@@ -1,45 +1,40 @@
 "use client"
 
-import type { ReactNode } from "react"
+import type React from "react"
 import { useState, useRef, useEffect } from "react"
 
-export interface DropdownItem {
+interface DropdownItem {
   label: string
   value?: string
-  icon?: ReactNode
+  icon?: React.ReactNode
   action: () => void
   destructive?: boolean
 }
 
-export interface ReusableDropdownProps {
-  trigger: ReactNode
+interface ReusableDropdownProps {
+  trigger: React.ReactNode
   items: DropdownItem[]
   align?: "left" | "right"
   width?: string
 }
 
-/**
- * ReusableDropdown
- * ----------------
- * Generic dropdown component used across the app.
- */
 export function ReusableDropdown({ trigger, items, align = "right", width = "w-64" }: ReusableDropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const ref = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Close when clicking outside
   useEffect(() => {
-    function handleClick(evt: MouseEvent) {
-      if (ref.current && !ref.current.contains(evt.target as Node)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
     }
-    document.addEventListener("mousedown", handleClick)
-    return () => document.removeEventListener("mousedown", handleClick)
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
   return (
-    <div className="relative" ref={ref}>
+    <div className="relative" ref={dropdownRef}>
       <div onClick={() => setIsOpen(!isOpen)}>{trigger}</div>
 
       {isOpen && (
@@ -48,9 +43,9 @@ export function ReusableDropdown({ trigger, items, align = "right", width = "w-6
             align === "right" ? "right-0" : "left-0"
           }`}
         >
-          {items.map((item, i) => (
+          {items.map((item, index) => (
             <button
-              key={i}
+              key={index}
               onClick={() => {
                 item.action()
                 setIsOpen(false)
@@ -61,13 +56,13 @@ export function ReusableDropdown({ trigger, items, align = "right", width = "w-6
             >
               <span className="font-medium">{item.label}</span>
               {item.icon && (
-                <span
-                  className={`w-5 h-5 flex items-center justify-center ${
+                <div
+                  className={`w-6 h-6 flex items-center justify-center ${
                     item.destructive ? "text-red-500" : "text-gray-600"
                   }`}
                 >
                   {item.icon}
-                </span>
+                </div>
               )}
             </button>
           ))}
@@ -76,6 +71,3 @@ export function ReusableDropdown({ trigger, items, align = "right", width = "w-6
     </div>
   )
 }
-
-// --- default export for `import X from` style ---
-export default ReusableDropdown
