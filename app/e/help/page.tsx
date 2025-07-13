@@ -1,26 +1,31 @@
-"use client"
+"use client";
 
-import { Bot, Twitter, Mail, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../../components/page-header"
-import { useRouter } from "next/navigation"
+import { Bot, Twitter, Mail, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { useRouter } from "next/navigation";
 
 export default function HelpPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const handleExternalLink = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer")
-  }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="border-b border-gray-200">
         <PageHeader
           title="Need Help?"
           subtitle="Choose how you'd like to get support"
           rightContent={
-            <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={() => router.back()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-gray-100"
+              onClick={() => router.back()}
+            >
               <X className="h-5 w-5" />
             </Button>
           }
@@ -37,10 +42,14 @@ export default function HelpPage() {
             </div>
             <div>
               <h3 className="font-bold text-lg">Talk to our AI agent</h3>
-              <p className="text-gray-500 text-sm">Get instant answers to common questions</p>
+              <p className="text-gray-500 text-sm">
+                Get instant answers to common questions
+              </p>
             </div>
           </div>
-          <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">Start Chat</Button>
+          <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+            Start Chat
+          </Button>
         </div>
 
         {/* Twitter Card */}
@@ -51,7 +60,9 @@ export default function HelpPage() {
             </div>
             <div>
               <h3 className="font-bold text-lg">Reach out to us on X</h3>
-              <p className="text-gray-500 text-sm">Connect with us on social media</p>
+              <p className="text-gray-500 text-sm">
+                Connect with us on social media
+              </p>
             </div>
           </div>
           <Button
@@ -70,7 +81,9 @@ export default function HelpPage() {
             </div>
             <div>
               <h3 className="font-bold text-lg">Email us at evento.so</h3>
-              <p className="text-gray-500 text-sm">Send us a detailed message</p>
+              <p className="text-gray-500 text-sm">
+                Send us a detailed message
+              </p>
             </div>
           </div>
           <Button
@@ -82,5 +95,5 @@ export default function HelpPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

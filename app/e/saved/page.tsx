@@ -1,16 +1,16 @@
-"use client"
+"use client";
 
-import { X, Plus, Bookmark, ChevronRight } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../../components/page-header"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
+import { X, Plus, Bookmark, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SavedListsPage() {
-  const router = useRouter()
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [newListName, setNewListName] = useState("")
+  const router = useRouter();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newListName, setNewListName] = useState("");
   const [savedLists, setSavedLists] = useState([
     {
       id: 1,
@@ -30,7 +30,10 @@ export default function SavedListsPage() {
       eventCount: 3,
       isDefault: false,
       lastUpdated: "1 week ago",
-      preview: ["/placeholder.svg?height=40&width=40", "/placeholder.svg?height=40&width=40"],
+      preview: [
+        "/placeholder.svg?height=40&width=40",
+        "/placeholder.svg?height=40&width=40",
+      ],
     },
     {
       id: 3,
@@ -44,12 +47,12 @@ export default function SavedListsPage() {
         "/placeholder.svg?height=40&width=40",
       ],
     },
-  ])
+  ]);
 
   const handleCreateList = () => {
     if (!newListName.trim()) {
-      toast.error("Please enter a list name")
-      return
+      toast.error("Please enter a list name");
+      return;
     }
 
     const newList = {
@@ -59,27 +62,35 @@ export default function SavedListsPage() {
       isDefault: false,
       lastUpdated: "Just now",
       preview: [],
-    }
+    };
 
-    setSavedLists([...savedLists, newList])
-    setNewListName("")
-    setShowCreateModal(false)
-    toast.success(`"${newList.name}" list created!`)
-  }
+    setSavedLists([...savedLists, newList]);
+    setNewListName("");
+    setShowCreateModal(false);
+    toast.success(`"${newList.name}" list created!`);
+  };
 
   const handleListClick = (listId: number) => {
-    router.push(`/saved/${listId}`)
-  }
+    router.push(`/saved/${listId}`);
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="border-b border-gray-200">
         <PageHeader
           title="Saved"
-          subtitle={`${savedLists.length} lists • ${savedLists.reduce((total, list) => total + list.eventCount, 0)} events`}
+          subtitle={`${savedLists.length} lists • ${savedLists.reduce(
+            (total, list) => total + list.eventCount,
+            0
+          )} events`}
           rightContent={
-            <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={() => router.back()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-gray-100"
+              onClick={() => router.back()}
+            >
               <X className="h-5 w-5" />
             </Button>
           }
@@ -118,7 +129,9 @@ export default function SavedListsPage() {
                     )}
                   </div>
                   <p className="text-gray-600 text-sm mb-2">
-                    {list.eventCount} {list.eventCount === 1 ? "event" : "events"} • Updated {list.lastUpdated}
+                    {list.eventCount}{" "}
+                    {list.eventCount === 1 ? "event" : "events"} • Updated{" "}
+                    {list.lastUpdated}
                   </p>
 
                   {/* Preview Images */}
@@ -153,9 +166,16 @@ export default function SavedListsPage() {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bookmark className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No saved lists</h3>
-              <p className="text-gray-500 text-sm mb-6">Create your first list to start saving events.</p>
-              <Button onClick={() => setShowCreateModal(true)} className="bg-orange-500 hover:bg-orange-600 text-white">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No saved lists
+              </h3>
+              <p className="text-gray-500 text-sm mb-6">
+                Create your first list to start saving events.
+              </p>
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
                 Create List
               </Button>
             </div>
@@ -166,7 +186,7 @@ export default function SavedListsPage() {
       {/* Create List Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
+          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full">
             <h3 className="text-xl font-bold mb-4">Create New List</h3>
             <input
               type="text"
@@ -181,14 +201,17 @@ export default function SavedListsPage() {
               <Button
                 variant="outline"
                 onClick={() => {
-                  setShowCreateModal(false)
-                  setNewListName("")
+                  setShowCreateModal(false);
+                  setNewListName("");
                 }}
                 className="flex-1"
               >
                 Cancel
               </Button>
-              <Button onClick={handleCreateList} className="flex-1 bg-orange-500 hover:bg-orange-600 text-white">
+              <Button
+                onClick={handleCreateList}
+                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+              >
                 Create
               </Button>
             </div>
@@ -196,5 +219,5 @@ export default function SavedListsPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

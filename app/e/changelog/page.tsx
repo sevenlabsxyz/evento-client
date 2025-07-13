@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { X, Calendar, Bug, Sparkles, Zap, Shield } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../../components/page-header"
-import { useRouter } from "next/navigation"
+import { X, Calendar, Bug, Sparkles, Zap, Shield } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { useRouter } from "next/navigation";
 
 export default function ChangelogPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const changelogEntries = [
     {
@@ -134,28 +134,33 @@ export default function ChangelogPage() {
         },
       ],
     },
-  ]
+  ];
 
   const getVersionBadgeColor = (type: string) => {
     switch (type) {
       case "hotfix":
-        return "bg-red-100 text-red-800"
+        return "bg-red-100 text-red-800";
       case "update":
-        return "bg-blue-100 text-blue-800"
+        return "bg-blue-100 text-blue-800";
       default:
-        return "bg-gray-100 text-gray-800"
+        return "bg-gray-100 text-gray-800";
     }
-  }
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="border-b border-gray-200">
         <PageHeader
           title="Change Log"
           subtitle="Stay updated with the latest app improvements"
           rightContent={
-            <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={() => router.back()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-gray-100"
+              onClick={() => router.back()}
+            >
               <X className="h-5 w-5" />
             </Button>
           }
@@ -165,13 +170,22 @@ export default function ChangelogPage() {
       {/* Content */}
       <div className="flex-1 px-4 py-6 space-y-6 bg-gray-50 overflow-y-auto">
         {changelogEntries.map((entry, index) => (
-          <div key={entry.version} className="bg-white rounded-2xl overflow-hidden shadow-sm">
+          <div
+            key={entry.version}
+            className="bg-white rounded-2xl overflow-hidden shadow-sm"
+          >
             {/* Version Header */}
             <div className="p-4 border-b border-gray-100">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-3">
-                  <h3 className="text-lg font-bold text-gray-900">v{entry.version}</h3>
-                  <span className={`px-2 py-1 rounded-full text-xs font-medium ${getVersionBadgeColor(entry.type)}`}>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    v{entry.version}
+                  </h3>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${getVersionBadgeColor(
+                      entry.type
+                    )}`}
+                  >
                     {entry.type}
                   </span>
                 </div>
@@ -193,11 +207,16 @@ export default function ChangelogPage() {
                 <div key={categoryIndex}>
                   <div className="flex items-center gap-2 mb-3">
                     {changeCategory.icon}
-                    <h4 className="font-semibold text-gray-900">{changeCategory.category}</h4>
+                    <h4 className="font-semibold text-gray-900">
+                      {changeCategory.category}
+                    </h4>
                   </div>
                   <ul className="space-y-2 ml-6">
                     {changeCategory.items.map((item, itemIndex) => (
-                      <li key={itemIndex} className="flex items-start gap-2 text-sm text-gray-700">
+                      <li
+                        key={itemIndex}
+                        className="flex items-start gap-2 text-sm text-gray-700"
+                      >
                         <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                         <span>{item}</span>
                       </li>
@@ -213,12 +232,15 @@ export default function ChangelogPage() {
         <div className="text-center py-6">
           <p className="text-gray-500 text-sm">
             Want to suggest a feature or report a bug?{" "}
-            <button onClick={() => router.push("/contact")} className="text-orange-600 font-medium hover:underline">
+            <button
+              onClick={() => router.push("/contact")}
+              className="text-orange-600 font-medium hover:underline"
+            >
               Contact us
             </button>
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import { Settings, Edit3, Camera, Globe, Zap, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
+import { Settings, Edit3, Camera, Globe, Zap, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
-  const router = useRouter()
-  const [activeTab, setActiveTab] = useState("events")
-  const [eventsFilter, setEventsFilter] = useState("attending")
-  const [showFollowingModal, setShowFollowingModal] = useState(false)
-  const [showFollowersModal, setShowFollowersModal] = useState(false)
-  const [showWebsiteModal, setShowWebsiteModal] = useState(false)
-  const [countdown, setCountdown] = useState(3)
-  const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]))
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState("events");
+  const [eventsFilter, setEventsFilter] = useState("attending");
+  const [showFollowingModal, setShowFollowingModal] = useState(false);
+  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showWebsiteModal, setShowWebsiteModal] = useState(false);
+  const [countdown, setCountdown] = useState(3);
+  const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
 
   const userStats = {
     events: 24,
@@ -22,7 +22,7 @@ export default function ProfilePage() {
     mutuals: 156,
     following: 89,
     followers: 234,
-  }
+  };
 
   const attendingEvents = [
     {
@@ -49,7 +49,7 @@ export default function ProfilePage() {
       location: "Rome, Italy",
       image: "/placeholder.svg?height=60&width=60",
     },
-  ]
+  ];
 
   const hostingEvents = [
     {
@@ -76,7 +76,7 @@ export default function ProfilePage() {
       location: "New York, USA",
       image: "/placeholder.svg?height=60&width=60",
     },
-  ]
+  ];
 
   const followingList = [
     {
@@ -109,7 +109,7 @@ export default function ProfilePage() {
       username: "@lisap",
       avatar: "/placeholder.svg?height=50&width=50",
     },
-  ]
+  ];
 
   const followersList = [
     {
@@ -136,7 +136,7 @@ export default function ProfilePage() {
       username: "@annaj",
       avatar: "/placeholder.svg?height=50&width=50",
     },
-  ]
+  ];
 
   const profilePhotos = [
     "/placeholder.svg?height=120&width=120",
@@ -145,86 +145,112 @@ export default function ProfilePage() {
     "/placeholder.svg?height=120&width=120",
     "/placeholder.svg?height=120&width=120",
     "/placeholder.svg?height=120&width=120",
-  ]
+  ];
 
   const profileQuestions = [
-    { question: "My travel style", answer: "Adventure seeker with a love for local culture" },
-    { question: "Dream destination", answer: "New Zealand - for the landscapes and adventure sports" },
-    { question: "Can't travel without", answer: "My camera and a good playlist" },
-    { question: "Best travel memory", answer: "Watching sunrise from Mount Fuji in Japan" },
-  ]
+    {
+      question: "My travel style",
+      answer: "Adventure seeker with a love for local culture",
+    },
+    {
+      question: "Dream destination",
+      answer: "New Zealand - for the landscapes and adventure sports",
+    },
+    {
+      question: "Can't travel without",
+      answer: "My camera and a good playlist",
+    },
+    {
+      question: "Best travel memory",
+      answer: "Watching sunrise from Mount Fuji in Japan",
+    },
+  ];
 
-  const interestTags = ["Photography", "Food", "Adventure", "Culture", "Music", "Art", "Nature", "Architecture"]
+  const interestTags = [
+    "Photography",
+    "Food",
+    "Adventure",
+    "Culture",
+    "Music",
+    "Art",
+    "Nature",
+    "Architecture",
+  ];
 
   const handleSocialClick = (platform: string) => {
     const urls = {
       instagram: "https://instagram.com/andrerfneves",
       x: "https://x.com/andrerfneves",
       website: "https://andrerfneves.com",
-    }
-    window.open(urls[platform as keyof typeof urls], "_blank", "noopener,noreferrer")
-  }
+    };
+    window.open(
+      urls[platform as keyof typeof urls],
+      "_blank",
+      "noopener,noreferrer"
+    );
+  };
 
   const handleZap = () => {
-    toast.success("Lightning payment coming soon!")
-  }
+    toast.success("Lightning payment coming soon!");
+  };
 
   const handleWebsiteClick = () => {
-    setShowWebsiteModal(true)
-    setCountdown(3)
+    setShowWebsiteModal(true);
+    setCountdown(3);
 
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
-          clearInterval(timer)
-          setShowWebsiteModal(false)
-          window.open("https://andrerfneves.com", "_blank", "noopener,noreferrer")
-          return 3
+          clearInterval(timer);
+          setShowWebsiteModal(false);
+          window.open(
+            "https://andrerfneves.com",
+            "_blank",
+            "noopener,noreferrer"
+          );
+          return 3;
         }
-        return prev - 1
-      })
-    }, 1000)
-  }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const handleFollowToggle = (userId: number) => {
-    const newFollowingUsers = new Set(followingUsers)
+    const newFollowingUsers = new Set(followingUsers);
     if (followingUsers.has(userId)) {
-      newFollowingUsers.delete(userId)
-      toast.success("Unfollowed user")
+      newFollowingUsers.delete(userId);
+      toast.success("Unfollowed user");
     } else {
-      newFollowingUsers.add(userId)
-      toast.success("Following user")
+      newFollowingUsers.add(userId);
+      toast.success("Following user");
     }
-    setFollowingUsers(newFollowingUsers)
-  }
+    setFollowingUsers(newFollowingUsers);
+  };
 
   const handleUserClick = (username: string) => {
-    router.push(`/${username.replace("@", "")}`)
-  }
+    router.push(`/${username.replace("@", "")}`);
+  };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce(
-      (acc, event) => {
-        const date = event.date
-        if (!acc[date]) {
-          acc[date] = []
-        }
-        acc[date].push(event)
-        return acc
-      },
-      {} as Record<string, typeof events>,
-    )
+    const grouped = events.reduce((acc, event) => {
+      const date = event.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(event);
+      return acc;
+    }, {} as Record<string, typeof events>);
 
     return Object.entries(grouped).map(([date, events]) => ({
       date,
       events,
       formattedDate: formatDateHeader(date),
-    }))
-  }
+    }));
+  };
 
   const formatDateHeader = (dateStr: string) => {
-    const date = new Date(dateStr + ", 2025")
-    const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    const date = new Date(dateStr + ", 2025");
+    const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     const monthNames = [
       "JANUARY",
       "FEBRUARY",
@@ -238,18 +264,19 @@ export default function ProfilePage() {
       "OCTOBER",
       "NOVEMBER",
       "DECEMBER",
-    ]
+    ];
 
-    const dayName = dayNames[date.getDay()]
-    const monthName = monthNames[date.getMonth()]
-    const day = date.getDate()
+    const dayName = dayNames[date.getDay()];
+    const monthName = monthNames[date.getMonth()];
+    const day = date.getDate();
 
-    return `${dayName}, ${monthName} ${day}`
-  }
+    return `${dayName}, ${monthName} ${day}`;
+  };
 
   const renderEventsTab = () => {
-    const currentEvents = eventsFilter === "attending" ? attendingEvents : hostingEvents
-    const groupedEvents = groupEventsByDate(currentEvents)
+    const currentEvents =
+      eventsFilter === "attending" ? attendingEvents : hostingEvents;
+    const groupedEvents = groupEventsByDate(currentEvents);
 
     return (
       <div className="space-y-4">
@@ -258,7 +285,9 @@ export default function ProfilePage() {
           <button
             onClick={() => setEventsFilter("attending")}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              eventsFilter === "attending" ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              eventsFilter === "attending"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             Attending
@@ -266,7 +295,9 @@ export default function ProfilePage() {
           <button
             onClick={() => setEventsFilter("hosting")}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              eventsFilter === "hosting" ? "bg-orange-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              eventsFilter === "hosting"
+                ? "bg-orange-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
             Hosting
@@ -278,7 +309,9 @@ export default function ProfilePage() {
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.date}>
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-gray-500 font-medium text-sm">{group.formattedDate}</h2>
+                <h2 className="text-gray-500 font-medium text-sm">
+                  {group.formattedDate}
+                </h2>
               </div>
 
               <div className="space-y-4">
@@ -294,7 +327,9 @@ export default function ProfilePage() {
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-gray-600 text-sm">{event.time}</span>
+                      <span className="text-gray-600 text-sm">
+                        {event.time}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -309,8 +344,8 @@ export default function ProfilePage() {
           </div>
         )}
       </div>
-    )
-  }
+    );
+  };
 
   const renderAboutTab = () => (
     <div className="space-y-6">
@@ -325,7 +360,10 @@ export default function ProfilePage() {
         </div>
         <div className="grid grid-cols-3 gap-2">
           {profilePhotos.map((photo, index) => (
-            <div key={index} className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+            <div
+              key={index}
+              className="aspect-square rounded-lg overflow-hidden bg-gray-100"
+            >
               <img
                 src={photo || "/placeholder.svg"}
                 alt={`Profile photo ${index + 1}`}
@@ -342,7 +380,9 @@ export default function ProfilePage() {
         <div className="space-y-3">
           {profileQuestions.map((item, index) => (
             <div key={index} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-sm font-medium text-gray-700 mb-1">{item.question}</p>
+              <p className="text-sm font-medium text-gray-700 mb-1">
+                {item.question}
+              </p>
               <p className="text-sm text-gray-900">{item.answer}</p>
             </div>
           ))}
@@ -364,23 +404,27 @@ export default function ProfilePage() {
         </div>
       </div>
     </div>
-  )
+  );
 
   const renderStatsTab = () => (
     <div className="grid grid-cols-2 gap-4">
       <div className="text-center p-4 bg-blue-50 rounded-xl">
-        <div className="text-3xl font-bold text-blue-600">{userStats.countries}</div>
+        <div className="text-3xl font-bold text-blue-600">
+          {userStats.countries}
+        </div>
         <div className="text-sm text-gray-600">Countries</div>
       </div>
       <div className="text-center p-4 bg-green-50 rounded-xl">
-        <div className="text-3xl font-bold text-green-600">{userStats.mutuals}</div>
+        <div className="text-3xl font-bold text-green-600">
+          {userStats.mutuals}
+        </div>
         <div className="text-sm text-gray-600">Mutuals</div>
       </div>
     </div>
-  )
+  );
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Profile Section */}
@@ -409,28 +453,43 @@ export default function ProfilePage() {
           {/* Stats above description */}
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-900">{userStats.events}</div>
+              <div className="text-xl font-bold text-gray-900">
+                {userStats.events}
+              </div>
               <div className="text-sm text-gray-500">Events</div>
             </div>
-            <button className="text-center" onClick={() => setShowFollowingModal(true)}>
-              <div className="text-xl font-bold text-gray-900">{userStats.following}</div>
+            <button
+              className="text-center"
+              onClick={() => setShowFollowingModal(true)}
+            >
+              <div className="text-xl font-bold text-gray-900">
+                {userStats.following}
+              </div>
               <div className="text-sm text-gray-500">Following</div>
             </button>
-            <button className="text-center" onClick={() => setShowFollowersModal(true)}>
-              <div className="text-xl font-bold text-gray-900">{userStats.followers}</div>
+            <button
+              className="text-center"
+              onClick={() => setShowFollowersModal(true)}
+            >
+              <div className="text-xl font-bold text-gray-900">
+                {userStats.followers}
+              </div>
               <div className="text-sm text-gray-500">Followers</div>
             </button>
           </div>
 
           <p className="text-gray-700 mb-4">
-            Travel enthusiast exploring the world one event at a time. Love photography, food, and meeting new people!
-            ✈️📸
+            Travel enthusiast exploring the world one event at a time. Love
+            photography, food, and meeting new people! ✈️📸
           </p>
 
           {/* Website */}
           <div className="flex items-center gap-2 mb-4">
             <Globe className="h-4 w-4 text-gray-500" />
-            <button onClick={handleWebsiteClick} className="text-blue-600 hover:underline text-sm">
+            <button
+              onClick={handleWebsiteClick}
+              className="text-blue-600 hover:underline text-sm"
+            >
               andrerfneves.com
             </button>
           </div>
@@ -476,7 +535,12 @@ export default function ProfilePage() {
               </div>
             </Button>
             {/* Lightning Zap */}
-            <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={handleZap}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-gray-100"
+              onClick={handleZap}
+            >
               <Zap className="h-5 w-5 text-yellow-500" />
             </Button>
           </div>
@@ -530,7 +594,7 @@ export default function ProfilePage() {
       {/* Following Modal */}
       {showFollowingModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col">
+          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-xl font-bold">Following</h3>
               <Button
@@ -556,16 +620,22 @@ export default function ProfilePage() {
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">{user.name}</h4>
+                        <h4 className="font-medium text-gray-900 truncate">
+                          {user.name}
+                        </h4>
                         <p className="text-sm text-gray-500">{user.username}</p>
                       </div>
                     </button>
                     <Button
-                      variant={followingUsers.has(user.id) ? "outline" : "default"}
+                      variant={
+                        followingUsers.has(user.id) ? "outline" : "default"
+                      }
                       size="sm"
                       onClick={() => handleFollowToggle(user.id)}
                       className={
-                        followingUsers.has(user.id) ? "bg-transparent" : "bg-orange-500 hover:bg-orange-600 text-white"
+                        followingUsers.has(user.id)
+                          ? "bg-transparent"
+                          : "bg-orange-500 hover:bg-orange-600 text-white"
                       }
                     >
                       {followingUsers.has(user.id) ? "Following" : "Follow"}
@@ -581,7 +651,7 @@ export default function ProfilePage() {
       {/* Followers Modal */}
       {showFollowersModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] flex flex-col">
+          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <h3 className="text-xl font-bold">Followers</h3>
               <Button
@@ -607,16 +677,22 @@ export default function ProfilePage() {
                         className="w-12 h-12 rounded-full object-cover"
                       />
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">{user.name}</h4>
+                        <h4 className="font-medium text-gray-900 truncate">
+                          {user.name}
+                        </h4>
                         <p className="text-sm text-gray-500">{user.username}</p>
                       </div>
                     </button>
                     <Button
-                      variant={followingUsers.has(user.id) ? "outline" : "default"}
+                      variant={
+                        followingUsers.has(user.id) ? "outline" : "default"
+                      }
                       size="sm"
                       onClick={() => handleFollowToggle(user.id)}
                       className={
-                        followingUsers.has(user.id) ? "bg-transparent" : "bg-orange-500 hover:bg-orange-600 text-white"
+                        followingUsers.has(user.id)
+                          ? "bg-transparent"
+                          : "bg-orange-500 hover:bg-orange-600 text-white"
                       }
                     >
                       {followingUsers.has(user.id) ? "Following" : "Follow"}
@@ -632,14 +708,23 @@ export default function ProfilePage() {
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm text-center">
+          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full text-center">
             <h3 className="text-xl font-bold mb-4">Leaving Evento</h3>
-            <p className="text-gray-600 mb-6">Are you about to leave Evento and be redirected to andrerfneves.com?</p>
-            <div className="text-6xl font-bold text-orange-500 mb-6">{countdown}</div>
+            <p className="text-gray-600 mb-6">
+              Are you about to leave Evento and be redirected to
+              andrerfneves.com?
+            </p>
+            <div className="text-6xl font-bold text-orange-500 mb-6">
+              {countdown}
+            </div>
             <Button
               onClick={() => {
-                setShowWebsiteModal(false)
-                window.open("https://andrerfneves.com", "_blank", "noopener,noreferrer")
+                setShowWebsiteModal(false);
+                window.open(
+                  "https://andrerfneves.com",
+                  "_blank",
+                  "noopener,noreferrer"
+                );
               }}
               className="w-full bg-orange-500 hover:bg-orange-600 text-white"
             >
@@ -649,5 +734,5 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
-  )
+  );
 }

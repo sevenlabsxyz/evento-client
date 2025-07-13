@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { ArrowLeft, Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { ArrowLeft, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function UserSearchPage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
 
   const suggestedUsers = [
     {
@@ -46,7 +46,7 @@ export default function UserSearchPage() {
       mutualEvents: 2,
       isOnline: false,
     },
-  ]
+  ];
 
   const searchResults = [
     {
@@ -67,21 +67,28 @@ export default function UserSearchPage() {
       mutualEvents: 0,
       isOnline: false,
     },
-  ]
+  ];
 
   const handleUserClick = (userId: number) => {
     // Navigate to chat with this user
-    router.push(`/messages/${userId}`)
-  }
+    router.push(`/messages/${userId}`);
+  };
 
-  const usersToShow = searchQuery ? searchResults : suggestedUsers
-  const sectionTitle = searchQuery ? `Results for "${searchQuery}"` : "Suggested"
+  const usersToShow = searchQuery ? searchResults : suggestedUsers;
+  const sectionTitle = searchQuery
+    ? `Results for "${searchQuery}"`
+    : "Suggested";
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => router.back()}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => router.back()}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1 relative">
@@ -100,7 +107,9 @@ export default function UserSearchPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="px-4 py-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">{sectionTitle}</h3>
+          <h3 className="text-sm font-semibold text-gray-900 mb-4">
+            {sectionTitle}
+          </h3>
           <div className="space-y-3">
             {usersToShow.map((user) => (
               <div
@@ -120,8 +129,12 @@ export default function UserSearchPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-900 truncate">{user.name}</h4>
-                    <span className="text-sm text-gray-500">{user.username}</span>
+                    <h4 className="font-medium text-gray-900 truncate">
+                      {user.name}
+                    </h4>
+                    <span className="text-sm text-gray-500">
+                      {user.username}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <span className="truncate">{user.location}</span>
@@ -133,7 +146,11 @@ export default function UserSearchPage() {
                     )}
                   </div>
                 </div>
-                <Button variant="outline" size="sm" className="text-xs bg-transparent">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs bg-transparent"
+                >
                   Message
                 </Button>
               </div>
@@ -148,5 +165,5 @@ export default function UserSearchPage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

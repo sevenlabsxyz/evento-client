@@ -1,12 +1,19 @@
-"use client"
+"use client";
 
-import { Heart, MessageCircle, UserPlus, Calendar, MapPin, Clock } from "lucide-react"
-import { PageHeader } from "../../components/page-header"
-import { Navbar } from "../../components/navbar"
-import { useState } from "react"
+import {
+  Heart,
+  MessageCircle,
+  UserPlus,
+  Calendar,
+  MapPin,
+  Clock,
+} from "lucide-react";
+import { PageHeader } from "@/components/page-header";
+import { Navbar } from "@/components/navbar";
+import { useState } from "react";
 
 export default function NotificationsPage() {
-  const [activeTab, setActiveTab] = useState("notifications")
+  const [activeTab, setActiveTab] = useState("notifications");
 
   const notifications = [
     {
@@ -83,26 +90,30 @@ export default function NotificationsPage() {
       time: "1d",
       isNew: false,
     },
-  ]
+  ];
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
       case "like":
-        return <Heart className="h-6 w-6 text-red-500" />
+        return <Heart className="h-6 w-6 text-red-500" />;
       case "comment":
-        return <MessageCircle className="h-6 w-6 text-blue-500" />
+        return <MessageCircle className="h-6 w-6 text-blue-500" />;
       case "follow":
-        return <UserPlus className="h-6 w-6 text-green-500" />
+        return <UserPlus className="h-6 w-6 text-green-500" />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white z-40 border-b border-gray-100">
-        <PageHeader title="Notifications" subtitle="Stay updated with your activity" rightContent={null} />
+      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
+        <PageHeader
+          title="Notifications"
+          subtitle="Stay updated with your activity"
+          rightContent={null}
+        />
       </div>
 
       {/* Notifications Content */}
@@ -145,8 +156,14 @@ export default function NotificationsPage() {
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <p className="text-base">
-                    {notification.user && <span className="font-semibold">{notification.user.name} </span>}
-                    <span className={notification.isNew ? "font-medium" : ""}>{notification.content}</span>
+                    {notification.user && (
+                      <span className="font-semibold">
+                        {notification.user.name}{" "}
+                      </span>
+                    )}
+                    <span className={notification.isNew ? "font-medium" : ""}>
+                      {notification.content}
+                    </span>
                   </p>
                   <div className="flex items-center gap-1 mt-1">
                     <Clock className="h-3 w-3 text-gray-400" />
@@ -166,7 +183,9 @@ export default function NotificationsPage() {
             </div>
 
             {/* New indicator */}
-            {notification.isNew && <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-2"></div>}
+            {notification.isNew && (
+              <div className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-2"></div>
+            )}
           </div>
         ))}
 
@@ -195,5 +214,5 @@ export default function NotificationsPage() {
       {/* Bottom Navbar */}
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
-  )
+  );
 }

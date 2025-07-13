@@ -1,14 +1,21 @@
-"use client"
+"use client";
 
-import { ArrowLeft, Calendar, MapPin, Clock, Bookmark, MoreHorizontal } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter, useParams } from "next/navigation"
-import { useState } from "react"
-import { toast } from "sonner"
+import {
+  ArrowLeft,
+  Calendar,
+  MapPin,
+  Clock,
+  Bookmark,
+  MoreHorizontal,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SavedListDetailPage() {
-  const router = useRouter()
-  const params = useParams()
+  const router = useRouter();
+  const params = useParams();
   const [savedEvents, setSavedEvents] = useState([
     {
       id: 1,
@@ -37,39 +44,52 @@ export default function SavedListDetailPage() {
       image: "/placeholder.svg?height=120&width=120",
       savedDate: "3 days ago",
     },
-  ])
+  ]);
 
   // Mock list data - in real app this would come from API based on params.id
   const listData = {
     "1": { name: "Event toes", isDefault: true },
     "2": { name: "Tokyo Adventures", isDefault: false },
     "3": { name: "Food Experiences", isDefault: false },
-  }
+  };
 
-  const currentList = listData[params.id as string] || listData["1"]
+  const currentList = listData[params.id as string] || listData["1"];
 
   const handleUnsaveEvent = (eventId: number) => {
-    setSavedEvents(savedEvents.filter((event) => event.id !== eventId))
-    toast.success("Event removed from list!")
-  }
+    setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
+    toast.success("Event removed from list!");
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
-        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => router.back()}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8"
+          onClick={() => router.back()}
+        >
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex-1">
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold">{currentList.name}</h1>
             {currentList.isDefault && (
-              <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">Default</span>
+              <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+                Default
+              </span>
             )}
           </div>
-          <p className="text-sm text-gray-500">{savedEvents.length} events saved</p>
+          <p className="text-sm text-gray-500">
+            {savedEvents.length} events saved
+          </p>
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-gray-100">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 rounded-full bg-gray-100"
+        >
           <MoreHorizontal className="h-5 w-5" />
         </Button>
       </div>
@@ -79,7 +99,10 @@ export default function SavedListDetailPage() {
         {savedEvents.length > 0 ? (
           <div className="px-4 py-4 space-y-4">
             {savedEvents.map((event) => (
-              <div key={event.id} className="bg-white rounded-2xl p-4 shadow-sm">
+              <div
+                key={event.id}
+                className="bg-white rounded-2xl p-4 shadow-sm"
+              >
                 <div className="flex gap-4">
                   {/* Event Image */}
                   <img
@@ -91,7 +114,9 @@ export default function SavedListDetailPage() {
                   {/* Event Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-bold text-lg leading-tight truncate pr-2">{event.title}</h3>
+                      <h3 className="font-bold text-lg leading-tight truncate pr-2">
+                        {event.title}
+                      </h3>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -121,13 +146,17 @@ export default function SavedListDetailPage() {
                     </div>
 
                     {/* Saved Date */}
-                    <p className="text-xs text-gray-500">Saved {event.savedDate}</p>
+                    <p className="text-xs text-gray-500">
+                      Saved {event.savedDate}
+                    </p>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 mt-4">
-                  <Button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white">View Details</Button>
+                  <Button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white">
+                    View Details
+                  </Button>
                   <Button variant="outline" className="flex-1 bg-transparent">
                     Share Event
                   </Button>
@@ -142,9 +171,16 @@ export default function SavedListDetailPage() {
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Bookmark className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No events in this list</h3>
-              <p className="text-gray-500 text-sm mb-6">Start saving events to see them here.</p>
-              <Button onClick={() => router.push("/feed")} className="bg-orange-500 hover:bg-orange-600 text-white">
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                No events in this list
+              </h3>
+              <p className="text-gray-500 text-sm mb-6">
+                Start saving events to see them here.
+              </p>
+              <Button
+                onClick={() => router.push("/feed")}
+                className="bg-orange-500 hover:bg-orange-600 text-white"
+              >
                 Discover Events
               </Button>
             </div>
@@ -152,5 +188,5 @@ export default function SavedListDetailPage() {
         )}
       </div>
     </div>
-  )
+  );
 }

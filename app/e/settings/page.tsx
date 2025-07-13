@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   LifeBuoy,
@@ -16,79 +16,154 @@ import {
   X,
   Code,
   BookOpen,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../../components/page-header"
-import { ReusableDropdown } from "../../components/reusable-dropdown"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
-import packageJson from "../../package.json"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { ReusableDropdown } from "@/components/reusable-dropdown";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import packageJson from "../../../package.json";
 
 export default function SettingsPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const languageItems = [
-    { label: "English", value: "en", action: () => console.log("English selected") },
-    { label: "Spanish", value: "es", action: () => console.log("Spanish selected") },
-    { label: "French", value: "fr", action: () => console.log("French selected") },
-    { label: "German", value: "de", action: () => console.log("German selected") },
-    { label: "Italian", value: "it", action: () => console.log("Italian selected") },
-    { label: "Portuguese", value: "pt", action: () => console.log("Portuguese selected") },
-    { label: "Japanese", value: "ja", action: () => console.log("Japanese selected") },
-    { label: "Korean", value: "ko", action: () => console.log("Korean selected") },
-    { label: "Chinese", value: "zh", action: () => console.log("Chinese selected") },
-  ]
+    {
+      label: "English",
+      value: "en",
+      action: () => console.log("English selected"),
+    },
+    {
+      label: "Spanish",
+      value: "es",
+      action: () => console.log("Spanish selected"),
+    },
+    {
+      label: "French",
+      value: "fr",
+      action: () => console.log("French selected"),
+    },
+    {
+      label: "German",
+      value: "de",
+      action: () => console.log("German selected"),
+    },
+    {
+      label: "Italian",
+      value: "it",
+      action: () => console.log("Italian selected"),
+    },
+    {
+      label: "Portuguese",
+      value: "pt",
+      action: () => console.log("Portuguese selected"),
+    },
+    {
+      label: "Japanese",
+      value: "ja",
+      action: () => console.log("Japanese selected"),
+    },
+    {
+      label: "Korean",
+      value: "ko",
+      action: () => console.log("Korean selected"),
+    },
+    {
+      label: "Chinese",
+      value: "zh",
+      action: () => console.log("Chinese selected"),
+    },
+  ];
 
   const currencyItems = [
-    { label: "US Dollar (USD)", value: "usd", action: () => console.log("USD selected") },
-    { label: "Euro (EUR)", value: "eur", action: () => console.log("EUR selected") },
-    { label: "British Pound (GBP)", value: "gbp", action: () => console.log("GBP selected") },
-    { label: "Japanese Yen (JPY)", value: "jpy", action: () => console.log("JPY selected") },
-    { label: "Canadian Dollar (CAD)", value: "cad", action: () => console.log("CAD selected") },
-    { label: "Australian Dollar (AUD)", value: "aud", action: () => console.log("AUD selected") },
-    { label: "Swiss Franc (CHF)", value: "chf", action: () => console.log("CHF selected") },
-    { label: "Chinese Yuan (CNY)", value: "cny", action: () => console.log("CNY selected") },
-  ]
+    {
+      label: "US Dollar (USD)",
+      value: "usd",
+      action: () => console.log("USD selected"),
+    },
+    {
+      label: "Euro (EUR)",
+      value: "eur",
+      action: () => console.log("EUR selected"),
+    },
+    {
+      label: "British Pound (GBP)",
+      value: "gbp",
+      action: () => console.log("GBP selected"),
+    },
+    {
+      label: "Japanese Yen (JPY)",
+      value: "jpy",
+      action: () => console.log("JPY selected"),
+    },
+    {
+      label: "Canadian Dollar (CAD)",
+      value: "cad",
+      action: () => console.log("CAD selected"),
+    },
+    {
+      label: "Australian Dollar (AUD)",
+      value: "aud",
+      action: () => console.log("AUD selected"),
+    },
+    {
+      label: "Swiss Franc (CHF)",
+      value: "chf",
+      action: () => console.log("CHF selected"),
+    },
+    {
+      label: "Chinese Yuan (CNY)",
+      value: "cny",
+      action: () => console.log("CNY selected"),
+    },
+  ];
 
   const handleExternalLink = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer")
-  }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   const handleShare = async () => {
     const shareData = {
       title: "Evento - Travel Events App",
       text: "Check out Evento, the best way to plan and organize your travel events!",
       url: "https://evento.so",
-    }
+    };
 
     try {
       if (navigator.share) {
-        await navigator.share(shareData)
+        await navigator.share(shareData);
       } else {
         // Fallback for browsers that don't support Web Share API
-        await navigator.clipboard.writeText("https://evento.so")
-        toast.success("Link copied to clipboard!")
+        await navigator.clipboard.writeText("https://evento.so");
+        toast.success("Link copied to clipboard!");
       }
     } catch (error) {
       // If sharing fails or is cancelled, copy to clipboard as fallback
       try {
-        await navigator.clipboard.writeText("https://evento.so")
-        toast.success("Link copied to clipboard!")
+        await navigator.clipboard.writeText("https://evento.so");
+        toast.success("Link copied to clipboard!");
       } catch (clipboardError) {
-        toast.error("Unable to share. Please copy the link manually: evento.so")
+        toast.error(
+          "Unable to share. Please copy the link manually: evento.so"
+        );
       }
     }
-  }
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="border-b border-gray-200">
         <PageHeader
           title="Settings"
           subtitle="Manage your app preferences"
           rightContent={
-            <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={() => router.back()}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full bg-gray-100"
+              onClick={() => router.back()}
+            >
               <X className="h-5 w-5" />
             </Button>
           }
@@ -106,7 +181,9 @@ export default function SettingsPage() {
               </div>
               <div>
                 <p className="font-medium text-orange-500">Andre Neves</p>
-                <p className="text-gray-600 text-sm">andrerfneves@protonmail.com</p>
+                <p className="text-gray-600 text-sm">
+                  andrerfneves@protonmail.com
+                </p>
               </div>
             </div>
           </div>
@@ -168,11 +245,16 @@ export default function SettingsPage() {
 
         {/* Help Center Section */}
         <div className="px-4 mb-2">
-          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">HELP CENTER</h2>
+          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">
+            HELP CENTER
+          </h2>
         </div>
         <div className="bg-white mx-4 rounded-2xl mb-4">
           <div className="p-4 border-b border-gray-100">
-            <button className="flex items-center justify-between w-full" onClick={() => router.push("/help")}>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => router.push("/e/help")}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <LifeBuoy className="h-4 w-4 text-orange-600" />
@@ -184,7 +266,10 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-4 border-b border-gray-100">
-            <button className="flex items-center justify-between w-full" onClick={() => router.push("/contact")}>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => router.push("/e/contact")}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Mail className="h-4 w-4 text-orange-600" />
@@ -196,7 +281,10 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-4">
-            <button className="flex items-center justify-between w-full" onClick={() => router.push("/changelog")}>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => router.push("/e/changelog")}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Sparkles className="h-4 w-4 text-orange-600" />
@@ -210,11 +298,16 @@ export default function SettingsPage() {
 
         {/* Developer Section */}
         <div className="px-4 mb-2">
-          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">DEVELOPER</h2>
+          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">
+            DEVELOPER
+          </h2>
         </div>
         <div className="bg-white mx-4 rounded-2xl mb-4">
           <div className="p-4 border-b border-gray-100">
-            <button className="flex items-center justify-between w-full" onClick={() => router.push("/api")}>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={() => router.push("/e/api")}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Code className="h-4 w-4 text-orange-600" />
@@ -243,7 +336,9 @@ export default function SettingsPage() {
 
         {/* About Section */}
         <div className="px-4 mb-2">
-          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">ABOUT</h2>
+          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">
+            ABOUT
+          </h2>
         </div>
         <div className="bg-white mx-4 rounded-2xl mb-4">
           <div className="p-4 border-b border-gray-100">
@@ -292,7 +387,10 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-4">
-            <button className="flex items-center justify-between w-full" onClick={handleShare}>
+            <button
+              className="flex items-center justify-between w-full"
+              onClick={handleShare}
+            >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
                   <Share className="h-4 w-4 text-orange-600" />
@@ -306,9 +404,11 @@ export default function SettingsPage() {
 
         {/* Version Info */}
         <div className="px-4 pb-6 text-center">
-          <p className="text-gray-500 text-sm">Version: {packageJson.version}</p>
+          <p className="text-gray-500 text-sm">
+            Version: {packageJson.version}
+          </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

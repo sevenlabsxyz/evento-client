@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Heart,
@@ -15,37 +15,39 @@ import {
   Share,
   Copy,
   Check,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../../../components/page-header"
-import { Navbar } from "../../../components/navbar"
-import { ReusableDropdown } from "../../../components/reusable-dropdown"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { Navbar } from "@/components/navbar";
+import { ReusableDropdown } from "@/components/reusable-dropdown";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function FeedPage() {
-  const [activeTab, setActiveTab] = useState("feed")
-  const [isLoading, setIsLoading] = useState(true)
-  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<number>>(new Set())
-  const [showSaveModal, setShowSaveModal] = useState(false)
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null)
-  const router = useRouter()
+  const [activeTab, setActiveTab] = useState("feed");
+  const [isLoading, setIsLoading] = useState(true);
+  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<number>>(
+    new Set()
+  );
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const router = useRouter();
 
   // Mock saved lists - in real app this would come from API
   const [savedLists] = useState([
     { id: 1, name: "Event toes", isDefault: true },
     { id: 2, name: "Tokyo Adventures", isDefault: false },
     { id: 3, name: "Food Experiences", isDefault: false },
-  ])
+  ]);
 
   useEffect(() => {
     // Simulate loading to prevent white screen
     const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 100)
-    return () => clearTimeout(timer)
-  }, [])
+      setIsLoading(false);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   const feedPosts = [
     {
@@ -63,7 +65,8 @@ export default function FeedPage() {
         location: "Paris, France",
         image: "/placeholder.svg?height=300&width=300",
       },
-      caption: "First time in Paris and I'm absolutely mesmerized! The Eiffel Tower at night is pure magic ✨",
+      caption:
+        "First time in Paris and I'm absolutely mesmerized! The Eiffel Tower at night is pure magic ✨",
       likes: 156,
       timeAgo: "4h ago",
     },
@@ -82,7 +85,8 @@ export default function FeedPage() {
         location: "Tokyo, Japan",
         image: "/placeholder.svg?height=300&width=300",
       },
-      caption: "Amazing sunset view from Tokyo Skytree! The city looks incredible from up here 🌅",
+      caption:
+        "Amazing sunset view from Tokyo Skytree! The city looks incredible from up here 🌅",
       likes: 234,
       timeAgo: "2h ago",
     },
@@ -101,86 +105,91 @@ export default function FeedPage() {
         location: "Bali, Indonesia",
         image: "/placeholder.svg?height=300&width=300",
       },
-      caption: "The rice terraces in Bali are breathtaking! Nature's artwork at its finest 🌾",
+      caption:
+        "The rice terraces in Bali are breathtaking! Nature's artwork at its finest 🌾",
       likes: 189,
       timeAgo: "6h ago",
     },
-  ]
+  ];
 
   const getDropdownItems = (postId: number, userName: string) => [
     {
       label: "Share Event",
       icon: <Share className="w-4 h-4" />,
       action: () => {
-        toast.success("Event shared!")
+        toast.success("Event shared!");
       },
     },
     {
       label: "Copy Link",
       icon: <Copy className="w-4 h-4" />,
       action: () => {
-        navigator.clipboard.writeText(`https://evento.so/event/${postId}`)
-        toast.success("Link copied to clipboard!")
+        navigator.clipboard.writeText(`https://evento.so/event/${postId}`);
+        toast.success("Link copied to clipboard!");
       },
     },
     {
       label: `Unfollow ${userName}`,
       icon: <UserMinus className="w-4 h-4" />,
       action: () => {
-        toast.success(`Unfollowed ${userName}`)
+        toast.success(`Unfollowed ${userName}`);
       },
     },
     {
       label: "Report Post",
       icon: <Flag className="w-4 h-4" />,
       action: () => {
-        toast.success("Post reported. Thank you for your feedback.")
+        toast.success("Post reported. Thank you for your feedback.");
       },
       destructive: true,
     },
-  ]
+  ];
 
   const handleBookmark = (postId: number) => {
-    setSelectedPostId(postId)
+    setSelectedPostId(postId);
 
     // If only one list exists, save automatically
     if (savedLists.length === 1) {
-      const newBookmarkedPosts = new Set(bookmarkedPosts)
+      const newBookmarkedPosts = new Set(bookmarkedPosts);
       if (bookmarkedPosts.has(postId)) {
-        newBookmarkedPosts.delete(postId)
-        toast.success("Event removed from saved!")
+        newBookmarkedPosts.delete(postId);
+        toast.success("Event removed from saved!");
       } else {
-        newBookmarkedPosts.add(postId)
-        toast.success(`Event saved to "${savedLists[0].name}"!`)
+        newBookmarkedPosts.add(postId);
+        toast.success(`Event saved to "${savedLists[0].name}"!`);
       }
-      setBookmarkedPosts(newBookmarkedPosts)
+      setBookmarkedPosts(newBookmarkedPosts);
     } else {
       // Show modal to choose list
-      setShowSaveModal(true)
+      setShowSaveModal(true);
     }
-  }
+  };
 
   const handleSaveToList = (listId: number, listName: string) => {
     if (selectedPostId) {
-      const newBookmarkedPosts = new Set(bookmarkedPosts)
-      newBookmarkedPosts.add(selectedPostId)
-      setBookmarkedPosts(newBookmarkedPosts)
-      toast.success(`Event saved to "${listName}"!`)
+      const newBookmarkedPosts = new Set(bookmarkedPosts);
+      newBookmarkedPosts.add(selectedPostId);
+      setBookmarkedPosts(newBookmarkedPosts);
+      toast.success(`Event saved to "${listName}"!`);
     }
-    setShowSaveModal(false)
-    setSelectedPostId(null)
-  }
+    setShowSaveModal(false);
+    setSelectedPostId(null);
+  };
 
   if (isLoading) {
     return (
-      <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
-        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white z-40 border-b border-gray-100">
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
           <PageHeader
             title="Feed"
             subtitle="Discover amazing travel events"
             rightContent={
               <>
-                <Button variant="ghost" size="icon" className="rounded-full bg-gray-100">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="rounded-full bg-gray-100"
+                >
                   <Search className="h-5 w-5" />
                 </Button>
               </>
@@ -192,13 +201,13 @@ export default function FeedPage() {
         </div>
         <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
-    )
+    );
   }
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white z-40 border-b border-gray-100">
+      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
         <PageHeader
           title="Feed"
           subtitle="Discover amazing travel events"
@@ -238,7 +247,11 @@ export default function FeedPage() {
               </div>
               <ReusableDropdown
                 trigger={
-                  <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-gray-100">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 rounded-full bg-gray-100"
+                  >
                     <MoreHorizontal className="h-4 w-4" />
                   </Button>
                 }
@@ -280,13 +293,25 @@ export default function FeedPage() {
 
               {/* Post Actions - All on left side */}
               <div className="flex items-center gap-4 mb-3">
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0 rounded-full bg-gray-100">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
+                >
                   <Heart className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0 rounded-full bg-gray-100">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
+                >
                   <MessageCircle className="h-5 w-5" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0 rounded-full bg-gray-100">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
+                >
                   <Send className="h-5 w-5" />
                 </Button>
                 <Button
@@ -296,7 +321,11 @@ export default function FeedPage() {
                   onClick={() => handleBookmark(post.id)}
                 >
                   <Bookmark
-                    className={`h-5 w-5 ${bookmarkedPosts.has(post.id) ? "fill-current text-orange-600" : ""}`}
+                    className={`h-5 w-5 ${
+                      bookmarkedPosts.has(post.id)
+                        ? "fill-current text-orange-600"
+                        : ""
+                    }`}
                   />
                 </Button>
               </div>
@@ -308,7 +337,7 @@ export default function FeedPage() {
       {/* Save to List Modal */}
       {showSaveModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
+          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full">
             <h3 className="text-xl font-bold mb-4">Save to List</h3>
             <div className="space-y-2">
               {savedLists.map((list) => (
@@ -335,8 +364,8 @@ export default function FeedPage() {
             <Button
               variant="outline"
               onClick={() => {
-                setShowSaveModal(false)
-                setSelectedPostId(null)
+                setShowSaveModal(false);
+                setSelectedPostId(null);
               }}
               className="w-full mt-4"
             >
@@ -349,5 +378,5 @@ export default function FeedPage() {
       {/* Bottom Navbar */}
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
-  )
+  );
 }

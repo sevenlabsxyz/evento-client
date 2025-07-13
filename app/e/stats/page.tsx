@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { X, Share } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
+import { X, Share } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function StatsPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   // Mock data - in real app this would come from user's actual event data
   const stats = {
@@ -17,18 +17,31 @@ export default function StatsPage() {
     shared: 0,
     international: 0,
     domestic: 0,
-  }
+  };
 
-  const CircularProgress = ({ percentage, size = 80 }: { percentage: number; size?: number }) => {
-    const radius = (size - 8) / 2
-    const circumference = 2 * Math.PI * radius
-    const strokeDasharray = circumference
-    const strokeDashoffset = circumference - (percentage / 100) * circumference
+  const CircularProgress = ({
+    percentage,
+    size = 80,
+  }: {
+    percentage: number;
+    size?: number;
+  }) => {
+    const radius = (size - 8) / 2;
+    const circumference = 2 * Math.PI * radius;
+    const strokeDasharray = circumference;
+    const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
     return (
       <div className="relative" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="transform -rotate-90">
-          <circle cx={size / 2} cy={size / 2} r={radius} stroke="#e5e7eb" strokeWidth="8" fill="none" />
+          <circle
+            cx={size / 2}
+            cy={size / 2}
+            r={radius}
+            stroke="#e5e7eb"
+            strokeWidth="8"
+            fill="none"
+          />
           <circle
             cx={size / 2}
             cy={size / 2}
@@ -43,14 +56,16 @@ export default function StatsPage() {
           />
         </svg>
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-2xl font-bold text-indigo-600">{percentage}%</span>
+          <span className="text-2xl font-bold text-indigo-600">
+            {percentage}%
+          </span>
         </div>
       </div>
-    )
-  }
+    );
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-gray-100 min-h-screen">
+    <div className="md:max-w-sm max-w-full mx-auto bg-gray-100 min-h-screen">
       {/* Header */}
       <div className="relative bg-gray-900 pt-12 pb-8">
         <Button
@@ -64,8 +79,12 @@ export default function StatsPage() {
 
         {/* Empty State Message */}
         <div className="px-6 text-center text-white mt-8">
-          <h1 className="text-2xl font-bold mb-4">No events recorded in your stats</h1>
-          <p className="text-gray-300 mb-12">We will calculate it as soon as your next event is completed</p>
+          <h1 className="text-2xl font-bold mb-4">
+            No events recorded in your stats
+          </h1>
+          <p className="text-gray-300 mb-12">
+            We will calculate it as soon as your next event is completed
+          </p>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-8 mb-8">
@@ -110,11 +129,15 @@ export default function StatsPage() {
 
           <div className="flex items-end gap-8 mb-8">
             <div className="text-center">
-              <div className="text-6xl font-bold text-indigo-600 mb-2">{stats.events}</div>
+              <div className="text-6xl font-bold text-indigo-600 mb-2">
+                {stats.events}
+              </div>
               <div className="text-indigo-600 font-medium">Events</div>
             </div>
             <div className="text-center">
-              <div className="text-6xl font-bold text-gray-400 mb-2">{stats.mutuals}</div>
+              <div className="text-6xl font-bold text-gray-400 mb-2">
+                {stats.mutuals}
+              </div>
               <div className="text-gray-400 font-medium">Mutuals Met</div>
             </div>
           </div>
@@ -148,7 +171,9 @@ export default function StatsPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-end gap-4">
               <div className="text-center">
-                <div className="text-5xl font-bold text-orange-500 mb-2">{stats.countries}</div>
+                <div className="text-5xl font-bold text-orange-500 mb-2">
+                  {stats.countries}
+                </div>
                 <div className="text-orange-500 font-medium">Visited</div>
               </div>
               <div className="text-center">
@@ -158,7 +183,11 @@ export default function StatsPage() {
             </div>
             <div className="text-center">
               <CircularProgress
-                percentage={stats.countries > 0 ? Math.round((stats.countries / 249) * 100) : 0}
+                percentage={
+                  stats.countries > 0
+                    ? Math.round((stats.countries / 249) * 100)
+                    : 0
+                }
                 size={100}
               />
             </div>
@@ -169,7 +198,10 @@ export default function StatsPage() {
             {/* Empty state for most visited countries */}
           </div>
 
-          <Button variant="ghost" className="w-full text-orange-500 font-semibold">
+          <Button
+            variant="ghost"
+            className="w-full text-orange-500 font-semibold"
+          >
             Show Visited Countries
           </Button>
         </div>
@@ -185,21 +217,29 @@ export default function StatsPage() {
 
           <div className="grid grid-cols-2 gap-6">
             <div className="text-center">
-              <div className="text-4xl font-bold text-blue-600 mb-2">{stats.categories}</div>
+              <div className="text-4xl font-bold text-blue-600 mb-2">
+                {stats.categories}
+              </div>
               <div className="text-blue-600 font-medium">Categories</div>
             </div>
             <div className="text-center">
-              <div className="text-4xl font-bold text-green-600 mb-2">{stats.mutuals}</div>
+              <div className="text-4xl font-bold text-green-600 mb-2">
+                {stats.mutuals}
+              </div>
               <div className="text-green-600 font-medium">Mutuals</div>
             </div>
           </div>
 
           <div className="mt-6">
-            <h3 className="text-gray-500 font-medium mb-4">Popular categories</h3>
-            <div className="text-center text-gray-400 text-sm">No event categories yet</div>
+            <h3 className="text-gray-500 font-medium mb-4">
+              Popular categories
+            </h3>
+            <div className="text-center text-gray-400 text-sm">
+              No event categories yet
+            </div>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

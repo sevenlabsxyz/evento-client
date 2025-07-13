@@ -1,21 +1,33 @@
-"use client"
+"use client";
 
-import { X, Calendar, CreditCard, Edit3, Paperclip, MapPin } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { PageHeader } from "../../components/page-header"
-import { useRouter } from "next/navigation"
+import {
+  X,
+  Calendar,
+  CreditCard,
+  Edit3,
+  Paperclip,
+  MapPin,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/page-header";
+import { useRouter } from "next/navigation";
 
 export default function CreatePage() {
-  const router = useRouter()
+  const router = useRouter();
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <PageHeader
         title="Create Event"
         subtitle="Add a new event to your itinerary"
         rightContent={
-          <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={() => router.back()}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-gray-100"
+            onClick={() => router.back()}
+          >
             <X className="h-5 w-5" />
           </Button>
         }
@@ -31,8 +43,12 @@ export default function CreatePage() {
             </div>
             <span className="text-gray-700 font-medium w-16">Starts</span>
             <div className="flex gap-2 flex-1">
-              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1">Tue, Sep 09</button>
-              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600">Time</button>
+              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1">
+                Tue, Sep 09
+              </button>
+              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600">
+                Time
+              </button>
             </div>
           </div>
 
@@ -42,8 +58,12 @@ export default function CreatePage() {
             </div>
             <span className="text-gray-700 font-medium w-16">Ends</span>
             <div className="flex gap-2 flex-1">
-              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1">Thu, Sep 11</button>
-              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600">Time</button>
+              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1">
+                Thu, Sep 11
+              </button>
+              <button className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600">
+                Time
+              </button>
             </div>
           </div>
         </div>
@@ -51,7 +71,9 @@ export default function CreatePage() {
         {/* Event Title Module */}
         <div className="bg-white rounded-2xl p-4">
           <div className="space-y-2">
-            <label className="text-gray-500 text-sm font-medium">Event Title</label>
+            <label className="text-gray-500 text-sm font-medium">
+              Event Title
+            </label>
             <input
               type="text"
               placeholder="Enter event name"
@@ -68,7 +90,9 @@ export default function CreatePage() {
               <MapPin className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-1">Address</label>
+              <label className="text-gray-500 text-sm font-medium block mb-1">
+                Address
+              </label>
               <input
                 type="text"
                 placeholder="Enter location"
@@ -86,7 +110,9 @@ export default function CreatePage() {
               <CreditCard className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-1">Total Cost</label>
+              <label className="text-gray-500 text-sm font-medium block mb-1">
+                Total Cost
+              </label>
               <input
                 type="text"
                 placeholder="Enter amount"
@@ -103,7 +129,9 @@ export default function CreatePage() {
               <Edit3 className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-2">Notes</label>
+              <label className="text-gray-500 text-sm font-medium block mb-2">
+                Notes
+              </label>
               <textarea
                 placeholder="Add notes about this event..."
                 className="w-full text-gray-900 bg-transparent border-none outline-none resize-none"
@@ -120,14 +148,18 @@ export default function CreatePage() {
               <Paperclip className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <button className="text-gray-500 font-medium text-left">Add File, Photo or Link</button>
+              <button className="text-gray-500 font-medium text-left">
+                Add File, Photo or Link
+              </button>
             </div>
           </div>
         </div>
 
         {/* Distance Module */}
         <div className="bg-white rounded-2xl p-4">
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Distance from a location</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-3">
+            Distance from a location
+          </h3>
           <div className="bg-orange-50 rounded-xl p-4 border border-orange-100">
             <div className="text-center text-gray-600">
               <MapPin className="h-8 w-8 mx-auto mb-2 text-orange-600" />
@@ -144,5 +176,5 @@ export default function CreatePage() {
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   MoreHorizontal,
@@ -15,40 +15,40 @@ import {
   Camera,
   User,
   BarChart3,
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { ReusableDropdown } from "./components/reusable-dropdown"
-import { Navbar } from "./components/navbar"
-import { PageHeader } from "./components/page-header"
-import { useRef, useState } from "react"
-import { useRouter } from "next/navigation"
-import { toast } from "sonner"
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { ReusableDropdown } from "./components/reusable-dropdown";
+import { Navbar } from "./components/navbar";
+import { PageHeader } from "./components/page-header";
+import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function TravelItinerary() {
-  const [activeDate, setActiveDate] = useState(2)
-  const [activeTab, setActiveTab] = useState("hub")
-  const router = useRouter()
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const dateRefs = useRef<{ [key: number]: HTMLDivElement | null }>({})
+  const [activeDate, setActiveDate] = useState(2);
+  const [activeTab, setActiveTab] = useState("hub");
+  const router = useRouter();
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const dateRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
   const scrollToDate = (date: number) => {
-    setActiveDate(date)
-    const targetElement = dateRefs.current[date]
+    setActiveDate(date);
+    const targetElement = dateRefs.current[date];
     if (targetElement && scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const containerHeight = container.clientHeight
-      const targetTop = targetElement.offsetTop
-      const targetHeight = targetElement.clientHeight
+      const container = scrollContainerRef.current;
+      const containerHeight = container.clientHeight;
+      const targetTop = targetElement.offsetTop;
+      const targetHeight = targetElement.clientHeight;
 
       // Center the target element in the viewport
-      const scrollTop = targetTop - containerHeight / 2 + targetHeight / 2
+      const scrollTop = targetTop - containerHeight / 2 + targetHeight / 2;
 
       container.scrollTo({
         top: Math.max(0, scrollTop),
         behavior: "smooth",
-      })
+      });
     }
-  }
+  };
 
   const dropdownItems = [
     {
@@ -72,20 +72,20 @@ export default function TravelItinerary() {
       action: () => toast.success("Logged out successfully!"),
       destructive: true,
     },
-  ]
+  ];
 
   // Generate real calendar dates for September 2025
   const generateCalendarDays = () => {
-    const startDate = new Date(2025, 8, 2) // September 2, 2025 (month is 0-indexed)
-    const days = []
+    const startDate = new Date(2025, 8, 2); // September 2, 2025 (month is 0-indexed)
+    const days = [];
 
     for (let i = 0; i < 8; i++) {
-      const currentDate = new Date(startDate)
-      currentDate.setDate(startDate.getDate() + i)
+      const currentDate = new Date(startDate);
+      currentDate.setDate(startDate.getDate() + i);
 
-      const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-      const dayName = dayNames[currentDate.getDay()]
-      const date = currentDate.getDate()
+      const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+      const dayName = dayNames[currentDate.getDay()];
+      const date = currentDate.getDate();
 
       days.push({
         day: dayName,
@@ -96,27 +96,27 @@ export default function TravelItinerary() {
           i === 0
             ? "bg-blue-500"
             : i === 1
-              ? "bg-purple-500"
-              : i === 2
-                ? "bg-green-500"
-                : i === 3
-                  ? "bg-yellow-500"
-                  : "bg-red-500",
-      })
+            ? "bg-purple-500"
+            : i === 2
+            ? "bg-green-500"
+            : i === 3
+            ? "bg-yellow-500"
+            : "bg-red-500",
+      });
     }
 
-    return days
-  }
+    return days;
+  };
 
-  const calendarDays = generateCalendarDays()
+  const calendarDays = generateCalendarDays();
 
   const handleTabChange = (tab: string) => {
-    setActiveTab(tab)
-  }
+    setActiveTab(tab);
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col relative">
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full max-w-sm bg-white z-40 shadow-sm">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
+      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 shadow-sm">
         {/* Header */}
         <PageHeader
           title="My Hub"
@@ -125,7 +125,11 @@ export default function TravelItinerary() {
             <>
               <ReusableDropdown
                 trigger={
-                  <Button variant="ghost" size="icon" className="rounded-full bg-gray-100">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="rounded-full bg-gray-100"
+                  >
                     <MoreHorizontal className="h-5 w-5" />
                   </Button>
                 }
@@ -155,13 +159,20 @@ export default function TravelItinerary() {
         <div className="px-4 mb-6">
           <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-2">
             {calendarDays.map((day, index) => (
-              <div key={index} className="flex flex-col items-center min-w-[50px]">
-                <span className="text-gray-500 text-xs font-medium mb-2">{day.day}</span>
+              <div
+                key={index}
+                className="flex flex-col items-center min-w-[50px]"
+              >
+                <span className="text-gray-500 text-xs font-medium mb-2">
+                  {day.day}
+                </span>
                 <div className="relative">
                   <button
                     onClick={() => scrollToDate(day.date)}
                     className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl font-medium transition-colors ${
-                      day.active ? "bg-orange-200 text-orange-800" : "text-black hover:bg-gray-100"
+                      day.active
+                        ? "bg-orange-200 text-orange-800"
+                        : "text-black hover:bg-gray-100"
                     }`}
                   >
                     {day.date}
@@ -179,7 +190,10 @@ export default function TravelItinerary() {
       </div>
 
       {/* Vertically Scrollable Content */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 pb-20 pt-[220px]">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto px-4 pb-20 pt-[220px]"
+      >
         {/* Tuesday, September 2 */}
         <div ref={(el) => (dateRefs.current[2] = el)} className="mb-8">
           <div className="flex justify-between items-center mb-4">
@@ -198,7 +212,9 @@ export default function TravelItinerary() {
                 <p className="text-gray-500">Delta Air Lines</p>
               </div>
               <div className="text-right">
-                <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium">DL7</span>
+                <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium">
+                  DL7
+                </span>
                 <div className="w-4 h-4 bg-orange-500 rounded-sm mt-1 ml-auto"></div>
               </div>
             </div>
@@ -209,7 +225,9 @@ export default function TravelItinerary() {
                 <span className="font-medium">LAX</span>
                 <span className="ml-auto text-gray-600">10:30 AM</span>
               </div>
-              <p className="text-gray-500 text-sm">Los Angeles International Airport</p>
+              <p className="text-gray-500 text-sm">
+                Los Angeles International Airport
+              </p>
             </div>
           </div>
         </div>
@@ -227,7 +245,9 @@ export default function TravelItinerary() {
               <span className="font-medium">HND</span>
               <span className="ml-auto text-gray-600">2:00 PM</span>
             </div>
-            <p className="text-gray-500 text-sm">Tokyo Haneda International Airport</p>
+            <p className="text-gray-500 text-sm">
+              Tokyo Haneda International Airport
+            </p>
           </div>
 
           {/* Hotel Check-in */}
@@ -267,7 +287,9 @@ export default function TravelItinerary() {
               <Hotel className="h-6 w-6 text-gray-600" />
             </div>
             <div className="flex-1">
-              <h3 className="font-medium text-gray-600">AC Tokyo Hotel Ginza</h3>
+              <h3 className="font-medium text-gray-600">
+                AC Tokyo Hotel Ginza
+              </h3>
               <p className="text-gray-500">Staying</p>
             </div>
           </div>
@@ -331,5 +353,5 @@ export default function TravelItinerary() {
       {/* Bottom Navbar */}
       <Navbar activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
-  )
+  );
 }

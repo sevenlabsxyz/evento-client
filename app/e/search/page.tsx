@@ -1,22 +1,28 @@
-"use client"
+"use client";
 
-import { Search, Clock, MapPin, Calendar, Users, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { Search, Clock, MapPin, Calendar, Users, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SearchPage() {
-  const router = useRouter()
-  const [searchQuery, setSearchQuery] = useState("")
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const recentSearches = ["Tokyo events", "Food festivals", "Marcus Johnson", "Paris photography", "Sunset experiences"]
+  const recentSearches = [
+    "Tokyo events",
+    "Food festivals",
+    "Marcus Johnson",
+    "Paris photography",
+    "Sunset experiences",
+  ];
 
   const suggestedSearches = [
     { icon: <Calendar className="h-4 w-4" />, text: "Events this weekend" },
     { icon: <MapPin className="h-4 w-4" />, text: "Events near me" },
     { icon: <Users className="h-4 w-4" />, text: "Popular events" },
     { icon: <Clock className="h-4 w-4" />, text: "Upcoming events" },
-  ]
+  ];
 
   const searchResults = [
     {
@@ -40,15 +46,15 @@ export default function SearchPage() {
       date: "Sep 20, 2025",
       image: "/placeholder.svg?height=60&width=60",
     },
-  ]
+  ];
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query)
+    setSearchQuery(query);
     // In a real app, this would trigger the search API
-  }
+  };
 
   return (
-    <div className="max-w-sm mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
         <div className="flex-1 relative">
@@ -62,7 +68,12 @@ export default function SearchPage() {
             autoFocus
           />
         </div>
-        <Button variant="ghost" size="icon" className="rounded-full bg-gray-100" onClick={() => router.back()}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full bg-gray-100"
+          onClick={() => router.back()}
+        >
           <X className="h-5 w-5" />
         </Button>
       </div>
@@ -72,15 +83,22 @@ export default function SearchPage() {
         {searchQuery ? (
           /* Search Results */
           <div className="px-4 py-4">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">Results for "{searchQuery}"</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-4">
+              Results for "{searchQuery}"
+            </h3>
             <div className="space-y-3">
               {searchResults.map((result, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors">
+                <div
+                  key={index}
+                  className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors"
+                >
                   <img
                     src={result.type === "user" ? result.avatar : result.image}
                     alt=""
                     className={`object-cover ${
-                      result.type === "user" ? "w-12 h-12 rounded-full" : "w-12 h-12 rounded-lg"
+                      result.type === "user"
+                        ? "w-12 h-12 rounded-full"
+                        : "w-12 h-12 rounded-lg"
                     }`}
                   />
                   <div className="flex-1 min-w-0">
@@ -113,7 +131,9 @@ export default function SearchPage() {
           <div className="px-4 py-4 space-y-6">
             {/* Recent Searches */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Recent</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                Recent
+              </h3>
               <div className="space-y-2">
                 {recentSearches.map((search, index) => (
                   <button
@@ -130,7 +150,9 @@ export default function SearchPage() {
 
             {/* Suggested Searches */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Suggestions</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                Suggestions
+              </h3>
               <div className="space-y-2">
                 {suggestedSearches.map((suggestion, index) => (
                   <button
@@ -147,9 +169,17 @@ export default function SearchPage() {
 
             {/* Trending */}
             <div>
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Trending</h3>
+              <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                Trending
+              </h3>
               <div className="flex flex-wrap gap-2">
-                {["#TokyoEvents", "#FoodFestival", "#Photography", "#Sunset", "#Travel"].map((tag, index) => (
+                {[
+                  "#TokyoEvents",
+                  "#FoodFestival",
+                  "#Photography",
+                  "#Sunset",
+                  "#Travel",
+                ].map((tag, index) => (
                   <button
                     key={index}
                     onClick={() => handleSearch(tag)}
@@ -164,5 +194,5 @@ export default function SearchPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
