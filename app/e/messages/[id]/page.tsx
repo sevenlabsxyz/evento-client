@@ -10,7 +10,7 @@ import {
   FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReusableDropdown } from "../../../components/reusable-dropdown";
+import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

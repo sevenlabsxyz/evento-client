@@ -17,9 +17,9 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReusableDropdown } from "./components/reusable-dropdown";
-import { Navbar } from "./components/navbar";
-import { PageHeader } from "./components/page-header";
+import { ReusableDropdown } from "@/components/reusable-dropdown";
+import { Navbar } from "@/components/navbar";
+import { PageHeader } from "@/components/page-header";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
