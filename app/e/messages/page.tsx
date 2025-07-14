@@ -120,7 +120,7 @@ export default function ChatPage() {
             placeholder="Search messages"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
           />
         </div>
       </div>
@@ -163,7 +163,7 @@ export default function ChatPage() {
                     {conversation.time}
                   </span>
                   {conversation.unreadCount > 0 && (
-                    <div className="bg-orange-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
                       {conversation.unreadCount}
                     </div>
                   )}

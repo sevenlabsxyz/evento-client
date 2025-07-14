@@ -17,6 +17,7 @@ export interface UserDetails {
   id: string;
   username: string;
   name: string;
+  email?: string; // Optional email field
   bio: string;
   image: string;
   bio_link: string;
@@ -36,7 +37,7 @@ export interface Event {
   cover: string;
   location: string;
   timezone: string;
-  status: 'draft' | 'published' | 'cancelled';
+  status: 'draft' | 'published' | 'cancelled' | 'archived';
   visibility: 'public' | 'private';
   cost: number | null;
   creator_user_id: string;

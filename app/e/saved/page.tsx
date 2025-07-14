@@ -103,7 +103,7 @@ export default function SavedListsPage() {
         <div className="px-4 py-4">
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-medium"
+            className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-medium"
           >
             <Plus className="h-5 w-5 mr-2" />
             Add New List
@@ -123,7 +123,7 @@ export default function SavedListsPage() {
                   <div className="flex items-center gap-2 mb-1">
                     <h3 className="font-bold text-lg">{list.name}</h3>
                     {list.isDefault && (
-                      <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                         Default
                       </span>
                     )}
@@ -174,7 +174,7 @@ export default function SavedListsPage() {
               </p>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-red-500 hover:bg-red-600 text-white"
               >
                 Create List
               </Button>
@@ -193,7 +193,7 @@ export default function SavedListsPage() {
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
               placeholder="Enter list name..."
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 mb-4"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
               autoFocus
               onKeyPress={(e) => e.key === "Enter" && handleCreateList()}
             />
@@ -210,7 +210,7 @@ export default function SavedListsPage() {
               </Button>
               <Button
                 onClick={handleCreateList}
-                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                className="flex-1 bg-red-500 hover:bg-red-600 text-white"
               >
                 Create
               </Button>

@@ -98,7 +98,7 @@ function LinkModal({ isOpen, onClose, onSave, initialUrl = '' }: LinkModalProps)
                 setError('');
               }}
               placeholder="Enter URL (e.g., example.com)"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
               autoFocus
             />
             {error && (
@@ -115,7 +115,7 @@ function LinkModal({ isOpen, onClose, onSave, initialUrl = '' }: LinkModalProps)
             </button>
             <button
               onClick={handleSave}
-              className="flex-1 py-2 px-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+              className="flex-1 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600"
             >
               Add Link
             </button>
@@ -151,7 +151,7 @@ export default function DescriptionModal({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-orange-600 underline',
+          class: 'text-red-600 underline',
         },
       }),
     ],
@@ -248,14 +248,14 @@ export default function DescriptionModal({
         <div className="flex items-center justify-between p-4 border-b border-gray-200">
           <button
             onClick={onClose}
-            className="text-orange-500 font-medium"
+            className="text-red-500 font-medium"
           >
             Cancel
           </button>
           <h1 className="text-lg font-semibold">Edit Description</h1>
           <button
             onClick={handleSave}
-            className="text-orange-500 font-medium"
+            className="text-red-500 font-medium"
           >
             Save
           </button>
@@ -282,7 +282,7 @@ export default function DescriptionModal({
               onClick={() => editor?.chain().focus().toggleBold().run()}
               className={`p-3 rounded-lg transition-colors ${
                 isActive('bold')
-                  ? 'bg-orange-100 text-orange-600'
+                  ? 'bg-red-100 text-red-600'
                   : 'hover:bg-gray-100 text-gray-600'
               }`}
             >
@@ -294,7 +294,7 @@ export default function DescriptionModal({
               onClick={() => editor?.chain().focus().toggleItalic().run()}
               className={`p-3 rounded-lg transition-colors ${
                 isActive('italic')
-                  ? 'bg-orange-100 text-orange-600'
+                  ? 'bg-red-100 text-red-600'
                   : 'hover:bg-gray-100 text-gray-600'
               }`}
             >
@@ -307,7 +307,7 @@ export default function DescriptionModal({
                 onClick={() => setShowHeadingDropdown(!showHeadingDropdown)}
                 className={`p-3 rounded-lg transition-colors ${
                   isActive('heading')
-                    ? 'bg-orange-100 text-orange-600'
+                    ? 'bg-red-100 text-red-600'
                     : 'hover:bg-gray-100 text-gray-600'
                 }`}
               >
@@ -319,7 +319,7 @@ export default function DescriptionModal({
                   <button
                     onClick={() => editor?.chain().focus().setParagraph().run()}
                     className={`w-full text-left px-3 py-2 hover:bg-gray-50 ${
-                      isActive('paragraph') ? 'bg-orange-50 text-orange-600' : ''
+                      isActive('paragraph') ? 'bg-red-50 text-red-600' : ''
                     }`}
                   >
                     Normal
@@ -327,7 +327,7 @@ export default function DescriptionModal({
                   <button
                     onClick={() => handleHeadingSelect(1)}
                     className={`w-full text-left px-3 py-2 hover:bg-gray-50 font-bold text-lg ${
-                      isActive('heading', { level: 1 }) ? 'bg-orange-50 text-orange-600' : ''
+                      isActive('heading', { level: 1 }) ? 'bg-red-50 text-red-600' : ''
                     }`}
                   >
                     H1
@@ -335,7 +335,7 @@ export default function DescriptionModal({
                   <button
                     onClick={() => handleHeadingSelect(2)}
                     className={`w-full text-left px-3 py-2 hover:bg-gray-50 font-bold ${
-                      isActive('heading', { level: 2 }) ? 'bg-orange-50 text-orange-600' : ''
+                      isActive('heading', { level: 2 }) ? 'bg-red-50 text-red-600' : ''
                     }`}
                   >
                     H2
@@ -343,7 +343,7 @@ export default function DescriptionModal({
                   <button
                     onClick={() => handleHeadingSelect(3)}
                     className={`w-full text-left px-3 py-2 hover:bg-gray-50 font-semibold text-sm ${
-                      isActive('heading', { level: 3 }) ? 'bg-orange-50 text-orange-600' : ''
+                      isActive('heading', { level: 3 }) ? 'bg-red-50 text-red-600' : ''
                     }`}
                   >
                     H3
@@ -357,7 +357,7 @@ export default function DescriptionModal({
               onClick={handleAddLink}
               className={`p-3 rounded-lg transition-colors ${
                 isActive('link')
-                  ? 'bg-orange-100 text-orange-600'
+                  ? 'bg-red-100 text-red-600'
                   : 'hover:bg-gray-100 text-gray-600'
               }`}
             >

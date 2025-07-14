@@ -89,7 +89,7 @@ export default function ImageSelectionModal({
           {/* Featured Section for Summer */}
           {activeTab === "summer" && (
             <div className="mb-6">
-              <div className="relative h-40 bg-gradient-to-r from-orange-400 to-orange-500 rounded-2xl overflow-hidden mb-4">
+              <div className="relative h-40 bg-gradient-to-r from-red-400 to-red-500 rounded-2xl overflow-hidden mb-4">
                 <div className="absolute inset-0 flex items-center justify-between p-6">
                   <div>
                     <h2 className="text-white text-2xl font-bold">Summer</h2>
@@ -128,7 +128,7 @@ export default function ImageSelectionModal({
             <div className="mb-6">
               <div className="grid grid-cols-2 gap-4 mb-6">
                 {/* Summer Featured */}
-                <div className="relative h-32 bg-gradient-to-r from-orange-400 to-orange-500 rounded-2xl overflow-hidden">
+                <div className="relative h-32 bg-gradient-to-r from-red-400 to-red-500 rounded-2xl overflow-hidden">
                   <div className="absolute inset-0 flex items-center justify-center p-4">
                     <div className="text-center">
                       <h3 className="text-white text-lg font-bold">Summer</h3>

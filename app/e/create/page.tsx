@@ -410,7 +410,7 @@ export default function CreatePage() {
             onClick={handleCreateEvent}
             className={`w-full py-3 rounded-xl font-medium transition-all ${
               isFormValid
-                ? "bg-orange-500 hover:bg-orange-600 text-white"
+                ? "bg-red-500 hover:bg-red-600 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
             disabled={!isFormValid}

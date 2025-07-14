@@ -76,8 +76,8 @@ export default function HelpPage() {
         {/* Email Card */}
         <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <Mail className="h-6 w-6 text-orange-600" />
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+              <Mail className="h-6 w-6 text-red-600" />
             </div>
             <div>
               <h3 className="font-bold text-lg">Email us at evento.so</h3>
@@ -87,7 +87,7 @@ export default function HelpPage() {
             </div>
           </div>
           <Button
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+            className="w-full bg-red-500 hover:bg-red-600 text-white"
             onClick={() => handleExternalLink("mailto:hello@evento.so")}
           >
             Send Email

@@ -42,7 +42,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
             <div>
               <button
                 onClick={() => handleExternalLink(event.details!.profileUrl!)}
-                className="text-orange-500 hover:text-orange-600 flex items-center gap-1"
+                className="text-red-500 hover:text-red-600 flex items-center gap-1"
               >
                 View participant profiles
                 <ExternalLink className="w-4 h-4" />
@@ -55,7 +55,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
             <div>
               <button
                 onClick={() => handleExternalLink(event.details!.website!)}
-                className="text-orange-500 hover:text-orange-600 flex items-center gap-1"
+                className="text-red-500 hover:text-red-600 flex items-center gap-1"
               >
                 {event.details!.website!.replace(/^https?:\/\//, '')}
                 <ExternalLink className="w-4 h-4" />
@@ -73,7 +73,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               window.open(event.registrationUrl, '_blank');
             }
           }}
-          className="w-full py-3 bg-orange-500 text-white font-semibold rounded-xl hover:bg-orange-600 transition-colors"
+          className="w-full py-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition-colors"
         >
           Register
         </button>

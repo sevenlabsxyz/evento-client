@@ -46,7 +46,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
       label: "Copy Link",
       icon: <Copy className="w-4 h-4" />,
       action: () => {
-        navigator.clipboard.writeText(`${window.location.origin}/e/event/${eventId}`);
+        navigator.clipboard.writeText(`${window.location.origin}/e/${eventId}`);
         toast.success("Link copied to clipboard!");
       },
     },
@@ -68,7 +68,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
   ];
 
   const handleEventClick = () => {
-    router.push(`/e/event/${event.id}`);
+    router.push(`/e/${event.id}`);
   };
 
   return (
@@ -119,7 +119,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
       {/* Event Details */}
       <div className="px-4 py-3">
         <h3 
-          className="font-bold text-lg mb-2 cursor-pointer hover:text-orange-600 transition-colors"
+          className="font-bold text-lg mb-2 cursor-pointer hover:text-red-600 transition-colors"
           onClick={handleEventClick}
         >
           {event.title}
@@ -185,7 +185,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
             <Bookmark
               className={`h-5 w-5 ${
                 isBookmarked
-                  ? "fill-current text-orange-600"
+                  ? "fill-current text-red-600"
                   : ""
               }`}
             />

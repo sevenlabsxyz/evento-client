@@ -205,7 +205,7 @@ export default function SingleChatPage() {
                   <div
                     className={`px-4 py-2 rounded-2xl ${
                       msg.isMe
-                        ? "bg-orange-500 text-white rounded-br-md"
+                        ? "bg-red-500 text-white rounded-br-md"
                         : "bg-gray-100 text-gray-900 rounded-bl-md"
                     }`}
                   >
@@ -244,14 +244,14 @@ export default function SingleChatPage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
-              className="w-full px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-orange-500 focus:bg-white"
+              className="w-full px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             />
           </div>
           <Button
             onClick={handleSendMessage}
             disabled={!message.trim()}
-            className="bg-orange-500 hover:bg-orange-600 rounded-full h-8 w-8 p-0 flex-shrink-0"
+            className="bg-red-500 hover:bg-red-600 rounded-full h-8 w-8 p-0 flex-shrink-0"
           >
             <Send className="h-4 w-4" />
           </Button>

@@ -108,7 +108,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         <div className="grid grid-cols-4 gap-2">
           <button
             onClick={handleRegister}
-            className="flex flex-col items-center justify-center h-16 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors"
+            className="flex flex-col items-center justify-center h-16 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
           >
             <Star className="w-5 h-5 mb-1" />
             <span className="text-xs font-medium">Register</span>
@@ -159,7 +159,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
               value={contactMessage}
               onChange={(e) => setContactMessage(e.target.value)}
               placeholder="Please enter your question for the host..."
-              className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             />
             
             <div className="flex gap-3 mt-4">
@@ -171,7 +171,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
               </button>
               <button
                 onClick={handleSendMessage}
-                className="flex-1 py-2 px-4 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
+                className="flex-1 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600"
                 disabled={!contactMessage.trim()}
               >
                 Send

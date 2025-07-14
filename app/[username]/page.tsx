@@ -279,7 +279,7 @@ export default function UserProfilePage() {
             onClick={() => setEventsFilter("hosting")}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               eventsFilter === "hosting"
-                ? "bg-orange-500 text-white"
+                ? "bg-red-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
             }`}
           >
@@ -306,7 +306,7 @@ export default function UserProfilePage() {
                       className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg hover:text-orange-600 transition-colors">{event.title}</h3>
+                      <h3 className="font-semibold text-lg hover:text-red-600 transition-colors">{event.title}</h3>
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">
@@ -507,7 +507,7 @@ export default function UserProfilePage() {
               className={`flex-1 ${
                 isFollowing
                   ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-orange-500 hover:bg-orange-600 text-white"
+                  : "bg-red-500 hover:bg-red-600 text-white"
               }`}
             >
               {isFollowing ? (
@@ -549,7 +549,7 @@ export default function UserProfilePage() {
               onClick={() => setActiveTab("about")}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "about"
-                  ? "border-orange-500 text-orange-600"
+                  ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -559,7 +559,7 @@ export default function UserProfilePage() {
               onClick={() => setActiveTab("events")}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "events"
-                  ? "border-orange-500 text-orange-600"
+                  ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -569,7 +569,7 @@ export default function UserProfilePage() {
               onClick={() => setActiveTab("stats")}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "stats"
-                  ? "border-orange-500 text-orange-600"
+                  ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
               }`}
             >
@@ -630,7 +630,7 @@ export default function UserProfilePage() {
                       className={
                         followingUsers.has(user.id)
                           ? "bg-transparent"
-                          : "bg-orange-500 hover:bg-orange-600 text-white"
+                          : "bg-red-500 hover:bg-red-600 text-white"
                       }
                     >
                       {followingUsers.has(user.id) ? "Following" : "Follow"}
@@ -687,7 +687,7 @@ export default function UserProfilePage() {
                       className={
                         followingUsers.has(user.id)
                           ? "bg-transparent"
-                          : "bg-orange-500 hover:bg-orange-600 text-white"
+                          : "bg-red-500 hover:bg-red-600 text-white"
                       }
                     >
                       {followingUsers.has(user.id) ? "Following" : "Follow"}
@@ -708,7 +708,7 @@ export default function UserProfilePage() {
             <p className="text-gray-600 mb-6">
               Are you about to leave Evento and be redirected to sarahchen.com?
             </p>
-            <div className="text-6xl font-bold text-orange-500 mb-6">
+            <div className="text-6xl font-bold text-red-500 mb-6">
               {countdown}
             </div>
             <Button
@@ -716,7 +716,7 @@ export default function UserProfilePage() {
                 setShowWebsiteModal(false);
                 window.open(userData.website, "_blank", "noopener,noreferrer");
               }}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+              className="w-full bg-red-500 hover:bg-red-600 text-white"
             >
               Take me to sarahchen.com
             </Button>
@@ -741,7 +741,7 @@ export default function UserProfilePage() {
                   setShowVerificationModal(false);
                   router.push('/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.');
                 }}
-                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+                className="w-full bg-red-500 hover:bg-red-600 text-white"
               >
                 Get in touch about verification
               </Button>

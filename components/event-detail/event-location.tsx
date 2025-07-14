@@ -87,7 +87,7 @@ export default function EventLocation({ event }: EventLocationProps) {
         
         {/* Full Address - Clickable */}
         <button 
-          className="text-sm text-gray-600 mt-3 hover:text-orange-600 transition-colors text-left"
+          className="text-sm text-gray-600 mt-3 hover:text-red-600 transition-colors text-left"
           onClick={() => setShowMapOptions(true)}
         >
           {fullAddress}

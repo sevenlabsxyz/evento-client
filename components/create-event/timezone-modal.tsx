@@ -323,7 +323,7 @@ export default function TimezoneModal({
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <button
           onClick={onClose}
-          className="text-orange-500 font-medium"
+          className="text-red-500 font-medium"
         >
           Cancel
         </button>
@@ -359,7 +359,7 @@ export default function TimezoneModal({
                   {timezone.city}, {timezone.country}
                 </p>
               </div>
-              <span className="text-orange-500 font-medium text-sm">
+              <span className="text-red-500 font-medium text-sm">
                 {timezone.offset}
               </span>
             </div>

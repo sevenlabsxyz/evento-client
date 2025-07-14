@@ -126,8 +126,8 @@ export default function ContactPage() {
           {attachedFile ? (
             <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Upload className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Upload className="h-4 w-4 text-red-600" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">
@@ -156,7 +156,7 @@ export default function ContactPage() {
                 accept="image/*,.pdf,.doc,.docx,.txt"
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               />
-              <div className="flex items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-orange-500 transition-colors">
+              <div className="flex items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-red-500 transition-colors">
                 <div className="text-center">
                   <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
                   <p className="text-sm text-gray-600">
@@ -176,7 +176,7 @@ export default function ContactPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-medium disabled:opacity-50"
+            className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-medium disabled:opacity-50"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">

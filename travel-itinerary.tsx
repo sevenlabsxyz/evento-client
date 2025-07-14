@@ -33,7 +33,7 @@ export default function TravelItinerary() {
   const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dateRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
-  
+
   // Get user profile data
   const { user, isLoading: isUserLoading } = useUserProfile();
   const { logout } = useAuth();
@@ -126,7 +126,7 @@ export default function TravelItinerary() {
       <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 shadow-sm">
         {/* Header */}
         <PageHeader
-          title="My Hub"
+          title="Hub"
           subtitle="September 2025"
           showMenu={true}
           rightContent={
@@ -161,14 +161,16 @@ export default function TravelItinerary() {
                   <User className="h-5 w-5" />
                 ) : (
                   <Avatar className="h-8 w-8">
-                    <AvatarImage 
-                      src={user?.image || ''} 
-                      alt={user?.name || user?.username || 'User'} 
+                    <AvatarImage
+                      src={user?.image || ""}
+                      alt={user?.name || user?.username || "User"}
                     />
                     <AvatarFallback>
-                      {user?.name ? user.name.charAt(0).toUpperCase() : 
-                       user?.username ? user.username.charAt(0).toUpperCase() : 
-                       'U'}
+                      {user?.name
+                        ? user.name.charAt(0).toUpperCase()
+                        : user?.username
+                        ? user.username.charAt(0).toUpperCase()
+                        : "U"}
                     </AvatarFallback>
                   </Avatar>
                 )}
@@ -193,7 +195,7 @@ export default function TravelItinerary() {
                     onClick={() => scrollToDate(day.date)}
                     className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl font-medium transition-colors ${
                       day.active
-                        ? "bg-orange-200 text-orange-800"
+                        ? "bg-red-200 text-red-800"
                         : "text-black hover:bg-gray-100"
                     }`}
                   >
@@ -234,10 +236,10 @@ export default function TravelItinerary() {
                 <p className="text-gray-500">Delta Air Lines</p>
               </div>
               <div className="text-right">
-                <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-medium">
+                <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
                   DL7
                 </span>
-                <div className="w-4 h-4 bg-orange-500 rounded-sm mt-1 ml-auto"></div>
+                <div className="w-4 h-4 bg-red-500 rounded-sm mt-1 ml-auto"></div>
               </div>
             </div>
 

@@ -137,7 +137,7 @@ export default function DatePickerModal({
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-center justify-between mb-4">
-            <button onClick={onClose} className="text-orange-500 font-medium">
+            <button onClick={onClose} className="text-red-500 font-medium">
               Cancel
             </button>
             <div className="text-center">
@@ -152,7 +152,7 @@ export default function DatePickerModal({
             </div>
             <button
               onClick={handleSave}
-              className="bg-orange-500 text-white px-4 py-2 rounded-xl font-medium"
+              className="bg-red-500 text-white px-4 py-2 rounded-xl font-medium"
             >
               Save
             </button>
@@ -203,7 +203,7 @@ export default function DatePickerModal({
                   ${!day ? "invisible" : ""}
                   ${
                     isSelectedDate(day)
-                      ? "bg-orange-500 text-white"
+                      ? "bg-red-500 text-white"
                       : "hover:bg-gray-100"
                   }
                 `}
@@ -217,15 +217,15 @@ export default function DatePickerModal({
                     )}
                     {day === 4 && (
                       <>
-                        <div className="w-1 h-1 bg-orange-500 rounded-full" />
-                        <div className="w-1 h-1 bg-orange-500 rounded-full" />
-                        <div className="w-1 h-1 bg-orange-500 rounded-full" />
+                        <div className="w-1 h-1 bg-red-500 rounded-full" />
+                        <div className="w-1 h-1 bg-red-500 rounded-full" />
+                        <div className="w-1 h-1 bg-red-500 rounded-full" />
                       </>
                     )}
                     {day === 5 && (
                       <>
-                        <div className="w-1 h-1 bg-orange-500 rounded-full" />
-                        <div className="w-1 h-1 bg-orange-500 rounded-full" />
+                        <div className="w-1 h-1 bg-red-500 rounded-full" />
+                        <div className="w-1 h-1 bg-red-500 rounded-full" />
                       </>
                     )}
                     {day === 9 && (

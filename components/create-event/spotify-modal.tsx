@@ -89,7 +89,7 @@ export default function SpotifyModal({
                 setError("");
               }}
               placeholder="https://open.spotify.com/playlist/..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             />
             {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
             <p className="mt-2 text-xs text-gray-500">
@@ -108,7 +108,7 @@ export default function SpotifyModal({
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-3 px-4 bg-orange-500 text-white rounded-xl hover:bg-orange-600 font-medium"
+            className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium"
           >
             Save
           </button>
