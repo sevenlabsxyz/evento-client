@@ -17,7 +17,11 @@ export default function EventDescription({ event }: EventDescriptionProps) {
       {/* Combined Event Content */}
       <div className="space-y-4 text-gray-700 leading-relaxed">
         {/* Main Description */}
-        <p>{event.description}</p>
+        <div 
+          dangerouslySetInnerHTML={{ __html: event.description }}
+          className="prose prose-gray max-w-none break-words"
+          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
+        />
 
         {/* Objective */}
         {event.details?.objective && (

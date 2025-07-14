@@ -48,18 +48,47 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
   };
 
   const handleAddToCalendar = () => {
-    // Generate calendar data
-    const calendarData = {
-      title: event.title,
-      start: `${event.date} ${event.startTime}`,
-      end: `${event.date} ${event.endTime}`,
-      location: `${event.location.name}, ${event.location.address}, ${event.location.city}`,
-      description: event.description
+    // Generate .ics file content
+    const formatICSDate = (dateStr: string) => {
+      // Convert ISO date to ICS format: YYYYMMDDTHHMMSSZ
+      const date = new Date(dateStr);
+      return date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
     };
+
+    const escapeICS = (text: string) => {
+      return text.replace(/[\n\r]/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+    };
+
+    const location = `${event.location.name}, ${event.location.address || ''}, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`.replace(/,\s*,/g, ',').trim();
     
-    // For now, copy to clipboard - could be enhanced to generate .ics file
-    const calendarText = `Event: ${calendarData.title}\nDate: ${calendarData.start} - ${calendarData.end}\nLocation: ${calendarData.location}\nDescription: ${calendarData.description}`;
-    navigator.clipboard.writeText(calendarText);
+    const icsContent = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Evento//Event Calendar//EN',
+      'BEGIN:VEVENT',
+      `UID:${event.id}@evento.so`,
+      `DTSTAMP:${formatICSDate(new Date().toISOString())}`,
+      `DTSTART:${formatICSDate(event.computedStartDate)}`,
+      `DTEND:${formatICSDate(event.computedEndDate)}`,
+      `SUMMARY:${escapeICS(event.title)}`,
+      `DESCRIPTION:${escapeICS(event.description.replace(/<[^>]*>/g, ''))}`,
+      `LOCATION:${escapeICS(location)}`,
+      event.registrationUrl ? `URL:${event.registrationUrl}` : '',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].filter(Boolean).join('\r\n');
+
+    // Create and download .ics file
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
     setShowMoreModal(false);
   };
 

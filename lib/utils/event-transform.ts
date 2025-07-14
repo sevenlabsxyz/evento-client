@@ -52,6 +52,8 @@ export function transformApiEventToDisplay(
     startTime: time,
     endTime: endDateTime.time,
     timezone: timeWithTz.split(' ').pop(), // Extract timezone abbreviation
+    computedStartDate: apiEvent.computed_start_date,
+    computedEndDate: apiEvent.computed_end_date,
     location: location,
     coverImages: apiEvent.cover ? [getOptimizedCoverUrl(apiEvent.cover, 'detail')] : [],
     galleryImages: galleryItems.map(item => getOptimizedCoverUrl(item.url, 'detail')),
