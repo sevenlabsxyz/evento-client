@@ -165,16 +165,31 @@ export default function DescriptionModal({
     },
   });
 
-  // Prevent body scroll when modal is open
+  // Prevent body scroll and enable VirtualKeyboard API when modal is open
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      
+      // Enable VirtualKeyboard API for modern browsers
+      if ('virtualKeyboard' in navigator && (navigator as any).virtualKeyboard) {
+        (navigator as any).virtualKeyboard.overlaysContent = true;
+      }
     } else {
       document.body.style.overflow = 'unset';
+      
+      // Reset VirtualKeyboard API when modal closes
+      if ('virtualKeyboard' in navigator && (navigator as any).virtualKeyboard) {
+        (navigator as any).virtualKeyboard.overlaysContent = false;
+      }
     }
     
     return () => {
       document.body.style.overflow = 'unset';
+      
+      // Cleanup VirtualKeyboard API
+      if ('virtualKeyboard' in navigator && (navigator as any).virtualKeyboard) {
+        (navigator as any).virtualKeyboard.overlaysContent = false;
+      }
     };
   }, [isOpen]);
 
@@ -255,7 +270,12 @@ export default function DescriptionModal({
         </div>
 
         {/* Fixed Bottom Toolbar */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3">
+        <div 
+          className="fixed left-0 right-0 bg-white border-t border-gray-200 p-3"
+          style={{
+            bottom: 'calc(0px + env(keyboard-inset-height, 0px))'
+          }}
+        >
           <div className="flex items-center justify-center gap-1 max-w-sm mx-auto">
             {/* Bold */}
             <button
