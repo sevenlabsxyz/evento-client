@@ -84,7 +84,7 @@ export default function CancelEventModal({
               <button
                 onClick={() => setSendEmail(!sendEmail)}
                 className={`w-12 h-6 rounded-full transition-colors ml-4 ${
-                  sendEmail ? 'bg-orange-500' : 'bg-gray-300'
+                  sendEmail ? 'bg-red-500' : 'bg-gray-300'
                 }`}
               >
                 <div

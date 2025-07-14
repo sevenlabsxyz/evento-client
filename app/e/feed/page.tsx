@@ -85,7 +85,7 @@ export default function FeedPage() {
           />
         </div>
         <div className="flex-1 flex items-center justify-center pt-[120px] pb-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
         </div>
         <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
@@ -162,12 +162,12 @@ export default function FeedPage() {
                   className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <Bookmark className="h-4 w-4 text-orange-600" />
+                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                      <Bookmark className="h-4 w-4 text-red-600" />
                     </div>
                     <span className="font-medium">{list.name}</span>
                     {list.isDefault && (
-                      <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                         Default
                       </span>
                     )}

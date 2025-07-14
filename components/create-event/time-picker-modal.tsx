@@ -150,7 +150,7 @@ export default function TimePickerModal({
         {/* Header */}
         <div className="p-6 pb-4">
           <div className="flex items-center justify-between mb-6">
-            <button onClick={onClose} className="text-orange-500 font-medium">
+            <button onClick={onClose} className="text-red-500 font-medium">
               Cancel
             </button>
             <div className="text-center">
@@ -163,7 +163,7 @@ export default function TimePickerModal({
             </div>
             <button
               onClick={handleSave}
-              className="bg-orange-500 text-white px-4 py-2 rounded-xl font-medium"
+              className="bg-red-500 text-white px-4 py-2 rounded-xl font-medium"
             >
               Save
             </button>
@@ -208,7 +208,7 @@ export default function TimePickerModal({
         <div className="px-6 pb-4">
           <button
             onClick={onTimezoneClick}
-            className="w-full p-3 bg-orange-100 text-orange-600 rounded-xl font-medium"
+            className="w-full p-3 bg-red-100 text-red-600 rounded-xl font-medium"
           >
             Timezone: {timezone}
           </button>

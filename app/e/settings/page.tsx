@@ -176,11 +176,11 @@ export default function SettingsPage() {
         <div className="bg-white mx-4 rounded-2xl mb-4">
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Cloud className="h-4 w-4 text-orange-600" />
+              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <Cloud className="h-4 w-4 text-red-600" />
               </div>
               <div>
-                <p className="font-medium text-orange-500">Andre Neves</p>
+                <p className="font-medium text-red-500">Andre Neves</p>
                 <p className="text-gray-600 text-sm">
                   andrerfneves@protonmail.com
                 </p>
@@ -193,8 +193,8 @@ export default function SettingsPage() {
               trigger={
                 <div className="flex items-center justify-between cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <Languages className="h-4 w-4 text-orange-600" />
+                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                      <Languages className="h-4 w-4 text-red-600" />
                     </div>
                     <span className="font-medium">Language</span>
                   </div>
@@ -212,8 +212,8 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Bell className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Bell className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Notifications</span>
               </div>
@@ -226,8 +226,8 @@ export default function SettingsPage() {
               trigger={
                 <div className="flex items-center justify-between cursor-pointer">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                      <DollarSign className="h-4 w-4 text-orange-600" />
+                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                      <DollarSign className="h-4 w-4 text-red-600" />
                     </div>
                     <span className="font-medium">Currency</span>
                   </div>
@@ -256,8 +256,8 @@ export default function SettingsPage() {
               onClick={() => router.push("/e/help")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <LifeBuoy className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <LifeBuoy className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Need help?</span>
               </div>
@@ -271,8 +271,8 @@ export default function SettingsPage() {
               onClick={() => router.push("/e/contact")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Mail className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Mail className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Talk to us</span>
               </div>
@@ -286,8 +286,8 @@ export default function SettingsPage() {
               onClick={() => router.push("/e/changelog")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Sparkles className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Sparkles className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">App Updates</span>
               </div>
@@ -309,8 +309,8 @@ export default function SettingsPage() {
               onClick={() => router.push("/e/api")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Code className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Code className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Evento API</span>
               </div>
@@ -324,8 +324,8 @@ export default function SettingsPage() {
               onClick={() => handleExternalLink("https://docs.evento.so")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <BookOpen className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Documentation</span>
               </div>
@@ -347,8 +347,8 @@ export default function SettingsPage() {
               onClick={() => handleExternalLink("https://evento.so")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Info className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Info className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">About Evento</span>
               </div>
@@ -362,8 +362,8 @@ export default function SettingsPage() {
               onClick={() => handleExternalLink("https://evento.so/terms")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Scale className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Scale className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Terms of Service</span>
               </div>
@@ -377,8 +377,8 @@ export default function SettingsPage() {
               onClick={() => handleExternalLink("https://evento.so/privacy")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Shield className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Shield className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Privacy Policy</span>
               </div>
@@ -392,8 +392,8 @@ export default function SettingsPage() {
               onClick={handleShare}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <Share className="h-4 w-4 text-orange-600" />
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Share className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Share to a Friend</span>
               </div>

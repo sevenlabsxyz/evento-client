@@ -190,7 +190,7 @@ export default function ChangelogPage() {
                   </span>
                 </div>
                 {index === 0 && (
-                  <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                     Latest
                   </span>
                 )}
@@ -234,7 +234,7 @@ export default function ChangelogPage() {
             Want to suggest a feature or report a bug?{" "}
             <button
               onClick={() => router.push("/contact")}
-              className="text-orange-600 font-medium hover:underline"
+              className="text-red-600 font-medium hover:underline"
             >
               Contact us
             </button>

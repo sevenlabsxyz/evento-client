@@ -171,10 +171,10 @@ export default function StatsPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-end gap-4">
               <div className="text-center">
-                <div className="text-5xl font-bold text-orange-500 mb-2">
+                <div className="text-5xl font-bold text-red-500 mb-2">
                   {stats.countries}
                 </div>
-                <div className="text-orange-500 font-medium">Visited</div>
+                <div className="text-red-500 font-medium">Visited</div>
               </div>
               <div className="text-center">
                 <div className="text-5xl font-bold text-gray-400 mb-2">249</div>
@@ -200,7 +200,7 @@ export default function StatsPage() {
 
           <Button
             variant="ghost"
-            className="w-full text-orange-500 font-semibold"
+            className="w-full text-red-500 font-semibold"
           >
             Show Visited Countries
           </Button>

@@ -44,7 +44,7 @@ export default function EventGallery({ event, currentUserId, onImageClick }: Eve
           {galleryImages.length > 0 && (
             <button
               onClick={handleViewAll}
-              className="text-orange-600 hover:text-orange-700 font-medium text-sm"
+              className="text-red-600 hover:text-red-700 font-medium text-sm"
             >
               View All
             </button>
@@ -82,7 +82,7 @@ export default function EventGallery({ event, currentUserId, onImageClick }: Eve
           {isOwner && displayImages.length < 3 && (
             <button
               onClick={handleAddPhoto}
-              className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-orange-400 hover:bg-orange-50 transition-colors"
+              className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-red-400 hover:bg-red-50 transition-colors"
             >
               <Plus className="w-6 h-6 text-gray-400" />
               <span className="text-xs text-gray-500 mt-1">Add Photo</span>
@@ -109,7 +109,7 @@ export default function EventGallery({ event, currentUserId, onImageClick }: Eve
           {isOwner && (
             <button
               onClick={handleAddPhoto}
-              className="mt-2 text-orange-600 hover:text-orange-700 font-medium text-sm"
+              className="mt-2 text-red-600 hover:text-red-700 font-medium text-sm"
             >
               Be the first to add a photo
             </button>

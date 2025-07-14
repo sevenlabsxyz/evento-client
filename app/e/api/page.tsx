@@ -46,7 +46,7 @@ export default function EventoAPIPage() {
         <div className="bg-white rounded-2xl p-6">
           <Button
             onClick={handleGetAccess}
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white py-4 rounded-xl font-semibold text-lg"
+            className="w-full bg-red-500 hover:bg-red-600 text-white py-4 rounded-xl font-semibold text-lg"
           >
             Get API Access
           </Button>
@@ -69,23 +69,23 @@ export default function EventoAPIPage() {
             <h3 className="font-semibold text-gray-900">What you can do:</h3>
             <ul className="space-y-2 text-gray-700">
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                 <span>Access event data and details</span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                 <span>Create custom event displays</span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                 <span>Integrate with your existing systems</span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                 <span>Build custom notification systems</span>
               </li>
               <li className="flex items-start gap-2">
-                <div className="w-1.5 h-1.5 bg-orange-500 rounded-full mt-2 flex-shrink-0"></div>
+                <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
                 <span>Sync events across platforms</span>
               </li>
             </ul>
@@ -118,7 +118,7 @@ export default function EventoAPIPage() {
               </p>
             </div>
 
-            <div className="border-l-4 border-orange-500 pl-4">
+            <div className="border-l-4 border-red-500 pl-4">
               <h4 className="font-medium text-gray-900">
                 Analytics & Reporting
               </h4>
@@ -135,8 +135,8 @@ export default function EventoAPIPage() {
 
           <div className="space-y-3">
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-orange-600">1</span>
+              <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-red-600">1</span>
               </div>
               <div>
                 <p className="font-medium text-gray-900">Request Access</p>
@@ -147,8 +147,8 @@ export default function EventoAPIPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-orange-600">2</span>
+              <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-red-600">2</span>
               </div>
               <div>
                 <p className="font-medium text-gray-900">Get Your API Keys</p>
@@ -159,8 +159,8 @@ export default function EventoAPIPage() {
             </div>
 
             <div className="flex items-start gap-3">
-              <div className="w-6 h-6 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <span className="text-xs font-bold text-orange-600">3</span>
+              <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                <span className="text-xs font-bold text-red-600">3</span>
               </div>
               <div>
                 <p className="font-medium text-gray-900">Start Building</p>
@@ -173,15 +173,15 @@ export default function EventoAPIPage() {
         </div>
 
         {/* Bottom CTA */}
-        <div className="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-6 text-white">
+        <div className="bg-gradient-to-r from-red-500 to-red-500 rounded-2xl p-6 text-white">
           <h3 className="font-bold text-lg mb-2">Ready to get started?</h3>
-          <p className="text-orange-100 mb-4 text-sm">
+          <p className="text-red-100 mb-4 text-sm">
             Join other developers building amazing experiences with the Evento
             API
           </p>
           <Button
             onClick={handleGetAccess}
-            className="w-full bg-white text-orange-600 hover:bg-gray-100 font-semibold"
+            className="w-full bg-white text-red-600 hover:bg-gray-100 font-semibold"
           >
             Request API Access
           </Button>

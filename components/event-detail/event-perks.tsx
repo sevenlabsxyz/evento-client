@@ -13,7 +13,7 @@ export default function EventPerks({ event }: EventPerksProps) {
   return (
     <div className="py-6 border-t border-gray-100">
       <div className="flex items-center gap-2 mb-4">
-        <Gift className="w-5 h-5 text-orange-500" />
+        <Gift className="w-5 h-5 text-red-500" />
         <h2 className="text-lg font-semibold text-gray-900">
           Guest Perks
         </h2>
@@ -42,7 +42,7 @@ export default function EventPerks({ event }: EventPerksProps) {
                   </span>
                 )}
                 {perk.isLimited && (
-                  <span className="bg-orange-100 text-orange-600 text-xs font-medium px-2 py-0.5 rounded">
+                  <span className="bg-red-100 text-red-600 text-xs font-medium px-2 py-0.5 rounded">
                     LIMITED
                   </span>
                 )}

@@ -76,7 +76,7 @@ export default function SavedListDetailPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold">{currentList.name}</h1>
             {currentList.isDefault && (
-              <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-medium">
+              <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                 Default
               </span>
             )}
@@ -116,7 +116,7 @@ export default function SavedListDetailPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
                       <h3 
-                        className="font-bold text-lg leading-tight truncate pr-2 cursor-pointer hover:text-orange-600 transition-colors"
+                        className="font-bold text-lg leading-tight truncate pr-2 cursor-pointer hover:text-red-600 transition-colors"
                         onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                       >
                         {event.title}
@@ -127,7 +127,7 @@ export default function SavedListDetailPage() {
                         className="h-8 w-8 flex-shrink-0"
                         onClick={() => handleUnsaveEvent(event.id)}
                       >
-                        <Bookmark className="h-4 w-4 fill-current text-orange-600" />
+                        <Bookmark className="h-4 w-4 fill-current text-red-600" />
                       </Button>
                     </div>
 
@@ -159,7 +159,7 @@ export default function SavedListDetailPage() {
                 {/* Action Buttons */}
                 <div className="flex gap-2 mt-4">
                   <Button 
-                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   >
                     View Details
@@ -186,7 +186,7 @@ export default function SavedListDetailPage() {
               </p>
               <Button
                 onClick={() => router.push("/feed")}
-                className="bg-orange-500 hover:bg-orange-600 text-white"
+                className="bg-red-500 hover:bg-red-600 text-white"
               >
                 Discover Events
               </Button>

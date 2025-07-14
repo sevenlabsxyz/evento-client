@@ -128,7 +128,7 @@ export default function LocationModal({
       <div className="flex items-center justify-between p-4 border-b border-gray-200">
         <button
           onClick={onClose}
-          className="text-orange-500 font-medium"
+          className="text-red-500 font-medium"
         >
           Cancel
         </button>
@@ -199,8 +199,8 @@ export default function LocationModal({
                 className="w-full px-4 py-4 border-b border-gray-100 hover:bg-gray-50 text-left"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
-                    <Plus className="w-5 h-5 text-orange-600" />
+                  <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                    <Plus className="w-5 h-5 text-red-600" />
                   </div>
                   <div className="flex-1">
                     <p className="font-medium text-gray-900">Add "{searchQuery}"</p>

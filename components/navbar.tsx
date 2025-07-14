@@ -40,7 +40,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
               <div key={item.id} className="flex justify-center">
                 <Button
                   size="icon"
-                  className="bg-orange-500 hover:bg-orange-600 rounded-full shadow-lg w-14 h-14"
+                  className="bg-red-500 hover:bg-red-600 rounded-full shadow-lg w-14 h-14"
                   onClick={() => handleNavigation(item)}
                 >
                   <Icon className="text-white font-bold stroke-2 w-9 h-9" />
@@ -55,12 +55,12 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
               onClick={() => handleNavigation(item)}
               className={`flex justify-center py-3 px-1 rounded-lg transition-colors ${
                 isActive
-                  ? "text-orange-600"
+                  ? "text-red-600"
                   : "text-gray-500 hover:text-gray-700"
               }`}
             >
               <Icon
-                className={`h-6 w-6 ${isActive ? "text-orange-600" : ""}`}
+                className={`h-6 w-6 ${isActive ? "text-red-600" : ""}`}
               />
             </button>
           );

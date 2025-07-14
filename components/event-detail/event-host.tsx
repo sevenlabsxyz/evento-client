@@ -46,7 +46,7 @@ export default function EventHost({ event }: EventHostProps) {
             {event.contactEnabled && (
               <button
                 onClick={() => handleContactHost(host.id)}
-                className="p-2 text-gray-400 hover:text-orange-500 hover:bg-orange-50 rounded-full transition-colors"
+                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
               >
                 <MessageCircle className="w-5 h-5" />
               </button>

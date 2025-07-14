@@ -59,7 +59,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* Invite Button */}
       <button
         onClick={handleInvite}
-        className="flex flex-col items-center justify-center h-16 bg-orange-500 text-white rounded-xl hover:bg-orange-600 transition-colors"
+        className="flex flex-col items-center justify-center h-16 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
       >
         <UserPlus className="w-5 h-5 mb-1" />
         <span className="text-xs font-medium">Invite</span>
