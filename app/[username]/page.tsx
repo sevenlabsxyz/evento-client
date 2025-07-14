@@ -282,14 +282,14 @@ export default function UserProfilePage() {
 
               <div className="space-y-4">
                 {group.events.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4">
+                  <div key={event.id} className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 rounded-xl p-2 -m-2 transition-colors" onClick={() => router.push(`/e/event/cosmoprof-2025`)}>
                     <img
                       src={event.image || "/placeholder.svg"}
                       alt={event.title}
                       className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{event.title}</h3>
+                      <h3 className="font-semibold text-lg hover:text-orange-600 transition-colors">{event.title}</h3>
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">

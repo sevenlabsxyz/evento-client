@@ -53,7 +53,7 @@ export default function SavedListDetailPage() {
     "3": { name: "Food Experiences", isDefault: false },
   };
 
-  const currentList = listData[params.id as string] || listData["1"];
+  const currentList = listData[params.id as keyof typeof listData] || listData["1"];
 
   const handleUnsaveEvent = (eventId: number) => {
     setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
@@ -108,13 +108,17 @@ export default function SavedListDetailPage() {
                   <img
                     src={event.image || "/placeholder.svg"}
                     alt={event.title}
-                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
+                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0 cursor-pointer"
+                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   />
 
                   {/* Event Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-bold text-lg leading-tight truncate pr-2">
+                      <h3 
+                        className="font-bold text-lg leading-tight truncate pr-2 cursor-pointer hover:text-orange-600 transition-colors"
+                        onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+                      >
                         {event.title}
                       </h3>
                       <Button
@@ -154,7 +158,10 @@ export default function SavedListDetailPage() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 mt-4">
-                  <Button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white">
+                  <Button 
+                    className="flex-1 bg-orange-500 hover:bg-orange-600 text-white"
+                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+                  >
                     View Details
                   </Button>
                   <Button variant="outline" className="flex-1 bg-transparent">

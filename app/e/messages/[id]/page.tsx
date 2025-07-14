@@ -84,7 +84,7 @@ export default function SingleChatPage() {
     },
   ];
 
-  const currentChat = chatData[params.id as string] || chatData["1"];
+  const currentChat = chatData[params.id as keyof typeof chatData] || chatData["1"];
   const isGroup = currentChat.type === "group";
 
   const uploadOptions = [

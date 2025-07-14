@@ -266,13 +266,19 @@ export default function FeedPage() {
               <img
                 src={post.event.image || "/placeholder.svg"}
                 alt="Event"
-                className="w-full aspect-square object-cover"
+                className="w-full aspect-square object-cover cursor-pointer"
+                onClick={() => router.push(`/e/event/cosmoprof-2025`)}
               />
             </div>
 
             {/* Event Details */}
             <div className="px-4 py-3">
-              <h3 className="font-bold text-lg mb-2">{post.event.title}</h3>
+              <h3 
+                className="font-bold text-lg mb-2 cursor-pointer hover:text-orange-600 transition-colors"
+                onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+              >
+                {post.event.title}
+              </h3>
 
               {/* Date, Time, Location */}
               <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
