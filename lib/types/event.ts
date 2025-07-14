@@ -7,6 +7,17 @@ export interface EventHost {
   company?: string;
 }
 
+export type GuestStatus = 'going' | 'invited' | 'not-going' | 'maybe' | 'checked-in';
+
+export interface Guest {
+  id: string;
+  name: string;
+  email: string;
+  avatar: string;
+  status: GuestStatus;
+  checkedInAt?: Date;
+}
+
 export interface EventLocation {
   name: string;
   address: string;
@@ -46,7 +57,13 @@ export interface Event {
   timezone?: string;
   location: EventLocation;
   coverImages: string[];
+  galleryImages?: string[];
   hosts: EventHost[];
+  guests?: Guest[];
+  guestListSettings?: {
+    isPublic: boolean;
+    allowPublicRSVP: boolean;
+  };
   perks?: EventPerk[];
   details?: EventDetails;
   capacity?: {
@@ -64,6 +81,11 @@ export interface Event {
   isActive: boolean;
   registrationUrl?: string;
   contactEnabled: boolean;
+  owner?: {
+    id: string;
+    name: string;
+    username: string;
+  };
 }
 
 export interface EventSummary {

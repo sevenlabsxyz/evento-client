@@ -3,12 +3,14 @@
 import { useState } from 'react';
 import { Calendar, Clock, MapPin, Mail, Share, MoreHorizontal, Star, CalendarPlus, ExternalLink, Flag } from 'lucide-react';
 import { Event } from '@/lib/types/event';
+import OwnerEventButtons from './owner-event-buttons';
 
 interface EventInfoProps {
   event: Event;
+  currentUserId?: string;
 }
 
-export default function EventInfo({ event }: EventInfoProps) {
+export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
   const [showContactModal, setShowContactModal] = useState(false);
   const [showMoreModal, setShowMoreModal] = useState(false);
   const [contactMessage, setContactMessage] = useState('');
@@ -74,6 +76,9 @@ export default function EventInfo({ event }: EventInfoProps) {
     // Could show a toast notification here
   };
 
+  // Check if current user is the event owner
+  const isOwner = event.owner?.id === currentUserId;
+
   return (
     <>
       <div className="py-6 space-y-6">
@@ -96,7 +101,10 @@ export default function EventInfo({ event }: EventInfoProps) {
           </div>
         </div>
 
-        {/* Action Buttons */}
+        {/* Action Buttons - Different for owners vs guests */}
+        {isOwner ? (
+          <OwnerEventButtons eventId={event.id} />
+        ) : (
         <div className="grid grid-cols-4 gap-2">
           <button
             onClick={handleRegister}
@@ -130,6 +138,7 @@ export default function EventInfo({ event }: EventInfoProps) {
             <span className="text-xs font-medium">More</span>
           </button>
         </div>
+        )}
       </div>
 
       {/* Contact Host Modal */}

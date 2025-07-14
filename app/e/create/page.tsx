@@ -15,6 +15,7 @@ import AttachmentModal from "@/components/create-event/attachment-modal";
 import SpotifyModal from "@/components/create-event/spotify-modal";
 import WavlakeModal from "@/components/create-event/wavlake-modal";
 import LinkModal from "@/components/create-event/link-modal";
+import EventCreatedModal from "@/components/create-event/event-created-modal";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -57,6 +58,8 @@ export default function CreatePage() {
   const [attachments, setAttachments] = useState<
     Array<{ type: string; url?: string; data?: any }>
   >([]);
+  const [showCreatedModal, setShowCreatedModal] = useState(false);
+  const [createdEventData, setCreatedEventData] = useState<any>(null);
 
   const handleImageSelect = (imageUrl: string) => {
     setSelectedCoverImage(imageUrl);
@@ -125,6 +128,53 @@ export default function CreatePage() {
     setAttachments((prev) => [...prev, { type, url }]);
   };
 
+  const handleCreateEvent = () => {
+    console.log('Create event button clicked');
+    console.log('Form valid:', isFormValid);
+    console.log('Event title:', eventTitle);
+    console.log('Event address:', eventAddress);
+    
+    if (!isFormValid) {
+      console.log('Form validation failed, returning early');
+      return;
+    }
+
+    // Generate a unique event ID (in a real app, this would come from the backend)
+    const eventId = 'evt_' + Math.random().toString(36).substr(2, 9);
+    
+    const newEvent = {
+      id: eventId,
+      title: eventTitle,
+      description: eventDescription,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      timezone,
+      address: eventAddress,
+      visibility: eventVisibility,
+      capacity: hasCapacity ? parseInt(capacity) : null,
+      attachments,
+      coverImage: selectedCoverImage,
+      createdAt: new Date(),
+      owner: 'current-user-id' // In a real app, this would be the actual user ID
+    };
+
+    // In a real app, you would save this to your backend
+    console.log('Creating event:', newEvent);
+    
+    // Store for the success modal
+    setCreatedEventData({
+      id: eventId,
+      title: eventTitle,
+      date: startDate,
+      time: startTime
+    });
+    
+    // Show success modal
+    setShowCreatedModal(true);
+  };
+
   // Check if all required fields are filled
   const isFormValid = eventTitle.trim() !== "" && eventAddress.trim() !== "";
 
@@ -155,7 +205,7 @@ export default function CreatePage() {
       </div>
 
       {/* Form Content */}
-      <div className="flex-1 px-4 pb-24 space-y-4 bg-gray-50 overflow-y-auto pt-4">
+      <div className="flex-1 px-4 pb-32 space-y-4 bg-gray-50 overflow-y-auto pt-4">
         {/* Event Title Module - Moved to top */}
         <div className="bg-white rounded-2xl p-4">
           <div className="space-y-2">
@@ -341,17 +391,20 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
-        <Button
-          className={`w-full py-3 rounded-xl font-medium transition-all ${
-            isFormValid
-              ? "bg-orange-500 hover:bg-orange-600 text-white"
-              : "bg-gray-300 text-gray-500 cursor-not-allowed"
-          }`}
-          disabled={!isFormValid}
-        >
-          Create Event
-        </Button>
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-50">
+        <div className="md:max-w-sm max-w-full mx-auto">
+          <Button
+            onClick={handleCreateEvent}
+            className={`w-full py-3 rounded-xl font-medium transition-all ${
+              isFormValid
+                ? "bg-orange-500 hover:bg-orange-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+            }`}
+            disabled={!isFormValid}
+          >
+            Create Event
+          </Button>
+        </div>
       </div>
 
       {/* Image Selection Modal */}
@@ -437,6 +490,15 @@ export default function CreatePage() {
         onClose={() => setShowLinkModal(false)}
         onSave={(url) => handleSaveAttachment("link", url)}
       />
+      
+      {/* Event Created Modal */}
+      {createdEventData && (
+        <EventCreatedModal
+          isOpen={showCreatedModal}
+          onClose={() => setShowCreatedModal(false)}
+          eventData={createdEventData}
+        />
+      )}
     </div>
   );
 }

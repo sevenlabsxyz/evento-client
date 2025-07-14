@@ -7,7 +7,9 @@ import { getEventById } from '@/lib/data/sample-events';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import EventInfo from '@/components/event-detail/event-info';
 import EventLocation from '@/components/event-detail/event-location';
+import EventGallery from '@/components/event-detail/event-gallery';
 import EventHost from '@/components/event-detail/event-host';
+import EventGuestList from '@/components/event-detail/event-guest-list';
 import EventDescription from '@/components/event-detail/event-description';
 import ImageLightbox from '@/components/event-detail/image-lightbox';
 
@@ -17,6 +19,7 @@ export default function EventDetailPage() {
   const eventId = params.id as string;
   const [showLightbox, setShowLightbox] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   
   const event = getEventById(eventId);
 
@@ -94,9 +97,19 @@ export default function EventDetailPage() {
           }} 
         />
         <div className="px-4 pb-20">
-          <EventInfo event={event} />
-          <EventLocation event={event} />
+          <EventInfo event={event} currentUserId="current-user-id" />
           <EventHost event={event} />
+          <EventGuestList event={event} currentUserId="current-user-id" />
+          <EventLocation event={event} />
+          <EventGallery 
+            event={event} 
+            currentUserId="current-user-id"
+            onImageClick={(index) => {
+              setLightboxImages(event.galleryImages || []);
+              setLightboxIndex(index);
+              setShowLightbox(true);
+            }}
+          />
           <EventDescription event={event} />
         </div>
       </div>
@@ -104,7 +117,7 @@ export default function EventDetailPage() {
       {/* Image Lightbox */}
       <ImageLightbox
         isOpen={showLightbox}
-        images={event.coverImages}
+        images={lightboxImages.length > 0 ? lightboxImages : event.coverImages}
         initialIndex={lightboxIndex}
         eventTitle={event.title}
         onClose={() => setShowLightbox(false)}

@@ -27,6 +27,14 @@ export const sampleEvents: Event[] = [
       '/api/placeholder/400/301',
       '/api/placeholder/400/302'
     ],
+    galleryImages: [
+      '/api/placeholder/300/300',
+      '/api/placeholder/300/301',
+      '/api/placeholder/300/302',
+      '/api/placeholder/300/303',
+      '/api/placeholder/300/304',
+      '/api/placeholder/300/305'
+    ],
     hosts: [
       {
         id: 'yuhelen',
@@ -81,7 +89,88 @@ export const sampleEvents: Event[] = [
     tags: ['K-Beauty', 'Networking', 'B2B', 'COSMOPROF'],
     isActive: true,
     registrationUrl: 'https://cosmoprofnorthamerica.com',
-    contactEnabled: true
+    contactEnabled: true,
+    owner: {
+      id: 'current-user-id',
+      name: 'Yu Helen Kim',
+      username: 'yuhelen'
+    },
+    guests: [
+      {
+        id: 'guest-1',
+        name: 'Sarah Chen',
+        email: 'sarah.chen@email.com',
+        avatar: '/api/placeholder/40/40',
+        status: 'going'
+      },
+      {
+        id: 'guest-2',
+        name: 'Marcus Johnson',
+        email: 'marcus.j@email.com',
+        avatar: '/api/placeholder/40/41',
+        status: 'going'
+      },
+      {
+        id: 'guest-3',
+        name: 'Emily Rodriguez',
+        email: 'emily.r@email.com',
+        avatar: '/api/placeholder/40/42',
+        status: 'going'
+      },
+      {
+        id: 'guest-4',
+        name: 'David Kim',
+        email: 'david.kim@email.com',
+        avatar: '/api/placeholder/40/43',
+        status: 'going'
+      },
+      {
+        id: 'guest-5',
+        name: 'Lisa Wang',
+        email: 'lisa.wang@email.com',
+        avatar: '/api/placeholder/40/44',
+        status: 'going'
+      },
+      {
+        id: 'guest-6',
+        name: 'John Smith',
+        email: 'john.smith@email.com',
+        avatar: '/api/placeholder/40/45',
+        status: 'invited'
+      },
+      {
+        id: 'guest-7',
+        name: 'Maria Garcia',
+        email: 'maria.g@email.com',
+        avatar: '/api/placeholder/40/46',
+        status: 'maybe'
+      },
+      {
+        id: 'guest-8',
+        name: 'Alex Thompson',
+        email: 'alex.t@email.com',
+        avatar: '/api/placeholder/40/47',
+        status: 'going'
+      },
+      {
+        id: 'guest-9',
+        name: 'Priya Patel',
+        email: 'priya.p@email.com',
+        avatar: '/api/placeholder/40/48',
+        status: 'not-going'
+      },
+      {
+        id: 'guest-10',
+        name: 'Michael Brown',
+        email: 'michael.b@email.com',
+        avatar: '/api/placeholder/40/49',
+        status: 'going'
+      }
+    ],
+    guestListSettings: {
+      isPublic: true,
+      allowPublicRSVP: true
+    }
   },
   {
     id: 'innovation-launchpad-2025',
@@ -107,6 +196,10 @@ export const sampleEvents: Event[] = [
     coverImages: [
       '/api/placeholder/400/300',
       '/api/placeholder/400/301'
+    ],
+    galleryImages: [
+      '/api/placeholder/300/306',
+      '/api/placeholder/300/307'
     ],
     hosts: [
       {
@@ -172,7 +265,69 @@ export const sampleEvents: Event[] = [
     type: 'showcase',
     tags: ['AI', 'Innovation', 'Technology', 'Networking'],
     isActive: true,
-    contactEnabled: true
+    contactEnabled: true,
+    guests: [
+      {
+        id: 'ai-guest-1',
+        name: 'Dr. Jennifer Liu',
+        email: 'jennifer.liu@techcorp.com',
+        avatar: '/api/placeholder/40/50',
+        status: 'going'
+      },
+      {
+        id: 'ai-guest-2',
+        name: 'Robert Zhang',
+        email: 'robert.z@startupai.com',
+        avatar: '/api/placeholder/40/51',
+        status: 'going'
+      },
+      {
+        id: 'ai-guest-3',
+        name: 'Amanda Foster',
+        email: 'amanda.foster@venture.com',
+        avatar: '/api/placeholder/40/52',
+        status: 'going'
+      },
+      {
+        id: 'ai-guest-4',
+        name: 'Carlos Rodriguez',
+        email: 'carlos.r@deeptech.ai',
+        avatar: '/api/placeholder/40/53',
+        status: 'going'
+      },
+      {
+        id: 'ai-guest-5',
+        name: 'Dr. Aisha Patel',
+        email: 'aisha.patel@research.edu',
+        avatar: '/api/placeholder/40/54',
+        status: 'going'
+      },
+      {
+        id: 'ai-guest-6',
+        name: 'Kevin O\'Connor',
+        email: 'kevin.o@innovation.com',
+        avatar: '/api/placeholder/40/55',
+        status: 'going'
+      },
+      {
+        id: 'ai-guest-7',
+        name: 'Sophia Kim',
+        email: 'sophia.kim@mlstartup.io',
+        avatar: '/api/placeholder/40/56',
+        status: 'invited'
+      },
+      {
+        id: 'ai-guest-8',
+        name: 'Daniel Martinez',
+        email: 'daniel.m@techfund.vc',
+        avatar: '/api/placeholder/40/57',
+        status: 'maybe'
+      }
+    ],
+    guestListSettings: {
+      isPublic: false,
+      allowPublicRSVP: false
+    }
   }
 ];
 
