@@ -128,6 +128,7 @@ export default function TravelItinerary() {
         <PageHeader
           title="My Hub"
           subtitle="September 2025"
+          showMenu={true}
           rightContent={
             <>
               <ReusableDropdown
