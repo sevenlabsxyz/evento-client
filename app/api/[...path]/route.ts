@@ -38,6 +38,7 @@ async function handler(
       'accept-language',
       'user-agent',
       'referer',
+      'authorization', // Important: forward authorization header for Supabase tokens
     ];
     
     headersToForward.forEach(header => {

@@ -1,11 +1,14 @@
 "use client";
 
-import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck } from "lucide-react";
+import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import ImageLightbox from "@/components/event-detail/image-lightbox";
+import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -20,21 +23,28 @@ export default function ProfilePage() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
+  
+  // Get user data from API
+  const { user, isLoading: isUserLoading } = useUserProfile();
+  const { logout } = useAuth();
+  const { data: eventCount } = useUserEventCount(user?.id || '');
+  const { data: followers } = useUserFollowers(user?.id || '');
+  const { data: following } = useUserFollowing(user?.id || '');
 
   const userStats = {
-    events: 24,
-    countries: 8,
-    mutuals: 156,
-    following: 89,
-    followers: 234,
+    events: eventCount || 0,
+    countries: 8, // This would come from a different API endpoint
+    mutuals: 156, // This would come from a different API endpoint
+    following: following?.length || 0,
+    followers: followers?.length || 0,
   };
 
   const userData = {
-    name: "Andre Neves",
-    username: "@andrerfneves",
-    status: "Software Engineer • Building the future",
-    avatar: "/placeholder.svg?height=80&width=80",
-    isVerified: true,
+    name: user?.name || "User",
+    username: user?.username ? `@${user.username}` : "@user",
+    status: user?.bio || "Welcome to Evento",
+    avatar: user?.image || "/placeholder.svg?height=80&width=80",
+    isVerified: user?.verification_status === 'verified',
   };
 
   const attendingEvents = [
@@ -192,22 +202,33 @@ export default function ProfilePage() {
 
   const handleSocialClick = (platform: string) => {
     const urls = {
-      instagram: "https://instagram.com/andrerfneves",
-      x: "https://x.com/andrerfneves",
-      website: "https://andrerfneves.com",
+      instagram: user?.instagram_handle ? `https://instagram.com/${user.instagram_handle}` : null,
+      x: user?.x_handle ? `https://x.com/${user.x_handle}` : null,
+      website: user?.bio_link || null,
     };
-    window.open(
-      urls[platform as keyof typeof urls],
-      "_blank",
-      "noopener,noreferrer"
-    );
+    
+    const url = urls[platform as keyof typeof urls];
+    if (url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    } else {
+      toast.error(`No ${platform} link available`);
+    }
   };
 
   const handleZap = () => {
-    toast.success("Lightning payment coming soon!");
+    if (user?.ln_address) {
+      toast.success(`Lightning: ${user.ln_address}`);
+    } else {
+      toast.error("No Lightning address available");
+    }
   };
 
   const handleWebsiteClick = () => {
+    if (!user?.bio_link) {
+      toast.error("No website link available");
+      return;
+    }
+    
     setShowWebsiteModal(true);
     setCountdown(3);
 
@@ -216,11 +237,7 @@ export default function ProfilePage() {
         if (prev <= 1) {
           clearInterval(timer);
           setShowWebsiteModal(false);
-          window.open(
-            "https://andrerfneves.com",
-            "_blank",
-            "noopener,noreferrer"
-          );
+          window.open(user.bio_link, "_blank", "noopener,noreferrer");
           return 3;
         }
         return prev - 1;
@@ -455,6 +472,16 @@ export default function ProfilePage() {
     </div>
   );
 
+  // Show loading state while fetching user data
+  if (isUserLoading || !user) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+        <p className="mt-2 text-gray-600">Loading profile...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Content */}
@@ -473,11 +500,15 @@ export default function ProfilePage() {
           <div className="flex items-center gap-4 mb-4">
             <div className="relative">
               <button onClick={handleAvatarClick}>
-                <img
-                  src={userData.avatar || "/placeholder.svg"}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover hover:opacity-90 transition-opacity"
-                />
+                <Avatar className="w-20 h-20">
+                  <AvatarImage 
+                    src={userData.avatar || ''} 
+                    alt="Profile" 
+                  />
+                  <AvatarFallback className="text-2xl">
+                    {userData.name.charAt(0).toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
               </button>
               
               {/* Verification Badge */}
@@ -534,15 +565,17 @@ export default function ProfilePage() {
           )}
 
           {/* Website */}
-          <div className="flex items-center gap-2 mb-4">
-            <Globe className="h-4 w-4 text-gray-500" />
-            <button
-              onClick={handleWebsiteClick}
-              className="text-blue-600 hover:underline text-sm"
-            >
-              andrerfneves.com
-            </button>
-          </div>
+          {user?.bio_link && (
+            <div className="flex items-center gap-2 mb-4">
+              <Globe className="h-4 w-4 text-gray-500" />
+              <button
+                onClick={handleWebsiteClick}
+                className="text-blue-600 hover:underline text-sm"
+              >
+                {user.bio_link.replace(/^https?:\/\//, '')}
+              </button>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="flex gap-3">
@@ -563,36 +596,42 @@ export default function ProfilePage() {
               <Settings className="h-5 w-5" />
             </Button>
             {/* Instagram */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => handleSocialClick("instagram")}
-            >
-              <div className="w-5 h-5 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-sm flex items-center justify-center">
-                <div className="w-3 h-3 border border-white rounded-sm"></div>
-              </div>
-            </Button>
+            {user?.instagram_handle && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-gray-100"
+                onClick={() => handleSocialClick("instagram")}
+              >
+                <div className="w-5 h-5 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-sm flex items-center justify-center">
+                  <div className="w-3 h-3 border border-white rounded-sm"></div>
+                </div>
+              </Button>
+            )}
             {/* X (Twitter) */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => handleSocialClick("x")}
-            >
-              <div className="w-5 h-5 bg-black rounded-sm flex items-center justify-center text-white text-xs font-bold">
-                𝕏
-              </div>
-            </Button>
+            {user?.x_handle && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-gray-100"
+                onClick={() => handleSocialClick("x")}
+              >
+                <div className="w-5 h-5 bg-black rounded-sm flex items-center justify-center text-white text-xs font-bold">
+                  𝕏
+                </div>
+              </Button>
+            )}
             {/* Lightning Zap */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={handleZap}
-            >
-              <Zap className="h-5 w-5 text-yellow-500" />
-            </Button>
+            {user?.ln_address && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-gray-100"
+                onClick={handleZap}
+              >
+                <Zap className="h-5 w-5 text-yellow-500" />
+              </Button>
+            )}
           </div>
         </div>
 

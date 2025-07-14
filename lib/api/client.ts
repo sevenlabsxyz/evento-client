@@ -21,7 +21,7 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError) => {
     // Extract error message from response
-    const errorMessage = error.response?.data?.message || error.message || 'An unexpected error occurred';
+    const errorMessage = (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
     
     // Create a standardized error object
     const apiError = {
@@ -34,15 +34,6 @@ apiClient.interceptors.response.use(
   }
 );
 
-// Request interceptor for adding common headers
-apiClient.interceptors.request.use(
-  (config) => {
-    // Add any common headers here if needed
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// No request interceptor needed - cookies handle authentication automatically
 
 export default apiClient;

@@ -1,4 +1,5 @@
 import { apiClient } from '../api/client';
+import { createClient } from '../supabase/client';
 import { 
   UserDetails, 
   LoginRequest, 
@@ -7,60 +8,59 @@ import {
   ApiError 
 } from '../types/api';
 
-// Supabase auth client for direct API calls
-const supabaseAuthClient = {
-  baseURL: process.env.NEXT_PUBLIC_SUPABASE_URL + '/auth/v1',
-  
-  async post(endpoint: string, data: any) {
-    const response = await fetch(`${this.baseURL}${endpoint}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-        'Authorization': `Bearer ${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''}`,
-      },
-      body: JSON.stringify(data),
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
-    }
-    
-    return response.json();
-  }
-};
-
 export const authService = {
   /**
-   * Send OTP code to email via Supabase
-   * POST /auth/v1/otp
+   * Send OTP code to email via Supabase SDK
    */
   sendLoginCode: async (email: string): Promise<void> => {
-    await supabaseAuthClient.post('/otp', {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
       }
     });
+    
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 
   /**
-   * Verify OTP code via Supabase
-   * POST /auth/v1/verify
+   * Verify OTP code via Supabase SDK
    */
   verifyCode: async (email: string, code: string): Promise<UserDetails> => {
-    const response = await supabaseAuthClient.post('/verify', {
-      type: 'email',
+    const supabase = createClient();
+    const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
+      type: 'email',
     });
     
-    // Convert Supabase user to your UserDetails format
+    if (error) {
+      throw new Error(error.message);
+    }
+    
+    if (!data.user) {
+      throw new Error('No user data returned from verification');
+    }
+    
+    console.log('Auth: OTP verification successful for user:', data.user.id);
+    
+    // Return user details - we'll get them from the backend later
     return {
-      id: response.user.id,
-      email: response.user.email,
-      // Add other fields as needed
+      id: data.user.id,
+      username: data.user.user_metadata?.username || data.user.email?.split('@')[0] || '',
+      name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || '',
+      bio: '',
+      image: data.user.user_metadata?.avatar_url || '',
+      bio_link: '',
+      x_handle: '',
+      instagram_handle: '',
+      ln_address: '',
+      nip05: '',
+      verification_status: null,
+      verification_date: '',
     };
   },
 
@@ -68,38 +68,54 @@ export const authService = {
    * Get current authenticated user from your backend
    * GET /v1/user
    */
-  getCurrentUser: async (): Promise<UserDetails[]> => {
-    const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
-    return response.data;
+  getCurrentUser: async (): Promise<UserDetails | null> => {
+    try {
+      // Check if we have a current session
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        return null; // No session means not authenticated
+      }
+      
+      const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
+      
+      // API returns array, get first user or null
+      const firstUser = (response as any)?.data?.[0] || null;
+      return firstUser;
+    } catch (error) {
+      console.error('Auth: Failed to get current user:', (error as any)?.message || error);
+      // Return null if user not authenticated or error occurs
+      return null;
+    }
   },
 
   /**
-   * Login with Google OAuth via Supabase
-   * Redirects to Supabase OAuth endpoint
+   * Login with Google OAuth via Supabase SDK
    */
-  loginWithGoogle: (): void => {
-    const redirectUrl = encodeURIComponent(`${window.location.origin}/auth/callback`);
-    window.location.href = `https://api.evento.so/auth/v1/authorize?provider=google&redirect_to=${redirectUrl}`;
+  loginWithGoogle: async (): Promise<void> => {
+    const supabase = createClient();
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    
+    if (error) {
+      throw new Error(error.message);
+    }
   },
 
   /**
-   * Logout user - clear both Supabase and your backend session
-   * POST /auth/v1/logout (Supabase) + your backend cleanup
+   * Logout user via Supabase SDK
    */
   logout: async (): Promise<void> => {
-    try {
-      // Logout from Supabase
-      await supabaseAuthClient.post('/logout', {});
-      
-      // Also clear your backend session if needed
-      try {
-        await apiClient.post('/auth/logout');
-      } catch (backendError) {
-        // Backend logout failed, but continue with local cleanup
-        console.warn('Backend logout failed:', backendError);
-      }
-    } catch (error) {
-      console.error('Logout request failed:', error);
+    const supabase = createClient();
+    const { error } = await supabase.auth.signOut();
+    
+    if (error) {
+      console.error('Logout failed:', error);
+      // Don't throw here - we want to continue even if logout fails
     }
   },
 
@@ -108,13 +124,7 @@ export const authService = {
    * This is useful for checking auth status on app start
    */
   checkAuth: async (): Promise<UserDetails | null> => {
-    try {
-      const users = await authService.getCurrentUser();
-      return users[0] || null;
-    } catch (error) {
-      // If we get 401 or any error, user is not authenticated
-      return null;
-    }
+    return await authService.getCurrentUser();
   },
 
   /**
@@ -123,14 +133,38 @@ export const authService = {
    */
   handleOAuthCallback: async (): Promise<UserDetails | null> => {
     try {
-      // After OAuth redirect, the backend should have set a session cookie
-      // So we just need to get the current user
-      const users = await authService.getCurrentUser();
-      return users[0] || null;
+      const supabase = createClient();
+      // Wait for the session to be established
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        return null;
+      }
+      
+      // Get user from backend
+      return await authService.getCurrentUser();
     } catch (error) {
       console.error('OAuth callback failed:', error);
       return null;
     }
+  },
+
+  /**
+   * Get current Supabase session
+   */
+  getSession: async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    return session;
+  },
+
+  /**
+   * Get current Supabase user
+   */
+  getSupabaseUser: async () => {
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    return user;
   },
 };
 

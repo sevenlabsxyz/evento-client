@@ -29,17 +29,19 @@ export default function AuthCallbackPage() {
             localStorage.setItem('supabase_refresh_token', refreshToken);
           }
           
-          // Get user info from your backend
-          const users = await authService.getCurrentUser();
-          const user = users[0];
+          // Give the tokens a moment to be stored, then get user info
+          await new Promise(resolve => setTimeout(resolve, 100));
+          
+          // Get user info from your backend (now with tokens in localStorage)
+          const user = await authService.getCurrentUser();
           
           if (user) {
             setUser(user);
             setStatus('success');
             
-            // Redirect to hub after brief success message
+            // Redirect to home after brief success message
             setTimeout(() => {
-              router.push('/hub');
+              router.push('/');
             }, 1500);
           } else {
             throw new Error('Failed to get user information');
@@ -47,14 +49,13 @@ export default function AuthCallbackPage() {
         } else {
           // No tokens in URL, might be a regular callback
           // Try to get current user (in case session was established)
-          const users = await authService.getCurrentUser();
-          const user = users[0];
+          const user = await authService.getCurrentUser();
           
           if (user) {
             setUser(user);
             setStatus('success');
             setTimeout(() => {
-              router.push('/hub');
+              router.push('/');
             }, 1500);
           } else {
             throw new Error('No authentication found');
@@ -99,7 +100,7 @@ export default function AuthCallbackPage() {
             <>
               <CheckCircle className="h-8 w-8 text-green-600" />
               <p className="text-gray-600 text-center">
-                Sign in successful! Redirecting to hub...
+                Sign in successful! Redirecting to home...
               </p>
             </>
           )}

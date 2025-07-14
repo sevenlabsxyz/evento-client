@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/auth-store';
 import { authService } from '../services/auth';
 import { ApiError } from '../types/api';
 import { useEffect } from 'react';
+import { createClient } from '../supabase/client';
 
 // Key for user query
 const USER_QUERY_KEY = ['auth', 'user'] as const;
@@ -32,8 +33,15 @@ export function useAuth() {
   } = useQuery({
     queryKey: USER_QUERY_KEY,
     queryFn: authService.getCurrentUser,
-    retry: false,
+    retry: (failureCount, error) => {
+      // Don't retry on 401 errors
+      if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
+        return false;
+      }
+      return failureCount < 2;
+    },
     staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
   });
 
   // Sync user data with store
@@ -48,6 +56,30 @@ export function useAuth() {
       }
     }
   }, [userData, authError, setUser, clearAuth]);
+
+  // Listen for auth state changes
+  useEffect(() => {
+    const supabase = createClient();
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth: State changed -', event);
+        
+        if (event === 'SIGNED_IN' && session) {
+          // User signed in - refresh user data
+          queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+        } else if (event === 'SIGNED_OUT') {
+          // User signed out - clear everything
+          clearAuth();
+          queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+        } else if (event === 'TOKEN_REFRESHED' && session) {
+          // Token refreshed - this is automatic, no action needed
+          console.log('Auth: Token refreshed');
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [queryClient, clearAuth]);
 
   // Logout mutation
   const logoutMutation = useMutation({
@@ -118,8 +150,8 @@ export function useVerifyCode() {
       // Invalidate user query to ensure fresh data
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       
-      // Redirect to hub
-      router.push('/hub');
+      // Redirect to home
+      router.push('/');
     },
   });
 
@@ -136,11 +168,15 @@ export function useVerifyCode() {
  * Hook for initiating Google OAuth login
  */
 export function useGoogleLogin() {
-  const loginWithGoogle = () => {
-    authService.loginWithGoogle();
-  };
+  const mutation = useMutation({
+    mutationFn: authService.loginWithGoogle,
+  });
 
-  return { loginWithGoogle };
+  return {
+    loginWithGoogle: mutation.mutate,
+    isLoading: mutation.isPending,
+    error: mutation.error as ApiError | null,
+  };
 }
 
 /**
@@ -162,7 +198,7 @@ export function useRequireAuth(redirectTo = '/auth/login') {
 /**
  * Hook to redirect authenticated users away from auth pages
  */
-export function useRedirectIfAuthenticated(redirectTo = '/hub') {
+export function useRedirectIfAuthenticated(redirectTo = '/') {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 

@@ -204,8 +204,13 @@ export interface SearchResults {
   events: Event[];
 }
 
+// Event with populated user details (for feed, etc.)
+export interface EventWithUser extends Event {
+  user_details: UserDetails;
+}
+
 // Utility types
 export type RSVPStatus = 'yes' | 'no' | 'maybe';
-export type EventStatus = 'draft' | 'published' | 'cancelled';
+export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;

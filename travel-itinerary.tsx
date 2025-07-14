@@ -20,9 +20,12 @@ import { Button } from "@/components/ui/button";
 import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { Navbar } from "@/components/navbar";
 import { PageHeader } from "@/components/page-header";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { useAuth } from "@/lib/hooks/useAuth";
 
 export default function TravelItinerary() {
   const [activeDate, setActiveDate] = useState(2);
@@ -30,6 +33,10 @@ export default function TravelItinerary() {
   const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dateRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
+  
+  // Get user profile data
+  const { user, isLoading: isUserLoading } = useUserProfile();
+  const { logout } = useAuth();
 
   const scrollToDate = (date: number) => {
     setActiveDate(date);
@@ -69,7 +76,7 @@ export default function TravelItinerary() {
     {
       label: "Log Out",
       icon: <LogOut className="w-4 h-4" />,
-      action: () => toast.success("Logged out successfully!"),
+      action: () => logout(),
       destructive: true,
     },
   ];
@@ -146,10 +153,24 @@ export default function TravelItinerary() {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full bg-gray-100"
+                className="rounded-full bg-gray-100 p-0 h-10 w-10"
                 onClick={() => router.push("/e/me")}
               >
-                <User className="h-5 w-5" />
+                {isUserLoading ? (
+                  <User className="h-5 w-5" />
+                ) : (
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage 
+                      src={user?.image || ''} 
+                      alt={user?.name || user?.username || 'User'} 
+                    />
+                    <AvatarFallback>
+                      {user?.name ? user.name.charAt(0).toUpperCase() : 
+                       user?.username ? user.username.charAt(0).toUpperCase() : 
+                       'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
               </Button>
             </>
           }
