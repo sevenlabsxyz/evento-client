@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-// Only enable proxy in development
-const isDevelopment = process.env.NODE_ENV === 'development';
+// API proxy configuration
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET || 'https://evento.so/api';
 
 // Helper to create error response
@@ -14,10 +13,6 @@ async function handler(
   request: NextRequest,
   { params }: { params: { path: string[] } }
 ) {
-  // Only allow proxy in development
-  if (!isDevelopment) {
-    return errorResponse('API proxy is only available in development', 404);
-  }
 
   try {
     // Reconstruct the path

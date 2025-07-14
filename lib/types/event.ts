@@ -55,6 +55,8 @@ export interface Event {
   startTime: string;
   endTime: string;
   timezone?: string;
+  computedStartDate: string;
+  computedEndDate: string;
   location: EventLocation;
   coverImages: string[];
   galleryImages?: string[];
