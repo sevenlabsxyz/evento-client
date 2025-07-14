@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Calendar, MapPin, Edit3 } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Edit3, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { getEventById } from '@/lib/data/sample-events';
 import CoverImageSelector from '@/components/create-event/cover-image-selector';
@@ -10,6 +10,10 @@ import ImageSelectionModal from '@/components/create-event/image-selection-modal
 import DatePickerModal from '@/components/create-event/date-picker-modal';
 import TimePickerModal from '@/components/create-event/time-picker-modal';
 import TimezoneModal from '@/components/create-event/timezone-modal';
+import LocationModal, { LocationData } from '@/components/create-event/location-modal';
+import DescriptionModal from '@/components/create-event/description-modal';
+import { getLocationDisplayName, eventLocationToLocationData, parseAddressString } from '@/lib/utils/location';
+import { getContentPreview, isContentEmpty, plainTextToHtml } from '@/lib/utils/content';
 
 export default function EditEventDetailsPage() {
   const params = useParams();
@@ -42,10 +46,29 @@ export default function EditEventDetailsPage() {
   );
   const [showImageModal, setShowImageModal] = useState(false);
   const [eventTitle, setEventTitle] = useState(existingEvent.title);
-  const [eventAddress, setEventAddress] = useState(
-    `${existingEvent.location.name}, ${existingEvent.location.address}, ${existingEvent.location.city}`
-  );
-  const [eventDescription, setEventDescription] = useState(existingEvent.description);
+  const [eventLocation, setEventLocation] = useState<LocationData>(() => {
+    // Try to convert existing location to LocationData format
+    if (existingEvent.location.name || existingEvent.location.address) {
+      return eventLocationToLocationData(existingEvent.location);
+    } else {
+      // Fallback for simple address strings
+      const addressString = `${existingEvent.location.name}, ${existingEvent.location.address}, ${existingEvent.location.city}`;
+      return parseAddressString(addressString);
+    }
+  });
+  const [eventDescription, setEventDescription] = useState(() => {
+    // Convert plain text description to HTML if needed
+    const description = existingEvent.description;
+    if (!description) return '<p></p>';
+    
+    // Check if it's already HTML (contains tags)
+    if (description.includes('<') && description.includes('>')) {
+      return description;
+    }
+    
+    // Convert plain text to HTML
+    return plainTextToHtml(description);
+  });
 
   // Parse existing dates and times
   const parseExistingDate = (dateString: string) => {
@@ -77,6 +100,8 @@ export default function EditEventDetailsPage() {
   const [showStartTimeModal, setShowStartTimeModal] = useState(false);
   const [showEndTimeModal, setShowEndTimeModal] = useState(false);
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
 
   const handleImageSelect = (imageUrl: string) => {
     setSelectedCoverImage(imageUrl);
@@ -111,7 +136,7 @@ export default function EditEventDetailsPage() {
       startTime,
       endTime,
       timezone,
-      address: eventAddress,
+      location: eventLocation,
       coverImage: selectedCoverImage,
     });
     
@@ -121,7 +146,7 @@ export default function EditEventDetailsPage() {
   };
 
   // Check if all required fields are filled
-  const isFormValid = eventTitle.trim() !== "" && eventAddress.trim() !== "";
+  const isFormValid = eventTitle.trim() !== "" && eventLocation !== null;
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
@@ -211,7 +236,10 @@ export default function EditEventDetailsPage() {
 
         {/* Location Module */}
         <div className="bg-white rounded-2xl p-4">
-          <div className="flex items-start gap-4">
+          <button
+            onClick={() => setShowLocationModal(true)}
+            className="flex items-start gap-4 w-full text-left"
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mt-1">
               <MapPin className="h-4 w-4 text-gray-600" />
             </div>
@@ -219,20 +247,22 @@ export default function EditEventDetailsPage() {
               <label className="text-gray-500 text-sm font-medium block mb-2">
                 Choose Location
               </label>
-              <input
-                type="text"
-                placeholder="Enter location"
-                value={eventAddress}
-                onChange={(e) => setEventAddress(e.target.value)}
-                className="w-full text-gray-900 bg-transparent border-none outline-none"
-              />
+              <div className="flex items-center justify-between">
+                <span className="text-gray-900 font-medium">
+                  {eventLocation ? getLocationDisplayName(eventLocation) : 'Choose address'}
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Description Module */}
         <div className="bg-white rounded-2xl p-4">
-          <div className="flex items-start gap-4">
+          <button
+            onClick={() => setShowDescriptionModal(true)}
+            className="flex items-start gap-4 w-full text-left"
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mt-1">
               <Edit3 className="h-4 w-4 text-gray-600" />
             </div>
@@ -240,15 +270,17 @@ export default function EditEventDetailsPage() {
               <label className="text-gray-500 text-sm font-medium block mb-2">
                 Add Description
               </label>
-              <textarea
-                placeholder="Add description about this event..."
-                value={eventDescription}
-                onChange={(e) => setEventDescription(e.target.value)}
-                className="w-full text-gray-900 bg-transparent border-none outline-none resize-none"
-                rows={4}
-              />
+              <div className="flex items-center justify-between">
+                <span className={`${isContentEmpty(eventDescription) ? 'text-gray-400' : 'text-gray-900'}`}>
+                  {isContentEmpty(eventDescription) 
+                    ? 'Add description about this event...' 
+                    : getContentPreview(eventDescription, 80)
+                  }
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+              </div>
             </div>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -309,6 +341,22 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowTimezoneModal(false)}
         onTimezoneSelect={setTimezone}
         selectedTimezone={timezone}
+      />
+
+      {/* Location Modal */}
+      <LocationModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onLocationSelect={setEventLocation}
+        selectedLocation={eventLocation}
+      />
+
+      {/* Description Modal */}
+      <DescriptionModal
+        isOpen={showDescriptionModal}
+        onClose={() => setShowDescriptionModal(false)}
+        onSave={setEventDescription}
+        initialContent={eventDescription}
       />
     </div>
   );

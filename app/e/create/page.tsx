@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { X, Calendar, Edit3, Music, MapPin, Globe, Users } from "lucide-react";
+import { X, Calendar, Edit3, Music, MapPin, Globe, Users, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { useRouter } from "next/navigation";
@@ -10,12 +10,16 @@ import ImageSelectionModal from "@/components/create-event/image-selection-modal
 import DatePickerModal from "@/components/create-event/date-picker-modal";
 import TimePickerModal from "@/components/create-event/time-picker-modal";
 import TimezoneModal from "@/components/create-event/timezone-modal";
+import LocationModal, { LocationData } from "@/components/create-event/location-modal";
+import DescriptionModal from "@/components/create-event/description-modal";
 import DropdownMenu from "@/components/ui/dropdown-menu";
 import AttachmentModal from "@/components/create-event/attachment-modal";
 import SpotifyModal from "@/components/create-event/spotify-modal";
 import WavlakeModal from "@/components/create-event/wavlake-modal";
 import LinkModal from "@/components/create-event/link-modal";
 import EventCreatedModal from "@/components/create-event/event-created-modal";
+import { getLocationDisplayName, locationDataToEventLocation } from "@/lib/utils/location";
+import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -25,8 +29,8 @@ export default function CreatePage() {
   const [hasCapacity, setHasCapacity] = useState(false);
   const [capacity, setCapacity] = useState("");
   const [eventTitle, setEventTitle] = useState("");
-  const [eventAddress, setEventAddress] = useState("");
-  const [eventDescription, setEventDescription] = useState("");
+  const [eventLocation, setEventLocation] = useState<LocationData | null>(null);
+  const [eventDescription, setEventDescription] = useState("<p></p>");
 
   // Date and Time States
   const [startDate, setStartDate] = useState<Date>(new Date(2025, 8, 9)); // Sep 09
@@ -49,6 +53,8 @@ export default function CreatePage() {
   const [showStartTimeModal, setShowStartTimeModal] = useState(false);
   const [showEndTimeModal, setShowEndTimeModal] = useState(false);
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
 
   // Attachment Modal States
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
@@ -132,7 +138,7 @@ export default function CreatePage() {
     console.log('Create event button clicked');
     console.log('Form valid:', isFormValid);
     console.log('Event title:', eventTitle);
-    console.log('Event address:', eventAddress);
+    console.log('Event location:', eventLocation);
     
     if (!isFormValid) {
       console.log('Form validation failed, returning early');
@@ -151,7 +157,7 @@ export default function CreatePage() {
       startTime,
       endTime,
       timezone,
-      address: eventAddress,
+      location: eventLocation ? locationDataToEventLocation(eventLocation) : null,
       visibility: eventVisibility,
       capacity: hasCapacity ? parseInt(capacity) : null,
       attachments,
@@ -176,7 +182,7 @@ export default function CreatePage() {
   };
 
   // Check if all required fields are filled
-  const isFormValid = eventTitle.trim() !== "" && eventAddress.trim() !== "";
+  const isFormValid = eventTitle.trim() !== "" && eventLocation !== null;
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
@@ -273,7 +279,10 @@ export default function CreatePage() {
 
         {/* Address Module */}
         <div className="bg-white rounded-2xl p-4">
-          <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowLocationModal(true)}
+            className="flex items-center gap-4 w-full text-left"
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
               <MapPin className="h-4 w-4 text-gray-600" />
             </div>
@@ -281,15 +290,14 @@ export default function CreatePage() {
               <label className="text-gray-500 text-sm font-medium block mb-1">
                 Address
               </label>
-              <input
-                type="text"
-                placeholder="Enter location"
-                value={eventAddress}
-                onChange={(e) => setEventAddress(e.target.value)}
-                className="w-full text-gray-900 font-medium bg-transparent border-none outline-none"
-              />
+              <div className="flex items-center justify-between">
+                <span className={`font-medium ${eventLocation ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {eventLocation ? getLocationDisplayName(eventLocation) : 'Choose address'}
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Event Visibility */}
@@ -351,9 +359,12 @@ export default function CreatePage() {
           </div>
         </div>
 
-        {/* Description Module (renamed from Notes) */}
+        {/* Description Module */}
         <div className="bg-white rounded-2xl p-4">
-          <div className="flex items-start gap-4">
+          <button
+            onClick={() => setShowDescriptionModal(true)}
+            className="flex items-start gap-4 w-full text-left"
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mt-1">
               <Edit3 className="h-4 w-4 text-gray-600" />
             </div>
@@ -361,15 +372,17 @@ export default function CreatePage() {
               <label className="text-gray-500 text-sm font-medium block mb-2">
                 Description
               </label>
-              <textarea
-                placeholder="Add description about this event..."
-                value={eventDescription}
-                onChange={(e) => setEventDescription(e.target.value)}
-                className="w-full text-gray-900 bg-transparent border-none outline-none resize-none"
-                rows={3}
-              />
+              <div className="flex items-center justify-between">
+                <span className={`${isContentEmpty(eventDescription) ? 'text-gray-400' : 'text-gray-900'}`}>
+                  {isContentEmpty(eventDescription) 
+                    ? 'Add description about this event...' 
+                    : getContentPreview(eventDescription, 80)
+                  }
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+              </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Attachments Module */}
@@ -489,6 +502,22 @@ export default function CreatePage() {
         isOpen={showLinkModal}
         onClose={() => setShowLinkModal(false)}
         onSave={(url) => handleSaveAttachment("link", url)}
+      />
+      
+      {/* Location Modal */}
+      <LocationModal
+        isOpen={showLocationModal}
+        onClose={() => setShowLocationModal(false)}
+        onLocationSelect={setEventLocation}
+        selectedLocation={eventLocation || undefined}
+      />
+      
+      {/* Description Modal */}
+      <DescriptionModal
+        isOpen={showDescriptionModal}
+        onClose={() => setShowDescriptionModal(false)}
+        onSave={setEventDescription}
+        initialContent={eventDescription}
       />
       
       {/* Event Created Modal */}

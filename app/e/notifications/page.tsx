@@ -110,7 +110,7 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
         <PageHeader
-          title="Notifications"
+          title="Activity"
           subtitle="Stay updated with your activity"
           rightContent={null}
         />

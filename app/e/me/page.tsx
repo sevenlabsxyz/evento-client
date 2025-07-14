@@ -1,20 +1,25 @@
 "use client";
 
-import { Settings, Edit3, Camera, Globe, Zap, X } from "lucide-react";
+import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import ImageLightbox from "@/components/event-detail/image-lightbox";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("events");
+  const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
   const [showFollowingModal, setShowFollowingModal] = useState(false);
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
+  const [showLightbox, setShowLightbox] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
 
   const userStats = {
     events: 24,
@@ -22,6 +27,14 @@ export default function ProfilePage() {
     mutuals: 156,
     following: 89,
     followers: 234,
+  };
+
+  const userData = {
+    name: "Andre Neves",
+    username: "@andrerfneves",
+    status: "Software Engineer • Building the future",
+    avatar: "/placeholder.svg?height=80&width=80",
+    isVerified: true,
   };
 
   const attendingEvents = [
@@ -231,6 +244,15 @@ export default function ProfilePage() {
     router.push(`/${username.replace("@", "")}`);
   };
 
+  const handleProfilePhotoClick = (index: number) => {
+    setLightboxIndex(index);
+    setShowLightbox(true);
+  };
+
+  const handleAvatarClick = () => {
+    setShowAvatarLightbox(true);
+  };
+
   const groupEventsByDate = (events: typeof attendingEvents) => {
     const grouped = events.reduce((acc, event) => {
       const date = event.date;
@@ -349,27 +371,26 @@ export default function ProfilePage() {
 
   const renderAboutTab = () => (
     <div className="space-y-6">
-      {/* Photo Album */}
+      {/* Bio/Description */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-semibold text-gray-900">Photos</h4>
-          <Button variant="ghost" size="sm" className="text-orange-600">
-            <Camera className="h-4 w-4 mr-1" />
-            Add
-          </Button>
-        </div>
-        <div className="grid grid-cols-3 gap-2">
-          {profilePhotos.map((photo, index) => (
-            <div
+        <h4 className="font-semibold text-gray-900 mb-3">Bio</h4>
+        <p className="text-gray-700">
+          Travel enthusiast exploring the world one event at a time. Love
+          photography, food, and meeting new people! ✈️📸
+        </p>
+      </div>
+
+      {/* Interest Tags */}
+      <div>
+        <h4 className="font-semibold text-gray-900 mb-3">Interests</h4>
+        <div className="flex flex-wrap gap-2">
+          {interestTags.map((tag, index) => (
+            <span
               key={index}
-              className="aspect-square rounded-lg overflow-hidden bg-gray-100"
+              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
             >
-              <img
-                src={photo || "/placeholder.svg"}
-                alt={`Profile photo ${index + 1}`}
-                className="w-full h-full object-cover"
-              />
-            </div>
+              {tag}
+            </span>
           ))}
         </div>
       </div>
@@ -389,17 +410,28 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Interest Tags */}
+      {/* Photo Album */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Interests</h4>
-        <div className="flex flex-wrap gap-2">
-          {interestTags.map((tag, index) => (
-            <span
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-semibold text-gray-900">Photos</h4>
+          <Button variant="ghost" size="sm" className="text-orange-600">
+            <Camera className="h-4 w-4 mr-1" />
+            Add
+          </Button>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {profilePhotos.map((photo, index) => (
+            <button
               key={index}
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
+              onClick={() => handleProfilePhotoClick(index)}
+              className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity"
             >
-              {tag}
-            </span>
+              <img
+                src={photo || "/placeholder.svg"}
+                alt={`Profile photo ${index + 1}`}
+                className="w-full h-full object-cover"
+              />
+            </button>
           ))}
         </div>
       </div>
@@ -439,27 +471,41 @@ export default function ProfilePage() {
           </Button>
 
           <div className="flex items-center gap-4 mb-4">
-            <img
-              src="/placeholder.svg?height=80&width=80"
-              alt="Profile"
-              className="w-20 h-20 rounded-full object-cover"
-            />
+            <div className="relative">
+              <button onClick={handleAvatarClick}>
+                <img
+                  src={userData.avatar || "/placeholder.svg"}
+                  alt="Profile"
+                  className="w-20 h-20 rounded-full object-cover hover:opacity-90 transition-opacity"
+                />
+              </button>
+              
+              {/* Verification Badge */}
+              {userData.isVerified && (
+                <button
+                  onClick={() => setShowVerificationModal(true)}
+                  className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
+                >
+                  <BadgeCheck className="w-6 h-6 bg-red-600 text-white rounded-full shadow-sm" />
+                </button>
+              )}
+            </div>
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">Andre Neves</h2>
-              <p className="text-gray-600 text-sm">@andrerfneves</p>
+              <h2 className="text-xl font-bold text-gray-900">{userData.name}</h2>
+              <p className="text-gray-600 text-sm">{userData.username}</p>
             </div>
           </div>
 
           {/* Stats above description */}
           <div className="grid grid-cols-3 gap-4 mb-4">
-            <div className="text-center">
+            <div>
               <div className="text-xl font-bold text-gray-900">
                 {userStats.events}
               </div>
               <div className="text-sm text-gray-500">Events</div>
             </div>
             <button
-              className="text-center"
+              className="text-left"
               onClick={() => setShowFollowingModal(true)}
             >
               <div className="text-xl font-bold text-gray-900">
@@ -468,7 +514,7 @@ export default function ProfilePage() {
               <div className="text-sm text-gray-500">Following</div>
             </button>
             <button
-              className="text-center"
+              className="text-left"
               onClick={() => setShowFollowersModal(true)}
             >
               <div className="text-xl font-bold text-gray-900">
@@ -478,10 +524,14 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          <p className="text-gray-700 mb-4">
-            Travel enthusiast exploring the world one event at a time. Love
-            photography, food, and meeting new people! ✈️📸
-          </p>
+          {/* Status/Title - One-liner */}
+          {userData.status && (
+            <div className="mb-4">
+              <p className="text-gray-600 text-sm font-medium">
+                {userData.status}
+              </p>
+            </div>
+          )}
 
           {/* Website */}
           <div className="flex items-center gap-2 mb-4">
@@ -551,16 +601,6 @@ export default function ProfilePage() {
           {/* Tab Headers */}
           <div className="flex border-b border-gray-200">
             <button
-              onClick={() => setActiveTab("events")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "events"
-                  ? "border-orange-500 text-orange-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              Events
-            </button>
-            <button
               onClick={() => setActiveTab("about")}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "about"
@@ -569,6 +609,16 @@ export default function ProfilePage() {
               }`}
             >
               About
+            </button>
+            <button
+              onClick={() => setActiveTab("events")}
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+                activeTab === "events"
+                  ? "border-orange-500 text-orange-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Events
             </button>
             <button
               onClick={() => setActiveTab("stats")}
@@ -584,8 +634,8 @@ export default function ProfilePage() {
 
           {/* Tab Content */}
           <div className="p-4">
-            {activeTab === "events" && renderEventsTab()}
             {activeTab === "about" && renderAboutTab()}
+            {activeTab === "events" && renderEventsTab()}
             {activeTab === "stats" && renderStatsTab()}
           </div>
         </div>
@@ -733,6 +783,57 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Verification Modal */}
+      {showVerificationModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full p-6 text-center">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">You are verified</h3>
+            <p className="text-gray-600 mb-6">
+              Congratulations! Your account is verified. You have premium member status with enhanced credibility and access to exclusive features on our platform.
+            </p>
+            <div className="flex flex-col gap-3">
+              <Button
+                onClick={() => {
+                  setShowVerificationModal(false);
+                  router.push('/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.');
+                }}
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white"
+              >
+                Contact support
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setShowVerificationModal(false)}
+                className="w-full"
+              >
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Avatar Lightbox */}
+      <ImageLightbox
+        isOpen={showAvatarLightbox}
+        images={[userData.avatar]}
+        initialIndex={0}
+        eventTitle={`${userData.name}'s Profile`}
+        onClose={() => setShowAvatarLightbox(false)}
+      />
+
+      {/* Profile Photos Lightbox */}
+      <ImageLightbox
+        isOpen={showLightbox}
+        images={profilePhotos}
+        initialIndex={lightboxIndex}
+        eventTitle="Profile Photos"
+        onClose={() => setShowLightbox(false)}
+      />
     </div>
   );
 }
