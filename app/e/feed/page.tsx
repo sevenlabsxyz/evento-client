@@ -1,38 +1,30 @@
 "use client";
 
 import {
-  Heart,
-  MessageCircle,
-  Send,
-  Bookmark,
-  MoreHorizontal,
-  MapPin,
-  Calendar,
   Search,
-  Clock,
-  Flag,
-  UserMinus,
-  Share,
-  Copy,
   Check,
+  Bookmark,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { Navbar } from "@/components/navbar";
-import { ReusableDropdown } from "@/components/reusable-dropdown";
+import { EventCard } from "@/components/event-card";
+import { useEventsFeed } from "@/lib/hooks/useEventsFeed";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export default function FeedPage() {
   const [activeTab, setActiveTab] = useState("feed");
-  const [isLoading, setIsLoading] = useState(true);
-  const [bookmarkedPosts, setBookmarkedPosts] = useState<Set<number>>(
+  const [bookmarkedEvents, setBookmarkedEvents] = useState<Set<string>>(
     new Set()
   );
   const [showSaveModal, setShowSaveModal] = useState(false);
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const router = useRouter();
+
+  // Fetch events feed
+  const { data: events = [], isLoading, error } = useEventsFeed();
 
   // Mock saved lists - in real app this would come from API
   const [savedLists] = useState([
@@ -41,124 +33,20 @@ export default function FeedPage() {
     { id: 3, name: "Food Experiences", isDefault: false },
   ]);
 
-  useEffect(() => {
-    // Simulate loading to prevent white screen
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 100);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const feedPosts = [
-    {
-      id: 1,
-      type: "event",
-      user: {
-        name: "Marcus Johnson",
-        username: "@marcusj",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      event: {
-        title: "Eiffel Tower Night Photography",
-        date: "Sep 20, 2025",
-        time: "7:00 PM",
-        location: "Paris, France",
-        image: "/placeholder.svg?height=300&width=300",
-      },
-      caption:
-        "First time in Paris and I'm absolutely mesmerized! The Eiffel Tower at night is pure magic ✨",
-      likes: 156,
-      timeAgo: "4h ago",
-    },
-    {
-      id: 2,
-      type: "event",
-      user: {
-        name: "Sarah Chen",
-        username: "@sarahc",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      event: {
-        title: "Tokyo Skytree Sunset Experience",
-        date: "Sep 15, 2025",
-        time: "6:30 PM",
-        location: "Tokyo, Japan",
-        image: "/placeholder.svg?height=300&width=300",
-      },
-      caption:
-        "Amazing sunset view from Tokyo Skytree! The city looks incredible from up here 🌅",
-      likes: 234,
-      timeAgo: "2h ago",
-    },
-    {
-      id: 3,
-      type: "event",
-      user: {
-        name: "Emma Rodriguez",
-        username: "@emmar",
-        avatar: "/placeholder.svg?height=40&width=40",
-      },
-      event: {
-        title: "Tegallalang Rice Terraces Tour",
-        date: "Sep 18, 2025",
-        time: "9:00 AM",
-        location: "Bali, Indonesia",
-        image: "/placeholder.svg?height=300&width=300",
-      },
-      caption:
-        "The rice terraces in Bali are breathtaking! Nature's artwork at its finest 🌾",
-      likes: 189,
-      timeAgo: "6h ago",
-    },
-  ];
-
-  const getDropdownItems = (postId: number, userName: string) => [
-    {
-      label: "Share Event",
-      icon: <Share className="w-4 h-4" />,
-      action: () => {
-        toast.success("Event shared!");
-      },
-    },
-    {
-      label: "Copy Link",
-      icon: <Copy className="w-4 h-4" />,
-      action: () => {
-        navigator.clipboard.writeText(`https://evento.so/event/${postId}`);
-        toast.success("Link copied to clipboard!");
-      },
-    },
-    {
-      label: `Unfollow ${userName}`,
-      icon: <UserMinus className="w-4 h-4" />,
-      action: () => {
-        toast.success(`Unfollowed ${userName}`);
-      },
-    },
-    {
-      label: "Report Post",
-      icon: <Flag className="w-4 h-4" />,
-      action: () => {
-        toast.success("Post reported. Thank you for your feedback.");
-      },
-      destructive: true,
-    },
-  ];
-
-  const handleBookmark = (postId: number) => {
-    setSelectedPostId(postId);
+  const handleBookmark = (eventId: string) => {
+    setSelectedEventId(eventId);
 
     // If only one list exists, save automatically
     if (savedLists.length === 1) {
-      const newBookmarkedPosts = new Set(bookmarkedPosts);
-      if (bookmarkedPosts.has(postId)) {
-        newBookmarkedPosts.delete(postId);
+      const newBookmarkedEvents = new Set(bookmarkedEvents);
+      if (bookmarkedEvents.has(eventId)) {
+        newBookmarkedEvents.delete(eventId);
         toast.success("Event removed from saved!");
       } else {
-        newBookmarkedPosts.add(postId);
+        newBookmarkedEvents.add(eventId);
         toast.success(`Event saved to "${savedLists[0].name}"!`);
       }
-      setBookmarkedPosts(newBookmarkedPosts);
+      setBookmarkedEvents(newBookmarkedEvents);
     } else {
       // Show modal to choose list
       setShowSaveModal(true);
@@ -166,14 +54,14 @@ export default function FeedPage() {
   };
 
   const handleSaveToList = (listId: number, listName: string) => {
-    if (selectedPostId) {
-      const newBookmarkedPosts = new Set(bookmarkedPosts);
-      newBookmarkedPosts.add(selectedPostId);
-      setBookmarkedPosts(newBookmarkedPosts);
+    if (selectedEventId) {
+      const newBookmarkedEvents = new Set(bookmarkedEvents);
+      newBookmarkedEvents.add(selectedEventId);
+      setBookmarkedEvents(newBookmarkedEvents);
       toast.success(`Event saved to "${listName}"!`);
     }
     setShowSaveModal(false);
-    setSelectedPostId(null);
+    setSelectedEventId(null);
   };
 
   if (isLoading) {
@@ -228,116 +116,37 @@ export default function FeedPage() {
 
       {/* Feed Content */}
       <div className="flex-1 overflow-y-auto pt-[120px] pb-20">
-        {feedPosts.map((post) => (
-          <div key={post.id} className="mb-6 bg-white">
-            {/* Post Header */}
-            <div className="flex items-center justify-between px-4 py-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src={post.user.avatar || "/placeholder.svg"}
-                  alt={post.user.name}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-                <div>
-                  <p className="font-semibold text-sm">{post.user.name}</p>
-                  <p className="text-xs text-gray-500">
-                    Posted by {post.user.username} {post.timeAgo}
-                  </p>
-                </div>
-              </div>
-              <ReusableDropdown
-                trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 rounded-full bg-gray-100"
-                  >
-                    <MoreHorizontal className="h-4 w-4" />
-                  </Button>
-                }
-                items={getDropdownItems(post.id, post.user.name)}
-                align="right"
-                width="w-56"
-              />
-            </div>
-
-            {/* Event Image - Square aspect ratio */}
-            <div className="relative">
-              <img
-                src={post.event.image || "/placeholder.svg"}
-                alt="Event"
-                className="w-full aspect-square object-cover cursor-pointer"
-                onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-              />
-            </div>
-
-            {/* Event Details */}
-            <div className="px-4 py-3">
-              <h3 
-                className="font-bold text-lg mb-2 cursor-pointer hover:text-orange-600 transition-colors"
-                onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-              >
-                {post.event.title}
-              </h3>
-
-              {/* Date, Time, Location */}
-              <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                <div className="flex items-center gap-1">
-                  <Calendar className="h-4 w-4" />
-                  <span>{post.event.date}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Clock className="h-4 w-4" />
-                  <span>{post.event.time}</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
-                <MapPin className="h-4 w-4" />
-                <span>{post.event.location}</span>
-              </div>
-
-              {/* Post Actions - All on left side */}
-              <div className="flex items-center gap-4 mb-3">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
-                >
-                  <Heart className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
-                >
-                  <MessageCircle className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
-                >
-                  <Send className="h-5 w-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 p-0 rounded-full bg-gray-100"
-                  onClick={() => handleBookmark(post.id)}
-                >
-                  <Bookmark
-                    className={`h-5 w-5 ${
-                      bookmarkedPosts.has(post.id)
-                        ? "fill-current text-orange-600"
-                        : ""
-                    }`}
-                  />
-                </Button>
-              </div>
-            </div>
+        {error ? (
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <p className="text-gray-500 text-center mb-4">
+              Failed to load events. Please try again.
+            </p>
+            <Button 
+              onClick={() => window.location.reload()} 
+              variant="outline"
+            >
+              Retry
+            </Button>
           </div>
-        ))}
+        ) : events.length === 0 && !isLoading ? (
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <p className="text-gray-500 text-center mb-2">
+              No events in your feed yet
+            </p>
+            <p className="text-sm text-gray-400 text-center">
+              Follow other users or create your first event to see updates here
+            </p>
+          </div>
+        ) : (
+          events.map((event) => (
+            <EventCard
+              key={event.id}
+              event={event}
+              onBookmark={handleBookmark}
+              isBookmarked={bookmarkedEvents.has(event.id)}
+            />
+          ))
+        )}
       </div>
 
       {/* Save to List Modal */}
@@ -371,7 +180,7 @@ export default function FeedPage() {
               variant="outline"
               onClick={() => {
                 setShowSaveModal(false);
-                setSelectedPostId(null);
+                setSelectedEventId(null);
               }}
               className="w-full mt-4"
             >
