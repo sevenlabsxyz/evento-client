@@ -17,7 +17,7 @@ import DatePickerSheet from "@/components/create-event/date-picker-sheet";
 import TimePickerSheet from "@/components/create-event/time-picker-sheet";
 import TimezoneSheet from "@/components/create-event/timezone-sheet";
 import LocationModal from "@/components/create-event/location-modal";
-import DescriptionModal from "@/components/create-event/description-modal";
+import DescriptionSheet from "@/components/create-event/description-sheet";
 import { getLocationDisplayName } from "@/lib/utils/location";
 import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
 import { useEventFormStore } from "@/lib/stores/event-form-store";
@@ -243,7 +243,7 @@ export default function EditEventDetailsPage() {
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -264,7 +264,7 @@ export default function EditEventDetailsPage() {
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -396,7 +396,7 @@ export default function EditEventDetailsPage() {
         selectedLocation={location || undefined}
       />
 
-      <DescriptionModal
+      <DescriptionSheet
         isOpen={showDescriptionModal}
         onClose={() => setShowDescriptionModal(false)}
         onSave={setDescription}

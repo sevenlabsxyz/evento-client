@@ -8,7 +8,7 @@ import { EventCard } from "@/components/event-card";
 import { useEventsFeed } from "@/lib/hooks/useEventsFeed";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 
 export default function FeedPage() {
   const [activeTab, setActiveTab] = useState("feed");

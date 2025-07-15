@@ -1,0 +1,189 @@
+.ImageSelectionSheet-content {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+}
+
+.ImageSelectionSheet-header {
+  /* APPEARANCE */
+  border-bottom-style: solid;
+  border-bottom-color: rgb(229, 231, 235);
+
+  /* INNER-LAYOUT */
+  border-bottom-width: 1px;
+  padding: 0 1.25rem 0.75rem;
+  display: grid;
+  grid-template-rows: min-content min-content min-content min-content;
+  gap: 0.5rem;
+
+  /* TEXT */
+  font-size: 0; /* Fix Webkit bug causing space added when typing */
+}
+
+.ImageSelectionSheet-handle {
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
+}
+
+.ImageSelectionSheet-visibleTitle {
+  /* TEXT */
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-align: center;
+  color: rgb(17, 24, 39);
+  margin: 0;
+}
+
+.ImageSelectionSheet-subtitle {
+  /* TEXT */
+  font-size: 0.875rem;
+  text-align: center;
+  color: rgb(107, 114, 128);
+  margin: 0;
+  margin-bottom: 0.5rem;
+}
+
+.ImageSelectionSheet-tabs {
+  /* INNER-LAYOUT */
+  padding-bottom: 0;
+}
+
+.ImageSelectionSheet-tabsContainer {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+}
+
+.ImageSelectionSheet-tab {
+  /* SELF-LAYOUT */
+  position: relative;
+  
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
+  
+  /* INNER-LAYOUT */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.25rem;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: color 0.15s;
+  
+  /* TEXT */
+  color: rgb(156, 163, 175);
+}
+
+.ImageSelectionSheet-tab--active {
+  /* TEXT */
+  color: rgb(17, 24, 39);
+}
+
+.ImageSelectionSheet-tabIcon {
+  /* SELF-LAYOUT */
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.ImageSelectionSheet-tabLabel {
+  /* TEXT */
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.ImageSelectionSheet-tabIndicator {
+  /* SELF-LAYOUT */
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  
+  /* APPEARANCE */
+  height: 0.125rem;
+  background-color: rgb(17, 24, 39);
+  border-radius: 9999px;
+}
+
+.ImageSelectionSheet-scrollView {
+  /* SELF-LAYOUT */
+  min-height: 0;
+}
+
+.ImageSelectionSheet-scrollContent {
+  /* INNER-LAYOUT */
+  padding: 1rem;
+  display: grid;
+}
+
+.ImageSelectionSheet-imageGrid {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.25rem;
+}
+
+.ImageSelectionSheet-imageButton {
+  /* SELF-LAYOUT */
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 1rem;
+  overflow: hidden;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.ImageSelectionSheet-imageButton:hover {
+  /* INTERACTIVITY */
+  transform: scale(1.05);
+}
+
+.ImageSelectionSheet-imageButton:active {
+  /* INTERACTIVITY */
+  transform: scale(0.98);
+}
+
+.ImageSelectionSheet-image {
+  /* APPEARANCE */
+  object-fit: cover;
+}
+
+.ImageSelectionSheet-footer {
+  /* APPEARANCE */
+  border-top-style: solid;
+  border-top-color: rgb(229, 231, 235);
+  
+  /* INNER-LAYOUT */
+  border-top-width: 1px;
+  padding: 1rem;
+}
+
+.ImageSelectionSheet-uploadButton {
+  /* SELF-LAYOUT */
+  width: 100%;
+  
+  /* INNER-LAYOUT */
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  
+  /* APPEARANCE */
+  border-radius: 1rem;
+  font-weight: 600;
+}

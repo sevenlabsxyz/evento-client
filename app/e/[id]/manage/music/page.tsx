@@ -8,7 +8,7 @@ import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 
 interface EventMusic {
   spotify?: {

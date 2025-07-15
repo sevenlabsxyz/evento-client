@@ -8,9 +8,9 @@ import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
+import { toast } from '@/lib/utils/toast';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
-import { toast } from 'sonner';
 
 interface PaymentMethod {
   enabled: boolean;

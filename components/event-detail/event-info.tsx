@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Calendar, Clock, MapPin, Mail, Share, MoreHorizontal, Star, CalendarPlus, ExternalLink, Flag } from 'lucide-react';
+import { Calendar, Clock, MapPin, Mail, Share, MoreHorizontal, Star } from 'lucide-react';
 import { Event } from '@/lib/types/event';
 import OwnerEventButtons from './owner-event-buttons';
+import ContactHostSheet from './contact-host-sheet';
+import MoreOptionsSheet from './more-options-sheet';
 
 interface EventInfoProps {
   event: Event;
@@ -11,9 +13,8 @@ interface EventInfoProps {
 }
 
 export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [showMoreModal, setShowMoreModal] = useState(false);
-  const [contactMessage, setContactMessage] = useState('');
+  const [showContactSheet, setShowContactSheet] = useState(false);
+  const [showMoreSheet, setShowMoreSheet] = useState(false);
 
   const handleRegister = () => {
     if (event.registrationUrl) {
@@ -22,7 +23,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
   };
 
   const handleContact = () => {
-    setShowContactModal(true);
+    setShowContactSheet(true);
   };
 
   const handleShare = async () => {
@@ -41,10 +42,9 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
     }
   };
 
-  const handleSendMessage = () => {
-    console.log('Sending message:', contactMessage);
-    setShowContactModal(false);
-    setContactMessage('');
+  const handleSendMessage = (message: string) => {
+    console.log('Sending message:', message);
+    // In a real app, this would send the message to the host via API
   };
 
   const handleAddToCalendar = () => {
@@ -89,20 +89,12 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
     
-    setShowMoreModal(false);
   };
 
   const handleOpenInSafari = () => {
     if (event.registrationUrl) {
       window.open(event.registrationUrl, '_blank');
     }
-    setShowMoreModal(false);
-  };
-
-  const handleReportEvent = () => {
-    console.log('Event reported:', event.id);
-    setShowMoreModal(false);
-    // Could show a toast notification here
   };
 
   // Check if current user is the event owner
@@ -160,7 +152,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
           </button>
           
           <button 
-            onClick={() => setShowMoreModal(true)}
+            onClick={() => setShowMoreSheet(true)}
             className="flex flex-col items-center justify-center h-16 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
           >
             <MoreHorizontal className="w-5 h-5 mb-1" />
@@ -170,87 +162,20 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         )}
       </div>
 
-      {/* Contact Host Modal */}
-      {showContactModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold">Contact Host</h3>
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="p-1 hover:bg-gray-100 rounded-full"
-              >
-                ×
-              </button>
-            </div>
-            
-            <textarea
-              value={contactMessage}
-              onChange={(e) => setContactMessage(e.target.value)}
-              placeholder="Please enter your question for the host..."
-              className="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
-            />
-            
-            <div className="flex gap-3 mt-4">
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="flex-1 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSendMessage}
-                className="flex-1 py-2 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                disabled={!contactMessage.trim()}
-              >
-                Send
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Contact Host Sheet */}
+      <ContactHostSheet
+        isOpen={showContactSheet}
+        onClose={() => setShowContactSheet(false)}
+        onSendMessage={handleSendMessage}
+      />
 
-      {/* More Options Modal */}
-      {showMoreModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4 text-center">More Options</h3>
-            
-            <div className="space-y-3">
-              <button
-                onClick={handleAddToCalendar}
-                className="w-full flex items-center gap-3 p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <CalendarPlus className="w-5 h-5 text-gray-600" />
-                <span>Add to Calendar</span>
-              </button>
-              
-              <button
-                onClick={handleOpenInSafari}
-                className="w-full flex items-center gap-3 p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-              >
-                <ExternalLink className="w-5 h-5 text-gray-600" />
-                <span>Open in Safari</span>
-              </button>
-
-              <button
-                onClick={handleReportEvent}
-                className="w-full flex items-center gap-3 p-3 text-left border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-              >
-                <Flag className="w-5 h-5" />
-                <span>Report Event</span>
-              </button>
-            </div>
-            
-            <button
-              onClick={() => setShowMoreModal(false)}
-              className="w-full mt-4 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      {/* More Options Sheet */}
+      <MoreOptionsSheet
+        isOpen={showMoreSheet}
+        onClose={() => setShowMoreSheet(false)}
+        onAddToCalendar={handleAddToCalendar}
+        onOpenInSafari={handleOpenInSafari}
+      />
     </>
   );
 }

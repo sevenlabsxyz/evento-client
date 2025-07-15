@@ -23,7 +23,7 @@ import { PageHeader } from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";
 

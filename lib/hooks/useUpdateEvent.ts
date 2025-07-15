@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import apiClient from '@/lib/api/client';
 import { UpdateEventData, updateEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';

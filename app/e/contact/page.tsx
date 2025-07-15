@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { useRouter, useSearchParams } from "next/navigation"; // keep useSearchParams for initial read
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 
 export default function ContactPage() {
   const router = useRouter();

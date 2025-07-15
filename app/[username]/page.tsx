@@ -12,7 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 import ImageLightbox from "@/components/event-detail/image-lightbox";
 
 export default function UserProfilePage() {
