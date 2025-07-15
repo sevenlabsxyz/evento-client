@@ -40,35 +40,7 @@ export default function ContributionsManagementPage() {
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
   const updateEventMutation = useUpdateEvent();
   
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading event details...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  if (error || !existingEvent) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h1>
-          <p className="text-gray-600 mb-4">The event you're trying to manage doesn't exist.</p>
-          <button
-            onClick={() => router.back()}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // State for contributions
+  // State for contributions - MUST be before any conditional returns
   const [contributions, setContributions] = useState<EventContributions>({
     enabled: false,
     suggestedAmount: {
@@ -115,12 +87,38 @@ export default function ContributionsManagementPage() {
       });
     }
   }, [existingEvent]);
+  
+  // Conditional returns MUST come after all hooks
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error || !existingEvent) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Event Not Found</h1>
+          <p className="text-gray-600 mb-4">The event you're trying to manage doesn't exist.</p>
+          <button
+            onClick={() => router.back()}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const currencies = [
-    { value: 'USD', label: '$', name: 'US Dollar' },
-    { value: 'EUR', label: '€', name: 'Euro' },
-    { value: 'GBP', label: '£', name: 'British Pound' },
-    { value: 'BTC', label: '₿', name: 'Bitcoin' }
+    { value: 'USD', label: '$', name: 'US Dollar' }
   ];
 
   const handleAmountChange = (amount: number) => {
@@ -133,15 +131,6 @@ export default function ContributionsManagementPage() {
     }));
   };
 
-  const handleCurrencyChange = (currency: string) => {
-    setContributions(prev => ({
-      ...prev,
-      suggestedAmount: {
-        ...prev.suggestedAmount!,
-        currency
-      }
-    }));
-  };
 
   const handlePaymentMethodToggle = (method: keyof EventContributions['paymentMethods']) => {
     setContributions(prev => ({
@@ -303,18 +292,10 @@ export default function ContributionsManagementPage() {
           </div>
 
           <div className="space-y-4">
-            <div className="flex gap-3">
-              <select
-                value={contributions.suggestedAmount?.currency}
-                onChange={(e) => handleCurrencyChange(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                {currencies.map(currency => (
-                  <option key={currency.value} value={currency.value}>
-                    {currency.label} {currency.name}
-                  </option>
-                ))}
-              </select>
+            <div className="flex gap-3 items-center">
+              <div className="px-3 py-2 bg-gray-100 rounded-lg text-gray-700 font-medium">
+                $ USD
+              </div>
               <input
                 type="number"
                 value={contributions.suggestedAmount?.amount || ''}

@@ -13,9 +13,9 @@ import {
 import { Button } from "@/components/ui/button";
 import CoverImageSelector from "@/components/create-event/cover-image-selector";
 import ImageSelectionModal from "@/components/create-event/image-selection-modal";
-import DatePickerModal from "@/components/create-event/date-picker-modal";
-import TimePickerModal from "@/components/create-event/time-picker-modal";
-import TimezoneModal from "@/components/create-event/timezone-modal";
+import DatePickerSheet from "@/components/create-event/date-picker-sheet";
+import TimePickerSheet from "@/components/create-event/time-picker-sheet";
+import TimezoneSheet from "@/components/create-event/timezone-sheet";
 import LocationModal from "@/components/create-event/location-modal";
 import DescriptionModal from "@/components/create-event/description-modal";
 import { getLocationDisplayName } from "@/lib/utils/location";
@@ -237,7 +237,7 @@ export default function EditEventDetailsPage() {
             <div className="flex gap-2 flex-1">
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
               >
                 {formatDateForDisplay(startDate)}
               </button>
@@ -258,7 +258,7 @@ export default function EditEventDetailsPage() {
             <div className="flex gap-2 flex-1">
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
               >
                 {formatDateForDisplay(endDate)}
               </button>
@@ -340,7 +340,7 @@ export default function EditEventDetailsPage() {
         onImageSelect={handleImageSelect}
       />
 
-      <DatePickerModal
+      <DatePickerSheet
         isOpen={showStartDateModal}
         onClose={() => setShowStartDateModal(false)}
         onDateSelect={setStartDate}
@@ -348,7 +348,7 @@ export default function EditEventDetailsPage() {
         title="Start Date"
       />
 
-      <DatePickerModal
+      <DatePickerSheet
         isOpen={showEndDateModal}
         onClose={() => setShowEndDateModal(false)}
         onDateSelect={setEndDate}
@@ -356,7 +356,7 @@ export default function EditEventDetailsPage() {
         title="End Date"
       />
 
-      <TimePickerModal
+      <TimePickerSheet
         isOpen={showStartTimeModal}
         onClose={() => setShowStartTimeModal(false)}
         onTimeSelect={setStartTime}
@@ -369,7 +369,7 @@ export default function EditEventDetailsPage() {
         title="Start Time"
       />
 
-      <TimePickerModal
+      <TimePickerSheet
         isOpen={showEndTimeModal}
         onClose={() => setShowEndTimeModal(false)}
         onTimeSelect={setEndTime}
@@ -382,7 +382,7 @@ export default function EditEventDetailsPage() {
         title="End Time"
       />
 
-      <TimezoneModal
+      <TimezoneSheet
         isOpen={showTimezoneModal}
         onClose={() => setShowTimezoneModal(false)}
         onTimezoneSelect={setTimezone}

@@ -25,9 +25,14 @@ const Loading = () => (
   </div>
 );
 
-const api = new GhostContentAPI({
-  url: process.env.GHOST_URL!,
-  key: process.env.GHOST_CONTENT_API_KEY!,
+// Check for required environment variables
+const GHOST_URL = process.env.GHOST_URL;
+const GHOST_CONTENT_API_KEY = process.env.GHOST_CONTENT_API_KEY;
+
+// Only initialize the API if environment variables are present
+const api = GHOST_URL && GHOST_CONTENT_API_KEY ? new GhostContentAPI({
+  url: GHOST_URL,
+  key: GHOST_CONTENT_API_KEY,
   version: "v5.0",
   makeRequest: async ({ url, method, params, headers }: any) => {
     const apiUrl = new URL(url);
@@ -44,9 +49,15 @@ const api = new GhostContentAPI({
       console.error(error);
     }
   },
-});
+}) : null;
 
 async function getBlogPost(slug: string) {
+  // Return null if API is not initialized
+  if (!api) {
+    console.warn("Ghost API not initialized - missing environment variables");
+    return null;
+  }
+  
   try {
     return await api.posts.read({ slug }, { include: ["tags", "authors"] });
   } catch (error) {
