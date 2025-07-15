@@ -1,0 +1,233 @@
+.LocationSheet-content {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+}
+
+.LocationSheet-header {
+  /* APPEARANCE */
+  border-bottom-style: solid;
+  border-bottom-color: rgb(229, 231, 235);
+
+  /* INNER-LAYOUT */
+  border-bottom-width: 1px;
+  padding: 0 1.25rem 0.75rem;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  gap: 0.75rem;
+
+  /* TEXT */
+  font-size: 0; /* Fix Webkit bug causing space added when typing */
+}
+
+.LocationSheet-handle {
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
+}
+
+.LocationSheet-searchContainer {
+  /* SELF-LAYOUT */
+  position: relative;
+  width: 100%;
+}
+
+.LocationSheet-searchIcon {
+  /* SELF-LAYOUT */
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.25rem;
+  height: 1.25rem;
+  
+  /* APPEARANCE */
+  color: rgb(107, 114, 128);
+}
+
+.LocationSheet-input {
+  /* SELF-LAYOUT */
+  width: 100%;
+  height: 2.75rem;
+  box-sizing: border-box;
+
+  /* APPEARANCE */
+  outline: none;
+  border: none;
+  border-radius: 12px;
+  background-color: rgb(243, 244, 246);
+
+  /* INNER-LAYOUT */
+  padding: 0 0.75rem 0 2.75rem;
+
+  /* TEXT */
+  appearance: none;
+  font-size: 1rem;
+  color: rgb(31, 41, 55);
+}
+
+.LocationSheet-input::placeholder {
+  /* TEXT */
+  color: rgb(107, 114, 128);
+}
+
+.LocationSheet-scrollView {
+  /* SELF-LAYOUT */
+  min-height: 0;
+}
+
+.LocationSheet-scrollContent {
+  /* INNER-LAYOUT */
+  padding: 0;
+  display: grid;
+}
+
+.LocationSheet-locationItem {
+  /* SELF-LAYOUT */
+  width: 100%;
+
+  /* APPEARANCE */
+  appearance: none;
+  border: none;
+  background: none;
+  border-bottom: 1px solid rgb(243, 244, 246);
+
+  /* INNER-LAYOUT */
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: background-color 0.15s;
+  
+  /* TEXT */
+  text-align: left;
+}
+
+.LocationSheet-locationItem:hover {
+  background-color: rgb(249, 250, 251);
+}
+
+.LocationSheet-locationItem--withChevron {
+  /* INNER-LAYOUT */
+  padding-right: 1rem;
+}
+
+.LocationSheet-currentLocation {
+  /* APPEARANCE */
+  border-bottom-width: 1px;
+}
+
+.LocationSheet-locationIcon {
+  /* SELF-LAYOUT */
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+
+  /* APPEARANCE */
+  background-color: rgb(243, 244, 246);
+  border-radius: 50%;
+
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.LocationSheet-locationIcon--blue {
+  /* APPEARANCE */
+  background-color: rgb(219, 234, 254);
+}
+
+.LocationSheet-locationIcon--red {
+  /* APPEARANCE */
+  background-color: rgb(254, 226, 226);
+}
+
+.LocationSheet-icon {
+  /* SELF-LAYOUT */
+  width: 1.25rem;
+  height: 1.25rem;
+
+  /* APPEARANCE */
+  color: rgb(107, 114, 128);
+}
+
+.LocationSheet-locationIcon--blue .LocationSheet-icon {
+  /* APPEARANCE */
+  color: rgb(37, 99, 235);
+}
+
+.LocationSheet-locationIcon--red .LocationSheet-icon {
+  /* APPEARANCE */
+  color: rgb(239, 68, 68);
+}
+
+.LocationSheet-locationDetails {
+  /* SELF-LAYOUT */
+  flex: 1;
+  min-width: 0;
+
+  /* INNER-LAYOUT */
+  display: grid;
+  gap: 0.125rem;
+}
+
+.LocationSheet-locationName {
+  /* TEXT */
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgb(31, 41, 55);
+  
+  /* LAYOUT */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LocationSheet-locationAddress {
+  /* TEXT */
+  font-size: 0.875rem;
+  color: rgb(107, 114, 128);
+  
+  /* LAYOUT */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.LocationSheet-chevron {
+  /* SELF-LAYOUT */
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+
+  /* APPEARANCE */
+  color: rgb(156, 163, 175);
+}
+
+.LocationSheet-sectionTitle {
+  /* INNER-LAYOUT */
+  padding: 0.75rem 1.25rem;
+
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(31, 41, 55);
+}
+
+.LocationSheet-noResults {
+  /* INNER-LAYOUT */
+  padding: 3rem 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  /* TEXT */
+  font-size: 1rem;
+  color: rgb(107, 114, 128);
+}

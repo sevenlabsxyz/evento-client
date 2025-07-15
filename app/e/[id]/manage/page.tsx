@@ -31,8 +31,8 @@ export default function ManageEventPage() {
       title: 'Guest List',
       description: 'View, manage, and check in guests',
       icon: <Users className="w-6 h-6" />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-blue-100',
+      iconColor: 'text-blue-600',
       route: `/e/${eventId}/manage/guests`
     },
     {
@@ -40,8 +40,8 @@ export default function ManageEventPage() {
       title: 'Hosts',
       description: 'Co-hosts & check-in managers',
       icon: <Share2 className="w-6 h-6" />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-orange-100',
+      iconColor: 'text-orange-600',
       route: `/e/${eventId}/manage/hosts`
     },
     {
@@ -49,8 +49,8 @@ export default function ManageEventPage() {
       title: 'Music',
       description: 'Add Spotify and Wavlake tracks',
       icon: <Music className="w-6 h-6" />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-pink-100',
+      iconColor: 'text-pink-600',
       route: `/e/${eventId}/manage/music`
     },
     {

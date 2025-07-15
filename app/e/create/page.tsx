@@ -11,23 +11,20 @@ import {
   Users,
   ChevronRight,
 } from "lucide-react";
+import { SheetStack } from "@silk-hq/components";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { useRouter } from "next/navigation";
 import CoverImageSelector from "@/components/create-event/cover-image-selector";
 import ImageSelectionModal from "@/components/create-event/image-selection-modal";
-import DatePickerModal from "@/components/create-event/date-picker-modal";
-import TimePickerModal from "@/components/create-event/time-picker-modal";
-import TimezoneModal from "@/components/create-event/timezone-modal";
-import LocationModal, {
+import DatePickerSheet from "@/components/create-event/date-picker-sheet";
+import TimePickerSheet from "@/components/create-event/time-picker-sheet";
+import LocationSheet, {
   LocationData,
-} from "@/components/create-event/location-modal";
+} from "@/components/create-event/location-sheet";
 import DescriptionModal from "@/components/create-event/description-modal";
 import DropdownMenu from "@/components/ui/dropdown-menu";
-import AttachmentModal from "@/components/create-event/attachment-modal";
-import SpotifyModal from "@/components/create-event/spotify-modal";
-import WavlakeModal from "@/components/create-event/wavlake-modal";
-import LinkModal from "@/components/create-event/link-modal";
+import AttachmentSheet from "@/components/create-event/attachment-sheet";
 import EventCreatedModal from "@/components/create-event/event-created-modal";
 import { getLocationDisplayName } from "@/lib/utils/location";
 import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
@@ -92,15 +89,11 @@ export default function CreatePage() {
   const [showEndDateModal, setShowEndDateModal] = useState(false);
   const [showStartTimeModal, setShowStartTimeModal] = useState(false);
   const [showEndTimeModal, setShowEndTimeModal] = useState(false);
-  const [showTimezoneModal, setShowTimezoneModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
 
   // Attachment Modal States
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
-  const [showSpotifyModal, setShowSpotifyModal] = useState(false);
-  const [showWavlakeModal, setShowWavlakeModal] = useState(false);
-  const [showLinkModal, setShowLinkModal] = useState(false);
   const [showCreatedModal, setShowCreatedModal] = useState(false);
   const [createdEventData, setCreatedEventData] = useState<any>(null);
 
@@ -111,16 +104,9 @@ export default function CreatePage() {
   const handleAttachmentType = (
     type: "spotify" | "wavlake" | "photo" | "file" | "link"
   ) => {
+    // This will be handled by the AttachmentSheet internally
+    // For now, just handle the file pickers
     switch (type) {
-      case "spotify":
-        setShowSpotifyModal(true);
-        break;
-      case "wavlake":
-        setShowWavlakeModal(true);
-        break;
-      case "link":
-        setShowLinkModal(true);
-        break;
       case "photo":
         // Trigger native photo picker
         const photoInput = document.createElement("input");
@@ -242,7 +228,7 @@ export default function CreatePage() {
             <div className="flex gap-2 flex-1">
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
               >
                 {formatDateForDisplay(startDate)}
               </button>
@@ -263,7 +249,7 @@ export default function CreatePage() {
             <div className="flex gap-2 flex-1">
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
               >
                 {formatDateForDisplay(endDate)}
               </button>
@@ -433,6 +419,58 @@ export default function CreatePage() {
         </div>
       </div>
 
+      {/* Modals and Sheets */}
+      <SheetStack.Root>
+        {/* Date Picker Sheets */}
+        <DatePickerSheet
+          isOpen={showStartDateModal}
+          onClose={() => setShowStartDateModal(false)}
+          onDateSelect={setStartDate}
+          selectedDate={startDate}
+          title="Start Date"
+        />
+
+        <DatePickerSheet
+          isOpen={showEndDateModal}
+          onClose={() => setShowEndDateModal(false)}
+          onDateSelect={setEndDate}
+          selectedDate={endDate}
+          title="End Date"
+        />
+
+        {/* Time Picker Sheets */}
+        <TimePickerSheet
+          isOpen={showStartTimeModal}
+          onClose={() => setShowStartTimeModal(false)}
+          onTimeSelect={setStartTime}
+          onTimezoneSelect={setTimezone}
+          selectedTime={startTime}
+          timezone={timezone}
+          title="Start Time"
+        />
+
+        <TimePickerSheet
+          isOpen={showEndTimeModal}
+          onClose={() => setShowEndTimeModal(false)}
+          onTimeSelect={setEndTime}
+          onTimezoneSelect={setTimezone}
+          selectedTime={endTime}
+          timezone={timezone}
+          title="End Time"
+        />
+
+        {/* Attachment Sheet */}
+        <AttachmentSheet
+          isOpen={showAttachmentModal}
+          onClose={() => setShowAttachmentModal(false)}
+          onSelectType={handleAttachmentType}
+          onSaveAttachment={handleSaveAttachment}
+          spotifyUrl={spotifyUrl}
+          wavlakeUrl={wavlakeUrl}
+        />
+      </SheetStack.Root>
+
+      {/* Other Modals */}
       {/* Image Selection Modal */}
       <ImageSelectionModal
         isOpen={showImageModal}
@@ -440,87 +478,8 @@ export default function CreatePage() {
         onImageSelect={handleImageSelect}
       />
 
-      {/* Date Picker Modals */}
-      <DatePickerModal
-        isOpen={showStartDateModal}
-        onClose={() => setShowStartDateModal(false)}
-        onDateSelect={setStartDate}
-        selectedDate={startDate}
-        title="Start Date"
-      />
-
-      <DatePickerModal
-        isOpen={showEndDateModal}
-        onClose={() => setShowEndDateModal(false)}
-        onDateSelect={setEndDate}
-        selectedDate={endDate}
-        title="End Date"
-      />
-
-      {/* Time Picker Modals */}
-      <TimePickerModal
-        isOpen={showStartTimeModal}
-        onClose={() => setShowStartTimeModal(false)}
-        onTimeSelect={setStartTime}
-        onTimezoneClick={() => {
-          setShowStartTimeModal(false);
-          setShowTimezoneModal(true);
-        }}
-        selectedTime={startTime}
-        timezone={timezone}
-        title="Start Time"
-      />
-
-      <TimePickerModal
-        isOpen={showEndTimeModal}
-        onClose={() => setShowEndTimeModal(false)}
-        onTimeSelect={setEndTime}
-        onTimezoneClick={() => {
-          setShowEndTimeModal(false);
-          setShowTimezoneModal(true);
-        }}
-        selectedTime={endTime}
-        timezone={timezone}
-        title="End Time"
-      />
-
-      {/* Timezone Modal */}
-      <TimezoneModal
-        isOpen={showTimezoneModal}
-        onClose={() => setShowTimezoneModal(false)}
-        onTimezoneSelect={setTimezone}
-        selectedTimezone={timezone}
-      />
-
-      {/* Attachment Modals */}
-      <AttachmentModal
-        isOpen={showAttachmentModal}
-        onClose={() => setShowAttachmentModal(false)}
-        onSelectType={handleAttachmentType}
-        spotifyUrl={spotifyUrl}
-        wavlakeUrl={wavlakeUrl}
-      />
-
-      <SpotifyModal
-        isOpen={showSpotifyModal}
-        onClose={() => setShowSpotifyModal(false)}
-        onSave={(url) => handleSaveAttachment("spotify", url)}
-      />
-
-      <WavlakeModal
-        isOpen={showWavlakeModal}
-        onClose={() => setShowWavlakeModal(false)}
-        onSave={(url) => handleSaveAttachment("wavlake", url)}
-      />
-
-      <LinkModal
-        isOpen={showLinkModal}
-        onClose={() => setShowLinkModal(false)}
-        onSave={(url) => handleSaveAttachment("link", url)}
-      />
-
-      {/* Location Modal */}
-      <LocationModal
+      {/* Location Sheet */}
+      <LocationSheet
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         onLocationSelect={setLocation}

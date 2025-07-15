@@ -26,6 +26,12 @@ const Loading = () => (
 );
 
 async function getBlogPosts() {
+  // Check for required environment variables
+  if (!process.env.GHOST_URL || !process.env.GHOST_CONTENT_API_KEY) {
+    console.warn("Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set");
+    return [];
+  }
+
   const res = await fetch(
     `${process.env.GHOST_URL}/ghost/api/content/posts/?key=${process.env.GHOST_CONTENT_API_KEY}&include=tags,authors`,
     { next: { revalidate: 60 } }
