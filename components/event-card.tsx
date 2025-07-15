@@ -9,8 +9,7 @@ import {
   MapPin,
   Calendar,
   Clock,
-  Flag,
-  UserMinus,
+  User,
   Share,
   Copy,
 } from "lucide-react";
@@ -18,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 import { EventWithUser } from "@/lib/types/api";
 import { formatEventDate, getRelativeTime } from "@/lib/utils/date";
 import { getOptimizedCoverUrl, getOptimizedAvatarUrl } from "@/lib/utils/image";
@@ -41,12 +40,33 @@ export function EventCard({
   );
   const timeAgo = getRelativeTime(event.created_at);
 
-  const getDropdownItems = (eventId: string, userName: string) => [
+  const getDropdownItems = (eventId: string, userName: string, userUsername: string) => [
     {
       label: "Share Event",
       icon: <Share className="w-4 h-4" />,
-      action: () => {
-        toast.success("Event shared!");
+      action: async () => {
+        const eventUrl = `${window.location.origin}/e/${eventId}`;
+        
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: event.title,
+              text: `Check out this event: ${event.title}`,
+              url: eventUrl,
+            });
+          } catch (error) {
+            // User cancelled the share or an error occurred
+            if (error.name !== 'AbortError') {
+              // Fallback to clipboard copy
+              navigator.clipboard.writeText(eventUrl);
+              toast.success("Link copied to clipboard!");
+            }
+          }
+        } else {
+          // Fallback for browsers without native share support
+          navigator.clipboard.writeText(eventUrl);
+          toast.success("Link copied to clipboard!");
+        }
       },
     },
     {
@@ -58,19 +78,11 @@ export function EventCard({
       },
     },
     {
-      label: `Unfollow ${userName}`,
-      icon: <UserMinus className="w-4 h-4" />,
+      label: "View Profile",
+      icon: <User className="w-4 h-4" />,
       action: () => {
-        toast.success(`Unfollowed ${userName}`);
+        router.push(`/${userUsername}`);
       },
-    },
-    {
-      label: "Report Post",
-      icon: <Flag className="w-4 h-4" />,
-      action: () => {
-        toast.success("Post reported. Thank you for your feedback.");
-      },
-      destructive: true,
     },
   ];
 
@@ -109,7 +121,8 @@ export function EventCard({
           }
           items={getDropdownItems(
             event.id,
-            event.user_details.name || event.user_details.username
+            event.user_details.name || event.user_details.username,
+            event.user_details.username
           )}
           align="right"
           width="w-56"

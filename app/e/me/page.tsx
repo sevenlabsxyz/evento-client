@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 import ImageLightbox from "@/components/event-detail/image-lightbox";
 import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";

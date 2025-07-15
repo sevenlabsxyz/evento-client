@@ -1,0 +1,617 @@
+/* Description Sheet Styles */
+/* Editor placeholder styling */
+.is-editor-empty:before {
+  content: attr(data-placeholder);
+  float: left;
+  color: rgb(156, 163, 175);
+  pointer-events: none;
+  height: 0;
+}
+.DescriptionSheet-content {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr;
+}
+
+.DescriptionSheet-header {
+  /* APPEARANCE */
+  border-bottom-style: solid;
+  border-bottom-color: rgb(229, 231, 235);
+  
+  /* INNER-LAYOUT */
+  border-bottom-width: 1px;
+  display: grid;
+  grid-template-rows: min-content min-content min-content;
+  
+  /* TEXT */
+  font-size: 0; /* Fix Webkit bug causing space added when typing */
+}
+
+.DescriptionSheet-handle {
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
+}
+
+.DescriptionSheet-headerBar {
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+}
+
+.DescriptionSheet-headerButton {
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
+  
+  /* TEXT */
+  font-weight: 500;
+  font-size: 1rem;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+}
+
+.DescriptionSheet-headerButton--cancel {
+  /* TEXT */
+  color: rgb(239, 68, 68);
+}
+
+.DescriptionSheet-headerButton--save {
+  /* TEXT */
+  color: rgb(239, 68, 68);
+}
+
+.DescriptionSheet-headerTitle {
+  /* TEXT */
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(17, 24, 39);
+  margin: 0;
+}
+
+.DescriptionSheet-toolbar {
+  /* APPEARANCE */
+  background-color: rgb(249, 250, 251);
+  
+  /* INNER-LAYOUT */
+  padding: 0.75rem;
+}
+
+.DescriptionSheet-toolbarInner {
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  max-width: 24rem;
+  margin: 0 auto;
+}
+
+.DescriptionSheet-toolButton {
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 0.5rem;
+  
+  /* INNER-LAYOUT */
+  padding: 0.75rem;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: all 0.15s;
+  
+  /* TEXT */
+  color: rgb(107, 114, 128);
+}
+
+.DescriptionSheet-toolButton:hover {
+  /* APPEARANCE */
+  background-color: rgb(229, 231, 235);
+}
+
+.DescriptionSheet-toolButton--active {
+  /* APPEARANCE */
+  background-color: rgb(254, 226, 226);
+  
+  /* TEXT */
+  color: rgb(220, 38, 38);
+}
+
+.DescriptionSheet-toolIcon {
+  /* SELF-LAYOUT */
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.DescriptionSheet-toolDropdown {
+  /* SELF-LAYOUT */
+  position: relative;
+}
+
+.DescriptionSheet-toolDropdownMenu {
+  /* SELF-LAYOUT */
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 0.5rem;
+  z-index: 50;
+  
+  /* APPEARANCE */
+  background-color: white;
+  border-style: solid;
+  border-color: rgb(229, 231, 235);
+  border-width: 1px;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* INNER-LAYOUT */
+  padding: 0.25rem;
+  min-width: 7.5rem;
+}
+
+.DescriptionSheet-toolDropdownItem {
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 0.375rem;
+  
+  /* INNER-LAYOUT */
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  
+  /* TEXT */
+  text-align: left;
+  font-size: 0.875rem;
+  color: rgb(55, 65, 81);
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.DescriptionSheet-toolDropdownItem:hover {
+  /* APPEARANCE */
+  background-color: rgb(249, 250, 251);
+}
+
+.DescriptionSheet-toolDropdownItem--active {
+  /* APPEARANCE */
+  background-color: rgb(254, 226, 226);
+  
+  /* TEXT */
+  color: rgb(220, 38, 38);
+}
+
+.DescriptionSheet-toolDropdownItem--h1 {
+  /* TEXT */
+  font-weight: 700;
+  font-size: 1.125rem;
+}
+
+.DescriptionSheet-toolDropdownItem--h2 {
+  /* TEXT */
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.DescriptionSheet-toolDropdownItem--h3 {
+  /* TEXT */
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.DescriptionSheet-scrollView {
+  /* SELF-LAYOUT */
+  min-height: 0;
+}
+
+.DescriptionSheet-scrollContent {
+  /* INNER-LAYOUT */
+  padding: 0;
+}
+
+.DescriptionSheet-editor {
+  /* INNER-LAYOUT */
+  padding: 1rem;
+  min-height: 50vh;
+}
+
+/* Link Edit Sheet Styles */
+.LinkEditSheet-content {
+  /* APPEARANCE */
+  max-width: 400px;
+}
+
+.LinkEditSheet-handle {
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
+}
+
+.LinkEditSheet-container {
+  /* INNER-LAYOUT */
+  padding: 1.5rem;
+}
+
+.LinkEditSheet-title {
+  /* TEXT */
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(17, 24, 39);
+  margin: 0 0 1.5rem 0;
+}
+
+.LinkEditSheet-form {
+  /* INNER-LAYOUT */
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.LinkEditSheet-field {
+  /* INNER-LAYOUT */
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.LinkEditSheet-field--checkbox {
+  /* INNER-LAYOUT */
+  flex-direction: row;
+}
+
+.LinkEditSheet-label {
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(55, 65, 81);
+}
+
+.LinkEditSheet-input {
+  /* APPEARANCE */
+  border-style: solid;
+  border-color: rgb(209, 213, 219);
+  border-width: 1px;
+  border-radius: 0.5rem;
+  
+  /* INNER-LAYOUT */
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  
+  /* TEXT */
+  font-size: 1rem;
+  color: rgb(17, 24, 39);
+  
+  /* INTERACTIVITY */
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.LinkEditSheet-input:focus {
+  /* APPEARANCE */
+  border-color: rgb(239, 68, 68);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.LinkEditSheet-checkboxLabel {
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  
+  /* TEXT */
+  font-size: 0.875rem;
+  color: rgb(55, 65, 81);
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+}
+
+.LinkEditSheet-checkbox {
+  /* APPEARANCE */
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+}
+
+.LinkEditSheet-error {
+  /* TEXT */
+  font-size: 0.875rem;
+  color: rgb(239, 68, 68);
+  margin: 0;
+}
+
+.LinkEditSheet-buttons {
+  /* INNER-LAYOUT */
+  display: flex;
+  gap: 0.5rem;
+}
+
+.LinkEditSheet-button {
+  /* APPEARANCE */
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 0.5rem;
+  
+  /* INNER-LAYOUT */
+  flex: 1;
+  padding: 0.5rem 1rem;
+  
+  /* TEXT */
+  font-weight: 500;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+}
+
+.LinkEditSheet-button--cancel {
+  /* APPEARANCE */
+  background-color: white;
+  border-color: rgb(209, 213, 219);
+  
+  /* TEXT */
+  color: rgb(55, 65, 81);
+}
+
+.LinkEditSheet-button--cancel:hover {
+  /* APPEARANCE */
+  background-color: rgb(249, 250, 251);
+}
+
+.LinkEditSheet-button--save {
+  /* APPEARANCE */
+  background-color: rgb(239, 68, 68);
+  border-color: rgb(239, 68, 68);
+  
+  /* TEXT */
+  color: white;
+}
+
+.LinkEditSheet-button--save:hover {
+  /* APPEARANCE */
+  background-color: rgb(220, 38, 38);
+  border-color: rgb(220, 38, 38);
+}
+
+/* Text Style Sheet Styles */
+.TextStylesSheet-content,
+.FormattingSheet-content,
+.ListSheet-content,
+.InsertSheet-content {
+  /* APPEARANCE */
+  max-width: 400px;
+}
+
+.TextStylesSheet-handle,
+.FormattingSheet-handle,
+.ListSheet-handle,
+.InsertSheet-handle {
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
+}
+
+.TextStylesSheet-container,
+.FormattingSheet-container,
+.ListSheet-container,
+.InsertSheet-container {
+  /* INNER-LAYOUT */
+  padding: 1.5rem;
+}
+
+.TextStylesSheet-title,
+.FormattingSheet-title,
+.ListSheet-title,
+.InsertSheet-title {
+  /* TEXT */
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(17, 24, 39);
+  margin: 0 0 1rem 0;
+}
+
+.TextStylesSheet-options,
+.FormattingSheet-options,
+.ListSheet-options,
+.InsertSheet-options {
+  /* INNER-LAYOUT */
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.TextStylesSheet-option,
+.FormattingSheet-option,
+.ListSheet-option,
+.InsertSheet-option {
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 0.375rem;
+  
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  
+  /* TEXT */
+  font-size: 0.875rem;
+  color: rgb(55, 65, 81);
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.TextStylesSheet-option:hover,
+.FormattingSheet-option:hover,
+.ListSheet-option:hover,
+.InsertSheet-option:hover {
+  /* APPEARANCE */
+  background-color: rgb(249, 250, 251);
+}
+
+.TextStylesSheet-option--active,
+.FormattingSheet-option--active,
+.ListSheet-option--active,
+.InsertSheet-option--active {
+  /* APPEARANCE */
+  background-color: rgb(254, 226, 226);
+  
+  /* TEXT */
+  color: rgb(220, 38, 38);
+}
+
+/* Link Sheet Styles (deprecated, kept for backwards compatibility) */
+.LinkSheet-content {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr;
+}
+
+.LinkSheet-handle {
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
+}
+
+.LinkSheet-container {
+  /* INNER-LAYOUT */
+  padding: 1.5rem;
+}
+
+.LinkSheet-title {
+  /* TEXT */
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(17, 24, 39);
+  margin: 0 0 1rem 0;
+}
+
+.LinkSheet-form {
+  /* INNER-LAYOUT */
+  margin-bottom: 1rem;
+}
+
+.LinkSheet-label {
+  /* INNER-LAYOUT */
+  display: block;
+  margin-bottom: 0.5rem;
+  
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(55, 65, 81);
+}
+
+.LinkSheet-input {
+  /* APPEARANCE */
+  border-style: solid;
+  border-color: rgb(209, 213, 219);
+  border-width: 1px;
+  border-radius: 0.5rem;
+  
+  /* INNER-LAYOUT */
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  
+  /* TEXT */
+  font-size: 1rem;
+  color: rgb(17, 24, 39);
+  
+  /* INTERACTIVITY */
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.LinkSheet-input:focus {
+  /* APPEARANCE */
+  border-color: rgb(239, 68, 68);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.LinkSheet-error {
+  /* TEXT */
+  font-size: 0.875rem;
+  color: rgb(239, 68, 68);
+  margin: 0.25rem 0 0 0;
+}
+
+.LinkSheet-buttons {
+  /* INNER-LAYOUT */
+  display: flex;
+  gap: 0.5rem;
+}
+
+.LinkSheet-button {
+  /* APPEARANCE */
+  border-style: solid;
+  border-width: 1px;
+  border-radius: 0.5rem;
+  
+  /* INNER-LAYOUT */
+  flex: 1;
+  padding: 0.5rem 1rem;
+  
+  /* TEXT */
+  font-weight: 500;
+  
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: all 0.15s;
+  outline: none;
+}
+
+.LinkSheet-button--cancel {
+  /* APPEARANCE */
+  background-color: white;
+  border-color: rgb(209, 213, 219);
+  
+  /* TEXT */
+  color: rgb(55, 65, 81);
+}
+
+.LinkSheet-button--cancel:hover {
+  /* APPEARANCE */
+  background-color: rgb(249, 250, 251);
+}
+
+.LinkSheet-button--save {
+  /* APPEARANCE */
+  background-color: rgb(239, 68, 68);
+  border-color: rgb(239, 68, 68);
+  
+  /* TEXT */
+  color: white;
+}
+
+.LinkSheet-button--save:hover {
+  /* APPEARANCE */
+  background-color: rgb(220, 38, 38);
+  border-color: rgb(220, 38, 38);
+}
+

@@ -16,16 +16,23 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { useRouter } from "next/navigation";
 import CoverImageSelector from "@/components/create-event/cover-image-selector";
-import ImageSelectionModal from "@/components/create-event/image-selection-modal";
+import ImageSelectionSheet from "@/components/create-event/image-selection-sheet";
 import DatePickerSheet from "@/components/create-event/date-picker-sheet";
 import TimePickerSheet from "@/components/create-event/time-picker-sheet";
 import LocationSheet, {
   LocationData,
 } from "@/components/create-event/location-sheet";
-import DescriptionModal from "@/components/create-event/description-modal";
+import DescriptionSheet from "@/components/create-event/description-sheet";
 import DropdownMenu from "@/components/ui/dropdown-menu";
 import AttachmentSheet from "@/components/create-event/attachment-sheet";
 import EventCreatedModal from "@/components/create-event/event-created-modal";
+import TextStylesSheet from "@/components/create-event/text-styles-sheet";
+import MoreFormattingSheet from "@/components/create-event/more-formatting-sheet";
+import ListsSheet from "@/components/create-event/lists-sheet";
+import InsertElementsSheet from "@/components/create-event/insert-elements-sheet";
+import { LinkEditSheet } from "@/components/create-event/link-edit-sheet";
+import CapacitySettingSheet from "@/components/create-event/capacity-setting-sheet";
+import CapacityConfirmationSheet from "@/components/create-event/capacity-confirmation-sheet";
 import { getLocationDisplayName } from "@/lib/utils/location";
 import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
 import { useEventFormStore } from "@/lib/stores/event-form-store";
@@ -34,7 +41,7 @@ import {
   formatDateForDisplay,
   formatTimeForDisplay,
 } from "@/lib/utils/event-date";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 
 export default function CreatePage() {
   const router = useRouter();
@@ -91,6 +98,59 @@ export default function CreatePage() {
   const [showEndTimeModal, setShowEndTimeModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+
+  // Toolbar Sheet States
+  const [showTextStylesSheet, setShowTextStylesSheet] = useState(false);
+  const [showMoreFormattingSheet, setShowMoreFormattingSheet] = useState(false);
+  const [showListsSheet, setShowListsSheet] = useState(false);
+  const [showInsertElementsSheet, setShowInsertElementsSheet] = useState(false);
+  const [showLinkEditSheet, setShowLinkEditSheet] = useState(false);
+  const [showCapacitySettingSheet, setShowCapacitySettingSheet] = useState(false);
+  const [showCapacityConfirmationSheet, setShowCapacityConfirmationSheet] = useState(false);
+  const [currentEditor, setCurrentEditor] = useState<any>(null);
+  const [linkEditData, setLinkEditData] = useState<{
+    url: string;
+    text: string;
+    openInNewTab: boolean;
+  }>({ url: "", text: "", openInNewTab: false });
+
+  const handleSetLink = ({ url, text, openInNewTab }: { url: string; text: string; openInNewTab: boolean }) => {
+    if (!currentEditor) return;
+    
+    const { from, to } = currentEditor.state.selection;
+    const selectedText = currentEditor.state.doc.textBetween(from, to);
+    
+    if (selectedText) {
+      // If there's selected text, apply link to it
+      currentEditor
+        .chain()
+        .focus()
+        .extendMarkRange('link')
+        .setLink({ href: url, target: openInNewTab ? '_blank' : '' })
+        .run();
+    } else {
+      // If no text selected, insert text with link
+      currentEditor
+        .chain()
+        .focus()
+        .insertContent({
+          type: 'text',
+          text: text || url,
+          marks: [
+            {
+              type: 'link',
+              attrs: {
+                href: url,
+                target: openInNewTab ? '_blank' : ''
+              }
+            }
+          ]
+        })
+        .run();
+    }
+    
+    setShowLinkEditSheet(false);
+  };
 
   // Attachment Modal States
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
@@ -234,7 +294,7 @@ export default function CreatePage() {
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -255,7 +315,7 @@ export default function CreatePage() {
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm"
+                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -323,12 +383,27 @@ export default function CreatePage() {
               <Users className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-gray-500 text-sm font-medium">
-                  Set Capacity
-                </label>
+              <div className="flex items-center justify-between">
+                <div className="flex flex-col">
+                  <label className="text-gray-500 text-sm font-medium mb-1">
+                    {hasCapacity && capacity ? `Capacity ${capacity}` : "Set Capacity"}
+                  </label>
+                  {hasCapacity && capacity && (
+                    <span className="text-gray-400 text-xs">
+                      Maximum attendees: {capacity}
+                    </span>
+                  )}
+                </div>
                 <button
-                  onClick={() => setHasCapacity(!hasCapacity)}
+                  onClick={() => {
+                    if (hasCapacity) {
+                      // User is trying to turn off capacity
+                      setShowCapacityConfirmationSheet(true);
+                    } else {
+                      // User is trying to turn on capacity
+                      setShowCapacitySettingSheet(true);
+                    }
+                  }}
                   className={`w-12 h-6 rounded-full transition-colors ${
                     hasCapacity ? "bg-purple-500" : "bg-gray-300"
                   }`}
@@ -340,15 +415,6 @@ export default function CreatePage() {
                   ></div>
                 </button>
               </div>
-              {hasCapacity && (
-                <input
-                  type="number"
-                  placeholder="Maximum attendees"
-                  value={capacity}
-                  onChange={(e) => setCapacity(e.target.value)}
-                  className="w-full text-gray-900 font-medium bg-transparent border-none outline-none"
-                />
-              )}
             </div>
           </div>
         </div>
@@ -468,11 +534,67 @@ export default function CreatePage() {
           spotifyUrl={spotifyUrl}
           wavlakeUrl={wavlakeUrl}
         />
+
+        {/* Toolbar Mobile Sheets */}
+        {currentEditor && (
+          <>
+            <TextStylesSheet
+              isOpen={showTextStylesSheet}
+              onClose={() => setShowTextStylesSheet(false)}
+              editor={currentEditor}
+            />
+            <MoreFormattingSheet
+              isOpen={showMoreFormattingSheet}
+              onClose={() => setShowMoreFormattingSheet(false)}
+              editor={currentEditor}
+            />
+            <ListsSheet
+              isOpen={showListsSheet}
+              onClose={() => setShowListsSheet(false)}
+              editor={currentEditor}
+            />
+            <InsertElementsSheet
+              isOpen={showInsertElementsSheet}
+              onClose={() => setShowInsertElementsSheet(false)}
+              editor={currentEditor}
+            />
+            <LinkEditSheet
+              isOpen={showLinkEditSheet}
+              onClose={() => setShowLinkEditSheet(false)}
+              onSetLink={handleSetLink}
+              initialUrl={linkEditData.url}
+              initialText={linkEditData.text}
+              initialOpenInNewTab={linkEditData.openInNewTab}
+            />
+          </>
+        )}
+
+        {/* Capacity Sheets */}
+        <CapacitySettingSheet
+          isOpen={showCapacitySettingSheet}
+          onClose={() => setShowCapacitySettingSheet(false)}
+          onSave={(capacity) => {
+            setCapacity(capacity);
+            setHasCapacity(true);
+            setShowCapacitySettingSheet(false);
+          }}
+          initialCapacity={capacity}
+        />
+        <CapacityConfirmationSheet
+          isOpen={showCapacityConfirmationSheet}
+          onClose={() => setShowCapacityConfirmationSheet(false)}
+          onConfirm={() => {
+            setHasCapacity(false);
+            setCapacity("");
+            setShowCapacityConfirmationSheet(false);
+          }}
+          currentCapacity={capacity}
+        />
       </SheetStack.Root>
 
       {/* Other Modals */}
-      {/* Image Selection Modal */}
-      <ImageSelectionModal
+      {/* Image Selection Sheet */}
+      <ImageSelectionSheet
         isOpen={showImageModal}
         onClose={() => setShowImageModal(false)}
         onImageSelect={handleImageSelect}
@@ -486,12 +608,33 @@ export default function CreatePage() {
         selectedLocation={location || undefined}
       />
 
-      {/* Description Modal */}
-      <DescriptionModal
+      {/* Description Sheet */}
+      <DescriptionSheet
         isOpen={showDescriptionModal}
         onClose={() => setShowDescriptionModal(false)}
         onSave={setDescription}
         initialContent={description}
+        onOpenTextStylesSheet={(editor) => {
+          setCurrentEditor(editor);
+          setShowTextStylesSheet(true);
+        }}
+        onOpenMoreFormattingSheet={(editor) => {
+          setCurrentEditor(editor);
+          setShowMoreFormattingSheet(true);
+        }}
+        onOpenListsSheet={(editor) => {
+          setCurrentEditor(editor);
+          setShowListsSheet(true);
+        }}
+        onOpenInsertElementsSheet={(editor) => {
+          setCurrentEditor(editor);
+          setShowInsertElementsSheet(true);
+        }}
+        onOpenLinkEditSheet={(editor, linkData) => {
+          setCurrentEditor(editor);
+          setLinkEditData(linkData);
+          setShowLinkEditSheet(true);
+        }}
       />
 
       {/* Event Created Modal */}

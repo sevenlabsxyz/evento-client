@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 
 export default function SingleChatPage() {
   const router = useRouter();

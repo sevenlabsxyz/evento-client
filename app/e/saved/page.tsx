@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 
 export default function SavedListsPage() {
   const router = useRouter();

@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import { toast } from '@/lib/utils/toast';
 import apiClient from '@/lib/api/client';
 import { CreateEventData, createEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';

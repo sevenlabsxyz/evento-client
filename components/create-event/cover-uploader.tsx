@@ -3,7 +3,7 @@
 import { Loader2, UploadCloud } from "lucide-react";
 import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner";
+import { toast } from "@/lib/utils/toast";
 
 interface CoverUploaderProps {
   onCoverUploaded: (url: string) => void;

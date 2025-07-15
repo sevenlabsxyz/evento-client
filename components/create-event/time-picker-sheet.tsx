@@ -74,7 +74,8 @@ export default function TimePickerSheet({
       if (wheelRef.current) {
         const selectedIndex = values.indexOf(selectedValue);
         const itemHeight = 44; // Height of each item
-        const scrollTop = selectedIndex * itemHeight - itemHeight * 2; // Center the selected item
+        const containerHeight = 176; // h-44 = 176px
+        const scrollTop = (selectedIndex * itemHeight) - (containerHeight / 2) + (itemHeight / 2);
         wheelRef.current.scrollTop = Math.max(0, scrollTop);
       }
     }, [selectedValue, values]);
@@ -104,8 +105,11 @@ export default function TimePickerSheet({
               key={index}
               onClick={() => onValueChange(value)}
               className={`
-                w-full h-11 flex items-center justify-center text-lg font-medium
-                ${selectedValue === value ? "text-gray-900" : "text-gray-400"}
+                w-full h-11 flex items-center justify-center text-lg font-medium rounded-lg transition-colors
+                ${selectedValue === value 
+                  ? "text-gray-900 bg-gray-100 border border-gray-200" 
+                  : "text-gray-400 hover:text-gray-500"
+                }
               `}
               style={{ scrollSnapAlign: "center" }}
             >
@@ -189,13 +193,32 @@ export default function TimePickerSheet({
                     />
                   </div>
 
-                  {/* Period Wheel */}
-                  <div className="text-center">
-                    <ScrollWheel
-                      values={periods}
-                      selectedValue={period}
-                      onValueChange={setPeriod}
-                    />
+                  {/* AM/PM Toggle Buttons */}
+                  <div className="flex flex-col gap-2 items-center justify-center h-44">
+                    <button
+                      onClick={() => setPeriod("AM")}
+                      className={`
+                        w-16 h-10 rounded-lg font-medium text-lg transition-colors border
+                        ${period === "AM" 
+                          ? "bg-gray-100 border-gray-300 text-gray-900" 
+                          : "bg-transparent border-gray-200 text-gray-400"
+                        }
+                      `}
+                    >
+                      AM
+                    </button>
+                    <button
+                      onClick={() => setPeriod("PM")}
+                      className={`
+                        w-16 h-10 rounded-lg font-medium text-lg transition-colors border
+                        ${period === "PM" 
+                          ? "bg-gray-100 border-gray-300 text-gray-900" 
+                          : "bg-transparent border-gray-200 text-gray-400"
+                        }
+                      `}
+                    >
+                      PM
+                    </button>
                   </div>
                 </div>
               </div>
