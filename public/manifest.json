@@ -1,7 +1,7 @@
 {
-  "name": "Evento Travel App",
+  "name": "Evento",
   "short_name": "Evento",
-  "description": "Discover and create amazing travel events",
+  "description": "Events made social",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

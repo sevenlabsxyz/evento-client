@@ -8,12 +8,10 @@ import { Providers } from "./providers"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Evento - Travel Itinerary App",
-  description: "Plan and organize your travel events",
+  title: "Evento - Events made social",
+  description: "Create, manage and oversee events and communities",
   generator: 'v0.dev',
   manifest: "/manifest.json",
-  themeColor: "#0078d7",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -22,6 +20,14 @@ export const metadata: Metadata = {
   icons: {
     apple: "/assets/pwa/icon@512px.png"
   }
+}
+
+export const viewport = {
+  themeColor: "#0078d7",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export default function RootLayout({
