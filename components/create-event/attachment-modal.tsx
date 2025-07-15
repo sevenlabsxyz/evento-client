@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { X, Music, Camera, File, Link, Headphones } from "lucide-react";
+import { X, Camera, File, Link } from "lucide-react";
+import { SpotifySVGImage } from "@/components/icons/spotify";
+import { WavlakeSVGImage } from "@/components/icons/wavlake";
 
 interface AttachmentModalProps {
   isOpen: boolean;
@@ -22,14 +24,14 @@ export default function AttachmentModal({
     {
       type: "spotify" as const,
       label: "Add Spotify",
-      icon: <Music className="w-6 h-6" />,
-      description: "Add a Spotify playlist",
+      icon: <SpotifySVGImage className="w-6 h-6" />,
+      description: "Add Spotify track or playlist",
     },
     {
       type: "wavlake" as const,
       label: "Add Wavlake",
-      icon: <Headphones className="w-6 h-6" />,
-      description: "Add a Wavlake playlist",
+      icon: <WavlakeSVGImage className="w-6 h-6" />,
+      description: "Add Wavlake track or playlist",
     },
     {
       type: "photo" as const,

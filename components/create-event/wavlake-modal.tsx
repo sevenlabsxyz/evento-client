@@ -66,7 +66,7 @@ export default function WavlakeModal({
       <div className="relative bg-white rounded-3xl w-full md:max-w-sm mx-2 md:mx-4 shadow-2xl p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Add Wavlake Playlist</h2>
+          <h2 className="text-xl font-semibold">Add Wavlake Track or Playlist</h2>
           <button
             onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-full"
@@ -88,12 +88,12 @@ export default function WavlakeModal({
                 setUrl(e.target.value);
                 setError("");
               }}
-              placeholder="https://wavlake.com/..."
+              placeholder="https://wavlake.com/track/... or /playlist/..."
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
             />
             {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
             <p className="mt-2 text-xs text-gray-500">
-              Paste a link to any Wavlake playlist
+              Paste a link to any Wavlake track or playlist
             </p>
           </div>
         </div>

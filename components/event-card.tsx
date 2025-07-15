@@ -29,9 +29,16 @@ interface EventCardProps {
   isBookmarked?: boolean;
 }
 
-export function EventCard({ event, onBookmark, isBookmarked = false }: EventCardProps) {
+export function EventCard({
+  event,
+  onBookmark,
+  isBookmarked = false,
+}: EventCardProps) {
   const router = useRouter();
-  const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
+  const { date, timeWithTz } = formatEventDate(
+    event.computed_start_date,
+    event.timezone
+  );
   const timeAgo = getRelativeTime(event.created_at);
 
   const getDropdownItems = (eventId: string, userName: string) => [
@@ -100,7 +107,10 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           }
-          items={getDropdownItems(event.id, event.user_details.name || event.user_details.username)}
+          items={getDropdownItems(
+            event.id,
+            event.user_details.name || event.user_details.username
+          )}
           align="right"
           width="w-56"
         />
@@ -109,7 +119,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
       {/* Event Image - Square aspect ratio */}
       <div className="relative">
         <img
-          src={getOptimizedCoverUrl(event.cover || "", 'feed')}
+          src={getOptimizedCoverUrl(event.cover || "", "feed")}
           alt={event.title}
           className="w-full aspect-square object-cover cursor-pointer"
           onClick={handleEventClick}
@@ -118,15 +128,15 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
 
       {/* Event Details */}
       <div className="px-4 py-3">
-        <h3 
-          className="font-bold text-lg mb-2 cursor-pointer hover:text-red-600 transition-colors"
+        <h3
+          className="font-semibold text-lg mb-2 cursor-pointer hover:text-red-600 transition-colors"
           onClick={handleEventClick}
         >
           {event.title}
         </h3>
 
         {/* Date, Time, Location */}
-        <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
+        <div className="flex items-center gap-4 text-base text-gray-500 mb-3">
           <div className="flex items-center gap-1">
             <Calendar className="h-4 w-4" />
             <span>{date}</span>
@@ -184,9 +194,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
           >
             <Bookmark
               className={`h-5 w-5 ${
-                isBookmarked
-                  ? "fill-current text-red-600"
-                  : ""
+                isBookmarked ? "fill-current text-red-600" : ""
               }`}
             />
           </Button>

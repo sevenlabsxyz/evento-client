@@ -16,6 +16,9 @@ import EventHost from '@/components/event-detail/event-host';
 import EventGuestList from '@/components/event-detail/event-guest-list';
 import EventDescription from '@/components/event-detail/event-description';
 import ImageLightbox from '@/components/event-detail/image-lightbox';
+import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
+import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
+import { debugLog } from '@/lib/utils/debug';
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -30,6 +33,26 @@ export default function EventDetailPage() {
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
   const { data: hostsData = [], isLoading: hostsLoading } = useEventHosts(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
+  
+  // Debug logging
+  debugLog('EventDetailPage', 'Component render', {
+    eventId,
+    hasEventData: !!eventData,
+    eventLoading,
+    hasEventError: !!eventError,
+    hostsDataLength: hostsData.length,
+    galleryDataLength: galleryData.length
+  });
+  
+  if (eventData) {
+    debugLog('EventDetailPage', 'Event data structure', {
+      keys: Object.keys(eventData),
+      title: eventData.title,
+      has_start_date_day: 'start_date_day' in eventData,
+      has_date: 'date' in eventData,
+      has_time: 'time' in eventData
+    });
+  }
   
   // Transform API data to display format
   const event = eventData ? transformApiEventToDisplay(eventData, hostsData, galleryData) : null;
@@ -134,6 +157,20 @@ export default function EventDetailPage() {
               setShowLightbox(true);
             }}
           />
+          
+          {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
+          {(eventData?.spotify_url || eventData?.wavlake_url) && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold text-gray-900">Music</h3>
+              {eventData.spotify_url && (
+                <EventSpotifyEmbed link={eventData.spotify_url} />
+              )}
+              {eventData.wavlake_url && (
+                <WavlakeEmbed link={eventData.wavlake_url} />
+              )}
+            </div>
+          )}
+          
           <EventDescription event={event} />
         </div>
       </div>

@@ -1,7 +1,16 @@
 "use client";
 
-import { useState } from "react";
-import { X, Calendar, Edit3, Music, MapPin, Globe, Users, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import {
+  X,
+  Calendar,
+  Edit3,
+  Music,
+  MapPin,
+  Globe,
+  Users,
+  ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { useRouter } from "next/navigation";
@@ -10,7 +19,9 @@ import ImageSelectionModal from "@/components/create-event/image-selection-modal
 import DatePickerModal from "@/components/create-event/date-picker-modal";
 import TimePickerModal from "@/components/create-event/time-picker-modal";
 import TimezoneModal from "@/components/create-event/timezone-modal";
-import LocationModal, { LocationData } from "@/components/create-event/location-modal";
+import LocationModal, {
+  LocationData,
+} from "@/components/create-event/location-modal";
 import DescriptionModal from "@/components/create-event/description-modal";
 import DropdownMenu from "@/components/ui/dropdown-menu";
 import AttachmentModal from "@/components/create-event/attachment-modal";
@@ -18,34 +29,63 @@ import SpotifyModal from "@/components/create-event/spotify-modal";
 import WavlakeModal from "@/components/create-event/wavlake-modal";
 import LinkModal from "@/components/create-event/link-modal";
 import EventCreatedModal from "@/components/create-event/event-created-modal";
-import { getLocationDisplayName, locationDataToEventLocation } from "@/lib/utils/location";
+import { getLocationDisplayName } from "@/lib/utils/location";
 import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
+import { useEventFormStore } from "@/lib/stores/event-form-store";
+import { useCreateEventWithCallbacks } from "@/lib/hooks/useCreateEvent";
+import {
+  formatDateForDisplay,
+  formatTimeForDisplay,
+} from "@/lib/utils/event-date";
+import { toast } from "sonner";
 
 export default function CreatePage() {
   const router = useRouter();
-  const [selectedCoverImage, setSelectedCoverImage] = useState<string>("");
-  const [showImageModal, setShowImageModal] = useState(false);
-  const [eventVisibility, setEventVisibility] = useState("public");
-  const [hasCapacity, setHasCapacity] = useState(false);
-  const [capacity, setCapacity] = useState("");
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventLocation, setEventLocation] = useState<LocationData | null>(null);
-  const [eventDescription, setEventDescription] = useState("<p></p>");
+  const createEventMutation = useCreateEventWithCallbacks();
 
-  // Date and Time States
-  const [startDate, setStartDate] = useState<Date>(new Date(2025, 8, 9)); // Sep 09
-  const [endDate, setEndDate] = useState<Date>(new Date(2025, 8, 11)); // Sep 11
-  const [startTime, setStartTime] = useState({
-    hour: 9,
-    minute: 0,
-    period: "AM" as "AM" | "PM",
-  });
-  const [endTime, setEndTime] = useState({
-    hour: 5,
-    minute: 0,
-    period: "PM" as "AM" | "PM",
-  });
-  const [timezone, setTimezone] = useState("America/Los_Angeles");
+  // Get state and actions from Zustand store
+  const {
+    title,
+    description,
+    coverImage,
+    location,
+    startDate,
+    endDate,
+    startTime,
+    endTime,
+    timezone,
+    visibility,
+    hasCapacity,
+    capacity,
+    spotifyUrl,
+    wavlakeUrl,
+    attachments,
+    setTitle,
+    setDescription,
+    setCoverImage,
+    setLocation,
+    setStartDate,
+    setEndDate,
+    setStartTime,
+    setEndTime,
+    setTimezone,
+    setVisibility,
+    setHasCapacity,
+    setCapacity,
+    setSpotifyUrl,
+    setWavlakeUrl,
+    setAttachments,
+    getFormData,
+    reset,
+    isValid,
+  } = useEventFormStore();
+
+  // Reset form on mount
+  useEffect(() => {
+    reset();
+  }, [reset]);
+
+  const [showImageModal, setShowImageModal] = useState(false);
 
   // Modal States
   const [showStartDateModal, setShowStartDateModal] = useState(false);
@@ -61,32 +101,11 @@ export default function CreatePage() {
   const [showSpotifyModal, setShowSpotifyModal] = useState(false);
   const [showWavlakeModal, setShowWavlakeModal] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
-  const [attachments, setAttachments] = useState<
-    Array<{ type: string; url?: string; data?: any }>
-  >([]);
   const [showCreatedModal, setShowCreatedModal] = useState(false);
   const [createdEventData, setCreatedEventData] = useState<any>(null);
 
   const handleImageSelect = (imageUrl: string) => {
-    setSelectedCoverImage(imageUrl);
-  };
-
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("en-US", {
-      weekday: "short",
-      month: "short",
-      day: "2-digit",
-    });
-  };
-
-  const formatTime = (time: {
-    hour: number;
-    minute: number;
-    period: "AM" | "PM";
-  }) => {
-    return `${time.hour.toString().padStart(2, "0")}:${time.minute
-      .toString()
-      .padStart(2, "0")} ${time.period}`;
+    setCoverImage(imageUrl);
   };
 
   const handleAttachmentType = (
@@ -131,58 +150,43 @@ export default function CreatePage() {
   };
 
   const handleSaveAttachment = (type: string, url: string) => {
-    setAttachments((prev) => [...prev, { type, url }]);
+    if (type === "spotify") {
+      setSpotifyUrl(url);
+    } else if (type === "wavlake") {
+      setWavlakeUrl(url);
+    }
+    setAttachments([...attachments, { type, url }]);
   };
 
-  const handleCreateEvent = () => {
-    console.log('Create event button clicked');
-    console.log('Form valid:', isFormValid);
-    console.log('Event title:', eventTitle);
-    console.log('Event location:', eventLocation);
-    
-    if (!isFormValid) {
-      console.log('Form validation failed, returning early');
+  const handleCreateEvent = async () => {
+    if (!isValid()) {
       return;
     }
 
-    // Generate a unique event ID (in a real app, this would come from the backend)
-    const eventId = 'evt_' + Math.random().toString(36).substr(2, 9);
-    
-    const newEvent = {
-      id: eventId,
-      title: eventTitle,
-      description: eventDescription,
-      startDate,
-      endDate,
-      startTime,
-      endTime,
-      timezone,
-      location: eventLocation ? locationDataToEventLocation(eventLocation) : null,
-      visibility: eventVisibility,
-      capacity: hasCapacity ? parseInt(capacity) : null,
-      attachments,
-      coverImage: selectedCoverImage,
-      createdAt: new Date(),
-      owner: 'current-user-id' // In a real app, this would be the actual user ID
-    };
+    try {
+      const formData = getFormData();
+      const result = await createEventMutation.mutateAsync(formData);
 
-    // In a real app, you would save this to your backend
-    console.log('Creating event:', newEvent);
-    
-    // Store for the success modal
-    setCreatedEventData({
-      id: eventId,
-      title: eventTitle,
-      date: startDate,
-      time: startTime
-    });
-    
-    // Show success modal
-    setShowCreatedModal(true);
+      // Prepare data for success modal
+      setCreatedEventData({
+        id: result.id,
+        title: result.title,
+        date: startDate,
+        time: startTime,
+      });
+
+      // Show success modal
+      setShowCreatedModal(true);
+      toast.success("Event created successfully!");
+    } catch (error: any) {
+      // Error handling
+      console.error("Failed to create event:", error);
+      toast.error(error.message || "Failed to create event");
+    }
   };
 
   // Check if all required fields are filled
-  const isFormValid = eventTitle.trim() !== "" && eventLocation !== null;
+  const isFormValid = isValid();
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
@@ -203,9 +207,9 @@ export default function CreatePage() {
       />
 
       {/* Cover Image Selector */}
-      <div className="px-4 mb-4">
+      <div className="px-4 mb-2 mt-2">
         <CoverImageSelector
-          selectedImage={selectedCoverImage}
+          selectedImage={coverImage}
           onImageClick={() => setShowImageModal(true)}
         />
       </div>
@@ -221,8 +225,8 @@ export default function CreatePage() {
             <input
               type="text"
               placeholder="Enter event name"
-              value={eventTitle}
-              onChange={(e) => setEventTitle(e.target.value)}
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               className="w-full text-gray-900 font-medium bg-transparent border-none outline-none text-lg"
             />
           </div>
@@ -240,15 +244,13 @@ export default function CreatePage() {
                 onClick={() => setShowStartDateModal(true)}
                 className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1"
               >
-                {formatDate(startDate)}
+                {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
                 className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm"
               >
-                {startTime.hour && startTime.minute !== undefined
-                  ? formatTime(startTime)
-                  : "Time"}
+                {formatTimeForDisplay(startTime)}
               </button>
             </div>
           </div>
@@ -263,15 +265,13 @@ export default function CreatePage() {
                 onClick={() => setShowEndDateModal(true)}
                 className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1"
               >
-                {formatDate(endDate)}
+                {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
                 className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm"
               >
-                {endTime.hour && endTime.minute !== undefined
-                  ? formatTime(endTime)
-                  : "Time"}
+                {formatTimeForDisplay(endTime)}
               </button>
             </div>
           </div>
@@ -291,8 +291,14 @@ export default function CreatePage() {
                 Address
               </label>
               <div className="flex items-center justify-between">
-                <span className={`font-medium ${eventLocation ? 'text-gray-900' : 'text-gray-400'}`}>
-                  {eventLocation ? getLocationDisplayName(eventLocation) : 'Choose address'}
+                <span
+                  className={`font-medium ${
+                    location ? "text-gray-900" : "text-gray-400"
+                  }`}
+                >
+                  {location
+                    ? getLocationDisplayName(location)
+                    : "Choose address"}
                 </span>
                 <ChevronRight className="h-4 w-4 text-gray-400" />
               </div>
@@ -315,8 +321,10 @@ export default function CreatePage() {
                   { value: "public", label: "Public" },
                   { value: "private", label: "Private" },
                 ]}
-                value={eventVisibility}
-                onChange={setEventVisibility}
+                value={visibility}
+                onChange={(value) =>
+                  setVisibility(value as "public" | "private")
+                }
               />
             </div>
           </div>
@@ -373,11 +381,16 @@ export default function CreatePage() {
                 Description
               </label>
               <div className="flex items-center justify-between">
-                <span className={`${isContentEmpty(eventDescription) ? 'text-gray-400' : 'text-gray-900'}`}>
-                  {isContentEmpty(eventDescription) 
-                    ? 'Add description about this event...' 
-                    : getContentPreview(eventDescription, 80)
-                  }
+                <span
+                  className={`${
+                    isContentEmpty(description)
+                      ? "text-gray-400"
+                      : "text-gray-900"
+                  }`}
+                >
+                  {isContentEmpty(description)
+                    ? "Add description about this event..."
+                    : getContentPreview(description, 80)}
                 </span>
                 <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
               </div>
@@ -413,9 +426,9 @@ export default function CreatePage() {
                 ? "bg-red-500 hover:bg-red-600 text-white"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
-            disabled={!isFormValid}
+            disabled={!isFormValid || createEventMutation.isPending}
           >
-            Create Event
+            {createEventMutation.isPending ? "Creating..." : "Create Event"}
           </Button>
         </div>
       </div>
@@ -503,28 +516,31 @@ export default function CreatePage() {
         onClose={() => setShowLinkModal(false)}
         onSave={(url) => handleSaveAttachment("link", url)}
       />
-      
+
       {/* Location Modal */}
       <LocationModal
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
-        onLocationSelect={setEventLocation}
-        selectedLocation={eventLocation || undefined}
+        onLocationSelect={setLocation}
+        selectedLocation={location || undefined}
       />
-      
+
       {/* Description Modal */}
       <DescriptionModal
         isOpen={showDescriptionModal}
         onClose={() => setShowDescriptionModal(false)}
-        onSave={setEventDescription}
-        initialContent={eventDescription}
+        onSave={setDescription}
+        initialContent={description}
       />
-      
+
       {/* Event Created Modal */}
       {createdEventData && (
         <EventCreatedModal
           isOpen={showCreatedModal}
-          onClose={() => setShowCreatedModal(false)}
+          onClose={() => {
+            setShowCreatedModal(false);
+            reset(); // Reset form after closing modal
+          }}
           eventData={createdEventData}
         />
       )}

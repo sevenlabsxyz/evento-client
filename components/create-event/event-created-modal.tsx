@@ -33,12 +33,12 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
 
   const handleViewEvent = () => {
     onClose();
-    router.push(`/e/event/${eventData.id}`);
+    router.push(`/e/${eventData.id}`);
   };
 
   const handleInviteGuests = () => {
     onClose();
-    router.push(`/e/event/${eventData.id}/invite`);
+    router.push(`/e/${eventData.id}/invite`);
   };
 
   return (

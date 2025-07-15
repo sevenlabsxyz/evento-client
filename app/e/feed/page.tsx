@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  Search,
-  Check,
-  Bookmark,
-} from "lucide-react";
+import { Search, Check, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/page-header";
 import { Navbar } from "@/components/navbar";
@@ -121,10 +117,7 @@ export default function FeedPage() {
             <p className="text-gray-500 text-center mb-4">
               Failed to load events. Please try again.
             </p>
-            <Button 
-              onClick={() => window.location.reload()} 
-              variant="outline"
-            >
+            <Button onClick={() => window.location.reload()} variant="outline">
               Retry
             </Button>
           </div>

@@ -14,7 +14,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   const [hideGuestList, setHideGuestList] = useState(false);
 
   const handleInvite = () => {
-    router.push(`/e/event/${eventId}/invite`);
+    router.push(`/e/${eventId}/invite`);
   };
 
   const handleChat = () => {
@@ -22,29 +22,29 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   };
 
   const handleManage = () => {
-    router.push(`/e/event/${eventId}/manage`);
+    router.push(`/e/${eventId}/manage`);
   };
 
   const handleEmailBlasts = () => {
-    router.push(`/e/event/${eventId}/manage`);
+    router.push(`/e/${eventId}/manage`);
   };
 
   const handleGallerySettings = () => {
-    router.push(`/e/event/${eventId}/gallery`);
+    router.push(`/e/${eventId}/gallery`);
   };
 
   const handleToggleGuestList = () => {
     setHideGuestList(!hideGuestList);
-    router.push(`/e/event/${eventId}/manage/guests`);
+    router.push(`/e/${eventId}/manage/guests`);
   };
 
   const handleEventLink = () => {
-    const eventUrl = `${window.location.origin}/e/event/${eventId}`;
+    const eventUrl = `${window.location.origin}/e/${eventId}`;
     alert(`Event link: ${eventUrl}`);
   };
 
   const handleCopyEventLink = () => {
-    const eventUrl = `${window.location.origin}/e/event/${eventId}`;
+    const eventUrl = `${window.location.origin}/e/${eventId}`;
     navigator.clipboard.writeText(eventUrl);
     alert('Event link copied to clipboard!');
   };

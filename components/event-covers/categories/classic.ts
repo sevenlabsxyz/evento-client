@@ -1,0 +1,31 @@
+const basePath = "/eventos/default-covers";
+const category = "classic";
+
+export const CLASSIC_COVERS = [
+  { url: `${basePath}/${category}/1.jpg` },
+  { url: `${basePath}/${category}/2.jpg` },
+  { url: `${basePath}/${category}/3.jpg` },
+  { url: `${basePath}/${category}/4.jpg` },
+  { url: `${basePath}/${category}/5.jpg` },
+  { url: `${basePath}/${category}/6.jpg` },
+  { url: `${basePath}/${category}/7.jpg` },
+  { url: `${basePath}/${category}/8.jpg` },
+  { url: `${basePath}/${category}/9.jpg` },
+  { url: `${basePath}/${category}/10.jpg` },
+  { url: `${basePath}/${category}/11.jpg` },
+  { url: `${basePath}/${category}/12.jpg` },
+  { url: `${basePath}/${category}/13.jpg` },
+  { url: `${basePath}/${category}/14.jpg` },
+  { url: `${basePath}/${category}/15.jpg` },
+  { url: `${basePath}/${category}/16.jpg` },
+  { url: `${basePath}/${category}/17.jpg` },
+  { url: `${basePath}/${category}/18.jpg` },
+  { url: `${basePath}/${category}/19.png` },
+  { url: `${basePath}/${category}/20.png` },
+  { url: `${basePath}/${category}/21.png` },
+  { url: `${basePath}/${category}/22.png` },
+  { url: `${basePath}/${category}/23.jpg` },
+  { url: `${basePath}/${category}/24.jpg` },
+  { url: `${basePath}/${category}/25.jpg` },
+  { url: `${basePath}/${category}/26.jpg` },
+];

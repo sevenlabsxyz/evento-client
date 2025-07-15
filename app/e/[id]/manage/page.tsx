@@ -24,7 +24,7 @@ export default function ManageEventPage() {
       icon: <FileText className="w-6 h-6" />,
       iconBg: 'bg-gray-100',
       iconColor: 'text-gray-600',
-      route: `/e/event/${eventId}/manage/details`
+      route: `/e/${eventId}/manage/details`
     },
     {
       id: 'guest-list',
@@ -33,7 +33,7 @@ export default function ManageEventPage() {
       icon: <Users className="w-6 h-6" />,
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
-      route: `/e/event/${eventId}/manage/guests`
+      route: `/e/${eventId}/manage/guests`
     },
     {
       id: 'hosts',
@@ -42,7 +42,7 @@ export default function ManageEventPage() {
       icon: <Share2 className="w-6 h-6" />,
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
-      route: `/e/event/${eventId}/manage/hosts`
+      route: `/e/${eventId}/manage/hosts`
     },
     {
       id: 'music',
@@ -51,7 +51,7 @@ export default function ManageEventPage() {
       icon: <Music className="w-6 h-6" />,
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
-      route: `/e/event/${eventId}/manage/music`
+      route: `/e/${eventId}/manage/music`
     },
     {
       id: 'contributions',
@@ -60,7 +60,7 @@ export default function ManageEventPage() {
       icon: <DollarSign className="w-6 h-6" />,
       iconBg: 'bg-green-100',
       iconColor: 'text-green-600',
-      route: `/e/event/${eventId}/manage/contributions`
+      route: `/e/${eventId}/manage/contributions`
     },
     {
       id: 'registration-questions',
@@ -69,7 +69,7 @@ export default function ManageEventPage() {
       icon: <HelpCircle className="w-6 h-6" />,
       iconBg: 'bg-purple-100',
       iconColor: 'text-purple-600',
-      route: `/e/event/${eventId}/manage/registration`
+      route: `/e/${eventId}/manage/registration`
     }
   ];
 
