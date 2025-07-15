@@ -497,6 +497,8 @@ export default function CreatePage() {
         isOpen={showAttachmentModal}
         onClose={() => setShowAttachmentModal(false)}
         onSelectType={handleAttachmentType}
+        spotifyUrl={spotifyUrl}
+        wavlakeUrl={wavlakeUrl}
       />
 
       <SpotifyModal
