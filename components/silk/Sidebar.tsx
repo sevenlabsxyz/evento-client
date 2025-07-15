@@ -5,6 +5,7 @@ import { useSidebar } from '@/lib/stores/sidebar-store'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/useAuth'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export function Sidebar() {
   const { isOpen, closeSidebar } = useSidebar()
@@ -16,8 +17,12 @@ export function Sidebar() {
     closeSidebar()
   }
 
-  const handleNavigation = (path: string) => {
-    router.push(path)
+  const handleNavigation = (path: string, isExternal?: boolean) => {
+    if (isExternal) {
+      window.open(path, '_blank')
+    } else {
+      router.push(path)
+    }
     handleClose()
   }
 
@@ -26,13 +31,13 @@ export function Sidebar() {
     handleClose()
   }
 
-  // Menu sections matching the example
+  // Menu sections
   const menuSections = [
     {
-      title: 'Dashboard',
+      title: 'Menu',
       items: [
         {
-          name: 'Overview',
+          name: 'Hub',
           path: '/',
           icon: (
             <svg
@@ -53,8 +58,8 @@ export function Sidebar() {
           ),
         },
         {
-          name: 'Analytics',
-          path: '/e/stats',
+          name: 'Chat',
+          path: '/e/messages',
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -67,18 +72,14 @@ export function Sidebar() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M12 16v5" />
-              <path d="M16 14v7" />
-              <path d="M20 10v11" />
-              <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15" />
-              <path d="M4 18v3" />
-              <path d="M8 14v7" />
+              <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z" />
+              <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
             </svg>
           ),
         },
         {
-          name: 'Recent Activity',
-          path: '/e/feed',
+          name: 'Activity',
+          path: '/e/notifications',
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -91,9 +92,8 @@ export function Sidebar() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <path d="M4 11a9 9 0 0 1 9 9" />
-              <path d="M4 4a16 16 0 0 1 16 16" />
-              <circle cx="5" cy="19" r="1" />
+              <path d="M10.268 21a2 2 0 0 0 3.464 0" />
+              <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
             </svg>
           ),
         },
@@ -103,8 +103,8 @@ export function Sidebar() {
       title: 'Events',
       items: [
         {
-          name: 'All Events',
-          path: '/e/search',
+          name: 'Create Event',
+          path: '/e/create',
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -117,30 +117,9 @@ export function Sidebar() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <rect width="7" height="7" x="3" y="3" rx="1" />
-              <rect width="7" height="7" x="14" y="3" rx="1" />
-              <rect width="7" height="7" x="14" y="14" rx="1" />
-              <rect width="7" height="7" x="3" y="14" rx="1" />
-            </svg>
-          ),
-        },
-        {
-          name: 'My Events',
-          path: '/e/me',
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" />
-              <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M8 12h8" />
+              <path d="M12 8v8" />
             </svg>
           ),
         },
@@ -165,79 +144,13 @@ export function Sidebar() {
             </svg>
           ),
         },
-        {
-          name: 'Create New Event',
-          path: '/e/create',
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect width="18" height="18" x="3" y="3" rx="2" />
-              <path d="M8 12h8" />
-              <path d="M12 8v8" />
-            </svg>
-          ),
-        },
       ],
     },
     {
-      title: 'Communication',
+      title: 'Account',
       items: [
         {
-          name: 'Messages',
-          path: '/e/messages',
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M14 9a2 2 0 0 1-2 2H6l-4 4V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2z" />
-              <path d="M18 9h2a2 2 0 0 1 2 2v11l-4-4h-6a2 2 0 0 1-2-2v-1" />
-            </svg>
-          ),
-        },
-        {
-          name: 'Notifications',
-          path: '/e/notifications',
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M10.268 21a2 2 0 0 0 3.464 0" />
-              <path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326" />
-            </svg>
-          ),
-        },
-      ],
-    },
-    {
-      title: 'Settings',
-      items: [
-        {
-          name: 'Account Settings',
+          name: 'Settings',
           path: '/e/settings',
           icon: (
             <svg
@@ -262,27 +175,6 @@ export function Sidebar() {
               <path d="m16.8 12.3-.4-1" />
               <path d="m14.3 16.6 1-.4" />
               <path d="m20.7 13.8 1-.4" />
-            </svg>
-          ),
-        },
-        {
-          name: 'Profile Settings',
-          path: '/e/me',
-          icon: (
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.1"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M18 20a6 6 0 0 0-12 0" />
-              <circle cx="12" cy="10" r="4" />
-              <circle cx="12" cy="12" r="10" />
             </svg>
           ),
         },
@@ -334,6 +226,54 @@ export function Sidebar() {
         },
       ],
     },
+    {
+      title: 'Evento',
+      items: [
+        {
+          name: 'Blog',
+          path: '/blog',
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a2.5 2.5 0 0 1 0-5H20" />
+              <path d="M8 11h8" />
+              <path d="M8 7h6" />
+            </svg>
+          ),
+        },
+        {
+          name: 'Store',
+          path: 'https://store.evento.so',
+          icon: (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.1"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+              <path d="M3 6h18" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+          ),
+          isExternal: true,
+        },
+      ],
+    },
   ]
 
   return (
@@ -341,60 +281,65 @@ export function Sidebar() {
       {/* Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-50 transition-opacity"
+          className="fixed inset-0 bg-black bg-opacity-60 z-50 transition-opacity"
           onClick={handleClose}
         />
       )}
       
       {/* Sidebar */}
       <div
-        className={`fixed left-0 top-0 h-full bg-white z-50 transform transition-transform shadow-xl ${
+        className={`fixed left-0 top-0 h-full z-50 transform transition-all duration-300 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
-        style={{ width: 'min(90vw, 325px)' }}
+        style={{ 
+          width: 'min(90vw, 325px)',
+          backgroundColor: '#0f0f0f',
+          boxShadow: isOpen ? '2px 0 12px rgba(0, 0, 0, 0.2)' : 'none',
+          transition: 'transform 300ms, box-shadow 300ms'
+        }}
       >
         <div className="flex flex-col h-full">
           {/* Header with user info */}
           <div 
-            className="border-t border-b" 
             style={{ 
-              backgroundColor: 'rgb(245, 245, 245)',
-              borderColor: 'rgb(212, 212, 212)',
+              backgroundColor: '#1a1a1a',
+              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
               padding: '1.5rem',
               paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)'
             }}
           >
             <div className="grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5">
-              {/* User avatar or illustration */}
-              <div 
-                className="row-span-2 w-[50px] h-[50px] rounded-xl border"
-                style={{
-                  backgroundImage: `conic-gradient(
-                    from -140deg at 100% 100%,
-                    rgba(36, 239, 215, 1),
-                    rgba(179, 250, 241, 1) 120deg,
-                    rgba(36, 239, 215, 1)
-                  )`,
-                  borderColor: 'rgba(0, 0, 0, 0.05)'
-                }}
-              />
-              <div className="text-xl font-bold" style={{ color: 'rgb(31, 41, 55)' }}>
+              {/* User avatar */}
+              <Avatar className="row-span-2 w-[50px] h-[50px] border border-white/10">
+                <AvatarImage 
+                  src={user?.image || ''} 
+                  alt={user?.name || user?.username || 'User'} 
+                />
+                <AvatarFallback className="bg-gradient-to-br from-cyan-400 via-cyan-300 to-cyan-400 text-black font-semibold">
+                  {user?.name
+                    ? user.name.charAt(0).toUpperCase()
+                    : user?.username
+                    ? user.username.charAt(0).toUpperCase()
+                    : 'U'}
+                </AvatarFallback>
+              </Avatar>
+              <div className="text-xl font-bold text-white">
                 {user?.name || 'Evento'}
               </div>
-              <div className="text-sm" style={{ color: 'rgb(107, 114, 128)' }}>
-                {user?.email || 'Welcome to Evento'}
+              <div className="text-sm text-gray-400">
+                {user?.username ? `@${user.username}` : 'Welcome to Evento'}
               </div>
             </div>
           </div>
 
           {/* Scrollable menu sections */}
-          <div className="flex-1 overflow-y-auto" style={{ padding: '1.5rem' }}>
+          <div className="flex-1 overflow-y-auto" style={{ padding: '1.5rem', backgroundColor: '#0f0f0f' }}>
             <div className="grid gap-10">
               {menuSections.map((section) => (
                 <div key={section.title} className="grid gap-6">
                   <h3 
                     className="m-0 text-sm font-semibold uppercase"
-                    style={{ color: 'rgb(156, 163, 175)' }}
+                    style={{ color: 'rgba(255, 255, 255, 0.5)' }}
                   >
                     {section.title}
                   </h3>
@@ -402,9 +347,9 @@ export function Sidebar() {
                     {section.items.map((item) => (
                       <li key={item.path}>
                         <button
-                          onClick={() => handleNavigation(item.path)}
-                          className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:opacity-70"
-                          style={{ color: 'rgb(55, 65, 81)' }}
+                          onClick={() => handleNavigation(item.path, (item as any).isExternal)}
+                          className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-white/10 rounded-lg px-3 py-2 -mx-3"
+                          style={{ color: 'rgba(255, 255, 255, 0.9)' }}
                         >
                           <span className="text-[0]">{item.icon}</span>
                           <span className="text-lg font-medium">{item.name}</span>
@@ -416,11 +361,11 @@ export function Sidebar() {
               ))}
               
               {/* Logout button */}
-              <div className="pt-6 border-t" style={{ borderColor: 'rgb(229, 231, 235)' }}>
+              <div className="pt-6 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
                 <button
                   onClick={handleLogout}
-                  className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:opacity-70"
-                  style={{ color: 'rgb(239, 68, 68)' }}
+                  className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-red-500/20 rounded-lg px-3 py-2 -mx-3"
+                  style={{ color: '#ef4444' }}
                 >
                   <span className="text-[0]">
                     <svg

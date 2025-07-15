@@ -67,6 +67,7 @@ export default function FeedPage() {
           <PageHeader
             title="Feed"
             subtitle="Discover amazing travel events"
+            showMenu={true}
             rightContent={
               <>
                 <Button
@@ -95,6 +96,7 @@ export default function FeedPage() {
         <PageHeader
           title="Feed"
           subtitle="Discover amazing travel events"
+          showMenu={true}
           rightContent={
             <>
               <Button

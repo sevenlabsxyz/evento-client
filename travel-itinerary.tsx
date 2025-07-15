@@ -1,15 +1,10 @@
 "use client";
 
 import {
-  MoreHorizontal,
   Plane,
   ArrowUpRight,
   ArrowDownLeft,
   Hotel,
-  Settings,
-  Bookmark,
-  Edit3,
-  LogOut,
   MapPin,
   Utensils,
   Camera,
@@ -17,20 +12,21 @@ import {
   BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { Navbar } from "@/components/navbar";
 import { PageHeader } from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { toast } from "@/lib/utils/toast";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { StatsLongSheet } from "@/components/stats-long-sheet/StatsLongSheet";
 
 export default function TravelItinerary() {
   const [activeDate, setActiveDate] = useState(2);
   const [activeTab, setActiveTab] = useState("hub");
   const router = useRouter();
+  const pathname = usePathname();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const dateRefs = useRef<{ [key: number]: HTMLDivElement | null }>({});
 
@@ -57,29 +53,6 @@ export default function TravelItinerary() {
     }
   };
 
-  const dropdownItems = [
-    {
-      label: "Settings",
-      icon: <Settings className="w-4 h-4" />,
-      action: () => router.push("/e/settings"),
-    },
-    {
-      label: "Saved",
-      icon: <Bookmark className="w-4 h-4" />,
-      action: () => router.push("/e/saved"),
-    },
-    {
-      label: "Edit Profile",
-      icon: <Edit3 className="w-4 h-4" />,
-      action: () => toast.success("Edit profile coming soon!"),
-    },
-    {
-      label: "Log Out",
-      icon: <LogOut className="w-4 h-4" />,
-      action: () => logout(),
-      destructive: true,
-    },
-  ];
 
   // Generate real calendar dates for September 2025
   const generateCalendarDays = () => {
@@ -131,30 +104,23 @@ export default function TravelItinerary() {
           showMenu={true}
           rightContent={
             <>
-              <ReusableDropdown
+              <StatsLongSheet
                 trigger={
                   <Button
                     variant="ghost"
                     size="icon"
                     className="rounded-full bg-gray-100"
                   >
-                    <MoreHorizontal className="h-5 w-5" />
+                    <BarChart3 className="h-5 w-5" />
                   </Button>
                 }
-                items={dropdownItems}
               />
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => router.push("/e/stats")}
-              >
-                <BarChart3 className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100 p-0 h-10 w-10"
+                className={`rounded-full bg-gray-100 p-0 h-10 w-10 ${
+                  pathname === "/e/me" ? "ring-2 ring-red-500" : ""
+                }`}
                 onClick={() => router.push("/e/me")}
               >
                 {isUserLoading ? (

@@ -2,26 +2,26 @@ import GhostContentAPI from "@tryghost/content-api";
 import { AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import Image from "next/image";
+import { BlogPostClient } from "@/components/blog/BlogPostClient";
 
 export const revalidate = 30;
 
 const Error = ({ message }: { message: string }) => (
   <div
-    className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4"
+    className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mx-4"
     role="alert"
   >
-    <div className="flex items-center">
-      <AlertTriangle className="mr-2" />
-      <p className="font-bold">Error</p>
+    <div className="flex items-center gap-2 mb-1">
+      <AlertTriangle className="h-5 w-5" />
+      <p className="font-semibold">Error</p>
     </div>
-    <p>{message}</p>
+    <p className="text-sm">{message}</p>
   </div>
 );
 
 const Loading = () => (
-  <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+  <div className="flex justify-center items-center h-screen">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
   </div>
 );
 
@@ -67,41 +67,7 @@ async function getBlogPost(slug: string) {
 }
 
 function PostContent({ post }: { post: any }) {
-  return (
-    <article className="max-w-[750px] mx-auto px-4 md:px-0">
-      <h1 className="text-4xl md:text-5xl font-medium mb-4">{post.title}</h1>
-      <p className="text-gray-500 mb-4">
-        posted on {new Date(post.published_at || "").toLocaleDateString()}
-      </p>
-      {post.feature_image && (
-        <div className="relative w-full aspect-[16/9] md:mb-12 mb-8">
-          <Image
-            src={post.feature_image}
-            alt={post.feature_image_alt || ""}
-            fill
-            className="object-cover rounded-xl shadow-sm"
-            sizes="(max-width: 768px) 100vw, 750px"
-            priority
-          />
-        </div>
-      )}
-      <div
-        className="prose max-w-none evento-blog-content"
-        dangerouslySetInnerHTML={{ __html: post.html || "" }}
-      />
-      <div className="mt-6">
-        {post.tags &&
-          post.tags.map((tag: any) => (
-            <span
-              key={tag.id}
-              className="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-            >
-              #{tag.name}
-            </span>
-          ))}
-      </div>
-    </article>
-  );
+  return <BlogPostClient post={post} />;
 }
 
 export default async function BlogPost({

@@ -112,6 +112,7 @@ export default function NotificationsPage() {
         <PageHeader
           title="Activity"
           subtitle="Stay updated with your activity"
+          showMenu={true}
           rightContent={null}
         />
       </div>
