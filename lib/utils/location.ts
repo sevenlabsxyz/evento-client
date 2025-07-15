@@ -64,6 +64,61 @@ export function formatLocationDataAddress(location: LocationData): string {
 }
 
 /**
+ * Parses a location string from the API into LocationData
+ * Handles formats like "Moscone Center, 747 Howard St, San Francisco, CA 94103, United States"
+ */
+export function parseLocationString(locationStr: string): LocationData {
+  if (!locationStr) {
+    return {
+      name: '',
+      address: '',
+      city: '',
+      country: '',
+      formatted: '',
+    };
+  }
+
+  const parts = locationStr.split(',').map(s => s.trim());
+  
+  if (parts.length === 1) {
+    // Simple location like "Online" or just a city name
+    return {
+      name: parts[0],
+      address: '',
+      city: parts[0],
+      country: '',
+      formatted: locationStr,
+    };
+  }
+  
+  if (parts.length >= 5) {
+    // Full format: "Name, Address, City, State ZIP, Country"
+    const stateZip = parts[3];
+    const stateMatch = stateZip.match(/^([A-Z]{2})\s+(\d{5})$/);
+    
+    return {
+      name: parts[0],
+      address: parts[1],
+      city: parts[2],
+      state: stateMatch ? stateMatch[1] : parts[3],
+      zipCode: stateMatch ? stateMatch[2] : undefined,
+      country: parts[4],
+      formatted: locationStr,
+    };
+  }
+  
+  // Fallback for other formats
+  return {
+    name: parts[0] || '',
+    address: parts[1] || '',
+    city: parts[2] || parts[0],
+    state: parts[3],
+    country: parts[parts.length - 1],
+    formatted: locationStr,
+  };
+}
+
+/**
  * Parses a simple address string into basic LocationData
  * Used for backward compatibility with existing text-based address inputs
  */

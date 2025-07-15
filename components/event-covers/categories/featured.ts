@@ -1,0 +1,65 @@
+const basePath = "/eventos/default-covers";
+
+// featured covers require a different format (must pass the exact path/category) since
+// its just featuring covers from other categories
+
+export const FEATURED_COVERS = [
+  // Bitcoin release
+  { url: `${basePath}/tech/18.webp` },
+  { url: `${basePath}/tech/17.webp` },
+  { url: `${basePath}/tech/16.webp` },
+  { url: `${basePath}/tech/15.webp` },
+  { url: `${basePath}/tech/14.webp` },
+  { url: `${basePath}/tech/13.webp` },
+  { url: `${basePath}/tech/12.webp` },
+  { url: `${basePath}/tech/11.webp` },
+  { url: `${basePath}/tech/10.webp` },
+  { url: `${basePath}/tech/9.webp` },
+  { url: `${basePath}/tech/8.webp` },
+  { url: `${basePath}/tech/7.webp` },
+  { url: `${basePath}/tech/6.webp` },
+  { url: `${basePath}/tech/5.webp` },
+  { url: `${basePath}/tech/4.webp` },
+  { url: `${basePath}/tech/3.webp` },
+  { url: `${basePath}/tech/2.webp` },
+  { url: `${basePath}/tech/1.webp` },
+
+  // Xmas Release
+  { url: `${basePath}/social/147.webp` },
+  { url: `${basePath}/social/146.webp` },
+  { url: `${basePath}/social/145.webp` },
+  { url: `${basePath}/social/144.webp` },
+  { url: `${basePath}/social/143.webp` },
+  { url: `${basePath}/social/142.webp` },
+  { url: `${basePath}/social/141.webp` },
+  { url: `${basePath}/social/140.webp` },
+  { url: `${basePath}/social/139.webp` },
+  { url: `${basePath}/social/138.webp` },
+  { url: `${basePath}/social/137.webp` },
+  { url: `${basePath}/social/136.webp` },
+  { url: `${basePath}/social/135.webp` },
+  { url: `${basePath}/social/134.webp` },
+  { url: `${basePath}/social/133.webp` },
+  { url: `${basePath}/social/132.webp` },
+  { url: `${basePath}/social/131.webp` },
+  { url: `${basePath}/social/130.webp` },
+  { url: `${basePath}/social/129.webp` },
+  { url: `${basePath}/social/128.webp` },
+
+	// Halloween Release
+  { url: `${basePath}/party/86.webp` },
+  { url: `${basePath}/party/85.webp` },
+  { url: `${basePath}/party/84.webp` },
+  { url: `${basePath}/party/83.webp` },
+  { url: `${basePath}/party/82.webp` },
+  { url: `${basePath}/party/81.webp` },
+  { url: `${basePath}/party/80.webp` },
+  { url: `${basePath}/party/79.webp` },
+  { url: `${basePath}/party/78.webp` },
+  { url: `${basePath}/party/77.webp` },
+  { url: `${basePath}/party/76.webp` },
+  { url: `${basePath}/party/75.webp` },
+  { url: `${basePath}/party/74.webp` },
+  { url: `${basePath}/party/73.webp` },
+  { url: `${basePath}/party/72.webp` },
+];

@@ -21,11 +21,18 @@ export function useEventComments(eventId: string) {
         `/v1/events/comments?event_id=${eventId}`
       );
       
-      if (!response || typeof response === 'string') {
+      // Handle the response structure { success, message, data }
+      if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');
       }
       
-      return (response as any)?.data || [];
+      // Check if it's the expected API response structure
+      if ('success' in response && 'data' in response) {
+        return response.data || [];
+      }
+      
+      // Fallback for direct data response
+      return response as EventComment[];
     },
     enabled: !!eventId,
     staleTime: 1000 * 60 * 2, // Cache for 2 minutes (comments update more frequently)

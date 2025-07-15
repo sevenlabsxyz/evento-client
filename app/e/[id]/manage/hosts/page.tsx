@@ -3,17 +3,28 @@
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Plus, Mail } from 'lucide-react';
-import { getEventById } from '@/lib/data/sample-events';
+import { useEventDetails } from '@/lib/hooks/useEventDetails';
 
 export default function HostsManagementPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
   
-  // Get existing event data
-  const existingEvent = getEventById(eventId);
+  // Get existing event data from API
+  const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
   
-  if (!existingEvent) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500 mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error || !existingEvent) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">

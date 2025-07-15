@@ -2,6 +2,8 @@
 
 import { Camera } from 'lucide-react';
 import Image from 'next/image';
+import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import ProgressiveImage from '@/components/ui/progressive-image';
 
 interface CoverImageSelectorProps {
   selectedImage?: string;
@@ -15,8 +17,8 @@ export default function CoverImageSelector({ selectedImage, onImageClick }: Cove
       onClick={onImageClick}
     >
       {selectedImage ? (
-        <Image
-          src={selectedImage}
+        <ProgressiveImage
+          src={getCoverImageUrl500x500(selectedImage)}
           alt="Selected cover image"
           fill
           className="object-cover"
