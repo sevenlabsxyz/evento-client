@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Mark this route as dynamic since it uses dynamic parameters
+export const dynamic = 'force-dynamic';
+
 // API proxy configuration
 const API_PROXY_TARGET = process.env.API_PROXY_TARGET || 'https://evento.so/api';
 
