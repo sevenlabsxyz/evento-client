@@ -21,7 +21,7 @@ import {
   Type,
   X,
 } from "lucide-react";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
 import { Separator } from "@/components/ui/separator";
 import SectionOne from "./toolbar-sections/section-one";
 import SectionTwo from "./toolbar-sections/section-two";
@@ -53,7 +53,7 @@ export default function DescriptionSheet({
   onOpenInsertElementsSheet,
   onOpenLinkEditSheet,
 }: DescriptionSheetProps) {
-  const [activeDetent, setActiveDetent] = useState(2); // Start at full height
+  // No longer need activeDetent as it always opens at full height
 
   const editor = useEditor({
     extensions: [
@@ -175,19 +175,17 @@ export default function DescriptionSheet({
 
   return (
     <>
-      <SheetWithDetent.Root
+      <SheetWithDetentFull.Root
         presented={isOpen}
         onPresentedChange={(presented) => !presented && onClose()}
-        activeDetent={activeDetent}
-        onActiveDetentChange={setActiveDetent}
       >
-        <SheetWithDetent.Portal>
-          <SheetWithDetent.View>
-            <SheetWithDetent.Backdrop />
-            <SheetWithDetent.Content className="DescriptionSheet-content">
+        <SheetWithDetentFull.Portal>
+          <SheetWithDetentFull.View>
+            <SheetWithDetentFull.Backdrop />
+            <SheetWithDetentFull.Content className="DescriptionSheet-content">
               {/* Fixed Header */}
               <div className="DescriptionSheet-header">
-                <SheetWithDetent.Handle className="DescriptionSheet-handle" />
+                <SheetWithDetentFull.Handle className="DescriptionSheet-handle" />
                 <div className="DescriptionSheet-headerBar">
                   <button
                     onClick={onClose}
@@ -227,20 +225,20 @@ export default function DescriptionSheet({
               </div>
 
               {/* Scrollable Editor Content */}
-              <SheetWithDetent.ScrollRoot asChild>
-                <SheetWithDetent.ScrollView className="DescriptionSheet-scrollView">
-                  <SheetWithDetent.ScrollContent className="DescriptionSheet-scrollContent">
+              <SheetWithDetentFull.ScrollRoot asChild>
+                <SheetWithDetentFull.ScrollView className="DescriptionSheet-scrollView">
+                  <SheetWithDetentFull.ScrollContent className="DescriptionSheet-scrollContent">
                     <EditorContent 
                       editor={editor} 
                       className="DescriptionSheet-editor"
                     />
-                  </SheetWithDetent.ScrollContent>
-                </SheetWithDetent.ScrollView>
-              </SheetWithDetent.ScrollRoot>
-            </SheetWithDetent.Content>
-          </SheetWithDetent.View>
-        </SheetWithDetent.Portal>
-      </SheetWithDetent.Root>
+                  </SheetWithDetentFull.ScrollContent>
+                </SheetWithDetentFull.ScrollView>
+              </SheetWithDetentFull.ScrollRoot>
+            </SheetWithDetentFull.Content>
+          </SheetWithDetentFull.View>
+        </SheetWithDetentFull.Portal>
+      </SheetWithDetentFull.Root>
     </>
   );
 }

@@ -19,16 +19,7 @@ export default function HelpPage() {
         <PageHeader
           title="Need Help?"
           subtitle="Choose how you'd like to get support"
-          rightContent={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.back()}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          }
+          showMenu={true}
         />
       </div>
 

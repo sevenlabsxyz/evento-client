@@ -69,16 +69,7 @@ export default function ContactPage() {
         <PageHeader
           title="Contact Us"
           subtitle="Send us a message and we'll get back to you"
-          rightContent={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.back()}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          }
+          showMenu={true}
         />
       </div>
 

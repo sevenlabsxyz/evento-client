@@ -9,6 +9,8 @@ import { toast } from "@/lib/utils/toast";
 import ImageLightbox from "@/components/event-detail/image-lightbox";
 import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { PageHeader } from "@/components/page-header";
+import { Navbar } from "@/components/navbar";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -483,19 +485,40 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
+      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 shadow-sm">
+        {/* Header */}
+        <PageHeader
+          title="Profile"
+          subtitle={userData.username}
+          showMenu={true}
+          rightContent={
+            <div className="flex gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-gray-100"
+                onClick={() => toast.success("Edit profile coming soon!")}
+              >
+                <Edit3 className="h-5 w-5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full bg-gray-100"
+                onClick={() => router.push("/e/settings")}
+              >
+                <Settings className="h-5 w-5" />
+              </Button>
+            </div>
+          }
+        />
+      </div>
+
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pt-24 pb-20">
         {/* Profile Section */}
         <div className="bg-white p-6 mb-4 relative">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute top-4 right-4 rounded-full bg-gray-100"
-            onClick={() => router.back()}
-          >
-            <X className="h-5 w-5" />
-          </Button>
 
           <div className="flex items-center gap-4 mb-4">
             <div className="relative">
@@ -577,24 +600,8 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Action Buttons */}
+          {/* Social Links */}
           <div className="flex gap-3">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => toast.success("Edit profile coming soon!")}
-            >
-              <Edit3 className="h-5 w-5" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.push("/e/settings")}
-            >
-              <Settings className="h-5 w-5" />
-            </Button>
             {/* Instagram */}
             {user?.instagram_handle && (
               <Button
@@ -873,6 +880,9 @@ export default function ProfilePage() {
         eventTitle="Profile Photos"
         onClose={() => setShowLightbox(false)}
       />
+
+      {/* Bottom Navbar */}
+      <Navbar />
     </div>
   );
 }

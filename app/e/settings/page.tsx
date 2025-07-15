@@ -157,16 +157,7 @@ export default function SettingsPage() {
         <PageHeader
           title="Settings"
           subtitle="Manage your app preferences"
-          rightContent={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.back()}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          }
+          showMenu={true}
         />
       </div>
 

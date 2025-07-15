@@ -1,27 +1,26 @@
 import { BlogCard } from "@/components/blog/card";
-import { HubSectionTitle } from "@/components/hub/hub-section-title";
 import GhostContentAPI from "@tryghost/content-api";
-import { AlertTriangle, PenTool } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { Suspense } from "react";
 
 export const dynamic = "force-dynamic";
 
 const Error = ({ message }: { message: string }) => (
   <div
-    className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 my-4"
+    className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg"
     role="alert"
   >
-    <div className="flex items-center">
-      <AlertTriangle className="mr-2" />
-      <p className="font-bold">Error</p>
+    <div className="flex items-center gap-2 mb-1">
+      <AlertTriangle className="h-5 w-5" />
+      <p className="font-semibold">Error</p>
     </div>
-    <p>{message}</p>
+    <p className="text-sm">{message}</p>
   </div>
 );
 
 const Loading = () => (
   <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
   </div>
 );
 
@@ -46,35 +45,33 @@ async function getBlogPosts() {
 }
 
 function PostList({ posts }: { posts: any[] }) {
-  return (
-    <>
-      <div className="mx-auto max-w-[1200px] px-4 md:px-0">
-        <div className="mb-4 md:mb-8">
-          <div className="flex items-center gap-2">
-            <PenTool className="h-6 w-6 md:h-8 md:w-8" />
-            <div className="flex items-center gap-2">
-              <h4 className="text-3xl md:text-4xl font-medium">Blog</h4>
-            </div>
-          </div>
-          <div className="text-base text-gray-500 mt-2">
-            Latest stories, news, and updates.
-          </div>
+  if (!posts || posts.length === 0) {
+    return (
+      <div className="px-4 py-12 text-center">
+        <div className="bg-gray-100 rounded-lg p-8">
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No posts yet</h3>
+          <p className="text-gray-500">Check back soon for new content!</p>
         </div>
       </div>
-      <div className="mx-auto flex max-w-[1200px] w-full flex-col">
-        {(posts || []).map((post: any) => (
+    );
+  }
+
+  return (
+    <div className="px-4 py-6">
+      <div className="flex flex-col space-y-4">
+        {posts.map((post: any) => (
           <BlogCard
             key={post.id}
             slug={post.slug}
             title={post.title}
             date={post.published_at}
-            category={post.category}
+            category={post.tags}
             image={post.feature_image}
             description={post.excerpt}
           />
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -85,15 +82,15 @@ export default async function BlogPosts() {
     posts = await getBlogPosts();
   } catch (error) {
     return (
-      <Error message="Failed to load blog posts. Please try again later." />
+      <div className="px-4 py-6">
+        <Error message="Failed to load blog posts. Please try again later." />
+      </div>
     );
   }
 
   return (
-    <div className="">
-      <Suspense fallback={<Loading />}>
-        <PostList posts={posts} />
-      </Suspense>
-    </div>
+    <Suspense fallback={<Loading />}>
+      <PostList posts={posts} />
+    </Suspense>
   );
 }

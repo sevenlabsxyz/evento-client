@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import {
-  X,
   Calendar,
   Edit3,
   Music,
@@ -240,16 +239,7 @@ export default function CreatePage() {
       <PageHeader
         title="Create Event"
         subtitle="Add a new event to your itinerary"
-        rightContent={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-gray-100"
-            onClick={() => router.back()}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        }
+        showMenu={true}
       />
 
       {/* Cover Image Selector */}

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "Evento"
   },
   icons: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 }
 
 export const viewport = {
-  themeColor: "#0078d7",
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -40,7 +40,7 @@ export default function RootLayout({
       <head>
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Evento" />
         <link rel="apple-touch-icon" href="/assets/pwa/icon@512px.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/assets/pwa/icon@256px.png" />

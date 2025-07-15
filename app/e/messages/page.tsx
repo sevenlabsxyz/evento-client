@@ -98,6 +98,7 @@ export default function ChatPage() {
         <PageHeader
           title="Chat"
           subtitle="Connect with mutuals and event groups"
+          showMenu={true}
           rightContent={
             <Button
               variant="ghost"
