@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Share, MoreHorizontal, Loader2 } from 'lucide-react';
 import { useEventDetails } from '@/lib/hooks/useEventDetails';
@@ -15,7 +15,7 @@ import EventGallery from '@/components/event-detail/event-gallery';
 import EventHost from '@/components/event-detail/event-host';
 import EventGuestList from '@/components/event-detail/event-guest-list';
 import EventDescription from '@/components/event-detail/event-description';
-import ImageLightbox from '@/components/event-detail/image-lightbox';
+import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import { debugLog } from '@/lib/utils/debug';
@@ -25,8 +25,7 @@ export default function EventDetailPage() {
   const router = useRouter();
   const eventId = params.id as string;
   const { user } = useAuth();
-  const [showLightbox, setShowLightbox] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const lightboxRef = useRef<SilkLightboxRef>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   
   // Fetch event data from API
@@ -139,8 +138,8 @@ export default function EventDetailPage() {
         <SwipeableHeader 
           event={event} 
           onImageClick={(index) => {
-            setLightboxIndex(index);
-            setShowLightbox(true);
+            setLightboxImages(event.coverImages);
+            lightboxRef.current?.open(index);
           }} 
         />
         <div className="px-4 pb-20">
@@ -153,8 +152,7 @@ export default function EventDetailPage() {
             currentUserId={user?.id || ''}
             onImageClick={(index) => {
               setLightboxImages(event.galleryImages || []);
-              setLightboxIndex(index);
-              setShowLightbox(true);
+              lightboxRef.current?.open(index);
             }}
           />
           
@@ -176,12 +174,10 @@ export default function EventDetailPage() {
       </div>
 
       {/* Image Lightbox */}
-      <ImageLightbox
-        isOpen={showLightbox}
+      <SilkLightbox
+        ref={lightboxRef}
         images={lightboxImages.length > 0 ? lightboxImages : event.coverImages}
-        initialIndex={lightboxIndex}
         eventTitle={event.title}
-        onClose={() => setShowLightbox(false)}
       />
     </div>
   );

@@ -7,6 +7,8 @@ import {
   Calendar,
   MapPin,
   Edit3,
+  Globe,
+  Lock,
   ChevronRight,
   Loader2,
 } from "lucide-react";
@@ -18,6 +20,7 @@ import TimePickerSheet from "@/components/create-event/time-picker-sheet";
 import TimezoneSheet from "@/components/create-event/timezone-sheet";
 import LocationModal from "@/components/create-event/location-modal";
 import DescriptionSheet from "@/components/create-event/description-sheet";
+import EventVisibilitySheet from "@/components/create-event/event-visibility-sheet";
 import { getLocationDisplayName } from "@/lib/utils/location";
 import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
 import { useEventFormStore } from "@/lib/stores/event-form-store";
@@ -50,6 +53,7 @@ export default function EditEventDetailsPage() {
     startTime,
     endTime,
     timezone,
+    visibility,
     setTitle,
     setDescription,
     setCoverImage,
@@ -59,6 +63,7 @@ export default function EditEventDetailsPage() {
     setStartTime,
     setEndTime,
     setTimezone,
+    setVisibility,
     populateFromApiEvent,
     getFormData,
     isValid,
@@ -74,6 +79,7 @@ export default function EditEventDetailsPage() {
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
 
   // Populate form when event data is loaded
   useEffect(() => {
@@ -331,6 +337,33 @@ export default function EditEventDetailsPage() {
             </div>
           </button>
         </div>
+
+        {/* Event Visibility */}
+        <div className="bg-white rounded-2xl p-4">
+          <button
+            onClick={() => setShowVisibilitySheet(true)}
+            className="flex items-center gap-4 w-full text-left"
+          >
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+              {visibility === "public" ? (
+                <Globe className="h-4 w-4 text-gray-600" />
+              ) : (
+                <Lock className="h-4 w-4 text-gray-600" />
+              )}
+            </div>
+            <div className="flex-1">
+              <label className="text-gray-500 text-sm font-medium block mb-1">
+                Event Visibility
+              </label>
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-900">
+                  {visibility === "public" ? "Public" : "Private"}
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Modals */}
@@ -401,6 +434,14 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowDescriptionModal(false)}
         onSave={setDescription}
         initialContent={description}
+      />
+
+      {/* Event Visibility Sheet */}
+      <EventVisibilitySheet
+        isOpen={showVisibilitySheet}
+        onClose={() => setShowVisibilitySheet(false)}
+        onVisibilitySelect={setVisibility}
+        currentVisibility={visibility}
       />
     </div>
   );

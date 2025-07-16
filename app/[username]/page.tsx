@@ -11,41 +11,77 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "@/lib/utils/toast";
-import ImageLightbox from "@/components/event-detail/image-lightbox";
+import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
+import { useUserByUsername, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
+import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
+import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 
 export default function UserProfilePage() {
   const router = useRouter();
   const params = useParams();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
-  const [showFollowingModal, setShowFollowingModal] = useState(false);
-  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingSheet, setShowFollowingSheet] = useState(false);
+  const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [isFollowing, setIsFollowing] = useState(false);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
-  const [showLightbox, setShowLightbox] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
+  const avatarLightboxRef = useRef<SilkLightboxRef>(null);
+  const photosLightboxRef = useRef<SilkLightboxRef>(null);
 
-  // Mock user data - in real app this would come from API based on params.username
-  const userData = {
-    name: "Sarah Chen",
-    username: "@sarahc",
-    avatar: "/placeholder.svg?height=80&width=80",
-    status: "Product Designer • Digital Nomad",
-    bio: "Digital nomad exploring Asia 🌏 Food lover and photography enthusiast. Currently in Tokyo!",
-    website: "https://sarahchen.com",
-    isVerified: true,
+  // Fetch user data from API
+  const username = params.username as string;
+  const { data: userData, isLoading: isUserLoading, error: userError } = useUserByUsername(username);
+  const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
+  const { data: followers = [] } = useUserFollowers(userData?.id || '');
+  const { data: following = [] } = useUserFollowing(userData?.id || '');
+
+  // Handle loading state
+  if (isUserLoading) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
+
+  // Handle user not found
+  if (userError || !userData) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <UserMinus className="h-8 w-8 text-gray-400" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">User not found</h2>
+          <p className="text-gray-500 mb-4">The user @{username} doesn't exist or may have been deleted.</p>
+          <Button onClick={() => router.back()} variant="outline">
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Transform API data to match expected format
+  const userProfile = {
+    name: userData.name || 'Unknown User',
+    username: `@${userData.username}`,
+    avatar: userData.image || "/placeholder.svg?height=80&width=80",
+    status: userData.bio || '',
+    bio: userData.bio || '',
+    website: userData.bio_link || '',
+    isVerified: userData.verification_status === 'verified',
     stats: {
-      events: 18,
-      following: 156,
-      followers: 342,
-      countries: 12,
-      mutuals: 23,
+      events: eventCount,
+      following: following.length,
+      followers: followers.length,
+      countries: 0, // This would need to be calculated from events
+      mutuals: 0, // This would need to be calculated
     },
   };
 
@@ -87,7 +123,21 @@ export default function UserProfilePage() {
     },
   ];
 
-  const followingList = [
+  const followingList = following.map(user => ({
+    id: user.id,
+    name: user.name || 'Unknown User',
+    username: `@${user.username}`,
+    avatar: user.image || "/placeholder.svg?height=50&width=50",
+  }));
+
+  const followersList = followers.map(user => ({
+    id: user.id,
+    name: user.name || 'Unknown User',
+    username: `@${user.username}`,
+    avatar: user.image || "/placeholder.svg?height=50&width=50",
+  }));
+
+  const mockFollowingList = [
     {
       id: 1,
       name: "Marcus Johnson",
@@ -102,20 +152,6 @@ export default function UserProfilePage() {
     },
   ];
 
-  const followersList = [
-    {
-      id: 6,
-      name: "David Wilson",
-      username: "@davidw",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 7,
-      name: "Maria Garcia",
-      username: "@mariag",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-  ];
 
   const profilePhotos = [
     "/placeholder.svg?height=120&width=120",
@@ -164,7 +200,7 @@ export default function UserProfilePage() {
         if (prev <= 1) {
           clearInterval(timer);
           setShowWebsiteModal(false);
-          window.open(userData.website, "_blank", "noopener,noreferrer");
+          window.open(userProfile.website, "_blank", "noopener,noreferrer");
           return 3;
         }
         return prev - 1;
@@ -187,8 +223,8 @@ export default function UserProfilePage() {
       setIsFollowing(!isFollowing);
       toast.success(
         isFollowing
-          ? `Unfollowed ${userData.name}`
-          : `Following ${userData.name}`
+          ? `Unfollowed ${userProfile.name}`
+          : `Following ${userProfile.name}`
       );
     }
   };
@@ -206,12 +242,11 @@ export default function UserProfilePage() {
   };
 
   const handleProfilePhotoClick = (index: number) => {
-    setLightboxIndex(index);
-    setShowLightbox(true);
+    photosLightboxRef.current?.open(index);
   };
 
   const handleAvatarClick = () => {
-    setShowAvatarLightbox(true);
+    avatarLightboxRef.current?.open();
   };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
@@ -335,7 +370,7 @@ export default function UserProfilePage() {
       {/* Bio/Description */}
       <div>
         <h4 className="font-semibold text-gray-900 mb-3">Bio</h4>
-        <p className="text-gray-700">{userData.bio}</p>
+        <p className="text-gray-700">{userProfile.bio}</p>
       </div>
 
       {/* Interest Tags */}
@@ -396,13 +431,13 @@ export default function UserProfilePage() {
     <div className="grid grid-cols-2 gap-4">
       <div className="text-center p-4 bg-blue-50 rounded-xl">
         <div className="text-3xl font-bold text-blue-600">
-          {userData.stats.countries}
+          {userProfile.stats.countries}
         </div>
         <div className="text-sm text-gray-600">Countries</div>
       </div>
       <div className="text-center p-4 bg-green-50 rounded-xl">
         <div className="text-3xl font-bold text-green-600">
-          {userData.stats.mutuals}
+          {userProfile.stats.mutuals}
         </div>
         <div className="text-sm text-gray-600">Mutuals</div>
       </div>
@@ -428,14 +463,14 @@ export default function UserProfilePage() {
             <div className="relative">
               <button onClick={handleAvatarClick}>
                 <img
-                  src={userData.avatar || "/placeholder.svg"}
+                  src={userProfile.avatar || "/placeholder.svg"}
                   alt="Profile"
                   className="w-20 h-20 rounded-full object-cover hover:opacity-90 transition-opacity"
                 />
               </button>
               
               {/* Verification Badge */}
-              {userData.isVerified && (
+              {userProfile.isVerified && (
                 <button
                   onClick={() => setShowVerificationModal(true)}
                   className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
@@ -446,9 +481,9 @@ export default function UserProfilePage() {
             </div>
             <div className="flex-1">
               <h2 className="text-xl font-bold text-gray-900">
-                {userData.name}
+                {userProfile.name}
               </h2>
-              <p className="text-gray-600 text-sm">{userData.username}</p>
+              <p className="text-gray-600 text-sm">{userProfile.username}</p>
             </div>
           </div>
 
@@ -456,35 +491,35 @@ export default function UserProfilePage() {
           <div className="grid grid-cols-3 gap-4 mb-4">
             <div>
               <div className="text-xl font-bold text-gray-900">
-                {userData.stats.events}
+                {userProfile.stats.events}
               </div>
               <div className="text-sm text-gray-500">Events</div>
             </div>
             <button
               className="text-left"
-              onClick={() => setShowFollowingModal(true)}
+              onClick={() => setShowFollowingSheet(true)}
             >
               <div className="text-xl font-bold text-gray-900">
-                {userData.stats.following}
+                {userProfile.stats.following}
               </div>
               <div className="text-sm text-gray-500">Following</div>
             </button>
             <button
               className="text-left"
-              onClick={() => setShowFollowersModal(true)}
+              onClick={() => setShowFollowersSheet(true)}
             >
               <div className="text-xl font-bold text-gray-900">
-                {userData.stats.followers}
+                {userProfile.stats.followers}
               </div>
               <div className="text-sm text-gray-500">Followers</div>
             </button>
           </div>
 
           {/* Status/Title - One-liner */}
-          {userData.status && (
+          {userProfile.status && (
             <div className="mb-4">
               <p className="text-gray-600 text-sm font-medium">
-                {userData.status}
+                {userProfile.status}
               </p>
             </div>
           )}
@@ -586,119 +621,21 @@ export default function UserProfilePage() {
         </div>
       </div>
 
-      {/* Following Modal */}
-      {showFollowingModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold">Following</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => setShowFollowingModal(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="space-y-3">
-                {followingList.map((user) => (
-                  <div key={user.id} className="flex items-center gap-3 p-2">
-                    <button
-                      onClick={() => handleUserClick(user.username)}
-                      className="flex items-center gap-3 flex-1 text-left"
-                    >
-                      <img
-                        src={user.avatar || "/placeholder.svg"}
-                        alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">
-                          {user.name}
-                        </h4>
-                        <p className="text-sm text-gray-500">{user.username}</p>
-                      </div>
-                    </button>
-                    <Button
-                      variant={
-                        followingUsers.has(user.id) ? "outline" : "default"
-                      }
-                      size="sm"
-                      onClick={() => handleFollowToggle(user.id)}
-                      className={
-                        followingUsers.has(user.id)
-                          ? "bg-transparent"
-                          : "bg-red-500 hover:bg-red-600 text-white"
-                      }
-                    >
-                      {followingUsers.has(user.id) ? "Following" : "Follow"}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Followers Sheet */}
+      <FollowersSheet
+        isOpen={showFollowersSheet}
+        onClose={() => setShowFollowersSheet(false)}
+        userId={userData?.id || ""}
+        username={userData?.username || "user"}
+      />
 
-      {/* Followers Modal */}
-      {showFollowersModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold">Followers</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => setShowFollowersModal(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="space-y-3">
-                {followersList.map((user) => (
-                  <div key={user.id} className="flex items-center gap-3 p-2">
-                    <button
-                      onClick={() => handleUserClick(user.username)}
-                      className="flex items-center gap-3 flex-1 text-left"
-                    >
-                      <img
-                        src={user.avatar || "/placeholder.svg"}
-                        alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">
-                          {user.name}
-                        </h4>
-                        <p className="text-sm text-gray-500">{user.username}</p>
-                      </div>
-                    </button>
-                    <Button
-                      variant={
-                        followingUsers.has(user.id) ? "outline" : "default"
-                      }
-                      size="sm"
-                      onClick={() => handleFollowToggle(user.id)}
-                      className={
-                        followingUsers.has(user.id)
-                          ? "bg-transparent"
-                          : "bg-red-500 hover:bg-red-600 text-white"
-                      }
-                    >
-                      {followingUsers.has(user.id) ? "Following" : "Follow"}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Following Sheet */}
+      <FollowingSheet
+        isOpen={showFollowingSheet}
+        onClose={() => setShowFollowingSheet(false)}
+        userId={userData?.id || ""}
+        username={userData?.username || "user"}
+      />
 
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
@@ -714,7 +651,7 @@ export default function UserProfilePage() {
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(userData.website, "_blank", "noopener,noreferrer");
+                window.open(userProfile.website, "_blank", "noopener,noreferrer");
               }}
               className="w-full bg-red-500 hover:bg-red-600 text-white"
             >
@@ -758,21 +695,17 @@ export default function UserProfilePage() {
       )}
 
       {/* Avatar Lightbox */}
-      <ImageLightbox
-        isOpen={showAvatarLightbox}
-        images={[userData.avatar]}
-        initialIndex={0}
-        eventTitle={`${userData.name}'s Profile`}
-        onClose={() => setShowAvatarLightbox(false)}
+      <SilkLightbox
+        ref={avatarLightboxRef}
+        images={[userProfile.avatar]}
+        eventTitle={`${userProfile.name}'s Profile`}
       />
 
       {/* Profile Photos Lightbox */}
-      <ImageLightbox
-        isOpen={showLightbox}
+      <SilkLightbox
+        ref={photosLightboxRef}
         images={profilePhotos}
-        initialIndex={lightboxIndex}
-        eventTitle={`${userData.name}'s Photos`}
-        onClose={() => setShowLightbox(false)}
+        eventTitle={`${userProfile.name}'s Photos`}
       />
     </div>
   );

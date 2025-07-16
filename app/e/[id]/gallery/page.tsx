@@ -1,17 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, Share, Plus } from 'lucide-react';
 import { getEventById } from '@/lib/data/sample-events';
-import ImageLightbox from '@/components/event-detail/image-lightbox';
+import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
 
 export default function GalleryPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
-  const [showLightbox, setShowLightbox] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const lightboxRef = useRef<SilkLightboxRef>(null);
   
   // Get existing event data
   const existingEvent = getEventById(eventId);
@@ -37,8 +36,7 @@ export default function GalleryPage() {
   const isOwner = existingEvent.owner?.id === 'current-user-id'; // In real app, use actual current user ID
 
   const handleImageClick = (index: number) => {
-    setLightboxIndex(index);
-    setShowLightbox(true);
+    lightboxRef.current?.open(index);
   };
 
   const handleShareGallery = async () => {
@@ -150,12 +148,10 @@ export default function GalleryPage() {
       </div>
 
       {/* Image Lightbox */}
-      <ImageLightbox
-        isOpen={showLightbox}
+      <SilkLightbox
+        ref={lightboxRef}
         images={galleryImages}
-        initialIndex={lightboxIndex}
         eventTitle={existingEvent.title}
-        onClose={() => setShowLightbox(false)}
       />
     </div>
   );
