@@ -1,13 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useState , useEffect} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, FileText, Users, Share2, Music, DollarSign, HelpCircle, UserCheck, MessageCircle, X } from 'lucide-react';
-import { PageHeader } from '@/components/page-header';
+import { useTopBar } from "@/lib/stores/topbar-store";
 import CancelEventModal from '@/components/manage-event/cancel-event-modal';
 import { getEventById } from '@/lib/data/sample-events';
 
 export default function ManageEventPage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Manage Event",
+      subtitle: "Event settings and details",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;

@@ -18,6 +18,7 @@ export const metadata: Metadata = {
     title: "Evento"
   },
   icons: {
+    icon: '/icon.png',
     apple: "/assets/pwa/icon@512px.png"
   }
 }

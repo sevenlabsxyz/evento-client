@@ -1,5 +1,5 @@
-import TravelItinerary from "../travel-itinerary"
+import { redirect } from 'next/navigation'
 
 export default function Page() {
-  return <TravelItinerary />
+  redirect('/e/hub')
 }

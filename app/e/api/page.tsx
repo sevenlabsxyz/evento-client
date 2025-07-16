@@ -1,11 +1,26 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { useRouter } from "next/navigation";
 
 export default function EventoAPIPage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "API",
+      subtitle: "Developer documentation",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const router = useRouter();
 
   const handleGetAccess = () => {
@@ -22,23 +37,6 @@ export default function EventoAPIPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="border-b border-gray-200">
-        <PageHeader
-          title="Evento API"
-          subtitle="Build custom integrations with Evento"
-          rightContent={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.back()}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          }
-        />
-      </div>
 
       {/* Content */}
       <div className="flex-1 px-4 py-6 space-y-6 bg-gray-50 overflow-y-auto">

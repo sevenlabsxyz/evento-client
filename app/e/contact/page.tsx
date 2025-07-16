@@ -4,12 +4,26 @@ import type React from "react";
 
 import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { useRouter, useSearchParams } from "next/navigation"; // keep useSearchParams for initial read
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { toast } from "@/lib/utils/toast";
 
 export default function ContactPage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Contact",
+      subtitle: "Get in touch with us",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const router = useRouter();
   const prefilledTitle = useSearchParams().get("title") ?? "";
   const prefilledMessage = useSearchParams().get("message") ?? "";
@@ -66,11 +80,7 @@ export default function ContactPage() {
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="border-b border-gray-200">
-        <PageHeader
-          title="Contact Us"
-          subtitle="Send us a message and we'll get back to you"
-          showMenu={true}
-        />
+        
       </div>
 
       {/* Form */}

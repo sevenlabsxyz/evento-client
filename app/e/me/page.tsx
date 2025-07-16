@@ -4,18 +4,19 @@ import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck, Loader2 } from "luc
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "@/lib/utils/toast";
 import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
 import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { Navbar } from "@/components/navbar";
 import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
 import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -33,6 +34,38 @@ export default function ProfilePage() {
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Profile",
+      subtitle: user?.username ? `@${user.username}` : "@user",
+      rightContent: (
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-gray-100"
+            onClick={() => toast.success("Edit profile coming soon!")}
+          >
+            <Edit3 className="h-5 w-5" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-gray-100"
+            onClick={() => router.push("/e/settings")}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+        </div>
+      ),
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [user?.username, router, setTopBar]);
 
   const userStats = {
     events: eventCount || 0,
@@ -486,37 +519,8 @@ export default function ProfilePage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 shadow-sm">
-        {/* Header */}
-        <PageHeader
-          title="Profile"
-          subtitle={userData.username}
-          showMenu={true}
-          rightContent={
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => toast.success("Edit profile coming soon!")}
-              >
-                <Edit3 className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => router.push("/e/settings")}
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
-          }
-        />
-      </div>
-
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pt-24 pb-20">
+      <div className="flex-1 overflow-y-auto pb-20">
         {/* Profile Section */}
         <div className="bg-white p-6 mb-4 relative">
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { Sidebar } from "@/components/silk/Sidebar"
+import { TopBar } from "@/components/top-bar"
 
 export default function EventoLayout({
   children,
@@ -9,8 +9,10 @@ export default function EventoLayout({
 }) {
   return (
     <>
-      <Sidebar />
-      {children}
+      <TopBar />
+      <div className="pt-24">
+        {children}
+      </div>
     </>
   )
 }

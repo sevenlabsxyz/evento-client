@@ -18,12 +18,12 @@ import {
   BookOpen,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { useRouter } from "next/navigation";
 import { toast } from "@/lib/utils/toast";
 import packageJson from "../../../package.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { HelpSheet } from "@/components/settings/HelpSheet";
 import { ContactSheet } from "@/components/settings/ContactSheet";
 import { ChangelogSheet } from "@/components/settings/ChangelogSheet";
@@ -31,6 +31,19 @@ import { APISheet } from "@/components/settings/APISheet";
 
 export default function SettingsPage() {
   const router = useRouter();
+  const { setTopBar } = useTopBar();
+  
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Settings",
+      subtitle: "Manage your preferences",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
   
   // Sheet states
   const [helpSheetOpen, setHelpSheetOpen] = useState(false);
@@ -171,14 +184,6 @@ export default function SettingsPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="border-b border-gray-200">
-        <PageHeader
-          title="Settings"
-          subtitle="Manage your app preferences"
-          showMenu={true}
-        />
-      </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50 px-0 pt-4">
