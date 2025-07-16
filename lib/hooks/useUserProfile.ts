@@ -174,10 +174,18 @@ export function useUserFollowers(userId: string) {
   return useQuery({
     queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<UserDetails[]>>(
+      const response = await apiClient.get<ApiResponse<any[]>>(
         `/v1/user/followers/list?id=${userId}`
       );
-      return response.data || [];
+      // Transform the API response to match UI expectations
+      const transformedData = (response.data || []).map((item: any) => ({
+        id: item.user_details?.id || item.follower_id,
+        username: item.user_details?.username || '',
+        name: item.user_details?.name || '',
+        image: item.user_details?.image || '',
+        verification_status: item.user_details?.verification_status || '',
+      }));
+      return transformedData;
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -191,10 +199,18 @@ export function useUserFollowing(userId: string) {
   return useQuery({
     queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<UserDetails[]>>(
+      const response = await apiClient.get<ApiResponse<any[]>>(
         `/v1/user/follows/list?id=${userId}`
       );
-      return response.data || [];
+      // Transform the API response to match UI expectations
+      const transformedData = (response.data || []).map((item: any) => ({
+        id: item.user_details?.id || item.followed_id,
+        username: item.user_details?.username || '',
+        name: item.user_details?.name || '',
+        image: item.user_details?.image || '',
+        verification_status: item.user_details?.verification_status || '',
+      }));
+      return transformedData;
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -215,5 +231,30 @@ export function useUserEventCount(userId: string) {
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+/**
+ * Hook to fetch user profile by username
+ */
+export function useUserByUsername(username: string) {
+  return useQuery({
+    queryKey: ['user', 'profile', 'username', username],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<UserDetails>>(
+        `/v1/user/details?username=${encodeURIComponent(username)}`
+      );
+      return response.data || null;
+    },
+    enabled: !!username,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    retry: (failureCount, error) => {
+      // Don't retry on 404 errors (user not found)
+      if (error && typeof error === 'object' && 'status' in error) {
+        const apiError = error as { status?: number };
+        if (apiError.status === 404) return false;
+      }
+      return failureCount < 3;
+    },
   });
 }

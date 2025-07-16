@@ -23,9 +23,21 @@ import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { useRouter } from "next/navigation";
 import { toast } from "@/lib/utils/toast";
 import packageJson from "../../../package.json";
+import { useState } from "react";
+import { HelpSheet } from "@/components/settings/HelpSheet";
+import { ContactSheet } from "@/components/settings/ContactSheet";
+import { ChangelogSheet } from "@/components/settings/ChangelogSheet";
+import { APISheet } from "@/components/settings/APISheet";
 
 export default function SettingsPage() {
   const router = useRouter();
+  
+  // Sheet states
+  const [helpSheetOpen, setHelpSheetOpen] = useState(false);
+  const [contactSheetOpen, setContactSheetOpen] = useState(false);
+  const [changelogSheetOpen, setChangelogSheetOpen] = useState(false);
+  const [apiSheetOpen, setApiSheetOpen] = useState(false);
+  const [showApiContactForm, setShowApiContactForm] = useState(false);
 
   const languageItems = [
     {
@@ -150,6 +162,13 @@ export default function SettingsPage() {
     }
   };
 
+  // Handle API access request
+  const handleApiAccess = () => {
+    setApiSheetOpen(false);
+    setShowApiContactForm(true);
+    setContactSheetOpen(true);
+  };
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
@@ -244,7 +263,7 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => router.push("/e/help")}
+              onClick={() => setHelpSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -259,7 +278,7 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => router.push("/e/contact")}
+              onClick={() => setContactSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -274,7 +293,7 @@ export default function SettingsPage() {
           <div className="p-4">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => router.push("/e/changelog")}
+              onClick={() => setChangelogSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -297,7 +316,7 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => router.push("/e/api")}
+              onClick={() => setApiSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -400,6 +419,24 @@ export default function SettingsPage() {
           </p>
         </div>
       </div>
+
+      {/* Sheet Components */}
+      <HelpSheet open={helpSheetOpen} onOpenChange={setHelpSheetOpen} />
+      <ContactSheet 
+        open={contactSheetOpen} 
+        onOpenChange={(open) => {
+          setContactSheetOpen(open);
+          if (!open) setShowApiContactForm(false);
+        }}
+        prefilledTitle={showApiContactForm ? "Get Evento API access" : ""}
+        prefilledMessage={showApiContactForm ? "I would like to request access to the Evento API.\n\nWhat I plan to use it for:\n\n[Please describe your use case and why you need API access]" : ""}
+      />
+      <ChangelogSheet open={changelogSheetOpen} onOpenChange={setChangelogSheetOpen} />
+      <APISheet 
+        open={apiSheetOpen} 
+        onOpenChange={setApiSheetOpen} 
+        onContactRequest={handleApiAccess}
+      />
     </div>
   );
 }

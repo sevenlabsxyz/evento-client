@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DetachedSheetKeyboardAware } from "@/components/ui/detached-sheet-keyboard-aware";
+import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
 
 interface LinkSheetProps {
   isOpen: boolean;
@@ -50,24 +50,18 @@ export default function LinkSheet({
   };
 
   return (
-    <DetachedSheetKeyboardAware.Root 
-      presented={isOpen} 
+    <SheetWithDetent.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && handleClose()}
-      forComponent="closest"
     >
-      <DetachedSheetKeyboardAware.Portal>
-        <DetachedSheetKeyboardAware.View>
-          <DetachedSheetKeyboardAware.Backdrop />
-          <DetachedSheetKeyboardAware.Content 
-            stackingAnimation={{
-              scale: ({ progress }) => 1 - (progress * 0.05),
-              translateY: ({ progress }) => `${-20 * progress}px`,
-            }}
-          >
+      <SheetWithDetent.Portal>
+        <SheetWithDetent.View>
+          <SheetWithDetent.Backdrop />
+          <SheetWithDetent.Content>
             <div className="p-6">
               {/* Handle */}
               <div className="flex justify-center mb-4">
-                <DetachedSheetKeyboardAware.Handle />
+                <SheetWithDetent.Handle />
               </div>
 
               {/* Header */}
@@ -117,9 +111,9 @@ export default function LinkSheet({
                 </button>
               </div>
             </div>
-          </DetachedSheetKeyboardAware.Content>
-        </DetachedSheetKeyboardAware.View>
-      </DetachedSheetKeyboardAware.Portal>
-    </DetachedSheetKeyboardAware.Root>
+          </SheetWithDetent.Content>
+        </SheetWithDetent.View>
+      </SheetWithDetent.Portal>
+    </SheetWithDetent.Root>
   );
 }

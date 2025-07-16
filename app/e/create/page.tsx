@@ -7,6 +7,7 @@ import {
   Music,
   MapPin,
   Globe,
+  Lock,
   Users,
   ChevronRight,
 } from "lucide-react";
@@ -22,8 +23,8 @@ import LocationSheet, {
   LocationData,
 } from "@/components/create-event/location-sheet";
 import DescriptionSheet from "@/components/create-event/description-sheet";
-import DropdownMenu from "@/components/ui/dropdown-menu";
 import AttachmentSheet from "@/components/create-event/attachment-sheet";
+import EventVisibilitySheet from "@/components/create-event/event-visibility-sheet";
 import EventCreatedModal from "@/components/create-event/event-created-modal";
 import TextStylesSheet from "@/components/create-event/text-styles-sheet";
 import MoreFormattingSheet from "@/components/create-event/more-formatting-sheet";
@@ -97,6 +98,7 @@ export default function CreatePage() {
   const [showEndTimeModal, setShowEndTimeModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
 
   // Toolbar Sheet States
   const [showTextStylesSheet, setShowTextStylesSheet] = useState(false);
@@ -344,26 +346,29 @@ export default function CreatePage() {
 
         {/* Event Visibility */}
         <div className="bg-white rounded-2xl p-4">
-          <div className="flex items-center gap-4">
+          <button
+            onClick={() => setShowVisibilitySheet(true)}
+            className="flex items-center gap-4 w-full text-left"
+          >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Globe className="h-4 w-4 text-gray-600" />
+              {visibility === "public" ? (
+                <Globe className="h-4 w-4 text-gray-600" />
+              ) : (
+                <Lock className="h-4 w-4 text-gray-600" />
+              )}
             </div>
             <div className="flex-1">
               <label className="text-gray-500 text-sm font-medium block mb-1">
                 Event Visibility
               </label>
-              <DropdownMenu
-                options={[
-                  { value: "public", label: "Public" },
-                  { value: "private", label: "Private" },
-                ]}
-                value={visibility}
-                onChange={(value) =>
-                  setVisibility(value as "public" | "private")
-                }
-              />
+              <div className="flex items-center justify-between">
+                <span className="font-medium text-gray-900">
+                  {visibility === "public" ? "Public" : "Private"}
+                </span>
+                <ChevronRight className="h-4 w-4 text-gray-400" />
+              </div>
             </div>
-          </div>
+          </button>
         </div>
 
         {/* Capacity Options */}
@@ -625,6 +630,14 @@ export default function CreatePage() {
           setLinkEditData(linkData);
           setShowLinkEditSheet(true);
         }}
+      />
+
+      {/* Event Visibility Sheet */}
+      <EventVisibilitySheet
+        isOpen={showVisibilitySheet}
+        onClose={() => setShowVisibilitySheet(false)}
+        onVisibilitySelect={setVisibility}
+        currentVisibility={visibility}
       />
 
       {/* Event Created Modal */}

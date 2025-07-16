@@ -1,0 +1,258 @@
+/* Lightbox */
+
+.ExampleLightbox-presentTrigger {
+  /* SELF-LAYOUT */
+  height: 2.75rem;
+
+  /* APPEARANCE */
+  border-radius: 9999px;
+  appearance: none;
+  border: none;
+  background-color: rgb(31, 41, 55);
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* INTERACTIVITY */
+  cursor: pointer;
+
+  /* INNER-LAYOUT */
+  padding-inline: 1.25rem;
+
+  /* TEXT */
+  text-box: trim-both cap alphabetic;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.ExampleLightbox-dismissTrigger {
+  /* SELF-LAYOUT */
+  width: 34px;
+  height: 34px;
+
+  /* APPEARANCE */
+  appearance: none;
+  outline-color: white;
+  border: none;
+  border-radius: 9999px;
+  background-color: transparent;
+
+  /* INNER-LAYOUT */
+  padding: 0;
+  display: grid;
+  place-items: center;
+
+  /* TEXT */
+  color: white;
+}
+
+.ExampleLightbox-dismissIcon {
+  /* SELF-LAYOUT */
+  width: 28px;
+  height: 28px;
+
+  /* APPEARANCE */
+  stroke-width: 2.05px;
+  color: white;
+}
+
+/* SideSheet */
+
+.ExampleLightbox-sideSheetPresentTrigger {
+  /* APPEARANCE */
+  appearance: none;
+  border-radius: 9999px;
+  border: none;
+  background-color: transparent;
+
+  /* INNER-LAYOUT */
+  padding: 0;
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 0.5rem;
+
+  /* TEXT */
+  color: white;
+}
+
+.ExampleLightbox-sideSheetPresentTrigger::before {
+  /* SELF-LAYOUT */
+  left: -20px;
+  right: -20px;
+  width: auto;
+}
+
+.ExampleLightbox-sideSheetPresentTriggerIcon {
+  /* SELF-LAYOUT */
+  width: 24px;
+  height: 24px;
+}
+
+.ExampleLightbox-sideSheetPresentTriggerText {
+  /* TEXT */
+  font-size: 1.125rem;
+  font-weight: 500;
+}
+
+.ExampleLightbox-sideSheetContent {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr;
+}
+
+.ExampleLightbox-sideSheetHeader {
+  /* SELF-LAYOUT */
+  height: 57px;
+
+  /* APPEARANCE */
+  border-bottom: 1px solid rgb(38, 38, 38);
+
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-columns: 3.5rem 1fr 3.5rem;
+  justify-items: center;
+  align-items: center;
+
+  /* TEXT */
+  color: white;
+}
+
+.ExampleLightbox-sideSheetDismissTrigger {
+  /* SELF-LAYOUT */
+  align-self: center;
+  width: 2.75rem;
+  height: 2.75rem;
+
+  /* APPEARANCE */
+  appearance: none;
+  border: none;
+  background-color: transparent;
+
+  /* MISCELLANEOUS */
+  cursor: pointer;
+
+  /* INNER-LAYOUT */
+  padding: 0;
+}
+
+.ExampleLightbox-sideSheetDismissIcon {
+  /* SELF-LAYOUT */
+  width: 36px;
+  height: 36px;
+
+  /* APPEARANCE */
+  color: rgb(249, 250, 251);
+}
+
+.ExampleLightbox-sideSheetTitle {
+  /* TEXT */
+  text-box: trim-both cap alphabetic;
+  font-size: 17.25px;
+  font-weight: 620;
+  color: white;
+}
+
+.ExampleLightbox-sideSheetScrollView {
+  /* SELF-LAYOUT */
+  min-height: 0;
+}
+
+/* Sidebar */
+
+.ExampleLightbox-sidebarContainer {
+  /* SELF-LAYOUT */
+  height: 100%;
+  min-height: 0;
+
+  /* INNER-LAYOUT */
+  display: grid;
+}
+
+.ExampleLightbox-sidebarTitle {
+  /* SELF-LAYOUT */
+  margin: 0;
+
+  /* APPEARANCE */
+  border-bottom: 1px solid rgb(38, 38, 38);
+
+  /* INNER-LAYOUT */
+  padding: 1.25rem;
+
+  /* TEXT */
+  color: white;
+}
+
+.ExampleLightbox-sidebarScrollView {
+  /* SELF-LAYOUT */
+  height: 100%;
+  min-height: 0;
+}
+
+/* Side content */
+
+.ExampleLightbox-sideContent {
+  /* SELF-LAYOUT */
+  margin: 0;
+
+  /* INNER-LAYOUT */
+  padding-inline: 1rem;
+  padding-block: 1rem max(env(safe-area-inset-bottom, 0px), 1rem);
+  display: grid;
+  gap: 1.25rem;
+}
+
+.ExampleLightbox-comment {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+}
+
+.ExampleLightbox-profilePicture {
+  /* SELF-LAYOUT */
+  width: 2.25rem;
+  height: 2.25rem;
+
+  /* APPEARANCE */
+  border-radius: 9999px;
+  background-image: conic-gradient(
+    from -140deg at 100% 100%,
+    rgba(36, 239, 215, 1),
+    rgba(179, 250, 241, 1) 120deg,
+    rgba(36, 239, 215, 1)
+  );
+  background-origin: border-box;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.ExampleLightbox-text {
+  /* INNER-LAYOUT */
+  display: grid;
+  gap: 0.25rem;
+
+  /* APPEARANCE */
+  border-radius: 16px;
+  background-color: rgb(38, 38, 38);
+
+  /* INNER-LAYOUT */
+  padding: 0.5rem 0.75rem;
+}
+
+.ExampleLightbox-username {
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: rgb(245, 245, 245);
+}
+
+.ExampleLightbox-commentContent {
+  /* APPEARANCE */
+  list-style-type: none;
+
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.25;
+  color: rgb(250, 250, 250);
+}

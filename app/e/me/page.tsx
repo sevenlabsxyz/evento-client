@@ -4,27 +4,28 @@ import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck, Loader2 } from "luc
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { toast } from "@/lib/utils/toast";
-import ImageLightbox from "@/components/event-detail/image-lightbox";
+import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
 import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";
 import { PageHeader } from "@/components/page-header";
 import { Navbar } from "@/components/navbar";
+import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
+import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 
 export default function ProfilePage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
-  const [showFollowingModal, setShowFollowingModal] = useState(false);
-  const [showFollowersModal, setShowFollowersModal] = useState(false);
+  const [showFollowingSheet, setShowFollowingSheet] = useState(false);
+  const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
-  const [showLightbox, setShowLightbox] = useState(false);
-  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const lightboxRef = useRef<SilkLightboxRef>(null);
+  const avatarLightboxRef = useRef<SilkLightboxRef>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [showAvatarLightbox, setShowAvatarLightbox] = useState(false);
   
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
@@ -264,12 +265,11 @@ export default function ProfilePage() {
   };
 
   const handleProfilePhotoClick = (index: number) => {
-    setLightboxIndex(index);
-    setShowLightbox(true);
+    lightboxRef.current?.open(index);
   };
 
   const handleAvatarClick = () => {
-    setShowAvatarLightbox(true);
+    avatarLightboxRef.current?.open();
   };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
@@ -560,7 +560,7 @@ export default function ProfilePage() {
             </div>
             <button
               className="text-left"
-              onClick={() => setShowFollowingModal(true)}
+              onClick={() => setShowFollowingSheet(true)}
             >
               <div className="text-xl font-bold text-gray-900">
                 {userStats.following}
@@ -569,7 +569,7 @@ export default function ProfilePage() {
             </button>
             <button
               className="text-left"
-              onClick={() => setShowFollowersModal(true)}
+              onClick={() => setShowFollowersSheet(true)}
             >
               <div className="text-xl font-bold text-gray-900">
                 {userStats.followers}
@@ -687,119 +687,7 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Following Modal */}
-      {showFollowingModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold">Following</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => setShowFollowingModal(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="space-y-3">
-                {followingList.map((user) => (
-                  <div key={user.id} className="flex items-center gap-3 p-2">
-                    <button
-                      onClick={() => handleUserClick(user.username)}
-                      className="flex items-center gap-3 flex-1 text-left"
-                    >
-                      <img
-                        src={user.avatar || "/placeholder.svg"}
-                        alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">
-                          {user.name}
-                        </h4>
-                        <p className="text-sm text-gray-500">{user.username}</p>
-                      </div>
-                    </button>
-                    <Button
-                      variant={
-                        followingUsers.has(user.id) ? "outline" : "default"
-                      }
-                      size="sm"
-                      onClick={() => handleFollowToggle(user.id)}
-                      className={
-                        followingUsers.has(user.id)
-                          ? "bg-transparent"
-                          : "bg-red-500 hover:bg-red-600 text-white"
-                      }
-                    >
-                      {followingUsers.has(user.id) ? "Following" : "Follow"}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
-      {/* Followers Modal */}
-      {showFollowersModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h3 className="text-xl font-bold">Followers</h3>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => setShowFollowersModal(false)}
-              >
-                <X className="h-5 w-5" />
-              </Button>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4">
-              <div className="space-y-3">
-                {followersList.map((user) => (
-                  <div key={user.id} className="flex items-center gap-3 p-2">
-                    <button
-                      onClick={() => handleUserClick(user.username)}
-                      className="flex items-center gap-3 flex-1 text-left"
-                    >
-                      <img
-                        src={user.avatar || "/placeholder.svg"}
-                        alt={user.name}
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-medium text-gray-900 truncate">
-                          {user.name}
-                        </h4>
-                        <p className="text-sm text-gray-500">{user.username}</p>
-                      </div>
-                    </button>
-                    <Button
-                      variant={
-                        followingUsers.has(user.id) ? "outline" : "default"
-                      }
-                      size="sm"
-                      onClick={() => handleFollowToggle(user.id)}
-                      className={
-                        followingUsers.has(user.id)
-                          ? "bg-transparent"
-                          : "bg-red-500 hover:bg-red-600 text-white"
-                      }
-                    >
-                      {followingUsers.has(user.id) ? "Following" : "Follow"}
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
@@ -864,25 +752,37 @@ export default function ProfilePage() {
       )}
 
       {/* Avatar Lightbox */}
-      <ImageLightbox
-        isOpen={showAvatarLightbox}
+      <SilkLightbox
+        ref={avatarLightboxRef}
         images={[userData.avatar]}
-        initialIndex={0}
         eventTitle={`${userData.name}'s Profile`}
-        onClose={() => setShowAvatarLightbox(false)}
       />
 
       {/* Profile Photos Lightbox */}
-      <ImageLightbox
-        isOpen={showLightbox}
+      <SilkLightbox
+        ref={lightboxRef}
         images={profilePhotos}
-        initialIndex={lightboxIndex}
         eventTitle="Profile Photos"
-        onClose={() => setShowLightbox(false)}
       />
 
       {/* Bottom Navbar */}
       <Navbar />
+
+      {/* Followers Sheet */}
+      <FollowersSheet
+        isOpen={showFollowersSheet}
+        onClose={() => setShowFollowersSheet(false)}
+        userId={user?.id || ""}
+        username={user?.username || "user"}
+      />
+
+      {/* Following Sheet */}
+      <FollowingSheet
+        isOpen={showFollowingSheet}
+        onClose={() => setShowFollowingSheet(false)}
+        userId={user?.id || ""}
+        username={user?.username || "user"}
+      />
     </div>
   );
 }

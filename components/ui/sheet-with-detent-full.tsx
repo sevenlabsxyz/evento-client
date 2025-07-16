@@ -122,6 +122,7 @@ const SheetWithDetentFullScrollView = React.forwardRef<
     <Scroll.View
       className={`SheetWithDetent-scrollView ${className ?? ""}`.trim()}
       scrollGestureTrap={{ yEnd: true }}
+      scrollGesture="auto"
       safeArea="layout-viewport"
       onScrollStart={{ dismissKeyboard: true }}
       {...restProps}
