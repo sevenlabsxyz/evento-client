@@ -52,96 +52,7 @@ export default function SettingsPage() {
   const [apiSheetOpen, setApiSheetOpen] = useState(false);
   const [showApiContactForm, setShowApiContactForm] = useState(false);
 
-  const languageItems = [
-    {
-      label: "English",
-      value: "en",
-      action: () => console.log("English selected"),
-    },
-    {
-      label: "Spanish",
-      value: "es",
-      action: () => console.log("Spanish selected"),
-    },
-    {
-      label: "French",
-      value: "fr",
-      action: () => console.log("French selected"),
-    },
-    {
-      label: "German",
-      value: "de",
-      action: () => console.log("German selected"),
-    },
-    {
-      label: "Italian",
-      value: "it",
-      action: () => console.log("Italian selected"),
-    },
-    {
-      label: "Portuguese",
-      value: "pt",
-      action: () => console.log("Portuguese selected"),
-    },
-    {
-      label: "Japanese",
-      value: "ja",
-      action: () => console.log("Japanese selected"),
-    },
-    {
-      label: "Korean",
-      value: "ko",
-      action: () => console.log("Korean selected"),
-    },
-    {
-      label: "Chinese",
-      value: "zh",
-      action: () => console.log("Chinese selected"),
-    },
-  ];
-
-  const currencyItems = [
-    {
-      label: "US Dollar (USD)",
-      value: "usd",
-      action: () => console.log("USD selected"),
-    },
-    {
-      label: "Euro (EUR)",
-      value: "eur",
-      action: () => console.log("EUR selected"),
-    },
-    {
-      label: "British Pound (GBP)",
-      value: "gbp",
-      action: () => console.log("GBP selected"),
-    },
-    {
-      label: "Japanese Yen (JPY)",
-      value: "jpy",
-      action: () => console.log("JPY selected"),
-    },
-    {
-      label: "Canadian Dollar (CAD)",
-      value: "cad",
-      action: () => console.log("CAD selected"),
-    },
-    {
-      label: "Australian Dollar (AUD)",
-      value: "aud",
-      action: () => console.log("AUD selected"),
-    },
-    {
-      label: "Swiss Franc (CHF)",
-      value: "chf",
-      action: () => console.log("CHF selected"),
-    },
-    {
-      label: "Chinese Yuan (CNY)",
-      value: "cny",
-      action: () => console.log("CNY selected"),
-    },
-  ];
+  // Hardcoded language to English and currency to US Dollar as per requirements
 
   const handleExternalLink = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -204,24 +115,17 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-4 border-b border-gray-100">
-            <ReusableDropdown
-              trigger={
-                <div className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                      <Languages className="h-4 w-4 text-red-600" />
-                    </div>
-                    <span className="font-medium">Language</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">English</span>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Languages className="h-4 w-4 text-red-600" />
                 </div>
-              }
-              items={languageItems}
-              width="w-56"
-            />
+                <span className="font-medium">Language</span>
+              </div>
+              <div>
+                <span className="text-gray-500">English</span>
+              </div>
+            </div>
           </div>
 
           <div className="p-4 border-b border-gray-100">
@@ -237,24 +141,17 @@ export default function SettingsPage() {
           </div>
 
           <div className="p-4">
-            <ReusableDropdown
-              trigger={
-                <div className="flex items-center justify-between cursor-pointer">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                      <DollarSign className="h-4 w-4 text-red-600" />
-                    </div>
-                    <span className="font-medium">Currency</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-gray-500">US Dollar</span>
-                    <ChevronRight className="h-4 w-4 text-gray-400" />
-                  </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-red-600" />
                 </div>
-              }
-              items={currencyItems}
-              width="w-64"
-            />
+                <span className="font-medium">Currency</span>
+              </div>
+              <div>
+                <span className="text-gray-500">US Dollar</span>
+              </div>
+            </div>
           </div>
         </div>
 
