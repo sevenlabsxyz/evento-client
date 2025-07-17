@@ -1,50 +1,48 @@
-"use client";
+'use client';
 
+import { ReusableDropdown } from '@/components/reusable-dropdown';
+import { APISheet } from '@/components/settings/APISheet';
+import { ChangelogSheet } from '@/components/settings/ChangelogSheet';
+import { ContactSheet } from '@/components/settings/ContactSheet';
+import { HelpSheet } from '@/components/settings/HelpSheet';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
 import {
+  Bell,
+  BookOpen,
+  ChevronRight,
+  Code,
+  DollarSign,
+  Info,
+  Languages,
   LifeBuoy,
   Mail,
-  Sparkles,
-  Info,
   Scale,
-  Shield,
   Share,
-  Bell,
-  Languages,
-  Cloud,
-  DollarSign,
-  ChevronRight,
-  X,
-  Code,
-  BookOpen,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { ReusableDropdown } from "@/components/reusable-dropdown";
-import { useRouter } from "next/navigation";
-import { toast } from "@/lib/utils/toast";
-import packageJson from "../../../package.json";
-import { useState, useEffect } from "react";
-import { HelpSheet } from "@/components/settings/HelpSheet";
-import { ContactSheet } from "@/components/settings/ContactSheet";
-import { ChangelogSheet } from "@/components/settings/ChangelogSheet";
-import { APISheet } from "@/components/settings/APISheet";
+  Shield,
+  Sparkles,
+  User,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
+import packageJson from '../../../package.json';
 
 export default function SettingsPage() {
-  const router = useRouter();
+  const { user, email } = useAuth();
   const { setTopBar } = useTopBar();
-  
+
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Settings",
-      subtitle: "Manage your preferences",
+      title: 'Settings',
+      subtitle: 'Manage your preferences',
     });
 
     return () => {
       setTopBar({ rightContent: null });
     };
   }, [setTopBar]);
-  
+
   // Sheet states
   const [helpSheetOpen, setHelpSheetOpen] = useState(false);
   const [contactSheetOpen, setContactSheetOpen] = useState(false);
@@ -54,104 +52,104 @@ export default function SettingsPage() {
 
   const languageItems = [
     {
-      label: "English",
-      value: "en",
-      action: () => console.log("English selected"),
+      label: 'English',
+      value: 'en',
+      action: () => console.log('English selected'),
     },
     {
-      label: "Spanish",
-      value: "es",
-      action: () => console.log("Spanish selected"),
+      label: 'Spanish',
+      value: 'es',
+      action: () => console.log('Spanish selected'),
     },
     {
-      label: "French",
-      value: "fr",
-      action: () => console.log("French selected"),
+      label: 'French',
+      value: 'fr',
+      action: () => console.log('French selected'),
     },
     {
-      label: "German",
-      value: "de",
-      action: () => console.log("German selected"),
+      label: 'German',
+      value: 'de',
+      action: () => console.log('German selected'),
     },
     {
-      label: "Italian",
-      value: "it",
-      action: () => console.log("Italian selected"),
+      label: 'Italian',
+      value: 'it',
+      action: () => console.log('Italian selected'),
     },
     {
-      label: "Portuguese",
-      value: "pt",
-      action: () => console.log("Portuguese selected"),
+      label: 'Portuguese',
+      value: 'pt',
+      action: () => console.log('Portuguese selected'),
     },
     {
-      label: "Japanese",
-      value: "ja",
-      action: () => console.log("Japanese selected"),
+      label: 'Japanese',
+      value: 'ja',
+      action: () => console.log('Japanese selected'),
     },
     {
-      label: "Korean",
-      value: "ko",
-      action: () => console.log("Korean selected"),
+      label: 'Korean',
+      value: 'ko',
+      action: () => console.log('Korean selected'),
     },
     {
-      label: "Chinese",
-      value: "zh",
-      action: () => console.log("Chinese selected"),
+      label: 'Chinese',
+      value: 'zh',
+      action: () => console.log('Chinese selected'),
     },
   ];
 
   const currencyItems = [
     {
-      label: "US Dollar (USD)",
-      value: "usd",
-      action: () => console.log("USD selected"),
+      label: 'US Dollar (USD)',
+      value: 'usd',
+      action: () => console.log('USD selected'),
     },
     {
-      label: "Euro (EUR)",
-      value: "eur",
-      action: () => console.log("EUR selected"),
+      label: 'Euro (EUR)',
+      value: 'eur',
+      action: () => console.log('EUR selected'),
     },
     {
-      label: "British Pound (GBP)",
-      value: "gbp",
-      action: () => console.log("GBP selected"),
+      label: 'British Pound (GBP)',
+      value: 'gbp',
+      action: () => console.log('GBP selected'),
     },
     {
-      label: "Japanese Yen (JPY)",
-      value: "jpy",
-      action: () => console.log("JPY selected"),
+      label: 'Japanese Yen (JPY)',
+      value: 'jpy',
+      action: () => console.log('JPY selected'),
     },
     {
-      label: "Canadian Dollar (CAD)",
-      value: "cad",
-      action: () => console.log("CAD selected"),
+      label: 'Canadian Dollar (CAD)',
+      value: 'cad',
+      action: () => console.log('CAD selected'),
     },
     {
-      label: "Australian Dollar (AUD)",
-      value: "aud",
-      action: () => console.log("AUD selected"),
+      label: 'Australian Dollar (AUD)',
+      value: 'aud',
+      action: () => console.log('AUD selected'),
     },
     {
-      label: "Swiss Franc (CHF)",
-      value: "chf",
-      action: () => console.log("CHF selected"),
+      label: 'Swiss Franc (CHF)',
+      value: 'chf',
+      action: () => console.log('CHF selected'),
     },
     {
-      label: "Chinese Yuan (CNY)",
-      value: "cny",
-      action: () => console.log("CNY selected"),
+      label: 'Chinese Yuan (CNY)',
+      value: 'cny',
+      action: () => console.log('CNY selected'),
     },
   ];
 
   const handleExternalLink = (url: string) => {
-    window.open(url, "_blank", "noopener,noreferrer");
+    window.open(url, '_blank', 'noopener,noreferrer');
   };
 
   const handleShare = async () => {
     const shareData = {
-      title: "Evento - Travel Events App",
-      text: "Check out Evento, the best way to plan and organize your travel events!",
-      url: "https://evento.so",
+      title: 'Evento - Travel Events App',
+      text: 'Check out Evento, the best way to plan and organize your travel events!',
+      url: 'https://evento.so',
     };
 
     try {
@@ -159,17 +157,17 @@ export default function SettingsPage() {
         await navigator.share(shareData);
       } else {
         // Fallback for browsers that don't support Web Share API
-        await navigator.clipboard.writeText("https://evento.so");
-        toast.success("Link copied to clipboard!");
+        await navigator.clipboard.writeText('https://evento.so');
+        toast.success('Link copied to clipboard!');
       }
     } catch (error) {
       // If sharing fails or is cancelled, copy to clipboard as fallback
       try {
-        await navigator.clipboard.writeText("https://evento.so");
-        toast.success("Link copied to clipboard!");
+        await navigator.clipboard.writeText('https://evento.so');
+        toast.success('Link copied to clipboard!');
       } catch (clipboardError) {
         toast.error(
-          "Unable to share. Please copy the link manually: evento.so"
+          'Unable to share. Please copy the link manually: evento.so'
         );
       }
     }
@@ -184,7 +182,6 @@ export default function SettingsPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50 px-0 pt-4">
         {/* User Profile Section */}
@@ -192,13 +189,13 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                <Cloud className="h-4 w-4 text-red-600" />
+                <User className="h-4 w-4 text-red-600" />
               </div>
               <div>
-                <p className="font-medium text-red-500">Andre Neves</p>
-                <p className="text-gray-600 text-sm">
-                  andrerfneves@protonmail.com
+                <p className="font-medium text-red-500">
+                  {user?.name || 'Unknown User'}
                 </p>
+                <p className="text-gray-600 text-sm">{email}</p>
               </div>
             </div>
           </div>
@@ -336,7 +333,7 @@ export default function SettingsPage() {
           <div className="p-4">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => handleExternalLink("https://docs.evento.so")}
+              onClick={() => handleExternalLink('https://docs.evento.so')}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -359,7 +356,7 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => handleExternalLink("https://evento.so")}
+              onClick={() => handleExternalLink('https://evento.so')}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -374,7 +371,7 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => handleExternalLink("https://evento.so/terms")}
+              onClick={() => handleExternalLink('https://evento.so/terms')}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -389,7 +386,7 @@ export default function SettingsPage() {
           <div className="p-4 border-b border-gray-100">
             <button
               className="flex items-center justify-between w-full"
-              onClick={() => handleExternalLink("https://evento.so/privacy")}
+              onClick={() => handleExternalLink('https://evento.so/privacy')}
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
@@ -427,19 +424,26 @@ export default function SettingsPage() {
 
       {/* Sheet Components */}
       <HelpSheet open={helpSheetOpen} onOpenChange={setHelpSheetOpen} />
-      <ContactSheet 
-        open={contactSheetOpen} 
+      <ContactSheet
+        open={contactSheetOpen}
         onOpenChange={(open) => {
           setContactSheetOpen(open);
           if (!open) setShowApiContactForm(false);
         }}
-        prefilledTitle={showApiContactForm ? "Get Evento API access" : ""}
-        prefilledMessage={showApiContactForm ? "I would like to request access to the Evento API.\n\nWhat I plan to use it for:\n\n[Please describe your use case and why you need API access]" : ""}
+        prefilledTitle={showApiContactForm ? 'Get Evento API access' : ''}
+        prefilledMessage={
+          showApiContactForm
+            ? 'I would like to request access to the Evento API.\n\nWhat I plan to use it for:\n\n[Please describe your use case and why you need API access]'
+            : ''
+        }
       />
-      <ChangelogSheet open={changelogSheetOpen} onOpenChange={setChangelogSheetOpen} />
-      <APISheet 
-        open={apiSheetOpen} 
-        onOpenChange={setApiSheetOpen} 
+      <ChangelogSheet
+        open={changelogSheetOpen}
+        onOpenChange={setChangelogSheetOpen}
+      />
+      <APISheet
+        open={apiSheetOpen}
+        onOpenChange={setApiSheetOpen}
         onContactRequest={handleApiAccess}
       />
     </div>

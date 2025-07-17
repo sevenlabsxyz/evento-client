@@ -1,12 +1,6 @@
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
-import { 
-  UserDetails, 
-  LoginRequest, 
-  VerifyCodeRequest, 
-  ApiResponse,
-  ApiError 
-} from '../types/api';
+import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
 export const authService = {
   /**
@@ -18,9 +12,9 @@ export const authService = {
       email,
       options: {
         emailRedirectTo: `${window.location.origin}/auth/callback`,
-      }
+      },
     });
-    
+
     if (error) {
       throw new Error(error.message);
     }
@@ -36,22 +30,28 @@ export const authService = {
       token: code,
       type: 'email',
     });
-    
+
     if (error) {
       throw new Error(error.message);
     }
-    
+
     if (!data.user) {
       throw new Error('No user data returned from verification');
     }
-    
+
     console.log('Auth: OTP verification successful for user:', data.user.id);
-    
+
     // Return user details - we'll get them from the backend later
     return {
       id: data.user.id,
-      username: data.user.user_metadata?.username || data.user.email?.split('@')[0] || '',
-      name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || '',
+      username:
+        data.user.user_metadata?.username ||
+        data.user.email?.split('@')[0] ||
+        '',
+      name:
+        data.user.user_metadata?.full_name ||
+        data.user.email?.split('@')[0] ||
+        '',
       bio: '',
       image: data.user.user_metadata?.avatar_url || '',
       bio_link: '',
@@ -72,18 +72,25 @@ export const authService = {
     try {
       // Check if we have a current session
       const supabase = createClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         return null; // No session means not authenticated
       }
-      
-      const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
-      
+
+      const response = await apiClient.get<ApiResponse<UserDetails[]>>(
+        '/v1/user'
+      );
+
       // API returns array, get first user or null
       const firstUser = (response as any)?.data?.[0] || null;
       return firstUser;
     } catch (error) {
-      console.error('Auth: Failed to get current user:', (error as any)?.message || error);
+      console.error(
+        'Auth: Failed to get current user:',
+        (error as any)?.message || error
+      );
       // Return null if user not authenticated or error occurs
       return null;
     }
@@ -100,7 +107,7 @@ export const authService = {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
-    
+
     if (error) {
       throw new Error(error.message);
     }
@@ -112,7 +119,7 @@ export const authService = {
   logout: async (): Promise<void> => {
     const supabase = createClient();
     const { error } = await supabase.auth.signOut();
-    
+
     if (error) {
       console.error('Logout failed:', error);
       // Don't throw here - we want to continue even if logout fails
@@ -135,12 +142,14 @@ export const authService = {
     try {
       const supabase = createClient();
       // Wait for the session to be established
-      const { data: { session } } = await supabase.auth.getSession();
-      
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
       if (!session) {
         return null;
       }
-      
+
       // Get user from backend
       return await authService.getCurrentUser();
     } catch (error) {
@@ -154,7 +163,9 @@ export const authService = {
    */
   getSession: async () => {
     const supabase = createClient();
-    const { data: { session } } = await supabase.auth.getSession();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
     return session;
   },
 
@@ -163,7 +174,9 @@ export const authService = {
    */
   getSupabaseUser: async () => {
     const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
     return user;
   },
 };
@@ -174,11 +187,11 @@ export const handleAuthError = (error: unknown): string => {
     const apiError = error as ApiError;
     return apiError.message;
   }
-  
+
   if (error instanceof Error) {
     return error.message;
   }
-  
+
   return 'An unexpected error occurred';
 };
 
