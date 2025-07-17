@@ -105,14 +105,3 @@
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
-
-/* Responsive styles */
-@media (min-width: 768px) {
-  .BlogCard-imageContainer {
-    /* SELF-LAYOUT */
-    width: 300px;
-    min-width: 300px;
-    height: 100%;
-    aspect-ratio: unset;
-  }
-}
