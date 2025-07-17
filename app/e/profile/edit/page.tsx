@@ -19,7 +19,10 @@ import {
 import { Button } from '@/components/ui/button';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
-import { useUserProfile, useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import {
+  useUserProfile,
+  useUpdateUserProfile,
+} from '@/lib/hooks/useUserProfile';
 import { toast } from '@/lib/utils/toast';
 import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
@@ -28,15 +31,17 @@ import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import BiographySheet from '@/components/profile-edit/biography-sheet';
 import LightningAddressSheet from '@/components/profile-edit/lightning-address-sheet';
 import NostrSheet from '@/components/profile-edit/nostr-sheet';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 
 export default function EditProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBar } = useTopBar();
   const updateProfileMutation = useUpdateUserProfile();
-  
+
   // Get user data
   const { user, isLoading } = useUserProfile();
-  
+
   // Get form state and actions
   const {
     username,
@@ -62,7 +67,7 @@ export default function EditProfilePage() {
     isValid,
     hasChanges,
   } = useProfileFormStore();
-  
+
   // Sheet states
   const [showUsernameSheet, setShowUsernameSheet] = useState(false);
   const [showNameSheet, setShowNameSheet] = useState(false);
@@ -71,7 +76,7 @@ export default function EditProfilePage() {
   const [showBiographySheet, setShowBiographySheet] = useState(false);
   const [showLightningSheet, setShowLightningSheet] = useState(false);
   const [showNostrSheet, setShowNostrSheet] = useState(false);
-  
+
   // Set TopBar content
   useEffect(() => {
     setTopBar({
@@ -83,14 +88,14 @@ export default function EditProfilePage() {
       setTopBar({ rightContent: null });
     };
   }, [setTopBar]);
-  
+
   // Populate form when user data is loaded
   useEffect(() => {
     if (user) {
       populateFromUser(user);
     }
   }, [user, populateFromUser]);
-  
+
   const handleSaveChanges = async () => {
     try {
       const formData = getFormData();
@@ -101,11 +106,11 @@ export default function EditProfilePage() {
       toast.error('Failed to update profile');
     }
   };
-  
+
   // Check if form is valid and has changes
   const canSave = isValid() && hasChanges();
-  
-  if (isLoading) {
+
+  if (isLoading || isCheckingAuth) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="flex items-center gap-2">
@@ -115,7 +120,7 @@ export default function EditProfilePage() {
       </div>
     );
   }
-  
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
@@ -137,7 +142,7 @@ export default function EditProfilePage() {
           {updateProfileMutation.isPending ? 'Saving...' : 'Save'}
         </Button>
       </div>
-      
+
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-4">
         {/* Profile Image Module */}
@@ -158,7 +163,7 @@ export default function EditProfilePage() {
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        
+
         {/* Basic Info Module */}
         <div className="bg-white rounded-2xl p-4 space-y-4">
           {/* Username */}
@@ -177,7 +182,7 @@ export default function EditProfilePage() {
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
-          
+
           {/* Name */}
           <button
             onClick={() => setShowNameSheet(true)}
@@ -188,14 +193,12 @@ export default function EditProfilePage() {
             </div>
             <div className="flex-1">
               <h3 className="font-semibold text-gray-900">Name</h3>
-              <p className="text-sm text-gray-500">
-                {name || 'Add your name'}
-              </p>
+              <p className="text-sm text-gray-500">{name || 'Add your name'}</p>
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        
+
         {/* Social Links Module */}
         <div className="bg-white rounded-2xl p-4">
           <button
@@ -208,7 +211,11 @@ export default function EditProfilePage() {
             <div className="flex-1">
               <h3 className="font-semibold text-gray-900">Social Links</h3>
               <p className="text-sm text-gray-500">
-                {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
+                {[
+                  instagram_handle && 'Instagram',
+                  x_handle && 'X',
+                  bio_link && 'Website',
+                ]
                   .filter(Boolean)
                   .join(', ') || 'Add your social profiles'}
               </p>
@@ -216,7 +223,7 @@ export default function EditProfilePage() {
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        
+
         {/* Biography Module */}
         <div className="bg-white rounded-2xl p-4">
           <button
@@ -229,13 +236,15 @@ export default function EditProfilePage() {
             <div className="flex-1">
               <h3 className="font-semibold text-gray-900">Biography</h3>
               <p className="text-sm text-gray-500">
-                {bio ? bio.replace(/<[^>]*>/g, '').substring(0, 40) + '...' : 'Tell us about yourself'}
+                {bio
+                  ? bio.replace(/<[^>]*>/g, '').substring(0, 40) + '...'
+                  : 'Tell us about yourself'}
               </p>
             </div>
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        
+
         {/* Bitcoin Module */}
         <div className="bg-white rounded-2xl p-4">
           <button
@@ -254,7 +263,7 @@ export default function EditProfilePage() {
             <ChevronRight className="w-5 h-5 text-gray-400" />
           </button>
         </div>
-        
+
         {/* Nostr Module */}
         <div className="bg-white rounded-2xl p-4">
           <button
@@ -274,7 +283,7 @@ export default function EditProfilePage() {
           </button>
         </div>
       </div>
-      
+
       {/* Sheet Components */}
       <ProfileImageSheet
         isOpen={showProfileImageSheet}
@@ -283,21 +292,21 @@ export default function EditProfilePage() {
         userName={name}
         onImageUpdate={setImage}
       />
-      
+
       <UsernameSheet
         isOpen={showUsernameSheet}
         onClose={() => setShowUsernameSheet(false)}
         onSave={setUsername}
         currentUsername={username}
       />
-      
+
       <NameSheet
         isOpen={showNameSheet}
         onClose={() => setShowNameSheet(false)}
         onSave={setName}
         currentName={name}
       />
-      
+
       <SocialLinksSheet
         isOpen={showSocialLinksSheet}
         onClose={() => setShowSocialLinksSheet(false)}
@@ -312,21 +321,21 @@ export default function EditProfilePage() {
           bio_link,
         }}
       />
-      
+
       <BiographySheet
         isOpen={showBiographySheet}
         onClose={() => setShowBiographySheet(false)}
         onSave={setBio}
         currentBio={bio}
       />
-      
+
       <LightningAddressSheet
         isOpen={showLightningSheet}
         onClose={() => setShowLightningSheet(false)}
         onSave={setLnAddress}
         currentAddress={ln_address}
       />
-      
+
       <NostrSheet
         isOpen={showNostrSheet}
         onClose={() => setShowNostrSheet(false)}

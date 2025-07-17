@@ -1,48 +1,50 @@
-"use client";
+'use client';
 
-import { ArrowLeft, Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { ArrowLeft, Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 
 export default function UserSearchPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const suggestedUsers = [
     {
       id: 6,
-      name: "David Wilson",
-      username: "@davidw",
-      avatar: "/placeholder.svg?height=50&width=50",
-      location: "London, UK",
+      name: 'David Wilson',
+      username: '@davidw',
+      avatar: '/placeholder.svg?height=50&width=50',
+      location: 'London, UK',
       mutualEvents: 3,
       isOnline: true,
     },
     {
       id: 7,
-      name: "Lisa Park",
-      username: "@lisap",
-      avatar: "/placeholder.svg?height=50&width=50",
-      location: "Seoul, Korea",
+      name: 'Lisa Park',
+      username: '@lisap',
+      avatar: '/placeholder.svg?height=50&width=50',
+      location: 'Seoul, Korea',
       mutualEvents: 1,
       isOnline: false,
     },
     {
       id: 8,
-      name: "Alex Kim",
-      username: "@alexk",
-      avatar: "/placeholder.svg?height=50&width=50",
-      location: "Vancouver, Canada",
+      name: 'Alex Kim',
+      username: '@alexk',
+      avatar: '/placeholder.svg?height=50&width=50',
+      location: 'Vancouver, Canada',
       mutualEvents: 5,
       isOnline: true,
     },
     {
       id: 9,
-      name: "Maria Garcia",
-      username: "@mariag",
-      avatar: "/placeholder.svg?height=50&width=50",
-      location: "Barcelona, Spain",
+      name: 'Maria Garcia',
+      username: '@mariag',
+      avatar: '/placeholder.svg?height=50&width=50',
+      location: 'Barcelona, Spain',
       mutualEvents: 2,
       isOnline: false,
     },
@@ -51,19 +53,19 @@ export default function UserSearchPage() {
   const searchResults = [
     {
       id: 10,
-      name: "John Smith",
-      username: "@johns",
-      avatar: "/placeholder.svg?height=50&width=50",
-      location: "New York, USA",
+      name: 'John Smith',
+      username: '@johns',
+      avatar: '/placeholder.svg?height=50&width=50',
+      location: 'New York, USA',
       mutualEvents: 1,
       isOnline: true,
     },
     {
       id: 11,
-      name: "Anna Johnson",
-      username: "@annaj",
-      avatar: "/placeholder.svg?height=50&width=50",
-      location: "Stockholm, Sweden",
+      name: 'Anna Johnson',
+      username: '@annaj',
+      avatar: '/placeholder.svg?height=50&width=50',
+      location: 'Stockholm, Sweden',
       mutualEvents: 0,
       isOnline: false,
     },
@@ -77,7 +79,17 @@ export default function UserSearchPage() {
   const usersToShow = searchQuery ? searchResults : suggestedUsers;
   const sectionTitle = searchQuery
     ? `Results for "${searchQuery}"`
-    : "Suggested";
+    : 'Suggested';
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
@@ -119,7 +131,7 @@ export default function UserSearchPage() {
               >
                 <div className="relative flex-shrink-0">
                   <img
-                    src={user.avatar || "/placeholder.svg"}
+                    src={user.avatar || '/placeholder.svg'}
                     alt={user.name}
                     className="w-12 h-12 rounded-full object-cover"
                   />

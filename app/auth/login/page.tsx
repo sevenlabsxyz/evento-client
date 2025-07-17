@@ -1,18 +1,32 @@
 'use client';
 
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import {
+  useGoogleLogin,
+  useLogin,
+  useRedirectIfAuthenticated,
+} from '@/lib/hooks/useAuth';
+import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertCircle, Chrome, Loader2, Mail } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useLogin, useGoogleLogin, useRedirectIfAuthenticated } from '@/lib/hooks/useAuth';
-import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Chrome, AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
-  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/';
+  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -48,7 +62,9 @@ export default function LoginPage() {
     <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome to Evento</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Welcome to Evento
+          </CardTitle>
           <CardDescription className="text-center">
             Sign in to manage your events
           </CardDescription>
@@ -107,7 +123,9 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              <span className="bg-white px-2 text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -133,7 +151,8 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="text-center text-sm text-gray-600">
           <p className="w-full">
-            By continuing, you agree to Evento's Terms of Service and Privacy Policy
+            By continuing, you agree to Evento's Terms of Service and Privacy
+            Policy
           </p>
         </CardFooter>
       </Card>

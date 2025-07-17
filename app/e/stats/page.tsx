@@ -1,10 +1,12 @@
-"use client";
+'use client';
 
-import { X, Share } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { Share, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 export default function StatsPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
 
   // Mock data - in real app this would come from user's actual event data
@@ -63,6 +65,16 @@ export default function StatsPage() {
       </div>
     );
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-gray-100 min-h-screen">
@@ -198,10 +210,7 @@ export default function StatsPage() {
             {/* Empty state for most visited countries */}
           </div>
 
-          <Button
-            variant="ghost"
-            className="w-full text-red-500 font-semibold"
-          >
+          <Button variant="ghost" className="w-full text-red-500 font-semibold">
             Show Visited Countries
           </Button>
         </div>

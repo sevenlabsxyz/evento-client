@@ -1,31 +1,38 @@
-"use client";
+'use client';
 
+import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
+import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
-  Globe,
-  Zap,
-  X,
-  MessageCircle,
-  UserPlus,
-  UserMinus,
+  useUserByUsername,
+  useUserEventCount,
+  useUserFollowers,
+  useUserFollowing,
+} from '@/lib/hooks/useUserProfile';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
+import {
   BadgeCheck,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter, useParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { toast } from "@/lib/utils/toast";
-import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { useUserByUsername, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
-import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
-import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
+  Globe,
+  MessageCircle,
+  UserMinus,
+  UserPlus,
+  X,
+  Zap,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function UserProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar, setTransparent } = useTopBar();
-  const [activeTab, setActiveTab] = useState("about");
-  const [eventsFilter, setEventsFilter] = useState("attending");
+  const [activeTab, setActiveTab] = useState('about');
+  const [eventsFilter, setEventsFilter] = useState('attending');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
@@ -38,13 +45,17 @@ export default function UserProfilePage() {
 
   // Fetch user data from API
   const username = params.username as string;
-  const { data: userData, isLoading: isUserLoading, error: userError } = useUserByUsername(username);
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useUserByUsername(username);
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
   const { data: followers = [] } = useUserFollowers(userData?.id || '');
   const { data: following = [] } = useUserFollowing(userData?.id || '');
 
   // Handle loading state
-  if (isUserLoading) {
+  if (isUserLoading || isCheckingAuth) {
     return (
       <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
@@ -60,8 +71,12 @@ export default function UserProfilePage() {
           <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 mx-auto">
             <UserMinus className="h-8 w-8 text-gray-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">User not found</h2>
-          <p className="text-gray-500 mb-4">The user @{username} doesn't exist or may have been deleted.</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
+            User not found
+          </h2>
+          <p className="text-gray-500 mb-4">
+            The user @{username} doesn't exist or may have been deleted.
+          </p>
           <Button onClick={() => router.back()} variant="outline">
             Go Back
           </Button>
@@ -74,7 +89,7 @@ export default function UserProfilePage() {
   const userProfile = {
     name: userData.name || 'Unknown User',
     username: `@${userData.username}`,
-    avatar: userData.image || "/placeholder.svg?height=80&width=80",
+    avatar: userData.image || '/placeholder.svg?height=80&width=80',
     status: userData.bio || '',
     bio: userData.bio || '',
     website: userData.bio_link || '',
@@ -106,107 +121,106 @@ export default function UserProfilePage() {
   const attendingEvents = [
     {
       id: 1,
-      title: "Tokyo Skytree Sunset",
-      date: "Sep 15, 2025",
-      time: "6:30 PM",
-      location: "Tokyo, Japan",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Tokyo Skytree Sunset',
+      date: 'Sep 15, 2025',
+      time: '6:30 PM',
+      location: 'Tokyo, Japan',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 2,
-      title: "Shibuya Food Tour",
-      date: "Sep 20, 2025",
-      time: "7:00 PM",
-      location: "Tokyo, Japan",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Shibuya Food Tour',
+      date: 'Sep 20, 2025',
+      time: '7:00 PM',
+      location: 'Tokyo, Japan',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 3,
-      title: "Kyoto Temple Walk",
-      date: "Sep 25, 2025",
-      time: "9:00 AM",
-      location: "Kyoto, Japan",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Kyoto Temple Walk',
+      date: 'Sep 25, 2025',
+      time: '9:00 AM',
+      location: 'Kyoto, Japan',
+      image: '/placeholder.svg?height=60&width=60',
     },
   ];
 
   const hostingEvents = [
     {
       id: 4,
-      title: "Photography Meetup",
-      date: "Sep 18, 2025",
-      time: "2:00 PM",
-      location: "Tokyo, Japan",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Photography Meetup',
+      date: 'Sep 18, 2025',
+      time: '2:00 PM',
+      location: 'Tokyo, Japan',
+      image: '/placeholder.svg?height=60&width=60',
     },
   ];
 
-  const followingList = following.map(user => ({
+  const followingList = following.map((user) => ({
     id: user.id,
     name: user.name || 'Unknown User',
     username: `@${user.username}`,
-    avatar: user.image || "/placeholder.svg?height=50&width=50",
+    avatar: user.image || '/placeholder.svg?height=50&width=50',
   }));
 
-  const followersList = followers.map(user => ({
+  const followersList = followers.map((user) => ({
     id: user.id,
     name: user.name || 'Unknown User',
     username: `@${user.username}`,
-    avatar: user.image || "/placeholder.svg?height=50&width=50",
+    avatar: user.image || '/placeholder.svg?height=50&width=50',
   }));
 
   const mockFollowingList = [
     {
       id: 1,
-      name: "Marcus Johnson",
-      username: "@marcusj",
-      avatar: "/placeholder.svg?height=50&width=50",
+      name: 'Marcus Johnson',
+      username: '@marcusj',
+      avatar: '/placeholder.svg?height=50&width=50',
     },
     {
       id: 2,
-      name: "Emma Rodriguez",
-      username: "@emmar",
-      avatar: "/placeholder.svg?height=50&width=50",
+      name: 'Emma Rodriguez',
+      username: '@emmar',
+      avatar: '/placeholder.svg?height=50&width=50',
     },
   ];
 
-
   const profilePhotos = [
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
   ];
 
   const profileQuestions = [
     {
-      question: "My travel style",
-      answer: "Slow travel with deep cultural immersion",
+      question: 'My travel style',
+      answer: 'Slow travel with deep cultural immersion',
     },
     {
-      question: "Dream destination",
-      answer: "Patagonia - for the untouched wilderness",
+      question: 'Dream destination',
+      answer: 'Patagonia - for the untouched wilderness',
     },
     {
       question: "Can't travel without",
-      answer: "My Fujifilm camera and matcha powder",
+      answer: 'My Fujifilm camera and matcha powder',
     },
     {
-      question: "Best travel memory",
-      answer: "Sunrise hot air balloon ride over Cappadocia",
+      question: 'Best travel memory',
+      answer: 'Sunrise hot air balloon ride over Cappadocia',
     },
   ];
 
   const interestTags = [
-    "Photography",
-    "Food",
-    "Culture",
-    "Architecture",
-    "Street Art",
-    "Coffee",
-    "Hiking",
+    'Photography',
+    'Food',
+    'Culture',
+    'Architecture',
+    'Street Art',
+    'Coffee',
+    'Hiking',
   ];
 
   const handleWebsiteClick = () => {
@@ -218,7 +232,7 @@ export default function UserProfilePage() {
         if (prev <= 1) {
           clearInterval(timer);
           setShowWebsiteModal(false);
-          window.open(userProfile.website, "_blank", "noopener,noreferrer");
+          window.open(userProfile.website, '_blank', 'noopener,noreferrer');
           return 3;
         }
         return prev - 1;
@@ -231,10 +245,10 @@ export default function UserProfilePage() {
       const newFollowingUsers = new Set(followingUsers);
       if (followingUsers.has(userId)) {
         newFollowingUsers.delete(userId);
-        toast.success("Unfollowed user");
+        toast.success('Unfollowed user');
       } else {
         newFollowingUsers.add(userId);
-        toast.success("Following user");
+        toast.success('Following user');
       }
       setFollowingUsers(newFollowingUsers);
     } else {
@@ -248,15 +262,15 @@ export default function UserProfilePage() {
   };
 
   const handleUserClick = (username: string) => {
-    router.push(`/${username.replace("@", "")}`);
+    router.push(`/${username.replace('@', '')}`);
   };
 
   const handleMessage = () => {
-    toast.success("Message feature coming soon!");
+    toast.success('Message feature coming soon!');
   };
 
   const handleZap = () => {
-    toast.success("Lightning payment coming soon!");
+    toast.success('Lightning payment coming soon!');
   };
 
   const handleProfilePhotoClick = (index: number) => {
@@ -285,21 +299,21 @@ export default function UserProfilePage() {
   };
 
   const formatDateHeader = (dateStr: string) => {
-    const date = new Date(dateStr + ", 2025");
-    const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    const date = new Date(dateStr + ', 2025');
+    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     const monthNames = [
-      "JANUARY",
-      "FEBRUARY",
-      "MARCH",
-      "APRIL",
-      "MAY",
-      "JUNE",
-      "JULY",
-      "AUGUST",
-      "SEPTEMBER",
-      "OCTOBER",
-      "NOVEMBER",
-      "DECEMBER",
+      'JANUARY',
+      'FEBRUARY',
+      'MARCH',
+      'APRIL',
+      'MAY',
+      'JUNE',
+      'JULY',
+      'AUGUST',
+      'SEPTEMBER',
+      'OCTOBER',
+      'NOVEMBER',
+      'DECEMBER',
     ];
 
     const dayName = dayNames[date.getDay()];
@@ -311,7 +325,7 @@ export default function UserProfilePage() {
 
   const renderEventsTab = () => {
     const currentEvents =
-      eventsFilter === "attending" ? attendingEvents : hostingEvents;
+      eventsFilter === 'attending' ? attendingEvents : hostingEvents;
     const groupedEvents = groupEventsByDate(currentEvents);
 
     return (
@@ -319,21 +333,21 @@ export default function UserProfilePage() {
         {/* Filter Badges */}
         <div className="flex gap-2">
           <button
-            onClick={() => setEventsFilter("attending")}
+            onClick={() => setEventsFilter('attending')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              eventsFilter === "attending"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              eventsFilter === 'attending'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Attending
           </button>
           <button
-            onClick={() => setEventsFilter("hosting")}
+            onClick={() => setEventsFilter('hosting')}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              eventsFilter === "hosting"
-                ? "bg-red-500 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+              eventsFilter === 'hosting'
+                ? 'bg-red-500 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Hosting
@@ -352,14 +366,20 @@ export default function UserProfilePage() {
 
               <div className="space-y-4">
                 {group.events.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 rounded-xl p-2 -m-2 transition-colors" onClick={() => router.push(`/e/event/cosmoprof-2025`)}>
+                  <div
+                    key={event.id}
+                    className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 rounded-xl p-2 -m-2 transition-colors"
+                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+                  >
                     <img
-                      src={event.image || "/placeholder.svg"}
+                      src={event.image || '/placeholder.svg'}
                       alt={event.title}
                       className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg hover:text-red-600 transition-colors">{event.title}</h3>
+                      <h3 className="font-semibold text-lg hover:text-red-600 transition-colors">
+                        {event.title}
+                      </h3>
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">
@@ -434,7 +454,7 @@ export default function UserProfilePage() {
               className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity"
             >
               <img
-                src={photo || "/placeholder.svg"}
+                src={photo || '/placeholder.svg'}
                 alt={`Profile photo ${index + 1}`}
                 className="w-full h-full object-cover"
               />
@@ -477,18 +497,15 @@ export default function UserProfilePage() {
           >
             <X className="h-5 w-5" />
           </Button>
-          
+
           {/* Banner */}
           <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
-          
+
           {/* Profile Picture - Centered & Clickable */}
           <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
             <button onClick={handleAvatarClick} className="relative">
               <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                <AvatarImage 
-                  src={userProfile.avatar || ''} 
-                  alt="Profile" 
-                />
+                <AvatarImage src={userProfile.avatar || ''} alt="Profile" />
                 <AvatarFallback className="text-3xl bg-white">
                   {userProfile.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
@@ -513,7 +530,9 @@ export default function UserProfilePage() {
         <div className="bg-white px-6 pt-20 pb-6 mb-4">
           {/* User Info - Centered */}
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{userProfile.name}</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userProfile.name}
+            </h2>
             <p className="text-gray-600">{userProfile.username}</p>
           </div>
 
@@ -523,8 +542,8 @@ export default function UserProfilePage() {
               onClick={() => handleFollowToggle()}
               className={`flex-1 ${
                 isFollowing
-                  ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-red-500 hover:bg-red-600 text-white"
+                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-red-500 hover:bg-red-600 text-white'
               }`}
             >
               {isFollowing ? (
@@ -615,31 +634,31 @@ export default function UserProfilePage() {
           {/* Tab Headers */}
           <div className="flex border-b border-gray-200">
             <button
-              onClick={() => setActiveTab("about")}
+              onClick={() => setActiveTab('about')}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "about"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === 'about'
+                  ? 'border-red-500 text-red-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               About
             </button>
             <button
-              onClick={() => setActiveTab("events")}
+              onClick={() => setActiveTab('events')}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "events"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === 'events'
+                  ? 'border-red-500 text-red-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Events
             </button>
             <button
-              onClick={() => setActiveTab("stats")}
+              onClick={() => setActiveTab('stats')}
               className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "stats"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                activeTab === 'stats'
+                  ? 'border-red-500 text-red-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
               }`}
             >
               Stats
@@ -648,9 +667,9 @@ export default function UserProfilePage() {
 
           {/* Tab Content */}
           <div className="p-4">
-            {activeTab === "about" && renderAboutTab()}
-            {activeTab === "events" && renderEventsTab()}
-            {activeTab === "stats" && renderStatsTab()}
+            {activeTab === 'about' && renderAboutTab()}
+            {activeTab === 'events' && renderEventsTab()}
+            {activeTab === 'stats' && renderStatsTab()}
           </div>
         </div>
       </div>
@@ -659,16 +678,16 @@ export default function UserProfilePage() {
       <FollowersSheet
         isOpen={showFollowersSheet}
         onClose={() => setShowFollowersSheet(false)}
-        userId={userData?.id || ""}
-        username={userData?.username || "user"}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
       />
 
       {/* Following Sheet */}
       <FollowingSheet
         isOpen={showFollowingSheet}
         onClose={() => setShowFollowingSheet(false)}
-        userId={userData?.id || ""}
-        username={userData?.username || "user"}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
       />
 
       {/* Website Redirect Modal */}
@@ -685,7 +704,11 @@ export default function UserProfilePage() {
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(userProfile.website, "_blank", "noopener,noreferrer");
+                window.open(
+                  userProfile.website,
+                  '_blank',
+                  'noopener,noreferrer'
+                );
               }}
               className="w-full bg-red-500 hover:bg-red-600 text-white"
             >
@@ -702,15 +725,21 @@ export default function UserProfilePage() {
             <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">This user is verified</h3>
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
+              This user is verified
+            </h3>
             <p className="text-gray-600 mb-6">
-              This user is a premium member with a verified account. Verified users have enhanced credibility and access to exclusive features on our platform.
+              This user is a premium member with a verified account. Verified
+              users have enhanced credibility and access to exclusive features
+              on our platform.
             </p>
             <div className="flex flex-col gap-3">
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
-                  router.push('/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.');
+                  router.push(
+                    '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
+                  );
                 }}
                 className="w-full bg-red-500 hover:bg-red-600 text-white"
               >

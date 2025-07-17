@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { authService } from '@/lib/services/auth';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setUser } = useAuthStore();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
@@ -39,9 +40,10 @@ export default function AuthCallbackPage() {
             setUser(user);
             setStatus('success');
             
-            // Redirect to home after brief success message
+            // Redirect to original location or home after brief success message
             setTimeout(() => {
-              router.push('/');
+              const redirect = searchParams.get('redirect');
+              router.push(redirect || '/');
             }, 1500);
           } else {
             throw new Error('Failed to get user information');
@@ -66,9 +68,10 @@ export default function AuthCallbackPage() {
         setError(error instanceof Error ? error.message : 'Authentication failed');
         setStatus('error');
         
-        // Redirect to login after error
+        // Redirect to login after error, preserving the redirect parameter
         setTimeout(() => {
-          router.push('/auth/login');
+          const redirect = searchParams.get('redirect');
+          router.push(redirect ? `/auth/login?redirect=${encodeURIComponent(redirect)}` : '/auth/login');
         }, 3000);
       }
     };

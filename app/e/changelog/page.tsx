@@ -1,18 +1,19 @@
-"use client";
+'use client';
 
-import { X, Calendar, Bug, Sparkles, Zap, Shield } from "lucide-react";
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { useRouter } from "next/navigation";
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { Bug, Calendar, Shield, Sparkles, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function ChangelogPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Changelog",
+      title: 'Changelog',
       subtitle: "What's new in Evento",
     });
 
@@ -25,126 +26,126 @@ export default function ChangelogPage() {
 
   const changelogEntries = [
     {
-      version: "3.4.6",
-      date: "January 13, 2025",
-      type: "update",
+      version: '3.4.6',
+      date: 'January 13, 2025',
+      type: 'update',
       changes: [
         {
-          category: "New Features",
+          category: 'New Features',
           icon: <Sparkles className="h-4 w-4 text-blue-600" />,
           items: [
-            "Added native share functionality for sharing Evento with friends",
-            "Introduced comprehensive changelog page with version history",
-            "Enhanced API access request flow with pre-filled contact forms",
+            'Added native share functionality for sharing Evento with friends',
+            'Introduced comprehensive changelog page with version history',
+            'Enhanced API access request flow with pre-filled contact forms',
           ],
         },
         {
-          category: "Improvements",
+          category: 'Improvements',
           icon: <Zap className="h-4 w-4 text-green-600" />,
           items: [
-            "Improved page loading performance and eliminated white screen flashes",
-            "Updated stats page to focus on events instead of trips",
-            "Enhanced dropdown menus with language and currency selection",
+            'Improved page loading performance and eliminated white screen flashes',
+            'Updated stats page to focus on events instead of trips',
+            'Enhanced dropdown menus with language and currency selection',
           ],
         },
         {
-          category: "Bug Fixes",
+          category: 'Bug Fixes',
           icon: <Bug className="h-4 w-4 text-red-600" />,
           items: [
-            "Fixed infinite loop issue in contact form pre-filling",
-            "Resolved navigation inconsistencies across pages",
-            "Fixed version display to read from package.json",
+            'Fixed infinite loop issue in contact form pre-filling',
+            'Resolved navigation inconsistencies across pages',
+            'Fixed version display to read from package.json',
           ],
         },
       ],
     },
     {
-      version: "3.4.5",
-      date: "January 10, 2025",
-      type: "update",
+      version: '3.4.5',
+      date: 'January 10, 2025',
+      type: 'update',
       changes: [
         {
-          category: "New Features",
+          category: 'New Features',
           icon: <Sparkles className="h-4 w-4 text-blue-600" />,
           items: [
-            "Launched Evento API for custom integrations",
-            "Added developer documentation portal",
-            "Introduced help center with AI agent support",
+            'Launched Evento API for custom integrations',
+            'Added developer documentation portal',
+            'Introduced help center with AI agent support',
           ],
         },
         {
-          category: "Security",
+          category: 'Security',
           icon: <Shield className="h-4 w-4 text-purple-600" />,
           items: [
-            "Enhanced data encryption for user information",
-            "Improved authentication flow security",
-            "Added privacy controls for event sharing",
+            'Enhanced data encryption for user information',
+            'Improved authentication flow security',
+            'Added privacy controls for event sharing',
           ],
         },
       ],
     },
     {
-      version: "3.4.4",
-      date: "January 5, 2025",
-      type: "update",
+      version: '3.4.4',
+      date: 'January 5, 2025',
+      type: 'update',
       changes: [
         {
-          category: "New Features",
+          category: 'New Features',
           icon: <Sparkles className="h-4 w-4 text-blue-600" />,
           items: [
-            "Added real-time calendar synchronization",
-            "Introduced event categories and tagging system",
-            "Enhanced notification system with customizable alerts",
+            'Added real-time calendar synchronization',
+            'Introduced event categories and tagging system',
+            'Enhanced notification system with customizable alerts',
           ],
         },
         {
-          category: "Improvements",
+          category: 'Improvements',
           icon: <Zap className="h-4 w-4 text-green-600" />,
           items: [
-            "Improved event creation flow with better UX",
-            "Enhanced search functionality across all events",
-            "Optimized app performance for faster loading",
+            'Improved event creation flow with better UX',
+            'Enhanced search functionality across all events',
+            'Optimized app performance for faster loading',
           ],
         },
       ],
     },
     {
-      version: "3.4.3",
-      date: "December 28, 2024",
-      type: "hotfix",
+      version: '3.4.3',
+      date: 'December 28, 2024',
+      type: 'hotfix',
       changes: [
         {
-          category: "Bug Fixes",
+          category: 'Bug Fixes',
           icon: <Bug className="h-4 w-4 text-red-600" />,
           items: [
-            "Fixed critical issue with event date calculations",
-            "Resolved timezone handling for international events",
-            "Fixed crash when uploading large image files",
+            'Fixed critical issue with event date calculations',
+            'Resolved timezone handling for international events',
+            'Fixed crash when uploading large image files',
           ],
         },
       ],
     },
     {
-      version: "3.4.2",
-      date: "December 20, 2024",
-      type: "update",
+      version: '3.4.2',
+      date: 'December 20, 2024',
+      type: 'update',
       changes: [
         {
-          category: "New Features",
+          category: 'New Features',
           icon: <Sparkles className="h-4 w-4 text-blue-600" />,
           items: [
-            "Added social feed for discovering events from friends",
-            "Introduced event analytics and statistics tracking",
-            "Enhanced messaging system with group chat support",
+            'Added social feed for discovering events from friends',
+            'Introduced event analytics and statistics tracking',
+            'Enhanced messaging system with group chat support',
           ],
         },
         {
-          category: "Improvements",
+          category: 'Improvements',
           icon: <Zap className="h-4 w-4 text-green-600" />,
           items: [
-            "Redesigned settings page with better organization",
-            "Improved onboarding flow for new users",
-            "Enhanced accessibility features throughout the app",
+            'Redesigned settings page with better organization',
+            'Improved onboarding flow for new users',
+            'Enhanced accessibility features throughout the app',
           ],
         },
       ],
@@ -153,14 +154,24 @@ export default function ChangelogPage() {
 
   const getVersionBadgeColor = (type: string) => {
     switch (type) {
-      case "hotfix":
-        return "bg-red-100 text-red-800";
-      case "update":
-        return "bg-blue-100 text-blue-800";
+      case 'hotfix':
+        return 'bg-red-100 text-red-800';
+      case 'update':
+        return 'bg-blue-100 text-blue-800';
       default:
-        return "bg-gray-100 text-gray-800";
+        return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
@@ -230,9 +241,9 @@ export default function ChangelogPage() {
         {/* Footer */}
         <div className="text-center py-6">
           <p className="text-gray-500 text-sm">
-            Want to suggest a feature or report a bug?{" "}
+            Want to suggest a feature or report a bug?{' '}
             <button
-              onClick={() => router.push("/contact")}
+              onClick={() => router.push('/contact')}
               className="text-red-600 font-medium hover:underline"
             >
               Contact us
