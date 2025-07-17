@@ -62,7 +62,7 @@
   color: rgb(220, 38, 38);
   padding: 0.25rem 0.75rem;
   border-radius: 9999px;
-  
+
   /* TEXT */
   font-size: 0.75rem;
   font-weight: 500;
@@ -108,26 +108,11 @@
 
 /* Responsive styles */
 @media (min-width: 768px) {
-  .BlogCard {
-    display: flex;
-    flex-direction: row;
-    height: 200px;
-  }
-
   .BlogCard-imageContainer {
     /* SELF-LAYOUT */
     width: 300px;
     min-width: 300px;
     height: 100%;
     aspect-ratio: unset;
-  }
-
-  .BlogCard-content {
-    /* SELF-LAYOUT */
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 2rem;
   }
 }
