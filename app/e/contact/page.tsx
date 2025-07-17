@@ -2,12 +2,12 @@
 
 import type React from "react";
 
-import { Upload, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTopBar } from "@/lib/stores/topbar-store";
-import { useRouter, useSearchParams } from "next/navigation"; // keep useSearchParams for initial read
-import { useState , useEffect} from "react";
 import { toast } from "@/lib/utils/toast";
+import { Upload, X } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation"; // keep useSearchParams for initial read
+import { useEffect, useState } from "react";
 
 export default function ContactPage() {
   const { setTopBar } = useTopBar();
@@ -77,19 +77,17 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
-      <div className="border-b border-gray-200">
-        
-      </div>
+      <div className="border-b border-gray-200"></div>
 
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className="flex-1 px-4 py-6 space-y-6 bg-gray-50 overflow-y-auto"
+        className="flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6"
       >
         {/* Title Field */}
-        <div className="bg-white rounded-2xl p-4 space-y-2">
+        <div className="space-y-2 rounded-2xl bg-white p-4">
           <label className="text-sm font-medium text-gray-700">Subject *</label>
           <input
             type="text"
@@ -98,13 +96,13 @@ export default function ContactPage() {
               setFormData({ ...formData, title: e.target.value })
             }
             placeholder="What's this about?"
-            className="w-full text-gray-900 font-medium bg-transparent border-none outline-none text-lg"
+            className="w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none"
             required
           />
         </div>
 
         {/* Message Field */}
-        <div className="bg-white rounded-2xl p-4 space-y-2">
+        <div className="space-y-2 rounded-2xl bg-white p-4">
           <label className="text-sm font-medium text-gray-700">Message *</label>
           <textarea
             value={formData.message}
@@ -113,21 +111,21 @@ export default function ContactPage() {
             }
             placeholder="Tell us more about your issue or question..."
             rows={6}
-            className="w-full text-gray-900 bg-transparent border-none outline-none resize-none"
+            className="w-full resize-none border-none bg-transparent text-gray-900 outline-none"
             required
           />
         </div>
 
         {/* File Upload */}
-        <div className="bg-white rounded-2xl p-4 space-y-2">
+        <div className="space-y-2 rounded-2xl bg-white p-4">
           <label className="text-sm font-medium text-gray-700">
             Attachment (optional)
           </label>
 
           {attachedFile ? (
-            <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Upload className="h-4 w-4 text-red-600" />
                 </div>
                 <div>
@@ -155,15 +153,15 @@ export default function ContactPage() {
                 type="file"
                 onChange={handleFileUpload}
                 accept="image/*,.pdf,.doc,.docx,.txt"
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               />
-              <div className="flex items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-xl hover:border-red-500 transition-colors">
+              <div className="flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-red-500">
                 <div className="text-center">
-                  <Upload className="h-8 w-8 mx-auto mb-2 text-gray-400" />
+                  <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
                   <p className="text-sm text-gray-600">
                     Click to upload a file or screenshot
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="mt-1 text-xs text-gray-500">
                     PNG, JPG, PDF, DOC up to 10MB
                   </p>
                 </div>
@@ -177,11 +175,11 @@ export default function ContactPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-medium disabled:opacity-50"
+            className="w-full rounded-xl bg-red-500 py-3 font-medium text-white hover:bg-red-600 disabled:opacity-50"
           >
             {isLoading ? (
               <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white"></div>
                 Sending...
               </div>
             ) : (

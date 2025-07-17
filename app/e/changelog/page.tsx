@@ -1,10 +1,9 @@
 "use client";
 
-import { X, Calendar, Bug, Sparkles, Zap, Shield } from "lucide-react";
-import { useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import { useTopBar } from "@/lib/stores/topbar-store";
+import { Bug, Calendar, Shield, Sparkles, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ChangelogPage() {
   const { setTopBar } = useTopBar();
@@ -163,33 +162,33 @@ export default function ChangelogPage() {
   };
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
 
       {/* Content */}
-      <div className="flex-1 px-4 py-6 space-y-6 bg-gray-50 overflow-y-auto">
+      <div className="flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6">
         {changelogEntries.map((entry, index) => (
           <div
             key={entry.version}
-            className="bg-white rounded-2xl overflow-hidden shadow-sm"
+            className="overflow-hidden rounded-2xl bg-white shadow-sm"
           >
             {/* Version Header */}
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center justify-between mb-2">
+            <div className="border-b border-gray-100 p-4">
+              <div className="mb-2 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <h3 className="text-lg font-bold text-gray-900">
                     v{entry.version}
                   </h3>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-medium ${getVersionBadgeColor(
-                      entry.type
+                    className={`rounded-full px-2 py-1 text-xs font-medium ${getVersionBadgeColor(
+                      entry.type,
                     )}`}
                   >
                     {entry.type}
                   </span>
                 </div>
                 {index === 0 && (
-                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                  <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
                     Latest
                   </span>
                 )}
@@ -201,22 +200,22 @@ export default function ChangelogPage() {
             </div>
 
             {/* Changes */}
-            <div className="p-4 space-y-4">
+            <div className="space-y-4 p-4">
               {entry.changes.map((changeCategory, categoryIndex) => (
                 <div key={categoryIndex}>
-                  <div className="flex items-center gap-2 mb-3">
+                  <div className="mb-3 flex items-center gap-2">
                     {changeCategory.icon}
                     <h4 className="font-semibold text-gray-900">
                       {changeCategory.category}
                     </h4>
                   </div>
-                  <ul className="space-y-2 ml-6">
+                  <ul className="ml-6 space-y-2">
                     {changeCategory.items.map((item, itemIndex) => (
                       <li
                         key={itemIndex}
                         className="flex items-start gap-2 text-sm text-gray-700"
                       >
-                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
+                        <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-400"></div>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -228,12 +227,12 @@ export default function ChangelogPage() {
         ))}
 
         {/* Footer */}
-        <div className="text-center py-6">
-          <p className="text-gray-500 text-sm">
+        <div className="py-6 text-center">
+          <p className="text-sm text-gray-500">
             Want to suggest a feature or report a bug?{" "}
             <button
               onClick={() => router.push("/contact")}
-              className="text-red-600 font-medium hover:underline"
+              className="font-medium text-red-600 hover:underline"
             >
               Contact us
             </button>

@@ -1,27 +1,27 @@
 'use client';
 
-import { Separator } from '@/components/ui/separator';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import type { Editor } from '@tiptap/core';
-import { getMarkRange } from '@tiptap/core';
-import Bold from '@tiptap/extension-bold';
-import BulletList from '@tiptap/extension-bullet-list';
-import Heading from '@tiptap/extension-heading';
-import Image from '@tiptap/extension-image';
-import Italic from '@tiptap/extension-italic';
-import Link from '@tiptap/extension-link';
-import ListItem from '@tiptap/extension-list-item';
-import Placeholder from '@tiptap/extension-placeholder';
-import { Plugin, TextSelection } from '@tiptap/pm/state';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
-import { useEffect } from 'react';
-import './description-sheet.css';
-import { getOutput } from './tiptap-utils';
-import SectionFour from './toolbar-sections/section-four';
-import SectionOne from './toolbar-sections/section-one';
-import SectionThree from './toolbar-sections/section-three';
-import SectionTwo from './toolbar-sections/section-two';
+import { Separator } from "@/components/ui/separator";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import type { Editor } from "@tiptap/core";
+import { getMarkRange } from "@tiptap/core";
+import Bold from "@tiptap/extension-bold";
+import BulletList from "@tiptap/extension-bullet-list";
+import Heading from "@tiptap/extension-heading";
+import Image from "@tiptap/extension-image";
+import Italic from "@tiptap/extension-italic";
+import Link from "@tiptap/extension-link";
+import ListItem from "@tiptap/extension-list-item";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Plugin, TextSelection } from "@tiptap/pm/state";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { useEffect } from "react";
+import "./description-sheet.css";
+import { getOutput } from "./tiptap-utils";
+import SectionFour from "./toolbar-sections/section-four";
+import SectionOne from "./toolbar-sections/section-one";
+import SectionThree from "./toolbar-sections/section-three";
+import SectionTwo from "./toolbar-sections/section-two";
 
 interface DescriptionSheetProps {
   isOpen: boolean;
@@ -34,7 +34,7 @@ interface DescriptionSheetProps {
   onOpenInsertElementsSheet?: (editor: Editor) => void;
   onOpenLinkEditSheet?: (
     editor: Editor,
-    linkData: { url: string; text: string; openInNewTab: boolean }
+    linkData: { url: string; text: string; openInNewTab: boolean },
   ) => void;
 }
 
@@ -89,7 +89,7 @@ export default function DescriptionSheet({
                   const { schema, doc, tr } = view.state;
                   const range = getMarkRange(
                     doc.resolve(pos),
-                    schema.marks.link
+                    schema.marks.link,
                   );
 
                   if (!range) {
@@ -107,7 +107,7 @@ export default function DescriptionSheet({
                   const $start = doc.resolve(start);
                   const $end = doc.resolve(end);
                   const transaction = tr.setSelection(
-                    new TextSelection($start, $end)
+                    new TextSelection($start, $end),
                   );
 
                   view.dispatch(transaction);
@@ -127,7 +127,7 @@ export default function DescriptionSheet({
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone',
+          "prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone",
       },
     },
     onUpdate: ({ editor }) => {
@@ -154,17 +154,18 @@ export default function DescriptionSheet({
   const handleOpenSheet = (sheet: string) => {
     if (!editor) return;
 
+
     switch (sheet) {
-      case 'textStyles':
+      case "textStyles":
         onOpenTextStylesSheet?.(editor);
         break;
-      case 'moreFormatting':
+      case "moreFormatting":
         onOpenMoreFormattingSheet?.(editor);
         break;
-      case 'lists':
+      case "lists":
         onOpenListsSheet?.(editor);
         break;
-      case 'insertElements':
+      case "insertElements":
         onOpenInsertElementsSheet?.(editor);
         break;
     }
@@ -192,6 +193,9 @@ export default function DescriptionSheet({
                   >
                     Cancel
                   </button>
+                  <h1 className="DescriptionSheet-headerTitle">
+                    Edit Description
+                  </h1>
                   <h1 className="DescriptionSheet-headerTitle">
                     Edit Description
                   </h1>
@@ -235,6 +239,33 @@ export default function DescriptionSheet({
                         <SectionFour
                           editor={editor}
                           onOpenSheet={handleOpenSheet}
+                        <SectionOne
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionTwo
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionThree
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionFour
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
                           onOpenLinkEditSheet={onOpenLinkEditSheet}
                         />
                       </>
@@ -249,6 +280,8 @@ export default function DescriptionSheet({
                   <SheetWithDetentFull.ScrollContent className="DescriptionSheet-scrollContent">
                     <EditorContent
                       editor={editor}
+                    <EditorContent
+                      editor={editor}
                       className="DescriptionSheet-editor"
                     />
                   </SheetWithDetentFull.ScrollContent>
@@ -261,3 +294,4 @@ export default function DescriptionSheet({
     </>
   );
 }
+

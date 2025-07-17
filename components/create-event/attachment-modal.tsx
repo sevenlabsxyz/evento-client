@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { X, Camera, File, Link, Check } from "lucide-react";
 import { SpotifySVGImage } from "@/components/icons/spotify";
 import { WavlakeSVGImage } from "@/components/icons/wavlake";
+import { Camera, Check, File, Link, X } from "lucide-react";
 
 interface AttachmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectType: (
-    type: "spotify" | "wavlake" | "photo" | "file" | "link"
+    type: "spotify" | "wavlake" | "photo" | "file" | "link",
   ) => void;
   spotifyUrl?: string;
   wavlakeUrl?: string;
@@ -19,8 +18,8 @@ export default function AttachmentModal({
   isOpen,
   onClose,
   onSelectType,
-  spotifyUrl = '',
-  wavlakeUrl = '',
+  spotifyUrl = "",
+  wavlakeUrl = "",
 }: AttachmentModalProps) {
   if (!isOpen) return null;
 
@@ -31,23 +30,27 @@ export default function AttachmentModal({
     {
       type: "spotify" as const,
       label: hasSpotify ? "Edit Spotify" : "Add Spotify",
-      icon: <SpotifySVGImage className="w-6 h-6" />,
-      description: hasSpotify ? "Modify Spotify track or playlist" : "Add Spotify track or playlist",
+      icon: <SpotifySVGImage className="h-6 w-6" />,
+      description: hasSpotify
+        ? "Modify Spotify track or playlist"
+        : "Add Spotify track or playlist",
       filled: hasSpotify,
       disabled: false,
     },
     {
       type: "wavlake" as const,
       label: hasWavlake ? "Edit Wavlake" : "Add Wavlake",
-      icon: <WavlakeSVGImage className="w-6 h-6" />,
-      description: hasWavlake ? "Modify Wavlake track or playlist" : "Add Wavlake track or playlist",
+      icon: <WavlakeSVGImage className="h-6 w-6" />,
+      description: hasWavlake
+        ? "Modify Wavlake track or playlist"
+        : "Add Wavlake track or playlist",
       filled: hasWavlake,
       disabled: false,
     },
     {
       type: "photo" as const,
       label: "Add Photo",
-      icon: <Camera className="w-6 h-6" />,
+      icon: <Camera className="h-6 w-6" />,
       description: "Select from your photos",
       filled: false,
       disabled: true,
@@ -55,7 +58,7 @@ export default function AttachmentModal({
     {
       type: "file" as const,
       label: "Add File",
-      icon: <File className="w-6 h-6" />,
+      icon: <File className="h-6 w-6" />,
       description: "Upload a document",
       filled: false,
       disabled: true,
@@ -63,7 +66,7 @@ export default function AttachmentModal({
     {
       type: "link" as const,
       label: "Add Link",
-      icon: <Link className="w-6 h-6" />,
+      icon: <Link className="h-6 w-6" />,
       description: "Add any web link",
       filled: false,
       disabled: true,
@@ -79,15 +82,15 @@ export default function AttachmentModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl w-full md:max-w-sm mx-2 md:mx-4 shadow-2xl p-6">
+      <div className="relative mx-2 w-full rounded-3xl bg-white p-6 shadow-2xl md:mx-4 md:max-w-sm">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold">Add Attachment</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="rounded-full p-2 hover:bg-gray-100"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -116,12 +119,21 @@ export default function AttachmentModal({
 
             const getTextStyles = () => {
               if (option.disabled) {
-                return { label: "font-medium text-gray-500", description: "text-sm text-gray-400" };
+                return {
+                  label: "font-medium text-gray-500",
+                  description: "text-sm text-gray-400",
+                };
               }
               if (option.filled) {
-                return { label: "font-medium text-green-900", description: "text-sm text-green-700" };
+                return {
+                  label: "font-medium text-green-900",
+                  description: "text-sm text-green-700",
+                };
               }
-              return { label: "font-medium text-gray-900", description: "text-sm text-gray-500" };
+              return {
+                label: "font-medium text-gray-900",
+                description: "text-sm text-gray-500",
+              };
             };
 
             const textStyles = getTextStyles();
@@ -138,16 +150,14 @@ export default function AttachmentModal({
                 className={getButtonStyles()}
                 disabled={option.disabled}
               >
-                <div className={getIconStyles()}>
-                  {option.icon}
-                </div>
+                <div className={getIconStyles()}>{option.icon}</div>
                 <div className="flex-1">
                   <p className={textStyles.label}>{option.label}</p>
                   <p className={textStyles.description}>{option.description}</p>
                 </div>
                 {option.filled && (
-                  <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                    <Check className="w-4 h-4 text-white" />
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
+                    <Check className="h-4 w-4 text-white" />
                   </div>
                 )}
               </button>

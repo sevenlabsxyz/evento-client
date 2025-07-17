@@ -1,17 +1,17 @@
+import { BlogPostClient } from "@/components/blog/BlogPostClient";
 import GhostContentAPI from "@tryghost/content-api";
 import { AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { BlogPostClient } from "@/components/blog/BlogPostClient";
 
 export const revalidate = 30;
 
 const Error = ({ message }: { message: string }) => (
   <div
-    className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mx-4"
+    className="mx-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
     role="alert"
   >
-    <div className="flex items-center gap-2 mb-1">
+    <div className="mb-1 flex items-center gap-2">
       <AlertTriangle className="h-5 w-5" />
       <p className="font-semibold">Error</p>
     </div>
@@ -20,8 +20,8 @@ const Error = ({ message }: { message: string }) => (
 );
 
 const Loading = () => (
-  <div className="flex justify-center items-center h-screen">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+  <div className="flex h-screen items-center justify-center">
+    <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-red-500"></div>
   </div>
 );
 
@@ -30,26 +30,32 @@ const GHOST_URL = process.env.GHOST_URL;
 const GHOST_CONTENT_API_KEY = process.env.GHOST_CONTENT_API_KEY;
 
 // Only initialize the API if environment variables are present
-const api = GHOST_URL && GHOST_CONTENT_API_KEY ? new GhostContentAPI({
-  url: GHOST_URL,
-  key: GHOST_CONTENT_API_KEY,
-  version: "v5.0",
-  makeRequest: async ({ url, method, params, headers }: any) => {
-    const apiUrl = new URL(url);
+const api =
+  GHOST_URL && GHOST_CONTENT_API_KEY
+    ? new GhostContentAPI({
+        url: GHOST_URL,
+        key: GHOST_CONTENT_API_KEY,
+        version: "v5.0",
+        makeRequest: async ({ url, method, params, headers }: any) => {
+          const apiUrl = new URL(url);
 
-    Object.keys(params).map((key) =>
-      apiUrl.searchParams.set(key, encodeURIComponent(params[key]))
-    );
+          Object.keys(params).map((key) =>
+            apiUrl.searchParams.set(key, encodeURIComponent(params[key])),
+          );
 
-    try {
-      const response = await fetch(apiUrl.toString(), { method, headers });
-      const data = await response.json();
-      return { data };
-    } catch (error) {
-      console.error(error);
-    }
-  },
-}) : null;
+          try {
+            const response = await fetch(apiUrl.toString(), {
+              method,
+              headers,
+            });
+            const data = await response.json();
+            return { data };
+          } catch (error) {
+            console.error(error);
+          }
+        },
+      })
+    : null;
 
 async function getBlogPost(slug: string) {
   // Return null if API is not initialized
@@ -57,7 +63,7 @@ async function getBlogPost(slug: string) {
     console.warn("Ghost API not initialized - missing environment variables");
     return null;
   }
-  
+
   try {
     return await api.posts.read({ slug }, { include: ["tags", "authors"] });
   } catch (error) {

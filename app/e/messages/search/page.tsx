@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowLeft, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -80,9 +80,9 @@ export default function UserSearchPage() {
     : "Suggested";
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+      <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-4">
         <Button
           variant="ghost"
           size="icon"
@@ -91,14 +91,14 @@ export default function UserSearchPage() {
         >
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search for users..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
+            className="w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
             autoFocus
           />
         </div>
@@ -107,7 +107,7 @@ export default function UserSearchPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         <div className="px-4 py-4">
-          <h3 className="text-sm font-semibold text-gray-900 mb-4">
+          <h3 className="mb-4 text-sm font-semibold text-gray-900">
             {sectionTitle}
           </h3>
           <div className="space-y-3">
@@ -115,21 +115,21 @@ export default function UserSearchPage() {
               <div
                 key={user.id}
                 onClick={() => handleUserClick(user.id)}
-                className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors cursor-pointer"
+                className="flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50"
               >
                 <div className="relative flex-shrink-0">
                   <img
                     src={user.avatar || "/placeholder.svg"}
                     alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover"
+                    className="h-12 w-12 rounded-full object-cover"
                   />
                   {user.isOnline && (
-                    <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                    <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></div>
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h4 className="font-medium text-gray-900 truncate">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1 flex items-center gap-2">
+                    <h4 className="truncate font-medium text-gray-900">
                       {user.name}
                     </h4>
                     <span className="text-sm text-gray-500">
@@ -149,7 +149,7 @@ export default function UserSearchPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="text-xs bg-transparent"
+                  className="bg-transparent text-xs"
                 >
                   Message
                 </Button>
@@ -158,7 +158,7 @@ export default function UserSearchPage() {
           </div>
 
           {searchQuery && usersToShow.length === 0 && (
-            <div className="text-center py-8">
+            <div className="py-8 text-center">
               <p className="text-gray-500">No users found</p>
             </div>
           )}

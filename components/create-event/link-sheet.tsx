@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { useState } from "react";
 
 interface LinkSheetProps {
   isOpen: boolean;
@@ -9,11 +9,7 @@ interface LinkSheetProps {
   onSave: (url: string) => void;
 }
 
-export default function LinkSheet({ 
-  isOpen, 
-  onClose, 
-  onSave 
-}: LinkSheetProps) {
+export default function LinkSheet({ isOpen, onClose, onSave }: LinkSheetProps) {
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
 
@@ -60,21 +56,19 @@ export default function LinkSheet({
           <SheetWithDetent.Content>
             <div className="p-6">
               {/* Handle */}
-              <div className="flex justify-center mb-4">
+              <div className="mb-4 flex justify-center">
                 <SheetWithDetent.Handle />
               </div>
 
               {/* Header */}
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-center">
-                  Add Link
-                </h2>
+                <h2 className="text-center text-xl font-semibold">Add Link</h2>
               </div>
 
               {/* Form */}
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="mb-2 block text-sm font-medium text-gray-700">
                     URL
                   </label>
                   <input
@@ -85,10 +79,12 @@ export default function LinkSheet({
                       setError("");
                     }}
                     placeholder="https://example.com"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500"
                     autoFocus
                   />
-                  {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
+                  {error && (
+                    <p className="mt-1 text-sm text-red-600">{error}</p>
+                  )}
                   <p className="mt-2 text-xs text-gray-500">
                     Enter any valid web URL
                   </p>
@@ -96,16 +92,16 @@ export default function LinkSheet({
               </div>
 
               {/* Actions */}
-              <div className="flex gap-3 mt-6">
+              <div className="mt-6 flex gap-3">
                 <button
                   onClick={handleClose}
-                  className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium"
+                  className="flex-1 rounded-xl border border-gray-300 px-4 py-3 font-medium text-gray-700 hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSave}
-                  className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium"
+                  className="flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600"
                 >
                   Save
                 </button>

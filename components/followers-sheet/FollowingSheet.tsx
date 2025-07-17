@@ -1,12 +1,12 @@
 "use client";
-import { useState, useMemo } from "react";
-import { MessageCircle, ArrowRight } from "lucide-react";
-import { VisuallyHidden } from "@silk-hq/components";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
 import { useUserFollowing } from "@/lib/hooks/useUserProfile";
+import { VisuallyHidden } from "@silk-hq/components";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import "./FollowersSheet.css";
 
 interface FollowingSheetProps {
@@ -20,24 +20,24 @@ export default function FollowingSheet({
   isOpen,
   onClose,
   userId,
-  username
+  username,
 }: FollowingSheetProps) {
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
-  
+
   const { data: following, isLoading, error } = useUserFollowing(userId);
 
   // Filter following based on search query
   const filteredFollowing = useMemo(() => {
     if (!following) return [];
     if (!searchText.trim()) return following;
-    
+
     const query = searchText.toLowerCase();
     return following.filter(
       (user) =>
         user.username?.toLowerCase().includes(query) ||
-        user.name?.toLowerCase().includes(query)
+        user.name?.toLowerCase().includes(query),
     );
   }, [following, searchText]);
 
@@ -52,10 +52,10 @@ export default function FollowingSheet({
   };
 
   return (
-    <SheetWithDetent.Root 
-      presented={isOpen} 
+    <SheetWithDetent.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
-      activeDetent={activeDetent} 
+      activeDetent={activeDetent}
       onActiveDetentChange={setActiveDetent}
     >
       <SheetWithDetent.Portal>
@@ -84,7 +84,10 @@ export default function FollowingSheet({
                   {isLoading ? (
                     // Loading State
                     Array.from({ length: 3 }).map((_, index) => (
-                      <div key={`loading-${index}`} className="FollowersSheet-loadingContainer">
+                      <div
+                        key={`loading-${index}`}
+                        className="FollowersSheet-loadingContainer"
+                      >
                         <div className="FollowersSheet-loadingAvatar" />
                         <div className="FollowersSheet-loadingDetails">
                           <div className="FollowersSheet-loadingLine" />
@@ -103,7 +106,7 @@ export default function FollowingSheet({
                     // Empty State
                     <div className="FollowersSheet-emptyContainer">
                       <div className="FollowersSheet-emptyText">
-                        {searchText.trim() 
+                        {searchText.trim()
                           ? `No following found matching "${searchText}"`
                           : `@${username} is not following anyone yet`}
                       </div>
@@ -111,7 +114,10 @@ export default function FollowingSheet({
                   ) : (
                     // Following List
                     filteredFollowing.map((user, index) => (
-                      <div key={user.id || `following-${index}`} className="FollowersSheet-userContainer">
+                      <div
+                        key={user.id || `following-${index}`}
+                        className="FollowersSheet-userContainer"
+                      >
                         <button
                           onClick={() => handleUserClick(user.username)}
                           className="FollowersSheet-userButton"
@@ -130,7 +136,7 @@ export default function FollowingSheet({
                               <div className="FollowersSheet-username">
                                 @{user.username}
                               </div>
-                              {user.verification_status === 'verified' && (
+                              {user.verification_status === "verified" && (
                                 <div className="FollowersSheet-verified">✓</div>
                               )}
                             </div>

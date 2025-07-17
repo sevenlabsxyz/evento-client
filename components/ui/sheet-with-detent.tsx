@@ -1,6 +1,12 @@
 "use client";
-import React, { createContext, useContext, useMemo, useRef, useState } from "react";
-import { Sheet, Scroll, type SheetViewProps } from "@silk-hq/components";
+import { Scroll, Sheet, type SheetViewProps } from "@silk-hq/components";
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import "./sheet-with-detent.css";
 
 // ================================================================================================
@@ -13,13 +19,14 @@ type SheetWithDetentContextValue = {
   viewRef: React.RefObject<HTMLElement>;
 };
 
-const SheetWithDetentContext = createContext<SheetWithDetentContextValue | null>(null);
+const SheetWithDetentContext =
+  createContext<SheetWithDetentContextValue | null>(null);
 
 const useSheetWithDetentContext = () => {
   const context = useContext(SheetWithDetentContext);
   if (!context) {
     throw new Error(
-      "useSheetWithDetentContext must be used within a SheetWithDetentContextProvider"
+      "useSheetWithDetentContext must be used within a SheetWithDetentContextProvider",
     );
   }
   return context;
@@ -66,10 +73,18 @@ const SheetWithDetentView = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Sheet.View>
 >(
   (
-    { children, className, onTravelStatusChange, onTravelRangeChange, onTravel, ...restProps },
-    ref
+    {
+      children,
+      className,
+      onTravelStatusChange,
+      onTravelRangeChange,
+      onTravel,
+      ...restProps
+    },
+    ref,
   ) => {
-    const { reachedLastDetent, setReachedLastDetent, viewRef } = useSheetWithDetentContext();
+    const { reachedLastDetent, setReachedLastDetent, viewRef } =
+      useSheetWithDetentContext();
 
     //
 
@@ -122,7 +137,7 @@ const SheetWithDetentView = React.forwardRef<
         {children}
       </Sheet.View>
     );
-  }
+  },
 );
 SheetWithDetentView.displayName = "SheetWithDetent.View";
 

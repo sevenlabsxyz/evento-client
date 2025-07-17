@@ -1,5 +1,5 @@
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { AlertTriangle } from 'lucide-react'
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { AlertTriangle } from "lucide-react";
 
 interface CapacityConfirmationSheetProps {
   isOpen: boolean;
@@ -8,15 +8,15 @@ interface CapacityConfirmationSheetProps {
   currentCapacity?: string;
 }
 
-export default function CapacityConfirmationSheet({ 
-  isOpen, 
-  onClose, 
+export default function CapacityConfirmationSheet({
+  isOpen,
+  onClose,
   onConfirm,
-  currentCapacity 
+  currentCapacity,
 }: CapacityConfirmationSheetProps) {
   const handleConfirm = () => {
-    onConfirm()
-  }
+    onConfirm();
+  };
 
   return (
     <DetachedSheet.Root
@@ -29,20 +29,23 @@ export default function CapacityConfirmationSheet({
           <DetachedSheet.Content>
             <div className="p-6">
               {/* Handle */}
-              <div className="flex justify-center mb-4">
+              <div className="mb-4 flex justify-center">
                 <DetachedSheet.Handle />
               </div>
 
               {/* Header */}
               <div className="mb-6">
-                <div className="flex items-center justify-between mb-6">
-                  <button onClick={onClose} className="text-red-500 font-medium">
+                <div className="mb-6 flex items-center justify-between">
+                  <button
+                    onClick={onClose}
+                    className="font-medium text-red-500"
+                  >
                     Cancel
                   </button>
-                  <h2 className="font-semibold text-lg">Turn Off Capacity?</h2>
+                  <h2 className="text-lg font-semibold">Turn Off Capacity?</h2>
                   <button
                     onClick={handleConfirm}
-                    className="bg-red-500 text-white px-4 py-2 rounded-xl font-medium"
+                    className="rounded-xl bg-red-500 px-4 py-2 font-medium text-white"
                   >
                     Turn Off
                   </button>
@@ -50,22 +53,26 @@ export default function CapacityConfirmationSheet({
               </div>
 
               {/* Content */}
-              <div className="text-center space-y-4">
-                <div className="flex justify-center mb-4">
+              <div className="space-y-4 text-center">
+                <div className="mb-4 flex justify-center">
                   <AlertTriangle className="h-12 w-12 text-amber-500" />
                 </div>
-                
+
                 <div className="space-y-3 text-left">
-                  <p className="text-gray-700 text-sm leading-relaxed">
-                    Are you sure you want to turn off capacity limits for this event?
+                  <p className="text-sm leading-relaxed text-gray-700">
+                    Are you sure you want to turn off capacity limits for this
+                    event?
                     {currentCapacity && (
                       <span className="font-semibold text-gray-900">
-                        {" "}Your current capacity is set to {currentCapacity} attendees.
+                        {" "}
+                        Your current capacity is set to {currentCapacity}{" "}
+                        attendees.
                       </span>
                     )}
                   </p>
-                  <p className="text-gray-500 text-sm leading-relaxed">
-                    This action will remove all capacity restrictions. You can always set a new capacity later.
+                  <p className="text-sm leading-relaxed text-gray-500">
+                    This action will remove all capacity restrictions. You can
+                    always set a new capacity later.
                   </p>
                 </div>
               </div>
@@ -74,5 +81,5 @@ export default function CapacityConfirmationSheet({
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  )
+  );
 }

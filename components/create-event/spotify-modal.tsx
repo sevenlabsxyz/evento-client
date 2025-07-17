@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { X } from "lucide-react";
+import { useState } from "react";
 
 interface SpotifyModalProps {
   isOpen: boolean;
@@ -63,22 +63,24 @@ export default function SpotifyModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl w-full md:max-w-sm mx-2 md:mx-4 shadow-2xl p-6">
+      <div className="relative mx-2 w-full rounded-3xl bg-white p-6 shadow-2xl md:mx-4 md:max-w-sm">
         {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold">Add Spotify Track or Playlist</h2>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xl font-semibold">
+            Add Spotify Track or Playlist
+          </h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="rounded-full p-2 hover:bg-gray-100"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-gray-700">
               Spotify URL
             </label>
             <input
@@ -89,7 +91,7 @@ export default function SpotifyModal({
                 setError("");
               }}
               placeholder="https://open.spotify.com/track/... or /playlist/..."
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              className="w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500"
             />
             {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
             <p className="mt-2 text-xs text-gray-500">
@@ -99,16 +101,16 @@ export default function SpotifyModal({
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 mt-6">
+        <div className="mt-6 flex gap-3">
           <button
             onClick={handleClose}
-            className="flex-1 py-3 px-4 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 font-medium"
+            className="flex-1 rounded-xl border border-gray-300 px-4 py-3 font-medium text-gray-700 hover:bg-gray-50"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-3 px-4 bg-red-500 text-white rounded-xl hover:bg-red-600 font-medium"
+            className="flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600"
           >
             Save
           </button>

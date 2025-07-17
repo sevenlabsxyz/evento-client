@@ -1,11 +1,11 @@
 "use client";
 
-import { Search, Plus } from "lucide-react";
+import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
 import { useTopBar } from "@/lib/stores/topbar-store";
-import { Navbar } from "@/components/navbar";
+import { Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState , useEffect} from "react";
+import { useEffect, useState } from "react";
 
 export default function ChatPage() {
   const { setTopBar } = useTopBar();
@@ -112,22 +112,23 @@ export default function ChatPage() {
       conversation.user.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      conversation.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
+      conversation.lastMessage
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()),
   );
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Search Bar */}
       <div className="px-4 pb-2">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400" />
           <input
             type="text"
             placeholder="Search messages"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
+            className="w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
           />
         </div>
       </div>
@@ -138,7 +139,7 @@ export default function ChatPage() {
           <div
             key={conversation.id}
             onClick={() => handleConversationClick(conversation.id)}
-            className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors active:bg-gray-100 cursor-pointer"
+            className="flex cursor-pointer items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 active:bg-gray-100"
           >
             {/* Avatar with online indicator */}
             <div className="relative flex-shrink-0">
@@ -147,19 +148,19 @@ export default function ChatPage() {
                 alt={conversation.user.name}
                 className={`object-cover ${
                   conversation.type === "group"
-                    ? "w-12 h-12 rounded-xl"
-                    : "w-12 h-12 rounded-full"
+                    ? "h-12 w-12 rounded-xl"
+                    : "h-12 w-12 rounded-full"
                 }`}
               />
               {conversation.type === "user" && conversation.isOnline && (
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></div>
               )}
             </div>
 
             {/* Message content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="font-semibold text-sm truncate">
+            <div className="min-w-0 flex-1">
+              <div className="mb-1 flex items-center justify-between">
+                <h3 className="truncate text-sm font-semibold">
                   {conversation.user.name}
                   {conversation.isGroup && (
                     <span className="ml-1 text-xs text-gray-500">• Group</span>
@@ -170,14 +171,14 @@ export default function ChatPage() {
                     {conversation.time}
                   </span>
                   {conversation.unreadCount > 0 && (
-                    <div className="bg-red-500 text-white text-xs rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">
+                    <div className="flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-red-500 px-1 text-xs text-white">
                       {conversation.unreadCount}
                     </div>
                   )}
                 </div>
               </div>
               <p
-                className={`text-sm truncate ${
+                className={`truncate text-sm ${
                   conversation.unreadCount > 0
                     ? "font-medium text-gray-900"
                     : "text-gray-600"
@@ -191,7 +192,7 @@ export default function ChatPage() {
 
         {/* No results message */}
         {searchQuery && filteredConversations.length === 0 && (
-          <div className="text-center py-8">
+          <div className="py-8 text-center">
             <p className="text-gray-500">No conversations found</p>
           </div>
         )}

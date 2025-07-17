@@ -9,12 +9,12 @@
   /* APPEARANCE */
   border-bottom-style: solid;
   border-bottom-color: rgb(229, 231, 235);
-  
+
   /* INNER-LAYOUT */
   border-bottom-width: 1px;
   display: grid;
   grid-template-rows: min-content min-content;
-  
+
   /* TEXT */
   font-size: 0; /* Fix Webkit bug causing space added when typing */
 }
@@ -40,11 +40,11 @@
   background: none;
   border: none;
   outline: none;
-  
+
   /* TEXT */
   font-weight: 500;
   font-size: 1rem;
-  
+
   /* INTERACTIVITY */
   cursor: pointer;
 }
@@ -62,7 +62,7 @@
 .ContactHostSheet-headerButton--send:disabled {
   /* TEXT */
   color: rgb(209, 213, 219);
-  
+
   /* INTERACTIVITY */
   cursor: not-allowed;
 }
@@ -101,12 +101,12 @@
   border-radius: 0.75rem;
   background-color: rgb(249, 250, 251);
   resize: none;
-  
+
   /* TEXT */
   font-size: 1rem;
   line-height: 1.5;
   color: rgb(17, 24, 39);
-  
+
   /* INTERACTIVITY */
   outline: none;
   transition: all 0.15s;

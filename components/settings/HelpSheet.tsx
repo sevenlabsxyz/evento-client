@@ -1,8 +1,8 @@
 "use client";
 
-import { Bot, Twitter, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { Bot, Mail, Twitter } from "lucide-react";
 
 interface HelpSheetProps {
   open: boolean;
@@ -15,8 +15,8 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
   };
 
   return (
-    <SheetWithDetent.Root 
-      presented={open} 
+    <SheetWithDetent.Root
+      presented={open}
       onPresentedChange={(presented) => onOpenChange(presented)}
       activeDetent={1}
       onActiveDetentChange={() => {}}
@@ -25,80 +25,94 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
         <SheetWithDetent.View>
           <SheetWithDetent.Backdrop />
           <SheetWithDetent.Content className="grid grid-rows-[min-content_1fr]">
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex justify-center mb-4">
+            <div className="border-b border-gray-100 p-4">
+              <div className="mb-4 flex justify-center">
                 <SheetWithDetent.Handle />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Need Help?</h2>
-                <p className="text-gray-600">Choose how you'd like to get support</p>
+                <h2 className="mb-2 text-2xl font-bold text-gray-900">
+                  Need Help?
+                </h2>
+                <p className="text-gray-600">
+                  Choose how you'd like to get support
+                </p>
               </div>
             </div>
 
             <SheetWithDetent.ScrollRoot asChild>
               <SheetWithDetent.ScrollView className="min-h-0">
                 <SheetWithDetent.ScrollContent className="p-4">
-                    <div className="space-y-4">
-                      {/* AI Agent Card */}
-                      <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                            <Bot className="h-6 w-6 text-blue-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-lg">Talk to our AI agent</h3>
-                            <p className="text-gray-500 text-sm">
-                              Get instant answers to common questions
-                            </p>
-                          </div>
+                  <div className="space-y-4">
+                    {/* AI Agent Card */}
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md">
+                      <div className="mb-4 flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                          <Bot className="h-6 w-6 text-blue-600" />
                         </div>
-                        <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
-                          Start Chat
-                        </Button>
-                      </div>
-
-                      {/* Twitter Card */}
-                      <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
-                            <Twitter className="h-6 w-6 text-white" />
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-lg">Reach out to us on X</h3>
-                            <p className="text-gray-500 text-sm">
-                              Connect with us on social media
-                            </p>
-                          </div>
+                        <div>
+                          <h3 className="text-lg font-bold">
+                            Talk to our AI agent
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            Get instant answers to common questions
+                          </p>
                         </div>
-                        <Button
-                          className="w-full bg-black hover:bg-gray-800 text-white"
-                          onClick={() => handleExternalLink("https://x.com/evento")}
-                        >
-                          Follow @evento
-                        </Button>
                       </div>
-
-                      {/* Email Card */}
-                      <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
-                        <div className="flex items-center gap-4 mb-4">
-                          <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
-                            <Mail className="h-6 w-6 text-red-600" />
-                          </div>
-                          <div>
-                            <h3 className="font-bold text-lg">Email us at evento.so</h3>
-                            <p className="text-gray-500 text-sm">
-                              Send us a detailed message
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          className="w-full bg-red-500 hover:bg-red-600 text-white"
-                          onClick={() => handleExternalLink("mailto:hello@evento.so")}
-                        >
-                          Send Email
-                        </Button>
-                      </div>
+                      <Button className="w-full bg-blue-500 text-white hover:bg-blue-600">
+                        Start Chat
+                      </Button>
                     </div>
+
+                    {/* Twitter Card */}
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md">
+                      <div className="mb-4 flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black">
+                          <Twitter className="h-6 w-6 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold">
+                            Reach out to us on X
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            Connect with us on social media
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        className="w-full bg-black text-white hover:bg-gray-800"
+                        onClick={() =>
+                          handleExternalLink("https://x.com/evento")
+                        }
+                      >
+                        Follow @evento
+                      </Button>
+                    </div>
+
+                    {/* Email Card */}
+                    <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md">
+                      <div className="mb-4 flex items-center gap-4">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                          <Mail className="h-6 w-6 text-red-600" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold">
+                            Email us at evento.so
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            Send us a detailed message
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        className="w-full bg-red-500 text-white hover:bg-red-600"
+                        onClick={() =>
+                          handleExternalLink("mailto:hello@evento.so")
+                        }
+                      >
+                        Send Email
+                      </Button>
+                    </div>
+                  </div>
                 </SheetWithDetent.ScrollContent>
               </SheetWithDetent.ScrollView>
             </SheetWithDetent.ScrollRoot>

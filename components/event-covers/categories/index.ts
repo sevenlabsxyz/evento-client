@@ -1,7 +1,7 @@
-import { FEATURED_COVERS } from "./featured";
 import { CLASSIC_COVERS } from "./classic";
-import { SOCIAL_COVERS } from "./social";
+import { FEATURED_COVERS } from "./featured";
 import { PARTY_COVERS } from "./party";
+import { SOCIAL_COVERS } from "./social";
 import { TECH_COVERS } from "./tech";
 // import { LOVE_COVERS } from "./love";
 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { useEffect } from "react";
@@ -23,11 +23,8 @@ export default function BlogLayout({
   }, [setTopBar]);
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
-      
-      <div className="flex-1 overflow-y-auto bg-gray-50">
-        {children}
-      </div>
+    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+      <div className="flex-1 overflow-y-auto bg-gray-50">{children}</div>
     </div>
   );
 }

@@ -1,11 +1,11 @@
 "use client";
 
-import { X, Plus, Bookmark, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTopBar } from "@/lib/stores/topbar-store";
-import { useRouter } from "next/navigation";
-import { useState , useEffect} from "react";
 import { toast } from "@/lib/utils/toast";
+import { Bookmark, ChevronRight, Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function SavedListsPage() {
   const { setTopBar } = useTopBar();
@@ -89,40 +89,39 @@ export default function SavedListsPage() {
   };
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
         {/* Add New List Button */}
         <div className="px-4 py-4">
           <Button
             onClick={() => setShowCreateModal(true)}
-            className="w-full bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-medium"
+            className="w-full rounded-xl bg-red-500 py-3 font-medium text-white hover:bg-red-600"
           >
-            <Plus className="h-5 w-5 mr-2" />
+            <Plus className="mr-2 h-5 w-5" />
             Add New List
           </Button>
         </div>
 
         {/* Lists */}
-        <div className="px-4 pb-6 space-y-3">
+        <div className="space-y-3 px-4 pb-6">
           {savedLists.map((list) => (
             <div
               key={list.id}
               onClick={() => handleListClick(list.id)}
-              className="bg-white rounded-2xl p-4 shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+              className="cursor-pointer rounded-2xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md"
             >
               <div className="flex items-center justify-between">
                 <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-bold text-lg">{list.name}</h3>
+                  <div className="mb-1 flex items-center gap-2">
+                    <h3 className="text-lg font-bold">{list.name}</h3>
                     {list.isDefault && (
-                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
                         Default
                       </span>
                     )}
                   </div>
-                  <p className="text-gray-600 text-sm mb-2">
+                  <p className="mb-2 text-sm text-gray-600">
                     {list.eventCount}{" "}
                     {list.eventCount === 1 ? "event" : "events"} • Updated{" "}
                     {list.lastUpdated}
@@ -130,17 +129,17 @@ export default function SavedListsPage() {
 
                   {/* Preview Images */}
                   {list.preview.length > 0 && (
-                    <div className="flex -space-x-2 mb-2">
+                    <div className="mb-2 flex -space-x-2">
                       {list.preview.slice(0, 3).map((image, index) => (
                         <img
                           key={index}
                           src={image || "/placeholder.svg"}
                           alt=""
-                          className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                          className="h-8 w-8 rounded-full border-2 border-white object-cover"
                         />
                       ))}
                       {list.eventCount > 3 && (
-                        <div className="w-8 h-8 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs font-medium text-gray-600">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-100 text-xs font-medium text-gray-600">
                           +{list.eventCount - 3}
                         </div>
                       )}
@@ -155,20 +154,20 @@ export default function SavedListsPage() {
 
         {/* Empty State */}
         {savedLists.length === 0 && (
-          <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="flex flex-1 items-center justify-center px-4 py-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                 <Bookmark className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
                 No saved lists
               </h3>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="mb-6 text-sm text-gray-500">
                 Create your first list to start saving events.
               </p>
               <Button
                 onClick={() => setShowCreateModal(true)}
-                className="bg-red-500 hover:bg-red-600 text-white"
+                className="bg-red-500 text-white hover:bg-red-600"
               >
                 Create List
               </Button>
@@ -179,15 +178,15 @@ export default function SavedListsPage() {
 
       {/* Create List Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full">
-            <h3 className="text-xl font-bold mb-4">Create New List</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm">
+            <h3 className="mb-4 text-xl font-bold">Create New List</h3>
             <input
               type="text"
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
               placeholder="Enter list name..."
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
+              className="mb-4 w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500"
               autoFocus
               onKeyPress={(e) => e.key === "Enter" && handleCreateList()}
             />
@@ -204,7 +203,7 @@ export default function SavedListsPage() {
               </Button>
               <Button
                 onClick={handleCreateList}
-                className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                className="flex-1 bg-red-500 text-white hover:bg-red-600"
               >
                 Create
               </Button>

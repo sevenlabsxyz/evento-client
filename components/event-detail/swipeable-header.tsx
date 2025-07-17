@@ -1,15 +1,18 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
-import { Event } from '@/lib/types/event';
+import { Event } from "@/lib/types/event";
+import Image from "next/image";
+import { useRef, useState } from "react";
 
 interface SwipeableHeaderProps {
   event: Event;
   onImageClick: (index: number) => void;
 }
 
-export default function SwipeableHeader({ event, onImageClick }: SwipeableHeaderProps) {
+export default function SwipeableHeader({
+  event,
+  onImageClick,
+}: SwipeableHeaderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -40,7 +43,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -59,18 +62,18 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
 
   if (images.length === 0) {
     return (
-      <div className="relative w-full aspect-square overflow-hidden bg-gray-200 flex items-center justify-center">
+      <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gray-200">
         <span className="text-gray-500">No image available</span>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full aspect-square overflow-hidden">
+    <div className="relative aspect-square w-full overflow-hidden">
       {/* Image Container */}
       <div
         ref={containerRef}
-        className="relative w-full h-full cursor-pointer"
+        className="relative h-full w-full cursor-pointer"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -84,13 +87,13 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
           className="object-cover transition-transform duration-300 ease-out"
           priority
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        
+
         {/* Dot Indicators */}
         {hasMultipleImages && (
-          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-16 left-1/2 flex -translate-x-1/2 transform gap-2">
             {images.map((_, index) => (
               <button
                 key={index}
@@ -98,25 +101,21 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
                   e.stopPropagation();
                   setCurrentIndex(index);
                 }}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex 
-                    ? 'bg-white' 
-                    : 'bg-white/50'
+                className={`h-2 w-2 rounded-full transition-colors ${
+                  index === currentIndex ? "bg-white" : "bg-white/50"
                 }`}
               />
             ))}
           </div>
         )}
-        
+
         {/* Event Title and Subtitle */}
         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-          <h1 className="text-2xl font-bold mb-2 leading-tight">
+          <h1 className="mb-2 text-2xl font-bold leading-tight">
             {event.title}
           </h1>
           {event.subtitle && (
-            <p className="text-lg opacity-90 leading-tight">
-              {event.subtitle}
-            </p>
+            <p className="text-lg leading-tight opacity-90">{event.subtitle}</p>
           )}
         </div>
       </div>

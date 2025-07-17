@@ -1,18 +1,31 @@
 "use client";
 
-import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { toast } from "@/lib/utils/toast";
-import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { Navbar } from "@/components/navbar";
 import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
 import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
+import { Navbar } from "@/components/navbar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
+import { useAuth } from "@/lib/hooks/useAuth";
+import {
+  useUserEventCount,
+  useUserFollowers,
+  useUserFollowing,
+  useUserProfile,
+} from "@/lib/hooks/useUserProfile";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { toast } from "@/lib/utils/toast";
+import {
+  BadgeCheck,
+  Camera,
+  Edit3,
+  Globe,
+  Loader2,
+  Settings,
+  Zap,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -27,13 +40,13 @@ export default function ProfilePage() {
   const lightboxRef = useRef<SilkLightboxRef>(null);
   const avatarLightboxRef = useRef<SilkLightboxRef>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  
+
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
   const { logout } = useAuth();
-  const { data: eventCount } = useUserEventCount(user?.id || '');
-  const { data: followers } = useUserFollowers(user?.id || '');
-  const { data: following } = useUserFollowing(user?.id || '');
+  const { data: eventCount } = useUserEventCount(user?.id || "");
+  const { data: followers } = useUserFollowers(user?.id || "");
+  const { data: following } = useUserFollowing(user?.id || "");
 
   // Set TopBar content
   useEffect(() => {
@@ -82,7 +95,7 @@ export default function ProfilePage() {
     username: user?.username ? `@${user.username}` : "@user",
     status: user?.bio || "Welcome to Evento",
     avatar: user?.image || "/placeholder.svg?height=80&width=80",
-    isVerified: user?.verification_status === 'verified',
+    isVerified: user?.verification_status === "verified",
   };
 
   const attendingEvents = [
@@ -240,11 +253,13 @@ export default function ProfilePage() {
 
   const handleSocialClick = (platform: string) => {
     const urls = {
-      instagram: user?.instagram_handle ? `https://instagram.com/${user.instagram_handle}` : null,
+      instagram: user?.instagram_handle
+        ? `https://instagram.com/${user.instagram_handle}`
+        : null,
       x: user?.x_handle ? `https://x.com/${user.x_handle}` : null,
       website: user?.bio_link || null,
     };
-    
+
     const url = urls[platform as keyof typeof urls];
     if (url) {
       window.open(url, "_blank", "noopener,noreferrer");
@@ -266,7 +281,7 @@ export default function ProfilePage() {
       toast.error("No website link available");
       return;
     }
-    
+
     setShowWebsiteModal(true);
     setCountdown(3);
 
@@ -308,14 +323,17 @@ export default function ProfilePage() {
   };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce((acc, event) => {
-      const date = event.date;
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(event);
-      return acc;
-    }, {} as Record<string, typeof events>);
+    const grouped = events.reduce(
+      (acc, event) => {
+        const date = event.date;
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(event);
+        return acc;
+      },
+      {} as Record<string, typeof events>,
+    );
 
     return Object.entries(grouped).map(([date, events]) => ({
       date,
@@ -360,7 +378,7 @@ export default function ProfilePage() {
         <div className="flex gap-2">
           <button
             onClick={() => setEventsFilter("attending")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               eventsFilter === "attending"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -370,7 +388,7 @@ export default function ProfilePage() {
           </button>
           <button
             onClick={() => setEventsFilter("hosting")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               eventsFilter === "hosting"
                 ? "bg-red-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -384,8 +402,8 @@ export default function ProfilePage() {
         <div className="space-y-6">
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.date}>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-gray-500 font-medium text-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-medium text-gray-500">
                   {group.formattedDate}
                 </h2>
               </div>
@@ -396,14 +414,14 @@ export default function ProfilePage() {
                     <img
                       src={event.image || "/placeholder.svg"}
                       alt={event.title}
-                      className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                      className="h-12 w-12 flex-shrink-0 rounded-xl object-cover"
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{event.title}</h3>
+                      <h3 className="text-lg font-semibold">{event.title}</h3>
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-gray-600 text-sm">
+                      <span className="text-sm text-gray-600">
                         {event.time}
                       </span>
                     </div>
@@ -415,7 +433,7 @@ export default function ProfilePage() {
         </div>
 
         {currentEvents.length === 0 && (
-          <div className="text-center py-8">
+          <div className="py-8 text-center">
             <p className="text-gray-500">No {eventsFilter} events yet</p>
           </div>
         )}
@@ -427,7 +445,7 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Bio/Description */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Bio</h4>
+        <h4 className="mb-3 font-semibold text-gray-900">Bio</h4>
         <p className="text-gray-700">
           Travel enthusiast exploring the world one event at a time. Love
           photography, food, and meeting new people! ✈️📸
@@ -436,12 +454,12 @@ export default function ProfilePage() {
 
       {/* Interest Tags */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Interests</h4>
+        <h4 className="mb-3 font-semibold text-gray-900">Interests</h4>
         <div className="flex flex-wrap gap-2">
           {interestTags.map((tag, index) => (
             <span
               key={index}
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
+              className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800"
             >
               {tag}
             </span>
@@ -451,11 +469,11 @@ export default function ProfilePage() {
 
       {/* Profile Questions */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">About Me</h4>
+        <h4 className="mb-3 font-semibold text-gray-900">About Me</h4>
         <div className="space-y-3">
           {profileQuestions.map((item, index) => (
-            <div key={index} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-sm font-medium text-gray-700 mb-1">
+            <div key={index} className="rounded-xl bg-gray-50 p-3">
+              <p className="mb-1 text-sm font-medium text-gray-700">
                 {item.question}
               </p>
               <p className="text-sm text-gray-900">{item.answer}</p>
@@ -466,10 +484,10 @@ export default function ProfilePage() {
 
       {/* Photo Album */}
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3 flex items-center justify-between">
           <h4 className="font-semibold text-gray-900">Photos</h4>
           <Button variant="ghost" size="sm" className="text-red-600">
-            <Camera className="h-4 w-4 mr-1" />
+            <Camera className="mr-1 h-4 w-4" />
             Add
           </Button>
         </div>
@@ -478,12 +496,12 @@ export default function ProfilePage() {
             <button
               key={index}
               onClick={() => handleProfilePhotoClick(index)}
-              className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity"
+              className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
             >
               <img
                 src={photo || "/placeholder.svg"}
                 alt={`Profile photo ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             </button>
           ))}
@@ -494,13 +512,13 @@ export default function ProfilePage() {
 
   const renderStatsTab = () => (
     <div className="grid grid-cols-2 gap-4">
-      <div className="text-center p-4 bg-blue-50 rounded-xl">
+      <div className="rounded-xl bg-blue-50 p-4 text-center">
         <div className="text-3xl font-bold text-blue-600">
           {userStats.countries}
         </div>
         <div className="text-sm text-gray-600">Countries</div>
       </div>
-      <div className="text-center p-4 bg-green-50 rounded-xl">
+      <div className="rounded-xl bg-green-50 p-4 text-center">
         <div className="text-3xl font-bold text-green-600">
           {userStats.mutuals}
         </div>
@@ -512,7 +530,7 @@ export default function ProfilePage() {
   // Show loading state while fetching user data
   if (isUserLoading || !user) {
     return (
-      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col items-center justify-center">
+      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm">
         <Loader2 className="h-8 w-8 animate-spin text-red-500" />
         <p className="mt-2 text-gray-600">Loading profile...</p>
       </div>
@@ -520,23 +538,20 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
+    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Content */}
       <div className="flex-1 overflow-y-auto pb-20">
         {/* Cover Image Section */}
         <div className="relative">
           {/* Banner */}
-          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
-          
+          <div className="h-48 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-64" />
+
           {/* Profile Picture - Centered & Clickable */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
             <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                <AvatarImage 
-                  src={userData.avatar || ''} 
-                  alt="Profile" 
-                />
-                <AvatarFallback className="text-3xl bg-white">
+              <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+                <AvatarImage src={userData.avatar || ""} alt="Profile" />
+                <AvatarFallback className="bg-white text-3xl">
                   {userData.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -547,9 +562,9 @@ export default function ProfilePage() {
                     e.stopPropagation();
                     setShowVerificationModal(true);
                   }}
-                  className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
+                  className="absolute bottom-0 right-0 transition-transform hover:scale-105"
                 >
-                  <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+                  <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
                 </button>
               )}
             </button>
@@ -557,15 +572,17 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className="bg-white px-6 pt-20 pb-6 mb-4">
+        <div className="mb-4 bg-white px-6 pb-6 pt-20">
           {/* User Info - Centered */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{userData.name}</h2>
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userData.name}
+            </h2>
             <p className="text-gray-600">{userData.username}</p>
           </div>
 
           {/* Stats - Centered */}
-          <div className="flex justify-center mb-6">
+          <div className="mb-6 flex justify-center">
             <div className="grid grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-xl font-bold text-gray-900">
@@ -596,8 +613,8 @@ export default function ProfilePage() {
 
           {/* Status/Title - Centered */}
           {userData.status && (
-            <div className="text-center mb-4">
-              <p className="text-gray-600 text-sm font-medium">
+            <div className="mb-4 text-center">
+              <p className="text-sm font-medium text-gray-600">
                 {userData.status}
               </p>
             </div>
@@ -605,13 +622,13 @@ export default function ProfilePage() {
 
           {/* Website - Centered */}
           {user?.bio_link && (
-            <div className="flex items-center justify-center gap-2 mb-4">
+            <div className="mb-4 flex items-center justify-center gap-2">
               <Globe className="h-4 w-4 text-gray-500" />
               <button
                 onClick={handleWebsiteClick}
-                className="text-blue-600 hover:underline text-sm"
+                className="text-sm text-blue-600 hover:underline"
               >
-                {user.bio_link.replace(/^https?:\/\//, '')}
+                {user.bio_link.replace(/^https?:\/\//, "")}
               </button>
             </div>
           )}
@@ -626,8 +643,8 @@ export default function ProfilePage() {
                 className="rounded-full bg-gray-100"
                 onClick={() => handleSocialClick("instagram")}
               >
-                <div className="w-5 h-5 bg-gradient-to-br from-purple-500 via-pink-500 to-red-400 rounded-sm flex items-center justify-center">
-                  <div className="w-3 h-3 border border-white rounded-sm"></div>
+                <div className="flex h-5 w-5 items-center justify-center rounded-sm bg-gradient-to-br from-purple-500 via-pink-500 to-red-400">
+                  <div className="h-3 w-3 rounded-sm border border-white"></div>
                 </div>
               </Button>
             )}
@@ -639,7 +656,7 @@ export default function ProfilePage() {
                 className="rounded-full bg-gray-100"
                 onClick={() => handleSocialClick("x")}
               >
-                <div className="w-5 h-5 bg-black rounded-sm flex items-center justify-center text-white text-xs font-bold">
+                <div className="flex h-5 w-5 items-center justify-center rounded-sm bg-black text-xs font-bold text-white">
                   𝕏
                 </div>
               </Button>
@@ -659,12 +676,12 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabbed Section */}
-        <div className="bg-white mb-4">
+        <div className="mb-4 bg-white">
           {/* Tab Headers */}
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab("about")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
                 activeTab === "about"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -674,7 +691,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("events")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
                 activeTab === "events"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -684,7 +701,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
                 activeTab === "stats"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -703,18 +720,16 @@ export default function ProfilePage() {
         </div>
       </div>
 
-
-
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full text-center">
-            <h3 className="text-xl font-bold mb-4">Leaving Evento</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
+            <h3 className="mb-4 text-xl font-bold">Leaving Evento</h3>
+            <p className="mb-6 text-gray-600">
               Are you about to leave Evento and be redirected to
               andrerfneves.com?
             </p>
-            <div className="text-6xl font-bold text-red-500 mb-6">
+            <div className="mb-6 text-6xl font-bold text-red-500">
               {countdown}
             </div>
             <Button
@@ -723,10 +738,10 @@ export default function ProfilePage() {
                 window.open(
                   "https://andrerfneves.com",
                   "_blank",
-                  "noopener,noreferrer"
+                  "noopener,noreferrer",
                 );
               }}
-              className="w-full bg-red-500 hover:bg-red-600 text-white"
+              className="w-full bg-red-500 text-white hover:bg-red-600"
             >
               Take me to andrerfneves.com
             </Button>
@@ -736,22 +751,28 @@ export default function ProfilePage() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full p-6 text-center">
-            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+              <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">You are verified</h3>
-            <p className="text-gray-600 mb-6">
-              Congratulations! Your account is verified. You have premium member status with enhanced credibility and access to exclusive features on our platform.
+            <h3 className="mb-4 text-xl font-bold text-gray-900">
+              You are verified
+            </h3>
+            <p className="mb-6 text-gray-600">
+              Congratulations! Your account is verified. You have premium member
+              status with enhanced credibility and access to exclusive features
+              on our platform.
             </p>
             <div className="flex flex-col gap-3">
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
-                  router.push('/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.');
+                  router.push(
+                    "/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.",
+                  );
                 }}
-                className="w-full bg-red-500 hover:bg-red-600 text-white"
+                className="w-full bg-red-500 text-white hover:bg-red-600"
               >
                 Contact support
               </Button>

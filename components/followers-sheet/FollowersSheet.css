@@ -95,7 +95,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  
+
   /* INNER-LAYOUT */
   display: grid;
   grid-auto-flow: column;
@@ -152,7 +152,7 @@
   /* APPEARANCE */
   background-color: rgb(239, 68, 68);
   border-radius: 50%;
-  
+
   /* INNER-LAYOUT */
   display: flex;
   align-items: center;
@@ -276,7 +276,8 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

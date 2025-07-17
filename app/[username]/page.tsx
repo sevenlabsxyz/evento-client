@@ -1,24 +1,29 @@
 "use client";
 
-import {
-  Globe,
-  Zap,
-  X,
-  MessageCircle,
-  UserPlus,
-  UserMinus,
-  BadgeCheck,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter, useParams } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { toast } from "@/lib/utils/toast";
-import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { useUserByUsername, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
 import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
 import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
+import {
+  useUserByUsername,
+  useUserEventCount,
+  useUserFollowers,
+  useUserFollowing,
+} from "@/lib/hooks/useUserProfile";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { toast } from "@/lib/utils/toast";
+import {
+  BadgeCheck,
+  Globe,
+  MessageCircle,
+  UserMinus,
+  UserPlus,
+  X,
+  Zap,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 export default function UserProfilePage() {
   const router = useRouter();
@@ -38,16 +43,20 @@ export default function UserProfilePage() {
 
   // Fetch user data from API
   const username = params.username as string;
-  const { data: userData, isLoading: isUserLoading, error: userError } = useUserByUsername(username);
-  const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
-  const { data: followers = [] } = useUserFollowers(userData?.id || '');
-  const { data: following = [] } = useUserFollowing(userData?.id || '');
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useUserByUsername(username);
+  const { data: eventCount = 0 } = useUserEventCount(userData?.id || "");
+  const { data: followers = [] } = useUserFollowers(userData?.id || "");
+  const { data: following = [] } = useUserFollowing(userData?.id || "");
 
   // Handle loading state
   if (isUserLoading) {
     return (
-      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+      <div className="mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
       </div>
     );
   }
@@ -55,13 +64,17 @@ export default function UserProfilePage() {
   // Handle user not found
   if (userError || !userData) {
     return (
-      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col items-center justify-center p-4">
+      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 mx-auto">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
             <UserMinus className="h-8 w-8 text-gray-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">User not found</h2>
-          <p className="text-gray-500 mb-4">The user @{username} doesn't exist or may have been deleted.</p>
+          <h2 className="mb-2 text-xl font-bold text-gray-900">
+            User not found
+          </h2>
+          <p className="mb-4 text-gray-500">
+            The user @{username} doesn't exist or may have been deleted.
+          </p>
           <Button onClick={() => router.back()} variant="outline">
             Go Back
           </Button>
@@ -72,13 +85,13 @@ export default function UserProfilePage() {
 
   // Transform API data to match expected format
   const userProfile = {
-    name: userData.name || 'Unknown User',
+    name: userData.name || "Unknown User",
     username: `@${userData.username}`,
     avatar: userData.image || "/placeholder.svg?height=80&width=80",
-    status: userData.bio || '',
-    bio: userData.bio || '',
-    website: userData.bio_link || '',
-    isVerified: userData.verification_status === 'verified',
+    status: userData.bio || "",
+    bio: userData.bio || "",
+    website: userData.bio_link || "",
+    isVerified: userData.verification_status === "verified",
     stats: {
       events: eventCount,
       following: following.length,
@@ -141,16 +154,16 @@ export default function UserProfilePage() {
     },
   ];
 
-  const followingList = following.map(user => ({
+  const followingList = following.map((user) => ({
     id: user.id,
-    name: user.name || 'Unknown User',
+    name: user.name || "Unknown User",
     username: `@${user.username}`,
     avatar: user.image || "/placeholder.svg?height=50&width=50",
   }));
 
-  const followersList = followers.map(user => ({
+  const followersList = followers.map((user) => ({
     id: user.id,
-    name: user.name || 'Unknown User',
+    name: user.name || "Unknown User",
     username: `@${user.username}`,
     avatar: user.image || "/placeholder.svg?height=50&width=50",
   }));
@@ -169,7 +182,6 @@ export default function UserProfilePage() {
       avatar: "/placeholder.svg?height=50&width=50",
     },
   ];
-
 
   const profilePhotos = [
     "/placeholder.svg?height=120&width=120",
@@ -242,7 +254,7 @@ export default function UserProfilePage() {
       toast.success(
         isFollowing
           ? `Unfollowed ${userProfile.name}`
-          : `Following ${userProfile.name}`
+          : `Following ${userProfile.name}`,
       );
     }
   };
@@ -268,14 +280,17 @@ export default function UserProfilePage() {
   };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce((acc, event) => {
-      const date = event.date;
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(event);
-      return acc;
-    }, {} as Record<string, typeof events>);
+    const grouped = events.reduce(
+      (acc, event) => {
+        const date = event.date;
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(event);
+        return acc;
+      },
+      {} as Record<string, typeof events>,
+    );
 
     return Object.entries(grouped).map(([date, events]) => ({
       date,
@@ -320,7 +335,7 @@ export default function UserProfilePage() {
         <div className="flex gap-2">
           <button
             onClick={() => setEventsFilter("attending")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               eventsFilter === "attending"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -330,7 +345,7 @@ export default function UserProfilePage() {
           </button>
           <button
             onClick={() => setEventsFilter("hosting")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
               eventsFilter === "hosting"
                 ? "bg-red-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -344,26 +359,32 @@ export default function UserProfilePage() {
         <div className="space-y-6">
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.date}>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-gray-500 font-medium text-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-medium text-gray-500">
                   {group.formattedDate}
                 </h2>
               </div>
 
               <div className="space-y-4">
                 {group.events.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 rounded-xl p-2 -m-2 transition-colors" onClick={() => router.push(`/e/event/cosmoprof-2025`)}>
+                  <div
+                    key={event.id}
+                    className="-m-2 flex cursor-pointer items-start gap-4 rounded-xl p-2 transition-colors hover:bg-gray-50"
+                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+                  >
                     <img
                       src={event.image || "/placeholder.svg"}
                       alt={event.title}
-                      className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                      className="h-12 w-12 flex-shrink-0 rounded-xl object-cover"
                     />
                     <div className="flex-1">
-                      <h3 className="font-semibold text-lg hover:text-red-600 transition-colors">{event.title}</h3>
+                      <h3 className="text-lg font-semibold transition-colors hover:text-red-600">
+                        {event.title}
+                      </h3>
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">
-                      <span className="text-gray-600 text-sm">
+                      <span className="text-sm text-gray-600">
                         {event.time}
                       </span>
                     </div>
@@ -375,7 +396,7 @@ export default function UserProfilePage() {
         </div>
 
         {currentEvents.length === 0 && (
-          <div className="text-center py-8">
+          <div className="py-8 text-center">
             <p className="text-gray-500">No {eventsFilter} events yet</p>
           </div>
         )}
@@ -387,18 +408,18 @@ export default function UserProfilePage() {
     <div className="space-y-6">
       {/* Bio/Description */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Bio</h4>
+        <h4 className="mb-3 font-semibold text-gray-900">Bio</h4>
         <p className="text-gray-700">{userProfile.bio}</p>
       </div>
 
       {/* Interest Tags */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Interests</h4>
+        <h4 className="mb-3 font-semibold text-gray-900">Interests</h4>
         <div className="flex flex-wrap gap-2">
           {interestTags.map((tag, index) => (
             <span
               key={index}
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
+              className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800"
             >
               {tag}
             </span>
@@ -408,11 +429,11 @@ export default function UserProfilePage() {
 
       {/* Profile Questions */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">About Me</h4>
+        <h4 className="mb-3 font-semibold text-gray-900">About Me</h4>
         <div className="space-y-3">
           {profileQuestions.map((item, index) => (
-            <div key={index} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-sm font-medium text-gray-700 mb-1">
+            <div key={index} className="rounded-xl bg-gray-50 p-3">
+              <p className="mb-1 text-sm font-medium text-gray-700">
                 {item.question}
               </p>
               <p className="text-sm text-gray-900">{item.answer}</p>
@@ -423,7 +444,7 @@ export default function UserProfilePage() {
 
       {/* Photo Album */}
       <div>
-        <div className="flex items-center justify-between mb-3">
+        <div className="mb-3 flex items-center justify-between">
           <h4 className="font-semibold text-gray-900">Photos</h4>
         </div>
         <div className="grid grid-cols-3 gap-2">
@@ -431,12 +452,12 @@ export default function UserProfilePage() {
             <button
               key={index}
               onClick={() => handleProfilePhotoClick(index)}
-              className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity"
+              className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
             >
               <img
                 src={photo || "/placeholder.svg"}
                 alt={`Profile photo ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="h-full w-full object-cover"
               />
             </button>
           ))}
@@ -447,13 +468,13 @@ export default function UserProfilePage() {
 
   const renderStatsTab = () => (
     <div className="grid grid-cols-2 gap-4">
-      <div className="text-center p-4 bg-blue-50 rounded-xl">
+      <div className="rounded-xl bg-blue-50 p-4 text-center">
         <div className="text-3xl font-bold text-blue-600">
           {userProfile.stats.countries}
         </div>
         <div className="text-sm text-gray-600">Countries</div>
       </div>
-      <div className="text-center p-4 bg-green-50 rounded-xl">
+      <div className="rounded-xl bg-green-50 p-4 text-center">
         <div className="text-3xl font-bold text-green-600">
           {userProfile.stats.mutuals}
         </div>
@@ -463,7 +484,7 @@ export default function UserProfilePage() {
   );
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
         {/* Cover Image Section */}
@@ -472,24 +493,21 @@ export default function UserProfilePage() {
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 rounded-full bg-white/80 backdrop-blur-sm z-10"
+            className="absolute right-4 top-4 z-10 rounded-full bg-white/80 backdrop-blur-sm"
             onClick={() => router.back()}
           >
             <X className="h-5 w-5" />
           </Button>
-          
+
           {/* Banner */}
-          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
-          
+          <div className="h-48 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-64" />
+
           {/* Profile Picture - Centered & Clickable */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
             <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                <AvatarImage 
-                  src={userProfile.avatar || ''} 
-                  alt="Profile" 
-                />
-                <AvatarFallback className="text-3xl bg-white">
+              <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+                <AvatarImage src={userProfile.avatar || ""} alt="Profile" />
+                <AvatarFallback className="bg-white text-3xl">
                   {userProfile.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -500,9 +518,9 @@ export default function UserProfilePage() {
                     e.stopPropagation();
                     setShowVerificationModal(true);
                   }}
-                  className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
+                  className="absolute bottom-0 right-0 transition-transform hover:scale-105"
                 >
-                  <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+                  <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
                 </button>
               )}
             </button>
@@ -510,31 +528,33 @@ export default function UserProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className="bg-white px-6 pt-20 pb-6 mb-4">
+        <div className="mb-4 bg-white px-6 pb-6 pt-20">
           {/* User Info - Centered */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{userProfile.name}</h2>
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userProfile.name}
+            </h2>
             <p className="text-gray-600">{userProfile.username}</p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 mb-6 max-w-xs mx-auto">
+          <div className="mx-auto mb-6 flex max-w-xs gap-3">
             <Button
               onClick={() => handleFollowToggle()}
               className={`flex-1 ${
                 isFollowing
                   ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-red-500 hover:bg-red-600 text-white"
+                  : "bg-red-500 text-white hover:bg-red-600"
               }`}
             >
               {isFollowing ? (
                 <>
-                  <UserMinus className="h-4 w-4 mr-2" />
+                  <UserMinus className="mr-2 h-4 w-4" />
                   Following
                 </>
               ) : (
                 <>
-                  <UserPlus className="h-4 w-4 mr-2" />
+                  <UserPlus className="mr-2 h-4 w-4" />
                   Follow
                 </>
               )}
@@ -544,7 +564,7 @@ export default function UserProfilePage() {
               onClick={handleMessage}
               className="flex-1 bg-transparent"
             >
-              <MessageCircle className="h-4 w-4 mr-2" />
+              <MessageCircle className="mr-2 h-4 w-4" />
               Message
             </Button>
             <Button
@@ -558,7 +578,7 @@ export default function UserProfilePage() {
           </div>
 
           {/* Stats - Centered */}
-          <div className="flex justify-center mb-6">
+          <div className="mb-6 flex justify-center">
             <div className="grid grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-xl font-bold text-gray-900">
@@ -589,8 +609,8 @@ export default function UserProfilePage() {
 
           {/* Status/Bio - Centered */}
           {userProfile.status && (
-            <div className="text-center mb-4">
-              <p className="text-gray-600 text-sm font-medium">
+            <div className="mb-4 text-center">
+              <p className="text-sm font-medium text-gray-600">
                 {userProfile.status}
               </p>
             </div>
@@ -602,21 +622,21 @@ export default function UserProfilePage() {
               <Globe className="h-4 w-4 text-gray-500" />
               <button
                 onClick={handleWebsiteClick}
-                className="text-blue-600 hover:underline text-sm"
+                className="text-sm text-blue-600 hover:underline"
               >
-                {userProfile.website.replace(/^https?:\/\//, '')}
+                {userProfile.website.replace(/^https?:\/\//, "")}
               </button>
             </div>
           )}
         </div>
 
         {/* Tabbed Section */}
-        <div className="bg-white mb-4">
+        <div className="mb-4 bg-white">
           {/* Tab Headers */}
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab("about")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
                 activeTab === "about"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -626,7 +646,7 @@ export default function UserProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("events")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
                 activeTab === "events"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -636,7 +656,7 @@ export default function UserProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
                 activeTab === "stats"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -673,21 +693,25 @@ export default function UserProfilePage() {
 
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full text-center">
-            <h3 className="text-xl font-bold mb-4">Leaving Evento</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
+            <h3 className="mb-4 text-xl font-bold">Leaving Evento</h3>
+            <p className="mb-6 text-gray-600">
               Are you about to leave Evento and be redirected to sarahchen.com?
             </p>
-            <div className="text-6xl font-bold text-red-500 mb-6">
+            <div className="mb-6 text-6xl font-bold text-red-500">
               {countdown}
             </div>
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(userProfile.website, "_blank", "noopener,noreferrer");
+                window.open(
+                  userProfile.website,
+                  "_blank",
+                  "noopener,noreferrer",
+                );
               }}
-              className="w-full bg-red-500 hover:bg-red-600 text-white"
+              className="w-full bg-red-500 text-white hover:bg-red-600"
             >
               Take me to sarahchen.com
             </Button>
@@ -697,22 +721,28 @@ export default function UserProfilePage() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full p-6 text-center">
-            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+              <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">This user is verified</h3>
-            <p className="text-gray-600 mb-6">
-              This user is a premium member with a verified account. Verified users have enhanced credibility and access to exclusive features on our platform.
+            <h3 className="mb-4 text-xl font-bold text-gray-900">
+              This user is verified
+            </h3>
+            <p className="mb-6 text-gray-600">
+              This user is a premium member with a verified account. Verified
+              users have enhanced credibility and access to exclusive features
+              on our platform.
             </p>
             <div className="flex flex-col gap-3">
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
-                  router.push('/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.');
+                  router.push(
+                    "/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.",
+                  );
                 }}
-                className="w-full bg-red-500 hover:bg-red-600 text-white"
+                className="w-full bg-red-500 text-white hover:bg-red-600"
               >
                 Get in touch about verification
               </Button>

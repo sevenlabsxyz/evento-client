@@ -1,17 +1,17 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { toast } from "@/lib/utils/toast";
 import {
   ArrowLeft,
-  Calendar,
-  MapPin,
-  Clock,
   Bookmark,
+  Calendar,
+  Clock,
+  MapPin,
   MoreHorizontal,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter, useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { toast } from "@/lib/utils/toast";
 
 export default function SavedListDetailPage() {
   const router = useRouter();
@@ -53,7 +53,8 @@ export default function SavedListDetailPage() {
     "3": { name: "Food Experiences", isDefault: false },
   };
 
-  const currentList = listData[params.id as keyof typeof listData] || listData["1"];
+  const currentList =
+    listData[params.id as keyof typeof listData] || listData["1"];
 
   const handleUnsaveEvent = (eventId: number) => {
     setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
@@ -61,9 +62,9 @@ export default function SavedListDetailPage() {
   };
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+      <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-4">
         <Button
           variant="ghost"
           size="icon"
@@ -76,7 +77,7 @@ export default function SavedListDetailPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold">{currentList.name}</h1>
             {currentList.isDefault && (
-              <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
                 Default
               </span>
             )}
@@ -97,26 +98,26 @@ export default function SavedListDetailPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
         {savedEvents.length > 0 ? (
-          <div className="px-4 py-4 space-y-4">
+          <div className="space-y-4 px-4 py-4">
             {savedEvents.map((event) => (
               <div
                 key={event.id}
-                className="bg-white rounded-2xl p-4 shadow-sm"
+                className="rounded-2xl bg-white p-4 shadow-sm"
               >
                 <div className="flex gap-4">
                   {/* Event Image */}
                   <img
                     src={event.image || "/placeholder.svg"}
                     alt={event.title}
-                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0 cursor-pointer"
+                    className="h-20 w-20 flex-shrink-0 cursor-pointer rounded-xl object-cover"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   />
 
                   {/* Event Details */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 
-                        className="font-bold text-lg leading-tight truncate pr-2 cursor-pointer hover:text-red-600 transition-colors"
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-2 flex items-start justify-between">
+                      <h3
+                        className="cursor-pointer truncate pr-2 text-lg font-bold leading-tight transition-colors hover:text-red-600"
                         onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                       >
                         {event.title}
@@ -132,7 +133,7 @@ export default function SavedListDetailPage() {
                     </div>
 
                     {/* Date and Time */}
-                    <div className="flex items-center gap-3 text-sm text-gray-600 mb-2">
+                    <div className="mb-2 flex items-center gap-3 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>{event.date}</span>
@@ -144,7 +145,7 @@ export default function SavedListDetailPage() {
                     </div>
 
                     {/* Location */}
-                    <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
+                    <div className="mb-2 flex items-center gap-1 text-sm text-gray-600">
                       <MapPin className="h-3 w-3" />
                       <span className="truncate">{event.location}</span>
                     </div>
@@ -157,9 +158,9 @@ export default function SavedListDetailPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 mt-4">
-                  <Button 
-                    className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    className="flex-1 bg-red-500 text-white hover:bg-red-600"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   >
                     View Details
@@ -173,20 +174,20 @@ export default function SavedListDetailPage() {
           </div>
         ) : (
           /* Empty State */
-          <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="flex flex-1 items-center justify-center px-4 py-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                 <Bookmark className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
                 No events in this list
               </h3>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="mb-6 text-sm text-gray-500">
                 Start saving events to see them here.
               </p>
               <Button
                 onClick={() => router.push("/feed")}
-                className="bg-red-500 hover:bg-red-600 text-white"
+                className="bg-red-500 text-white hover:bg-red-600"
               >
                 Discover Events
               </Button>

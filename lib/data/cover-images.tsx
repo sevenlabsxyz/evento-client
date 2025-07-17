@@ -1,6 +1,12 @@
-import React from "react";
-import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from "lucide-react";
 import { DEFAULT_COVERS } from "@/components/event-covers";
+import {
+  Cpu,
+  Crown,
+  MessagesSquare,
+  PartyPopper,
+  Sparkles,
+} from "lucide-react";
+import React from "react";
 
 export interface CoverImage {
   id: string;
@@ -18,7 +24,10 @@ export interface CoverImageCategory {
 }
 
 // Helper function to convert legacy cover format to new format
-function convertLegacyCovers(legacyCovers: { url: string }[], categoryName: string): CoverImage[] {
+function convertLegacyCovers(
+  legacyCovers: { url: string }[],
+  categoryName: string,
+): CoverImage[] {
   return legacyCovers.map((cover, index) => ({
     id: `${categoryName.toLowerCase()}-${index + 1}`,
     url: cover.url,
