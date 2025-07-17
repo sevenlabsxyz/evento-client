@@ -15,13 +15,15 @@ import { useRedirectIfAuthenticated, useVerifyCode } from '@/lib/hooks/useAuth';
 import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowLeft, Loader2, Mail } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function VerifyPage() {
   const router = useRouter();
-  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/';
+  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { verifyCode, isLoading, error, reset, email } = useVerifyCode();
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -44,9 +46,9 @@ export default function VerifyPage() {
   // Redirect to login if no email in store
   useEffect(() => {
     if (!isCheckingAuth && !email) {
-      router.push('/auth/login');
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
     }
-  }, [email, isCheckingAuth, router]);
+  }, [email, isCheckingAuth, redirectUrl, router]);
 
   // Countdown timer for resend
   useEffect(() => {
@@ -207,7 +209,7 @@ export default function VerifyPage() {
           <Button
             variant='ghost'
             className='w-full'
-            onClick={() => router.push('/auth/login')}
+            onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`)}
             disabled={isLoading}
           >
             <ArrowLeft className='mr-2 h-4 w-4' />

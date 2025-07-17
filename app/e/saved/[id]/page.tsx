@@ -1,12 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { toast } from '@/lib/utils/toast';
 import { ArrowLeft, Bookmark, Calendar, Clock, MapPin, MoreHorizontal } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SavedListDetailPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const [savedEvents, setSavedEvents] = useState([
@@ -52,6 +54,16 @@ export default function SavedListDetailPage() {
     setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
     toast.success('Event removed from list!');
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
@@ -157,12 +169,7 @@ export default function SavedListDetailPage() {
               </div>
               <h3 className='mb-2 text-lg font-semibold text-gray-900'>No events in this list</h3>
               <p className='mb-6 text-sm text-gray-500'>Start saving events to see them here.</p>
-              <Button
-                onClick={() => router.push('/feed')}
-                className='bg-red-500 text-white hover:bg-red-600'
-              >
-                Discover Events
-              </Button>
+              <Button onClick={() => router.push('/feed')}>Discover Events</Button>
             </div>
           </div>
         )}

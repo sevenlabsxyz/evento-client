@@ -17,6 +17,7 @@ import MoreFormattingSheet from '@/components/create-event/more-formatting-sheet
 import TextStylesSheet from '@/components/create-event/text-styles-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useCreateEventWithCallbacks } from '@/lib/hooks/useCreateEvent';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -26,10 +27,10 @@ import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function CreatePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -44,7 +45,6 @@ export default function CreatePage() {
     };
   }, [setTopBar]);
 
-  const router = useRouter();
   const createEventMutation = useCreateEventWithCallbacks();
 
   // Get state and actions from Zustand store
@@ -241,6 +241,16 @@ export default function CreatePage() {
   // Check if all required fields are filled
   const isFormValid = isValid();
 
+  if (isCheckingAuth) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Header */}
@@ -312,6 +322,27 @@ export default function CreatePage() {
               </button>
             </div>
           </div>
+        </div>
+
+        {/* Address Module */}
+        <div className='rounded-2xl bg-white p-4'>
+          <button
+            onClick={() => setShowLocationModal(true)}
+            className='flex w-full items-center gap-4 text-left'
+          >
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <MapPin className='h-4 w-4 text-gray-600' />
+            </div>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
+              <div className='flex items-center justify-between'>
+                <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {location ? getLocationDisplayName(location) : 'Choose address'}
+                </span>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </div>
+            </div>
+          </button>
         </div>
 
         {/* Address Module */}

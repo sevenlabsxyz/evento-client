@@ -8,6 +8,7 @@ import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
 import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
 import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/useUserProfile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -28,6 +29,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBar } = useTopBar();
   const updateProfileMutation = useUpdateUserProfile();
@@ -103,7 +105,7 @@ export default function EditProfilePage() {
   // Check if form is valid and has changes
   const canSave = isValid() && hasChanges();
 
-  if (isLoading) {
+  if (isLoading || isCheckingAuth) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='flex items-center gap-2'>

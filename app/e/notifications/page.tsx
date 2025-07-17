@@ -1,11 +1,13 @@
 'use client';
 
 import { Navbar } from '@/components/navbar';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Calendar, Clock, Heart, MapPin, MessageCircle, UserPlus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 export default function NotificationsPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -107,10 +109,26 @@ export default function NotificationsPage() {
         return <MessageCircle className='h-6 w-6 text-blue-500' />;
       case 'follow':
         return <UserPlus className='h-6 w-6 text-green-500' />;
+      case 'like':
+        return <Heart className='h-6 w-6 text-red-500' />;
+      case 'comment':
+        return <MessageCircle className='h-6 w-6 text-blue-500' />;
+      case 'follow':
+        return <UserPlus className='h-6 w-6 text-green-500' />;
       default:
         return null;
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>

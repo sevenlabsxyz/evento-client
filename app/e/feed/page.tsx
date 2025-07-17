@@ -3,6 +3,7 @@
 import { EventCard } from '@/components/event-card';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useEventsFeed } from '@/lib/hooks/useEventsFeed';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
@@ -11,6 +12,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function FeedPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('feed');
   const [bookmarkedEvents, setBookmarkedEvents] = useState<Set<string>>(new Set());
@@ -81,7 +83,7 @@ export default function FeedPage() {
     setSelectedEventId(null);
   };
 
-  if (isLoading) {
+  if (isLoading || isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>

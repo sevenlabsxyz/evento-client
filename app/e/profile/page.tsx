@@ -6,7 +6,7 @@ import { Navbar } from '@/components/navbar';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
   useUserEventCount,
   useUserFollowers,
@@ -20,6 +20,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function ProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBar, setTransparent } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
@@ -35,7 +36,6 @@ export default function ProfilePage() {
 
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
-  const { logout } = useAuth();
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
@@ -507,7 +507,7 @@ export default function ProfilePage() {
   );
 
   // Show loading state while fetching user data
-  if (isUserLoading || !user) {
+  if (isCheckingAuth || isUserLoading || !user) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm'>
         <Loader2 className='h-8 w-8 animate-spin text-red-500' />

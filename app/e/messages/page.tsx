@@ -8,7 +8,9 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ChatPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
+  const router = useRouter();
 
   // Set TopBar content
   useEffect(() => {
@@ -34,7 +36,6 @@ export default function ChatPage() {
 
   const [activeTab, setActiveTab] = useState('messages');
   const [searchQuery, setSearchQuery] = useState('');
-  const router = useRouter();
 
   const conversations = [
     {
@@ -112,6 +113,16 @@ export default function ChatPage() {
       conversation.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       conversation.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (isCheckingAuth) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>

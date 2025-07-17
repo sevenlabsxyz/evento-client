@@ -4,6 +4,7 @@ import { APISheet } from '@/components/settings/APISheet';
 import { ChangelogSheet } from '@/components/settings/ChangelogSheet';
 import { ContactSheet } from '@/components/settings/ContactSheet';
 import { HelpSheet } from '@/components/settings/HelpSheet';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
@@ -27,6 +28,7 @@ import { useEffect, useState } from 'react';
 import packageJson from '../../../package.json';
 
 export default function SettingsPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBar } = useTopBar();
 
@@ -87,6 +89,16 @@ export default function SettingsPage() {
     setShowApiContactForm(true);
     setContactSheetOpen(true);
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>

@@ -5,6 +5,7 @@ import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
   useUserByUsername,
   useUserEventCount,
@@ -18,6 +19,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function UserProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar, setTransparent } = useTopBar();
@@ -45,7 +47,7 @@ export default function UserProfilePage() {
   const { data: following = [] } = useUserFollowing(userData?.id || '');
 
   // Handle loading state
-  if (isUserLoading) {
+  if (isUserLoading || isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm'>
         <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
@@ -75,13 +77,13 @@ export default function UserProfilePage() {
 
   // Transform API data to match expected format
   const userProfile = {
-    name: userData.name || 'Unknown User',
-    username: `@${userData.username}`,
-    avatar: userData.image || '/placeholder.svg?height=80&width=80',
-    status: userData.bio || '',
-    bio: userData.bio || '',
-    website: userData.bio_link || '',
-    isVerified: userData.verification_status === 'verified',
+    name: userData.data.name || 'Unknown User',
+    username: `@${userData.data.username}`,
+    avatar: userData.data.image || '/placeholder.svg?height=80&width=80',
+    status: userData.data.bio || '',
+    bio: userData.data.bio || '',
+    website: userData.data.bio_link || '',
+    isVerified: userData.data.verification_status === 'verified',
     stats: {
       events: eventCount,
       following: following.length,

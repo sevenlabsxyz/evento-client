@@ -64,10 +64,10 @@ export const updateProfileSchema = z.object({
 });
 
 // Type inference from schemas
-export type LoginForm = z.infer<typeof loginSchema>;
-export type VerifyCodeForm = z.infer<typeof verifyCodeSchema>;
-export type AuthForm = z.infer<typeof authSchema>;
-export type UpdateProfileForm = z.infer<typeof updateProfileSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
+export type VerifyCodeFormData = z.infer<typeof verifyCodeSchema>;
+export type AuthFormData = z.infer<typeof authSchema>;
+export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
 
 // Common validation messages
 export const validationMessages = {

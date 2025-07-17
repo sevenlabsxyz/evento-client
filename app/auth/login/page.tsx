@@ -15,11 +15,14 @@ import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hook
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Chrome, Loader2, Mail } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function LoginPage() {
-  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/';
+  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);

@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
@@ -101,12 +101,16 @@ export function useAuth() {
 export function useLogin() {
   const router = useRouter();
   const { setEmail } = useAuthStore();
+  const searchParams = useSearchParams();
 
   const mutation = useMutation({
     mutationFn: authService.sendLoginCode,
     onSuccess: (_, email) => {
       setEmail(email);
-      router.push('/auth/verify');
+      const redirect = searchParams.get('redirect');
+      router.push(
+        redirect ? `/auth/verify?redirect=${encodeURIComponent(redirect)}` : '/auth/verify'
+      );
     },
   });
 
@@ -178,10 +182,11 @@ export function useGoogleLogin() {
 export function useRequireAuth(redirectTo = '/auth/login') {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push(redirectTo);
+      router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
 

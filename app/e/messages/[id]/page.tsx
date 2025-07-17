@@ -2,20 +2,14 @@
 
 import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { toast } from '@/lib/utils/toast';
-import {
-  ArrowLeft,
-  FileText,
-  ImageIcon,
-  MoreHorizontal,
-  Paperclip,
-  Plus,
-  Send,
-} from 'lucide-react';
+import { ArrowLeft, MoreHorizontal, Paperclip, Plus, Send } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SingleChatPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const [message, setMessage] = useState('');
@@ -142,6 +136,16 @@ export default function SingleChatPage() {
       </div>
     </div>
   );
+
+  if (isCheckingAuth) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
