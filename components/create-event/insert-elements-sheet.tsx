@@ -1,7 +1,7 @@
-import type { Editor } from '@tiptap/core'
-import { Minus } from 'lucide-react'
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { VisuallyHidden } from '@silk-hq/components'
+import type { Editor } from '@tiptap/core';
+import { Minus } from 'lucide-react';
+import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { VisuallyHidden } from '@silk-hq/components';
 
 interface InsertElementsSheetProps {
   isOpen: boolean;
@@ -9,7 +9,11 @@ interface InsertElementsSheetProps {
   editor: Editor;
 }
 
-export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertElementsSheetProps) {
+export default function InsertElementsSheet({
+  isOpen,
+  onClose,
+  editor,
+}: InsertElementsSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -20,14 +24,16 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
           <DetachedSheet.Content className="InsertSheet-content">
-            <DetachedSheet.Handle className="InsertSheet-handle" />
+            <div className="flex justify-center mb-4">
+              <DetachedSheet.Handle className="InsertSheet-handle" />
+            </div>
             <VisuallyHidden.Root asChild>
               <DetachedSheet.Title>Insert Elements</DetachedSheet.Title>
             </VisuallyHidden.Root>
 
             <div className="InsertSheet-container">
               <h3 className="InsertSheet-title">Insert Elements</h3>
-              
+
               <div className="InsertSheet-options">
                 <button
                   onClick={() => {
@@ -45,5 +51,5 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  )
+  );
 }

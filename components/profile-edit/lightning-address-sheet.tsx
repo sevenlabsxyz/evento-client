@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Zap, X } from 'lucide-react';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { X, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface LightningAddressSheetProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export default function LightningAddressSheet({
 
   const validateLightningAddress = (addr: string) => {
     if (!addr) return true;
-    
+
     // Basic Lightning address validation (user@domain.com format)
     const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return regex.test(addr);
@@ -40,7 +40,7 @@ export default function LightningAddressSheet({
 
   const handleSave = () => {
     const trimmedAddress = address.trim();
-    
+
     if (trimmedAddress && !validateLightningAddress(trimmedAddress)) {
       setError('Invalid Lightning address format (e.g., user@wallet.com)');
       return;
@@ -68,7 +68,9 @@ export default function LightningAddressSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <SheetWithDetentFull.Handle />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Bitcoin</h2>
                 <button
@@ -113,10 +115,11 @@ export default function LightningAddressSheet({
                   {/* Info text */}
                   <div className="space-y-3 mb-6">
                     <p className="text-sm text-gray-500">
-                      Lightning addresses allow you to receive instant Bitcoin payments from anyone 
-                      attending your events or visiting your profile.
+                      Lightning addresses allow you to receive instant Bitcoin
+                      payments from anyone attending your events or visiting
+                      your profile.
                     </p>
-                    
+
                     <div className="bg-orange-50 p-4 rounded-xl">
                       <p className="text-sm text-orange-800 font-medium mb-2">
                         Popular Lightning wallets:
