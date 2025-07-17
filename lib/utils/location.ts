@@ -1,10 +1,12 @@
-import { LocationData } from '@/components/create-event/location-modal';
-import { EventLocation } from '@/lib/types/event';
+import { LocationData } from "@/components/create-event/location-modal";
+import { EventLocation } from "@/lib/types/event";
 
 /**
  * Converts LocationData from the modal to EventLocation format used in the Event interface
  */
-export function locationDataToEventLocation(locationData: LocationData): EventLocation {
+export function locationDataToEventLocation(
+  locationData: LocationData,
+): EventLocation {
   return {
     name: locationData.name,
     address: locationData.address,
@@ -12,14 +14,16 @@ export function locationDataToEventLocation(locationData: LocationData): EventLo
     state: locationData.state,
     country: locationData.country,
     zipCode: locationData.zipCode,
-    coordinates: locationData.coordinates
+    coordinates: locationData.coordinates,
   };
 }
 
 /**
  * Converts EventLocation to LocationData format for the modal
  */
-export function eventLocationToLocationData(eventLocation: EventLocation): LocationData {
+export function eventLocationToLocationData(
+  eventLocation: EventLocation,
+): LocationData {
   return {
     name: eventLocation.name,
     address: eventLocation.address,
@@ -28,7 +32,7 @@ export function eventLocationToLocationData(eventLocation: EventLocation): Locat
     country: eventLocation.country,
     zipCode: eventLocation.zipCode,
     coordinates: eventLocation.coordinates,
-    formatted: formatEventLocationAddress(eventLocation)
+    formatted: formatEventLocationAddress(eventLocation),
   };
 }
 
@@ -42,25 +46,28 @@ export function formatEventLocationAddress(location: EventLocation): string {
     location.city,
     location.state,
     location.zipCode,
-    location.country
-  ].filter(part => part && part.trim() !== '');
-  
-  return parts.join(', ');
+    location.country,
+  ].filter((part) => part && part.trim() !== "");
+
+  return parts.join(", ");
 }
 
 /**
  * Formats a LocationData into a display-friendly address string
  */
 export function formatLocationDataAddress(location: LocationData): string {
-  return location.formatted || formatEventLocationAddress({
-    name: location.name,
-    address: location.address,
-    city: location.city,
-    state: location.state,
-    country: location.country,
-    zipCode: location.zipCode,
-    coordinates: location.coordinates
-  });
+  return (
+    location.formatted ||
+    formatEventLocationAddress({
+      name: location.name,
+      address: location.address,
+      city: location.city,
+      state: location.state,
+      country: location.country,
+      zipCode: location.zipCode,
+      coordinates: location.coordinates,
+    })
+  );
 }
 
 /**
@@ -70,32 +77,32 @@ export function formatLocationDataAddress(location: LocationData): string {
 export function parseLocationString(locationStr: string): LocationData {
   if (!locationStr) {
     return {
-      name: '',
-      address: '',
-      city: '',
-      country: '',
-      formatted: '',
+      name: "",
+      address: "",
+      city: "",
+      country: "",
+      formatted: "",
     };
   }
 
-  const parts = locationStr.split(',').map(s => s.trim());
-  
+  const parts = locationStr.split(",").map((s) => s.trim());
+
   if (parts.length === 1) {
     // Simple location like "Online" or just a city name
     return {
       name: parts[0],
-      address: '',
+      address: "",
       city: parts[0],
-      country: '',
+      country: "",
       formatted: locationStr,
     };
   }
-  
+
   if (parts.length >= 5) {
     // Full format: "Name, Address, City, State ZIP, Country"
     const stateZip = parts[3];
     const stateMatch = stateZip.match(/^([A-Z]{2})\s+(\d{5})$/);
-    
+
     return {
       name: parts[0],
       address: parts[1],
@@ -106,11 +113,11 @@ export function parseLocationString(locationStr: string): LocationData {
       formatted: locationStr,
     };
   }
-  
+
   // Fallback for other formats
   return {
-    name: parts[0] || '',
-    address: parts[1] || '',
+    name: parts[0] || "",
+    address: parts[1] || "",
     city: parts[2] || parts[0],
     state: parts[3],
     country: parts[parts.length - 1],
@@ -128,9 +135,9 @@ export function parseAddressString(addressString: string): LocationData {
   return {
     name: addressString,
     address: addressString,
-    city: '',
-    country: '',
-    formatted: addressString
+    city: "",
+    country: "",
+    formatted: addressString,
   };
 }
 
@@ -138,7 +145,9 @@ export function parseAddressString(addressString: string): LocationData {
  * Checks if a location is valid (has required fields)
  */
 export function isValidLocation(location: LocationData): boolean {
-  return !!(location.name || location.address) && location.formatted.trim() !== '';
+  return (
+    !!(location.name || location.address) && location.formatted.trim() !== ""
+  );
 }
 
 /**
@@ -148,10 +157,10 @@ export function getLocationDisplayName(location: LocationData): string {
   if (location.name && location.name !== location.address) {
     return location.name;
   }
-  
+
   if (location.city) {
     return location.city;
   }
-  
-  return location.formatted.split(',')[0] || 'Unknown Location';
+
+  return location.formatted.split(",")[0] || "Unknown Location";
 }

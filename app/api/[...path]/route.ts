@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
 
 // Mark this route as dynamic since it uses dynamic parameters
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // API proxy configuration
-const API_PROXY_TARGET = process.env.API_PROXY_TARGET || 'https://evento.so/api';
+const API_PROXY_TARGET =
+  process.env.API_PROXY_TARGET || "https://evento.so/api";
 
 // Helper to create error response
 function errorResponse(message: string, status: number = 500) {
@@ -14,32 +15,31 @@ function errorResponse(message: string, status: number = 500) {
 // Proxy handler for all HTTP methods
 async function handler(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: { path: string[] } },
 ) {
-
   try {
     // Reconstruct the path
-    const path = params.path?.join('/') || '';
+    const path = params.path?.join("/") || "";
     const targetUrl = `${API_PROXY_TARGET}/${path}`;
-    
+
     // Get query parameters
     const queryString = request.nextUrl.search;
     const fullUrl = `${targetUrl}${queryString}`;
 
     // Prepare headers
     const headers = new Headers();
-    
+
     // Copy relevant headers from the incoming request
     const headersToForward = [
-      'content-type',
-      'accept',
-      'accept-language',
-      'user-agent',
-      'referer',
-      'authorization', // Important: forward authorization header for Supabase tokens
+      "content-type",
+      "accept",
+      "accept-language",
+      "user-agent",
+      "referer",
+      "authorization", // Important: forward authorization header for Supabase tokens
     ];
-    
-    headersToForward.forEach(header => {
+
+    headersToForward.forEach((header) => {
       const value = request.headers.get(header);
       if (value) {
         headers.set(header, value);
@@ -47,9 +47,9 @@ async function handler(
     });
 
     // Forward cookies
-    const cookies = request.headers.get('cookie');
+    const cookies = request.headers.get("cookie");
     if (cookies) {
-      headers.set('cookie', cookies);
+      headers.set("cookie", cookies);
     }
 
     // Prepare request options
@@ -57,14 +57,14 @@ async function handler(
       method: request.method,
       headers,
       // Include credentials for cookie handling
-      credentials: 'include',
+      credentials: "include",
     };
 
     // Add body for non-GET requests
-    if (request.method !== 'GET' && request.method !== 'HEAD') {
-      const contentType = request.headers.get('content-type');
-      
-      if (contentType?.includes('application/json')) {
+    if (request.method !== "GET" && request.method !== "HEAD") {
+      const contentType = request.headers.get("content-type");
+
+      if (contentType?.includes("application/json")) {
         try {
           const body = await request.json();
           options.body = JSON.stringify(body);
@@ -83,16 +83,16 @@ async function handler(
 
     // Create response with proxied data
     const responseHeaders = new Headers();
-    
+
     // Forward specific headers from the target response
     const headersToReturn = [
-      'content-type',
-      'cache-control',
-      'etag',
-      'last-modified',
+      "content-type",
+      "cache-control",
+      "etag",
+      "last-modified",
     ];
-    
-    headersToReturn.forEach(header => {
+
+    headersToReturn.forEach((header) => {
       const value = response.headers.get(header);
       if (value) {
         responseHeaders.set(header, value);
@@ -101,14 +101,14 @@ async function handler(
 
     // IMPORTANT: Forward Set-Cookie headers for session management
     const setCookieHeaders = response.headers.getSetCookie();
-    setCookieHeaders.forEach(cookie => {
-      responseHeaders.append('set-cookie', cookie);
+    setCookieHeaders.forEach((cookie) => {
+      responseHeaders.append("set-cookie", cookie);
     });
 
     // Handle different response types
-    const contentType = response.headers.get('content-type');
-    
-    if (contentType?.includes('application/json')) {
+    const contentType = response.headers.get("content-type");
+
+    if (contentType?.includes("application/json")) {
       const data = await response.json();
       return NextResponse.json(data, {
         status: response.status,
@@ -122,12 +122,11 @@ async function handler(
         headers: responseHeaders,
       });
     }
-    
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error("Proxy error:", error);
     return errorResponse(
-      `Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      500
+      `Proxy error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      500,
     );
   }
 }

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { DetachedSheet } from "@/components/ui/detached-sheet";
 import { VisuallyHidden } from "@silk-hq/components";
-import { LinkProps } from "./tiptap-utils";
+import { useEffect, useState } from "react";
 import "./description-sheet.css";
+import { LinkProps } from "./tiptap-utils";
 
 interface LinkEditSheetProps {
   isOpen: boolean;
@@ -45,7 +45,9 @@ export function LinkEditSheet({
     if (!inputUrl.trim()) return false;
     try {
       // Add protocol if missing
-      const urlToValidate = inputUrl.includes("://") ? inputUrl : `https://${inputUrl}`;
+      const urlToValidate = inputUrl.includes("://")
+        ? inputUrl
+        : `https://${inputUrl}`;
       new URL(urlToValidate);
       return true;
     } catch {
@@ -55,7 +57,7 @@ export function LinkEditSheet({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!field.url.trim()) {
       setError("Please enter a URL");
       return;
@@ -67,8 +69,10 @@ export function LinkEditSheet({
     }
 
     // Add protocol if missing
-    const finalUrl = field.url.includes("://") ? field.url : `https://${field.url}`;
-    
+    const finalUrl = field.url.includes("://")
+      ? field.url
+      : `https://${field.url}`;
+
     onSetLink({
       url: finalUrl,
       text: field.text || finalUrl,
@@ -94,7 +98,7 @@ export function LinkEditSheet({
 
             <form onSubmit={handleSubmit} className="LinkEditSheet-container">
               <h3 className="LinkEditSheet-title">Edit Link</h3>
-              
+
               <div className="LinkEditSheet-form">
                 <div className="LinkEditSheet-field">
                   <label className="LinkEditSheet-label">Link</label>
@@ -110,17 +114,19 @@ export function LinkEditSheet({
                     autoFocus
                     required
                   />
-                  {error && (
-                    <p className="LinkEditSheet-error">{error}</p>
-                  )}
+                  {error && <p className="LinkEditSheet-error">{error}</p>}
                 </div>
 
                 <div className="LinkEditSheet-field">
-                  <label className="LinkEditSheet-label">Display text (optional)</label>
+                  <label className="LinkEditSheet-label">
+                    Display text (optional)
+                  </label>
                   <input
                     type="text"
                     value={field.text}
-                    onChange={(e) => setField({ ...field, text: e.target.value })}
+                    onChange={(e) =>
+                      setField({ ...field, text: e.target.value })
+                    }
                     placeholder="Text to display"
                     className="LinkEditSheet-input"
                   />
@@ -131,14 +137,19 @@ export function LinkEditSheet({
                     <input
                       type="checkbox"
                       checked={field.openInNewTab}
-                      onChange={() => setField({ ...field, openInNewTab: !field.openInNewTab })}
+                      onChange={() =>
+                        setField({
+                          ...field,
+                          openInNewTab: !field.openInNewTab,
+                        })
+                      }
                       className="LinkEditSheet-checkbox"
                     />
                     <span>Open in new tab</span>
                   </label>
                 </div>
               </div>
-              
+
               <div className="LinkEditSheet-buttons">
                 <button
                   type="button"

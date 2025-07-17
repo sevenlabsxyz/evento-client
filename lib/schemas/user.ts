@@ -1,72 +1,72 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 // User profile update schema
 export const updateUserProfileSchema = z.object({
   username: z
     .string()
-    .min(3, 'Username must be at least 3 characters')
-    .max(20, 'Username must be less than 20 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+    .min(3, "Username must be at least 3 characters")
+    .max(20, "Username must be less than 20 characters")
+    .regex(
+      /^[a-zA-Z0-9_]+$/,
+      "Username can only contain letters, numbers, and underscores",
+    )
     .optional(),
-  
+
   name: z
     .string()
-    .min(1, 'Name is required')
-    .max(100, 'Name must be less than 100 characters')
+    .min(1, "Name is required")
+    .max(100, "Name must be less than 100 characters")
     .optional(),
-  
-  bio: z
-    .string()
-    .max(280, 'Bio must be less than 280 characters')
-    .optional(),
-  
+
+  bio: z.string().max(280, "Bio must be less than 280 characters").optional(),
+
   bio_link: z
     .string()
-    .url('Please enter a valid URL')
+    .url("Please enter a valid URL")
     .optional()
-    .or(z.literal('')),
-  
+    .or(z.literal("")),
+
   x_handle: z
     .string()
-    .max(50, 'X handle must be less than 50 characters')
+    .max(50, "X handle must be less than 50 characters")
     .optional(),
-  
+
   instagram_handle: z
     .string()
-    .max(50, 'Instagram handle must be less than 50 characters')
+    .max(50, "Instagram handle must be less than 50 characters")
     .optional(),
-  
+
   ln_address: z
     .string()
-    .email('Please enter a valid Lightning address')
+    .email("Please enter a valid Lightning address")
     .optional()
-    .or(z.literal('')),
-  
+    .or(z.literal("")),
+
   nip05: z
     .string()
-    .email('Please enter a valid NIP-05 identifier')
+    .email("Please enter a valid NIP-05 identifier")
     .optional()
-    .or(z.literal('')),
-  
+    .or(z.literal("")),
+
   image: z
     .string()
-    .url('Please enter a valid image URL')
+    .url("Please enter a valid image URL")
     .optional()
-    .or(z.literal('')),
+    .or(z.literal("")),
 });
 
 // User search schema
 export const userSearchSchema = z.object({
   q: z
     .string()
-    .min(1, 'Search query is required')
-    .max(100, 'Search query must be less than 100 characters'),
+    .min(1, "Search query is required")
+    .max(100, "Search query must be less than 100 characters"),
 });
 
 // Follow user schema
 export const followUserSchema = z.object({
-  user_id: z.string().min(1, 'User ID is required'),
-  action: z.enum(['follow', 'unfollow'], {
+  user_id: z.string().min(1, "User ID is required"),
+  action: z.enum(["follow", "unfollow"], {
     required_error: 'Action must be either "follow" or "unfollow"',
   }),
 });
@@ -83,7 +83,7 @@ export const userDetailsSchema = z.object({
   instagram_handle: z.string(),
   ln_address: z.string(),
   nip05: z.string(),
-  verification_status: z.enum(['verified', 'pending']).nullable(),
+  verification_status: z.enum(["verified", "pending"]).nullable(),
   verification_date: z.string(),
 });
 

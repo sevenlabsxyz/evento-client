@@ -1,7 +1,7 @@
 "use client";
 
-import { Calendar, Bug, Sparkles, Zap, Shield } from "lucide-react";
 import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { Bug, Calendar, Shield, Sparkles, Zap } from "lucide-react";
 
 interface ChangelogSheetProps {
   open: boolean;
@@ -149,8 +149,8 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
   };
 
   return (
-    <SheetWithDetent.Root 
-      presented={open} 
+    <SheetWithDetent.Root
+      presented={open}
       onPresentedChange={(presented) => onOpenChange(presented)}
       activeDetent={1}
       onActiveDetentChange={() => {}}
@@ -159,92 +159,100 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
         <SheetWithDetent.View>
           <SheetWithDetent.Backdrop />
           <SheetWithDetent.Content className="grid grid-rows-[min-content_1fr]">
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex justify-center mb-4">
+            <div className="border-b border-gray-100 p-4">
+              <div className="mb-4 flex justify-center">
                 <SheetWithDetent.Handle />
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-2">Change Log</h2>
-                <p className="text-gray-600">Stay updated with the latest app improvements</p>
+                <h2 className="mb-2 text-2xl font-bold text-gray-900">
+                  Change Log
+                </h2>
+                <p className="text-gray-600">
+                  Stay updated with the latest app improvements
+                </p>
               </div>
             </div>
 
             <SheetWithDetent.ScrollRoot asChild>
               <SheetWithDetent.ScrollView className="min-h-0">
                 <SheetWithDetent.ScrollContent className="p-4">
-                    <div className="space-y-6">
-                      {changelogEntries.map((entry, index) => (
-                        <div
-                          key={entry.version}
-                          className="bg-white rounded-2xl overflow-hidden shadow-sm"
-                        >
-                          {/* Version Header */}
-                          <div className="p-4 border-b border-gray-100">
-                            <div className="flex items-center justify-between mb-2">
-                              <div className="flex items-center gap-3">
-                                <h3 className="text-lg font-bold text-gray-900">
-                                  v{entry.version}
-                                </h3>
-                                <span
-                                  className={`px-2 py-1 rounded-full text-xs font-medium ${getVersionBadgeColor(
-                                    entry.type
-                                  )}`}
-                                >
-                                  {entry.type}
-                                </span>
-                              </div>
-                              {index === 0 && (
-                                <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
-                                  Latest
-                                </span>
-                              )}
+                  <div className="space-y-6">
+                    {changelogEntries.map((entry, index) => (
+                      <div
+                        key={entry.version}
+                        className="overflow-hidden rounded-2xl bg-white shadow-sm"
+                      >
+                        {/* Version Header */}
+                        <div className="border-b border-gray-100 p-4">
+                          <div className="mb-2 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-lg font-bold text-gray-900">
+                                v{entry.version}
+                              </h3>
+                              <span
+                                className={`rounded-full px-2 py-1 text-xs font-medium ${getVersionBadgeColor(
+                                  entry.type,
+                                )}`}
+                              >
+                                {entry.type}
+                              </span>
                             </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-500">
-                              <Calendar className="h-4 w-4" />
-                              <span>{entry.date}</span>
-                            </div>
+                            {index === 0 && (
+                              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
+                                Latest
+                              </span>
+                            )}
                           </div>
+                          <div className="flex items-center gap-2 text-sm text-gray-500">
+                            <Calendar className="h-4 w-4" />
+                            <span>{entry.date}</span>
+                          </div>
+                        </div>
 
-                          {/* Changes */}
-                          <div className="p-4 space-y-4">
-                            {entry.changes.map((changeCategory, categoryIndex) => (
+                        {/* Changes */}
+                        <div className="space-y-4 p-4">
+                          {entry.changes.map(
+                            (changeCategory, categoryIndex) => (
                               <div key={categoryIndex}>
-                                <div className="flex items-center gap-2 mb-3">
+                                <div className="mb-3 flex items-center gap-2">
                                   {changeCategory.icon}
                                   <h4 className="font-semibold text-gray-900">
                                     {changeCategory.category}
                                   </h4>
                                 </div>
-                                <ul className="space-y-2 ml-6">
-                                  {changeCategory.items.map((item, itemIndex) => (
-                                    <li
-                                      key={itemIndex}
-                                      className="flex items-start gap-2 text-sm text-gray-700"
-                                    >
-                                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
-                                      <span>{item}</span>
-                                    </li>
-                                  ))}
+                                <ul className="ml-6 space-y-2">
+                                  {changeCategory.items.map(
+                                    (item, itemIndex) => (
+                                      <li
+                                        key={itemIndex}
+                                        className="flex items-start gap-2 text-sm text-gray-700"
+                                      >
+                                        <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-400"></div>
+                                        <span>{item}</span>
+                                      </li>
+                                    ),
+                                  )}
                                 </ul>
                               </div>
-                            ))}
-                          </div>
+                            ),
+                          )}
                         </div>
-                      ))}
-
-                      {/* Footer */}
-                      <div className="text-center py-6">
-                        <p className="text-gray-500 text-sm">
-                          Want to suggest a feature or report a bug?{" "}
-                          <button
-                            onClick={() => onOpenChange(false)}
-                            className="text-red-600 font-medium hover:underline"
-                          >
-                            Contact us
-                          </button>
-                        </p>
                       </div>
+                    ))}
+
+                    {/* Footer */}
+                    <div className="py-6 text-center">
+                      <p className="text-sm text-gray-500">
+                        Want to suggest a feature or report a bug?{" "}
+                        <button
+                          onClick={() => onOpenChange(false)}
+                          className="font-medium text-red-600 hover:underline"
+                        >
+                          Contact us
+                        </button>
+                      </p>
                     </div>
+                  </div>
                 </SheetWithDetent.ScrollContent>
               </SheetWithDetent.ScrollView>
             </SheetWithDetent.ScrollRoot>

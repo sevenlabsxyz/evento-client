@@ -1,37 +1,37 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
-import {
-  ArrowLeft,
-  Calendar,
-  MapPin,
-  Edit3,
-  Globe,
-  Lock,
-  ChevronRight,
-  Loader2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
 import CoverImageSelector from "@/components/create-event/cover-image-selector";
-import ImageSelectionModal from "@/components/create-event/image-selection-modal";
 import DatePickerSheet from "@/components/create-event/date-picker-sheet";
-import TimePickerSheet from "@/components/create-event/time-picker-sheet";
-import TimezoneSheet from "@/components/create-event/timezone-sheet";
-import LocationModal from "@/components/create-event/location-modal";
 import DescriptionSheet from "@/components/create-event/description-sheet";
 import EventVisibilitySheet from "@/components/create-event/event-visibility-sheet";
-import { getLocationDisplayName } from "@/lib/utils/location";
-import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
-import { useEventFormStore } from "@/lib/stores/event-form-store";
-import { useUpdateEvent } from "@/lib/hooks/useUpdateEvent";
+import ImageSelectionModal from "@/components/create-event/image-selection-modal";
+import LocationModal from "@/components/create-event/location-modal";
+import TimePickerSheet from "@/components/create-event/time-picker-sheet";
+import TimezoneSheet from "@/components/create-event/timezone-sheet";
+import { Button } from "@/components/ui/button";
 import { useEventDetails } from "@/lib/hooks/useEventDetails";
+import { useUpdateEvent } from "@/lib/hooks/useUpdateEvent";
+import { apiEventSchema } from "@/lib/schemas/event";
+import { useEventFormStore } from "@/lib/stores/event-form-store";
+import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
+import { debugError, debugLog } from "@/lib/utils/debug";
 import {
   formatDateForDisplay,
   formatTimeForDisplay,
 } from "@/lib/utils/event-date";
-import { apiEventSchema } from "@/lib/schemas/event";
-import { debugLog, debugError } from "@/lib/utils/debug";
+import { getLocationDisplayName } from "@/lib/utils/location";
+import {
+  ArrowLeft,
+  Calendar,
+  ChevronRight,
+  Edit3,
+  Globe,
+  Loader2,
+  Lock,
+  MapPin,
+} from "lucide-react";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function EditEventDetailsPage() {
   const params = useParams();
@@ -111,7 +111,7 @@ export default function EditEventDetailsPage() {
         // Validate and populate the form with API data
         debugLog(
           "EditDetailsPage",
-          "Attempting to validate event data with apiEventSchema"
+          "Attempting to validate event data with apiEventSchema",
         );
         const validatedEvent = apiEventSchema.parse(eventData);
         debugLog("EditDetailsPage", "Validation successful", validatedEvent);
@@ -131,7 +131,7 @@ export default function EditEventDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="flex items-center gap-2">
           <Loader2 className="h-6 w-6 animate-spin" />
           <span>Loading event details...</span>
@@ -142,18 +142,18 @@ export default function EditEventDetailsPage() {
 
   if (error || !eventData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="mb-2 text-2xl font-bold text-gray-900">
             Event Not Found
           </h1>
-          <p className="text-gray-600 mb-4">
+          <p className="mb-4 text-gray-600">
             The event you're trying to edit doesn't exist or you don't have
             permission.
           </p>
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
           >
             Go Back
           </button>
@@ -186,21 +186,21 @@ export default function EditEventDetailsPage() {
   const isFormValid = isValid() && hasChanges();
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
+    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div className="flex items-center justify-between border-b border-gray-100 p-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-full"
+            className="rounded-full p-2 hover:bg-gray-100"
           >
-            <ArrowLeft className="w-5 h-5" />
+            <ArrowLeft className="h-5 w-5" />
           </button>
           <h1 className="text-xl font-semibold">Event Details</h1>
         </div>
         <Button
           onClick={handleSaveChanges}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+          className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
           disabled={!isFormValid || updateEventMutation.isPending}
         >
           {updateEventMutation.isPending ? "Saving..." : "Save"}
@@ -208,7 +208,7 @@ export default function EditEventDetailsPage() {
       </div>
 
       {/* Cover Image Selector */}
-      <div className="px-4 mb-4">
+      <div className="mb-4 px-4">
         <CoverImageSelector
           selectedImage={coverImage}
           onImageClick={() => setShowImageModal(true)}
@@ -216,11 +216,11 @@ export default function EditEventDetailsPage() {
       </div>
 
       {/* Form Content */}
-      <div className="flex-1 px-4 pb-32 space-y-4 bg-gray-50 overflow-y-auto pt-4">
+      <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4">
         {/* Event Title Module */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className="rounded-2xl bg-white p-4">
           <div className="space-y-2">
-            <label className="text-gray-500 text-sm font-medium">
+            <label className="text-sm font-medium text-gray-500">
               Event Title
             </label>
             <input
@@ -228,28 +228,28 @@ export default function EditEventDetailsPage() {
               placeholder="Enter event name"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-gray-900 font-medium bg-transparent border-none outline-none text-lg"
+              className="w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none"
             />
           </div>
         </div>
 
         {/* Date & Time Module */}
-        <div className="bg-white rounded-2xl p-4 space-y-4">
+        <div className="space-y-4 rounded-2xl bg-white p-4">
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-600" />
             </div>
-            <span className="text-gray-700 font-medium w-16">Starts</span>
-            <div className="flex gap-2 flex-1">
+            <span className="w-16 font-medium text-gray-700">Starts</span>
+            <div className="flex flex-1 gap-2">
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
+                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900"
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
+                className="whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600"
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -257,20 +257,20 @@ export default function EditEventDetailsPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-600" />
             </div>
-            <span className="text-gray-700 font-medium w-16">Ends</span>
-            <div className="flex gap-2 flex-1">
+            <span className="w-16 font-medium text-gray-700">Ends</span>
+            <div className="flex flex-1 gap-2">
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
+                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900"
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
+                className="whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600"
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -279,23 +279,21 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Address Module */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className="rounded-2xl bg-white p-4">
           <button
             onClick={() => setShowLocationModal(true)}
-            className="flex items-center gap-4 w-full text-left"
+            className="flex w-full items-center gap-4 text-left"
           >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
               <MapPin className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-1">
+              <label className="mb-1 block text-sm font-medium text-gray-500">
                 Address
               </label>
               <div className="flex items-center justify-between">
                 <span
-                  className={`font-medium ${
-                    location ? "text-gray-900" : "text-gray-400"
-                  }`}
+                  className={`font-medium ${location ? "text-gray-900" : "text-gray-400"}`}
                 >
                   {location
                     ? getLocationDisplayName(location)
@@ -308,43 +306,39 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Description Module */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className="rounded-2xl bg-white p-4">
           <button
             onClick={() => setShowDescriptionModal(true)}
-            className="flex items-start gap-4 w-full text-left"
+            className="flex w-full items-start gap-4 text-left"
           >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mt-1">
+            <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
               <Edit3 className="h-4 w-4 text-gray-600" />
             </div>
             <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-2">
+              <label className="mb-2 block text-sm font-medium text-gray-500">
                 Description
               </label>
               <div className="flex items-center justify-between">
                 <span
-                  className={`${
-                    isContentEmpty(description)
-                      ? "text-gray-400"
-                      : "text-gray-900"
-                  }`}
+                  className={`${isContentEmpty(description) ? "text-gray-400" : "text-gray-900"}`}
                 >
                   {isContentEmpty(description)
                     ? "Add description about this event..."
                     : getContentPreview(description, 80)}
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <ChevronRight className="h-4 w-4 flex-shrink-0 text-gray-400" />
               </div>
             </div>
           </button>
         </div>
 
         {/* Event Visibility */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className="rounded-2xl bg-white p-4">
           <button
             onClick={() => setShowVisibilitySheet(true)}
-            className="flex items-center gap-4 w-full text-left"
+            className="flex w-full items-center gap-4 text-left"
           >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
               {visibility === "public" ? (
                 <Globe className="h-4 w-4 text-gray-600" />
               ) : (
@@ -352,7 +346,7 @@ export default function EditEventDetailsPage() {
               )}
             </div>
             <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-1">
+              <label className="mb-1 block text-sm font-medium text-gray-500">
                 Event Visibility
               </label>
               <div className="flex items-center justify-between">

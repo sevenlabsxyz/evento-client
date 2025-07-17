@@ -1,12 +1,12 @@
 "use client";
-import { useState, useMemo } from "react";
-import { MessageCircle, ArrowRight } from "lucide-react";
-import { VisuallyHidden } from "@silk-hq/components";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
 import { useUserFollowers } from "@/lib/hooks/useUserProfile";
+import { VisuallyHidden } from "@silk-hq/components";
+import { ArrowRight, MessageCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useMemo, useState } from "react";
 import "./FollowersSheet.css";
 
 interface FollowersSheetProps {
@@ -20,24 +20,24 @@ export default function FollowersSheet({
   isOpen,
   onClose,
   userId,
-  username
+  username,
 }: FollowersSheetProps) {
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState("");
   const router = useRouter();
-  
+
   const { data: followers, isLoading, error } = useUserFollowers(userId);
 
   // Filter followers based on search query
   const filteredFollowers = useMemo(() => {
     if (!followers) return [];
     if (!searchText.trim()) return followers;
-    
+
     const query = searchText.toLowerCase();
     return followers.filter(
       (follower) =>
         follower.username?.toLowerCase().includes(query) ||
-        follower.name?.toLowerCase().includes(query)
+        follower.name?.toLowerCase().includes(query),
     );
   }, [followers, searchText]);
 
@@ -52,10 +52,10 @@ export default function FollowersSheet({
   };
 
   return (
-    <SheetWithDetent.Root 
-      presented={isOpen} 
+    <SheetWithDetent.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
-      activeDetent={activeDetent} 
+      activeDetent={activeDetent}
       onActiveDetentChange={setActiveDetent}
     >
       <SheetWithDetent.Portal>
@@ -84,7 +84,10 @@ export default function FollowersSheet({
                   {isLoading ? (
                     // Loading State
                     Array.from({ length: 3 }).map((_, index) => (
-                      <div key={`loading-${index}`} className="FollowersSheet-loadingContainer">
+                      <div
+                        key={`loading-${index}`}
+                        className="FollowersSheet-loadingContainer"
+                      >
                         <div className="FollowersSheet-loadingAvatar" />
                         <div className="FollowersSheet-loadingDetails">
                           <div className="FollowersSheet-loadingLine" />
@@ -103,7 +106,7 @@ export default function FollowersSheet({
                     // Empty State
                     <div className="FollowersSheet-emptyContainer">
                       <div className="FollowersSheet-emptyText">
-                        {searchText.trim() 
+                        {searchText.trim()
                           ? `No followers found matching "${searchText}"`
                           : `@${username} has no followers yet`}
                       </div>
@@ -111,7 +114,10 @@ export default function FollowersSheet({
                   ) : (
                     // Followers List
                     filteredFollowers.map((follower, index) => (
-                      <div key={follower.id || `follower-${index}`} className="FollowersSheet-userContainer">
+                      <div
+                        key={follower.id || `follower-${index}`}
+                        className="FollowersSheet-userContainer"
+                      >
                         <button
                           onClick={() => handleUserClick(follower.username)}
                           className="FollowersSheet-userButton"
@@ -122,7 +128,8 @@ export default function FollowersSheet({
                               alt={follower.name || follower.username}
                             />
                             <AvatarFallback>
-                              {follower.username?.charAt(0).toUpperCase() || "U"}
+                              {follower.username?.charAt(0).toUpperCase() ||
+                                "U"}
                             </AvatarFallback>
                           </Avatar>
                           <div className="FollowersSheet-userDetails">
@@ -130,7 +137,7 @@ export default function FollowersSheet({
                               <div className="FollowersSheet-username">
                                 @{follower.username}
                               </div>
-                              {follower.verification_status === 'verified' && (
+                              {follower.verification_status === "verified" && (
                                 <div className="FollowersSheet-verified">✓</div>
                               )}
                             </div>

@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
-import { VisuallyHidden } from "@silk-hq/components";
-import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
-import { coverImageCategories, CoverImage } from "@/lib/data/cover-images";
-import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
-import CoverUploader from "./cover-uploader";
 import ProgressiveImage from "@/components/ui/progressive-image";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import { CoverImage, coverImageCategories } from "@/lib/data/cover-images";
+import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
+import { VisuallyHidden } from "@silk-hq/components";
+import { useState } from "react";
+import CoverUploader from "./cover-uploader";
 import "./image-selection-sheet.css";
 
 interface ImageSelectionSheetProps {
@@ -25,7 +24,7 @@ export default function ImageSelectionSheet({
   // No longer need activeDetent as it always opens at full height
 
   const activeCategory = coverImageCategories.find(
-    (cat) => cat.id === activeTab
+    (cat) => cat.id === activeTab,
   );
   const images = activeCategory?.images || [];
 
@@ -40,8 +39,8 @@ export default function ImageSelectionSheet({
   };
 
   return (
-    <SheetWithDetentFull.Root 
-      presented={isOpen} 
+    <SheetWithDetentFull.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
     >
       <SheetWithDetentFull.Portal>
@@ -56,9 +55,13 @@ export default function ImageSelectionSheet({
                   Add Cover Image
                 </SheetWithDetentFull.Title>
               </VisuallyHidden.Root>
-              <h2 className="ImageSelectionSheet-visibleTitle">Add Cover Image</h2>
-              <p className="ImageSelectionSheet-subtitle">Choose from our curated collection</p>
-              
+              <h2 className="ImageSelectionSheet-visibleTitle">
+                Add Cover Image
+              </h2>
+              <p className="ImageSelectionSheet-subtitle">
+                Choose from our curated collection
+              </p>
+
               {/* Tab Navigation */}
               <div className="ImageSelectionSheet-tabs">
                 <div className="ImageSelectionSheet-tabsContainer">
@@ -69,11 +72,15 @@ export default function ImageSelectionSheet({
                         key={category.id}
                         onClick={() => setActiveTab(category.id)}
                         className={`ImageSelectionSheet-tab ${
-                          activeTab === category.id ? "ImageSelectionSheet-tab--active" : ""
+                          activeTab === category.id
+                            ? "ImageSelectionSheet-tab--active"
+                            : ""
                         }`}
                       >
                         <IconComponent className="ImageSelectionSheet-tabIcon" />
-                        <span className="ImageSelectionSheet-tabLabel">{category.name}</span>
+                        <span className="ImageSelectionSheet-tabLabel">
+                          {category.name}
+                        </span>
                         {activeTab === category.id && (
                           <div className="ImageSelectionSheet-tabIndicator"></div>
                         )}

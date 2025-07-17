@@ -1,8 +1,8 @@
-import type { Editor } from '@tiptap/core'
-import { cn } from '@/lib/utils'
-import { List } from 'lucide-react'
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { VisuallyHidden } from '@silk-hq/components'
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@silk-hq/components";
+import type { Editor } from "@tiptap/core";
+import { List } from "lucide-react";
 
 interface ListsSheetProps {
   isOpen: boolean;
@@ -10,7 +10,11 @@ interface ListsSheetProps {
   editor: Editor;
 }
 
-export default function ListsSheet({ isOpen, onClose, editor }: ListsSheetProps) {
+export default function ListsSheet({
+  isOpen,
+  onClose,
+  editor,
+}: ListsSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -28,7 +32,7 @@ export default function ListsSheet({ isOpen, onClose, editor }: ListsSheetProps)
 
             <div className="ListSheet-container">
               <h3 className="ListSheet-title">Lists</h3>
-              
+
               <div className="ListSheet-options">
                 <button
                   onClick={() => {
@@ -36,11 +40,11 @@ export default function ListsSheet({ isOpen, onClose, editor }: ListsSheetProps)
                     onClose();
                   }}
                   className={cn("ListSheet-option", {
-                    'ListSheet-option--active': editor.isActive('bulletList')
+                    "ListSheet-option--active": editor.isActive("bulletList"),
                   })}
                   aria-label="Bullet list"
                 >
-                  <List className="h-4 w-4 mr-2" />
+                  <List className="mr-2 h-4 w-4" />
                   <span className="grow">Bullet list</span>
                 </button>
               </div>
@@ -49,5 +53,5 @@ export default function ListsSheet({ isOpen, onClose, editor }: ListsSheetProps)
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { type ToastType, type ToastData } from "@/lib/contexts/toast-context";
+import { type ToastType } from "@/lib/contexts/toast-context";
 
 // ================================================================================================
 // Global Toast Manager
@@ -20,13 +20,13 @@ class ToastManager {
   private idCounter = 0;
 
   private notify() {
-    this.listeners.forEach(listener => listener([...this.toasts]));
+    this.listeners.forEach((listener) => listener([...this.toasts]));
   }
 
   subscribe(listener: (toasts: ToastInstance[]) => void) {
     this.listeners.push(listener);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      this.listeners = this.listeners.filter((l) => l !== listener);
     };
   }
 
@@ -37,14 +37,14 @@ class ToastManager {
       ...toast,
       duration: toast.duration ?? 5000,
     };
-    
+
     this.toasts.push(newToast);
     this.notify();
     return id;
   }
 
   remove(id: string) {
-    this.toasts = this.toasts.filter(toast => toast.id !== id);
+    this.toasts = this.toasts.filter((toast) => toast.id !== id);
     this.notify();
   }
 
@@ -70,41 +70,41 @@ const toastManager = new ToastManager();
 
 export const toast = {
   success: (description: string, title?: string, duration?: number) =>
-    toastManager.add({ 
-      type: "success", 
-      description, 
-      title: title || "Success", 
-      duration 
+    toastManager.add({
+      type: "success",
+      description,
+      title: title || "Success",
+      duration,
     }),
-  
+
   error: (description: string, title?: string, duration?: number) =>
-    toastManager.add({ 
-      type: "error", 
-      description, 
-      title: title || "Error", 
-      duration 
+    toastManager.add({
+      type: "error",
+      description,
+      title: title || "Error",
+      duration,
     }),
-  
+
   info: (description: string, title?: string, duration?: number) =>
-    toastManager.add({ 
-      type: "info", 
-      description, 
-      title: title || "Info", 
-      duration 
+    toastManager.add({
+      type: "info",
+      description,
+      title: title || "Info",
+      duration,
     }),
-  
+
   warning: (description: string, title?: string, duration?: number) =>
-    toastManager.add({ 
-      type: "warning", 
-      description, 
-      title: title || "Warning", 
-      duration 
+    toastManager.add({
+      type: "warning",
+      description,
+      title: title || "Warning",
+      duration,
     }),
-  
+
   custom: (toast: Omit<ToastInstance, "id">) => toastManager.add(toast),
-  
+
   dismiss: (id: string) => toastManager.remove(id),
-  
+
   clear: () => toastManager.clear(),
 };
 

@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Instagram, X as XIcon, Globe } from 'lucide-react';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import { Globe, Instagram, X as XIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface SocialLinksSheetProps {
   isOpen: boolean;
@@ -28,29 +28,29 @@ export default function SocialLinksSheet({
   onSave,
   currentLinks,
 }: SocialLinksSheetProps) {
-  const [instagram, setInstagram] = useState('');
-  const [xHandle, setXHandle] = useState('');
-  const [website, setWebsite] = useState('');
+  const [instagram, setInstagram] = useState("");
+  const [xHandle, setXHandle] = useState("");
+  const [website, setWebsite] = useState("");
   const [errors, setErrors] = useState({
-    instagram: '',
-    x: '',
-    website: '',
+    instagram: "",
+    x: "",
+    website: "",
   });
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
-      setInstagram(currentLinks.instagram_handle || '');
-      setXHandle(currentLinks.x_handle || '');
-      setWebsite(currentLinks.bio_link || '');
-      setErrors({ instagram: '', x: '', website: '' });
+      setInstagram(currentLinks.instagram_handle || "");
+      setXHandle(currentLinks.x_handle || "");
+      setWebsite(currentLinks.bio_link || "");
+      setErrors({ instagram: "", x: "", website: "" });
     }
   }, [isOpen, currentLinks]);
 
   const validateWebsite = (url: string) => {
     if (!url) return true;
     try {
-      new URL(url.startsWith('http') ? url : `https://${url}`);
+      new URL(url.startsWith("http") ? url : `https://${url}`);
       return true;
     } catch {
       return false;
@@ -59,30 +59,30 @@ export default function SocialLinksSheet({
 
   const cleanHandle = (handle: string) => {
     // Remove @ symbol if present
-    return handle.replace(/^@/, '').trim();
+    return handle.replace(/^@/, "").trim();
   };
 
   const handleSave = () => {
-    const newErrors = { instagram: '', x: '', website: '' };
+    const newErrors = { instagram: "", x: "", website: "" };
     let hasError = false;
 
     // Validate Instagram
     const cleanedInstagram = cleanHandle(instagram);
     if (cleanedInstagram && !/^[a-zA-Z0-9_.]+$/.test(cleanedInstagram)) {
-      newErrors.instagram = 'Invalid Instagram username';
+      newErrors.instagram = "Invalid Instagram username";
       hasError = true;
     }
 
     // Validate X handle
     const cleanedX = cleanHandle(xHandle);
     if (cleanedX && !/^[a-zA-Z0-9_]+$/.test(cleanedX)) {
-      newErrors.x = 'Invalid X username';
+      newErrors.x = "Invalid X username";
       hasError = true;
     }
 
     // Validate website
     if (website && !validateWebsite(website)) {
-      newErrors.website = 'Invalid website URL';
+      newErrors.website = "Invalid website URL";
       hasError = true;
     }
 
@@ -93,7 +93,7 @@ export default function SocialLinksSheet({
 
     // Format website URL
     let formattedWebsite = website;
-    if (website && !website.startsWith('http')) {
+    if (website && !website.startsWith("http")) {
       formattedWebsite = `https://${website}`;
     }
 
@@ -106,16 +106,16 @@ export default function SocialLinksSheet({
   };
 
   const handleCancel = () => {
-    setInstagram(currentLinks.instagram_handle || '');
-    setXHandle(currentLinks.x_handle || '');
-    setWebsite(currentLinks.bio_link || '');
+    setInstagram(currentLinks.instagram_handle || "");
+    setXHandle(currentLinks.x_handle || "");
+    setWebsite(currentLinks.bio_link || "");
     onClose();
   };
 
-  const hasChanges = 
-    instagram !== (currentLinks.instagram_handle || '') ||
-    xHandle !== (currentLinks.x_handle || '') ||
-    website !== (currentLinks.bio_link || '');
+  const hasChanges =
+    instagram !== (currentLinks.instagram_handle || "") ||
+    xHandle !== (currentLinks.x_handle || "") ||
+    website !== (currentLinks.bio_link || "");
 
   return (
     <SheetWithDetentFull.Root
@@ -127,15 +127,15 @@ export default function SocialLinksSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
+            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
               <SheetWithDetentFull.Handle />
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Social Links</h2>
                 <button
                   onClick={handleCancel}
-                  className="p-2 hover:bg-gray-100 rounded-full"
+                  className="rounded-full p-2 hover:bg-gray-100"
                 >
-                  <XIcon className="w-5 h-5" />
+                  <XIcon className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -143,11 +143,14 @@ export default function SocialLinksSheet({
             {/* Content */}
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent className="p-6 space-y-6">
+                <SheetWithDetentFull.ScrollContent className="space-y-6 p-6">
                   {/* Instagram */}
                   <div>
-                    <Label htmlFor="instagram" className="flex items-center gap-2 mb-2">
-                      <Instagram className="w-4 h-4" />
+                    <Label
+                      htmlFor="instagram"
+                      className="mb-2 flex items-center gap-2"
+                    >
+                      <Instagram className="h-4 w-4" />
                       Instagram
                     </Label>
                     <div className="relative">
@@ -160,21 +163,23 @@ export default function SocialLinksSheet({
                         value={instagram}
                         onChange={(e) => {
                           setInstagram(e.target.value);
-                          setErrors({ ...errors, instagram: '' });
+                          setErrors({ ...errors, instagram: "" });
                         }}
                         placeholder="username"
                         className="pl-8"
                       />
                     </div>
                     {errors.instagram && (
-                      <p className="text-sm text-red-500 mt-1">{errors.instagram}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.instagram}
+                      </p>
                     )}
                   </div>
 
                   {/* X (Twitter) */}
                   <div>
-                    <Label htmlFor="x" className="flex items-center gap-2 mb-2">
-                      <div className="w-4 h-4 bg-black rounded-sm flex items-center justify-center text-white text-xs font-bold">
+                    <Label htmlFor="x" className="mb-2 flex items-center gap-2">
+                      <div className="flex h-4 w-4 items-center justify-center rounded-sm bg-black text-xs font-bold text-white">
                         𝕏
                       </div>
                       X (formerly Twitter)
@@ -189,21 +194,24 @@ export default function SocialLinksSheet({
                         value={xHandle}
                         onChange={(e) => {
                           setXHandle(e.target.value);
-                          setErrors({ ...errors, x: '' });
+                          setErrors({ ...errors, x: "" });
                         }}
                         placeholder="username"
                         className="pl-8"
                       />
                     </div>
                     {errors.x && (
-                      <p className="text-sm text-red-500 mt-1">{errors.x}</p>
+                      <p className="mt-1 text-sm text-red-500">{errors.x}</p>
                     )}
                   </div>
 
                   {/* Website */}
                   <div>
-                    <Label htmlFor="website" className="flex items-center gap-2 mb-2">
-                      <Globe className="w-4 h-4" />
+                    <Label
+                      htmlFor="website"
+                      className="mb-2 flex items-center gap-2"
+                    >
+                      <Globe className="h-4 w-4" />
                       Website
                     </Label>
                     <Input
@@ -212,25 +220,28 @@ export default function SocialLinksSheet({
                       value={website}
                       onChange={(e) => {
                         setWebsite(e.target.value);
-                        setErrors({ ...errors, website: '' });
+                        setErrors({ ...errors, website: "" });
                       }}
                       placeholder="yourwebsite.com"
                     />
                     {errors.website && (
-                      <p className="text-sm text-red-500 mt-1">{errors.website}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.website}
+                      </p>
                     )}
                   </div>
 
                   {/* Info text */}
                   <p className="text-sm text-gray-500">
-                    Add your social media profiles to help others connect with you outside of Evento.
+                    Add your social media profiles to help others connect with
+                    you outside of Evento.
                   </p>
 
                   {/* Save/Cancel Buttons */}
                   <div className="flex gap-3">
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
                       disabled={!hasChanges}
                     >
                       Save

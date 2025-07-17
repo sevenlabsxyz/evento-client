@@ -1,10 +1,9 @@
 "use client";
 
-import { Page } from "./Page";
 import { Scroll, VisuallyHidden } from "@silk-hq/components";
-import "./BlogPost.css";
 import { useRouter } from "next/navigation";
-import { formatDistance } from "date-fns";
+import "./BlogPost.css";
+import { Page } from "./Page";
 
 interface BlogPostClientProps {
   post: any;
@@ -15,18 +14,25 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
   if (!post) return null;
 
-  const authorName = post.authors && post.authors.length > 0 
-    ? post.authors[0].name 
-    : "Evento Team";
+  const authorName =
+    post.authors && post.authors.length > 0
+      ? post.authors[0].name
+      : "Evento Team";
 
-  const publishedDate = new Date(post.published_at || "").toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
+  const publishedDate = new Date(post.published_at || "").toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    },
+  );
 
   return (
-    <Page.Root presented={true} onPresentedChange={(presented) => !presented && router.back()}>
+    <Page.Root
+      presented={true}
+      onPresentedChange={(presented) => !presented && router.back()}
+    >
       <Page.Portal>
         <Page.View>
           <Page.Backdrop />
@@ -36,12 +42,12 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                 <Scroll.Content asChild>
                   <article className="BlogPost-article">
                     {post.feature_image ? (
-                      <div 
-                        className="BlogPost-illustration" 
+                      <div
+                        className="BlogPost-illustration"
                         style={{
                           backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${post.feature_image})`,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center'
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
                         }}
                       />
                     ) : (
@@ -52,14 +58,16 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                         <h1>{post.title}</h1>
                       </Page.Title>
                       {post.excerpt && (
-                        <h2 className="BlogPost-subtitle">
-                          {post.excerpt}
-                        </h2>
+                        <h2 className="BlogPost-subtitle">{post.excerpt}</h2>
                       )}
                       <div className="BlogPost-author">
-                        by <span className="BlogPost-authorName">{authorName}</span> • {publishedDate}
+                        by{" "}
+                        <span className="BlogPost-authorName">
+                          {authorName}
+                        </span>{" "}
+                        • {publishedDate}
                       </div>
-                      <div 
+                      <div
                         className="BlogPost-articleBody"
                         dangerouslySetInnerHTML={{ __html: post.html || "" }}
                       />

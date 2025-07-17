@@ -1,15 +1,26 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useLogin, useGoogleLogin, useRedirectIfAuthenticated } from '@/lib/hooks/useAuth';
-import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, Mail, Chrome, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  useGoogleLogin,
+  useLogin,
+  useRedirectIfAuthenticated,
+} from "@/lib/hooks/useAuth";
+import { loginSchema, type LoginFormData } from "@/lib/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Chrome, Loader2, Mail } from "lucide-react";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function LoginPage() {
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated();
@@ -38,17 +49,19 @@ export default function LoginPage() {
   // Show loading while checking auth status
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Welcome to Evento</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold">
+            Welcome to Evento
+          </CardTitle>
           <CardDescription className="text-center">
             Sign in to manage your events
           </CardDescription>
@@ -59,7 +72,7 @@ export default function LoginPage() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {error.message || 'An error occurred. Please try again.'}
+                {error.message || "An error occurred. Please try again."}
               </AlertDescription>
             </Alert>
           )}
@@ -73,7 +86,7 @@ export default function LoginPage() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <Input
-                  {...register('email')}
+                  {...register("email")}
                   id="email"
                   type="email"
                   placeholder="you@example.com"
@@ -97,7 +110,7 @@ export default function LoginPage() {
                   Sending code...
                 </>
               ) : (
-                'Continue with Email'
+                "Continue with Email"
               )}
             </Button>
           </form>
@@ -107,7 +120,9 @@ export default function LoginPage() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+              <span className="bg-white px-2 text-gray-500">
+                Or continue with
+              </span>
             </div>
           </div>
 
@@ -133,7 +148,8 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter className="text-center text-sm text-gray-600">
           <p className="w-full">
-            By continuing, you agree to Evento's Terms of Service and Privacy Policy
+            By continuing, you agree to Evento's Terms of Service and Privacy
+            Policy
           </p>
         </CardFooter>
       </Card>

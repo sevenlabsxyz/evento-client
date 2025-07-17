@@ -1,6 +1,10 @@
 "use client";
+import {
+  Sheet,
+  SheetViewProps,
+  useClientMediaQuery,
+} from "@silk-hq/components";
 import React from "react";
-import { Sheet, SheetViewProps, useClientMediaQuery } from "@silk-hq/components";
 import "./detached-sheet.css";
 
 // ================================================================================================
@@ -34,7 +38,9 @@ const DetachedSheetView = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   const largeViewport = useClientMediaQuery("(min-width: 650px)");
   const contentPlacement = largeViewport ? "center" : "bottom";
-  const tracks: SheetViewProps["tracks"] = largeViewport ? ["top", "bottom"] : "bottom";
+  const tracks: SheetViewProps["tracks"] = largeViewport
+    ? ["top", "bottom"]
+    : "bottom";
 
   return (
     <Sheet.View

@@ -1,7 +1,13 @@
 "use client";
-import React, { useEffect, useState, useRef, createContext, useContext } from "react";
 import { Sheet, useClientMediaQuery } from "@silk-hq/components";
-import { CheckCircle, XCircle, AlertCircle, Info, AlertTriangle } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, XCircle } from "lucide-react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./silk-toast.css";
 
 // ================================================================================================
@@ -41,15 +47,15 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 const getToastIcon = (type: ToastType) => {
   switch (type) {
     case "success":
-      return <CheckCircle className="w-5 h-5 text-white" />;
+      return <CheckCircle className="h-5 w-5 text-white" />;
     case "error":
-      return <XCircle className="w-5 h-5 text-white" />;
+      return <XCircle className="h-5 w-5 text-white" />;
     case "info":
-      return <Info className="w-5 h-5 text-white" />;
+      return <Info className="h-5 w-5 text-white" />;
     case "warning":
-      return <AlertTriangle className="w-5 h-5 text-white" />;
+      return <AlertTriangle className="h-5 w-5 text-white" />;
     default:
-      return <Info className="w-5 h-5 text-white" />;
+      return <Info className="h-5 w-5 text-white" />;
   }
 };
 
@@ -151,7 +157,8 @@ const ToastView = React.forwardRef<
   const contentPlacement = largeViewport ? "right" : "top";
 
   const context = useContext(ToastContext);
-  if (!context) throw new Error("ToastView must be used within a ToastContext.Provider");
+  if (!context)
+    throw new Error("ToastView must be used within a ToastContext.Provider");
   const { setTravelStatus } = context;
 
   return (

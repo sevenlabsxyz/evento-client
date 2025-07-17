@@ -1,14 +1,11 @@
 "use client";
 
-import { useState , useEffect} from "react";
-import { X } from "lucide-react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { coverImageCategories, CoverImage } from "@/lib/data/cover-images";
-import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
-import CoverUploader from "./cover-uploader";
 import ProgressiveImage from "@/components/ui/progressive-image";
+import { CoverImage, coverImageCategories } from "@/lib/data/cover-images";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
+import { useEffect, useState } from "react";
+import CoverUploader from "./cover-uploader";
 
 interface ImageSelectionModalProps {
   isOpen: boolean;
@@ -40,7 +37,7 @@ export default function ImageSelectionModal({
   if (!isOpen) return null;
 
   const activeCategory = coverImageCategories.find(
-    (cat) => cat.id === activeTab
+    (cat) => cat.id === activeTab,
   );
   const images = activeCategory?.images || [];
 
@@ -55,10 +52,9 @@ export default function ImageSelectionModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-white overflow-hidden">
-
+    <div className="fixed inset-0 z-50 overflow-hidden bg-white">
       {/* Tab Navigation */}
-      <div className="px-4 mb-4">
+      <div className="mb-4 px-4">
         <div className="grid grid-cols-5 gap-2">
           {coverImageCategories.map((category) => {
             const IconComponent = category.icon;
@@ -66,14 +62,16 @@ export default function ImageSelectionModal({
               <button
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
-                className={`flex flex-col items-center space-y-2 py-2 px-1 ${
+                className={`flex flex-col items-center space-y-2 px-1 py-2 ${
                   activeTab === category.id ? "text-gray-900" : "text-gray-400"
                 }`}
               >
-                <IconComponent className="w-6 h-6" />
-                <span className="text-xs font-medium text-center leading-tight">{category.name}</span>
+                <IconComponent className="h-6 w-6" />
+                <span className="text-center text-xs font-medium leading-tight">
+                  {category.name}
+                </span>
                 {activeTab === category.id && (
-                  <div className="w-full h-0.5 bg-gray-900 rounded-full"></div>
+                  <div className="h-0.5 w-full rounded-full bg-gray-900"></div>
                 )}
               </button>
             );
@@ -93,7 +91,7 @@ export default function ImageSelectionModal({
               <button
                 key={image.id}
                 onClick={() => handleImageSelect(image)}
-                className="relative aspect-square w-full h-auto rounded-2xl overflow-hidden hover:scale-105 transition-transform"
+                className="relative aspect-square h-auto w-full overflow-hidden rounded-2xl transition-transform hover:scale-105"
               >
                 <ProgressiveImage
                   src={getCoverImageUrl500x500(image.url)}
@@ -108,10 +106,10 @@ export default function ImageSelectionModal({
       </div>
 
       {/* Bottom Action Button */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+      <div className="absolute bottom-0 left-0 right-0 border-t border-gray-200 bg-white p-4">
         <CoverUploader
           onCoverUploaded={handleCoverUploaded}
-          className="w-full py-4 rounded-2xl font-semibold"
+          className="w-full rounded-2xl py-4 font-semibold"
           buttonText="Upload Custom Image"
           buttonVariant="default"
         />

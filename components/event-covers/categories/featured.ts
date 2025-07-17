@@ -46,7 +46,7 @@ export const FEATURED_COVERS = [
   { url: `${basePath}/social/129.webp` },
   { url: `${basePath}/social/128.webp` },
 
-	// Halloween Release
+  // Halloween Release
   { url: `${basePath}/party/86.webp` },
   { url: `${basePath}/party/85.webp` },
   { url: `${basePath}/party/84.webp` },

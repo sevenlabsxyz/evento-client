@@ -45,7 +45,7 @@
 .StatsLongSheet-header {
   /* SELF-LAYOUT */
   width: 100%;
-  
+
   /* APPEARANCE */
   background-color: rgb(17, 24, 39);
   position: relative;
@@ -124,7 +124,9 @@
   /* APPEARANCE */
   background-color: white;
   border-radius: 1rem;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 
   /* INNER-LAYOUT */
   padding: 1.5rem;

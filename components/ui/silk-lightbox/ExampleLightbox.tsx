@@ -1,7 +1,7 @@
-import { useEffect } from "react";
 import { Scroll, VisuallyHidden } from "@silk-hq/components";
-import { Lightbox } from "./Lightbox";
+import { useEffect } from "react";
 import "./ExampleLightbox.css";
+import { Lightbox } from "./Lightbox";
 
 // ================================================================================================
 // Data
@@ -28,7 +28,8 @@ const comments = [
   {
     id: 4,
     username: "Noah García",
-    content: "The juxtaposition of the bustling city against the serene sea is fascinating.",
+    content:
+      "The juxtaposition of the bustling city against the serene sea is fascinating.",
   },
   {
     id: 5,
@@ -110,7 +111,9 @@ const sideContent = (
         <div className="ExampleLightbox-profilePicture" />
         <div className="ExampleLightbox-text">
           <div className="ExampleLightbox-username">{comment.username}</div>
-          <div className="ExampleLightbox-commentContent">{comment.content}</div>
+          <div className="ExampleLightbox-commentContent">
+            {comment.content}
+          </div>
         </div>
       </li>
     ))}
@@ -130,7 +133,9 @@ const ExampleLightbox = () => {
 
   return (
     <Lightbox.Root>
-      <Lightbox.Trigger className="ExampleLightbox-presentTrigger">Lightbox</Lightbox.Trigger>
+      <Lightbox.Trigger className="ExampleLightbox-presentTrigger">
+        Lightbox
+      </Lightbox.Trigger>
       <Lightbox.Portal>
         <Lightbox.View>
           <Lightbox.Backdrop />
@@ -165,7 +170,10 @@ const ExampleLightbox = () => {
             <div className="ExampleLightbox-sidebarContainer">
               <h2 className="ExampleLightbox-sidebarTitle">Comments</h2>
               <Scroll.Root asChild>
-                <Scroll.View className="ExampleLightbox-sidebarScrollView" safeArea="none">
+                <Scroll.View
+                  className="ExampleLightbox-sidebarScrollView"
+                  safeArea="none"
+                >
                   <Scroll.Content>{sideContent}</Scroll.Content>
                 </Scroll.View>
               </Scroll.Root>
@@ -188,7 +196,9 @@ const ExampleLightbox = () => {
               >
                 <path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
               </svg>
-              <div className="ExampleLightbox-sideSheetPresentTriggerText">Comments</div>
+              <div className="ExampleLightbox-sideSheetPresentTriggerText">
+                Comments
+              </div>
             </Lightbox.SideSheetPresentTrigger>
 
             <Lightbox.SideSheetPortal>

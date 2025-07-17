@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface TimePickerModalProps {
   isOpen: boolean;
@@ -28,7 +28,7 @@ export default function TimePickerModal({
   const [hour, setHour] = useState(selectedTime?.hour || 9);
   const [minute, setMinute] = useState(selectedTime?.minute || 45);
   const [period, setPeriod] = useState<"AM" | "PM">(
-    selectedTime?.period || "AM"
+    selectedTime?.period || "AM",
   );
 
   const hourRef = useRef<HTMLDivElement>(null);
@@ -99,15 +99,15 @@ export default function TimePickerModal({
     return (
       <div className="relative h-44 overflow-hidden">
         {/* Gradient overlays */}
-        <div className="absolute top-0 left-0 right-0 h-11 bg-gradient-to-b from-white to-transparent z-10 pointer-events-none" />
-        <div className="absolute bottom-0 left-0 right-0 h-11 bg-gradient-to-t from-white to-transparent z-10 pointer-events-none" />
+        <div className="pointer-events-none absolute left-0 right-0 top-0 z-10 h-11 bg-gradient-to-b from-white to-transparent" />
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-11 bg-gradient-to-t from-white to-transparent" />
 
         {/* Selection indicator */}
-        <div className="absolute top-1/2 left-0 right-0 h-11 -mt-5.5 border-t border-b border-gray-200 pointer-events-none z-10" />
+        <div className="-mt-5.5 pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-11 border-b border-t border-gray-200" />
 
         <div
           ref={wheelRef}
-          className="h-full overflow-y-auto scrollbar-hide"
+          className="scrollbar-hide h-full overflow-y-auto"
           style={{ scrollSnapType: "y mandatory" }}
           onTouchStart={(e) => e.stopPropagation()}
           onTouchMove={(e) => e.stopPropagation()}
@@ -120,10 +120,7 @@ export default function TimePickerModal({
             <button
               key={index}
               onClick={() => onValueChange(value)}
-              className={`
-                w-full h-11 flex items-center justify-center text-lg font-medium
-                ${selectedValue === value ? "text-gray-900" : "text-gray-400"}
-              `}
+              className={`flex h-11 w-full items-center justify-center text-lg font-medium ${selectedValue === value ? "text-gray-900" : "text-gray-400"} `}
               style={{ scrollSnapAlign: "center" }}
             >
               {formatValue ? formatValue(value) : value}
@@ -146,16 +143,16 @@ export default function TimePickerModal({
       />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl w-full md:max-w-sm mx-2 md:mx-4 shadow-2xl">
+      <div className="relative mx-2 w-full rounded-3xl bg-white shadow-2xl md:mx-4 md:max-w-sm">
         {/* Header */}
         <div className="p-6 pb-4">
-          <div className="flex items-center justify-between mb-6">
-            <button onClick={onClose} className="text-red-500 font-medium">
+          <div className="mb-6 flex items-center justify-between">
+            <button onClick={onClose} className="font-medium text-red-500">
               Cancel
             </button>
             <div className="text-center">
-              <h2 className="font-semibold text-lg">{title}</h2>
-              <p className="text-gray-500 text-sm whitespace-pre-line">
+              <h2 className="text-lg font-semibold">{title}</h2>
+              <p className="whitespace-pre-line text-sm text-gray-500">
                 {`${hour.toString().padStart(2, "0")}:${minute
                   .toString()
                   .padStart(2, "0")} ${period}`}
@@ -163,7 +160,7 @@ export default function TimePickerModal({
             </div>
             <button
               onClick={handleSave}
-              className="bg-red-500 text-white px-4 py-2 rounded-xl font-medium"
+              className="rounded-xl bg-red-500 px-4 py-2 font-medium text-white"
             >
               Save
             </button>
@@ -208,17 +205,17 @@ export default function TimePickerModal({
         <div className="px-6 pb-4">
           <button
             onClick={onTimezoneClick}
-            className="w-full p-3 bg-red-100 text-red-600 rounded-xl font-medium"
+            className="w-full rounded-xl bg-red-100 p-3 font-medium text-red-600"
           >
             Timezone: {timezone}
           </button>
         </div>
 
         {/* Clear Button */}
-        <div className="p-4 border-t border-gray-100">
+        <div className="border-t border-gray-100 p-4">
           <button
             onClick={handleClear}
-            className="w-full py-3 text-red-500 font-medium"
+            className="w-full py-3 font-medium text-red-500"
           >
             Clear Time
           </button>

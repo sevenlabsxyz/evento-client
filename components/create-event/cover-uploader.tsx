@@ -1,9 +1,9 @@
 "use client";
 
-import { Loader2, UploadCloud } from "lucide-react";
-import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/lib/utils/toast";
+import { Loader2, UploadCloud } from "lucide-react";
+import { useRef, useState } from "react";
 
 interface CoverUploaderProps {
   onCoverUploaded: (url: string) => void;
@@ -23,7 +23,9 @@ export default function CoverUploader({
   const [isLoading, setIsLoading] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) {
       toast.error("No image selected. Please try again.");
@@ -52,7 +54,7 @@ export default function CoverUploader({
         {
           method: "POST",
           body: file,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -60,7 +62,7 @@ export default function CoverUploader({
       }
 
       const result = await response.json();
-      
+
       if (result.image) {
         onCoverUploaded(result.image);
         toast.success("Cover image uploaded successfully!");
@@ -92,7 +94,7 @@ export default function CoverUploader({
         style={{ display: "none" }}
         onChange={handleFileUpload}
       />
-      
+
       <Button
         onClick={handleButtonClick}
         disabled={isLoading}

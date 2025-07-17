@@ -22,7 +22,9 @@
     height: calc(100% - max(env(safe-area-inset-top), 5vh));
 
     /* APPEARANCE */
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
     border-radius: 24px;
   }
 }
@@ -267,7 +269,7 @@
   /* APPEARANCE */
   background-color: rgb(239, 68, 68);
   border-radius: 50%;
-  
+
   /* INNER-LAYOUT */
   display: flex;
   align-items: center;
@@ -405,7 +407,8 @@
 
 /* Animations */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {

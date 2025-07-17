@@ -1,7 +1,7 @@
-import type { Editor } from '@tiptap/core'
-import { Minus } from 'lucide-react'
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { VisuallyHidden } from '@silk-hq/components'
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { VisuallyHidden } from "@silk-hq/components";
+import type { Editor } from "@tiptap/core";
+import { Minus } from "lucide-react";
 
 interface InsertElementsSheetProps {
   isOpen: boolean;
@@ -9,7 +9,11 @@ interface InsertElementsSheetProps {
   editor: Editor;
 }
 
-export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertElementsSheetProps) {
+export default function InsertElementsSheet({
+  isOpen,
+  onClose,
+  editor,
+}: InsertElementsSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -27,7 +31,7 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
 
             <div className="InsertSheet-container">
               <h3 className="InsertSheet-title">Insert Elements</h3>
-              
+
               <div className="InsertSheet-options">
                 <button
                   onClick={() => {
@@ -36,7 +40,7 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
                   }}
                   className="InsertSheet-option"
                 >
-                  <Minus className="h-4 w-4 mr-2" />
+                  <Minus className="mr-2 h-4 w-4" />
                   <span className="grow">Divider</span>
                 </button>
               </div>
@@ -45,5 +49,5 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  )
+  );
 }
