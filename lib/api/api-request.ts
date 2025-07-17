@@ -4,11 +4,7 @@ import { NextResponse } from 'next/server';
 // Use the backend target URL directly for server-side requests
 const API_BASE_URL = Env.API_PROXY_TARGET;
 
-export async function apiRequest(
-  method: string,
-  path: string,
-  request: Request
-) {
+export async function apiRequest(method: string, path: string, request: Request) {
   try {
     const url = new URL(request.url);
     const queryString = url.search;

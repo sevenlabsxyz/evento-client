@@ -1,15 +1,7 @@
 'use client';
 
 import { Event } from '@/lib/types/event';
-import {
-  Calendar,
-  Clock,
-  Mail,
-  MapPin,
-  MoreHorizontal,
-  Share,
-  Star,
-} from 'lucide-react';
+import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
 import { useState } from 'react';
 import ContactHostSheet from './contact-host-sheet';
 import MoreOptionsSheet from './more-options-sheet';
@@ -20,10 +12,7 @@ interface EventInfoProps {
   currentUserId?: string;
 }
 
-export default function EventInfo({
-  event,
-  currentUserId = 'current-user-id',
-}: EventInfoProps) {
+export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [showMoreSheet, setShowMoreSheet] = useState(false);
 
@@ -78,9 +67,7 @@ export default function EventInfo({
 
     const location = `${event.location.name}, ${
       event.location.address || ''
-    }, ${event.location.city}, ${event.location.state || ''} ${
-      event.location.zipCode || ''
-    }`
+    }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
       .replace(/,\s*,/g, ',')
       .trim();
 
@@ -110,9 +97,7 @@ export default function EventInfo({
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${event.title
-      .replace(/[^a-z0-9]/gi, '_')
-      .toLowerCase()}.ics`;
+    link.download = `${event.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.ics`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -130,22 +115,22 @@ export default function EventInfo({
 
   return (
     <>
-      <div className="py-6 space-y-6">
+      <div className='space-y-6 py-6'>
         {/* Date and Time */}
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 text-gray-700">
-            <Calendar className="w-5 h-5 text-gray-400" />
-            <span className="font-medium">{event.date}</span>
+        <div className='space-y-3'>
+          <div className='flex items-center gap-3 text-gray-700'>
+            <Calendar className='h-5 w-5 text-gray-400' />
+            <span className='font-medium'>{event.date}</span>
           </div>
-          <div className="flex items-center gap-3 text-gray-700">
-            <Clock className="w-5 h-5 text-gray-400" />
+          <div className='flex items-center gap-3 text-gray-700'>
+            <Clock className='h-5 w-5 text-gray-400' />
             <span>
               {event.startTime} - {event.endTime}
               {event.timezone && ` ${event.timezone}`}
             </span>
           </div>
-          <div className="flex items-center gap-3 text-gray-700">
-            <MapPin className="w-5 h-5 text-gray-400" />
+          <div className='flex items-center gap-3 text-gray-700'>
+            <MapPin className='h-5 w-5 text-gray-400' />
             <span>{event.location.name}</span>
           </div>
         </div>
@@ -154,39 +139,39 @@ export default function EventInfo({
         {isOwner ? (
           <OwnerEventButtons eventId={event.id} />
         ) : (
-          <div className="flex items-center [&>button]:flex-[1] gap-2">
+          <div className='flex items-center gap-2 [&>button]:flex-[1]'>
             {event.registrationUrl ? (
               <button
                 onClick={handleRegister}
-                className="flex flex-col items-center justify-center h-16 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors"
+                className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
               >
-                <Star className="w-5 h-5 mb-1" />
-                <span className="text-xs font-medium">Register</span>
+                <Star className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>Register</span>
               </button>
             ) : null}
 
             <button
               onClick={handleContact}
-              className="flex flex-col items-center justify-center h-16 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
             >
-              <Mail className="w-5 h-5 mb-1" />
-              <span className="text-xs font-medium">Contact</span>
+              <Mail className='mb-1 h-5 w-5' />
+              <span className='text-xs font-medium'>Contact</span>
             </button>
 
             <button
               onClick={handleShare}
-              className="flex flex-col items-center justify-center h-16 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
             >
-              <Share className="w-5 h-5 mb-1" />
-              <span className="text-xs font-medium">Share</span>
+              <Share className='mb-1 h-5 w-5' />
+              <span className='text-xs font-medium'>Share</span>
             </button>
 
             <button
               onClick={() => setShowMoreSheet(true)}
-              className="flex flex-col items-center justify-center h-16 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-colors"
+              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
             >
-              <MoreHorizontal className="w-5 h-5 mb-1" />
-              <span className="text-xs font-medium">More</span>
+              <MoreHorizontal className='mb-1 h-5 w-5' />
+              <span className='text-xs font-medium'>More</span>
             </button>
           </div>
         )}

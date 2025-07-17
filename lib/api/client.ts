@@ -20,9 +20,7 @@ apiClient.interceptors.response.use(
   (error: AxiosError) => {
     // Extract error message from response
     const errorMessage =
-      (error.response?.data as any)?.message ||
-      error.message ||
-      'An unexpected error occurred';
+      (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
 
     // Create a standardized error object
     const apiError = {

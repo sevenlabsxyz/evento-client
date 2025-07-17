@@ -18,7 +18,7 @@ export function formatEventDate(isoString: string, timezone?: string) {
   }
 
   const date = new Date(isoString);
-  
+
   // Format date as "Sep 20, 2025"
   const formattedDate = date.toLocaleDateString('en-US', {
     month: 'short',
@@ -69,7 +69,7 @@ export function getRelativeTime(isoString: string): string {
   const now = new Date();
   const date = new Date(isoString);
   const diffMs = now.getTime() - date.getTime();
-  
+
   const diffMinutes = Math.floor(diffMs / (1000 * 60));
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));

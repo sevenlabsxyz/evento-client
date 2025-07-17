@@ -67,86 +67,74 @@ export default function NostrSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <div className="flex justify-center mb-4">
-                <SheetWithDetentFull.Handle />
-              </div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Nostr</h2>
-                <button
-                  onClick={handleCancel}
-                  className="p-2 hover:bg-gray-100 rounded-full"
-                >
-                  <X className="w-5 h-5" />
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-between'>
+                <h2 className='text-xl font-semibold'>Nostr</h2>
+                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                  <X className='h-5 w-5' />
                 </button>
               </div>
-              <p className="text-sm text-gray-500 mt-1">
-                Add your Nostr identifier (NIP-05)
-              </p>
+              <p className='mt-1 text-sm text-gray-500'>Add your Nostr identifier (NIP-05)</p>
             </div>
 
             {/* Content */}
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent className="p-6">
+                <SheetWithDetentFull.ScrollContent className='p-6'>
                   {/* Input with icon */}
-                  <div className="relative mb-4">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <Hash className="w-5 h-5 text-pink-600" />
+                  <div className='relative mb-4'>
+                    <div className='absolute left-3 top-1/2 -translate-y-1/2'>
+                      <Hash className='h-5 w-5 text-pink-600' />
                     </div>
                     <Input
-                      type="text"
+                      type='text'
                       value={nip05}
                       onChange={(e) => {
                         setNip05(e.target.value);
                         setError('');
                       }}
-                      placeholder="user@domain.com"
-                      className="pl-10"
+                      placeholder='user@domain.com'
+                      className='pl-10'
                       autoFocus
                     />
                   </div>
 
                   {/* Error message */}
-                  {error && (
-                    <p className="text-sm text-red-500 mb-4">{error}</p>
-                  )}
+                  {error && <p className='mb-4 text-sm text-red-500'>{error}</p>}
 
                   {/* Info text */}
-                  <div className="space-y-3 mb-6">
-                    <p className="text-sm text-gray-500">
-                      A Nostr identifier (NIP-05) helps people find and verify
-                      your Nostr profile. It looks like an email address but is
-                      used for the Nostr protocol.
+                  <div className='mb-6 space-y-3'>
+                    <p className='text-sm text-gray-500'>
+                      A Nostr identifier (NIP-05) helps people find and verify your Nostr profile.
+                      It looks like an email address but is used for the Nostr protocol. A Nostr
+                      identifier (NIP-05) helps people find and verify your Nostr profile. It looks
+                      like an email address but is used for the Nostr protocol.
                     </p>
 
-                    <div className="bg-pink-50 p-4 rounded-xl">
-                      <p className="text-sm text-pink-800 font-medium mb-2">
-                        What is Nostr?
-                      </p>
-                      <p className="text-sm text-pink-700">
-                        Nostr is a decentralized social network protocol that
-                        gives you control over your identity and content. Your
-                        NIP-05 identifier makes it easy for others to find you
-                        across different Nostr apps.
+                    <div className='rounded-xl bg-pink-50 p-4'>
+                      <p className='mb-2 text-sm font-medium text-pink-800'>What is Nostr?</p>
+                      <p className='text-sm text-pink-700'>
+                        Nostr is a decentralized social network protocol that gives you control over
+                        your identity and content. Your NIP-05 identifier makes it easy for others
+                        to find you across different Nostr apps. Nostr is a decentralized social
+                        network protocol that gives you control over your identity and content. Your
+                        NIP-05 identifier makes it easy for others to find you across different
+                        Nostr apps.
                       </p>
                     </div>
                   </div>
 
                   {/* Save/Cancel Buttons */}
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
                       disabled={!hasChanges}
                     >
                       Save
                     </Button>
-                    <Button
-                      onClick={handleCancel}
-                      variant="outline"
-                      className="flex-1"
-                    >
+                    <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
                     </Button>
                   </div>

@@ -32,11 +32,9 @@ export async function getTimezoneAbbreviation(timezone: string): Promise<string>
 
   try {
     const timezoneData = await loadTimezoneData();
-    
+
     // Find timezone entry where utc array contains the timezone
-    const entry = timezoneData.find((tz: any) => 
-      tz.utc && tz.utc.includes(timezone)
-    );
+    const entry = timezoneData.find((tz: any) => tz.utc && tz.utc.includes(timezone));
 
     if (entry && entry.abbr) {
       return entry.abbr;
@@ -70,7 +68,7 @@ export function getTimezoneAbbreviationSync(timezone: string): string {
   // Basic timezone mapping for common cases (can be expanded)
   const commonTimezones: Record<string, string> = {
     'America/New_York': 'EST',
-    'America/Chicago': 'CST', 
+    'America/Chicago': 'CST',
     'America/Denver': 'MST',
     'America/Los_Angeles': 'PST',
     'America/Phoenix': 'MST',

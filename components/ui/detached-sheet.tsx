@@ -1,15 +1,15 @@
-"use client";
-import React from "react";
-import { Sheet, SheetViewProps, useClientMediaQuery } from "@silk-hq/components";
-import "./detached-sheet.css";
+'use client';
+import { Sheet, SheetViewProps, useClientMediaQuery } from '@silk-hq/components';
+import React from 'react';
+import './detached-sheet.css';
 
 // ================================================================================================
 // Root
 // ================================================================================================
 
 type SheetRootProps = React.ComponentPropsWithoutRef<typeof Sheet.Root>;
-type DetachedSheetRootProps = Omit<SheetRootProps, "license"> & {
-  license?: SheetRootProps["license"];
+type DetachedSheetRootProps = Omit<SheetRootProps, 'license'> & {
+  license?: SheetRootProps['license'];
 };
 
 const DetachedSheetRoot = React.forwardRef<
@@ -17,12 +17,12 @@ const DetachedSheetRoot = React.forwardRef<
   DetachedSheetRootProps
 >(({ children, ...restProps }, ref) => {
   return (
-    <Sheet.Root license="commercial" {...restProps} ref={ref}>
+    <Sheet.Root license='commercial' {...restProps} ref={ref}>
       {children}
     </Sheet.Root>
   );
 });
-DetachedSheetRoot.displayName = "DetachedSheet.Root";
+DetachedSheetRoot.displayName = 'DetachedSheet.Root';
 
 // ================================================================================================
 // View
@@ -32,13 +32,13 @@ const DetachedSheetView = React.forwardRef<
   React.ElementRef<typeof Sheet.View>,
   React.ComponentPropsWithoutRef<typeof Sheet.View>
 >(({ children, className, ...restProps }, ref) => {
-  const largeViewport = useClientMediaQuery("(min-width: 650px)");
-  const contentPlacement = largeViewport ? "center" : "bottom";
-  const tracks: SheetViewProps["tracks"] = largeViewport ? ["top", "bottom"] : "bottom";
+  const largeViewport = useClientMediaQuery('(min-width: 650px)');
+  const contentPlacement = largeViewport ? 'center' : 'bottom';
+  const tracks: SheetViewProps['tracks'] = largeViewport ? ['top', 'bottom'] : 'bottom';
 
   return (
     <Sheet.View
-      className={`DetachedSheet-view contentPlacement-${contentPlacement} ${className ?? ""}`}
+      className={`DetachedSheet-view contentPlacement-${contentPlacement} ${className ?? ''}`}
       contentPlacement={contentPlacement}
       tracks={tracks}
       nativeEdgeSwipePrevention={true}
@@ -49,7 +49,7 @@ const DetachedSheetView = React.forwardRef<
     </Sheet.View>
   );
 });
-DetachedSheetView.displayName = "DetachedSheet.View";
+DetachedSheetView.displayName = 'DetachedSheet.View';
 
 // ================================================================================================
 // Backdrop
@@ -61,17 +61,17 @@ const DetachedSheetBackdrop = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Backdrop
-      className={`DetachedSheet-backdrop ${className ?? ""}`.trim()}
+      className={`DetachedSheet-backdrop ${className ?? ''}`.trim()}
       travelAnimation={{
         opacity: ({ progress }) => Math.min(progress * 0.2, 0.2),
       }}
-      themeColorDimming="auto"
+      themeColorDimming='auto'
       {...restProps}
       ref={ref}
     />
   );
 });
-DetachedSheetBackdrop.displayName = "DetachedSheet.Backdrop";
+DetachedSheetBackdrop.displayName = 'DetachedSheet.Backdrop';
 
 // ================================================================================================
 // Content
@@ -83,15 +83,15 @@ const DetachedSheetContent = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Sheet.Content
-      className={`DetachedSheet-content ${className ?? ""}`.trim()}
+      className={`DetachedSheet-content ${className ?? ''}`.trim()}
       {...restProps}
       ref={ref}
     >
-      <div className="DetachedSheet-innerContent">{children}</div>
+      <div className='DetachedSheet-innerContent'>{children}</div>
     </Sheet.Content>
   );
 });
-DetachedSheetContent.displayName = "DetachedSheet.Content";
+DetachedSheetContent.displayName = 'DetachedSheet.Content';
 
 // ================================================================================================
 // Handle
@@ -103,14 +103,14 @@ const DetachedSheetHandle = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Handle
-      className={`DetachedSheet-handle ${className ?? ""}`.trim()}
-      action="dismiss"
+      className={`DetachedSheet-handle ${className ?? ''}`.trim()}
+      action='dismiss'
       {...restProps}
       ref={ref}
     />
   );
 });
-DetachedSheetHandle.displayName = "DetachedSheet.Handle";
+DetachedSheetHandle.displayName = 'DetachedSheet.Handle';
 
 // ================================================================================================
 // Unchanged Components

@@ -1,9 +1,9 @@
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useAuthStore } from '../stores/auth-store';
-import { authService } from '../services/auth';
 import { apiClient } from '../api/client';
-import { UserDetails, ApiResponse } from '../types/api';
+import { authService } from '../services/auth';
+import { useAuthStore } from '../stores/auth-store';
+import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;

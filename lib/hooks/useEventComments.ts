@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api/client';
 import { ApiResponse, UserDetails } from '@/lib/types/api';
+import { useQuery } from '@tanstack/react-query';
 
 export interface EventComment {
   id: string;
@@ -20,17 +20,17 @@ export function useEventComments(eventId: string) {
       const response = await apiClient.get<ApiResponse<EventComment[]>>(
         `/v1/events/comments?event_id=${eventId}`
       );
-      
+
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');
       }
-      
+
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
         return response.data || [];
       }
-      
+
       // Fallback for direct data response
       return response as EventComment[];
     },

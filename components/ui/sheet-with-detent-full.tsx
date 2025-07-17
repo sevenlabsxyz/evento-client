@@ -1,15 +1,15 @@
-"use client";
-import React from "react";
-import { Sheet, Scroll } from "@silk-hq/components";
-import "./sheet-with-detent.css";
+'use client';
+import { Scroll, Sheet } from '@silk-hq/components';
+import React from 'react';
+import './sheet-with-detent.css';
 
 // ================================================================================================
 // Root
 // ================================================================================================
 
 type SheetRootProps = React.ComponentPropsWithoutRef<typeof Sheet.Root>;
-type SheetWithDetentFullRootProps = Omit<SheetRootProps, "license"> & {
-  license?: SheetRootProps["license"];
+type SheetWithDetentFullRootProps = Omit<SheetRootProps, 'license'> & {
+  license?: SheetRootProps['license'];
 };
 
 const SheetWithDetentFullRoot = React.forwardRef<
@@ -17,12 +17,12 @@ const SheetWithDetentFullRoot = React.forwardRef<
   SheetWithDetentFullRootProps
 >(({ children, ...restProps }, ref) => {
   return (
-    <Sheet.Root license="commercial" {...restProps} ref={ref}>
+    <Sheet.Root license='commercial' {...restProps} ref={ref}>
       {children}
     </Sheet.Root>
   );
 });
-SheetWithDetentFullRoot.displayName = "SheetWithDetentFull.Root";
+SheetWithDetentFullRoot.displayName = 'SheetWithDetentFull.Root';
 
 // ================================================================================================
 // View - Always opens at full height
@@ -35,14 +35,14 @@ const SheetWithDetentFullView = React.forwardRef<
   return (
     <Sheet.View
       {...props}
-      className={`SheetWithDetent-view ${props.className ?? ""}`.trim()}
+      className={`SheetWithDetent-view ${props.className ?? ''}`.trim()}
       swipeOvershoot={false}
       nativeEdgeSwipePrevention={true}
       ref={ref}
     />
   );
 });
-SheetWithDetentFullView.displayName = "SheetWithDetentFull.View";
+SheetWithDetentFullView.displayName = 'SheetWithDetentFull.View';
 
 // ================================================================================================
 // Backdrop
@@ -54,14 +54,14 @@ const SheetWithDetentFullBackdrop = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Backdrop
-      className={`SheetWithDetent-backdrop ${className ?? ""}`.trim()}
-      themeColorDimming="auto"
+      className={`SheetWithDetent-backdrop ${className ?? ''}`.trim()}
+      themeColorDimming='auto'
       {...restProps}
       ref={ref}
     />
   );
 });
-SheetWithDetentFullBackdrop.displayName = "SheetWithDetentFull.Backdrop";
+SheetWithDetentFullBackdrop.displayName = 'SheetWithDetentFull.Backdrop';
 
 // ================================================================================================
 // Content
@@ -73,7 +73,7 @@ const SheetWithDetentFullContent = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Sheet.Content
-      className={`SheetWithDetent-content ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-content ${className ?? ''}`.trim()}
       {...restProps}
       ref={ref}
     >
@@ -81,7 +81,7 @@ const SheetWithDetentFullContent = React.forwardRef<
     </Sheet.Content>
   );
 });
-SheetWithDetentFullContent.displayName = "SheetWithDetentFull.Content";
+SheetWithDetentFullContent.displayName = 'SheetWithDetentFull.Content';
 
 // ================================================================================================
 // Handle
@@ -93,14 +93,14 @@ const SheetWithDetentFullHandle = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Handle
-      className={`SheetWithDetent-handle ${className ?? ""}`.trim()}
-      action="dismiss"
+      className={`SheetWithDetent-handle ${className ?? ''}`.trim()}
+      action='dismiss'
       {...restProps}
       ref={ref}
     />
   );
 });
-SheetWithDetentFullHandle.displayName = "SheetWithDetentFull.Handle";
+SheetWithDetentFullHandle.displayName = 'SheetWithDetentFull.Handle';
 
 // ================================================================================================
 // Scroll Components
@@ -112,7 +112,7 @@ const SheetWithDetentFullScrollRoot = React.forwardRef<
 >((props, ref) => {
   return <Scroll.Root {...props} ref={ref} />;
 });
-SheetWithDetentFullScrollRoot.displayName = "SheetWithDetentFull.ScrollRoot";
+SheetWithDetentFullScrollRoot.displayName = 'SheetWithDetentFull.ScrollRoot';
 
 const SheetWithDetentFullScrollView = React.forwardRef<
   React.ElementRef<typeof Scroll.View>,
@@ -120,10 +120,10 @@ const SheetWithDetentFullScrollView = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Scroll.View
-      className={`SheetWithDetent-scrollView ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-scrollView ${className ?? ''}`.trim()}
       scrollGestureTrap={{ yEnd: true }}
-      scrollGesture="auto"
-      safeArea="layout-viewport"
+      scrollGesture='auto'
+      safeArea='layout-viewport'
       onScrollStart={{ dismissKeyboard: true }}
       {...restProps}
       ref={ref}
@@ -132,7 +132,7 @@ const SheetWithDetentFullScrollView = React.forwardRef<
     </Scroll.View>
   );
 });
-SheetWithDetentFullScrollView.displayName = "SheetWithDetentFull.ScrollView";
+SheetWithDetentFullScrollView.displayName = 'SheetWithDetentFull.ScrollView';
 
 const SheetWithDetentFullScrollContent = React.forwardRef<
   React.ElementRef<typeof Scroll.Content>,
@@ -140,7 +140,7 @@ const SheetWithDetentFullScrollContent = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Scroll.Content
-      className={`SheetWithDetent-scrollContent ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-scrollContent ${className ?? ''}`.trim()}
       {...restProps}
       ref={ref}
     >
@@ -148,7 +148,7 @@ const SheetWithDetentFullScrollContent = React.forwardRef<
     </Scroll.Content>
   );
 });
-SheetWithDetentFullScrollContent.displayName = "SheetWithDetentFull.ScrollContent";
+SheetWithDetentFullScrollContent.displayName = 'SheetWithDetentFull.ScrollContent';
 
 // ================================================================================================
 // Unchanged Components

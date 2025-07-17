@@ -10,10 +10,7 @@ function errorResponse(message: string, status: number = 500) {
 }
 
 // Proxy handler for all HTTP methods
-async function handler(
-  request: NextRequest,
-  { params }: { params: { path: string[] } }
-) {
+async function handler(request: NextRequest, { params }: { params: { path: string[] } }) {
   try {
     // Reconstruct the path
     const path = params.path?.join('/') || '';
@@ -82,12 +79,7 @@ async function handler(
     const responseHeaders = new Headers();
 
     // Forward specific headers from the target response
-    const headersToReturn = [
-      'content-type',
-      'cache-control',
-      'etag',
-      'last-modified',
-    ];
+    const headersToReturn = ['content-type', 'cache-control', 'etag', 'last-modified'];
 
     headersToReturn.forEach((header) => {
       const value = response.headers.get(header);
@@ -122,9 +114,7 @@ async function handler(
   } catch (error) {
     console.error('Proxy error:', error);
     return errorResponse(
-      `Proxy error: ${
-        error instanceof Error ? error.message : 'Unknown error'
-      }`,
+      `Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       500
     );
   }

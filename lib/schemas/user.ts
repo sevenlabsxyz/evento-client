@@ -8,51 +8,33 @@ export const updateUserProfileSchema = z.object({
     .max(20, 'Username must be less than 20 characters')
     .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
     .optional(),
-  
+
   name: z
     .string()
     .min(1, 'Name is required')
     .max(100, 'Name must be less than 100 characters')
     .optional(),
-  
-  bio: z
-    .string()
-    .max(280, 'Bio must be less than 280 characters')
-    .optional(),
-  
-  bio_link: z
-    .string()
-    .url('Please enter a valid URL')
-    .optional()
-    .or(z.literal('')),
-  
-  x_handle: z
-    .string()
-    .max(50, 'X handle must be less than 50 characters')
-    .optional(),
-  
+
+  bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
+
+  bio_link: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+
+  x_handle: z.string().max(50, 'X handle must be less than 50 characters').optional(),
+
   instagram_handle: z
     .string()
     .max(50, 'Instagram handle must be less than 50 characters')
     .optional(),
-  
+
   ln_address: z
     .string()
     .email('Please enter a valid Lightning address')
     .optional()
     .or(z.literal('')),
-  
-  nip05: z
-    .string()
-    .email('Please enter a valid NIP-05 identifier')
-    .optional()
-    .or(z.literal('')),
-  
-  image: z
-    .string()
-    .url('Please enter a valid image URL')
-    .optional()
-    .or(z.literal('')),
+
+  nip05: z.string().email('Please enter a valid NIP-05 identifier').optional().or(z.literal('')),
+
+  image: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
 });
 
 // User search schema

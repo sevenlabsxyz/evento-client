@@ -3,7 +3,7 @@ import { create } from 'zustand';
 interface SidebarState {
   // State
   isOpen: boolean;
-  
+
   // Actions
   openSidebar: () => void;
   closeSidebar: () => void;
@@ -13,7 +13,7 @@ interface SidebarState {
 export const useSidebarStore = create<SidebarState>((set) => ({
   // Initial state
   isOpen: false,
-  
+
   // Actions
   openSidebar: () => set({ isOpen: true }),
   closeSidebar: () => set({ isOpen: false }),
@@ -26,6 +26,6 @@ export const useSidebar = () => {
   const openSidebar = useSidebarStore((state) => state.openSidebar);
   const closeSidebar = useSidebarStore((state) => state.closeSidebar);
   const toggleSidebar = useSidebarStore((state) => state.toggleSidebar);
-  
+
   return { isOpen, openSidebar, closeSidebar, toggleSidebar };
 };

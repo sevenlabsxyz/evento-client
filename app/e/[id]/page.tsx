@@ -29,15 +29,9 @@ export default function EventDetailPage() {
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
 
   // Fetch event data from API
-  const {
-    data: eventData,
-    isLoading: eventLoading,
-    error: eventError,
-  } = useEventDetails(eventId);
-  const { data: hostsData = [], isLoading: hostsLoading } =
-    useEventHosts(eventId);
-  const { data: galleryData = [], isLoading: galleryLoading } =
-    useEventGallery(eventId);
+  const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
+  const { data: hostsData = [], isLoading: hostsLoading } = useEventHosts(eventId);
+  const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
 
   // Debug logging
   debugLog('EventDetailPage', 'Component render', {
@@ -60,18 +54,16 @@ export default function EventDetailPage() {
   }
 
   // Transform API data to display format
-  const event = eventData
-    ? transformApiEventToDisplay(eventData, hostsData, galleryData)
-    : null;
+  const event = eventData ? transformApiEventToDisplay(eventData, hostsData, galleryData) : null;
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin text-red-500 mx-auto mb-4" />
-          <p className="text-gray-600">Loading event details...</p>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
+          <p className='text-gray-600'>Loading event details...</p>
         </div>
       </div>
     );
@@ -79,17 +71,13 @@ export default function EventDetailPage() {
 
   if (eventError || !event) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Event Not Found
-          </h1>
-          <p className="text-gray-600 mb-4">
-            The event you're looking for doesn't exist.
-          </p>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
+          <p className='mb-4 text-gray-600'>The event you're looking for doesn't exist.</p>
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
             Go Back
           </button>
@@ -121,32 +109,26 @@ export default function EventDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className='min-h-screen bg-gray-50'>
       {/* Header with navigation */}
-      <div className="sticky top-0 z-50 bg-white border-b border-gray-200">
-        <div className="flex items-center justify-between p-4">
-          <button
-            onClick={handleBack}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <ArrowLeft className="w-6 h-6" />
+      <div className='sticky top-0 z-50 border-b border-gray-200 bg-white'>
+        <div className='flex items-center justify-between p-4'>
+          <button onClick={handleBack} className='rounded-full p-2 hover:bg-gray-100'>
+            <ArrowLeft className='h-6 w-6' />
           </button>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleShare}
-              className="p-2 hover:bg-gray-100 rounded-full"
-            >
-              <Share className="w-6 h-6" />
+          <div className='flex items-center gap-2'>
+            <button onClick={handleShare} className='rounded-full p-2 hover:bg-gray-100'>
+              <Share className='h-6 w-6' />
             </button>
-            <button className="p-2 hover:bg-gray-100 rounded-full">
-              <MoreHorizontal className="w-6 h-6" />
+            <button className='rounded-full p-2 hover:bg-gray-100'>
+              <MoreHorizontal className='h-6 w-6' />
             </button>
           </div>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="md:max-w-sm max-w-full mx-auto bg-white">
+      <div className='mx-auto max-w-full bg-white md:max-w-sm'>
         <SwipeableHeader
           event={event}
           onImageClick={(index) => {
@@ -154,7 +136,7 @@ export default function EventDetailPage() {
             lightboxRef.current?.open(index);
           }}
         />
-        <div className="px-4 pb-20">
+        <div className='px-4 pb-20'>
           <EventInfo event={event} currentUserId={user?.id || ''} />
           <EventHost event={event} />
           <EventGuestList event={event} currentUserId={user?.id || ''} />
@@ -170,21 +152,14 @@ export default function EventDetailPage() {
 
           {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
           {(eventData?.spotify_url || eventData?.wavlake_url) && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">Music</h3>
-              {eventData.spotify_url && (
-                <EventSpotifyEmbed link={eventData.spotify_url} />
-              )}
-              {eventData.wavlake_url && (
-                <WavlakeEmbed link={eventData.wavlake_url} />
-              )}
+            <div className='space-y-4'>
+              <h3 className='text-lg font-semibold text-gray-900'>Music</h3>
+              {eventData.spotify_url && <EventSpotifyEmbed link={eventData.spotify_url} />}
+              {eventData.wavlake_url && <WavlakeEmbed link={eventData.wavlake_url} />}
             </div>
           )}
 
-          <EventDescription
-            event={event}
-            isOwner={user?.id === event.owner?.id}
-          />
+          <EventDescription event={event} isOwner={user?.id === event.owner?.id} />
         </div>
       </div>
 

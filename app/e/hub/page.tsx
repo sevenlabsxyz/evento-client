@@ -1,5 +1,5 @@
-import TravelItinerary from "../../../travel-itinerary"
+import TravelItinerary from '../../../travel-itinerary';
 
 export default function HubPage() {
-  return <TravelItinerary />
+  return <TravelItinerary />;
 }

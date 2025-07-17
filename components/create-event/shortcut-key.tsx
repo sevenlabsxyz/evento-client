@@ -1,10 +1,10 @@
-import { cn } from '@/lib/utils'
+import { cn } from '@/lib/utils';
 
 type ShortcutKeyProps = {
-  keys: string[]
-  className?: string
-  withBg?: boolean
-}
+  keys: string[];
+  className?: string;
+  withBg?: boolean;
+};
 
 export function ShortcutKey({ keys, className, withBg = false }: ShortcutKeyProps) {
   const keyMap: Record<string, string> = {
@@ -12,14 +12,11 @@ export function ShortcutKey({ keys, className, withBg = false }: ShortcutKeyProp
     shift: '⇧',
     alt: '⌥',
     ctrl: '⌃',
-  }
+  };
 
   return (
     <span
-      className={cn(
-        'inline-flex items-center gap-0.5 text-xs text-muted-foreground',
-        className
-      )}
+      className={cn('inline-flex items-center gap-0.5 text-xs text-muted-foreground', className)}
     >
       {keys.map((key, index) => (
         <kbd
@@ -33,5 +30,5 @@ export function ShortcutKey({ keys, className, withBg = false }: ShortcutKeyProp
         </kbd>
       ))}
     </span>
-  )
+  );
 }

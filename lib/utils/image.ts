@@ -63,10 +63,7 @@ export function getOptimizedAvatarUrl(url: string): string {
 /**
  * Get cover image URL optimized for event covers
  */
-export function getOptimizedCoverUrl(
-  url: string,
-  size: 'feed' | 'detail' = 'feed'
-): string {
+export function getOptimizedCoverUrl(url: string, size: 'feed' | 'detail' = 'feed'): string {
   const imageSize = size === 'feed' ? ImageSizes.MEDIUM : ImageSizes.LARGE;
   return getOptimizedImageUrl(url, imageSize, 80);
 }

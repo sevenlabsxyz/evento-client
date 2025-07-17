@@ -10,11 +10,7 @@ interface EventGalleryProps {
   onImageClick?: (index: number) => void;
 }
 
-export default function EventGallery({
-  event,
-  currentUserId,
-  onImageClick,
-}: EventGalleryProps) {
+export default function EventGallery({ event, currentUserId, onImageClick }: EventGalleryProps) {
   const router = useRouter();
   const galleryImages = event.galleryImages || [];
   const isOwner = event.owner?.id === currentUserId;
@@ -39,15 +35,15 @@ export default function EventGallery({
   const hasMoreImages = galleryImages.length > 3;
 
   return (
-    <div className="py-6 border-b border-gray-100">
+    <div className='border-b border-gray-100 py-6'>
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">Gallery</h3>
-        <div className="flex items-center gap-3">
+      <div className='mb-4 flex items-center justify-between'>
+        <h3 className='text-lg font-semibold text-gray-900'>Gallery</h3>
+        <div className='flex items-center gap-3'>
           {galleryImages.length > 0 && (
             <button
               onClick={handleViewAll}
-              className="text-red-600 hover:text-red-700 font-medium text-sm"
+              className='text-sm font-medium text-red-600 hover:text-red-700'
             >
               View All
             </button>
@@ -55,7 +51,7 @@ export default function EventGallery({
           {isOwner && (
             <button
               onClick={handleAddPhoto}
-              className="text-gray-600 hover:text-gray-700 font-medium text-sm"
+              className='text-sm font-medium text-gray-600 hover:text-gray-700'
             >
               Add Photo
             </button>
@@ -65,18 +61,18 @@ export default function EventGallery({
 
       {/* Gallery Grid */}
       {galleryImages.length > 0 ? (
-        <div className="grid grid-cols-4 gap-2">
+        <div className='grid grid-cols-4 gap-2'>
           {/* Display up to 3 images */}
           {displayImages.map((image, index) => (
             <button
               key={index}
               onClick={() => handleImageClick(index)}
-              className="aspect-square bg-gray-200 rounded-lg overflow-hidden hover:opacity-90 transition-opacity"
+              className='aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90'
             >
               <img
                 src={image}
                 alt={`Gallery image ${index + 1}`}
-                className="w-full h-full object-cover"
+                className='h-full w-full object-cover'
               />
             </button>
           ))}
@@ -85,10 +81,10 @@ export default function EventGallery({
           {isOwner && displayImages.length < 3 && (
             <button
               onClick={handleAddPhoto}
-              className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center hover:border-red-400 hover:bg-red-50 transition-colors"
+              className='flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-red-400 hover:bg-red-50'
             >
-              <Plus className="w-6 h-6 text-gray-400" />
-              <span className="text-xs text-gray-500 mt-1">Add Photo</span>
+              <Plus className='h-6 w-6 text-gray-400' />
+              <span className='mt-1 text-xs text-gray-500'>Add Photo</span>
             </button>
           )}
 
@@ -96,12 +92,10 @@ export default function EventGallery({
           {hasMoreImages && displayImages.length === 3 && (
             <button
               onClick={handleViewAll}
-              className="aspect-square bg-gray-100 rounded-lg flex flex-col items-center justify-center hover:bg-gray-200 transition-colors"
+              className='flex aspect-square flex-col items-center justify-center rounded-lg bg-gray-100 transition-colors hover:bg-gray-200'
             >
-              <Eye className="w-6 h-6 text-gray-600" />
-              <span className="text-xs text-gray-600 mt-1">
-                +{galleryImages.length - 3}
-              </span>
+              <Eye className='h-6 w-6 text-gray-600' />
+              <span className='mt-1 text-xs text-gray-600'>+{galleryImages.length - 3}</span>
             </button>
           )}
         </div>

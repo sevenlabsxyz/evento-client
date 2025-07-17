@@ -1,8 +1,8 @@
-const basePath = "/eventos/default-covers";
-const category = "tech";
+const basePath = '/eventos/default-covers';
+const category = 'tech';
 
 export const TECH_COVERS = [
-	// Bitcoin release
+  // Bitcoin release
   { url: `${basePath}/${category}/18.webp` },
   { url: `${basePath}/${category}/17.webp` },
   { url: `${basePath}/${category}/16.webp` },

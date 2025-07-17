@@ -1,8 +1,8 @@
-"use client";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Sheet, useClientMediaQuery } from "@silk-hq/components";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
-import "./Lightbox.css";
+'use client';
+import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { Sheet, useClientMediaQuery } from '@silk-hq/components';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import './Lightbox.css';
 
 // ================================================================================================
 // Context
@@ -23,7 +23,7 @@ const LightboxContext = createContext<LightboxContextValue | null>(null);
 const useLightboxContext = () => {
   const context = useContext(LightboxContext);
   if (!context) {
-    throw new Error("useLightbox must be used within a LightboxRoot");
+    throw new Error('useLightbox must be used within a LightboxRoot');
   }
   return context;
 };
@@ -33,20 +33,20 @@ const useLightboxContext = () => {
 // ================================================================================================
 
 type SheetRootProps = React.ComponentPropsWithoutRef<typeof Sheet.Root>;
-type LightboxRootProps = Omit<SheetRootProps, "license"> & {
-  license?: SheetRootProps["license"];
+type LightboxRootProps = Omit<SheetRootProps, 'license'> & {
+  license?: SheetRootProps['license'];
 };
 
 const LightboxRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, LightboxRootProps>(
   ({ children, className, ...restProps }, ref) => {
-    const [status, setStatus] = useState("idleOutside");
+    const [status, setStatus] = useState('idleOutside');
     const [range, setRange] = useState({ start: 0, end: 0 });
 
     const [contentClicked, setContentClicked] = useState(false);
     const contentClickHandler = useCallback(() => setContentClicked((value) => !value), []);
     useEffect(() => {
       // Reset the value when dismissed
-      if (status === "idleOutside") setContentClicked(false);
+      if (status === 'idleOutside') setContentClicked(false);
     }, [status]);
 
     const UIVisible = useMemo(
@@ -70,8 +70,8 @@ const LightboxRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, Light
     return (
       <LightboxContext.Provider value={contextValue}>
         <Sheet.Root
-          className={`Lightbox-root ${className ?? ""}`.trim()}
-          license="commercial"
+          className={`Lightbox-root ${className ?? ''}`.trim()}
+          license='commercial'
           {...restProps}
           ref={ref}
         >
@@ -81,7 +81,7 @@ const LightboxRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, Light
     );
   }
 );
-LightboxRoot.displayName = "Lightbox.Root";
+LightboxRoot.displayName = 'Lightbox.Root';
 
 // ================================================================================================
 // View
@@ -95,16 +95,16 @@ const LightboxView = React.forwardRef<
 
   return (
     <Sheet.View
-      className={`Lightbox-view ${className ?? ""}`.trim()}
-      contentPlacement="center"
-      tracks={["top", "bottom"]}
+      className={`Lightbox-view ${className ?? ''}`.trim()}
+      contentPlacement='center'
+      tracks={['top', 'bottom']}
       nativeEdgeSwipePrevention={true}
       onClickOutside={(event) => {
         event.changeDefault({ dismiss: false });
         contentClickHandler();
       }}
       exitingAnimationSettings={{
-        preset: "gentle",
+        preset: 'gentle',
       }}
       onTravelStatusChange={onTravelStatusChange}
       onTravelRangeChange={onTravelRangeChange}
@@ -115,7 +115,7 @@ const LightboxView = React.forwardRef<
     </Sheet.View>
   );
 });
-LightboxView.displayName = "Lightbox.View";
+LightboxView.displayName = 'Lightbox.View';
 
 // ================================================================================================
 // Backdrop
@@ -127,8 +127,8 @@ const LightboxBackdrop = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Backdrop
-      className={`Lightbox-backdrop ${className ?? ""}`.trim()}
-      themeColorDimming="auto"
+      className={`Lightbox-backdrop ${className ?? ''}`.trim()}
+      themeColorDimming='auto'
       travelAnimation={{
         opacity: [0, 1],
       }}
@@ -137,7 +137,7 @@ const LightboxBackdrop = React.forwardRef<
     />
   );
 });
-LightboxBackdrop.displayName = "Lightbox.Backdrop";
+LightboxBackdrop.displayName = 'Lightbox.Backdrop';
 
 // ================================================================================================
 // Content
@@ -153,7 +153,7 @@ const LightboxContent = React.forwardRef<
 
   return (
     <Sheet.Content
-      className={`Lightbox-content ${className ?? ""}`.trim()}
+      className={`Lightbox-content ${className ?? ''}`.trim()}
       onClick={contentClickHandler}
       {...restProps}
       ref={ref}
@@ -162,7 +162,7 @@ const LightboxContent = React.forwardRef<
     </Sheet.Content>
   );
 });
-LightboxContent.displayName = "Lightbox.Content";
+LightboxContent.displayName = 'Lightbox.Content';
 
 // ================================================================================================
 // DismissTrigger
@@ -176,8 +176,8 @@ const LightboxDismissTrigger = React.forwardRef<
 
   return (
     <Sheet.Trigger
-      className={`Lightbox-dismissTrigger visible-${UIVisible} ${className ?? ""}`.trim()}
-      action="dismiss"
+      className={`Lightbox-dismissTrigger visible-${UIVisible} ${className ?? ''}`.trim()}
+      action='dismiss'
       {...restProps}
       ref={ref}
     >
@@ -185,7 +185,7 @@ const LightboxDismissTrigger = React.forwardRef<
     </Sheet.Trigger>
   );
 });
-LightboxDismissTrigger.displayName = "Lightbox.DismissTrigger";
+LightboxDismissTrigger.displayName = 'Lightbox.DismissTrigger';
 
 // ================================================================================================
 // Side content
@@ -197,7 +197,7 @@ const LightboxSideContent = ({
   travelAnimation,
   ...restProps
 }: React.ComponentPropsWithoutRef<typeof Sheet.Outlet>) => {
-  const largeViewport = useClientMediaQuery("(min-width: 1200px)");
+  const largeViewport = useClientMediaQuery('(min-width: 1200px)');
 
   if (!largeViewport) {
     return null;
@@ -205,7 +205,7 @@ const LightboxSideContent = ({
 
   return (
     <Sheet.Outlet
-      className={`Lightbox-sidebar ${className ?? ""}`.trim()}
+      className={`Lightbox-sidebar ${className ?? ''}`.trim()}
       travelAnimation={{
         opacity: [0, 1],
         ...travelAnimation,
@@ -216,7 +216,7 @@ const LightboxSideContent = ({
     </Sheet.Outlet>
   );
 };
-LightboxSideContent.displayName = "Lightbox.SideContent";
+LightboxSideContent.displayName = 'Lightbox.SideContent';
 
 // ================================================================================================
 // SideSheet PresentTrigger
@@ -228,7 +228,7 @@ const LightboxSideSheetPresentTrigger = ({
   ...restProps
 }: React.ComponentPropsWithoutRef<typeof SheetWithDetent.Trigger>) => {
   const { UIVisible } = useLightboxContext();
-  const largeViewport = useClientMediaQuery("(min-width: 1200px)");
+  const largeViewport = useClientMediaQuery('(min-width: 1200px)');
 
   if (largeViewport) {
     return null;
@@ -236,14 +236,14 @@ const LightboxSideSheetPresentTrigger = ({
 
   return (
     <SheetWithDetent.Trigger
-      className={`Lightbox-sideSheetPresentTrigger visible-${UIVisible} ${className ?? ""}`.trim()}
+      className={`Lightbox-sideSheetPresentTrigger visible-${UIVisible} ${className ?? ''}`.trim()}
       {...restProps}
     >
       {children}
     </SheetWithDetent.Trigger>
   );
 };
-LightboxSideSheetPresentTrigger.displayName = "Lightbox.SideSheetPresentTrigger";
+LightboxSideSheetPresentTrigger.displayName = 'Lightbox.SideSheetPresentTrigger';
 
 // ================================================================================================
 // SideSheet View
@@ -253,19 +253,19 @@ const LightboxSideSheetView = ({
   children,
   ...restProps
 }: React.ComponentPropsWithoutRef<typeof SheetWithDetent.View>) => {
-  const largeViewport = useClientMediaQuery("(min-width: 1200px)");
+  const largeViewport = useClientMediaQuery('(min-width: 1200px)');
 
   if (largeViewport) {
     return null;
   }
 
   return (
-    <SheetWithDetent.View enteringAnimationSettings="snappy" {...restProps}>
+    <SheetWithDetent.View enteringAnimationSettings='snappy' {...restProps}>
       {children}
     </SheetWithDetent.View>
   );
 };
-LightboxSideSheetView.displayName = "Lightbox.SideSheetView";
+LightboxSideSheetView.displayName = 'Lightbox.SideSheetView';
 
 // ================================================================================================
 // SideSheet Content
@@ -278,14 +278,14 @@ const LightboxSideSheetContent = ({
 }: React.ComponentPropsWithoutRef<typeof SheetWithDetent.Content>) => {
   return (
     <SheetWithDetent.Content
-      className={`Lightbox-sideSheetContent ${className ?? ""}`.trim()}
+      className={`Lightbox-sideSheetContent ${className ?? ''}`.trim()}
       {...restProps}
     >
       {children}
     </SheetWithDetent.Content>
   );
 };
-LightboxSideSheetContent.displayName = "Lightbox.SideSheetContent";
+LightboxSideSheetContent.displayName = 'Lightbox.SideSheetContent';
 
 // ================================================================================================
 // Unchanged Components

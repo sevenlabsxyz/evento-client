@@ -7,10 +7,10 @@ export const queryClient = new QueryClient({
     queries: {
       // Stale time: 5 minutes - data is considered fresh for 5 minutes
       staleTime: 5 * 60 * 1000,
-      
+
       // Garbage collection time: 10 minutes - unused data is garbage collected after 10 minutes
       gcTime: 10 * 60 * 1000,
-      
+
       // Retry configuration
       retry: (failureCount, error) => {
         // Don't retry on 4xx errors (client errors)
@@ -20,17 +20,17 @@ export const queryClient = new QueryClient({
             return false;
           }
         }
-        
+
         // Retry up to 3 times for other errors
         return failureCount < 3;
       },
-      
+
       // Retry delay: exponential backoff
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-      
+
       // Refetch on window focus only if data is stale
       refetchOnWindowFocus: false,
-      
+
       // Refetch on reconnect
       refetchOnReconnect: true,
     },
@@ -55,14 +55,14 @@ export const queryKeys = {
   // Authentication
   auth: ['auth'] as const,
   currentUser: () => [...queryKeys.auth, 'currentUser'] as const,
-  
+
   // Users
   users: ['users'] as const,
   user: (id: string) => [...queryKeys.users, id] as const,
   userSearch: (query: string) => [...queryKeys.users, 'search', query] as const,
   userFollowers: (id: string) => [...queryKeys.users, id, 'followers'] as const,
   userFollowing: (id: string) => [...queryKeys.users, id, 'following'] as const,
-  
+
   // Events
   events: ['events'] as const,
   event: (id: string) => [...queryKeys.events, id] as const,
@@ -71,20 +71,20 @@ export const queryKeys = {
   eventsUserMe: () => [...queryKeys.events, 'user', 'me'] as const,
   eventsUserGoing: (userId: string) => [...queryKeys.events, 'user', userId, 'going'] as const,
   eventsUserPast: (userId: string) => [...queryKeys.events, 'user', userId, 'past'] as const,
-  
+
   // RSVPs
   rsvps: ['rsvps'] as const,
   eventRsvps: (eventId: string) => [...queryKeys.rsvps, 'event', eventId] as const,
   userRsvp: (eventId: string) => [...queryKeys.rsvps, 'user', eventId] as const,
-  
+
   // Comments
   comments: ['comments'] as const,
   eventComments: (eventId: string) => [...queryKeys.comments, 'event', eventId] as const,
-  
+
   // Gallery
   gallery: ['gallery'] as const,
   eventGallery: (eventId: string) => [...queryKeys.gallery, 'event', eventId] as const,
-  
+
   // Notifications
   notifications: ['notifications'] as const,
   userNotifications: () => [...queryKeys.notifications, 'user'] as const,

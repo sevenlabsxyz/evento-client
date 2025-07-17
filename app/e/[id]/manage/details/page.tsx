@@ -1,37 +1,34 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import CoverImageSelector from '@/components/create-event/cover-image-selector';
+import DatePickerSheet from '@/components/create-event/date-picker-sheet';
+import DescriptionSheet from '@/components/create-event/description-sheet';
+import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
+import ImageSelectionModal from '@/components/create-event/image-selection-modal';
+import LocationModal from '@/components/create-event/location-modal';
+import TimePickerSheet from '@/components/create-event/time-picker-sheet';
+import TimezoneSheet from '@/components/create-event/timezone-sheet';
+import { Button } from '@/components/ui/button';
+import { useEventDetails } from '@/lib/hooks/useEventDetails';
+import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
+import { apiEventSchema } from '@/lib/schemas/event';
+import { useEventFormStore } from '@/lib/stores/event-form-store';
+import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
+import { debugError, debugLog } from '@/lib/utils/debug';
+import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
+import { getLocationDisplayName } from '@/lib/utils/location';
 import {
   ArrowLeft,
   Calendar,
-  MapPin,
+  ChevronRight,
   Edit3,
   Globe,
-  Lock,
-  ChevronRight,
   Loader2,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import CoverImageSelector from "@/components/create-event/cover-image-selector";
-import ImageSelectionModal from "@/components/create-event/image-selection-modal";
-import DatePickerSheet from "@/components/create-event/date-picker-sheet";
-import TimePickerSheet from "@/components/create-event/time-picker-sheet";
-import TimezoneSheet from "@/components/create-event/timezone-sheet";
-import LocationModal from "@/components/create-event/location-modal";
-import DescriptionSheet from "@/components/create-event/description-sheet";
-import EventVisibilitySheet from "@/components/create-event/event-visibility-sheet";
-import { getLocationDisplayName } from "@/lib/utils/location";
-import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
-import { useEventFormStore } from "@/lib/stores/event-form-store";
-import { useUpdateEvent } from "@/lib/hooks/useUpdateEvent";
-import { useEventDetails } from "@/lib/hooks/useEventDetails";
-import {
-  formatDateForDisplay,
-  formatTimeForDisplay,
-} from "@/lib/utils/event-date";
-import { apiEventSchema } from "@/lib/schemas/event";
-import { debugLog, debugError } from "@/lib/utils/debug";
+  Lock,
+  MapPin,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function EditEventDetailsPage() {
   const params = useParams();
@@ -83,7 +80,7 @@ export default function EditEventDetailsPage() {
 
   // Populate form when event data is loaded
   useEffect(() => {
-    debugLog("EditDetailsPage", "useEffect triggered", {
+    debugLog('EditDetailsPage', 'useEffect triggered', {
       eventId,
       hasEventData: !!eventData,
       isLoading,
@@ -91,15 +88,15 @@ export default function EditEventDetailsPage() {
     });
 
     if (eventData) {
-      debugLog("EditDetailsPage", "Event data received from hook", eventData);
+      debugLog('EditDetailsPage', 'Event data received from hook', eventData);
 
       // Log specific fields to check format
-      debugLog("EditDetailsPage", "Checking date field formats", {
-        has_start_date_day: "start_date_day" in eventData,
-        has_start_date_month: "start_date_month" in eventData,
-        has_start_date_year: "start_date_year" in eventData,
-        has_date: "date" in eventData,
-        has_time: "time" in eventData,
+      debugLog('EditDetailsPage', 'Checking date field formats', {
+        has_start_date_day: 'start_date_day' in eventData,
+        has_start_date_month: 'start_date_month' in eventData,
+        has_start_date_year: 'start_date_year' in eventData,
+        has_date: 'date' in eventData,
+        has_time: 'time' in eventData,
         start_date_day: (eventData as any).start_date_day,
         start_date_month: (eventData as any).start_date_month,
         start_date_year: (eventData as any).start_date_year,
@@ -109,31 +106,28 @@ export default function EditEventDetailsPage() {
 
       try {
         // Validate and populate the form with API data
-        debugLog(
-          "EditDetailsPage",
-          "Attempting to validate event data with apiEventSchema"
-        );
+        debugLog('EditDetailsPage', 'Attempting to validate event data with apiEventSchema');
         const validatedEvent = apiEventSchema.parse(eventData);
-        debugLog("EditDetailsPage", "Validation successful", validatedEvent);
+        debugLog('EditDetailsPage', 'Validation successful', validatedEvent);
 
-        debugLog("EditDetailsPage", "Calling populateFromApiEvent");
+        debugLog('EditDetailsPage', 'Calling populateFromApiEvent');
         populateFromApiEvent(validatedEvent);
       } catch (error) {
-        debugError("EditDetailsPage", "Schema validation failed", error, {
+        debugError('EditDetailsPage', 'Schema validation failed', error, {
           eventData,
-          zodErrors: (error as any)?.errors || "No Zod errors available",
+          zodErrors: (error as any)?.errors || 'No Zod errors available',
         });
       }
     } else {
-      debugLog("EditDetailsPage", "No event data available yet");
+      debugLog('EditDetailsPage', 'No event data available yet');
     }
   }, [eventData, populateFromApiEvent, eventId, isLoading, error]);
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin" />
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='flex items-center gap-2'>
+          <Loader2 className='h-6 w-6 animate-spin' />
           <span>Loading event details...</span>
         </div>
       </div>
@@ -142,18 +136,15 @@ export default function EditEventDetailsPage() {
 
   if (error || !eventData) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Event Not Found
-          </h1>
-          <p className="text-gray-600 mb-4">
-            The event you're trying to edit doesn't exist or you don't have
-            permission.
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
+          <p className='mb-4 text-gray-600'>
+            The event you're trying to edit doesn't exist or you don't have permission.
           </p>
           <button
             onClick={() => router.back()}
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
             Go Back
           </button>
@@ -178,7 +169,7 @@ export default function EditEventDetailsPage() {
       router.push(`/e/${eventId}/manage`);
     } catch (error) {
       // Error handling is done in the mutation hook
-      console.error("Failed to update event:", error);
+      console.error('Failed to update event:', error);
     }
   };
 
@@ -186,29 +177,26 @@ export default function EditEventDetailsPage() {
   const isFormValid = isValid() && hasChanges();
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <ArrowLeft className="w-5 h-5" />
+      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
+        <div className='flex items-center gap-4'>
+          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
+            <ArrowLeft className='h-5 w-5' />
           </button>
-          <h1 className="text-xl font-semibold">Event Details</h1>
+          <h1 className='text-xl font-semibold'>Event Details</h1>
         </div>
         <Button
           onClick={handleSaveChanges}
-          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg"
+          className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           disabled={!isFormValid || updateEventMutation.isPending}
         >
-          {updateEventMutation.isPending ? "Saving..." : "Save"}
+          {updateEventMutation.isPending ? 'Saving...' : 'Save'}
         </Button>
       </div>
 
       {/* Cover Image Selector */}
-      <div className="px-4 mb-4">
+      <div className='mb-4 px-4'>
         <CoverImageSelector
           selectedImage={coverImage}
           onImageClick={() => setShowImageModal(true)}
@@ -216,61 +204,59 @@ export default function EditEventDetailsPage() {
       </div>
 
       {/* Form Content */}
-      <div className="flex-1 px-4 pb-32 space-y-4 bg-gray-50 overflow-y-auto pt-4">
+      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
         {/* Event Title Module */}
-        <div className="bg-white rounded-2xl p-4">
-          <div className="space-y-2">
-            <label className="text-gray-500 text-sm font-medium">
-              Event Title
-            </label>
+        <div className='rounded-2xl bg-white p-4'>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium text-gray-500'>Event Title</label>
             <input
-              type="text"
-              placeholder="Enter event name"
+              type='text'
+              placeholder='Enter event name'
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-gray-900 font-medium bg-transparent border-none outline-none text-lg"
+              className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
             />
           </div>
         </div>
 
         {/* Date & Time Module */}
-        <div className="bg-white rounded-2xl p-4 space-y-4">
-          <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Calendar className="h-4 w-4 text-gray-600" />
+        <div className='space-y-4 rounded-2xl bg-white p-4'>
+          <div className='flex items-center gap-4'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Calendar className='h-4 w-4 text-gray-600' />
             </div>
-            <span className="text-gray-700 font-medium w-16">Starts</span>
-            <div className="flex gap-2 flex-1">
+            <span className='w-16 font-medium text-gray-700'>Starts</span>
+            <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
+                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
+                className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(startTime)}
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <Calendar className="h-4 w-4 text-gray-600" />
+          <div className='flex items-center gap-4'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Calendar className='h-4 w-4 text-gray-600' />
             </div>
-            <span className="text-gray-700 font-medium w-16">Ends</span>
-            <div className="flex gap-2 flex-1">
+            <span className='w-16 font-medium text-gray-700'>Ends</span>
+            <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-900 font-medium flex-1 whitespace-nowrap text-sm"
+                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className="bg-gray-100 rounded-lg px-4 py-2 text-gray-600 text-sm whitespace-nowrap"
+                className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -279,87 +265,73 @@ export default function EditEventDetailsPage() {
         </div>
 
         {/* Address Module */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className='rounded-2xl bg-white p-4'>
           <button
             onClick={() => setShowLocationModal(true)}
-            className="flex items-center gap-4 w-full text-left"
+            className='flex w-full items-center gap-4 text-left'
           >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <MapPin className="h-4 w-4 text-gray-600" />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <MapPin className='h-4 w-4 text-gray-600' />
             </div>
-            <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-1">
-                Address
-              </label>
-              <div className="flex items-center justify-between">
-                <span
-                  className={`font-medium ${
-                    location ? "text-gray-900" : "text-gray-400"
-                  }`}
-                >
-                  {location
-                    ? getLocationDisplayName(location)
-                    : "Choose address"}
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
+              <div className='flex items-center justify-between'>
+                <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className='h-4 w-4 text-gray-400' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Description Module */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className='rounded-2xl bg-white p-4'>
           <button
             onClick={() => setShowDescriptionModal(true)}
-            className="flex items-start gap-4 w-full text-left"
+            className='flex w-full items-start gap-4 text-left'
           >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mt-1">
-              <Edit3 className="h-4 w-4 text-gray-600" />
+            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Edit3 className='h-4 w-4 text-gray-600' />
             </div>
-            <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-2">
-                Description
-              </label>
-              <div className="flex items-center justify-between">
+            <div className='flex-1'>
+              <label className='mb-2 block text-sm font-medium text-gray-500'>Description</label>
+              <div className='flex items-center justify-between'>
                 <span
-                  className={`${
-                    isContentEmpty(description)
-                      ? "text-gray-400"
-                      : "text-gray-900"
-                  }`}
+                  className={`${isContentEmpty(description) ? 'text-gray-400' : 'text-gray-900'}`}
                 >
                   {isContentEmpty(description)
-                    ? "Add description about this event..."
+                    ? 'Add description about this event...'
                     : getContentPreview(description, 80)}
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Event Visibility */}
-        <div className="bg-white rounded-2xl p-4">
+        <div className='rounded-2xl bg-white p-4'>
           <button
             onClick={() => setShowVisibilitySheet(true)}
-            className="flex items-center gap-4 w-full text-left"
+            className='flex w-full items-center gap-4 text-left'
           >
-            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              {visibility === "public" ? (
-                <Globe className="h-4 w-4 text-gray-600" />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              {visibility === 'public' ? (
+                <Globe className='h-4 w-4 text-gray-600' />
               ) : (
-                <Lock className="h-4 w-4 text-gray-600" />
+                <Lock className='h-4 w-4 text-gray-600' />
               )}
             </div>
-            <div className="flex-1">
-              <label className="text-gray-500 text-sm font-medium block mb-1">
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>
                 Event Visibility
               </label>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900">
-                  {visibility === "public" ? "Public" : "Private"}
+              <div className='flex items-center justify-between'>
+                <span className='font-medium text-gray-900'>
+                  {visibility === 'public' ? 'Public' : 'Private'}
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className='h-4 w-4 text-gray-400' />
               </div>
             </div>
           </button>
@@ -378,7 +350,7 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowStartDateModal(false)}
         onDateSelect={setStartDate}
         selectedDate={startDate}
-        title="Start Date"
+        title='Start Date'
       />
 
       <DatePickerSheet
@@ -386,7 +358,7 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowEndDateModal(false)}
         onDateSelect={setEndDate}
         selectedDate={endDate}
-        title="End Date"
+        title='End Date'
       />
 
       <TimePickerSheet
@@ -399,7 +371,7 @@ export default function EditEventDetailsPage() {
         }}
         selectedTime={startTime}
         timezone={timezone}
-        title="Start Time"
+        title='Start Time'
       />
 
       <TimePickerSheet
@@ -412,7 +384,7 @@ export default function EditEventDetailsPage() {
         }}
         selectedTime={endTime}
         timezone={timezone}
-        title="End Time"
+        title='End Time'
       />
 
       <TimezoneSheet

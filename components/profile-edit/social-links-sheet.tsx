@@ -10,11 +10,7 @@ import { useEffect, useState } from 'react';
 interface SocialLinksSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (links: {
-    instagram_handle: string;
-    x_handle: string;
-    bio_link: string;
-  }) => void;
+  onSave: (links: { instagram_handle: string; x_handle: string; bio_link: string }) => void;
   currentLinks: {
     instagram_handle?: string;
     x_handle?: string;
@@ -127,17 +123,12 @@ export default function SocialLinksSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <div className="flex justify-center mb-4">
-                <SheetWithDetentFull.Handle />
-              </div>
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Social Links</h2>
-                <button
-                  onClick={handleCancel}
-                  className="p-2 hover:bg-gray-100 rounded-full"
-                >
-                  <XIcon className="w-5 h-5" />
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-between'>
+                <h2 className='text-xl font-semibold'>Social Links</h2>
+                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                  <XIcon className='h-5 w-5' />
                 </button>
               </div>
             </div>
@@ -145,114 +136,99 @@ export default function SocialLinksSheet({
             {/* Content */}
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent className="p-6 space-y-6">
+                <SheetWithDetentFull.ScrollContent className='space-y-6 p-6'>
                   {/* Instagram */}
                   <div>
-                    <Label
-                      htmlFor="instagram"
-                      className="flex items-center gap-2 mb-2"
-                    >
-                      <Instagram className="w-4 h-4" />
+                    <Label htmlFor='instagram' className='mb-2 flex items-center gap-2'>
+                      <Instagram className='h-4 w-4' />
                       Instagram
                     </Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <div className='relative'>
+                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
                         @
                       </span>
                       <Input
-                        id="instagram"
-                        type="text"
+                        id='instagram'
+                        type='text'
                         value={instagram}
                         onChange={(e) => {
                           setInstagram(e.target.value);
                           setErrors({ ...errors, instagram: '' });
                         }}
-                        placeholder="username"
-                        className="pl-8"
+                        placeholder='username'
+                        className='pl-8'
                       />
                     </div>
                     {errors.instagram && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.instagram}
-                      </p>
+                      <p className='mt-1 text-sm text-red-500'>{errors.instagram}</p>
                     )}
                   </div>
 
                   {/* X (Twitter) */}
                   <div>
-                    <Label htmlFor="x" className="flex items-center gap-2 mb-2">
-                      <div className="w-4 h-4 bg-black rounded-sm flex items-center justify-center text-white text-xs font-bold">
+                    <Label htmlFor='x' className='mb-2 flex items-center gap-2'>
+                      <div className='flex h-4 w-4 items-center justify-center rounded-sm bg-black text-xs font-bold text-white'>
                         𝕏
                       </div>
                       X (formerly Twitter)
                     </Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <div className='relative'>
+                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
                         @
                       </span>
                       <Input
-                        id="x"
-                        type="text"
+                        id='x'
+                        type='text'
                         value={xHandle}
                         onChange={(e) => {
                           setXHandle(e.target.value);
                           setErrors({ ...errors, x: '' });
                         }}
-                        placeholder="username"
-                        className="pl-8"
+                        placeholder='username'
+                        className='pl-8'
                       />
                     </div>
-                    {errors.x && (
-                      <p className="text-sm text-red-500 mt-1">{errors.x}</p>
-                    )}
+                    {errors.x && <p className='mt-1 text-sm text-red-500'>{errors.x}</p>}
                   </div>
 
                   {/* Website */}
                   <div>
-                    <Label
-                      htmlFor="website"
-                      className="flex items-center gap-2 mb-2"
-                    >
-                      <Globe className="w-4 h-4" />
+                    <Label htmlFor='website' className='mb-2 flex items-center gap-2'>
+                      <Globe className='h-4 w-4' />
                       Website
                     </Label>
                     <Input
-                      id="website"
-                      type="text"
+                      id='website'
+                      type='text'
                       value={website}
                       onChange={(e) => {
                         setWebsite(e.target.value);
                         setErrors({ ...errors, website: '' });
                       }}
-                      placeholder="yourwebsite.com"
+                      placeholder='yourwebsite.com'
                     />
                     {errors.website && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {errors.website}
-                      </p>
+                      <p className='mt-1 text-sm text-red-500'>{errors.website}</p>
                     )}
                   </div>
 
                   {/* Info text */}
-                  <p className="text-sm text-gray-500">
-                    Add your social media profiles to help others connect with
-                    you outside of Evento.
+                  <p className='text-sm text-gray-500'>
+                    Add your social media profiles to help others connect with you outside of
+                    Evento. Add your social media profiles to help others connect with you outside
+                    of Evento.
                   </p>
 
                   {/* Save/Cancel Buttons */}
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
                       disabled={!hasChanges}
                     >
                       Save
                     </Button>
-                    <Button
-                      onClick={handleCancel}
-                      variant="outline"
-                      className="flex-1"
-                    >
+                    <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
                     </Button>
                   </div>

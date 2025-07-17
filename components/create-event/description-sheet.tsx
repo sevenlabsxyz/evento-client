@@ -87,10 +87,7 @@ export default function DescriptionSheet({
               props: {
                 handleClick(view, pos) {
                   const { schema, doc, tr } = view.state;
-                  const range = getMarkRange(
-                    doc.resolve(pos),
-                    schema.marks.link
-                  );
+                  const range = getMarkRange(doc.resolve(pos), schema.marks.link);
 
                   if (!range) {
                     return;
@@ -106,9 +103,7 @@ export default function DescriptionSheet({
 
                   const $start = doc.resolve(start);
                   const $end = doc.resolve(end);
-                  const transaction = tr.setSelection(
-                    new TextSelection($start, $end)
-                  );
+                  const transaction = tr.setSelection(new TextSelection($start, $end));
 
                   view.dispatch(transaction);
                 },
@@ -126,8 +121,7 @@ export default function DescriptionSheet({
     immediatelyRender: false, // Prevent SSR hydration issues
     editorProps: {
       attributes: {
-        class:
-          'prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone',
+        class: 'prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone',
       },
     },
     onUpdate: ({ editor }) => {
@@ -179,59 +173,47 @@ export default function DescriptionSheet({
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className="DescriptionSheet-content">
+            <SheetWithDetentFull.Content className='DescriptionSheet-content'>
               {/* Fixed Header */}
-              <div className="DescriptionSheet-header">
-                <div className="flex justify-center mb-4">
-                  <SheetWithDetentFull.Handle className="DescriptionSheet-handle" />
+              <div className='DescriptionSheet-header'>
+                <div className='mb-4 flex justify-center'>
+                  <SheetWithDetentFull.Handle className='DescriptionSheet-handle' />
                 </div>
-                <div className="DescriptionSheet-headerBar">
+                <div className='DescriptionSheet-headerBar'>
                   <button
                     onClick={onClose}
-                    className="DescriptionSheet-headerButton DescriptionSheet-headerButton--cancel"
+                    className='DescriptionSheet-headerButton DescriptionSheet-headerButton--cancel'
                   >
                     Cancel
                   </button>
-                  <h1 className="DescriptionSheet-headerTitle">
-                    Edit Description
-                  </h1>
+                  <h1 className='DescriptionSheet-headerTitle'>Edit Description</h1>
+                  <h1 className='DescriptionSheet-headerTitle'>Edit Description</h1>
                   <button
                     onClick={handleSave}
-                    className="DescriptionSheet-headerButton DescriptionSheet-headerButton--save"
+                    className='DescriptionSheet-headerButton DescriptionSheet-headerButton--save'
                   >
                     Save
                   </button>
                 </div>
 
                 {/* Toolbar at top */}
-                <div className="DescriptionSheet-toolbar">
-                  <div className="DescriptionSheet-toolbarInner">
+                <div className='DescriptionSheet-toolbar'>
+                  <div className='DescriptionSheet-toolbarInner'>
                     {editor && (
                       <>
-                        <SectionOne
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
-                        />
-                        <Separator
-                          orientation="vertical"
-                          className="mx-2 h-7"
-                        />
-                        <SectionTwo
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
-                        />
-                        <Separator
-                          orientation="vertical"
-                          className="mx-2 h-7"
-                        />
-                        <SectionThree
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
-                        />
-                        <Separator
-                          orientation="vertical"
-                          className="mx-2 h-7"
-                        />
+                        <SectionOne editor={editor} onOpenSheet={handleOpenSheet} />
+                        <Separator orientation='vertical' className='mx-2 h-7' />
+                        <SectionTwo editor={editor} onOpenSheet={handleOpenSheet} />
+                        <Separator orientation='vertical' className='mx-2 h-7' />
+                        <SectionThree editor={editor} onOpenSheet={handleOpenSheet} />
+                        <Separator orientation='vertical' className='mx-2 h-7' />
+                        <SectionFour editor={editor} onOpenSheet={handleOpenSheet} />
+                        <SectionOne editor={editor} onOpenSheet={handleOpenSheet} />
+                        <Separator orientation='vertical' className='mx-2 h-7' />
+                        <SectionTwo editor={editor} onOpenSheet={handleOpenSheet} />
+                        <Separator orientation='vertical' className='mx-2 h-7' />
+                        <SectionThree editor={editor} onOpenSheet={handleOpenSheet} />
+                        <Separator orientation='vertical' className='mx-2 h-7' />
                         <SectionFour
                           editor={editor}
                           onOpenSheet={handleOpenSheet}
@@ -245,12 +227,9 @@ export default function DescriptionSheet({
 
               {/* Scrollable Editor Content */}
               <SheetWithDetentFull.ScrollRoot asChild>
-                <SheetWithDetentFull.ScrollView className="DescriptionSheet-scrollView">
-                  <SheetWithDetentFull.ScrollContent className="DescriptionSheet-scrollContent">
-                    <EditorContent
-                      editor={editor}
-                      className="DescriptionSheet-editor"
-                    />
+                <SheetWithDetentFull.ScrollView className='DescriptionSheet-scrollView'>
+                  <SheetWithDetentFull.ScrollContent className='DescriptionSheet-scrollContent'>
+                    <EditorContent editor={editor} className='DescriptionSheet-editor' />
                   </SheetWithDetentFull.ScrollContent>
                 </SheetWithDetentFull.ScrollView>
               </SheetWithDetentFull.ScrollRoot>

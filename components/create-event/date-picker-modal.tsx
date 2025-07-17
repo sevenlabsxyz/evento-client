@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from 'react';
 
 interface DatePickerModalProps {
   isOpen: boolean;
@@ -24,34 +24,34 @@ export default function DatePickerModal({
   // Prevent body scroll when modal is open
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = 'hidden';
     } else {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     }
 
     return () => {
-      document.body.style.overflow = "unset";
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
-  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -104,8 +104,8 @@ export default function DatePickerModal({
     onClose();
   };
 
-  const navigateMonth = (direction: "prev" | "next") => {
-    if (direction === "prev") {
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
       if (viewMonth === 0) {
         setViewMonth(11);
         setViewYear(viewYear - 1);
@@ -125,65 +125,59 @@ export default function DatePickerModal({
   const calendarDays = generateCalendarDays();
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-hidden">
+    <div className='fixed inset-0 z-50 flex items-center justify-center overflow-hidden'>
       {/* Backdrop */}
-      <div
-        className="absolute inset-0 bg-black bg-opacity-50"
-        onClick={onClose}
-      />
+      <div className='absolute inset-0 bg-black bg-opacity-50' onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-white rounded-3xl w-full md:max-w-sm mx-2 md:mx-4 shadow-2xl">
+      <div className='relative mx-2 w-full rounded-3xl bg-white shadow-2xl md:mx-4 md:max-w-sm'>
         {/* Header */}
-        <div className="p-6 pb-4">
-          <div className="flex items-center justify-between mb-4">
-            <button onClick={onClose} className="text-red-500 font-medium">
+        <div className='p-6 pb-4'>
+          <div className='mb-4 flex items-center justify-between'>
+            <button onClick={onClose} className='font-medium text-red-500'>
               Cancel
             </button>
-            <div className="text-center">
-              <h2 className="font-semibold text-lg">{title}</h2>
-              <p className="text-gray-500 text-sm">
-                {currentDate.toLocaleDateString("en-US", {
-                  weekday: "short",
-                  month: "short",
-                  day: "2-digit",
+            <div className='text-center'>
+              <h2 className='text-lg font-semibold'>{title}</h2>
+              <p className='text-sm text-gray-500'>
+                {currentDate.toLocaleDateString('en-US', {
+                  weekday: 'short',
+                  month: 'short',
+                  day: '2-digit',
                 })}
               </p>
             </div>
             <button
               onClick={handleSave}
-              className="bg-red-500 text-white px-4 py-2 rounded-xl font-medium"
+              className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white'
             >
               Save
             </button>
           </div>
 
           {/* Month/Year Navigation */}
-          <div className="flex items-center justify-between mb-4">
+          <div className='mb-4 flex items-center justify-between'>
             <button
-              onClick={() => navigateMonth("prev")}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              onClick={() => navigateMonth('prev')}
+              className='rounded-lg p-2 hover:bg-gray-100'
             >
               ←
             </button>
-            <h3 className="font-semibold text-lg">
+            <h3 className='text-lg font-semibold'>
               {monthNames[viewMonth]} {viewYear}
             </h3>
             <button
-              onClick={() => navigateMonth("next")}
-              className="p-2 hover:bg-gray-100 rounded-lg"
+              onClick={() => navigateMonth('next')}
+              className='rounded-lg p-2 hover:bg-gray-100'
             >
               →
             </button>
           </div>
 
           {/* Days of Week Header */}
-          <div className="grid grid-cols-7 gap-1 mb-2">
+          <div className='mb-2 grid grid-cols-7 gap-1'>
             {daysOfWeek.map((day) => (
-              <div
-                key={day}
-                className="text-center text-xs font-medium text-gray-500 py-2"
-              >
+              <div key={day} className='py-2 text-center text-xs font-medium text-gray-500'>
                 {day}
               </div>
             ))}
@@ -191,55 +185,39 @@ export default function DatePickerModal({
         </div>
 
         {/* Calendar Grid */}
-        <div className="px-6 pb-4">
-          <div className="grid grid-cols-7 gap-1">
+        <div className='px-6 pb-4'>
+          <div className='grid grid-cols-7 gap-1'>
             {calendarDays.map((day, index) => (
               <button
                 key={index}
                 onClick={() => handleDateClick(day)}
                 disabled={!day}
-                className={`
-                  h-10 w-10 rounded-full flex items-center justify-center text-sm font-medium
-                  ${!day ? "invisible" : ""}
-                  ${
-                    isSelectedDate(day)
-                      ? "bg-red-500 text-white"
-                      : "hover:bg-gray-100"
-                  }
-                `}
+                className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium ${!day ? 'invisible' : ''} ${
+                  isSelectedDate(day) ? 'bg-red-500 text-white' : 'hover:bg-gray-100'
+                } `}
               >
                 {day}
                 {/* Event indicators */}
                 {day && day <= 15 && (
-                  <div className="absolute mt-6 flex gap-0.5">
-                    {day === 3 && (
-                      <div className="w-1 h-1 bg-purple-500 rounded-full" />
-                    )}
+                  <div className='absolute mt-6 flex gap-0.5'>
+                    {day === 3 && <div className='h-1 w-1 rounded-full bg-purple-500' />}
                     {day === 4 && (
                       <>
-                        <div className="w-1 h-1 bg-red-500 rounded-full" />
-                        <div className="w-1 h-1 bg-red-500 rounded-full" />
-                        <div className="w-1 h-1 bg-red-500 rounded-full" />
+                        <div className='h-1 w-1 rounded-full bg-red-500' />
+                        <div className='h-1 w-1 rounded-full bg-red-500' />
+                        <div className='h-1 w-1 rounded-full bg-red-500' />
                       </>
                     )}
                     {day === 5 && (
                       <>
-                        <div className="w-1 h-1 bg-red-500 rounded-full" />
-                        <div className="w-1 h-1 bg-red-500 rounded-full" />
+                        <div className='h-1 w-1 rounded-full bg-red-500' />
+                        <div className='h-1 w-1 rounded-full bg-red-500' />
                       </>
                     )}
-                    {day === 9 && (
-                      <div className="w-1 h-1 bg-red-500 rounded-full" />
-                    )}
-                    {day === 11 && (
-                      <div className="w-1 h-1 bg-red-500 rounded-full" />
-                    )}
-                    {day === 15 && (
-                      <div className="w-1 h-1 bg-red-500 rounded-full" />
-                    )}
-                    {day === 16 && (
-                      <div className="w-1 h-1 bg-blue-500 rounded-full" />
-                    )}
+                    {day === 9 && <div className='h-1 w-1 rounded-full bg-red-500' />}
+                    {day === 11 && <div className='h-1 w-1 rounded-full bg-red-500' />}
+                    {day === 15 && <div className='h-1 w-1 rounded-full bg-red-500' />}
+                    {day === 16 && <div className='h-1 w-1 rounded-full bg-blue-500' />}
                   </div>
                 )}
               </button>
@@ -248,11 +226,8 @@ export default function DatePickerModal({
         </div>
 
         {/* Clear Button */}
-        <div className="p-4 border-t border-gray-100">
-          <button
-            onClick={handleClear}
-            className="w-full py-3 text-red-500 font-medium"
-          >
+        <div className='border-t border-gray-100 p-4'>
+          <button onClick={handleClear} className='w-full py-3 font-medium text-red-500'>
             Clear Date & Time
           </button>
         </div>

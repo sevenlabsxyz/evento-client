@@ -1,5 +1,5 @@
-@import "@silk-hq/components/unlayered-styles";
-@import "../components/ui/silk-toast.css";
+@import '@silk-hq/components/unlayered-styles';
+@import '../components/ui/silk-toast.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,11 +12,11 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
-  
+
   .animate-shimmer {
     animation: shimmer 1.5s infinite;
   }
