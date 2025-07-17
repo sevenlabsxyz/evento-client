@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
+import { ReusableDropdown } from '@/components/reusable-dropdown';
+import { Button } from '@/components/ui/button';
+import { EventWithUser } from '@/lib/types/api';
+import { htmlToPlainText } from '@/lib/utils/content';
+import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
+import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
+import { toast } from '@/lib/utils/toast';
 import {
-  Heart,
-  MessageCircle,
-  Send,
   Bookmark,
-  MoreHorizontal,
-  MapPin,
   Calendar,
   Clock,
-  User,
-  Share,
   Copy,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ReusableDropdown } from "@/components/reusable-dropdown";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "@/lib/utils/toast";
-import { EventWithUser } from "@/lib/types/api";
-import { formatEventDate, getRelativeTime } from "@/lib/utils/date";
-import { getOptimizedCoverUrl, getOptimizedAvatarUrl } from "@/lib/utils/image";
+  Heart,
+  MapPin,
+  MessageCircle,
+  MoreHorizontal,
+  Send,
+  Share,
+  User,
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface EventCardProps {
   event: EventWithUser;
@@ -40,13 +40,17 @@ export function EventCard({
   );
   const timeAgo = getRelativeTime(event.created_at);
 
-  const getDropdownItems = (eventId: string, userName: string, userUsername: string) => [
+  const getDropdownItems = (
+    eventId: string,
+    userName: string,
+    userUsername: string
+  ) => [
     {
-      label: "Share Event",
+      label: 'Share Event',
       icon: <Share className="w-4 h-4" />,
       action: async () => {
         const eventUrl = `${window.location.origin}/e/${eventId}`;
-        
+
         if (navigator.share) {
           try {
             await navigator.share({
@@ -55,30 +59,34 @@ export function EventCard({
               url: eventUrl,
             });
           } catch (error) {
-            // User cancelled the share or an error occurred
-            if (error.name !== 'AbortError') {
-              // Fallback to clipboard copy
-              navigator.clipboard.writeText(eventUrl);
-              toast.success("Link copied to clipboard!");
+            if (error instanceof Error) {
+              // User cancelled the share or an error occurred
+              if (error.name !== 'AbortError') {
+                // Fallback to clipboard copy
+                navigator.clipboard.writeText(eventUrl);
+                toast.success('Link copied to clipboard!');
+              }
+            } else {
+              toast.error('Failed to share event');
             }
           }
         } else {
           // Fallback for browsers without native share support
           navigator.clipboard.writeText(eventUrl);
-          toast.success("Link copied to clipboard!");
+          toast.success('Link copied to clipboard!');
         }
       },
     },
     {
-      label: "Copy Link",
+      label: 'Copy Link',
       icon: <Copy className="w-4 h-4" />,
       action: () => {
         navigator.clipboard.writeText(`${window.location.origin}/e/${eventId}`);
-        toast.success("Link copied to clipboard!");
+        toast.success('Link copied to clipboard!');
       },
     },
     {
-      label: "View Profile",
+      label: 'View Profile',
       icon: <User className="w-4 h-4" />,
       action: () => {
         router.push(`/${userUsername}`);
@@ -96,7 +104,7 @@ export function EventCard({
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3">
           <img
-            src={getOptimizedAvatarUrl(event.user_details.image || "")}
+            src={getOptimizedAvatarUrl(event.user_details.image || '')}
             alt={event.user_details.name || event.user_details.username}
             className="w-10 h-10 rounded-full object-cover"
           />
@@ -132,7 +140,7 @@ export function EventCard({
       {/* Event Image - Square aspect ratio */}
       <div className="relative">
         <img
-          src={getOptimizedCoverUrl(event.cover || "", "feed")}
+          src={getOptimizedCoverUrl(event.cover || '', 'feed')}
           alt={event.title}
           className="w-full aspect-square object-cover cursor-pointer"
           onClick={handleEventClick}
@@ -172,7 +180,7 @@ export function EventCard({
         {/* Event Description (if exists) */}
         {event.description && (
           <p className="text-sm text-gray-700 mb-4 line-clamp-3">
-            {event.description}
+            {htmlToPlainText(event.description)}
           </p>
         )}
 
@@ -207,7 +215,7 @@ export function EventCard({
           >
             <Bookmark
               className={`h-5 w-5 ${
-                isBookmarked ? "fill-current text-red-600" : ""
+                isBookmarked ? 'fill-current text-red-600' : ''
               }`}
             />
           </Button>
