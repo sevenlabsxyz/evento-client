@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { Search, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { Navbar } from "@/components/navbar";
-import { useRouter } from "next/navigation";
-import { useState , useEffect} from "react";
+import { Search, Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { Navbar } from '@/components/navbar';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function ChatPage() {
   const { setTopBar } = useTopBar();
@@ -13,14 +13,14 @@ export default function ChatPage() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Messages",
-      subtitle: "Your conversations",
+      title: 'Messages',
+      subtitle: 'Your conversations',
       rightContent: (
         <Button
           variant="ghost"
           size="icon"
           className="rounded-full bg-gray-100"
-          onClick={() => router.push("/messages/search")}
+          onClick={() => router.push('/messages/search')}
         >
           <Plus className="h-5 w-5" />
         </Button>
@@ -32,71 +32,71 @@ export default function ChatPage() {
     };
   }, [setTopBar, router]);
 
-  const [activeTab, setActiveTab] = useState("messages");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState('messages');
+  const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
 
   const conversations = [
     {
       id: 1,
-      type: "user",
+      type: 'user',
       user: {
-        name: "Sarah Chen",
-        avatar: "/placeholder.svg?height=50&width=50",
+        name: 'Sarah Chen',
+        avatar: '/placeholder.svg?height=50&width=50',
       },
-      lastMessage: "The ramen place you recommended was amazing! 🍜",
-      time: "2m",
+      lastMessage: 'The ramen place you recommended was amazing! 🍜',
+      time: '2m',
       isOnline: true,
       unreadCount: 2,
       isNew: true,
     },
     {
       id: 2,
-      type: "group",
+      type: 'group',
       user: {
-        name: "Tokyo Adventure",
-        avatar: "/placeholder.svg?height=50&width=50",
+        name: 'Tokyo Adventure',
+        avatar: '/placeholder.svg?height=50&width=50',
       },
-      lastMessage: "Marcus: Anyone up for Shibuya tonight?",
-      time: "15m",
+      lastMessage: 'Marcus: Anyone up for Shibuya tonight?',
+      time: '15m',
       isOnline: false,
       unreadCount: 5,
       isGroup: true,
     },
     {
       id: 3,
-      type: "user",
+      type: 'user',
       user: {
-        name: "Emma Rodriguez",
-        avatar: "/placeholder.svg?height=50&width=50",
+        name: 'Emma Rodriguez',
+        avatar: '/placeholder.svg?height=50&width=50',
       },
-      lastMessage: "Thanks for the Bali tips! Having an amazing time here",
-      time: "1h",
+      lastMessage: 'Thanks for the Bali tips! Having an amazing time here',
+      time: '1h',
       isOnline: true,
       unreadCount: 0,
     },
     {
       id: 4,
-      type: "group",
+      type: 'group',
       user: {
-        name: "Paris Food Tour",
-        avatar: "/placeholder.svg?height=50&width=50",
+        name: 'Paris Food Tour',
+        avatar: '/placeholder.svg?height=50&width=50',
       },
-      lastMessage: "Lisa: The croissants here are incredible!",
-      time: "2h",
+      lastMessage: 'Lisa: The croissants here are incredible!',
+      time: '2h',
       isOnline: false,
       unreadCount: 1,
       isGroup: true,
     },
     {
       id: 5,
-      type: "user",
+      type: 'user',
       user: {
-        name: "Marcus Johnson",
-        avatar: "/placeholder.svg?height=50&width=50",
+        name: 'Marcus Johnson',
+        avatar: '/placeholder.svg?height=50&width=50',
       },
-      lastMessage: "You: See you at the Eiffel Tower at 7!",
-      time: "3h",
+      lastMessage: 'You: See you at the Eiffel Tower at 7!',
+      time: '3h',
       isOnline: false,
       unreadCount: 0,
     },
@@ -117,7 +117,6 @@ export default function ChatPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-
       {/* Search Bar */}
       <div className="px-4 pb-2">
         <div className="relative">
@@ -143,15 +142,15 @@ export default function ChatPage() {
             {/* Avatar with online indicator */}
             <div className="relative flex-shrink-0">
               <img
-                src={conversation.user.avatar || "/placeholder.svg"}
+                src={conversation.user.avatar || '/placeholder.svg'}
                 alt={conversation.user.name}
                 className={`object-cover ${
-                  conversation.type === "group"
-                    ? "w-12 h-12 rounded-xl"
-                    : "w-12 h-12 rounded-full"
+                  conversation.type === 'group'
+                    ? 'w-12 h-12 rounded-xl'
+                    : 'w-12 h-12 rounded-full'
                 }`}
               />
-              {conversation.type === "user" && conversation.isOnline && (
+              {conversation.type === 'user' && conversation.isOnline && (
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
               )}
             </div>
@@ -179,8 +178,8 @@ export default function ChatPage() {
               <p
                 className={`text-sm truncate ${
                   conversation.unreadCount > 0
-                    ? "font-medium text-gray-900"
-                    : "text-gray-600"
+                    ? 'font-medium text-gray-900'
+                    : 'text-gray-600'
                 }`}
               >
                 {conversation.lastMessage}
