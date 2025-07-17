@@ -1,9 +1,9 @@
-"use client";
-import { useState, useMemo } from "react";
-import { Search, MapPin, Plus, ChevronRight } from "lucide-react";
-import { VisuallyHidden } from "@silk-hq/components";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
-import "./location-sheet.css";
+'use client';
+import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { VisuallyHidden } from '@silk-hq/components';
+import { ChevronRight, MapPin, Plus, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import './location-sheet.css';
 
 interface LocationSheetProps {
   isOpen: boolean;
@@ -30,56 +30,57 @@ export default function LocationSheet({
   isOpen,
   onClose,
   onLocationSelect,
-  selectedLocation
+  selectedLocation,
 }: LocationSheetProps) {
   const [activeDetent, setActiveDetent] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Mock Google Places API results - in real app this would come from actual API
   const placesResults: LocationData[] = [
     {
-      name: "Moscone Center",
-      address: "747 Howard St",
-      city: "San Francisco",
-      state: "CA",
-      country: "United States",
-      zipCode: "94103",
+      name: 'Moscone Center',
+      address: '747 Howard St',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
+      zipCode: '94103',
       coordinates: { lat: 37.7849, lng: -122.4021 },
-      formatted: "Moscone Center, 747 Howard St, San Francisco, CA 94103, United States"
+      formatted:
+        'Moscone Center, 747 Howard St, San Francisco, CA 94103, United States',
     },
     {
-      name: "Golden Gate Park",
-      address: "Golden Gate Park",
-      city: "San Francisco",
-      state: "CA", 
-      country: "United States",
+      name: 'Golden Gate Park',
+      address: 'Golden Gate Park',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
       coordinates: { lat: 37.7694, lng: -122.4862 },
-      formatted: "Golden Gate Park, San Francisco, CA, United States"
+      formatted: 'Golden Gate Park, San Francisco, CA, United States',
     },
     {
-      name: "Union Square",
-      address: "Union Square",
-      city: "San Francisco",
-      state: "CA",
-      country: "United States",
-      coordinates: { lat: 37.7880, lng: -122.4075 },
-      formatted: "Union Square, San Francisco, CA, United States"
+      name: 'Union Square',
+      address: 'Union Square',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
+      coordinates: { lat: 37.788, lng: -122.4075 },
+      formatted: 'Union Square, San Francisco, CA, United States',
     },
     {
-      name: "Pier 39",
-      address: "Pier 39",
-      city: "San Francisco", 
-      state: "CA",
-      country: "United States",
+      name: 'Pier 39',
+      address: 'Pier 39',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
       coordinates: { lat: 37.8086, lng: -122.4098 },
-      formatted: "Pier 39, San Francisco, CA, United States"
-    }
+      formatted: 'Pier 39, San Francisco, CA, United States',
+    },
   ];
 
   // Filter locations based on search query
   const filteredLocations = useMemo(() => {
     if (!searchQuery.trim()) return placesResults;
-    
+
     const query = searchQuery.toLowerCase();
     return placesResults.filter(
       (location) =>
@@ -97,37 +98,37 @@ export default function LocationSheet({
 
   const handleCustomLocation = () => {
     if (!searchQuery.trim()) return;
-    
+
     // Create a custom location from the search query
     const customLocation: LocationData = {
       name: searchQuery,
       address: searchQuery,
-      city: "",
-      country: "",
-      formatted: searchQuery
+      city: '',
+      country: '',
+      formatted: searchQuery,
     };
-    
+
     handleLocationSelect(customLocation);
   };
 
   const handleCurrentLocation = () => {
     // In a real app, this would request GPS location
     const currentLocation: LocationData = {
-      name: "Current Location",
-      address: "Your current location",
-      city: "",
-      country: "",
-      formatted: "Current Location"
+      name: 'Current Location',
+      address: 'Your current location',
+      city: '',
+      country: '',
+      formatted: 'Current Location',
     };
-    
+
     handleLocationSelect(currentLocation);
   };
 
   return (
-    <SheetWithDetent.Root 
-      presented={isOpen} 
+    <SheetWithDetent.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
-      activeDetent={activeDetent} 
+      activeDetent={activeDetent}
       onActiveDetentChange={setActiveDetent}
     >
       <SheetWithDetent.Portal>
@@ -158,7 +159,7 @@ export default function LocationSheet({
               <SheetWithDetent.ScrollView className="LocationSheet-scrollView">
                 <SheetWithDetent.ScrollContent className="LocationSheet-scrollContent">
                   {/* Current Location Option */}
-                  <button 
+                  <button
                     onClick={handleCurrentLocation}
                     className="LocationSheet-locationItem LocationSheet-currentLocation"
                   >
@@ -166,7 +167,9 @@ export default function LocationSheet({
                       <MapPin className="LocationSheet-icon" />
                     </div>
                     <div className="LocationSheet-locationDetails">
-                      <div className="LocationSheet-locationName">Use current location</div>
+                      <div className="LocationSheet-locationName">
+                        Use current location
+                      </div>
                       <div className="LocationSheet-locationAddress">
                         We'll use your current GPS location
                       </div>
@@ -196,7 +199,7 @@ export default function LocationSheet({
                           </div>
                         </button>
                       ))}
-                      
+
                       {/* Custom Location Option */}
                       {filteredLocations.length === 0 && searchQuery.trim() && (
                         <button
@@ -220,7 +223,9 @@ export default function LocationSheet({
                   ) : (
                     /* Default Suggestions */
                     <>
-                      <div className="LocationSheet-sectionTitle">Suggested</div>
+                      <div className="LocationSheet-sectionTitle">
+                        Suggested
+                      </div>
                       {placesResults.slice(0, 4).map((location, index) => (
                         <button
                           key={index}
@@ -243,12 +248,14 @@ export default function LocationSheet({
                       ))}
                     </>
                   )}
-                  
-                  {searchQuery && filteredLocations.length === 0 && !searchQuery.trim() && (
-                    <div className="LocationSheet-noResults">
-                      No locations found
-                    </div>
-                  )}
+
+                  {searchQuery &&
+                    filteredLocations.length === 0 &&
+                    !searchQuery.trim() && (
+                      <div className="LocationSheet-noResults">
+                        No locations found
+                      </div>
+                    )}
                 </SheetWithDetent.ScrollContent>
               </SheetWithDetent.ScrollView>
             </SheetWithDetent.ScrollRoot>

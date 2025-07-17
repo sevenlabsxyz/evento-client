@@ -25,7 +25,7 @@ export default function UsernameSheet({
   const [username, setUsername] = useState(currentUsername);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
   const [error, setError] = useState('');
-  
+
   const debouncedUsername = useDebounce(username, 500);
   const checkUsernameMutation = useCheckUsername();
 
@@ -93,7 +93,9 @@ export default function UsernameSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <SheetWithDetentFull.Handle />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Username</h2>
                 <button
@@ -117,7 +119,9 @@ export default function UsernameSheet({
                     <Input
                       type="text"
                       value={username}
-                      onChange={(e) => setUsername(e.target.value.toLowerCase())}
+                      onChange={(e) =>
+                        setUsername(e.target.value.toLowerCase())
+                      }
                       placeholder="username"
                       className="pl-10 pr-10"
                       autoFocus
@@ -128,16 +132,19 @@ export default function UsernameSheet({
                         <div className="w-5 h-5 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />
                       </div>
                     )}
-                    {!checkUsernameMutation.isPending && isAvailable === true && username !== currentUsername && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                      </div>
-                    )}
-                    {!checkUsernameMutation.isPending && isAvailable === false && (
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <XCircle className="w-5 h-5 text-red-500" />
-                      </div>
-                    )}
+                    {!checkUsernameMutation.isPending &&
+                      isAvailable === true &&
+                      username !== currentUsername && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <CheckCircle className="w-5 h-5 text-green-500" />
+                        </div>
+                      )}
+                    {!checkUsernameMutation.isPending &&
+                      isAvailable === false && (
+                        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                          <XCircle className="w-5 h-5 text-red-500" />
+                        </div>
+                      )}
                   </div>
 
                   {/* Error message */}
@@ -154,7 +161,7 @@ export default function UsernameSheet({
 
                   {/* Info text */}
                   <p className="text-sm text-gray-500 mb-6">
-                    Your username is unique and helps others find you on Evento. 
+                    Your username is unique and helps others find you on Evento.
                     It can only contain letters, numbers, and underscores.
                   </p>
 

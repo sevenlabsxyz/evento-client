@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Camera, Upload, X } from 'lucide-react';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { toast } from '@/lib/utils/toast';
+import { Button } from '@/components/ui/button';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useUploadProfileImage } from '@/lib/hooks/useUserProfile';
+import { toast } from '@/lib/utils/toast';
+import { Camera, Upload, X } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 interface ProfileImageSheetProps {
   isOpen: boolean;
@@ -46,7 +46,7 @@ export default function ProfileImageSheet({
     }
 
     setSelectedFile(file);
-    
+
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -97,7 +97,9 @@ export default function ProfileImageSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <SheetWithDetentFull.Handle />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Profile Image</h2>
                 <button
@@ -117,15 +119,15 @@ export default function ProfileImageSheet({
                   {/* Avatar Preview */}
                   <div className="flex flex-col items-center mb-8">
                     <Avatar className="w-32 h-32 mb-4">
-                      <AvatarImage 
-                        src={selectedImage || currentImage || ''} 
+                      <AvatarImage
+                        src={selectedImage || currentImage || ''}
                         alt="Profile"
                       />
                       <AvatarFallback className="text-3xl">
                         {userName.charAt(0).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    
+
                     {/* Camera Icon Overlay */}
                     <button
                       onClick={triggerFileInput}

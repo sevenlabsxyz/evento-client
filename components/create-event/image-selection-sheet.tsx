@@ -1,14 +1,13 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import { VisuallyHidden } from "@silk-hq/components";
-import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
-import { coverImageCategories, CoverImage } from "@/lib/data/cover-images";
-import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
-import CoverUploader from "./cover-uploader";
-import ProgressiveImage from "@/components/ui/progressive-image";
-import "./image-selection-sheet.css";
+import ProgressiveImage from '@/components/ui/progressive-image';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
+import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { VisuallyHidden } from '@silk-hq/components';
+import { useState } from 'react';
+import CoverUploader from './cover-uploader';
+import './image-selection-sheet.css';
 
 interface ImageSelectionSheetProps {
   isOpen: boolean;
@@ -21,7 +20,7 @@ export default function ImageSelectionSheet({
   onClose,
   onImageSelect,
 }: ImageSelectionSheetProps) {
-  const [activeTab, setActiveTab] = useState("featured");
+  const [activeTab, setActiveTab] = useState('featured');
   // No longer need activeDetent as it always opens at full height
 
   const activeCategory = coverImageCategories.find(
@@ -40,8 +39,8 @@ export default function ImageSelectionSheet({
   };
 
   return (
-    <SheetWithDetentFull.Root 
-      presented={isOpen} 
+    <SheetWithDetentFull.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
     >
       <SheetWithDetentFull.Portal>
@@ -50,15 +49,21 @@ export default function ImageSelectionSheet({
           <SheetWithDetentFull.Content className="ImageSelectionSheet-content">
             {/* Fixed Header */}
             <div className="ImageSelectionSheet-header">
-              <SheetWithDetentFull.Handle className="ImageSelectionSheet-handle" />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle className="ImageSelectionSheet-handle" />
+              </div>
               <VisuallyHidden.Root asChild>
                 <SheetWithDetentFull.Title className="ImageSelectionSheet-title">
                   Add Cover Image
                 </SheetWithDetentFull.Title>
               </VisuallyHidden.Root>
-              <h2 className="ImageSelectionSheet-visibleTitle">Add Cover Image</h2>
-              <p className="ImageSelectionSheet-subtitle">Choose from our curated collection</p>
-              
+              <h2 className="ImageSelectionSheet-visibleTitle">
+                Add Cover Image
+              </h2>
+              <p className="ImageSelectionSheet-subtitle">
+                Choose from our curated collection
+              </p>
+
               {/* Tab Navigation */}
               <div className="ImageSelectionSheet-tabs">
                 <div className="ImageSelectionSheet-tabsContainer">
@@ -69,11 +74,15 @@ export default function ImageSelectionSheet({
                         key={category.id}
                         onClick={() => setActiveTab(category.id)}
                         className={`ImageSelectionSheet-tab ${
-                          activeTab === category.id ? "ImageSelectionSheet-tab--active" : ""
+                          activeTab === category.id
+                            ? 'ImageSelectionSheet-tab--active'
+                            : ''
                         }`}
                       >
                         <IconComponent className="ImageSelectionSheet-tabIcon" />
-                        <span className="ImageSelectionSheet-tabLabel">{category.name}</span>
+                        <span className="ImageSelectionSheet-tabLabel">
+                          {category.name}
+                        </span>
                         {activeTab === category.id && (
                           <div className="ImageSelectionSheet-tabIndicator"></div>
                         )}
@@ -97,7 +106,7 @@ export default function ImageSelectionSheet({
                       >
                         <ProgressiveImage
                           src={getCoverImageUrl500x500(image.url)}
-                          alt={image.title || "Cover image"}
+                          alt={image.title || 'Cover image'}
                           fill
                           className="ImageSelectionSheet-image"
                         />
