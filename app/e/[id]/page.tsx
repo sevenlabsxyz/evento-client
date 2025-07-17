@@ -159,7 +159,6 @@ export default function EventDetailPage() {
           <EventHost event={event} />
           <EventGuestList event={event} currentUserId={user?.id || ''} />
           <EventLocation event={event} />
-          {/* {event.galleryImages && event.galleryImages.length > 0 ? ( */}
           <EventGallery
             event={event}
             currentUserId={user?.id || ''}
@@ -168,7 +167,6 @@ export default function EventDetailPage() {
               lightboxRef.current?.open(index);
             }}
           />
-          {/* ) : null} */}
 
           {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
           {(eventData?.spotify_url || eventData?.wavlake_url) && (
