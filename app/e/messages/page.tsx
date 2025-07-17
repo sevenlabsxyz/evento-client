@@ -15,12 +15,22 @@ export default function ChatPage() {
     setTopBar({
       title: "Messages",
       subtitle: "Your conversations",
+      rightContent: (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full bg-gray-100"
+          onClick={() => router.push("/messages/search")}
+        >
+          <Plus className="h-5 w-5" />
+        </Button>
+      ),
     });
 
     return () => {
       setTopBar({ rightContent: null });
     };
-  }, [setTopBar]);
+  }, [setTopBar, router]);
 
   const [activeTab, setActiveTab] = useState("messages");
   const [searchQuery, setSearchQuery] = useState("");
@@ -107,27 +117,9 @@ export default function ChatPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
-        <PageHeader
-          title="Chat"
-          subtitle="Connect with mutuals and event groups"
-          showMenu={true}
-          rightContent={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.push("/messages/search")}
-            >
-              <Plus className="h-5 w-5" />
-            </Button>
-          }
-        />
-      </div>
 
       {/* Search Bar */}
-      <div className="fixed top-[120px] left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-30 px-4 pb-2">
+      <div className="px-4 pb-2">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
           <input
@@ -141,7 +133,7 @@ export default function ChatPage() {
       </div>
 
       {/* Messages Content */}
-      <div className="flex-1 overflow-y-auto pt-[170px] pb-20">
+      <div className="flex-1 overflow-y-auto pb-20">
         {filteredConversations.map((conversation) => (
           <div
             key={conversation.id}
