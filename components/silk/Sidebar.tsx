@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { Sheet, Scroll, VisuallyHidden } from '@silk-hq/components'
 import { useSidebar } from '@/lib/stores/sidebar-store'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/hooks/useAuth'
@@ -13,22 +14,18 @@ export function Sidebar() {
   const { logout } = useAuth()
   const { user } = useUserProfile()
   
-  const handleClose = () => {
-    closeSidebar()
-  }
-
   const handleNavigation = (path: string, isExternal?: boolean) => {
     if (isExternal) {
       window.open(path, '_blank')
     } else {
       router.push(path)
     }
-    handleClose()
+    closeSidebar()
   }
 
   const handleLogout = () => {
     logout()
-    handleClose()
+    closeSidebar()
   }
 
   // Menu sections
@@ -277,120 +274,152 @@ export function Sidebar() {
   ]
 
   return (
-    <>
-      {/* Backdrop */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black bg-opacity-60 z-50 transition-opacity"
-          onClick={handleClose}
-        />
-      )}
-      
-      {/* Sidebar */}
-      <div
-        className={`fixed left-0 top-0 h-full z-50 transform transition-all duration-300 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
-        style={{ 
-          width: 'min(90vw, 325px)',
-          backgroundColor: '#0f0f0f',
-          boxShadow: isOpen ? '2px 0 12px rgba(0, 0, 0, 0.2)' : 'none',
-          transition: 'transform 300ms, box-shadow 300ms'
-        }}
-      >
-        <div className="flex flex-col h-full">
-          {/* Header with user info */}
-          <div 
-            style={{ 
-              backgroundColor: '#1a1a1a',
-              borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-              padding: '1.5rem',
-              paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)'
+    <Sheet.Root 
+      license="commercial" 
+      presented={isOpen}
+      onPresentedChange={(presented) => {
+        if (!presented) closeSidebar()
+      }}
+    >
+      <Sheet.Portal>
+        <Sheet.View 
+          contentPlacement="left"
+          swipeOvershoot={false}
+          nativeEdgeSwipePrevention={true}
+          style={{
+            zIndex: 50,
+            height: 'calc(var(--silk-100-lvh-dvh-pct) + 60px)',
+          }}
+        >
+          <Sheet.Backdrop 
+            className="bg-black/30"
+            onClick={closeSidebar}
+          />
+          <Sheet.Content
+            style={{
+              width: 'min(90vw, 325px)',
+              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+              backgroundColor: 'hsl(var(--sidebar-background))',
             }}
           >
-            <div className="grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5">
-              {/* User avatar */}
-              <Avatar className="row-span-2 w-[50px] h-[50px] border border-white/10">
-                <AvatarImage 
-                  src={user?.image || ''} 
-                  alt={user?.name || user?.username || 'User'} 
-                />
-                <AvatarFallback className="bg-gradient-to-br from-cyan-400 via-cyan-300 to-cyan-400 text-black font-semibold">
-                  {user?.name
-                    ? user.name.charAt(0).toUpperCase()
-                    : user?.username
-                    ? user.username.charAt(0).toUpperCase()
-                    : 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-xl font-bold text-white">
-                {user?.name || 'Evento'}
-              </div>
-              <div className="text-sm text-gray-400">
-                {user?.username ? `@${user.username}` : 'Welcome to Evento'}
-              </div>
-            </div>
-          </div>
+            {/* Accessibility */}
+            <VisuallyHidden.Root>
+              <Sheet.Title>Navigation Menu</Sheet.Title>
+              <Sheet.Description>Main navigation sidebar</Sheet.Description>
+              <Sheet.Trigger action="dismiss">Close navigation menu</Sheet.Trigger>
+            </VisuallyHidden.Root>
 
-          {/* Scrollable menu sections */}
-          <div className="flex-1 overflow-y-auto" style={{ padding: '1.5rem', backgroundColor: '#0f0f0f' }}>
-            <div className="grid gap-10">
-              {menuSections.map((section) => (
-                <div key={section.title} className="grid gap-6">
-                  <h3 
-                    className="m-0 text-sm font-semibold uppercase"
-                    style={{ color: 'rgba(255, 255, 255, 0.5)' }}
+            <div className="flex flex-col h-full">
+              {/* Header with user info */}
+              <div 
+                className="bg-sidebar-accent border-b border-sidebar-border"
+                style={{ 
+                  padding: '1.5rem',
+                  paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)'
+                }}
+              >
+                <div className="grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5">
+                  {/* User avatar */}
+                  <button
+                    onClick={() => handleNavigation('/e/profile')}
+                    className="row-span-2 w-[50px] h-[50px] p-0 border-0 bg-transparent rounded-full transition-opacity hover:opacity-80 cursor-pointer"
+                    aria-label="Go to profile"
                   >
-                    {section.title}
-                  </h3>
-                  <ul className="m-0 p-0 grid gap-5 list-none">
-                    {section.items.map((item) => (
-                      <li key={item.path}>
-                        <button
-                          onClick={() => handleNavigation(item.path, (item as any).isExternal)}
-                          className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-white/10 rounded-lg px-3 py-2 -mx-3"
-                          style={{ color: 'rgba(255, 255, 255, 0.9)' }}
-                        >
-                          <span className="text-[0]">{item.icon}</span>
-                          <span className="text-lg font-medium">{item.name}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
+                    <Avatar className="w-[50px] h-[50px] border border-black/10">
+                      <AvatarImage 
+                        src={user?.image || ''} 
+                        alt={user?.name || user?.username || 'User'} 
+                      />
+                      <AvatarFallback className="bg-gradient-to-br from-cyan-400 via-cyan-300 to-cyan-400 text-black font-semibold">
+                        {user?.name
+                          ? user.name.charAt(0).toUpperCase()
+                          : user?.username
+                          ? user.username.charAt(0).toUpperCase()
+                          : 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                  </button>
+                  <button
+                    onClick={() => handleNavigation('/e/profile')}
+                    className="text-xl font-bold text-sidebar-foreground text-left p-0 border-0 bg-transparent transition-colors hover:text-sidebar-foreground/80 cursor-pointer"
+                    aria-label="Go to profile"
+                  >
+                    {user?.name || 'Evento'}
+                  </button>
+                  <button
+                    onClick={() => handleNavigation('/e/profile')}
+                    className="text-sm text-muted-foreground text-left p-0 border-0 bg-transparent transition-colors hover:text-muted-foreground/80 cursor-pointer"
+                    aria-label="Go to profile"
+                  >
+                    {user?.username ? `@${user.username}` : 'Welcome to Evento'}
+                  </button>
                 </div>
-              ))}
-              
-              {/* Logout button */}
-              <div className="pt-6 border-t" style={{ borderColor: 'rgba(255, 255, 255, 0.1)' }}>
-                <button
-                  onClick={handleLogout}
-                  className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-red-500/20 rounded-lg px-3 py-2 -mx-3"
-                  style={{ color: '#ef4444' }}
-                >
-                  <span className="text-[0]">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="20"
-                      height="20"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.1"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                      <polyline points="16 17 21 12 16 7" />
-                      <line x1="21" x2="9" y1="12" y2="12" />
-                    </svg>
-                  </span>
-                  <span className="text-lg font-medium">Log Out</span>
-                </button>
               </div>
+
+              {/* Scrollable menu sections */}
+              <Scroll.Root className="flex-1 min-h-0">
+                <Scroll.View 
+                  className="h-full"
+                  scrollGestureTrap={{ yEnd: true }}
+                  safeArea="layout-viewport"
+                >
+                  <Scroll.Content className="p-6">
+                    <div className="grid gap-10">
+                      {menuSections.map((section) => (
+                        <div key={section.title} className="grid gap-6">
+                          <h3 className="m-0 text-sm font-semibold uppercase text-muted-foreground">
+                            {section.title}
+                          </h3>
+                          <ul className="m-0 p-0 grid gap-5 list-none">
+                            {section.items.map((item) => (
+                              <li key={item.path}>
+                                <button
+                                  onClick={() => handleNavigation(item.path, (item as any).isExternal)}
+                                  className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-sidebar-accent rounded-lg px-3 py-2 -mx-3 text-sidebar-foreground"
+                                >
+                                  <span className="text-[0]">{item.icon}</span>
+                                  <span className="text-lg font-medium">{item.name}</span>
+                                </button>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                      
+                      {/* Logout button */}
+                      <div className="pt-6 border-t border-sidebar-border">
+                        <button
+                          onClick={handleLogout}
+                          className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-red-500/10 rounded-lg px-3 py-2 -mx-3 text-destructive"
+                        >
+                          <span className="text-[0]">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.1"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                              <polyline points="16 17 21 12 16 7" />
+                              <line x1="21" x2="9" y1="12" y2="12" />
+                            </svg>
+                          </span>
+                          <span className="text-lg font-medium">Log Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </Scroll.Content>
+                </Scroll.View>
+              </Scroll.Root>
             </div>
-          </div>
-        </div>
-      </div>
-    </>
+          </Sheet.Content>
+        </Sheet.View>
+      </Sheet.Portal>
+    </Sheet.Root>
   )
 }

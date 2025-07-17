@@ -8,11 +8,25 @@ import {
   MapPin,
   Clock,
 } from "lucide-react";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { Navbar } from "@/components/navbar";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 
 export default function NotificationsPage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Notifications",
+      subtitle: "Stay updated",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const [activeTab, setActiveTab] = useState("notifications");
 
   const notifications = [
@@ -108,17 +122,10 @@ export default function NotificationsPage() {
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
-        <PageHeader
-          title="Activity"
-          subtitle="Stay updated with your activity"
-          showMenu={true}
-          rightContent={null}
-        />
-      </div>
+      
 
       {/* Notifications Content */}
-      <div className="flex-1 overflow-y-auto pt-[120px] pb-20">
+      <div className="flex-1 overflow-y-auto  pb-20">
         <div className="px-4 py-2">
           <h3 className="text-sm font-semibold text-gray-900 mb-3">Today</h3>
         </div>

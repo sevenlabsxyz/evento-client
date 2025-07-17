@@ -2,12 +2,26 @@
 
 import { X, Plus, Bookmark, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { toast } from "@/lib/utils/toast";
 
 export default function SavedListsPage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Saved",
+      subtitle: "Your saved events",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const router = useRouter();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newListName, setNewListName] = useState("");
@@ -76,26 +90,6 @@ export default function SavedListsPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="border-b border-gray-200">
-        <PageHeader
-          title="Saved"
-          subtitle={`${savedLists.length} lists • ${savedLists.reduce(
-            (total, list) => total + list.eventCount,
-            0
-          )} events`}
-          rightContent={
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={() => router.back()}
-            >
-              <X className="h-5 w-5" />
-            </Button>
-          }
-        />
-      </div>
 
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50">

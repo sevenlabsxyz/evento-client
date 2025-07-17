@@ -2,7 +2,7 @@
 
 import { Search, Check, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { Navbar } from "@/components/navbar";
 import { EventCard } from "@/components/event-card";
 import { useEventsFeed } from "@/lib/hooks/useEventsFeed";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "@/lib/utils/toast";
 
 export default function FeedPage() {
+  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState("feed");
   const [bookmarkedEvents, setBookmarkedEvents] = useState<Set<string>>(
     new Set()
@@ -18,6 +19,28 @@ export default function FeedPage() {
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const router = useRouter();
+  
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Feed",
+      subtitle: "Your personalized event feed",
+      rightContent: (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full bg-gray-100"
+          onClick={() => router.push("/e/search")}
+        >
+          <Search className="h-5 w-5" />
+        </Button>
+      ),
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [router, setTopBar]);
 
   // Fetch events feed
   const { data: events = [], isLoading, error } = useEventsFeed();
@@ -63,25 +86,7 @@ export default function FeedPage() {
   if (isLoading) {
     return (
       <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-        <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
-          <PageHeader
-            title="Feed"
-            subtitle="Discover amazing travel events"
-            showMenu={true}
-            rightContent={
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="rounded-full bg-gray-100"
-                >
-                  <Search className="h-5 w-5" />
-                </Button>
-              </>
-            }
-          />
-        </div>
-        <div className="flex-1 flex items-center justify-center pt-[120px] pb-20">
+        <div className="flex-1 flex items-center justify-center pb-20">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
         </div>
         <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
@@ -91,29 +96,8 @@ export default function FeedPage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-      {/* Header */}
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 border-b border-gray-100">
-        <PageHeader
-          title="Feed"
-          subtitle="Discover amazing travel events"
-          showMenu={true}
-          rightContent={
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => router.push("/e/search")}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            </>
-          }
-        />
-      </div>
-
       {/* Feed Content */}
-      <div className="flex-1 overflow-y-auto pt-[120px] pb-20">
+      <div className="flex-1 overflow-y-auto pb-20">
         {error ? (
           <div className="flex flex-col items-center justify-center py-12 px-4">
             <p className="text-gray-500 text-center mb-4">

@@ -4,18 +4,19 @@ import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck, Loader2 } from "luc
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast } from "@/lib/utils/toast";
 import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
 import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
 import { useAuth } from "@/lib/hooks/useAuth";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { Navbar } from "@/components/navbar";
 import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
 import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 
 export default function ProfilePage() {
   const router = useRouter();
+  const { setTopBar, setTransparent } = useTopBar();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -33,6 +34,40 @@ export default function ProfilePage() {
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Profile",
+      subtitle: user?.username ? `@${user.username}` : "@user",
+      rightContent: (
+        <div className="flex gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
+            onClick={() => router.push("/e/profile/edit")}
+          >
+            <Edit3 className="h-5 w-5 text-white" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
+            onClick={() => router.push("/e/settings")}
+          >
+            <Settings className="h-5 w-5 text-white" />
+          </Button>
+        </div>
+      ),
+    });
+    setTransparent(true);
+
+    return () => {
+      setTopBar({ rightContent: null });
+      setTransparent(false);
+    };
+  }, [user?.username, router, setTopBar, setTransparent]);
 
   const userStats = {
     events: eventCount || 0,
@@ -486,110 +521,91 @@ export default function ProfilePage() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 shadow-sm">
-        {/* Header */}
-        <PageHeader
-          title="Profile"
-          subtitle={userData.username}
-          showMenu={true}
-          rightContent={
-            <div className="flex gap-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => toast.success("Edit profile coming soon!")}
-              >
-                <Edit3 className="h-5 w-5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => router.push("/e/settings")}
-              >
-                <Settings className="h-5 w-5" />
-              </Button>
-            </div>
-          }
-        />
-      </div>
-
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pt-24 pb-20">
-        {/* Profile Section */}
-        <div className="bg-white p-6 mb-4 relative">
-
-          <div className="flex items-center gap-4 mb-4">
-            <div className="relative">
-              <button onClick={handleAvatarClick}>
-                <Avatar className="w-20 h-20">
-                  <AvatarImage 
-                    src={userData.avatar || ''} 
-                    alt="Profile" 
-                  />
-                  <AvatarFallback className="text-2xl">
-                    {userData.name.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-              </button>
-              
+      <div className="flex-1 overflow-y-auto pb-20">
+        {/* Cover Image Section */}
+        <div className="relative">
+          {/* Banner */}
+          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
+          
+          {/* Profile Picture - Centered & Clickable */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+            <button onClick={handleAvatarClick} className="relative">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                <AvatarImage 
+                  src={userData.avatar || ''} 
+                  alt="Profile" 
+                />
+                <AvatarFallback className="text-3xl bg-white">
+                  {userData.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               {/* Verification Badge */}
               {userData.isVerified && (
                 <button
-                  onClick={() => setShowVerificationModal(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowVerificationModal(true);
+                  }}
                   className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
                 >
-                  <BadgeCheck className="w-6 h-6 bg-red-600 text-white rounded-full shadow-sm" />
+                  <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
                 </button>
               )}
-            </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">{userData.name}</h2>
-              <p className="text-gray-600 text-sm">{userData.username}</p>
+            </button>
+          </div>
+        </div>
+
+        {/* Profile Section */}
+        <div className="bg-white px-6 pt-20 pb-6 mb-4">
+          {/* User Info - Centered */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">{userData.name}</h2>
+            <p className="text-gray-600">{userData.username}</p>
+          </div>
+
+          {/* Stats - Centered */}
+          <div className="flex justify-center mb-6">
+            <div className="grid grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="text-xl font-bold text-gray-900">
+                  {userStats.events}
+                </div>
+                <div className="text-sm text-gray-500">Events</div>
+              </div>
+              <button
+                className="text-center"
+                onClick={() => setShowFollowingSheet(true)}
+              >
+                <div className="text-xl font-bold text-gray-900">
+                  {userStats.following}
+                </div>
+                <div className="text-sm text-gray-500">Following</div>
+              </button>
+              <button
+                className="text-center"
+                onClick={() => setShowFollowersSheet(true)}
+              >
+                <div className="text-xl font-bold text-gray-900">
+                  {userStats.followers}
+                </div>
+                <div className="text-sm text-gray-500">Followers</div>
+              </button>
             </div>
           </div>
 
-          {/* Stats above description */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div>
-              <div className="text-xl font-bold text-gray-900">
-                {userStats.events}
-              </div>
-              <div className="text-sm text-gray-500">Events</div>
-            </div>
-            <button
-              className="text-left"
-              onClick={() => setShowFollowingSheet(true)}
-            >
-              <div className="text-xl font-bold text-gray-900">
-                {userStats.following}
-              </div>
-              <div className="text-sm text-gray-500">Following</div>
-            </button>
-            <button
-              className="text-left"
-              onClick={() => setShowFollowersSheet(true)}
-            >
-              <div className="text-xl font-bold text-gray-900">
-                {userStats.followers}
-              </div>
-              <div className="text-sm text-gray-500">Followers</div>
-            </button>
-          </div>
-
-          {/* Status/Title - One-liner */}
+          {/* Status/Title - Centered */}
           {userData.status && (
-            <div className="mb-4">
+            <div className="text-center mb-4">
               <p className="text-gray-600 text-sm font-medium">
                 {userData.status}
               </p>
             </div>
           )}
 
-          {/* Website */}
+          {/* Website - Centered */}
           {user?.bio_link && (
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center justify-center gap-2 mb-4">
               <Globe className="h-4 w-4 text-gray-500" />
               <button
                 onClick={handleWebsiteClick}
@@ -600,8 +616,8 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Social Links */}
-          <div className="flex gap-3">
+          {/* Social Links - Centered */}
+          <div className="flex justify-center gap-3">
             {/* Instagram */}
             {user?.instagram_handle && (
               <Button

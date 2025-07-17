@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState , useEffect} from "react";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { coverImageCategories, CoverImage } from "@/lib/data/cover-images";
 import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
 import CoverUploader from "./cover-uploader";
@@ -21,6 +21,20 @@ export default function ImageSelectionModal({
   onClose,
   onImageSelect,
 }: ImageSelectionModalProps) {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Select Image",
+      subtitle: "Choose your event photo",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const [activeTab, setActiveTab] = useState("featured");
 
   if (!isOpen) return null;
@@ -42,21 +56,6 @@ export default function ImageSelectionModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-white overflow-hidden">
-      {/* Header */}
-      <PageHeader
-        title="Add Cover Image"
-        subtitle="Choose from our curated collection"
-        rightContent={
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-gray-100"
-            onClick={onClose}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-        }
-      />
 
       {/* Tab Navigation */}
       <div className="px-4 mb-4">

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { SheetStack } from "@silk-hq/components";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { useRouter } from "next/navigation";
 import CoverImageSelector from "@/components/create-event/cover-image-selector";
 import ImageSelectionSheet from "@/components/create-event/image-selection-sheet";
@@ -44,6 +44,20 @@ import {
 import { toast } from "@/lib/utils/toast";
 
 export default function CreatePage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Create Event",
+      subtitle: "Start planning your next event",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const router = useRouter();
   const createEventMutation = useCreateEventWithCallbacks();
 
@@ -238,11 +252,7 @@ export default function CreatePage() {
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
       {/* Header */}
-      <PageHeader
-        title="Create Event"
-        subtitle="Add a new event to your itinerary"
-        showMenu={true}
-      />
+      
 
       {/* Cover Image Selector */}
       <div className="px-4 mb-2 mt-2">

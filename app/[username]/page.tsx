@@ -10,8 +10,10 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter, useParams } from "next/navigation";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { toast } from "@/lib/utils/toast";
 import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
 import { useUserByUsername, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
@@ -21,6 +23,7 @@ import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 export default function UserProfilePage() {
   const router = useRouter();
   const params = useParams();
+  const { setTopBar, setTransparent } = useTopBar();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -84,6 +87,21 @@ export default function UserProfilePage() {
       mutuals: 0, // This would need to be calculated
     },
   };
+
+  // Set TopBar content for transparent mode
+  useEffect(() => {
+    setTopBar({
+      title: userProfile.name,
+      subtitle: userProfile.username,
+      rightContent: null, // No right content for other users' profiles
+    });
+    setTransparent(true);
+
+    return () => {
+      setTopBar({ rightContent: null });
+      setTransparent(false);
+    };
+  }, [userProfile.name, userProfile.username, setTopBar, setTransparent]);
 
   const attendingEvents = [
     {
@@ -448,95 +466,59 @@ export default function UserProfilePage() {
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Content */}
       <div className="flex-1 overflow-y-auto">
-        {/* Profile Section */}
-        <div className="bg-white p-6 mb-4 relative">
+        {/* Cover Image Section */}
+        <div className="relative">
+          {/* Back Button - Absolute positioned */}
           <Button
             variant="ghost"
             size="icon"
-            className="absolute top-4 right-4 rounded-full bg-gray-100"
+            className="absolute top-4 right-4 rounded-full bg-white/80 backdrop-blur-sm z-10"
             onClick={() => router.back()}
           >
             <X className="h-5 w-5" />
           </Button>
-
-          <div className="flex items-center gap-4 mb-4">
-            <div className="relative">
-              <button onClick={handleAvatarClick}>
-                <img
-                  src={userProfile.avatar || "/placeholder.svg"}
-                  alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover hover:opacity-90 transition-opacity"
+          
+          {/* Banner */}
+          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
+          
+          {/* Profile Picture - Centered & Clickable */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
+            <button onClick={handleAvatarClick} className="relative">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
+                <AvatarImage 
+                  src={userProfile.avatar || ''} 
+                  alt="Profile" 
                 />
-              </button>
-              
+                <AvatarFallback className="text-3xl bg-white">
+                  {userProfile.name.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
               {/* Verification Badge */}
               {userProfile.isVerified && (
                 <button
-                  onClick={() => setShowVerificationModal(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowVerificationModal(true);
+                  }}
                   className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
                 >
-                  <BadgeCheck className="w-6 h-6 bg-red-600 text-white rounded-full shadow-sm" />
+                  <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
                 </button>
               )}
-            </div>
-            <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">
-                {userProfile.name}
-              </h2>
-              <p className="text-gray-600 text-sm">{userProfile.username}</p>
-            </div>
-          </div>
-
-          {/* Stats above description */}
-          <div className="grid grid-cols-3 gap-4 mb-4">
-            <div>
-              <div className="text-xl font-bold text-gray-900">
-                {userProfile.stats.events}
-              </div>
-              <div className="text-sm text-gray-500">Events</div>
-            </div>
-            <button
-              className="text-left"
-              onClick={() => setShowFollowingSheet(true)}
-            >
-              <div className="text-xl font-bold text-gray-900">
-                {userProfile.stats.following}
-              </div>
-              <div className="text-sm text-gray-500">Following</div>
-            </button>
-            <button
-              className="text-left"
-              onClick={() => setShowFollowersSheet(true)}
-            >
-              <div className="text-xl font-bold text-gray-900">
-                {userProfile.stats.followers}
-              </div>
-              <div className="text-sm text-gray-500">Followers</div>
             </button>
           </div>
+        </div>
 
-          {/* Status/Title - One-liner */}
-          {userProfile.status && (
-            <div className="mb-4">
-              <p className="text-gray-600 text-sm font-medium">
-                {userProfile.status}
-              </p>
-            </div>
-          )}
-
-          {/* Website */}
-          <div className="flex items-center gap-2 mb-4">
-            <Globe className="h-4 w-4 text-gray-500" />
-            <button
-              onClick={handleWebsiteClick}
-              className="text-blue-600 hover:underline text-sm"
-            >
-              sarahchen.com
-            </button>
+        {/* Profile Section */}
+        <div className="bg-white px-6 pt-20 pb-6 mb-4">
+          {/* User Info - Centered */}
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">{userProfile.name}</h2>
+            <p className="text-gray-600">{userProfile.username}</p>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 mb-6 max-w-xs mx-auto">
             <Button
               onClick={() => handleFollowToggle()}
               className={`flex-1 ${
@@ -574,6 +556,58 @@ export default function UserProfilePage() {
               <Zap className="h-5 w-5 text-yellow-500" />
             </Button>
           </div>
+
+          {/* Stats - Centered */}
+          <div className="flex justify-center mb-6">
+            <div className="grid grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="text-xl font-bold text-gray-900">
+                  {userProfile.stats.events}
+                </div>
+                <div className="text-sm text-gray-500">Events</div>
+              </div>
+              <button
+                className="text-center"
+                onClick={() => setShowFollowingSheet(true)}
+              >
+                <div className="text-xl font-bold text-gray-900">
+                  {userProfile.stats.following}
+                </div>
+                <div className="text-sm text-gray-500">Following</div>
+              </button>
+              <button
+                className="text-center"
+                onClick={() => setShowFollowersSheet(true)}
+              >
+                <div className="text-xl font-bold text-gray-900">
+                  {userProfile.stats.followers}
+                </div>
+                <div className="text-sm text-gray-500">Followers</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Status/Bio - Centered */}
+          {userProfile.status && (
+            <div className="text-center mb-4">
+              <p className="text-gray-600 text-sm font-medium">
+                {userProfile.status}
+              </p>
+            </div>
+          )}
+
+          {/* Website - Centered */}
+          {userProfile.website && (
+            <div className="flex items-center justify-center gap-2">
+              <Globe className="h-4 w-4 text-gray-500" />
+              <button
+                onClick={handleWebsiteClick}
+                className="text-blue-600 hover:underline text-sm"
+              >
+                {userProfile.website.replace(/^https?:\/\//, '')}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Tabbed Section */}

@@ -1,11 +1,26 @@
 "use client";
 
 import { Bot, Twitter, Mail, X } from "lucide-react";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { useRouter } from "next/navigation";
 
 export default function HelpPage() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Help",
+      subtitle: "Get support and find answers",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const router = useRouter();
 
   const handleExternalLink = (url: string) => {
@@ -16,11 +31,7 @@ export default function HelpPage() {
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
       <div className="border-b border-gray-200">
-        <PageHeader
-          title="Need Help?"
-          subtitle="Choose how you'd like to get support"
-          showMenu={true}
-        />
+        
       </div>
 
       {/* Content */}

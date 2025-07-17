@@ -13,9 +13,9 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/navbar";
-import { PageHeader } from "@/components/page-header";
+import { useTopBar } from "@/lib/stores/topbar-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRef, useState } from "react";
+import { useRef, useState , useEffect} from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "@/lib/utils/toast";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
@@ -23,6 +23,20 @@ import { useAuth } from "@/lib/hooks/useAuth";
 import { StatsLongSheet } from "@/components/stats-long-sheet/StatsLongSheet";
 
 export default function TravelItinerary() {
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: "Travel Itinerary",
+      subtitle: "Your trip details",
+    });
+
+    return () => {
+      setTopBar({ rightContent: null });
+    };
+  }, [setTopBar]);
+
   const [activeDate, setActiveDate] = useState(2);
   const [activeTab, setActiveTab] = useState("hub");
   const router = useRouter();
@@ -52,7 +66,6 @@ export default function TravelItinerary() {
       });
     }
   };
-
 
   // Generate real calendar dates for September 2025
   const generateCalendarDays = () => {
@@ -96,54 +109,6 @@ export default function TravelItinerary() {
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
-      <div className="fixed top-0 left-1/2 transform -translate-x-1/2 w-full md:max-w-sm max-w-full bg-white z-40 shadow-sm">
-        {/* Header */}
-        <PageHeader
-          title="Hub"
-          subtitle="September 2025"
-          showMenu={true}
-          rightContent={
-            <>
-              <StatsLongSheet
-                trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="rounded-full bg-gray-100"
-                  >
-                    <BarChart3 className="h-5 w-5" />
-                  </Button>
-                }
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`rounded-full bg-gray-100 p-0 h-10 w-10 ${
-                  pathname === "/e/me" ? "ring-2 ring-red-500" : ""
-                }`}
-                onClick={() => router.push("/e/me")}
-              >
-                {isUserLoading ? (
-                  <User className="h-5 w-5" />
-                ) : (
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={user?.image || ""}
-                      alt={user?.name || user?.username || "User"}
-                    />
-                    <AvatarFallback>
-                      {user?.name
-                        ? user.name.charAt(0).toUpperCase()
-                        : user?.username
-                        ? user.username.charAt(0).toUpperCase()
-                        : "U"}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
-              </Button>
-            </>
-          }
-        />
 
         {/* Horizontal Scrollable Calendar */}
         <div className="px-4 mb-6">
@@ -177,12 +142,11 @@ export default function TravelItinerary() {
             ))}
           </div>
         </div>
-      </div>
 
       {/* Vertically Scrollable Content */}
       <div
         ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto px-4 pb-20 pt-[220px]"
+        className="flex-1 overflow-y-auto px-4 pb-20"
       >
         {/* Tuesday, September 2 */}
         <div ref={(el) => (dateRefs.current[2] = el)} className="mb-8">
