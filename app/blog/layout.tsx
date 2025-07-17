@@ -1,3 +1,5 @@
+"use client"
+
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { useEffect } from "react";
 

@@ -321,7 +321,7 @@ export function Sidebar() {
                 <div className="grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5">
                   {/* User avatar */}
                   <button
-                    onClick={() => handleNavigation('/e/me')}
+                    onClick={() => handleNavigation('/e/profile')}
                     className="row-span-2 w-[50px] h-[50px] p-0 border-0 bg-transparent rounded-full transition-opacity hover:opacity-80 cursor-pointer"
                     aria-label="Go to profile"
                   >
@@ -340,14 +340,14 @@ export function Sidebar() {
                     </Avatar>
                   </button>
                   <button
-                    onClick={() => handleNavigation('/e/me')}
+                    onClick={() => handleNavigation('/e/profile')}
                     className="text-xl font-bold text-sidebar-foreground text-left p-0 border-0 bg-transparent transition-colors hover:text-sidebar-foreground/80 cursor-pointer"
                     aria-label="Go to profile"
                   >
                     {user?.name || 'Evento'}
                   </button>
                   <button
-                    onClick={() => handleNavigation('/e/me')}
+                    onClick={() => handleNavigation('/e/profile')}
                     className="text-sm text-muted-foreground text-left p-0 border-0 bg-transparent transition-colors hover:text-muted-foreground/80 cursor-pointer"
                     aria-label="Go to profile"
                   >
