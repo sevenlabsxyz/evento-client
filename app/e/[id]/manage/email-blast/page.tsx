@@ -3,9 +3,12 @@
 import EmailBlastCard from '@/components/manage-event/email-blast-card';
 import EmailBlastDetailModal from '@/components/manage-event/email-blast-detail-modal';
 import EmailBlastSheet from '@/components/manage-event/email-blast-sheet';
-import { useEmailBlasts, transformEmailBlastForUI } from '@/lib/hooks/useEmailBlasts';
+import {
+  transformEmailBlastForUI,
+  useEmailBlasts,
+} from '@/lib/hooks/useEmailBlasts';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { ArrowLeft, Mail, Plus, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Mail, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -16,10 +19,10 @@ export default function EmailBlastPage() {
   const eventId = params.id as string;
   const [showEmailBlastSheet, setShowEmailBlastSheet] = useState(false);
   const [selectedBlast, setSelectedBlast] = useState<any | null>(null);
-  
+
   // Fetch email blasts data
   const { data: emailBlasts = [], isLoading, error } = useEmailBlasts(eventId);
-  
+
   // Transform API data for UI
   const transformedBlasts = (emailBlasts || []).map(transformEmailBlastForUI);
 
