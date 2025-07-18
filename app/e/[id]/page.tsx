@@ -181,7 +181,10 @@ export default function EventDetailPage() {
             </div>
           )}
 
-          <EventDescription event={event} />
+          <EventDescription
+            event={event}
+            isOwner={user?.id === event.owner?.id}
+          />
         </div>
       </div>
 

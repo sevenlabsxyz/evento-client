@@ -3,12 +3,17 @@
 import { Event } from '@/lib/types/event';
 import { ExternalLink } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/hooks/useAuth';
 
 interface EventDescriptionProps {
   event: Event;
+  isOwner?: boolean;
 }
 
-export default function EventDescription({ event }: EventDescriptionProps) {
+export default function EventDescription({
+  event,
+  isOwner,
+}: EventDescriptionProps) {
   const router = useRouter();
 
   const handleExternalLink = (url: string) => {
@@ -75,7 +80,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
       </div>
 
       {/* Register Button fixed at Bottom */}
-      {event.registrationUrl ? (
+      {!isOwner && event.registrationUrl ? (
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-50">
           <button
             onClick={() => {
