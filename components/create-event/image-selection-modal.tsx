@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import ProgressiveImage from '@/components/ui/progressive-image';
-import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
-import { useEffect, useState } from 'react';
-import GiphyPicker from '../giphy/giphy-picker';
-import CoverUploader from './cover-uploader';
+import ProgressiveImage from "@/components/ui/progressive-image";
+import { CoverImage, coverImageCategories } from "@/lib/data/cover-images";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
+import { useEffect, useState } from "react";
+import GiphyPicker from "../giphy/giphy-picker";
+import CoverUploader from "./cover-uploader";
 
 interface ImageSelectionModalProps {
   isOpen: boolean;
@@ -20,13 +20,13 @@ export default function ImageSelectionModal({
   onImageSelect,
 }: ImageSelectionModalProps) {
   const { setTopBar } = useTopBar();
-  const [activeTab, setActiveTab] = useState('featured');
+  const [activeTab, setActiveTab] = useState("featured");
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: 'Select Image',
-      subtitle: 'Choose your event photo',
+      title: "Select Image",
+      subtitle: "Choose your event photo",
     });
 
     return () => {
@@ -40,7 +40,7 @@ export default function ImageSelectionModal({
   const images = activeCategory?.images || [];
 
   const handleImageSelect = (image: CoverImage | string) => {
-    const imageUrl = typeof image === 'string' ? image : image.url;
+    const imageUrl = typeof image === "string" ? image : image.url;
     onImageSelect(imageUrl);
     onClose();
   };
@@ -50,7 +50,7 @@ export default function ImageSelectionModal({
     onClose();
   };
 
-  const isGifTab = activeTab === 'giphy';
+  const isGifTab = activeTab === "giphy";
 
   if (!isOpen) return null;
 
@@ -66,7 +66,7 @@ export default function ImageSelectionModal({
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
                 className={`flex flex-col items-center space-y-2 py-2 px-1 ${
-                  activeTab === category.id ? 'text-gray-900' : 'text-gray-400'
+                  activeTab === category.id ? "text-gray-900" : "text-gray-400"
                 }`}
               >
                 <IconComponent className="w-6 h-6" />
@@ -85,7 +85,7 @@ export default function ImageSelectionModal({
       {/* Content Area */}
       <div
         className="flex-1 overflow-y-auto"
-        style={{ height: isGifTab ? '100vh' : 'calc(100vh - 200px)' }} // No need provisioning space for bottom action button if GIF tab is active
+        style={{ height: isGifTab ? "100vh" : "calc(100vh - 200px)" }} // No need provisioning space for bottom action button if GIF tab is active
       >
         <div className="px-4 pb-24">
           {isGifTab ? (
@@ -98,7 +98,7 @@ export default function ImageSelectionModal({
               />
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
               {images.map((image) => (
                 <button
                   key={image.id}
@@ -107,7 +107,7 @@ export default function ImageSelectionModal({
                 >
                   <ProgressiveImage
                     src={getCoverImageUrl500x500(image.url)}
-                    alt={image.title || 'Cover image'}
+                    alt={image.title || "Cover image"}
                     fill
                     className="object-cover"
                   />

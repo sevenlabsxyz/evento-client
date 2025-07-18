@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import { Input } from '@/components/ui/input';
-import { GiphyFetch } from '@giphy/js-fetch-api';
-import { IGif } from '@giphy/js-types';
-import { Loader2, Search } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { Input } from "@/components/ui/input";
+import { GiphyFetch } from "@giphy/js-fetch-api";
+import { IGif } from "@giphy/js-types";
+import { Loader2, Search } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
-const gf = new GiphyFetch(process.env.NEXT_PUBLIC_GIPHY_API_KEY || '');
+const gf = new GiphyFetch(process.env.NEXT_PUBLIC_GIPHY_API_KEY || "");
 
 interface GiphyPickerProps {
   onGifSelect: (gifUrl: string) => void;
 }
 
 export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [gifs, setGifs] = useState<IGif[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedGif, setSelectedGif] = useState<IGif | null>(null);
@@ -23,12 +23,12 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
       setIsLoading(true);
       const { data } = await gf.trending({
         limit: 20,
-        rating: 'g',
-        type: 'gifs',
+        rating: "g",
+        type: "gifs",
       });
       setGifs(data);
     } catch (error) {
-      console.error('Error fetching trending GIFs:', error);
+      console.error("Error fetching trending GIFs:", error);
     } finally {
       setIsLoading(false);
     }
@@ -45,12 +45,12 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
         setIsLoading(true);
         const { data } = await gf.search(query, {
           limit: 20,
-          rating: 'g',
-          type: 'gifs',
+          rating: "g",
+          type: "gifs",
         });
         setGifs(data);
       } catch (error) {
-        console.error('Error searching GIFs:', error);
+        console.error("Error searching GIFs:", error);
       } finally {
         setIsLoading(false);
       }
@@ -89,7 +89,7 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
           placeholder="Search GIFs..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 w-full"
+          className="pl-10 w-full bg-gray-100"
         />
       </div>
 
@@ -102,20 +102,20 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
 
       {/* GIF Grid */}
       {!isLoading && gifs.length > 0 && (
-        <div className="grid grid-cols-2 gap-2 overflow-y-auto flex-1 pb-4">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 overflow-y-auto flex-1 pb-4">
           {gifs.map((gif) => (
             <div
               key={gif.id}
               className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
                 selectedGif?.id === gif.id
-                  ? 'ring-2 ring-primary ring-offset-2'
-                  : ''
+                  ? "ring-2 ring-primary ring-offset-2"
+                  : ""
               }`}
               onClick={() => handleGifClick(gif)}
             >
               <img
                 src={gif.images.fixed_width.webp}
-                alt={gif.title || 'GIF'}
+                alt={gif.title || "GIF"}
                 className="w-full h-full object-cover"
                 loading="lazy"
               />
