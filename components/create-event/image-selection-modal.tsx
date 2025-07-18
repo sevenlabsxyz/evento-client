@@ -1,14 +1,12 @@
-"use client";
+'use client';
 
-import { useState , useEffect} from "react";
-import { X } from "lucide-react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { coverImageCategories, CoverImage } from "@/lib/data/cover-images";
-import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
-import CoverUploader from "./cover-uploader";
-import ProgressiveImage from "@/components/ui/progressive-image";
+import ProgressiveImage from '@/components/ui/progressive-image';
+import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { useEffect, useState } from 'react';
+import GiphyPicker from '../giphy/giphy-picker';
+import CoverUploader from './cover-uploader';
 
 interface ImageSelectionModalProps {
   isOpen: boolean;
@@ -22,12 +20,13 @@ export default function ImageSelectionModal({
   onImageSelect,
 }: ImageSelectionModalProps) {
   const { setTopBar } = useTopBar();
+  const [activeTab, setActiveTab] = useState('featured');
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Select Image",
-      subtitle: "Choose your event photo",
+      title: 'Select Image',
+      subtitle: 'Choose your event photo',
     });
 
     return () => {
@@ -35,17 +34,14 @@ export default function ImageSelectionModal({
     };
   }, [setTopBar]);
 
-  const [activeTab, setActiveTab] = useState("featured");
-
-  if (!isOpen) return null;
-
   const activeCategory = coverImageCategories.find(
     (cat) => cat.id === activeTab
   );
   const images = activeCategory?.images || [];
 
-  const handleImageSelect = (image: CoverImage) => {
-    onImageSelect(image.url);
+  const handleImageSelect = (image: CoverImage | string) => {
+    const imageUrl = typeof image === 'string' ? image : image.url;
+    onImageSelect(imageUrl);
     onClose();
   };
 
@@ -54,12 +50,15 @@ export default function ImageSelectionModal({
     onClose();
   };
 
+  const isGifTab = activeTab === 'giphy';
+
+  if (!isOpen) return null;
+
   return (
     <div className="fixed inset-0 z-50 bg-white overflow-hidden">
-
       {/* Tab Navigation */}
       <div className="px-4 mb-4">
-        <div className="grid grid-cols-5 gap-2">
+        <div className="grid grid-cols-6 gap-2">
           {coverImageCategories.map((category) => {
             const IconComponent = category.icon;
             return (
@@ -67,13 +66,15 @@ export default function ImageSelectionModal({
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
                 className={`flex flex-col items-center space-y-2 py-2 px-1 ${
-                  activeTab === category.id ? "text-gray-900" : "text-gray-400"
+                  activeTab === category.id ? 'text-gray-900' : 'text-gray-400'
                 }`}
               >
                 <IconComponent className="w-6 h-6" />
-                <span className="text-xs font-medium text-center leading-tight">{category.name}</span>
+                <span className="text-xs font-medium text-center leading-tight">
+                  {category.name}
+                </span>
                 {activeTab === category.id && (
-                  <div className="w-full h-0.5 bg-gray-900 rounded-full"></div>
+                  <div className="w-full h-0.5 bg-gray-900 rounded-full" />
                 )}
               </button>
             );
@@ -84,38 +85,50 @@ export default function ImageSelectionModal({
       {/* Content Area */}
       <div
         className="flex-1 overflow-y-auto"
-        style={{ height: "calc(100vh - 200px)" }}
+        style={{ height: isGifTab ? '100vh' : 'calc(100vh - 200px)' }} // No need provisioning space for bottom action button if GIF tab is active
       >
         <div className="px-4 pb-24">
-          {/* Image Grid */}
-          <div className="grid grid-cols-2 gap-1">
-            {images.map((image) => (
-              <button
-                key={image.id}
-                onClick={() => handleImageSelect(image)}
-                className="relative aspect-square w-full h-auto rounded-2xl overflow-hidden hover:scale-105 transition-transform"
-              >
-                <ProgressiveImage
-                  src={getCoverImageUrl500x500(image.url)}
-                  alt={image.title || "Cover image"}
-                  fill
-                  className="object-cover"
-                />
-              </button>
-            ))}
-          </div>
+          {isGifTab ? (
+            <div className="h-full">
+              <GiphyPicker
+                onGifSelect={(gifUrl) => {
+                  onImageSelect(gifUrl);
+                  onClose();
+                }}
+              />
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-1">
+              {images.map((image) => (
+                <button
+                  key={image.id}
+                  onClick={() => handleImageSelect(image)}
+                  className="relative aspect-square w-full h-auto rounded-2xl overflow-hidden hover:scale-105 transition-transform"
+                >
+                  <ProgressiveImage
+                    src={getCoverImageUrl500x500(image.url)}
+                    alt={image.title || 'Cover image'}
+                    fill
+                    className="object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Bottom Action Button */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
-        <CoverUploader
-          onCoverUploaded={handleCoverUploaded}
-          className="w-full py-4 rounded-2xl font-semibold"
-          buttonText="Upload Custom Image"
-          buttonVariant="default"
-        />
-      </div>
+      {/* Bottom Action Button - Only show for non-GIF tabs */}
+      {!isGifTab && (
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200">
+          <CoverUploader
+            onCoverUploaded={handleCoverUploaded}
+            className="w-full py-4 rounded-2xl font-semibold"
+            buttonText="Upload Custom Image"
+            buttonVariant="default"
+          />
+        </div>
+      )}
     </div>
   );
 }

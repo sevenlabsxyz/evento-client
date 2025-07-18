@@ -1,15 +1,18 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import Image from 'next/image';
 import { Event } from '@/lib/types/event';
+import Image from 'next/image';
+import { useRef, useState } from 'react';
 
 interface SwipeableHeaderProps {
   event: Event;
   onImageClick: (index: number) => void;
 }
 
-export default function SwipeableHeader({ event, onImageClick }: SwipeableHeaderProps) {
+export default function SwipeableHeader({
+  event,
+  onImageClick,
+}: SwipeableHeaderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -40,7 +43,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
-    
+
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
@@ -76,18 +79,18 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
         onTouchEnd={onTouchEnd}
         onClick={handleImageClick}
       >
-        {/* Current Image */}
         <Image
           src={images[currentIndex]}
           alt={`${event.title} - Image ${currentIndex + 1}`}
           fill
           className="object-cover transition-transform duration-300 ease-out"
           priority
+          unoptimized={images[currentIndex]?.endsWith('.gif')} // Optimizing GIFs may impact performance
         />
-        
+
         {/* Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-        
+
         {/* Dot Indicators */}
         {hasMultipleImages && (
           <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex gap-2">
@@ -99,24 +102,20 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
                   setCurrentIndex(index);
                 }}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex 
-                    ? 'bg-white' 
-                    : 'bg-white/50'
+                  index === currentIndex ? 'bg-white' : 'bg-white/50'
                 }`}
               />
             ))}
           </div>
         )}
-        
+
         {/* Event Title and Subtitle */}
         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
           <h1 className="text-2xl font-bold mb-2 leading-tight">
             {event.title}
           </h1>
           {event.subtitle && (
-            <p className="text-lg opacity-90 leading-tight">
-              {event.subtitle}
-            </p>
+            <p className="text-lg opacity-90 leading-tight">{event.subtitle}</p>
           )}
         </div>
       </div>

@@ -1,6 +1,13 @@
-import React from "react";
-import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from "lucide-react";
-import { DEFAULT_COVERS } from "@/components/event-covers";
+import React from 'react';
+import {
+  Cpu,
+  Crown,
+  MessagesSquare,
+  PartyPopper,
+  Sparkles,
+} from 'lucide-react';
+import { DEFAULT_COVERS } from '@/components/event-covers';
+import GiphyIcon from '@/components/icons/giphy-icon';
 
 export interface CoverImage {
   id: string;
@@ -18,7 +25,10 @@ export interface CoverImageCategory {
 }
 
 // Helper function to convert legacy cover format to new format
-function convertLegacyCovers(legacyCovers: { url: string }[], categoryName: string): CoverImage[] {
+function convertLegacyCovers(
+  legacyCovers: { url: string }[],
+  categoryName: string
+): CoverImage[] {
   return legacyCovers.map((cover, index) => ({
     id: `${categoryName.toLowerCase()}-${index + 1}`,
     url: cover.url,
@@ -29,35 +39,41 @@ function convertLegacyCovers(legacyCovers: { url: string }[], categoryName: stri
 
 export const coverImageCategories: CoverImageCategory[] = [
   {
-    id: "featured",
-    name: "Featured",
+    id: 'featured',
+    name: 'Featured',
     icon: Crown,
     featured: true,
-    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, "Featured"),
+    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, 'Featured'),
   },
   {
-    id: "party",
-    name: "Party",
+    id: 'party',
+    name: 'Party',
     icon: PartyPopper,
-    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, "Party"),
+    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, 'Party'),
   },
   {
-    id: "social",
-    name: "Social",
+    id: 'social',
+    name: 'Social',
     icon: MessagesSquare,
-    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, "Social"),
+    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, 'Social'),
   },
   {
-    id: "classic",
-    name: "Classic",
+    id: 'classic',
+    name: 'Classic',
     icon: Sparkles,
-    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, "Classic"),
+    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'Classic'),
   },
   {
-    id: "tech",
-    name: "Tech",
+    id: 'tech',
+    name: 'Tech',
     icon: Cpu,
-    images: convertLegacyCovers(DEFAULT_COVERS.TECH, "Tech"),
+    images: convertLegacyCovers(DEFAULT_COVERS.TECH, 'Tech'),
+  },
+  {
+    id: 'giphy',
+    name: 'GIFs',
+    icon: GiphyIcon,
+    images: [], // No static images, will be loaded dynamically
   },
 ];
 
