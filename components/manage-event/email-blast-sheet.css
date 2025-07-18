@@ -1,0 +1,360 @@
+.EmailBlastSheet-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  border-radius: 16px 16px 0 0;
+}
+
+.EmailBlastSheet-header {
+  flex-shrink: 0;
+  padding: 0 16px 16px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.EmailBlastSheet-handle {
+  width: 36px;
+  height: 4px;
+  background: #d1d5db;
+  border-radius: 2px;
+}
+
+.EmailBlastSheet-headerBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.EmailBlastSheet-headerTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.EmailBlastSheet-headerButton {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.EmailBlastSheet-headerButton--cancel {
+  background: transparent;
+  color: #6b7280;
+}
+
+.EmailBlastSheet-headerButton--cancel:hover {
+  background: #f3f4f6;
+}
+
+.EmailBlastSheet-tabs {
+  display: flex;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 4px;
+}
+
+.EmailBlastSheet-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.EmailBlastSheet-tab:hover {
+  background: #e5e7eb;
+}
+
+.EmailBlastSheet-tab--active {
+  background: white;
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.EmailBlastSheet-scrollView {
+  flex: 1;
+  overflow: auto;
+}
+
+.EmailBlastSheet-scrollContent {
+  padding: 16px;
+}
+
+/* Compose Tab Styles */
+.EmailBlastCompose-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.EmailBlastCompose-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.EmailBlastCompose-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.EmailBlastCompose-recipientDescription {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.EmailBlastCompose-select,
+.EmailBlastCompose-input {
+  padding: 12px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #111827;
+  background: white;
+  transition: border-color 0.2s;
+}
+
+.EmailBlastCompose-select:focus,
+.EmailBlastCompose-input:focus {
+  outline: none;
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.EmailBlastCompose-editor {
+  min-height: 200px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  position: relative;
+}
+
+.EmailBlastCompose-editor:focus-within {
+  border-color: #ef4444;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Editor placeholder styles */
+.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+.EmailBlastCompose-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.EmailBlastCompose-button {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.EmailBlastCompose-button--send {
+  background: #ef4444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.EmailBlastCompose-button--send:hover {
+  background: #dc2626;
+}
+
+.EmailBlastCompose-button--send:disabled {
+  background: #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Email Blast History States */
+.EmailBlastHistory-loading,
+.EmailBlastHistory-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+
+.EmailBlastHistory-loading {
+  color: #6b7280;
+}
+
+.EmailBlastHistory-error {
+  color: #dc2626;
+}
+
+.EmailBlastCompose-button--cancel {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.EmailBlastCompose-button--cancel:hover {
+  background: #e5e7eb;
+}
+
+/* History Tab Styles */
+.EmailBlastHistory-empty {
+  text-align: center;
+  padding: 48px 16px;
+}
+
+.EmailBlastHistory-emptyIcon {
+  width: 64px;
+  height: 64px;
+  background: #f3f4f6;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px;
+}
+
+.EmailBlastHistory-emptyTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.EmailBlastHistory-emptyDescription {
+  color: #6b7280;
+  margin-bottom: 24px;
+}
+
+.EmailBlastHistory-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.EmailBlastHistory-item {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.EmailBlastHistory-item:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.EmailBlastHistory-itemHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.EmailBlastHistory-itemTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.EmailBlastHistory-itemRecipients {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.EmailBlastHistory-status {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.EmailBlastHistory-status--delivered {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.EmailBlastHistory-status--pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.EmailBlastHistory-status--failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.EmailBlastHistory-itemFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.EmailBlastHistory-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.EmailBlastHistory-stat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.EmailBlastHistory-statDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.EmailBlastHistory-statDot--delivered {
+  background: #10b981;
+}
+
+.EmailBlastHistory-statDot--failed {
+  background: #ef4444;
+}
+
+.EmailBlastHistory-statDot--pending {
+  background: #f59e0b;
+}

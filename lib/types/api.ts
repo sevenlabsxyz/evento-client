@@ -189,7 +189,12 @@ export interface Follow {
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'event_invite' | 'event_comment' | 'event_rsvp' | 'user_follow' | 'event_reminder';
+  type:
+    | 'event_invite'
+    | 'event_comment'
+    | 'event_rsvp'
+    | 'user_follow'
+    | 'event_reminder';
   title: string;
   message: string;
   read: boolean;
@@ -217,6 +222,33 @@ export interface SearchResults {
 // Event with populated user details (for feed, etc.)
 export interface EventWithUser extends Event {
   user_details: UserDetails;
+}
+
+// Email Blast
+export interface EmailBlast {
+  id: string;
+  event_id: string;
+  user_id: string;
+  message: string;
+  recipient_filter: 'all' | 'yes_only' | 'yes_and_maybe';
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+  scheduled_for: string | null;
+  created_at: string;
+  updated_at: string;
+  // Additional fields for UI display
+  subject?: string;
+  recipients?: string;
+  recipientCount?: number;
+  delivered?: number;
+  failed?: number;
+  pending?: number;
+}
+
+// Email Blast creation form
+export interface CreateEmailBlastForm {
+  message: string;
+  recipientFilter: EmailBlastRecipientFilter;
+  scheduledFor?: string | null;
 }
 
 // Utility types
