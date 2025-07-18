@@ -56,6 +56,7 @@ const SheetWithDetentRoot = React.forwardRef<
   );
 });
 SheetWithDetentRoot.displayName = 'SheetWithDetent.Root';
+SheetWithDetentRoot.displayName = 'SheetWithDetent.Root';
 
 // ================================================================================================
 // View
@@ -104,10 +105,10 @@ const SheetWithDetentView = React.forwardRef<
     return (
       <Sheet.View
         className={`SheetWithDetent-view ${className ?? ''}`.trim()}
-        detents={!reachedLastDetent ? '66vh' : undefined}
         swipeOvershoot={false}
         nativeEdgeSwipePrevention={true}
         onTravelStatusChange={(travelStatus) => {
+          if (travelStatus === 'idleOutside') setReachedLastDetent(false);
           if (travelStatus === 'idleOutside') setReachedLastDetent(false);
           onTravelStatusChange?.(travelStatus);
         }}
@@ -124,6 +125,7 @@ const SheetWithDetentView = React.forwardRef<
     );
   }
 );
+SheetWithDetentView.displayName = 'SheetWithDetent.View';
 SheetWithDetentView.displayName = 'SheetWithDetent.View';
 
 // ================================================================================================
@@ -144,6 +146,7 @@ const SheetWithDetentBackdrop = React.forwardRef<
   );
 });
 SheetWithDetentBackdrop.displayName = 'SheetWithDetent.Backdrop';
+SheetWithDetentBackdrop.displayName = 'SheetWithDetent.Backdrop';
 
 // ================================================================================================
 // Content
@@ -163,6 +166,7 @@ const SheetWithDetentContent = React.forwardRef<
     </Sheet.Content>
   );
 });
+SheetWithDetentContent.displayName = 'SheetWithDetent.Content';
 SheetWithDetentContent.displayName = 'SheetWithDetent.Content';
 
 // ================================================================================================
@@ -185,6 +189,7 @@ const SheetWithDetentHandle = React.forwardRef<
   );
 });
 SheetWithDetentHandle.displayName = 'SheetWithDetent.Handle';
+SheetWithDetentHandle.displayName = 'SheetWithDetent.Handle';
 
 // ================================================================================================
 // Scroll Root
@@ -200,6 +205,7 @@ const SheetWithDetentScrollRoot = React.forwardRef<
     </Scroll.Root>
   );
 });
+SheetWithDetentScrollRoot.displayName = 'SheetWithDetent.ScrollRoot';
 SheetWithDetentScrollRoot.displayName = 'SheetWithDetent.ScrollRoot';
 
 // ================================================================================================
@@ -227,6 +233,7 @@ const SheetWithDetentScrollView = React.forwardRef<
   );
 });
 SheetWithDetentScrollView.displayName = 'SheetWithDetent.ScrollView';
+SheetWithDetentScrollView.displayName = 'SheetWithDetent.ScrollView';
 
 // ================================================================================================
 // Scroll Content
@@ -246,6 +253,7 @@ const SheetWithDetentScrollContent = React.forwardRef<
     </Scroll.Content>
   );
 });
+SheetWithDetentScrollContent.displayName = 'SheetWithDetent.ScrollContent';
 SheetWithDetentScrollContent.displayName = 'SheetWithDetent.ScrollContent';
 
 // ================================================================================================
