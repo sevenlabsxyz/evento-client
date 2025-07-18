@@ -5,6 +5,7 @@ import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
+import { getPostAuthRedirectUrl } from '../utils/onboarding';
 
 // Key for user query
 const USER_QUERY_KEY = ['auth', 'user'] as const;
@@ -155,8 +156,9 @@ export function useVerifyCode() {
       // Invalidate user query to ensure fresh data
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
-      // Redirect to home
-      router.push('/');
+      // Redirect to appropriate page (onboarding for new users, home for existing)
+      const redirectUrl = getPostAuthRedirectUrl(data);
+      router.push(redirectUrl);
     },
   });
 
@@ -203,15 +205,16 @@ export function useRequireAuth(redirectTo = '/auth/login') {
 /**
  * Hook to redirect authenticated users away from auth pages
  */
-export function useRedirectIfAuthenticated(redirectTo = '/') {
-  const { isAuthenticated, isLoading } = useAuth();
+export function useRedirectIfAuthenticated(redirectTo?: string) {
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && isAuthenticated) {
-      router.push(redirectTo);
+    if (!isLoading && isAuthenticated && user) {
+      const finalRedirectTo = redirectTo || getPostAuthRedirectUrl(user);
+      router.push(finalRedirectTo);
     }
-  }, [isAuthenticated, isLoading, router, redirectTo]);
+  }, [isAuthenticated, isLoading, router, redirectTo, user]);
 
   return { isAuthenticated, isLoading };
 }

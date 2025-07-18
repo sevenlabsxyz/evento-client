@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { authService } from '@/lib/services/auth';
+import { getPostAuthRedirectUrl } from '@/lib/utils/onboarding';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -39,9 +40,10 @@ export default function AuthCallbackPage() {
             setUser(user);
             setStatus('success');
             
-            // Redirect to home after brief success message
+            // Redirect to appropriate page (onboarding for new users, home for existing)
+            const redirectUrl = getPostAuthRedirectUrl(user);
             setTimeout(() => {
-              router.push('/');
+              router.push(redirectUrl);
             }, 1500);
           } else {
             throw new Error('Failed to get user information');
@@ -54,8 +56,9 @@ export default function AuthCallbackPage() {
           if (user) {
             setUser(user);
             setStatus('success');
+            const redirectUrl = getPostAuthRedirectUrl(user);
             setTimeout(() => {
-              router.push('/');
+              router.push(redirectUrl);
             }, 1500);
           } else {
             throw new Error('No authentication found');
