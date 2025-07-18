@@ -1,5 +1,6 @@
 'use client';
 
+import { Env } from '@/lib/constants/env';
 import { Event } from '@/lib/types/event';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
@@ -15,7 +16,7 @@ export default function EventLocation({ event }: EventLocationProps) {
     event.location.state || ''
   } ${event.location.zipCode || ''}`.trim();
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${
-    process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+    Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   }&q=${encodeURIComponent(fullAddress)}&zoom=15&maptype=roadmap`;
 
   const handleOpenMaps = (provider: 'apple' | 'google') => {
