@@ -5,7 +5,11 @@ import { Button } from '@/components/ui/button';
 import { EventWithUser } from '@/lib/types/api';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
-import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
+import {
+  getOptimizedAvatarUrl,
+  getOptimizedCoverUrl,
+  isGif,
+} from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
   Bookmark,
@@ -140,7 +144,11 @@ export function EventCard({
       {/* Event Image - Square aspect ratio */}
       <div className="relative">
         <img
-          src={getOptimizedCoverUrl(event.cover || '', 'feed')}
+          src={
+            isGif(event.cover)
+              ? event.cover
+              : getOptimizedCoverUrl(event.cover || '', 'feed')
+          } // For GIFs, use a regular img tag to ensure they play automatically
           alt={event.title}
           className="w-full aspect-square object-cover cursor-pointer"
           onClick={handleEventClick}

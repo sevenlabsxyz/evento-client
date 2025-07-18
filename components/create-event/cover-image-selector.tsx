@@ -1,28 +1,44 @@
 'use client';
 
-import { Camera } from 'lucide-react';
-import Image from 'next/image';
-import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import ProgressiveImage from '@/components/ui/progressive-image';
+import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { isGif } from '@/lib/utils/image';
+import { Camera } from 'lucide-react';
 
 interface CoverImageSelectorProps {
   selectedImage?: string;
   onImageClick: () => void;
 }
 
-export default function CoverImageSelector({ selectedImage, onImageClick }: CoverImageSelectorProps) {
+export default function CoverImageSelector({
+  selectedImage,
+  onImageClick,
+}: CoverImageSelectorProps) {
   return (
-    <div 
+    <div
       className="relative w-full aspect-square bg-gradient-to-br from-pink-300 to-pink-400 rounded-2xl overflow-hidden cursor-pointer"
       onClick={onImageClick}
     >
       {selectedImage ? (
-        <ProgressiveImage
-          src={getCoverImageUrl500x500(selectedImage)}
-          alt="Selected cover image"
-          fill
-          className="object-cover"
-        />
+        <div className="w-full h-full">
+          {isGif(selectedImage) ? (
+            // For GIFs, use a regular img tag to ensure they play automatically
+            <img
+              src={selectedImage}
+              alt="Selected GIF cover"
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          ) : (
+            // For regular images, use the ProgressiveImage component
+            <ProgressiveImage
+              src={getCoverImageUrl500x500(selectedImage)}
+              alt="Selected cover image"
+              fill
+              className="object-cover"
+            />
+          )}
+        </div>
       ) : (
         // Default sunny character placeholder matching the screenshot
         <div className="flex items-center justify-center h-full">
@@ -34,12 +50,12 @@ export default function CoverImageSelector({ selectedImage, onImageClick }: Cove
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-yellow-500 rounded-full"></div>
               <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-8 h-1 bg-yellow-500 rounded-full"></div>
               <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 w-8 h-1 bg-yellow-500 rounded-full"></div>
-              
+
               {/* Face */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-4xl">😎</div>
               </div>
-              
+
               {/* Arms and legs (simplified) */}
               <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gray-700 rounded-full"></div>
               <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gray-700 rounded-full"></div>
@@ -49,7 +65,7 @@ export default function CoverImageSelector({ selectedImage, onImageClick }: Cove
           </div>
         </div>
       )}
-      
+
       {/* Camera icon in bottom right */}
       <div className="absolute bottom-4 right-4 w-10 h-10 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
         <Camera className="w-5 h-5 text-white" />
