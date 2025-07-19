@@ -31,7 +31,6 @@ export default function LocationSheet({
   onClose,
   onLocationSelect,
   selectedLocation,
-  selectedLocation,
 }: LocationSheetProps) {
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -132,10 +131,7 @@ export default function LocationSheet({
   return (
     <SheetWithDetent.Root
       presented={isOpen}
-    <SheetWithDetent.Root
-      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
-      activeDetent={activeDetent}
       activeDetent={activeDetent}
       onActiveDetentChange={setActiveDetent}
     >
@@ -168,7 +164,6 @@ export default function LocationSheet({
                 <SheetWithDetent.ScrollContent className="LocationSheet-scrollContent">
                   {/* Current Location Option */}
                   <button
-                  <button
                     onClick={handleCurrentLocation}
                     className="LocationSheet-locationItem LocationSheet-currentLocation"
                   >
@@ -176,9 +171,6 @@ export default function LocationSheet({
                       <MapPin className="LocationSheet-icon" />
                     </div>
                     <div className="LocationSheet-locationDetails">
-                      <div className="LocationSheet-locationName">
-                        Use current location
-                      </div>
                       <div className="LocationSheet-locationName">
                         Use current location
                       </div>
@@ -239,9 +231,6 @@ export default function LocationSheet({
                       <div className="LocationSheet-sectionTitle">
                         Suggested
                       </div>
-                      <div className="LocationSheet-sectionTitle">
-                        Suggested
-                      </div>
                       {placesResults.slice(0, 4).map((location, index) => (
                         <button
                           key={index}
@@ -264,14 +253,6 @@ export default function LocationSheet({
                       ))}
                     </>
                   )}
-
-                  {searchQuery &&
-                    filteredLocations.length === 0 &&
-                    !searchQuery.trim() && (
-                      <div className="LocationSheet-noResults">
-                        No locations found
-                      </div>
-                    )}
 
                   {searchQuery &&
                     filteredLocations.length === 0 &&

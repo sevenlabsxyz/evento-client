@@ -1,4 +1,5 @@
 import { BlogPostClient } from "@/components/blog/BlogPostClient";
+import { Env } from "@/lib/constants/env";
 import GhostContentAPI from "@tryghost/content-api";
 import { AlertTriangle } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -25,22 +26,18 @@ const Loading = () => (
   </div>
 );
 
-// Check for required environment variables
-const GHOST_URL = process.env.GHOST_URL;
-const GHOST_CONTENT_API_KEY = process.env.GHOST_CONTENT_API_KEY;
-
 // Only initialize the API if environment variables are present
 const api =
-  GHOST_URL && GHOST_CONTENT_API_KEY
+  Env.GHOST_URL && Env.GHOST_CONTENT_API_KEY
     ? new GhostContentAPI({
-        url: GHOST_URL,
-        key: GHOST_CONTENT_API_KEY,
+        url: Env.GHOST_URL,
+        key: Env.GHOST_CONTENT_API_KEY,
         version: "v5.0",
         makeRequest: async ({ url, method, params, headers }: any) => {
           const apiUrl = new URL(url);
 
           Object.keys(params).map((key) =>
-            apiUrl.searchParams.set(key, encodeURIComponent(params[key])),
+            apiUrl.searchParams.set(key, encodeURIComponent(params[key]))
           );
 
           try {

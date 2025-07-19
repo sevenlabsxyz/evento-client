@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { Env } from '@/lib/constants/env';
+import { NextResponse } from 'next/server';
 
 // Use the backend target URL directly for server-side requests
-const API_BASE_URL =
-  process.env.API_PROXY_TARGET || "http://localhost:3002/api";
+const API_BASE_URL = Env.API_PROXY_TARGET;
 
 export async function apiRequest(
   method: string,
@@ -19,7 +19,7 @@ export async function apiRequest(
 
     // Prepare headers for the backend request
     const headers: HeadersInit = {
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
       cookie: cookieHeader,
     };
 
@@ -70,10 +70,10 @@ export async function apiRequest(
     console.error("Target URL was:", `${API_BASE_URL}${path}`);
     return NextResponse.json(
       {
-        error: "Failed to proxy request",
-        details: error instanceof Error ? error.message : "Unknown error",
+        error: 'Failed to proxy request',
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

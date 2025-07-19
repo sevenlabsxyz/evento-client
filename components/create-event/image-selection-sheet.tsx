@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
+import GiphyPicker from "@/components/giphy/giphy-picker";
 import ProgressiveImage from "@/components/ui/progressive-image";
 import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
 import { CoverImage, coverImageCategories } from "@/lib/data/cover-images";
 import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
 import { VisuallyHidden } from "@silk-hq/components";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import CoverUploader from "./cover-uploader";
 import "./image-selection-sheet.css";
 
@@ -20,11 +21,10 @@ export default function ImageSelectionSheet({
   onClose,
   onImageSelect,
 }: ImageSelectionSheetProps) {
-  const [activeTab, setActiveTab] = useState('featured');
-  // No longer need activeDetent as it always opens at full height
+  const [activeTab, setActiveTab] = useState("featured");
 
   const activeCategory = coverImageCategories.find(
-    (cat) => cat.id === activeTab,
+    (cat) => cat.id === activeTab
   );
   const images = activeCategory?.images || [];
 
@@ -38,9 +38,15 @@ export default function ImageSelectionSheet({
     onClose();
   };
 
+  const handleGifSelect = useCallback(
+    (gifUrl: string) => {
+      onImageSelect(gifUrl);
+      onClose();
+    },
+    [onImageSelect, onClose]
+  );
+
   return (
-    <SheetWithDetentFull.Root
-      presented={isOpen}
     <SheetWithDetentFull.Root
       presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
@@ -109,39 +115,46 @@ export default function ImageSelectionSheet({
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView className="ImageSelectionSheet-scrollView">
                 <SheetWithDetentFull.ScrollContent className="ImageSelectionSheet-scrollContent">
-                  <div className="ImageSelectionSheet-imageGrid">
-                    {images.map((image) => (
-                      <button
-                        key={image.id}
-                        onClick={() => handleImageSelect(image)}
-                        className="ImageSelectionSheet-imageButton"
-                      >
-                        <ProgressiveImage
-                          src={getCoverImageUrl500x500(image.url)}
-                          alt={image.title || 'Cover image'}
-                          fill
-                          className="ImageSelectionSheet-image"
-                        />
-                      </button>
-                    ))}
-                  </div>
+                  {activeTab === "giphy" ? (
+                    <div className="h-full w-full">
+                      <GiphyPicker onGifSelect={handleGifSelect} />
+                    </div>
+                  ) : (
+                    <div className="ImageSelectionSheet-imageGrid">
+                      {images.map((image) => (
+                        <button
+                          key={image.id}
+                          onClick={() => handleImageSelect(image)}
+                          className="ImageSelectionSheet-imageButton"
+                        >
+                          <ProgressiveImage
+                            src={getCoverImageUrl500x500(image.url)}
+                            alt={image.title || "Cover image"}
+                            fill
+                            className="ImageSelectionSheet-image"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </SheetWithDetentFull.ScrollContent>
               </SheetWithDetentFull.ScrollView>
             </SheetWithDetentFull.ScrollRoot>
 
-            {/* Fixed Footer */}
-            <div className="ImageSelectionSheet-footer">
-              <CoverUploader
-                onCoverUploaded={handleCoverUploaded}
-                className="ImageSelectionSheet-uploadButton"
-                buttonText="Upload Custom Image"
-                buttonVariant="default"
-              />
-            </div>
+            {/* Custom Image Upload - Only show for non-GIF tabs */}
+            {activeTab !== "giphy" && (
+              <div className="ImageSelectionSheet-footer">
+                <CoverUploader
+                  onCoverUploaded={handleCoverUploaded}
+                  className="ImageSelectionSheet-uploadButton"
+                  buttonText="Upload Custom Image"
+                  buttonVariant="default"
+                />
+              </div>
+            )}
           </SheetWithDetentFull.Content>
         </SheetWithDetentFull.View>
       </SheetWithDetentFull.Portal>
     </SheetWithDetentFull.Root>
   );
 }
-

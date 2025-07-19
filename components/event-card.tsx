@@ -3,8 +3,13 @@
 import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { Button } from "@/components/ui/button";
 import { EventWithUser } from "@/lib/types/api";
+import { htmlToPlainText } from "@/lib/utils/content";
 import { formatEventDate, getRelativeTime } from "@/lib/utils/date";
-import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from "@/lib/utils/image";
+import {
+  getOptimizedAvatarUrl,
+  getOptimizedCoverUrl,
+  isGif,
+} from "@/lib/utils/image";
 import { toast } from "@/lib/utils/toast";
 import {
   Bookmark,
@@ -35,14 +40,14 @@ export function EventCard({
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(
     event.computed_start_date,
-    event.timezone,
+    event.timezone
   );
   const timeAgo = getRelativeTime(event.created_at);
 
   const getDropdownItems = (
     eventId: string,
     userName: string,
-    userUsername: string,
+    userUsername: string
   ) => [
     {
       label: "Share Event",
@@ -57,7 +62,7 @@ export function EventCard({
               text: `Check out this event: ${event.title}`,
               url: eventUrl,
             });
-          } catch (error) {
+          } catch (error: any) {
             // User cancelled the share or an error occurred
             if (error.name !== "AbortError") {
               // Fallback to clipboard copy
@@ -125,7 +130,7 @@ export function EventCard({
           items={getDropdownItems(
             event.id,
             event.user_details.name || event.user_details.username,
-            event.user_details.username,
+            event.user_details.username
           )}
           align="right"
           width="w-56"
@@ -135,7 +140,11 @@ export function EventCard({
       {/* Event Image - Square aspect ratio */}
       <div className="relative">
         <img
-          src={getOptimizedCoverUrl(event.cover || "", "feed")}
+          src={
+            isGif(event.cover)
+              ? event.cover
+              : getOptimizedCoverUrl(event.cover || "", "feed")
+          } // For GIFs, use a regular img tag to ensure they play automatically
           alt={event.title}
           className="aspect-square w-full cursor-pointer object-cover"
           onClick={handleEventClick}
@@ -175,7 +184,7 @@ export function EventCard({
         {/* Event Description (if exists) */}
         {event.description && (
           <p className="mb-4 line-clamp-3 text-sm text-gray-700">
-            {event.description}
+            {htmlToPlainText(event.description)}
           </p>
         )}
 

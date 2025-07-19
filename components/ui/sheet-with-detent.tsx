@@ -26,7 +26,7 @@ const useSheetWithDetentContext = () => {
   const context = useContext(SheetWithDetentContext);
   if (!context) {
     throw new Error(
-      "useSheetWithDetentContext must be used within a SheetWithDetentContextProvider",
+      "useSheetWithDetentContext must be used within a SheetWithDetentContextProvider"
     );
   }
   return context;
@@ -81,7 +81,7 @@ const SheetWithDetentView = React.forwardRef<
       onTravel,
       ...restProps
     },
-    ref,
+    ref
   ) => {
     const { reachedLastDetent, setReachedLastDetent, viewRef } =
       useSheetWithDetentContext();
@@ -119,7 +119,6 @@ const SheetWithDetentView = React.forwardRef<
     return (
       <Sheet.View
         className={`SheetWithDetent-view ${className ?? ""}`.trim()}
-        detents={!reachedLastDetent ? "66vh" : undefined}
         swipeOvershoot={false}
         nativeEdgeSwipePrevention={true}
         onTravelStatusChange={(travelStatus) => {
@@ -137,7 +136,7 @@ const SheetWithDetentView = React.forwardRef<
         {children}
       </Sheet.View>
     );
-  },
+  }
 );
 SheetWithDetentView.displayName = "SheetWithDetent.View";
 

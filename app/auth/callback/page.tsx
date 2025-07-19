@@ -10,9 +10,8 @@ import { useEffect, useState } from "react";
 export default function AuthCallbackPage() {
   const router = useRouter();
   const { setUser } = useAuthStore();
-  const [status, setStatus] =
-    (useState < "loading") | "success" | ("error" > "loading");
-  const [error, setError] = (useState < string) | (null > null);
+  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleAuthCallback = async () => {

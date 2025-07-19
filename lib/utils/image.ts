@@ -8,7 +8,7 @@
 export function getOptimizedImageUrl(
   url: string,
   size: number = 500,
-  quality: number = 80,
+  quality: number = 80
 ): string {
   if (!url) {
     return "/placeholder.svg";
@@ -22,6 +22,15 @@ export function getOptimizedImageUrl(
   // For Supabase storage URLs, add transformation parameters
   // Let height auto-adjust to maintain aspect ratio
   return `https://api.evento.so/storage/v1/object/public/cdn/${url}?width=${size}&quality=${quality}`;
+}
+
+/**
+ * Check if the URL is a GIF
+ * @param url - Image URL
+ * @returns true if the URL is a GIF, false otherwise
+ */
+export function isGif(url: string): boolean {
+  return url.endsWith('.gif') || url.includes('media.giphy.com');
 }
 
 /**
@@ -56,8 +65,8 @@ export function getOptimizedAvatarUrl(url: string): string {
  */
 export function getOptimizedCoverUrl(
   url: string,
-  size: "feed" | "detail" = "feed",
+  size: 'feed' | 'detail' = 'feed'
 ): string {
-  const imageSize = size === "feed" ? ImageSizes.MEDIUM : ImageSizes.LARGE;
+  const imageSize = size === 'feed' ? ImageSizes.MEDIUM : ImageSizes.LARGE;
   return getOptimizedImageUrl(url, imageSize, 80);
 }

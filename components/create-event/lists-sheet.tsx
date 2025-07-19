@@ -15,11 +15,6 @@ export default function ListsSheet({
   onClose,
   editor,
 }: ListsSheetProps) {
-export default function ListsSheet({
-  isOpen,
-  onClose,
-  editor,
-}: ListsSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -61,7 +56,6 @@ export default function ListsSheet({
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  );
   );
 }
 

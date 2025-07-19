@@ -1,4 +1,5 @@
 "use client";
+import { isGif } from "@/lib/utils/image";
 import { Scroll, VisuallyHidden } from "@silk-hq/components";
 import Image from "next/image";
 import React, { useEffect, useImperativeHandle, useRef } from "react";
@@ -32,7 +33,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
       comments = [],
       onClose,
     },
-    ref,
+    ref
   ) => {
     const [currentIndex, setCurrentIndex] = React.useState(initialIndex);
     const triggerRef = useRef<HTMLButtonElement>(null);
@@ -49,7 +50,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
           // The lightbox will close naturally via DismissTrigger
         },
       }),
-      [initialIndex],
+      [initialIndex]
     );
 
     useEffect(() => {
@@ -99,11 +100,11 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
     };
 
     const sideContent = showComments && comments.length > 0 && (
-      <ul className="m-0 space-y-5 px-4 py-4">
+      <ul className="m-0 px-4 py-4 space-y-5">
         {comments.map((comment) => (
           <li key={comment.id} className="flex gap-2">
-            <div className="h-9 w-9 flex-shrink-0 rounded-full border border-black/5 bg-gradient-to-br from-teal-400 to-teal-300" />
-            <div className="flex flex-col gap-1 rounded-2xl bg-gray-800 px-3 py-2">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-400 to-teal-300 border border-black/5 flex-shrink-0" />
+            <div className="flex flex-col gap-1 bg-gray-800 rounded-2xl px-3 py-2">
               <div className="text-sm font-bold text-gray-100">
                 {comment.username}
               </div>
@@ -132,10 +133,11 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
                 alt={`${eventTitle} - Image ${currentIndex + 1}`}
                 width={1200}
                 height={1200}
-                className="max-h-full max-w-full cursor-pointer object-contain"
+                className="max-w-full max-h-full object-contain cursor-pointer"
                 priority
                 draggable={false}
                 onClick={handleImageClick}
+                unoptimized={isGif(images[currentIndex])}
               />
             </Lightbox.Content>
 
@@ -161,7 +163,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
 
             {/* Image counter for multiple images */}
             {images.length > 1 && (
-              <div className="fixed right-2 top-2 z-10 rounded-full bg-black/50 px-3 py-1 text-sm text-white">
+              <div className="fixed top-2 right-2 z-10 px-3 py-1 bg-black/50 rounded-full text-white text-sm">
                 {currentIndex + 1} of {images.length}
               </div>
             )}
@@ -247,7 +249,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
         </Lightbox.Portal>
       </Lightbox.Root>
     );
-  },
+  }
 );
 
 SilkLightbox.displayName = "SilkLightbox";

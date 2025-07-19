@@ -1,11 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { Env } from '@/lib/constants/env';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Mark this route as dynamic since it uses dynamic parameters
 export const dynamic = "force-dynamic";
-
-// API proxy configuration
-const API_PROXY_TARGET =
-  process.env.API_PROXY_TARGET || "https://evento.so/api";
 
 // Helper to create error response
 function errorResponse(message: string, status: number = 500) {
@@ -19,8 +16,8 @@ async function handler(
 ) {
   try {
     // Reconstruct the path
-    const path = params.path?.join("/") || "";
-    const targetUrl = `${API_PROXY_TARGET}/${path}`;
+    const path = params.path?.join('/') || '';
+    const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
 
     // Get query parameters
     const queryString = request.nextUrl.search;
@@ -61,10 +58,10 @@ async function handler(
     };
 
     // Add body for non-GET requests
-    if (request.method !== "GET" && request.method !== "HEAD") {
-      const contentType = request.headers.get("content-type");
+    if (request.method !== 'GET' && request.method !== 'HEAD') {
+      const contentType = request.headers.get('content-type');
 
-      if (contentType?.includes("application/json")) {
+      if (contentType?.includes('application/json')) {
         try {
           const body = await request.json();
           options.body = JSON.stringify(body);
@@ -102,13 +99,13 @@ async function handler(
     // IMPORTANT: Forward Set-Cookie headers for session management
     const setCookieHeaders = response.headers.getSetCookie();
     setCookieHeaders.forEach((cookie) => {
-      responseHeaders.append("set-cookie", cookie);
+      responseHeaders.append('set-cookie', cookie);
     });
 
     // Handle different response types
-    const contentType = response.headers.get("content-type");
+    const contentType = response.headers.get('content-type');
 
-    if (contentType?.includes("application/json")) {
+    if (contentType?.includes('application/json')) {
       const data = await response.json();
       return NextResponse.json(data, {
         status: response.status,
@@ -125,8 +122,10 @@ async function handler(
   } catch (error) {
     console.error("Proxy error:", error);
     return errorResponse(
-      `Proxy error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      500,
+      `Proxy error: ${
+        error instanceof Error ? error.message : 'Unknown error'
+      }`,
+      500
     );
   }
 }

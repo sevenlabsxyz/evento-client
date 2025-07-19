@@ -196,9 +196,6 @@ export default function DescriptionSheet({
                   <h1 className="DescriptionSheet-headerTitle">
                     Edit Description
                   </h1>
-                  <h1 className="DescriptionSheet-headerTitle">
-                    Edit Description
-                  </h1>
                   <button
                     onClick={handleSave}
                     className="DescriptionSheet-headerButton DescriptionSheet-headerButton--save"
@@ -239,33 +236,6 @@ export default function DescriptionSheet({
                         <SectionFour
                           editor={editor}
                           onOpenSheet={handleOpenSheet}
-                        <SectionOne
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
-                        />
-                        <Separator
-                          orientation="vertical"
-                          className="mx-2 h-7"
-                        />
-                        <SectionTwo
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
-                        />
-                        <Separator
-                          orientation="vertical"
-                          className="mx-2 h-7"
-                        />
-                        <SectionThree
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
-                        />
-                        <Separator
-                          orientation="vertical"
-                          className="mx-2 h-7"
-                        />
-                        <SectionFour
-                          editor={editor}
-                          onOpenSheet={handleOpenSheet}
                           onOpenLinkEditSheet={onOpenLinkEditSheet}
                         />
                       </>
@@ -278,8 +248,6 @@ export default function DescriptionSheet({
               <SheetWithDetentFull.ScrollRoot asChild>
                 <SheetWithDetentFull.ScrollView className="DescriptionSheet-scrollView">
                   <SheetWithDetentFull.ScrollContent className="DescriptionSheet-scrollContent">
-                    <EditorContent
-                      editor={editor}
                     <EditorContent
                       editor={editor}
                       className="DescriptionSheet-editor"

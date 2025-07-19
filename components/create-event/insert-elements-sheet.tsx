@@ -14,11 +14,6 @@ export default function InsertElementsSheet({
   onClose,
   editor,
 }: InsertElementsSheetProps) {
-export default function InsertElementsSheet({
-  isOpen,
-  onClose,
-  editor,
-}: InsertElementsSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -57,7 +52,6 @@ export default function InsertElementsSheet({
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  );
   );
 }
 

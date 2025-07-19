@@ -105,20 +105,7 @@ export default function EventGallery({
             </button>
           )}
         </div>
-      ) : (
-        /* Empty state - only shown if no images exist */
-        <div className="py-8 text-center text-gray-500">
-          <p className="text-sm">No photos yet</p>
-          {isOwner && (
-            <button
-              onClick={handleAddPhoto}
-              className="mt-2 text-sm font-medium text-red-600 hover:text-red-700"
-            >
-              Be the first to add a photo
-            </button>
-          )}
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

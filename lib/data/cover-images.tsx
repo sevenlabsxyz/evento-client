@@ -1,12 +1,14 @@
-import { DEFAULT_COVERS } from "@/components/event-covers";
+import React from "react";
 import {
+  Clapperboard,
   Cpu,
   Crown,
   MessagesSquare,
   PartyPopper,
   Sparkles,
 } from "lucide-react";
-import React from "react";
+import { DEFAULT_COVERS } from "@/components/event-covers";
+import GiphyIcon from "@/components/icons/giphy-icon";
 
 export interface CoverImage {
   id: string;
@@ -26,7 +28,7 @@ export interface CoverImageCategory {
 // Helper function to convert legacy cover format to new format
 function convertLegacyCovers(
   legacyCovers: { url: string }[],
-  categoryName: string,
+  categoryName: string
 ): CoverImage[] {
   return legacyCovers.map((cover, index) => ({
     id: `${categoryName.toLowerCase()}-${index + 1}`,
@@ -43,6 +45,12 @@ export const coverImageCategories: CoverImageCategory[] = [
     icon: Crown,
     featured: true,
     images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, "Featured"),
+  },
+  {
+    id: "giphy",
+    name: "GIFs",
+    icon: Clapperboard,
+    images: [], // No static images, will be loaded dynamically
   },
   {
     id: "party",

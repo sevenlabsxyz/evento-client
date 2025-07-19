@@ -79,13 +79,13 @@ export default function SwipeableHeader({
         onTouchEnd={onTouchEnd}
         onClick={handleImageClick}
       >
-        {/* Current Image */}
         <Image
           src={images[currentIndex]}
           alt={`${event.title} - Image ${currentIndex + 1}`}
           fill
           className="object-cover transition-transform duration-300 ease-out"
           priority
+          unoptimized={images[currentIndex]?.endsWith(".gif")} // Optimizing GIFs may impact performance
         />
 
         {/* Gradient Overlay */}
@@ -101,7 +101,7 @@ export default function SwipeableHeader({
                   e.stopPropagation();
                   setCurrentIndex(index);
                 }}
-                className={`h-2 w-2 rounded-full transition-colors ${
+                className={`w-2 h-2 rounded-full transition-colors ${
                   index === currentIndex ? "bg-white" : "bg-white/50"
                 }`}
               />
@@ -115,7 +115,7 @@ export default function SwipeableHeader({
             {event.title}
           </h1>
           {event.subtitle && (
-            <p className="text-lg leading-tight opacity-90">{event.subtitle}</p>
+            <p className="text-lg opacity-90 leading-tight">{event.subtitle}</p>
           )}
         </div>
       </div>

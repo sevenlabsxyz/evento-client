@@ -1,28 +1,42 @@
 "use client";
 
 import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { getEventById } from "@/lib/data/sample-events";
-import { ArrowLeft, Plus, Share } from "lucide-react";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { useEventDetails } from "@/lib/hooks/useEventDetails";
+import { useEventGallery } from "@/lib/hooks/useEventGallery";
+import { ArrowLeft, Loader2, Plus, Share } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useRef } from "react";
 
 export default function GalleryPage() {
+  const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
   const lightboxRef = useRef<SilkLightboxRef>(null);
+  const { data: eventData, isLoading: eventLoading } = useEventDetails(eventId);
+  const { data: galleryData = [], isLoading: galleryLoading } =
+    useEventGallery(eventId);
 
-  // Get existing event data
-  const existingEvent = getEventById(eventId);
-
-  if (!existingEvent) {
+  if (eventLoading || galleryLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="text-center">
-          <h1 className="mb-2 text-2xl font-bold text-gray-900">
+          <Loader2 className="h-8 w-8 animate-spin text-red-500 mx-auto mb-4" />
+          <p className="text-gray-600">Loading event details...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!eventData || galleryData.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">
             Event Not Found
           </h1>
-          <p className="mb-4 text-gray-600">
+          <p className="text-gray-600 mb-4">
             The event you're trying to view doesn't exist.
           </p>
           <button
@@ -36,12 +50,12 @@ export default function GalleryPage() {
     );
   }
 
-  const galleryImages = existingEvent.galleryImages || [];
-  const isOwner = existingEvent.owner?.id === "current-user-id"; // In real app, use actual current user ID
-
+  const galleryImages = galleryData || [];
   const handleImageClick = (index: number) => {
     lightboxRef.current?.open(index);
   };
+
+  const isOwner = eventData?.user_details?.id === user?.id;
 
   const handleShareGallery = async () => {
     const galleryUrl = `${window.location.origin}/e/event/${eventId}/gallery`;
@@ -49,8 +63,8 @@ export default function GalleryPage() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `${existingEvent.title} - Gallery`,
-          text: `Check out photos from ${existingEvent.title}`,
+          title: `${eventData.title} - Gallery`,
+          text: `Check out photos from ${eventData.title}`,
           url: galleryUrl,
         });
       } catch (error) {
@@ -75,7 +89,7 @@ export default function GalleryPage() {
       if (files) {
         console.log(
           "Selected files:",
-          Array.from(files).map((f) => f.name),
+          Array.from(files).map((f) => f.name)
         );
         // TODO: Handle file upload
       }
@@ -134,7 +148,7 @@ export default function GalleryPage() {
                 className="aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90"
               >
                 <img
-                  src={image}
+                  src={image.url}
                   alt={`Gallery image ${index + 1}`}
                   className="h-full w-full object-cover"
                 />
@@ -142,10 +156,10 @@ export default function GalleryPage() {
             ))}
           </div>
         ) : (
-          <div className="py-16 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+          <div className="text-center py-16">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <svg
-                className="h-8 w-8 text-gray-400"
+                className="w-8 h-8 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -158,10 +172,10 @@ export default function GalleryPage() {
                 />
               </svg>
             </div>
-            <h3 className="mb-2 text-lg font-medium text-gray-900">
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
               No Photos Yet
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-gray-500 text-sm">
               Photos from this event will appear here once they're added.
             </p>
           </div>
@@ -171,8 +185,8 @@ export default function GalleryPage() {
       {/* Image Lightbox */}
       <SilkLightbox
         ref={lightboxRef}
-        images={galleryImages}
-        eventTitle={existingEvent.title}
+        images={galleryImages.map((image) => image.url)}
+        eventTitle={eventData.title}
       />
     </div>
   );
