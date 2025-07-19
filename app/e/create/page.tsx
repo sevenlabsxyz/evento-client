@@ -1,56 +1,55 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import {
-  Calendar,
-  Edit3,
-  Music,
-  MapPin,
-  Globe,
-  Lock,
-  Users,
-  ChevronRight,
-} from "lucide-react";
-import { SheetStack } from "@silk-hq/components";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { useRouter } from "next/navigation";
-import CoverImageSelector from "@/components/create-event/cover-image-selector";
-import ImageSelectionSheet from "@/components/create-event/image-selection-sheet";
-import DatePickerSheet from "@/components/create-event/date-picker-sheet";
-import TimePickerSheet from "@/components/create-event/time-picker-sheet";
-import LocationSheet, {
-  LocationData,
-} from "@/components/create-event/location-sheet";
-import DescriptionSheet from "@/components/create-event/description-sheet";
-import AttachmentSheet from "@/components/create-event/attachment-sheet";
-import EventVisibilitySheet from "@/components/create-event/event-visibility-sheet";
-import EventCreatedModal from "@/components/create-event/event-created-modal";
-import TextStylesSheet from "@/components/create-event/text-styles-sheet";
-import MoreFormattingSheet from "@/components/create-event/more-formatting-sheet";
-import ListsSheet from "@/components/create-event/lists-sheet";
-import InsertElementsSheet from "@/components/create-event/insert-elements-sheet";
-import { LinkEditSheet } from "@/components/create-event/link-edit-sheet";
-import CapacitySettingSheet from "@/components/create-event/capacity-setting-sheet";
-import CapacityConfirmationSheet from "@/components/create-event/capacity-confirmation-sheet";
-import { getLocationDisplayName } from "@/lib/utils/location";
-import { getContentPreview, isContentEmpty } from "@/lib/utils/content";
-import { useEventFormStore } from "@/lib/stores/event-form-store";
-import { useCreateEventWithCallbacks } from "@/lib/hooks/useCreateEvent";
+import AttachmentSheet from '@/components/create-event/attachment-sheet';
+import CapacityConfirmationSheet from '@/components/create-event/capacity-confirmation-sheet';
+import CapacitySettingSheet from '@/components/create-event/capacity-setting-sheet';
+import CoverImageSelector from '@/components/create-event/cover-image-selector';
+import DatePickerSheet from '@/components/create-event/date-picker-sheet';
+import DescriptionSheet from '@/components/create-event/description-sheet';
+import EventCreatedModal from '@/components/create-event/event-created-modal';
+import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
+import ImageSelectionSheet from '@/components/create-event/image-selection-sheet';
+import InsertElementsSheet from '@/components/create-event/insert-elements-sheet';
+import { LinkEditSheet } from '@/components/create-event/link-edit-sheet';
+import ListsSheet from '@/components/create-event/lists-sheet';
+import LocationSheet from '@/components/create-event/location-sheet';
+import MoreFormattingSheet from '@/components/create-event/more-formatting-sheet';
+import TextStylesSheet from '@/components/create-event/text-styles-sheet';
+import TimePickerSheet from '@/components/create-event/time-picker-sheet';
+import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useCreateEventWithCallbacks } from '@/lib/hooks/useCreateEvent';
+import { useEventFormStore } from '@/lib/stores/event-form-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import {
   formatDateForDisplay,
   formatTimeForDisplay,
-} from "@/lib/utils/event-date";
-import { toast } from "@/lib/utils/toast";
+} from '@/lib/utils/event-date';
+import { getLocationDisplayName } from '@/lib/utils/location';
+import { toast } from '@/lib/utils/toast';
+import { SheetStack } from '@silk-hq/components';
+import {
+  Calendar,
+  ChevronRight,
+  Edit3,
+  Globe,
+  Lock,
+  MapPin,
+  Music,
+  Users,
+} from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export default function CreatePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Create Event",
-      subtitle: "Start planning your next event",
+      title: 'Create Event',
+      subtitle: 'Start planning your next event',
     });
 
     return () => {
@@ -58,7 +57,6 @@ export default function CreatePage() {
     };
   }, [setTopBar]);
 
-  const router = useRouter();
   const createEventMutation = useCreateEventWithCallbacks();
 
   // Get state and actions from Zustand store
@@ -120,21 +118,31 @@ export default function CreatePage() {
   const [showListsSheet, setShowListsSheet] = useState(false);
   const [showInsertElementsSheet, setShowInsertElementsSheet] = useState(false);
   const [showLinkEditSheet, setShowLinkEditSheet] = useState(false);
-  const [showCapacitySettingSheet, setShowCapacitySettingSheet] = useState(false);
-  const [showCapacityConfirmationSheet, setShowCapacityConfirmationSheet] = useState(false);
+  const [showCapacitySettingSheet, setShowCapacitySettingSheet] =
+    useState(false);
+  const [showCapacityConfirmationSheet, setShowCapacityConfirmationSheet] =
+    useState(false);
   const [currentEditor, setCurrentEditor] = useState<any>(null);
   const [linkEditData, setLinkEditData] = useState<{
     url: string;
     text: string;
     openInNewTab: boolean;
-  }>({ url: "", text: "", openInNewTab: false });
+  }>({ url: '', text: '', openInNewTab: false });
 
-  const handleSetLink = ({ url, text, openInNewTab }: { url: string; text: string; openInNewTab: boolean }) => {
+  const handleSetLink = ({
+    url,
+    text,
+    openInNewTab,
+  }: {
+    url: string;
+    text: string;
+    openInNewTab: boolean;
+  }) => {
     if (!currentEditor) return;
-    
+
     const { from, to } = currentEditor.state.selection;
     const selectedText = currentEditor.state.doc.textBetween(from, to);
-    
+
     if (selectedText) {
       // If there's selected text, apply link to it
       currentEditor
@@ -156,14 +164,14 @@ export default function CreatePage() {
               type: 'link',
               attrs: {
                 href: url,
-                target: openInNewTab ? '_blank' : ''
-              }
-            }
-          ]
+                target: openInNewTab ? '_blank' : '',
+              },
+            },
+          ],
         })
         .run();
     }
-    
+
     setShowLinkEditSheet(false);
   };
 
@@ -177,32 +185,32 @@ export default function CreatePage() {
   };
 
   const handleAttachmentType = (
-    type: "spotify" | "wavlake" | "photo" | "file" | "link"
+    type: 'spotify' | 'wavlake' | 'photo' | 'file' | 'link'
   ) => {
     // This will be handled by the AttachmentSheet internally
     // For now, just handle the file pickers
     switch (type) {
-      case "photo":
+      case 'photo':
         // Trigger native photo picker
-        const photoInput = document.createElement("input");
-        photoInput.type = "file";
-        photoInput.accept = "image/*";
+        const photoInput = document.createElement('input');
+        photoInput.type = 'file';
+        photoInput.accept = 'image/*';
         photoInput.onchange = (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
           if (file) {
-            setAttachments((prev) => [...prev, { type: "photo", data: file }]);
+            setAttachments((prev) => [...prev, { type: 'photo', data: file }]);
           }
         };
         photoInput.click();
         break;
-      case "file":
+      case 'file':
         // Trigger native file picker
-        const fileInput = document.createElement("input");
-        fileInput.type = "file";
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
         fileInput.onchange = (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
           if (file) {
-            setAttachments((prev) => [...prev, { type: "file", data: file }]);
+            setAttachments((prev) => [...prev, { type: 'file', data: file }]);
           }
         };
         fileInput.click();
@@ -211,9 +219,9 @@ export default function CreatePage() {
   };
 
   const handleSaveAttachment = (type: string, url: string) => {
-    if (type === "spotify") {
+    if (type === 'spotify') {
       setSpotifyUrl(url);
-    } else if (type === "wavlake") {
+    } else if (type === 'wavlake') {
       setWavlakeUrl(url);
     }
     setAttachments([...attachments, { type, url }]);
@@ -238,21 +246,30 @@ export default function CreatePage() {
 
       // Show success modal
       setShowCreatedModal(true);
-      toast.success("Event created successfully!");
+      toast.success('Event created successfully!');
     } catch (error: any) {
       // Error handling
-      console.error("Failed to create event:", error);
-      toast.error(error.message || "Failed to create event");
+      console.error('Failed to create event:', error);
+      toast.error(error.message || 'Failed to create event');
     }
   };
 
   // Check if all required fields are filled
   const isFormValid = isValid();
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
       {/* Header */}
-      
 
       {/* Cover Image Selector */}
       <div className="px-4 mb-2 mt-2">
@@ -341,12 +358,12 @@ export default function CreatePage() {
               <div className="flex items-center justify-between">
                 <span
                   className={`font-medium ${
-                    location ? "text-gray-900" : "text-gray-400"
+                    location ? 'text-gray-900' : 'text-gray-400'
                   }`}
                 >
                   {location
                     ? getLocationDisplayName(location)
-                    : "Choose address"}
+                    : 'Choose address'}
                 </span>
                 <ChevronRight className="h-4 w-4 text-gray-400" />
               </div>
@@ -361,7 +378,7 @@ export default function CreatePage() {
             className="flex items-center gap-4 w-full text-left"
           >
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              {visibility === "public" ? (
+              {visibility === 'public' ? (
                 <Globe className="h-4 w-4 text-gray-600" />
               ) : (
                 <Lock className="h-4 w-4 text-gray-600" />
@@ -373,7 +390,7 @@ export default function CreatePage() {
               </label>
               <div className="flex items-center justify-between">
                 <span className="font-medium text-gray-900">
-                  {visibility === "public" ? "Public" : "Private"}
+                  {visibility === 'public' ? 'Public' : 'Private'}
                 </span>
                 <ChevronRight className="h-4 w-4 text-gray-400" />
               </div>
@@ -391,7 +408,9 @@ export default function CreatePage() {
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
                   <label className="text-gray-500 text-sm font-medium mb-1">
-                    {hasCapacity && capacity ? `Capacity ${capacity}` : "Set Capacity"}
+                    {hasCapacity && capacity
+                      ? `Capacity ${capacity}`
+                      : 'Set Capacity'}
                   </label>
                   {hasCapacity && capacity && (
                     <span className="text-gray-400 text-xs">
@@ -410,12 +429,12 @@ export default function CreatePage() {
                     }
                   }}
                   className={`w-12 h-6 rounded-full transition-colors ${
-                    hasCapacity ? "bg-purple-500" : "bg-gray-300"
+                    hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
                   }`}
                 >
                   <div
                     className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                      hasCapacity ? "translate-x-6" : "translate-x-0.5"
+                      hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   ></div>
                 </button>
@@ -441,12 +460,12 @@ export default function CreatePage() {
                 <span
                   className={`${
                     isContentEmpty(description)
-                      ? "text-gray-400"
-                      : "text-gray-900"
+                      ? 'text-gray-400'
+                      : 'text-gray-900'
                   }`}
                 >
                   {isContentEmpty(description)
-                    ? "Add description about this event..."
+                    ? 'Add description about this event...'
                     : getContentPreview(description, 80)}
                 </span>
                 <ChevronRight className="h-4 w-4 text-gray-400 flex-shrink-0" />
@@ -480,12 +499,12 @@ export default function CreatePage() {
             onClick={handleCreateEvent}
             className={`w-full py-3 rounded-xl font-medium transition-all ${
               isFormValid
-                ? "bg-red-500 hover:bg-red-600 text-white"
-                : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             disabled={!isFormValid || createEventMutation.isPending}
           >
-            {createEventMutation.isPending ? "Creating..." : "Create Event"}
+            {createEventMutation.isPending ? 'Creating...' : 'Create Event'}
           </Button>
         </div>
       </div>
@@ -590,7 +609,7 @@ export default function CreatePage() {
           onClose={() => setShowCapacityConfirmationSheet(false)}
           onConfirm={() => {
             setHasCapacity(false);
-            setCapacity("");
+            setCapacity('');
             setShowCapacityConfirmationSheet(false);
           }}
           currentCapacity={capacity}

@@ -1,22 +1,24 @@
-"use client";
+'use client';
 
-import type React from "react";
+import type React from 'react';
 
-import { Upload, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { useRouter, useSearchParams } from "next/navigation"; // keep useSearchParams for initial read
-import { useState , useEffect} from "react";
-import { toast } from "@/lib/utils/toast";
+import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
+import { Upload, X } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function ContactPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Contact",
-      subtitle: "Get in touch with us",
+      title: 'Contact',
+      subtitle: 'Get in touch with us',
     });
 
     return () => {
@@ -25,8 +27,8 @@ export default function ContactPage() {
   }, [setTopBar]);
 
   const router = useRouter();
-  const prefilledTitle = useSearchParams().get("title") ?? "";
-  const prefilledMessage = useSearchParams().get("message") ?? "";
+  const prefilledTitle = useSearchParams().get('title') ?? '';
+  const prefilledMessage = useSearchParams().get('message') ?? '';
 
   const [formData, setFormData] = useState({
     title: prefilledTitle,
@@ -50,7 +52,7 @@ export default function ContactPage() {
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.message.trim()) {
-      toast.error("Please fill in all required fields");
+      toast.error('Please fill in all required fields');
       return;
     }
 
@@ -65,23 +67,31 @@ export default function ContactPage() {
 
       if (success) {
         toast.success("Message sent successfully! We'll get back to you soon.");
-        router.push("/settings");
+        router.push('/settings');
       } else {
-        toast.error("Failed to send message. Please try again.");
+        toast.error('Failed to send message. Please try again.');
       }
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Header */}
-      <div className="border-b border-gray-200">
-        
-      </div>
+      <div className="border-b border-gray-200"></div>
 
       {/* Form */}
       <form
@@ -185,7 +195,7 @@ export default function ContactPage() {
                 Sending...
               </div>
             ) : (
-              "Send Message"
+              'Send Message'
             )}
           </Button>
         </div>

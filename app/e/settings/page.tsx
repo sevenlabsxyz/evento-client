@@ -1,38 +1,35 @@
 "use client";
 
+import { APISheet } from "@/components/settings/APISheet";
+import { ChangelogSheet } from "@/components/settings/ChangelogSheet";
+import { ContactSheet } from "@/components/settings/ContactSheet";
+import { HelpSheet } from "@/components/settings/HelpSheet";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { toast } from "@/lib/utils/toast";
 import {
+  Bell,
+  BookOpen,
+  ChevronRight,
+  Cloud,
+  Code,
+  DollarSign,
+  Info,
+  Languages,
   LifeBuoy,
   Mail,
-  Sparkles,
-  Info,
   Scale,
-  Shield,
   Share,
-  Bell,
-  Languages,
-  Cloud,
-  DollarSign,
-  ChevronRight,
-  X,
-  Code,
-  BookOpen,
+  Shield,
+  Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { ReusableDropdown } from "@/components/reusable-dropdown";
-import { useRouter } from "next/navigation";
-import { toast } from "@/lib/utils/toast";
+import { useEffect, useState } from "react";
 import packageJson from "../../../package.json";
-import { useState, useEffect } from "react";
-import { HelpSheet } from "@/components/settings/HelpSheet";
-import { ContactSheet } from "@/components/settings/ContactSheet";
-import { ChangelogSheet } from "@/components/settings/ChangelogSheet";
-import { APISheet } from "@/components/settings/APISheet";
 
 export default function SettingsPage() {
-  const router = useRouter();
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
-  
+
   // Set TopBar content
   useEffect(() => {
     setTopBar({
@@ -44,15 +41,13 @@ export default function SettingsPage() {
       setTopBar({ rightContent: null });
     };
   }, [setTopBar]);
-  
+
   // Sheet states
   const [helpSheetOpen, setHelpSheetOpen] = useState(false);
   const [contactSheetOpen, setContactSheetOpen] = useState(false);
   const [changelogSheetOpen, setChangelogSheetOpen] = useState(false);
   const [apiSheetOpen, setApiSheetOpen] = useState(false);
   const [showApiContactForm, setShowApiContactForm] = useState(false);
-
-  // Hardcoded language to English and currency to US Dollar as per requirements
 
   const handleExternalLink = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -93,9 +88,18 @@ export default function SettingsPage() {
     setContactSheetOpen(true);
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50 px-0 pt-4">
         {/* User Profile Section */}
@@ -324,19 +328,26 @@ export default function SettingsPage() {
 
       {/* Sheet Components */}
       <HelpSheet open={helpSheetOpen} onOpenChange={setHelpSheetOpen} />
-      <ContactSheet 
-        open={contactSheetOpen} 
+      <ContactSheet
+        open={contactSheetOpen}
         onOpenChange={(open) => {
           setContactSheetOpen(open);
           if (!open) setShowApiContactForm(false);
         }}
         prefilledTitle={showApiContactForm ? "Get Evento API access" : ""}
-        prefilledMessage={showApiContactForm ? "I would like to request access to the Evento API.\n\nWhat I plan to use it for:\n\n[Please describe your use case and why you need API access]" : ""}
+        prefilledMessage={
+          showApiContactForm
+            ? "I would like to request access to the Evento API.\n\nWhat I plan to use it for:\n\n[Please describe your use case and why you need API access]"
+            : ""
+        }
       />
-      <ChangelogSheet open={changelogSheetOpen} onOpenChange={setChangelogSheetOpen} />
-      <APISheet 
-        open={apiSheetOpen} 
-        onOpenChange={setApiSheetOpen} 
+      <ChangelogSheet
+        open={changelogSheetOpen}
+        onOpenChange={setChangelogSheetOpen}
+      />
+      <APISheet
+        open={apiSheetOpen}
+        onOpenChange={setApiSheetOpen}
         onContactRequest={handleApiAccess}
       />
     </div>

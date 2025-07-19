@@ -1,20 +1,22 @@
-"use client";
+'use client';
 
-import { X, Plus, Bookmark, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { useRouter } from "next/navigation";
-import { useState , useEffect} from "react";
-import { toast } from "@/lib/utils/toast";
+import { X, Plus, Bookmark, ChevronRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { toast } from '@/lib/utils/toast';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 
 export default function SavedListsPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Saved",
-      subtitle: "Your saved events",
+      title: 'Saved',
+      subtitle: 'Your saved events',
     });
 
     return () => {
@@ -24,48 +26,48 @@ export default function SavedListsPage() {
 
   const router = useRouter();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newListName, setNewListName] = useState("");
+  const [newListName, setNewListName] = useState('');
   const [savedLists, setSavedLists] = useState([
     {
       id: 1,
-      name: "Event toes",
+      name: 'Event toes',
       eventCount: 5,
       isDefault: true,
-      lastUpdated: "2 days ago",
+      lastUpdated: '2 days ago',
       preview: [
-        "/placeholder.svg?height=40&width=40",
-        "/placeholder.svg?height=40&width=40",
-        "/placeholder.svg?height=40&width=40",
+        '/placeholder.svg?height=40&width=40',
+        '/placeholder.svg?height=40&width=40',
+        '/placeholder.svg?height=40&width=40',
       ],
     },
     {
       id: 2,
-      name: "Tokyo Adventures",
+      name: 'Tokyo Adventures',
       eventCount: 3,
       isDefault: false,
-      lastUpdated: "1 week ago",
+      lastUpdated: '1 week ago',
       preview: [
-        "/placeholder.svg?height=40&width=40",
-        "/placeholder.svg?height=40&width=40",
+        '/placeholder.svg?height=40&width=40',
+        '/placeholder.svg?height=40&width=40',
       ],
     },
     {
       id: 3,
-      name: "Food Experiences",
+      name: 'Food Experiences',
       eventCount: 7,
       isDefault: false,
-      lastUpdated: "3 days ago",
+      lastUpdated: '3 days ago',
       preview: [
-        "/placeholder.svg?height=40&width=40",
-        "/placeholder.svg?height=40&width=40",
-        "/placeholder.svg?height=40&width=40",
+        '/placeholder.svg?height=40&width=40',
+        '/placeholder.svg?height=40&width=40',
+        '/placeholder.svg?height=40&width=40',
       ],
     },
   ]);
 
   const handleCreateList = () => {
     if (!newListName.trim()) {
-      toast.error("Please enter a list name");
+      toast.error('Please enter a list name');
       return;
     }
 
@@ -74,12 +76,12 @@ export default function SavedListsPage() {
       name: newListName.trim(),
       eventCount: 0,
       isDefault: false,
-      lastUpdated: "Just now",
+      lastUpdated: 'Just now',
       preview: [],
     };
 
     setSavedLists([...savedLists, newList]);
-    setNewListName("");
+    setNewListName('');
     setShowCreateModal(false);
     toast.success(`"${newList.name}" list created!`);
   };
@@ -88,9 +90,18 @@ export default function SavedListsPage() {
     router.push(`/saved/${listId}`);
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
         {/* Add New List Button */}
@@ -123,8 +134,8 @@ export default function SavedListsPage() {
                     )}
                   </div>
                   <p className="text-gray-600 text-sm mb-2">
-                    {list.eventCount}{" "}
-                    {list.eventCount === 1 ? "event" : "events"} • Updated{" "}
+                    {list.eventCount}{' '}
+                    {list.eventCount === 1 ? 'event' : 'events'} • Updated{' '}
                     {list.lastUpdated}
                   </p>
 
@@ -134,7 +145,7 @@ export default function SavedListsPage() {
                       {list.preview.slice(0, 3).map((image, index) => (
                         <img
                           key={index}
-                          src={image || "/placeholder.svg"}
+                          src={image || '/placeholder.svg'}
                           alt=""
                           className="w-8 h-8 rounded-full border-2 border-white object-cover"
                         />
@@ -189,14 +200,14 @@ export default function SavedListsPage() {
               placeholder="Enter list name..."
               className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 mb-4"
               autoFocus
-              onKeyPress={(e) => e.key === "Enter" && handleCreateList()}
+              onKeyPress={(e) => e.key === 'Enter' && handleCreateList()}
             />
             <div className="flex gap-3">
               <Button
                 variant="outline"
                 onClick={() => {
                   setShowCreateModal(false);
-                  setNewListName("");
+                  setNewListName('');
                 }}
                 className="flex-1"
               >

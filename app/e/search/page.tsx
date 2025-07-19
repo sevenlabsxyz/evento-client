@@ -1,50 +1,52 @@
-"use client";
+'use client';
 
-import { Search, Clock, MapPin, Calendar, Users, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { Calendar, Clock, MapPin, Search, Users, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function SearchPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState('');
 
   const recentSearches = [
-    "Tokyo events",
-    "Food festivals",
-    "Marcus Johnson",
-    "Paris photography",
-    "Sunset experiences",
+    'Tokyo events',
+    'Food festivals',
+    'Marcus Johnson',
+    'Paris photography',
+    'Sunset experiences',
   ];
 
   const suggestedSearches = [
-    { icon: <Calendar className="h-4 w-4" />, text: "Events this weekend" },
-    { icon: <MapPin className="h-4 w-4" />, text: "Events near me" },
-    { icon: <Users className="h-4 w-4" />, text: "Popular events" },
-    { icon: <Clock className="h-4 w-4" />, text: "Upcoming events" },
+    { icon: <Calendar className="h-4 w-4" />, text: 'Events this weekend' },
+    { icon: <MapPin className="h-4 w-4" />, text: 'Events near me' },
+    { icon: <Users className="h-4 w-4" />, text: 'Popular events' },
+    { icon: <Clock className="h-4 w-4" />, text: 'Upcoming events' },
   ];
 
   const searchResults = [
     {
-      type: "event",
-      title: "Tokyo Skytree Sunset Experience",
-      location: "Tokyo, Japan",
-      date: "Sep 15, 2025",
-      image: "/placeholder.svg?height=60&width=60",
+      type: 'event',
+      title: 'Tokyo Skytree Sunset Experience',
+      location: 'Tokyo, Japan',
+      date: 'Sep 15, 2025',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
-      type: "user",
-      name: "Marcus Johnson",
-      username: "@marcusj",
-      location: "Paris, France",
-      avatar: "/placeholder.svg?height=60&width=60",
+      type: 'user',
+      name: 'Marcus Johnson',
+      username: '@marcusj',
+      location: 'Paris, France',
+      avatar: '/placeholder.svg?height=60&width=60',
     },
     {
-      type: "event",
-      title: "Eiffel Tower Night Photography",
-      location: "Paris, France",
-      date: "Sep 20, 2025",
-      image: "/placeholder.svg?height=60&width=60",
+      type: 'event',
+      title: 'Eiffel Tower Night Photography',
+      location: 'Paris, France',
+      date: 'Sep 20, 2025',
+      image: '/placeholder.svg?height=60&width=60',
     },
   ];
 
@@ -52,6 +54,16 @@ export default function SearchPage() {
     setSearchQuery(query);
     // In a real app, this would trigger the search API
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
@@ -93,28 +105,28 @@ export default function SearchPage() {
                   className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors"
                 >
                   <img
-                    src={result.type === "user" ? result.avatar : result.image}
+                    src={result.type === 'user' ? result.avatar : result.image}
                     alt=""
                     className={`object-cover ${
-                      result.type === "user"
-                        ? "w-12 h-12 rounded-full"
-                        : "w-12 h-12 rounded-lg"
+                      result.type === 'user'
+                        ? 'w-12 h-12 rounded-full'
+                        : 'w-12 h-12 rounded-lg'
                     }`}
                   />
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-gray-900 truncate">
-                      {result.type === "user" ? result.name : result.title}
+                      {result.type === 'user' ? result.name : result.title}
                     </h4>
                     <div className="flex items-center gap-1 text-sm text-gray-500">
                       <MapPin className="h-3 w-3" />
                       <span className="truncate">{result.location}</span>
-                      {result.type === "event" && result.date && (
+                      {result.type === 'event' && result.date && (
                         <>
                           <span>•</span>
                           <span>{result.date}</span>
                         </>
                       )}
-                      {result.type === "user" && result.username && (
+                      {result.type === 'user' && result.username && (
                         <>
                           <span>•</span>
                           <span>{result.username}</span>
@@ -174,11 +186,11 @@ export default function SearchPage() {
               </h3>
               <div className="flex flex-wrap gap-2">
                 {[
-                  "#TokyoEvents",
-                  "#FoodFestival",
-                  "#Photography",
-                  "#Sunset",
-                  "#Travel",
+                  '#TokyoEvents',
+                  '#FoodFestival',
+                  '#Photography',
+                  '#Sunset',
+                  '#Travel',
                 ].map((tag, index) => (
                   <button
                     key={index}

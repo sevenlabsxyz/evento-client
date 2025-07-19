@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import {
   ArrowLeft,
@@ -7,58 +7,71 @@ import {
   Clock,
   Bookmark,
   MoreHorizontal,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useRouter, useParams } from "next/navigation";
-import { useState } from "react";
-import { toast } from "@/lib/utils/toast";
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useRouter, useParams } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from '@/lib/utils/toast';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
 
 export default function SavedListDetailPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const [savedEvents, setSavedEvents] = useState([
     {
       id: 1,
-      title: "Eiffel Tower Night Photography",
-      date: "Sep 20, 2025",
-      time: "7:00 PM",
-      location: "Paris, France",
-      image: "/placeholder.svg?height=120&width=120",
-      savedDate: "2 days ago",
+      title: 'Eiffel Tower Night Photography',
+      date: 'Sep 20, 2025',
+      time: '7:00 PM',
+      location: 'Paris, France',
+      image: '/placeholder.svg?height=120&width=120',
+      savedDate: '2 days ago',
     },
     {
       id: 2,
-      title: "Tokyo Skytree Sunset Experience",
-      date: "Sep 15, 2025",
-      time: "6:30 PM",
-      location: "Tokyo, Japan",
-      image: "/placeholder.svg?height=120&width=120",
-      savedDate: "1 week ago",
+      title: 'Tokyo Skytree Sunset Experience',
+      date: 'Sep 15, 2025',
+      time: '6:30 PM',
+      location: 'Tokyo, Japan',
+      image: '/placeholder.svg?height=120&width=120',
+      savedDate: '1 week ago',
     },
     {
       id: 3,
-      title: "Tegallalang Rice Terraces Tour",
-      date: "Sep 18, 2025",
-      time: "9:00 AM",
-      location: "Bali, Indonesia",
-      image: "/placeholder.svg?height=120&width=120",
-      savedDate: "3 days ago",
+      title: 'Tegallalang Rice Terraces Tour',
+      date: 'Sep 18, 2025',
+      time: '9:00 AM',
+      location: 'Bali, Indonesia',
+      image: '/placeholder.svg?height=120&width=120',
+      savedDate: '3 days ago',
     },
   ]);
 
   // Mock list data - in real app this would come from API based on params.id
   const listData = {
-    "1": { name: "Event toes", isDefault: true },
-    "2": { name: "Tokyo Adventures", isDefault: false },
-    "3": { name: "Food Experiences", isDefault: false },
+    '1': { name: 'Event toes', isDefault: true },
+    '2': { name: 'Tokyo Adventures', isDefault: false },
+    '3': { name: 'Food Experiences', isDefault: false },
   };
 
-  const currentList = listData[params.id as keyof typeof listData] || listData["1"];
+  const currentList =
+    listData[params.id as keyof typeof listData] || listData['1'];
 
   const handleUnsaveEvent = (eventId: number) => {
     setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
-    toast.success("Event removed from list!");
+    toast.success('Event removed from list!');
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
@@ -106,7 +119,7 @@ export default function SavedListDetailPage() {
                 <div className="flex gap-4">
                   {/* Event Image */}
                   <img
-                    src={event.image || "/placeholder.svg"}
+                    src={event.image || '/placeholder.svg'}
                     alt={event.title}
                     className="w-20 h-20 rounded-xl object-cover flex-shrink-0 cursor-pointer"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
@@ -115,7 +128,7 @@ export default function SavedListDetailPage() {
                   {/* Event Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between mb-2">
-                      <h3 
+                      <h3
                         className="font-bold text-lg leading-tight truncate pr-2 cursor-pointer hover:text-red-600 transition-colors"
                         onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                       >
@@ -158,7 +171,7 @@ export default function SavedListDetailPage() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 mt-4">
-                  <Button 
+                  <Button
                     className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   >
@@ -185,7 +198,7 @@ export default function SavedListDetailPage() {
                 Start saving events to see them here.
               </p>
               <Button
-                onClick={() => router.push("/feed")}
+                onClick={() => router.push('/feed')}
                 className="bg-red-500 hover:bg-red-600 text-white"
               >
                 Discover Events

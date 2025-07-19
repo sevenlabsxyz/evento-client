@@ -1,41 +1,43 @@
-"use client";
+'use client';
 
+import { ReusableDropdown } from '@/components/reusable-dropdown';
+import { Button } from '@/components/ui/button';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { toast } from '@/lib/utils/toast';
 import {
   ArrowLeft,
-  MoreHorizontal,
-  Send,
-  Plus,
-  ImageIcon,
-  Paperclip,
   FileText,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { ReusableDropdown } from "@/components/reusable-dropdown";
-import { useRouter, useParams } from "next/navigation";
-import { useState } from "react";
-import { toast } from "@/lib/utils/toast";
+  ImageIcon,
+  MoreHorizontal,
+  Paperclip,
+  Plus,
+  Send,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function SingleChatPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   // Mock data - in real app this would come from API based on params.id
   const chatData = {
-    "1": {
-      type: "user",
-      name: "Sarah Chen",
-      username: "@sarahc",
-      avatar: "/placeholder.svg?height=40&width=40",
+    '1': {
+      type: 'user',
+      name: 'Sarah Chen',
+      username: '@sarahc',
+      avatar: '/placeholder.svg?height=40&width=40',
       isOnline: true,
       lastSeen: null,
     },
-    "2": {
-      type: "group",
-      name: "Tokyo Adventure",
-      username: "3 members",
-      avatar: "/placeholder.svg?height=40&width=40",
-      members: ["Sarah Chen", "Marcus Johnson", "You"],
+    '2': {
+      type: 'group',
+      name: 'Tokyo Adventure',
+      username: '3 members',
+      avatar: '/placeholder.svg?height=40&width=40',
+      members: ['Sarah Chen', 'Marcus Johnson', 'You'],
       memberCount: 3,
     },
   };
@@ -43,70 +45,71 @@ export default function SingleChatPage() {
   const messages = [
     {
       id: 1,
-      sender: "Sarah Chen",
-      content: "Hey! Just landed in Tokyo 🛬",
-      time: "10:30 AM",
+      sender: 'Sarah Chen',
+      content: 'Hey! Just landed in Tokyo 🛬',
+      time: '10:30 AM',
       isMe: false,
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: '/placeholder.svg?height=32&width=32',
     },
     {
       id: 2,
-      sender: "You",
-      content: "Welcome to Tokyo! How was the flight?",
-      time: "10:32 AM",
+      sender: 'You',
+      content: 'Welcome to Tokyo! How was the flight?',
+      time: '10:32 AM',
       isMe: true,
     },
     {
       id: 3,
-      sender: "Sarah Chen",
+      sender: 'Sarah Chen',
       content:
         "Long but worth it! The city looks amazing from the plane. Can't wait to explore 🏙️",
-      time: "10:33 AM",
+      time: '10:33 AM',
       isMe: false,
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: '/placeholder.svg?height=32&width=32',
     },
     {
       id: 4,
-      sender: "You",
+      sender: 'You',
       content:
-        "The ramen place I mentioned is just 5 minutes from your hotel. Perfect for jet lag recovery! 🍜",
-      time: "10:35 AM",
+        'The ramen place I mentioned is just 5 minutes from your hotel. Perfect for jet lag recovery! 🍜',
+      time: '10:35 AM',
       isMe: true,
     },
     {
       id: 5,
-      sender: "Sarah Chen",
+      sender: 'Sarah Chen',
       content:
         "Perfect timing! I'm starving. Sending you a pic when I get there ✨",
-      time: "10:36 AM",
+      time: '10:36 AM',
       isMe: false,
-      avatar: "/placeholder.svg?height=32&width=32",
+      avatar: '/placeholder.svg?height=32&width=32',
     },
   ];
 
-  const currentChat = chatData[params.id as keyof typeof chatData] || chatData["1"];
-  const isGroup = currentChat.type === "group";
+  const currentChat =
+    chatData[params.id as keyof typeof chatData] || chatData['1'];
+  const isGroup = currentChat.type === 'group';
 
   const uploadOptions = [
     {
-      label: "Upload Photo",
+      label: 'Upload Photo',
       icon: <ImageIcon className="w-4 h-4" />,
       action: () => {
-        toast.success("Photo upload coming soon!");
+        toast.success('Photo upload coming soon!');
       },
     },
     {
-      label: "Pick from Files",
+      label: 'Pick from Files',
       icon: <Paperclip className="w-4 h-4" />,
       action: () => {
-        toast.success("File picker coming soon!");
+        toast.success('File picker coming soon!');
       },
     },
     {
-      label: "Upload Document",
+      label: 'Upload Document',
       icon: <FileText className="w-4 h-4" />,
       action: () => {
-        toast.success("Document upload coming soon!");
+        toast.success('Document upload coming soon!');
       },
     },
   ];
@@ -114,7 +117,7 @@ export default function SingleChatPage() {
   const handleSendMessage = () => {
     if (message.trim()) {
       // Handle sending message
-      setMessage("");
+      setMessage('');
     }
   };
 
@@ -132,10 +135,10 @@ export default function SingleChatPage() {
       <div className="flex items-center gap-3 flex-1">
         <div className="relative">
           <img
-            src={currentChat.avatar || "/placeholder.svg"}
+            src={currentChat.avatar || '/placeholder.svg'}
             alt={currentChat.name}
             className={`object-cover ${
-              isGroup ? "w-10 h-10 rounded-lg" : "w-10 h-10 rounded-full"
+              isGroup ? 'w-10 h-10 rounded-lg' : 'w-10 h-10 rounded-full'
             }`}
           />
           {!isGroup && currentChat.isOnline && (
@@ -151,6 +154,16 @@ export default function SingleChatPage() {
       </div>
     </div>
   );
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
@@ -178,23 +191,23 @@ export default function SingleChatPage() {
           {messages.map((msg) => (
             <div
               key={msg.id}
-              className={`flex ${msg.isMe ? "justify-end" : "justify-start"}`}
+              className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}
             >
               <div
                 className={`flex gap-2 max-w-[80%] ${
-                  msg.isMe ? "flex-row-reverse" : "flex-row"
+                  msg.isMe ? 'flex-row-reverse' : 'flex-row'
                 }`}
               >
                 {!msg.isMe && (
                   <img
-                    src={msg.avatar || "/placeholder.svg"}
+                    src={msg.avatar || '/placeholder.svg'}
                     alt={msg.sender}
                     className="w-8 h-8 rounded-full object-cover flex-shrink-0"
                   />
                 )}
                 <div
                   className={`flex flex-col ${
-                    msg.isMe ? "items-end" : "items-start"
+                    msg.isMe ? 'items-end' : 'items-start'
                   }`}
                 >
                   {!msg.isMe && isGroup && (
@@ -205,8 +218,8 @@ export default function SingleChatPage() {
                   <div
                     className={`px-4 py-2 rounded-2xl ${
                       msg.isMe
-                        ? "bg-red-500 text-white rounded-br-md"
-                        : "bg-gray-100 text-gray-900 rounded-bl-md"
+                        ? 'bg-red-500 text-white rounded-br-md'
+                        : 'bg-gray-100 text-gray-900 rounded-bl-md'
                     }`}
                   >
                     <p className="text-sm">{msg.content}</p>
@@ -245,7 +258,7 @@ export default function SingleChatPage() {
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
               className="w-full px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
-              onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             />
           </div>
           <Button
