@@ -1,6 +1,6 @@
 "use client";
 
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
 import { useState } from "react";
 
 interface WavlakeSheetProps {
@@ -53,18 +53,18 @@ export default function WavlakeSheet({
   };
 
   return (
-    <SheetWithDetent.Root
+    <SheetWithDetentFull.Root
       presented={isOpen}
       onPresentedChange={(presented) => !presented && handleClose()}
     >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content>
+      <SheetWithDetentFull.Portal>
+        <SheetWithDetentFull.View>
+          <SheetWithDetentFull.Backdrop />
+          <SheetWithDetentFull.Content>
             <div className="p-6">
               {/* Handle */}
               <div className="mb-4 flex justify-center">
-                <SheetWithDetent.Handle />
+                <SheetWithDetentFull.Handle />
               </div>
 
               {/* Header */}
@@ -116,9 +116,9 @@ export default function WavlakeSheet({
                 </button>
               </div>
             </div>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+          </SheetWithDetentFull.Content>
+        </SheetWithDetentFull.View>
+      </SheetWithDetentFull.Portal>
+    </SheetWithDetentFull.Root>
   );
 }

@@ -72,13 +72,6 @@ export default function ImageSelectionSheet({
                 Choose from our curated collection
               </p>
 
-              <h2 className="ImageSelectionSheet-visibleTitle">
-                Add Cover Image
-              </h2>
-              <p className="ImageSelectionSheet-subtitle">
-                Choose from our curated collection
-              </p>
-
               {/* Tab Navigation */}
               <div className="ImageSelectionSheet-tabs">
                 <div className="ImageSelectionSheet-tabsContainer">
@@ -95,9 +88,6 @@ export default function ImageSelectionSheet({
                         }`}
                       >
                         <IconComponent className="ImageSelectionSheet-tabIcon" />
-                        <span className="ImageSelectionSheet-tabLabel">
-                          {category.name}
-                        </span>
                         <span className="ImageSelectionSheet-tabLabel">
                           {category.name}
                         </span>

@@ -22,7 +22,6 @@ import {
   useUserFollowers,
   useUserFollowing,
 } from "@/lib/hooks/useUserProfile";
-import { useAuth } from "@/lib/hooks/useAuth";
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { Navbar } from "@/components/navbar";
 import FollowersSheet from "@/components/followers-sheet/FollowersSheet";

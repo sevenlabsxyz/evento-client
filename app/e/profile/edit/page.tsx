@@ -21,6 +21,8 @@ import {
   Camera,
   ChevronRight,
   Hash,
+  Zap,
+  User,
   Instagram,
   Loader2,
   Type,
