@@ -9,12 +9,7 @@ import {
   MapPin,
   MessageCircle,
   UserPlus,
-  Calendar,
-  MapPin,
-  Clock,
 } from "lucide-react";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { Navbar } from "@/components/navbar";
 import { useState, useEffect } from "react";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 

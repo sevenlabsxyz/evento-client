@@ -25,21 +25,8 @@ import {
   Loader2,
   Type,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { useProfileFormStore } from "@/lib/stores/profile-form-store";
-import {
-  useUserProfile,
-  useUpdateUserProfile,
-} from "@/lib/hooks/useUserProfile";
-import { toast } from "@/lib/utils/toast";
-import ProfileImageSheet from "@/components/profile-edit/profile-image-sheet";
-import UsernameSheet from "@/components/profile-edit/username-sheet";
-import NameSheet from "@/components/profile-edit/name-sheet";
-import SocialLinksSheet from "@/components/profile-edit/social-links-sheet";
-import BiographySheet from "@/components/profile-edit/biography-sheet";
-import LightningAddressSheet from "@/components/profile-edit/lightning-address-sheet";
-import NostrSheet from "@/components/profile-edit/nostr-sheet";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function EditProfilePage() {
