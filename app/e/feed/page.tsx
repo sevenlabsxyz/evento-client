@@ -26,21 +26,21 @@ export default function FeedPage() {
   useEffect(() => {
     setTopBar({
       title: "Feed",
-      subtitle: "Your personalized event feed",
-      rightContent: (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full bg-gray-100"
-          onClick={() => router.push("/e/search")}
-        >
-          <Search className="h-5 w-5" />
-        </Button>
-      ),
+      showAvatar: true,
+      leftMode: "menu",
+      subtitle: undefined,
+      buttons: [
+        {
+          id: "search",
+          icon: Search,
+          onClick: () => router.push("/e/search"),
+          label: "Search events",
+        },
+      ],
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ buttons: [] });
     };
   }, [router, setTopBar]);
 

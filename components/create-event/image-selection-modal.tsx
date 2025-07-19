@@ -28,10 +28,6 @@ export default function ImageSelectionModal({
       title: "Select Image",
       subtitle: "Choose your event photo",
     });
-
-    return () => {
-      setTopBar({ rightContent: null });
-    };
   }, [setTopBar]);
 
   const activeCategory = coverImageCategories.find(

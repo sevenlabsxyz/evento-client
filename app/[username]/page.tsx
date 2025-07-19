@@ -22,15 +22,19 @@ import {
   UserPlus,
   X,
   Zap,
+  User,
+  Calendar,
+  BarChart3,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import SocialLinks from "@/components/profile/social-links";
 
 export default function UserProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
-  const { setTopBar, setTransparent } = useTopBar();
+  const { setTopBar, setOverlaid } = useTopBar();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -103,20 +107,20 @@ export default function UserProfilePage() {
     },
   };
 
-  // Set TopBar content for transparent mode
+  // Set TopBar content for overlay mode
   useEffect(() => {
     setTopBar({
       title: userProfile.name,
       subtitle: userProfile.username,
       rightContent: null, // No right content for other users' profiles
     });
-    setTransparent(true);
+    setOverlaid(true);
 
     return () => {
       setTopBar({ rightContent: null });
-      setTransparent(false);
+      setOverlaid(false);
     };
-  }, [userProfile.name, userProfile.username, setTopBar, setTransparent]);
+  }, [userProfile.name, userProfile.username, setTopBar, setOverlaid]);
 
   const attendingEvents = [
     {
@@ -618,50 +622,50 @@ export default function UserProfilePage() {
             </div>
           )}
 
-          {/* Website - Centered */}
-          {userProfile.website && (
-            <div className="flex items-center justify-center gap-2">
-              <Globe className="h-4 w-4 text-gray-500" />
-              <button
-                onClick={handleWebsiteClick}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                {userProfile.website.replace(/^https?:\/\//, "")}
-              </button>
-            </div>
+          {/* Social Links */}
+          {userProfile && (
+            <SocialLinks 
+              user={{
+                bio_link: userProfile.website,
+                instagram_handle: userProfile.instagram_handle,
+                x_handle: userProfile.x_handle,
+                ln_address: userProfile.ln_address,
+                nip05: userProfile.nip05,
+              }} 
+            />
           )}
         </div>
 
         {/* Tabbed Section */}
         <div className="mb-4 bg-white">
           {/* Tab Headers */}
-          <div className="flex border-b border-gray-200">
+          <div className="flex gap-2 px-4 py-3">
             <button
               onClick={() => setActiveTab("about")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`px-3 py-1.5 text-base font-normal rounded-full border border-gray-200 transition-all ${
                 activeTab === "about"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "bg-gray-100 text-black"
+                  : "bg-white text-black hover:bg-gray-50"
               }`}
             >
               About
             </button>
             <button
               onClick={() => setActiveTab("events")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`px-3 py-1.5 text-base font-normal rounded-full border border-gray-200 transition-all ${
                 activeTab === "events"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "bg-gray-100 text-black"
+                  : "bg-white text-black hover:bg-gray-50"
               }`}
             >
               Events
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`px-3 py-1.5 text-base font-normal rounded-full border border-gray-200 transition-all ${
                 activeTab === "stats"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "bg-gray-100 text-black"
+                  : "bg-white text-black hover:bg-gray-50"
               }`}
             >
               Stats

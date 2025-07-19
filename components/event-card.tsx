@@ -146,7 +146,7 @@ export function EventCard({
               : getOptimizedCoverUrl(event.cover || "", "feed")
           } // For GIFs, use a regular img tag to ensure they play automatically
           alt={event.title}
-          className="aspect-square w-full cursor-pointer object-cover"
+          className="aspect-square w-[calc(94%)] rounded-2xl cursor-pointer object-cover mx-auto shadow-md"
           onClick={handleEventClick}
         />
       </div>
@@ -154,7 +154,7 @@ export function EventCard({
       {/* Event Details */}
       <div className="px-4 py-3">
         <h3
-          className="mb-2 cursor-pointer text-lg font-semibold transition-colors hover:text-red-600"
+          className="mb-2 cursor-pointer text-xl font-semibold transition-colors hover:text-red-600"
           onClick={handleEventClick}
         >
           {event.title}

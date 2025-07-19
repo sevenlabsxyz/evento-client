@@ -9,6 +9,9 @@ import {
   X,
   BadgeCheck,
   Loader2,
+  User,
+  Calendar,
+  BarChart3,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,11 +30,12 @@ import { Navbar } from "@/components/navbar";
 import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
 import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
+import SocialLinks from "@/components/profile/social-links";
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const { setTopBar, setTransparent } = useTopBar();
+  const { setTopBar, setOverlaid } = useTopBar();
   const [activeTab, setActiveTab] = useState("about");
   const [eventsFilter, setEventsFilter] = useState("attending");
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -49,39 +53,35 @@ export default function ProfilePage() {
   const { data: followers } = useUserFollowers(user?.id || "");
   const { data: following } = useUserFollowing(user?.id || "");
 
-  // Set TopBar content
+  // Set TopBar content and enable overlay mode
   useEffect(() => {
     setTopBar({
-      title: "Profile",
-      subtitle: user?.username ? `@${user.username}` : "@user",
-      rightContent: (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
-            onClick={() => router.push("/e/profile/edit")}
-          >
-            <Edit3 className="h-5 w-5 text-white" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
-            onClick={() => router.push("/e/settings")}
-          >
-            <Settings className="h-5 w-5 text-white" />
-          </Button>
-        </div>
-      ),
+      title: undefined,
+      subtitle: undefined,
+      showAvatar: false,
+      leftMode: "menu",
+      buttons: [
+        {
+          id: "edit",
+          icon: Edit3,
+          onClick: () => router.push("/e/profile/edit"),
+          label: "Edit profile",
+        },
+        {
+          id: "settings",
+          icon: Settings,
+          onClick: () => router.push("/e/settings"),
+          label: "Settings",
+        },
+      ],
     });
-    setTransparent(true);
+    setOverlaid(true);
 
     return () => {
-      setTopBar({ rightContent: null });
-      setTransparent(false);
+      setTopBar({ buttons: [] });
+      setOverlaid(false);
     };
-  }, [user?.username, router, setTopBar, setTransparent]);
+  }, [user?.username, router, setTopBar, setOverlaid]);
 
   const userStats = {
     events: eventCount || 0,
@@ -150,66 +150,6 @@ export default function ProfilePage() {
       time: "8:00 PM",
       location: "New York, USA",
       image: "/placeholder.svg?height=60&width=60",
-    },
-  ];
-
-  const followingList = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      username: "@sarahc",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 2,
-      name: "Marcus Johnson",
-      username: "@marcusj",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 3,
-      name: "Emma Rodriguez",
-      username: "@emmar",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 4,
-      name: "Alex Kim",
-      username: "@alexk",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 5,
-      name: "Lisa Park",
-      username: "@lisap",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-  ];
-
-  const followersList = [
-    {
-      id: 6,
-      name: "David Wilson",
-      username: "@davidw",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 7,
-      name: "Maria Garcia",
-      username: "@mariag",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 8,
-      name: "John Smith",
-      username: "@johns",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 9,
-      name: "Anna Johnson",
-      username: "@annaj",
-      avatar: "/placeholder.svg?height=50&width=50",
     },
   ];
 
@@ -447,10 +387,7 @@ export default function ProfilePage() {
       {/* Bio/Description */}
       <div>
         <h4 className="mb-3 font-semibold text-gray-900">Bio</h4>
-        <p className="text-gray-700">
-          Travel enthusiast exploring the world one event at a time. Love
-          photography, food, and meeting new people! ✈️📸
-        </p>
+        <p className="text-gray-700">{user?.bio || "Welcome to Evento"}</p>
       </div>
 
       {/* Interest Tags */}
@@ -545,7 +482,7 @@ export default function ProfilePage() {
         {/* Cover Image Section */}
         <div className="relative">
           {/* Banner */}
-          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
+          <div className="w-full h-40 md:h-48 bg-gradient-to-br from-red-400 to-red-600" />
 
           {/* Profile Picture - Centered & Clickable */}
           <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
@@ -612,100 +549,40 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Status/Title - Centered */}
-          {userData.status && (
-            <div className="mb-4 text-center">
-              <p className="text-sm font-medium text-gray-600">
-                {userData.status}
-              </p>
-            </div>
-          )}
-
-          {/* Website - Centered */}
-          {user?.bio_link && (
-            <div className="mb-4 flex items-center justify-center gap-2">
-              <Globe className="h-4 w-4 text-gray-500" />
-              <button
-                onClick={handleWebsiteClick}
-                className="text-sm text-blue-600 hover:underline"
-              >
-                {user.bio_link.replace(/^https?:\/\//, "")}
-              </button>
-            </div>
-          )}
-
-          {/* Social Links - Centered */}
-          <div className="flex justify-center gap-3">
-            {/* Instagram */}
-            {user?.instagram_handle && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => handleSocialClick("instagram")}
-              >
-                <div className="flex h-5 w-5 items-center justify-center rounded-sm bg-gradient-to-br from-purple-500 via-pink-500 to-red-400">
-                  <div className="h-3 w-3 rounded-sm border border-white"></div>
-                </div>
-              </Button>
-            )}
-            {/* X (Twitter) */}
-            {user?.x_handle && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => handleSocialClick("x")}
-              >
-                <div className="flex h-5 w-5 items-center justify-center rounded-sm bg-black text-xs font-bold text-white">
-                  𝕏
-                </div>
-              </Button>
-            )}
-            {/* Lightning Zap */}
-            {user?.ln_address && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={handleZap}
-              >
-                <Zap className="h-5 w-5 text-yellow-500" />
-              </Button>
-            )}
-          </div>
+          {/* Social Links */}
+          {user && <SocialLinks user={user} />}
         </div>
 
         {/* Tabbed Section */}
         <div className="mb-4 bg-white">
           {/* Tab Headers */}
-          <div className="flex border-b border-gray-200">
+          <div className="flex gap-2 px-4 py-3">
             <button
               onClick={() => setActiveTab("about")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`px-3 py-1.5 text-base font-normal rounded-full border border-gray-200 transition-all ${
                 activeTab === "about"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "bg-gray-100 text-black"
+                  : "bg-white text-black hover:bg-gray-50"
               }`}
             >
               About
             </button>
             <button
               onClick={() => setActiveTab("events")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`px-3 py-1.5 text-base font-normal rounded-full border border-gray-200 transition-all ${
                 activeTab === "events"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "bg-gray-100 text-black"
+                  : "bg-white text-black hover:bg-gray-50"
               }`}
             >
               Events
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
+              className={`px-3 py-1.5 text-base font-normal rounded-full border border-gray-200 transition-all ${
                 activeTab === "stats"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "bg-gray-100 text-black"
+                  : "bg-white text-black hover:bg-gray-50"
               }`}
             >
               Stats

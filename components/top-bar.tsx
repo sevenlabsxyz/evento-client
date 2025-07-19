@@ -4,51 +4,212 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUserProfile } from "@/lib/hooks/useUserProfile";
 import { useSidebar } from "@/lib/stores/sidebar-store";
 import { useTopBar } from "@/lib/stores/topbar-store";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 
 export function TopBar() {
   const { openSidebar } = useSidebar();
-  const { title, subtitle, rightContent, isTransparent } = useTopBar();
+  const {
+    leftMode,
+    onBackPress,
+    centerMode,
+    title,
+    subtitle,
+    buttons,
+    showAvatar,
+    isOverlaid,
+  } = useTopBar();
   const { user } = useUserProfile();
   const pathname = usePathname();
+  const router = useRouter();
+  const [isSpinning, setIsSpinning] = useState(false);
+  
+  // Scroll state for overlay mode animations
+  const [scrollY, setScrollY] = useState(0);
+  const [isScrollingUp, setIsScrollingUp] = useState(false);
+  const [showNavigation, setShowNavigation] = useState(false);
+
+  // Scroll detection for overlay mode
+  useEffect(() => {
+    if (!isOverlaid) return;
+
+    let lastScrollY = 0;
+    let ticking = false;
+
+    const handleScroll = () => {
+      if (!ticking) {
+        requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY;
+          const scrollingUp = currentScrollY < lastScrollY;
+          
+          setScrollY(currentScrollY);
+          setIsScrollingUp(scrollingUp);
+          
+          // Show navigation when scrolling up from >100px position
+          if (scrollingUp && currentScrollY > 50) {
+            setShowNavigation(true);
+          } else if (!scrollingUp) {
+            setShowNavigation(false);
+          }
+          
+          lastScrollY = currentScrollY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isOverlaid]);
+
+  const handleBackPress = () => {
+    if (onBackPress) {
+      onBackPress();
+    } else {
+      router.back();
+    }
+  };
+
+  const handleMenuClick = () => {
+    setIsSpinning(true);
+    openSidebar();
+    setTimeout(() => setIsSpinning(false), 400);
+  };
+
+  const renderLeftContent = () => {
+    if (leftMode === "back") {
+      return (
+        <button
+          onClick={handleBackPress}
+          className={
+            "w-[32px] h-[32px] flex items-center justify-center border border-transparent mt-0.5"
+          }
+        >
+          <ArrowLeft className="h-6 w-6 text-gray-500" strokeWidth={2.5} />
+        </button>
+      );
+    }
+
+    return (
+      <button
+        onClick={handleMenuClick}
+        className={`rounded-full p-0 border border-gray-200 bg-gray-50 transition-all duration-300 hover:opacity-80 ${
+          isOverlaid ? "bg-white border-gray-200" : "hover:bg-gray-100"
+        } ${isSpinning ? "animate-spin" : ""}`}
+      >
+        <Image
+          src="/assets/img/evento-sublogo.svg"
+          alt="Evento"
+          width={32}
+          height={32}
+        />
+      </button>
+    );
+  };
+
+  const renderCenterContent = () => {
+    if (centerMode === "empty") {
+      return null;
+    }
+
+    if (centerMode === "title" && !isOverlaid) {
+      return (
+        <div className="flex-1 flex flex-col gap-1">
+          <h1 className="text-lg font-semibold text-gray-500">{title}</h1>
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
+        </div>
+      );
+    }
+
+    return null;
+  };
+
+  // Calculate styles based on scroll state
+  const getTopBarStyles = () => {
+    if (!isOverlaid) {
+      return "bg-white";
+    }
+    
+    // Always transparent when within 100px of top
+    if (scrollY <= 100) {
+      return "bg-transparent";
+    }
+    
+    if (showNavigation) {
+      return "bg-white shadow-sm transform translate-y-0 transition-all duration-300 ease-out";
+    }
+    
+    return "bg-transparent";
+  };
+
+  const getContentOpacity = () => {
+    if (!isOverlaid) return "opacity-100";
+    
+    if (scrollY > 100 && !showNavigation) {
+      return "opacity-0";
+    }
+    
+    return "opacity-100";
+  };
 
   return (
     <div
-      className={`fixed left-1/2 top-0 z-40 w-full max-w-full -translate-x-1/2 transform md:max-w-sm ${
-        isTransparent ? "" : "bg-white shadow-sm"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-40 w-full max-w-full h-16 md:max-w-sm transition-all duration-300 ${getTopBarStyles()}`}
     >
-      <div className="px-4 pb-4 pt-6">
-        <div className="mb-2 flex items-start justify-between">
-          <div className="flex flex-1 items-start gap-2">
-            <button
-              onClick={openSidebar}
-              className={`mt-0.5 rounded-full transition-opacity hover:opacity-80 ${
-                pathname === "/e/profile" ? "ring-2 ring-red-500" : ""
-              } ${isTransparent ? "bg-white/10 backdrop-blur-sm" : ""}`}
-            >
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={user?.image || ""}
-                  alt={user?.name || "Profile"}
-                />
-                <AvatarFallback className="bg-gray-100 text-sm">
-                  {user?.name?.charAt(0).toUpperCase() ||
-                    user?.username?.charAt(0).toUpperCase() ||
-                    "U"}
-                </AvatarFallback>
-              </Avatar>
-            </button>
-            {!isTransparent && (
-              <div className="flex-1">
-                <h1 className="mb-1 text-3xl font-bold text-black">{title}</h1>
-                <p className="text-sm text-gray-500">{subtitle}</p>
+      <div className="px-4 pb-4 pt-4">
+        <div className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}>
+          <div className="flex items-center gap-3">
+            {renderLeftContent()}
+            {renderCenterContent()}
+          </div>
+          <div className="flex items-center gap-3">
+            {buttons.length > 0 && (
+              <div className="flex gap-3">
+                {buttons.map((button) => {
+                  const Icon = button.icon;
+                  return (
+                    <button
+                      key={button.id}
+                      onClick={button.onClick}
+                      className={`transition-all duration-300 hover:opacity-80 ${
+                        isOverlaid
+                          ? "w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center"
+                          : "p-0"
+                      }`}
+                    >
+                      <Icon
+                        className={`${
+                          isOverlaid ? "h-5 w-5 text-gray-500" : "h-6 w-6 text-gray-400"
+                        }`}
+                        strokeWidth={2.5}
+                      />
+                    </button>
+                  );
+                })}
               </div>
             )}
+            {showAvatar && (
+              <button
+                onClick={() => router.push("/e/profile")}
+                className={`ml-1 rounded-full transition-opacity hover:opacity-80`}
+              >
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.image || ""}
+                    alt={user?.name || "Profile"}
+                  />
+                  <AvatarFallback className="bg-gray-100 text-sm">
+                    {user?.name?.charAt(0).toUpperCase() ||
+                      user?.username?.charAt(0).toUpperCase() ||
+                      "U"}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            )}
           </div>
-          {rightContent && (
-            <div className="ml-4 flex gap-2">{rightContent}</div>
-          )}
         </div>
       </div>
     </div>

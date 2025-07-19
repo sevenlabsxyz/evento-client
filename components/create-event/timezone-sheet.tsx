@@ -2,6 +2,7 @@
 import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
 import { VisuallyHidden } from "@silk-hq/components";
 import { useMemo, useState } from "react";
+import { getTimezoneAbbreviationSync, formatTimezoneOffsetWithAbbreviation } from "@/lib/utils/timezone";
 import "./timezone-sheet.css";
 
 interface TimezoneSheetProps {
@@ -1386,6 +1387,20 @@ const timezones: TimezoneData[] = [
   },
 ];
 
+// Common/preferred timezones with specific cities
+const commonTimezonePreferences = [
+  { value: "America/Los_Angeles", preferredCity: "Los Angeles" },
+  { value: "America/Denver", preferredCity: "Denver" },
+  { value: "America/Chicago", preferredCity: "Chicago" },
+  { value: "America/New_York", preferredCity: "New York" },
+  { value: "Europe/London", preferredCity: "London" },
+  { value: "Europe/Paris", preferredCity: "Paris" },
+  { value: "Asia/Tokyo", preferredCity: "Tokyo" },
+  { value: "Asia/Shanghai", preferredCity: "Beijing" },
+  { value: "Australia/Sydney", preferredCity: "Sydney" },
+  { value: "Asia/Kolkata", preferredCity: "New Delhi" },
+];
+
 export default function TimezoneSheet({
   isOpen,
   onClose,
@@ -1395,21 +1410,53 @@ export default function TimezoneSheet({
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState("");
 
-  const filteredTimezones = useMemo(() => {
-    if (!searchText.trim()) return timezones;
+  const { commonTimezonesList, regularTimezonesList } = useMemo(() => {
+    const baseFilter = (tz: TimezoneData) => {
+      if (!searchText.trim()) return true;
 
-    const query = searchText.toLowerCase();
-    return timezones.filter(
-      (tz) =>
+      const query = searchText.toLowerCase();
+      const abbreviation = getTimezoneAbbreviationSync(tz.value).toLowerCase();
+      
+      return (
         tz.city.toLowerCase().includes(query) ||
         tz.country.toLowerCase().includes(query) ||
         tz.offset.toLowerCase().includes(query) ||
-        tz.value.toLowerCase().includes(query),
-    );
+        tz.value.toLowerCase().includes(query) ||
+        abbreviation.includes(query) ||
+        // Support various GMT offset formats
+        query.match(/^(gmt\s*)?[+-]?\d+/) && tz.offset.toLowerCase().includes(query.replace(/^gmt\s*/, "").replace(/\s+/g, ""))
+      );
+    };
+
+    if (!searchText.trim()) {
+      // When no search, show common timezones at top
+      const commonTzData = commonTimezonePreferences
+        .map(pref => 
+          timezones.find(tz => 
+            tz.value === pref.value && tz.city === pref.preferredCity
+          ) || timezones.find(tz => tz.value === pref.value) // fallback to any city with that timezone
+        )
+        .filter((tz): tz is TimezoneData => tz !== undefined);
+      
+      const commonTimezoneValues = commonTimezonePreferences.map(pref => pref.value);
+      const regularTzData = timezones.filter(tz => !commonTimezoneValues.includes(tz.value));
+      
+      return {
+        commonTimezonesList: commonTzData,
+        regularTimezonesList: regularTzData
+      };
+    } else {
+      // When searching, filter all timezones and don't separate
+      const filtered = timezones.filter(baseFilter);
+      return {
+        commonTimezonesList: [],
+        regularTimezonesList: filtered
+      };
+    }
   }, [searchText]);
 
   const handleTimezoneSelect = (timezone: TimezoneData) => {
-    onTimezoneSelect(`${timezone.offset.replace("GMT", "")}`);
+    onTimezoneSelect(timezone.value);
     onClose();
   };
 
@@ -1444,23 +1491,60 @@ export default function TimezoneSheet({
             <SheetWithDetent.ScrollRoot asChild>
               <SheetWithDetent.ScrollView className="TimezoneSheet-scrollView">
                 <SheetWithDetent.ScrollContent className="TimezoneSheet-scrollContent">
-                  {filteredTimezones.map((timezone) => (
-                    <button
-                      key={`${timezone.city}-${timezone.country}`}
-                      onClick={() => handleTimezoneSelect(timezone)}
-                      className="TimezoneSheet-timezoneContainer"
-                    >
-                      <div className="TimezoneSheet-timezoneDetails">
-                        <div className="TimezoneSheet-timezoneCity">
-                          {timezone.city}, {timezone.country}
+                  {/* Common Timezones Section */}
+                  {commonTimezonesList.length > 0 && (
+                    <>
+                      <div className="TimezoneSheet-sectionHeader">
+                        Common
+                      </div>
+                      {commonTimezonesList.map((timezone) => (
+                        <button
+                          key={`common-${timezone.city}-${timezone.country}`}
+                          onClick={() => handleTimezoneSelect(timezone)}
+                          className="TimezoneSheet-timezoneContainer"
+                        >
+                          <div className="TimezoneSheet-timezoneDetails">
+                            <div className="TimezoneSheet-timezoneCity">
+                              {timezone.city}, {timezone.country}
+                            </div>
+                          </div>
+                          <div className="TimezoneSheet-timezoneOffset">
+                            {formatTimezoneOffsetWithAbbreviation(timezone.value, timezone.offset)}
+                          </div>
+                        </button>
+                      ))}
+                    </>
+                  )}
+
+                  {/* Regular Timezones Section */}
+                  {regularTimezonesList.length > 0 && (
+                    <>
+                      {commonTimezonesList.length > 0 && (
+                        <div className="TimezoneSheet-sectionHeader">
+                          All Timezones
                         </div>
-                      </div>
-                      <div className="TimezoneSheet-timezoneOffset">
-                        {timezone.offset}
-                      </div>
-                    </button>
-                  ))}
-                  {filteredTimezones.length === 0 && (
+                      )}
+                      {regularTimezonesList.map((timezone) => (
+                        <button
+                          key={`${timezone.city}-${timezone.country}`}
+                          onClick={() => handleTimezoneSelect(timezone)}
+                          className="TimezoneSheet-timezoneContainer"
+                        >
+                          <div className="TimezoneSheet-timezoneDetails">
+                            <div className="TimezoneSheet-timezoneCity">
+                              {timezone.city}, {timezone.country}
+                            </div>
+                          </div>
+                          <div className="TimezoneSheet-timezoneOffset">
+                            {formatTimezoneOffsetWithAbbreviation(timezone.value, timezone.offset)}
+                          </div>
+                        </button>
+                      ))}
+                    </>
+                  )}
+
+                  {/* No Results */}
+                  {commonTimezonesList.length === 0 && regularTimezonesList.length === 0 && (
                     <div className="TimezoneSheet-noResults">
                       No timezones found
                     </div>

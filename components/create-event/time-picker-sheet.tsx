@@ -3,6 +3,7 @@
 import { DetachedSheet } from "@/components/ui/detached-sheet";
 import { useEffect, useRef, useState } from "react";
 import TimezoneSheet from "./timezone-sheet";
+import { formatSelectedTimezone } from "@/lib/utils/timezone";
 
 interface TimePickerSheetProps {
   isOpen: boolean;
@@ -88,7 +89,7 @@ export default function TimePickerSheet({
         <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-11 bg-gradient-to-t from-white to-transparent" />
 
         {/* Selection indicator */}
-        <div className="-mt-5.5 pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-11 border-b border-t border-gray-200" />
+        <div className="-mt-5.5 pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-11 border-b border-t border-transparent" />
 
         <div
           ref={wheelRef}
@@ -227,7 +228,7 @@ export default function TimePickerSheet({
                   onClick={() => setShowTimezoneSheet(true)}
                   className="w-full rounded-xl bg-red-100 p-3 font-medium text-red-600"
                 >
-                  Timezone: {timezone}
+                  Timezone: {formatSelectedTimezone(timezone)}
                 </button>
               </div>
 

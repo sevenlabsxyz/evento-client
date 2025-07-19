@@ -16,8 +16,10 @@ export default function ChatPage() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Messages",
-      subtitle: "Your conversations",
+      title: "Chat",
+      subtitle: undefined,
+      showAvatar: true,
+      leftMode: "menu",
       rightContent: (
         <Button
           variant="ghost"

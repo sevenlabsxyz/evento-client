@@ -115,6 +115,18 @@
   color: rgb(239, 68, 68);
 }
 
+.TimezoneSheet-sectionHeader {
+  /* INNER-LAYOUT */
+  padding: 1rem 1.25rem 0.5rem;
+
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(107, 114, 128);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
 .TimezoneSheet-noResults {
   /* INNER-LAYOUT */
   padding: 3rem 1.25rem;

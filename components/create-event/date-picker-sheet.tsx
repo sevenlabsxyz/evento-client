@@ -248,16 +248,6 @@ export default function DatePickerSheet({
                   ))}
                 </div>
               </div>
-
-              {/* Clear Button */}
-              <div className="border-t border-gray-100 pt-4">
-                <button
-                  onClick={handleClear}
-                  className="w-full py-3 font-medium text-red-500"
-                >
-                  Clear Date & Time
-                </button>
-              </div>
             </div>
           </DetachedSheet.Content>
         </DetachedSheet.View>

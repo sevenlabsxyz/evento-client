@@ -41,6 +41,12 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+type Attachment = {
+  type: string;
+  url?: string;
+  data?: any;
+};
+
 export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
@@ -48,13 +54,11 @@ export default function CreatePage() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
+      leftMode: "back",
       title: "Create Event",
-      subtitle: "Start planning your next event",
+      subtitle: undefined,
+      showAvatar: true,
     });
-
-    return () => {
-      setTopBar({ rightContent: null });
-    };
   }, [setTopBar]);
 
   const createEventMutation = useCreateEventWithCallbacks();
@@ -198,7 +202,11 @@ export default function CreatePage() {
         photoInput.onchange = (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
           if (file) {
-            setAttachments((prev) => [...prev, { type: "photo", data: file }]);
+            const newAttachments = [
+              ...attachments,
+              { type: "photo", data: file },
+            ];
+            setAttachments(newAttachments);
           }
         };
         photoInput.click();
@@ -210,7 +218,11 @@ export default function CreatePage() {
         fileInput.onchange = (e) => {
           const file = (e.target as HTMLInputElement).files?.[0];
           if (file) {
-            setAttachments((prev) => [...prev, { type: "file", data: file }]);
+            const newAttachments = [
+              ...attachments,
+              { type: "file", data: file },
+            ];
+            setAttachments(newAttachments);
           }
         };
         fileInput.click();
@@ -300,20 +312,22 @@ export default function CreatePage() {
         {/* Date & Time Module */}
         <div className="space-y-4 rounded-2xl bg-white p-4">
           <div className="flex items-center gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+            <div className="flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-600" />
             </div>
-            <span className="w-16 font-medium text-gray-700">Starts</span>
+            <span className="w-12 min-w-10 font-medium text-gray-700">
+              Starts
+            </span>
             <div className="flex flex-1 gap-2">
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900"
+                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900"
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className="whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600"
+                className="whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600"
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -321,20 +335,22 @@ export default function CreatePage() {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+            <div className="flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100">
               <Calendar className="h-4 w-4 text-gray-600" />
             </div>
-            <span className="w-16 font-medium text-gray-700">Ends</span>
+            <span className="w-12 min-w-10 font-medium text-gray-700">
+              Ends
+            </span>
             <div className="flex flex-1 gap-2">
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900"
+                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900"
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className="whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600"
+                className="whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600"
               >
                 {formatTimeForDisplay(endTime)}
               </button>

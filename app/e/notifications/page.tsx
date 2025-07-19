@@ -20,13 +20,11 @@ export default function NotificationsPage() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: "Notifications",
-      subtitle: "Stay updated",
+      title: "Inbox",
+      subtitle: undefined,
+      showAvatar: true,
+      leftMode: "menu",
     });
-
-    return () => {
-      setTopBar({ rightContent: null });
-    };
   }, [setTopBar]);
 
   const [activeTab, setActiveTab] = useState("notifications");

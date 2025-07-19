@@ -8,12 +8,12 @@ export default function EventoLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isTransparent } = useTopBar();
-
+  const { isOverlaid } = useTopBar();
+  
   return (
     <>
       <TopBar />
-      <div className={isTransparent ? "" : "pt-24"}>{children}</div>
+      <div className={isOverlaid ? "" : "pt-16"}>{children}</div>
     </>
   );
 }

@@ -34,12 +34,10 @@ export default function SettingsPage() {
   useEffect(() => {
     setTopBar({
       title: "Settings",
-      subtitle: "Manage your preferences",
+      subtitle: undefined,
+      showAvatar: false,
+      leftMode: "back",
     });
-
-    return () => {
-      setTopBar({ rightContent: null });
-    };
   }, [setTopBar]);
 
   // Sheet states
