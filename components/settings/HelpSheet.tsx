@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import { Bot, Mail, Twitter } from "lucide-react";
 
 interface HelpSheetProps {
   open: boolean;
