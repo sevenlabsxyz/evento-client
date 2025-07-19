@@ -1,9 +1,9 @@
-"use client";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
-import { VisuallyHidden } from "@silk-hq/components";
-import { ChevronRight, MapPin, Plus, Search } from "lucide-react";
-import { useMemo, useState } from "react";
-import "./location-sheet.css";
+'use client';
+import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { VisuallyHidden } from '@silk-hq/components';
+import { ChevronRight, MapPin, Plus, Search } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import './location-sheet.css';
 
 interface LocationSheetProps {
   isOpen: boolean;
@@ -45,35 +45,34 @@ export default function LocationSheet({
       country: 'United States',
       zipCode: '94103',
       coordinates: { lat: 37.7849, lng: -122.4021 },
-      formatted:
-        "Moscone Center, 747 Howard St, San Francisco, CA 94103, United States",
+      formatted: 'Moscone Center, 747 Howard St, San Francisco, CA 94103, United States',
     },
     {
-      name: "Golden Gate Park",
-      address: "Golden Gate Park",
-      city: "San Francisco",
-      state: "CA",
-      country: "United States",
+      name: 'Golden Gate Park',
+      address: 'Golden Gate Park',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
       coordinates: { lat: 37.7694, lng: -122.4862 },
-      formatted: "Golden Gate Park, San Francisco, CA, United States",
+      formatted: 'Golden Gate Park, San Francisco, CA, United States',
     },
     {
-      name: "Union Square",
-      address: "Union Square",
-      city: "San Francisco",
-      state: "CA",
-      country: "United States",
+      name: 'Union Square',
+      address: 'Union Square',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
       coordinates: { lat: 37.788, lng: -122.4075 },
-      formatted: "Union Square, San Francisco, CA, United States",
+      formatted: 'Union Square, San Francisco, CA, United States',
     },
     {
-      name: "Pier 39",
-      address: "Pier 39",
-      city: "San Francisco",
-      state: "CA",
-      country: "United States",
+      name: 'Pier 39',
+      address: 'Pier 39',
+      city: 'San Francisco',
+      state: 'CA',
+      country: 'United States',
       coordinates: { lat: 37.8086, lng: -122.4098 },
-      formatted: "Pier 39, San Francisco, CA, United States",
+      formatted: 'Pier 39, San Francisco, CA, United States',
     },
   ];
 
@@ -81,14 +80,13 @@ export default function LocationSheet({
   const filteredLocations = useMemo(() => {
     if (!searchQuery.trim()) return placesResults;
 
-
     const query = searchQuery.toLowerCase();
     return placesResults.filter(
       (location) =>
         location.name.toLowerCase().includes(query) ||
         location.address.toLowerCase().includes(query) ||
         location.city.toLowerCase().includes(query) ||
-        location.formatted.toLowerCase().includes(query),
+        location.formatted.toLowerCase().includes(query)
     );
   }, [searchQuery]);
 
@@ -100,16 +98,14 @@ export default function LocationSheet({
   const handleCustomLocation = () => {
     if (!searchQuery.trim()) return;
 
-
     // Create a custom location from the search query
     const customLocation: LocationData = {
       name: searchQuery,
       address: searchQuery,
-      city: "",
-      country: "",
+      city: '',
+      country: '',
       formatted: searchQuery,
     };
-
 
     handleLocationSelect(customLocation);
   };
@@ -117,13 +113,12 @@ export default function LocationSheet({
   const handleCurrentLocation = () => {
     // In a real app, this would request GPS location
     const currentLocation: LocationData = {
-      name: "Current Location",
-      address: "Your current location",
-      city: "",
-      country: "",
-      formatted: "Current Location",
+      name: 'Current Location',
+      address: 'Your current location',
+      city: '',
+      country: '',
+      formatted: 'Current Location',
     };
-
 
     handleLocationSelect(currentLocation);
   };
@@ -138,20 +133,20 @@ export default function LocationSheet({
       <SheetWithDetent.Portal>
         <SheetWithDetent.View>
           <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className="LocationSheet-content">
-            <div className="LocationSheet-header">
-              <SheetWithDetent.Handle className="LocationSheet-handle" />
+          <SheetWithDetent.Content className='LocationSheet-content'>
+            <div className='LocationSheet-header'>
+              <SheetWithDetent.Handle className='LocationSheet-handle' />
               <VisuallyHidden.Root asChild>
-                <SheetWithDetent.Title className="LocationSheet-title">
+                <SheetWithDetent.Title className='LocationSheet-title'>
                   Choose Location
                 </SheetWithDetent.Title>
               </VisuallyHidden.Root>
-              <div className="LocationSheet-searchContainer">
-                <Search className="LocationSheet-searchIcon" />
+              <div className='LocationSheet-searchContainer'>
+                <Search className='LocationSheet-searchIcon' />
                 <input
-                  className="LocationSheet-input"
-                  type="text"
-                  placeholder="Search for a place or address"
+                  className='LocationSheet-input'
+                  type='text'
+                  placeholder='Search for a place or address'
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setActiveDetent(2)}
@@ -160,21 +155,19 @@ export default function LocationSheet({
               </div>
             </div>
             <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className="LocationSheet-scrollView">
-                <SheetWithDetent.ScrollContent className="LocationSheet-scrollContent">
+              <SheetWithDetent.ScrollView className='LocationSheet-scrollView'>
+                <SheetWithDetent.ScrollContent className='LocationSheet-scrollContent'>
                   {/* Current Location Option */}
                   <button
                     onClick={handleCurrentLocation}
-                    className="LocationSheet-locationItem LocationSheet-currentLocation"
+                    className='LocationSheet-locationItem LocationSheet-currentLocation'
                   >
-                    <div className="LocationSheet-locationIcon LocationSheet-locationIcon--blue">
-                      <MapPin className="LocationSheet-icon" />
+                    <div className='LocationSheet-locationIcon LocationSheet-locationIcon--blue'>
+                      <MapPin className='LocationSheet-icon' />
                     </div>
-                    <div className="LocationSheet-locationDetails">
-                      <div className="LocationSheet-locationName">
-                        Use current location
-                      </div>
-                      <div className="LocationSheet-locationAddress">
+                    <div className='LocationSheet-locationDetails'>
+                      <div className='LocationSheet-locationName'>Use current location</div>
+                      <div className='LocationSheet-locationAddress'>
                         We'll use your current GPS location
                       </div>
                     </div>
@@ -188,37 +181,32 @@ export default function LocationSheet({
                         <button
                           key={index}
                           onClick={() => handleLocationSelect(location)}
-                          className="LocationSheet-locationItem"
+                          className='LocationSheet-locationItem'
                         >
-                          <div className="LocationSheet-locationIcon">
-                            <MapPin className="LocationSheet-icon" />
+                          <div className='LocationSheet-locationIcon'>
+                            <MapPin className='LocationSheet-icon' />
                           </div>
-                          <div className="LocationSheet-locationDetails">
-                            <div className="LocationSheet-locationName">
-                              {location.name}
-                            </div>
-                            <div className="LocationSheet-locationAddress">
+                          <div className='LocationSheet-locationDetails'>
+                            <div className='LocationSheet-locationName'>{location.name}</div>
+                            <div className='LocationSheet-locationAddress'>
                               {location.formatted}
                             </div>
                           </div>
                         </button>
                       ))}
 
-
                       {/* Custom Location Option */}
                       {filteredLocations.length === 0 && searchQuery.trim() && (
                         <button
                           onClick={handleCustomLocation}
-                          className="LocationSheet-locationItem"
+                          className='LocationSheet-locationItem'
                         >
-                          <div className="LocationSheet-locationIcon LocationSheet-locationIcon--red">
-                            <Plus className="LocationSheet-icon" />
+                          <div className='LocationSheet-locationIcon LocationSheet-locationIcon--red'>
+                            <Plus className='LocationSheet-icon' />
                           </div>
-                          <div className="LocationSheet-locationDetails">
-                            <div className="LocationSheet-locationName">
-                              Add "{searchQuery}"
-                            </div>
-                            <div className="LocationSheet-locationAddress">
+                          <div className='LocationSheet-locationDetails'>
+                            <div className='LocationSheet-locationName'>Add "{searchQuery}"</div>
+                            <div className='LocationSheet-locationAddress'>
                               Use as custom location
                             </div>
                           </div>
@@ -228,39 +216,31 @@ export default function LocationSheet({
                   ) : (
                     /* Default Suggestions */
                     <>
-                      <div className="LocationSheet-sectionTitle">
-                        Suggested
-                      </div>
+                      <div className='LocationSheet-sectionTitle'>Suggested</div>
                       {placesResults.slice(0, 4).map((location, index) => (
                         <button
                           key={index}
                           onClick={() => handleLocationSelect(location)}
-                          className="LocationSheet-locationItem LocationSheet-locationItem--withChevron"
+                          className='LocationSheet-locationItem LocationSheet-locationItem--withChevron'
                         >
-                          <div className="LocationSheet-locationIcon">
-                            <MapPin className="LocationSheet-icon" />
+                          <div className='LocationSheet-locationIcon'>
+                            <MapPin className='LocationSheet-icon' />
                           </div>
-                          <div className="LocationSheet-locationDetails">
-                            <div className="LocationSheet-locationName">
-                              {location.name}
-                            </div>
-                            <div className="LocationSheet-locationAddress">
+                          <div className='LocationSheet-locationDetails'>
+                            <div className='LocationSheet-locationName'>{location.name}</div>
+                            <div className='LocationSheet-locationAddress'>
                               {location.city}, {location.state}
                             </div>
                           </div>
-                          <ChevronRight className="LocationSheet-chevron" />
+                          <ChevronRight className='LocationSheet-chevron' />
                         </button>
                       ))}
                     </>
                   )}
 
-                  {searchQuery &&
-                    filteredLocations.length === 0 &&
-                    !searchQuery.trim() && (
-                      <div className="LocationSheet-noResults">
-                        No locations found
-                      </div>
-                    )}
+                  {searchQuery && filteredLocations.length === 0 && !searchQuery.trim() && (
+                    <div className='LocationSheet-noResults'>No locations found</div>
+                  )}
                 </SheetWithDetent.ScrollContent>
               </SheetWithDetent.ScrollView>
             </SheetWithDetent.ScrollRoot>
@@ -270,4 +250,3 @@ export default function LocationSheet({
     </SheetWithDetent.Root>
   );
 }
-

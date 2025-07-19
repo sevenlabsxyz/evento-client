@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { DetachedSheet } from "@/components/ui/detached-sheet";
-import { VisuallyHidden } from "@silk-hq/components";
-import { useEffect, useState } from "react";
-import "./description-sheet.css";
-import { LinkProps } from "./tiptap-utils";
+import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { VisuallyHidden } from '@silk-hq/components';
+import { useEffect, useState } from 'react';
+import './description-sheet.css';
+import { LinkProps } from './tiptap-utils';
 
 interface LinkEditSheetProps {
   isOpen: boolean;
@@ -19,8 +19,8 @@ export function LinkEditSheet({
   isOpen,
   onClose,
   onSetLink,
-  initialUrl = "",
-  initialText = "",
+  initialUrl = '',
+  initialText = '',
   initialOpenInNewTab = false,
 }: LinkEditSheetProps) {
   const [field, setField] = useState<LinkProps>({
@@ -28,7 +28,7 @@ export function LinkEditSheet({
     text: initialText,
     openInNewTab: initialOpenInNewTab,
   });
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (isOpen) {
@@ -37,7 +37,7 @@ export function LinkEditSheet({
         text: initialText,
         openInNewTab: initialOpenInNewTab,
       });
-      setError("");
+      setError('');
     }
   }, [isOpen, initialUrl, initialText, initialOpenInNewTab]);
 
@@ -45,9 +45,7 @@ export function LinkEditSheet({
     if (!inputUrl.trim()) return false;
     try {
       // Add protocol if missing
-      const urlToValidate = inputUrl.includes("://")
-        ? inputUrl
-        : `https://${inputUrl}`;
+      const urlToValidate = inputUrl.includes('://') ? inputUrl : `https://${inputUrl}`;
       new URL(urlToValidate);
       return true;
     } catch {
@@ -59,19 +57,17 @@ export function LinkEditSheet({
     e.preventDefault();
 
     if (!field.url.trim()) {
-      setError("Please enter a URL");
+      setError('Please enter a URL');
       return;
     }
 
     if (!validateUrl(field.url)) {
-      setError("Please enter a valid URL");
+      setError('Please enter a valid URL');
       return;
     }
 
     // Add protocol if missing
-    const finalUrl = field.url.includes("://")
-      ? field.url
-      : `https://${field.url}`;
+    const finalUrl = field.url.includes('://') ? field.url : `https://${field.url}`;
 
     onSetLink({
       url: finalUrl,
@@ -85,66 +81,58 @@ export function LinkEditSheet({
     <DetachedSheet.Root
       presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
-      forComponent="closest"
+      forComponent='closest'
     >
       <DetachedSheet.Portal>
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
-          <DetachedSheet.Content className="LinkEditSheet-content">
-            <div className="flex justify-center mb-4">
-              <DetachedSheet.Handle className="LinkEditSheet-handle" />
+          <DetachedSheet.Content className='LinkEditSheet-content'>
+            <div className='mb-4 flex justify-center'>
+              <DetachedSheet.Handle className='LinkEditSheet-handle' />
             </div>
             <VisuallyHidden.Root asChild>
               <DetachedSheet.Title>Edit Link</DetachedSheet.Title>
             </VisuallyHidden.Root>
 
-            <form onSubmit={handleSubmit} className="LinkEditSheet-container">
-              <h3 className="LinkEditSheet-title">Edit Link</h3>
+            <form onSubmit={handleSubmit} className='LinkEditSheet-container'>
+              <h3 className='LinkEditSheet-title'>Edit Link</h3>
 
-              <div className="LinkEditSheet-form">
-                <div className="LinkEditSheet-field">
-                  <label className="LinkEditSheet-label">Link</label>
+              <div className='LinkEditSheet-form'>
+                <div className='LinkEditSheet-field'>
+                  <label className='LinkEditSheet-label'>Link</label>
                   <input
-                    type="url"
+                    type='url'
                     value={field.url}
                     onChange={(e) => {
                       setField({ ...field, url: e.target.value });
-                      setError("");
+                      setError('');
                     }}
-                    placeholder="Paste a link (https://...)"
-                    className="LinkEditSheet-input"
+                    placeholder='Paste a link (https://...)'
+                    className='LinkEditSheet-input'
                     autoFocus
                     required
                   />
-                  {error && <p className="LinkEditSheet-error">{error}</p>}
-                  {error && <p className="LinkEditSheet-error">{error}</p>}
+                  {error && <p className='LinkEditSheet-error'>{error}</p>}
+                  {error && <p className='LinkEditSheet-error'>{error}</p>}
                 </div>
 
-                <div className="LinkEditSheet-field">
-                  <label className="LinkEditSheet-label">
-                    Display text (optional)
-                  </label>
-                  <label className="LinkEditSheet-label">
-                    Display text (optional)
-                  </label>
+                <div className='LinkEditSheet-field'>
+                  <label className='LinkEditSheet-label'>Display text (optional)</label>
+                  <label className='LinkEditSheet-label'>Display text (optional)</label>
                   <input
-                    type="text"
+                    type='text'
                     value={field.text}
-                    onChange={(e) =>
-                      setField({ ...field, text: e.target.value })
-                    }
-                    onChange={(e) =>
-                      setField({ ...field, text: e.target.value })
-                    }
-                    placeholder="Text to display"
-                    className="LinkEditSheet-input"
+                    onChange={(e) => setField({ ...field, text: e.target.value })}
+                    onChange={(e) => setField({ ...field, text: e.target.value })}
+                    placeholder='Text to display'
+                    className='LinkEditSheet-input'
                   />
                 </div>
 
-                <div className="LinkEditSheet-field LinkEditSheet-field--checkbox">
-                  <label className="LinkEditSheet-checkboxLabel">
+                <div className='LinkEditSheet-field LinkEditSheet-field--checkbox'>
+                  <label className='LinkEditSheet-checkboxLabel'>
                     <input
-                      type="checkbox"
+                      type='checkbox'
                       checked={field.openInNewTab}
                       onChange={() =>
                         setField({
@@ -158,25 +146,22 @@ export function LinkEditSheet({
                           openInNewTab: !field.openInNewTab,
                         })
                       }
-                      className="LinkEditSheet-checkbox"
+                      className='LinkEditSheet-checkbox'
                     />
                     <span>Open in new tab</span>
                   </label>
                 </div>
               </div>
 
-              <div className="LinkEditSheet-buttons">
+              <div className='LinkEditSheet-buttons'>
                 <button
-                  type="button"
+                  type='button'
                   onClick={onClose}
-                  className="LinkEditSheet-button LinkEditSheet-button--cancel"
+                  className='LinkEditSheet-button LinkEditSheet-button--cancel'
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="LinkEditSheet-button LinkEditSheet-button--save"
-                >
+                <button type='submit' className='LinkEditSheet-button LinkEditSheet-button--save'>
                   Insert
                 </button>
               </div>

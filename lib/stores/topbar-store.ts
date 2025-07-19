@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { create } from "zustand";
+import type { ReactNode } from 'react';
+import { create } from 'zustand';
 
 interface TopBarState {
   // State
@@ -10,9 +10,7 @@ interface TopBarState {
 
   // Actions
   setTopBar: (
-    config: Partial<
-      Pick<TopBarState, "title" | "subtitle" | "rightContent" | "isTransparent">
-    >,
+    config: Partial<Pick<TopBarState, 'title' | 'subtitle' | 'rightContent' | 'isTransparent'>>
   ) => void;
   setTitle: (title: string) => void;
   setSubtitle: (subtitle: string) => void;
@@ -22,8 +20,8 @@ interface TopBarState {
 }
 
 const initialState = {
-  title: "",
-  subtitle: "",
+  title: '',
+  subtitle: '',
   rightContent: null,
   isTransparent: false,
 };

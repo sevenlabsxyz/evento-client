@@ -1,13 +1,7 @@
-"use client";
-import { SilkToast, type ToastType } from "@/components/ui/silk-toast";
-import { SheetStack } from "@silk-hq/components";
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+'use client';
+import { SilkToast, type ToastType } from '@/components/ui/silk-toast';
+import { SheetStack } from '@silk-hq/components';
+import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
 
 // ================================================================================================
 // Types
@@ -23,7 +17,7 @@ export interface ToastData {
 
 interface ToastContextValue {
   toasts: ToastData[];
-  addToast: (toast: Omit<ToastData, "id">) => string;
+  addToast: (toast: Omit<ToastData, 'id'>) => string;
   removeToast: (id: string) => void;
   clearToasts: () => void;
 }
@@ -38,13 +32,11 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 // Provider
 // ================================================================================================
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
   const toastIdCounter = useRef(0);
 
-  const addToast = useCallback((toast: Omit<ToastData, "id">) => {
+  const addToast = useCallback((toast: Omit<ToastData, 'id'>) => {
     const id = `toast-${toastIdCounter.current++}`;
     const newToast: ToastData = {
       id,
@@ -88,10 +80,7 @@ interface ToastContainerProps {
   onDismiss: (id: string) => void;
 }
 
-const ToastContainer: React.FC<ToastContainerProps> = ({
-  toasts,
-  onDismiss,
-}) => {
+const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) => {
   if (toasts.length === 0) return null;
 
   return (
@@ -118,7 +107,7 @@ const ToastContainer: React.FC<ToastContainerProps> = ({
 export const useToast = () => {
   const context = useContext(ToastContext);
   if (!context) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider');
   }
   return context;
 };
@@ -127,18 +116,18 @@ export const useToast = () => {
 // Utility Functions
 // ================================================================================================
 
-export const createToastApi = (addToast: ToastContextValue["addToast"]) => ({
+export const createToastApi = (addToast: ToastContextValue['addToast']) => ({
   success: (description: string, title?: string, duration?: number) =>
-    addToast({ type: "success", description, title, duration }),
+    addToast({ type: 'success', description, title, duration }),
 
   error: (description: string, title?: string, duration?: number) =>
-    addToast({ type: "error", description, title, duration }),
+    addToast({ type: 'error', description, title, duration }),
 
   info: (description: string, title?: string, duration?: number) =>
-    addToast({ type: "info", description, title, duration }),
+    addToast({ type: 'info', description, title, duration }),
 
   warning: (description: string, title?: string, duration?: number) =>
-    addToast({ type: "warning", description, title, duration }),
+    addToast({ type: 'warning', description, title, duration }),
 
-  custom: (toast: Omit<ToastData, "id">) => addToast(toast),
+  custom: (toast: Omit<ToastData, 'id'>) => addToast(toast),
 });

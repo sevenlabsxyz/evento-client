@@ -81,44 +81,42 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
   };
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className='flex h-full w-full flex-col'>
       {/* Search bar */}
-      <div className="relative mt-2 mb-4">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+      <div className='relative mb-4 mt-2'>
+        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
         <Input
-          type="text"
-          placeholder="Search GIFs..."
+          type='text'
+          placeholder='Search GIFs...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="pl-10 w-full bg-gray-100"
+          className='w-full bg-gray-100 pl-10'
         />
       </div>
 
       {/* Loading state */}
       {isLoading && (
-        <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+        <div className='flex flex-1 items-center justify-center'>
+          <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
         </div>
       )}
 
       {/* GIF Grid */}
       {!isLoading && gifs.length > 0 && (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 overflow-y-auto flex-1 pb-4">
+        <div className='grid flex-1 grid-cols-2 gap-2 overflow-y-auto pb-4 md:grid-cols-3 lg:grid-cols-4'>
           {gifs.map((gif) => (
             <div
               key={gif.id}
-              className={`aspect-square rounded-lg overflow-hidden cursor-pointer transition-all duration-200 ${
-                selectedGif?.id === gif.id
-                  ? 'ring-2 ring-primary ring-offset-2'
-                  : ''
+              className={`aspect-square cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
+                selectedGif?.id === gif.id ? 'ring-2 ring-primary ring-offset-2' : ''
               }`}
               onClick={() => handleGifClick(gif)}
             >
               <img
                 src={gif.images.fixed_width.webp}
                 alt={gif.title || 'GIF'}
-                className="w-full h-full object-cover"
-                loading="lazy"
+                className='h-full w-full object-cover'
+                loading='lazy'
               />
             </div>
           ))}
@@ -127,9 +125,9 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
 
       {/* No results */}
       {!isLoading && gifs.length === 0 && (
-        <div className="flex-1 flex flex-col items-center justify-center text-center p-4">
-          <p className="text-gray-500">No GIFs found</p>
-          <p className="text-sm text-gray-400">Try a different search term</p>
+        <div className='flex flex-1 flex-col items-center justify-center p-4 text-center'>
+          <p className='text-gray-500'>No GIFs found</p>
+          <p className='text-sm text-gray-400'>Try a different search term</p>
         </div>
       )}
     </div>

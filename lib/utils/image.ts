@@ -11,11 +11,11 @@ export function getOptimizedImageUrl(
   quality: number = 80
 ): string {
   if (!url) {
-    return "/placeholder.svg";
+    return '/placeholder.svg';
   }
 
   // If URL already contains https, return as-is (external image)
-  if (url.includes("https://")) {
+  if (url.includes('https://')) {
     return url;
   }
 
@@ -48,7 +48,7 @@ export const ImageSizes = {
  */
 export function getOptimizedImageUrlPreset(
   url: string,
-  preset: keyof typeof ImageSizes = "MEDIUM",
+  preset: keyof typeof ImageSizes = 'MEDIUM'
 ): string {
   return getOptimizedImageUrl(url, ImageSizes[preset]);
 }
@@ -63,10 +63,7 @@ export function getOptimizedAvatarUrl(url: string): string {
 /**
  * Get cover image URL optimized for event covers
  */
-export function getOptimizedCoverUrl(
-  url: string,
-  size: 'feed' | 'detail' = 'feed'
-): string {
+export function getOptimizedCoverUrl(url: string, size: 'feed' | 'detail' = 'feed'): string {
   const imageSize = size === 'feed' ? ImageSizes.MEDIUM : ImageSizes.LARGE;
   return getOptimizedImageUrl(url, imageSize, 80);
 }

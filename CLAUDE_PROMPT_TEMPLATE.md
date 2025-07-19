@@ -44,18 +44,18 @@ Common HTTP status codes: 200 (success), 400 (bad request), 401 (unauthorized), 
 
 ```typescript
 interface UserDetails {
-  id: string;
-  username: string;
-  name: string;
-  bio: string;
-  image: string;
-  bio_link: string;
-  x_handle: string;
-  instagram_handle: string;
-  ln_address: string; // Lightning address
-  nip05: string; // Nostr identifier
-  verification_status: "verified" | "pending" | null;
-  verification_date: string;
+    id: string;
+    username: string;
+    name: string;
+    bio: string;
+    image: string;
+    bio_link: string;
+    x_handle: string;
+    instagram_handle: string;
+    ln_address: string; // Lightning address
+    nip05: string; // Nostr identifier
+    verification_status: 'verified' | 'pending' | null;
+    verification_date: string;
 }
 ```
 
@@ -63,49 +63,49 @@ interface UserDetails {
 
 ```typescript
 interface Event {
-  id: string;
-  title: string;
-  description: string;
-  cover: string;
-  location: string;
-  timezone: string;
-  status: "draft" | "published" | "cancelled";
-  visibility: "public" | "private";
-  cost: number | null;
-  creator_user_id: string;
+    id: string;
+    title: string;
+    description: string;
+    cover: string;
+    location: string;
+    timezone: string;
+    status: 'draft' | 'published' | 'cancelled';
+    visibility: 'public' | 'private';
+    cost: number | null;
+    creator_user_id: string;
 
-  // Date stored as components for timezone handling
-  start_date_day: number;
-  start_date_month: number;
-  start_date_year: number;
-  start_date_hours: number;
-  start_date_minutes: number;
+    // Date stored as components for timezone handling
+    start_date_day: number;
+    start_date_month: number;
+    start_date_year: number;
+    start_date_hours: number;
+    start_date_minutes: number;
 
-  end_date_day: number;
-  end_date_month: number;
-  end_date_year: number;
-  end_date_hours: number;
-  end_date_minutes: number;
+    end_date_day: number;
+    end_date_month: number;
+    end_date_year: number;
+    end_date_hours: number;
+    end_date_minutes: number;
 
-  // Computed ISO dates
-  computed_start_date: string;
-  computed_end_date: string;
+    // Computed ISO dates
+    computed_start_date: string;
+    computed_end_date: string;
 
-  // Media & Links
-  spotify_url: string;
-  wavlake_url: string;
+    // Media & Links
+    spotify_url: string;
+    wavlake_url: string;
 
-  // Contribution methods
-  contrib_cashapp: string;
-  contrib_venmo: string;
-  contrib_paypal: string;
-  contrib_btclightning: string;
+    // Contribution methods
+    contrib_cashapp: string;
+    contrib_venmo: string;
+    contrib_paypal: string;
+    contrib_btclightning: string;
 
-  created_at: string;
-  updated_at: string;
+    created_at: string;
+    updated_at: string;
 
-  // Relations
-  user_details?: UserDetails;
+    // Relations
+    user_details?: UserDetails;
 }
 ```
 
@@ -113,13 +113,13 @@ interface Event {
 
 ```typescript
 interface EventRSVP {
-  id: string;
-  event_id: string;
-  user_id: string;
-  status: "yes" | "no" | "maybe";
-  created_at: string;
-  updated_at: string;
-  user_details?: UserDetails;
+    id: string;
+    event_id: string;
+    user_id: string;
+    status: 'yes' | 'no' | 'maybe';
+    created_at: string;
+    updated_at: string;
+    user_details?: UserDetails;
 }
 ```
 
@@ -180,7 +180,7 @@ if (!user?.id) return handle401();
 ### API Key (External APIs)
 
 ```typescript
-const apiKey = request.headers.get("x-evento-api-key");
+const apiKey = request.headers.get('x-evento-api-key');
 if (!VALID_API_KEYS.includes(apiKey)) return handle401();
 ```
 
@@ -245,12 +245,12 @@ Create a [SPECIFY YOUR FRONTEND TYPE: React/Next.js/Vue/etc.] application that i
 2. **TypeScript Types**: Complete type definitions based on the data models above
 3. **Authentication Flow**: Session management and login/logout handling
 4. **Core Features**: [SPECIFY WHICH FEATURES YOU NEED]
-   - User profile management
-   - Event browsing and creation
-   - RSVP functionality
-   - Event feed/timeline
-   - Search functionality
-   - [ADD ANY SPECIFIC FEATURES]
+    - User profile management
+    - Event browsing and creation
+    - RSVP functionality
+    - Event feed/timeline
+    - Search functionality
+    - [ADD ANY SPECIFIC FEATURES]
 
 5. **Error Handling**: Centralized error management with user-friendly messages
 6. **State Management**: [SPECIFY: Redux/Zustand/Context/etc.] for app state
@@ -309,13 +309,13 @@ Create a Next.js 14 application with App Router that integrates with this Evento
 2. **TypeScript Types**: Complete type definitions based on the data models above
 3. **Authentication Flow**: Session management and login/logout handling
 4. **Core Features**:
-   - User profile management and editing
-   - Event browsing with infinite scroll
-   - Event creation with rich form validation
-   - RSVP functionality with real-time updates
-   - Social feed showing followed users' events
-   - User search and follow/unfollow
-   - Event comments and gallery
+    - User profile management and editing
+    - Event browsing with infinite scroll
+    - Event creation with rich form validation
+    - RSVP functionality with real-time updates
+    - Social feed showing followed users' events
+    - User search and follow/unfollow
+    - Event comments and gallery
 
 5. **Error Handling**: Centralized error management with toast notifications
 6. **State Management**: Zustand for client state + TanStack Query for server state

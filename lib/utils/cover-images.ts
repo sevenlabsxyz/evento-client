@@ -12,15 +12,15 @@
 export function getCoverImageUrl(
   imagePath: string,
   width: number = 500,
-  height: number = 500,
+  height: number = 500
 ): string {
   // If it's already a full URL, return as-is
-  if (imagePath.includes("http://") || imagePath.includes("https://")) {
+  if (imagePath.includes('http://') || imagePath.includes('https://')) {
     return imagePath;
   }
 
   // Remove leading slash if present
-  const cleanPath = imagePath.startsWith("/") ? imagePath.slice(1) : imagePath;
+  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
 
   // Construct the Supabase storage URL with optimization
   return `https://api.evento.so/storage/v1/render/image/public/cdn/${cleanPath}?width=${width}&height=${height}`;
@@ -61,7 +61,7 @@ export function getCoverImageLarge(imagePath: string): string {
  */
 export function extractRelativePath(url: string): string {
   // If it's already a relative path, return as-is
-  if (!url.includes("://")) {
+  if (!url.includes('://')) {
     return url;
   }
 

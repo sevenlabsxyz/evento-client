@@ -1,17 +1,17 @@
-import { cn } from "@/lib/utils";
-import type { Editor } from "@tiptap/core";
-import { ChevronDown, Link, Minus, Plus } from "lucide-react";
-import { useState } from "react";
-import { LinkEditSheet } from "../link-edit-sheet";
-import { DropdownMenuItemClass, LinkProps } from "../tiptap-utils";
-import { ToolbarButton } from "../toolbar-button";
+import { cn } from '@/lib/utils';
+import type { Editor } from '@tiptap/core';
+import { ChevronDown, Link, Minus, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { LinkEditSheet } from '../link-edit-sheet';
+import { DropdownMenuItemClass, LinkProps } from '../tiptap-utils';
+import { ToolbarButton } from '../toolbar-button';
 
 interface SectionFourProps {
   editor: Editor;
   onOpenSheet?: (sheet: string) => void;
   onOpenLinkEditSheet?: (
     editor: Editor,
-    linkData: { url: string; text: string; openInNewTab: boolean },
+    linkData: { url: string; text: string; openInNewTab: boolean }
   ) => void;
 }
 
@@ -32,8 +32,8 @@ export default function SectionFour({
       editor
         .chain()
         .focus()
-        .extendMarkRange("link")
-        .setLink({ href: url, target: openInNewTab ? "_blank" : "" })
+        .extendMarkRange('link')
+        .setLink({ href: url, target: openInNewTab ? '_blank' : '' })
         .run();
     } else {
       // If no text selected, insert text with link
@@ -41,14 +41,14 @@ export default function SectionFour({
         .chain()
         .focus()
         .insertContent({
-          type: "text",
+          type: 'text',
           text: text || url,
           marks: [
             {
-              type: "link",
+              type: 'link',
               attrs: {
                 href: url,
-                target: openInNewTab ? "_blank" : "",
+                target: openInNewTab ? '_blank' : '',
               },
             },
           ],
@@ -68,18 +68,18 @@ export default function SectionFour({
     <>
       {/* LINK */}
       <ToolbarButton
-        isActive={editor.isActive("link")}
-        tooltip="Link"
-        disabled={editor.isActive("codeBlock")}
+        isActive={editor.isActive('link')}
+        tooltip='Link'
+        disabled={editor.isActive('codeBlock')}
         onClick={() => {
           if (onOpenLinkEditSheet) {
             const linkData = {
-              url: editor.getAttributes("link").href || "",
+              url: editor.getAttributes('link').href || '',
               text: editor.state.doc.textBetween(
                 editor.state.selection.from,
-                editor.state.selection.to,
+                editor.state.selection.to
               ),
-              openInNewTab: editor.getAttributes("link").target === "_blank",
+              openInNewTab: editor.getAttributes('link').target === '_blank',
             };
             onOpenLinkEditSheet(editor, linkData);
           } else {
@@ -87,46 +87,34 @@ export default function SectionFour({
           }
         }}
       >
-        <Link className="h-5 w-5" />
+        <Link className='h-5 w-5' />
       </ToolbarButton>
 
       {/* INSERT ELEMENTS */}
-      <div className="relative">
+      <div className='relative'>
         <ToolbarButton
-          isActive={
-            editor.isActive("codeBlock") || editor.isActive("blockquote")
-          }
-          tooltip="Insert elements"
-          className="hidden w-12 md:flex"
+          isActive={editor.isActive('codeBlock') || editor.isActive('blockquote')}
+          tooltip='Insert elements'
+          className='hidden w-12 md:flex'
           onClick={() => {
-            if (
-              onOpenSheet &&
-              typeof window !== "undefined" &&
-              window.innerWidth < 768
-            ) {
-              onOpenSheet("insertElements");
+            if (onOpenSheet && typeof window !== 'undefined' && window.innerWidth < 768) {
+              onOpenSheet('insertElements');
             } else {
               setShowInsertDropdown(!showInsertDropdown);
             }
           }}
         >
-          <Plus className="h-5 w-5" />
-          <ChevronDown className="h-5 w-5" />
+          <Plus className='h-5 w-5' />
+          <ChevronDown className='h-5 w-5' />
         </ToolbarButton>
 
         {showInsertDropdown && (
           <>
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowInsertDropdown(false)}
-            />
-            <div className="absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg">
-              <button
-                onClick={insertDivider}
-                className={cn(DropdownMenuItemClass)}
-              >
-                <span className="flex grow items-center">
-                  <Minus className="mr-2 h-4 w-4" />
+            <div className='fixed inset-0 z-40' onClick={() => setShowInsertDropdown(false)} />
+            <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg'>
+              <button onClick={insertDivider} className={cn(DropdownMenuItemClass)}>
+                <span className='flex grow items-center'>
+                  <Minus className='mr-2 h-4 w-4' />
                   Divider
                 </span>
               </button>
@@ -141,12 +129,12 @@ export default function SectionFour({
           isOpen={showLinkSheet}
           onClose={() => setShowLinkSheet(false)}
           onSetLink={setLink}
-          initialUrl={editor.getAttributes("link").href || ""}
+          initialUrl={editor.getAttributes('link').href || ''}
           initialText={editor.state.doc.textBetween(
             editor.state.selection.from,
-            editor.state.selection.to,
+            editor.state.selection.to
           )}
-          initialOpenInNewTab={editor.getAttributes("link").target === "_blank"}
+          initialOpenInNewTab={editor.getAttributes('link').target === '_blank'}
         />
       )}
     </>
