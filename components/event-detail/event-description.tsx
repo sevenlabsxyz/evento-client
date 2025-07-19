@@ -76,7 +76,7 @@ export default function EventDescription({ event, isOwner }: EventDescriptionPro
       </div>
 
       {/* Register Button fixed at Bottom */}
-      {!isOwner && event.registrationUrl ? (
+      {!isOwner ? (
         <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
           <button
             onClick={() => {
@@ -90,7 +90,7 @@ export default function EventDescription({ event, isOwner }: EventDescriptionPro
             }}
             className='w-full rounded-xl bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600'
           >
-            Register
+            RSVP
           </button>
         </div>
       ) : null}
