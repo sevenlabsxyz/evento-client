@@ -1,12 +1,10 @@
-import { LocationData } from "@/components/create-event/location-modal";
-import { EventLocation } from "@/lib/types/event";
+import { LocationData } from '@/components/create-event/location-modal';
+import { EventLocation } from '@/lib/types/event';
 
 /**
  * Converts LocationData from the modal to EventLocation format used in the Event interface
  */
-export function locationDataToEventLocation(
-  locationData: LocationData,
-): EventLocation {
+export function locationDataToEventLocation(locationData: LocationData): EventLocation {
   return {
     name: locationData.name,
     address: locationData.address,
@@ -21,9 +19,7 @@ export function locationDataToEventLocation(
 /**
  * Converts EventLocation to LocationData format for the modal
  */
-export function eventLocationToLocationData(
-  eventLocation: EventLocation,
-): LocationData {
+export function eventLocationToLocationData(eventLocation: EventLocation): LocationData {
   return {
     name: eventLocation.name,
     address: eventLocation.address,
@@ -47,9 +43,9 @@ export function formatEventLocationAddress(location: EventLocation): string {
     location.state,
     location.zipCode,
     location.country,
-  ].filter((part) => part && part.trim() !== "");
+  ].filter((part) => part && part.trim() !== '');
 
-  return parts.join(", ");
+  return parts.join(', ');
 }
 
 /**
@@ -77,23 +73,23 @@ export function formatLocationDataAddress(location: LocationData): string {
 export function parseLocationString(locationStr: string): LocationData {
   if (!locationStr) {
     return {
-      name: "",
-      address: "",
-      city: "",
-      country: "",
-      formatted: "",
+      name: '',
+      address: '',
+      city: '',
+      country: '',
+      formatted: '',
     };
   }
 
-  const parts = locationStr.split(",").map((s) => s.trim());
+  const parts = locationStr.split(',').map((s) => s.trim());
 
   if (parts.length === 1) {
     // Simple location like "Online" or just a city name
     return {
       name: parts[0],
-      address: "",
+      address: '',
       city: parts[0],
-      country: "",
+      country: '',
       formatted: locationStr,
     };
   }
@@ -116,8 +112,8 @@ export function parseLocationString(locationStr: string): LocationData {
 
   // Fallback for other formats
   return {
-    name: parts[0] || "",
-    address: parts[1] || "",
+    name: parts[0] || '',
+    address: parts[1] || '',
     city: parts[2] || parts[0],
     state: parts[3],
     country: parts[parts.length - 1],
@@ -135,8 +131,8 @@ export function parseAddressString(addressString: string): LocationData {
   return {
     name: addressString,
     address: addressString,
-    city: "",
-    country: "",
+    city: '',
+    country: '',
     formatted: addressString,
   };
 }
@@ -145,9 +141,7 @@ export function parseAddressString(addressString: string): LocationData {
  * Checks if a location is valid (has required fields)
  */
 export function isValidLocation(location: LocationData): boolean {
-  return (
-    !!(location.name || location.address) && location.formatted.trim() !== ""
-  );
+  return !!(location.name || location.address) && location.formatted.trim() !== '';
 }
 
 /**
@@ -162,5 +156,5 @@ export function getLocationDisplayName(location: LocationData): string {
     return location.city;
   }
 
-  return location.formatted.split(",")[0] || "Unknown Location";
+  return location.formatted.split(',')[0] || 'Unknown Location';
 }

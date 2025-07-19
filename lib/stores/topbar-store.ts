@@ -1,9 +1,8 @@
-import type { ReactNode } from "react";
-import { create } from "zustand";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from 'lucide-react';
+import { create } from 'zustand';
 
-export type LeftMode = "menu" | "back";
-export type CenterMode = "title" | "empty";
+export type LeftMode = 'menu' | 'back';
+export type CenterMode = 'title' | 'empty';
 
 export interface TopBarButton {
   id: string;
@@ -27,8 +26,18 @@ interface TopBarState {
   // Actions
   setTopBar: (
     config: Partial<
-      Pick<TopBarState, "leftMode" | "onBackPress" | "centerMode" | "title" | "subtitle" | "buttons" | "showAvatar" | "isOverlaid">
-    >,
+      Pick<
+        TopBarState,
+        | 'leftMode'
+        | 'onBackPress'
+        | 'centerMode'
+        | 'title'
+        | 'subtitle'
+        | 'buttons'
+        | 'showAvatar'
+        | 'isOverlaid'
+      >
+    >
   ) => void;
   setLeftMode: (mode: LeftMode) => void;
   setBackHandler: (handler: (() => void) | null) => void;
@@ -42,11 +51,11 @@ interface TopBarState {
 }
 
 const initialState = {
-  leftMode: "menu" as LeftMode,
+  leftMode: 'menu' as LeftMode,
   onBackPress: null,
-  centerMode: "title" as CenterMode,
-  title: "",
-  subtitle: "",
+  centerMode: 'title' as CenterMode,
+  title: '',
+  subtitle: '',
   buttons: [],
   showAvatar: true,
   isOverlaid: false,

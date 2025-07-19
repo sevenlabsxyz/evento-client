@@ -1,8 +1,8 @@
-"use client";
-import { SilkToast } from "@/components/ui/silk-toast";
-import { useToastManager } from "@/lib/hooks/use-toast-manager";
-import { SheetStack } from "@silk-hq/components";
-import React from "react";
+'use client';
+import { SilkToast } from '@/components/ui/silk-toast';
+import { useToastManager } from '@/lib/hooks/use-toast-manager';
+import { SheetStack } from '@silk-hq/components';
+import React from 'react';
 
 // ================================================================================================
 // Toast Container Component
@@ -34,9 +34,7 @@ export const ToastContainer: React.FC = () => {
 // Provider Component (for app-wide usage)
 // ================================================================================================
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <>
       {children}

@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { DetachedSheet } from "@/components/ui/detached-sheet";
-import { useState } from "react";
+import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { useState } from 'react';
 
 interface DatePickerSheetProps {
   isOpen: boolean;
@@ -23,21 +23,21 @@ export default function DatePickerSheet({
   const [viewYear, setViewYear] = useState(currentDate.getFullYear());
 
   const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
-  const daysOfWeek = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -78,9 +78,7 @@ export default function DatePickerSheet({
     if (!day) return false;
     const today = new Date();
     return (
-      today.getDate() === day &&
-      today.getMonth() === viewMonth &&
-      today.getFullYear() === viewYear
+      today.getDate() === day && today.getMonth() === viewMonth && today.getFullYear() === viewYear
     );
   };
 
@@ -100,8 +98,8 @@ export default function DatePickerSheet({
     onClose();
   };
 
-  const navigateMonth = (direction: "prev" | "next") => {
-    if (direction === "prev") {
+  const navigateMonth = (direction: 'prev' | 'next') => {
+    if (direction === 'prev') {
       if (viewMonth === 0) {
         setViewMonth(11);
         setViewYear(viewYear - 1);
@@ -129,65 +127,59 @@ export default function DatePickerSheet({
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
           <DetachedSheet.Content>
-            <div className="p-6">
+            <div className='p-6'>
               {/* Handle */}
-              <div className="mb-4 flex justify-center">
+              <div className='mb-4 flex justify-center'>
                 <DetachedSheet.Handle />
               </div>
 
               {/* Header */}
-              <div className="mb-4">
-                <div className="mb-4 flex items-center justify-between">
-                  <button
-                    onClick={onClose}
-                    className="font-medium text-red-500"
-                  >
+              <div className='mb-4'>
+                <div className='mb-4 flex items-center justify-between'>
+                  <button onClick={onClose} className='font-medium text-red-500'>
                     Cancel
                   </button>
-                  <div className="text-center">
-                    <h2 className="text-lg font-semibold">{title}</h2>
-                    <p className="text-sm text-gray-500">
-                      {currentDate.toLocaleDateString("en-US", {
-                        weekday: "short",
-                        month: "short",
-                        day: "2-digit",
+                  <div className='text-center'>
+                    <h2 className='text-lg font-semibold'>{title}</h2>
+                    <p className='text-sm text-gray-500'>
+                      {currentDate.toLocaleDateString('en-US', {
+                        weekday: 'short',
+                        month: 'short',
+                        day: '2-digit',
                       })}
                     </p>
                   </div>
                   <button
                     onClick={handleSave}
-                    className="rounded-xl bg-red-500 px-4 py-2 font-medium text-white"
+                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white'
                   >
                     Save
                   </button>
                 </div>
 
                 {/* Month/Year Navigation */}
-                <div className="mb-4 flex items-center justify-between">
+                <div className='mb-4 flex items-center justify-between'>
                   <button
-                    onClick={() => navigateMonth("prev")}
-                    className="rounded-lg p-2 hover:bg-gray-100"
+                    onClick={() => navigateMonth('prev')}
+                    className='rounded-lg p-2 hover:bg-gray-100'
                   >
                     ←
                   </button>
-                  <h3 className="text-lg font-semibold">
+                  <h3 className='text-lg font-semibold'>
                     {monthNames[viewMonth]} {viewYear}
                   </h3>
                   <button
-                    onClick={() => navigateMonth("next")}
-                    className="rounded-lg p-2 hover:bg-gray-100"
+                    onClick={() => navigateMonth('next')}
+                    className='rounded-lg p-2 hover:bg-gray-100'
                   >
                     →
                   </button>
                 </div>
 
                 {/* Days of Week Header */}
-                <div className="mb-2 grid grid-cols-7 gap-1">
+                <div className='mb-2 grid grid-cols-7 gap-1'>
                   {daysOfWeek.map((day) => (
-                    <div
-                      key={day}
-                      className="py-2 text-center text-xs font-medium text-gray-500"
-                    >
+                    <div key={day} className='py-2 text-center text-xs font-medium text-gray-500'>
                       {day}
                     </div>
                   ))}
@@ -195,53 +187,43 @@ export default function DatePickerSheet({
               </div>
 
               {/* Calendar Grid */}
-              <div className="pb-4">
-                <div className="grid grid-cols-7 gap-1">
+              <div className='pb-4'>
+                <div className='grid grid-cols-7 gap-1'>
                   {calendarDays.map((day, index) => (
                     <button
                       key={index}
                       onClick={() => handleDateClick(day)}
                       disabled={!day}
-                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? "invisible" : ""} ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? 'invisible' : ''} ${
                         isSelectedDate(day)
-                          ? "bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2"
+                          ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
                           : isToday(day)
-                            ? "border border-gray-300 bg-gray-50 text-gray-900"
-                            : "hover:bg-gray-100"
+                            ? 'border border-gray-300 bg-gray-50 text-gray-900'
+                            : 'hover:bg-gray-100'
                       } `}
                     >
                       {day}
                       {/* Event indicators */}
                       {day && day <= 15 && (
-                        <div className="absolute mt-6 flex gap-0.5">
-                          {day === 3 && (
-                            <div className="h-1 w-1 rounded-full bg-purple-500" />
-                          )}
+                        <div className='absolute mt-6 flex gap-0.5'>
+                          {day === 3 && <div className='h-1 w-1 rounded-full bg-purple-500' />}
                           {day === 4 && (
                             <>
-                              <div className="h-1 w-1 rounded-full bg-red-500" />
-                              <div className="h-1 w-1 rounded-full bg-red-500" />
-                              <div className="h-1 w-1 rounded-full bg-red-500" />
+                              <div className='h-1 w-1 rounded-full bg-red-500' />
+                              <div className='h-1 w-1 rounded-full bg-red-500' />
+                              <div className='h-1 w-1 rounded-full bg-red-500' />
                             </>
                           )}
                           {day === 5 && (
                             <>
-                              <div className="h-1 w-1 rounded-full bg-red-500" />
-                              <div className="h-1 w-1 rounded-full bg-red-500" />
+                              <div className='h-1 w-1 rounded-full bg-red-500' />
+                              <div className='h-1 w-1 rounded-full bg-red-500' />
                             </>
                           )}
-                          {day === 9 && (
-                            <div className="h-1 w-1 rounded-full bg-red-500" />
-                          )}
-                          {day === 11 && (
-                            <div className="h-1 w-1 rounded-full bg-red-500" />
-                          )}
-                          {day === 15 && (
-                            <div className="h-1 w-1 rounded-full bg-red-500" />
-                          )}
-                          {day === 16 && (
-                            <div className="h-1 w-1 rounded-full bg-blue-500" />
-                          )}
+                          {day === 9 && <div className='h-1 w-1 rounded-full bg-red-500' />}
+                          {day === 11 && <div className='h-1 w-1 rounded-full bg-red-500' />}
+                          {day === 15 && <div className='h-1 w-1 rounded-full bg-red-500' />}
+                          {day === 16 && <div className='h-1 w-1 rounded-full bg-blue-500' />}
                         </div>
                       )}
                     </button>

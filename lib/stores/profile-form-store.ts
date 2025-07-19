@@ -1,6 +1,6 @@
-import { UserDetails } from "@/lib/types/api";
-import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { UserDetails } from '@/lib/types/api';
+import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 
 interface ProfileFormState {
   // Profile fields matching API
@@ -43,15 +43,15 @@ interface ProfileFormState {
 }
 
 const initialState = {
-  username: "",
-  name: "",
-  bio: "",
-  image: "",
-  bio_link: "",
-  x_handle: "",
-  instagram_handle: "",
-  ln_address: "",
-  nip05: "",
+  username: '',
+  name: '',
+  bio: '',
+  image: '',
+  bio_link: '',
+  x_handle: '',
+  instagram_handle: '',
+  ln_address: '',
+  nip05: '',
   originalData: null,
 };
 
@@ -74,15 +74,15 @@ export const useProfileFormStore = create<ProfileFormState>()(
       // Populate from user data
       populateFromUser: (user) => {
         set({
-          username: user.username || "",
-          name: user.name || "",
-          bio: user.bio || "",
-          image: user.image || "",
-          bio_link: user.bio_link || "",
-          x_handle: user.x_handle || "",
-          instagram_handle: user.instagram_handle || "",
-          ln_address: user.ln_address || "",
-          nip05: user.nip05 || "",
+          username: user.username || '',
+          name: user.name || '',
+          bio: user.bio || '',
+          image: user.image || '',
+          bio_link: user.bio_link || '',
+          x_handle: user.x_handle || '',
+          instagram_handle: user.instagram_handle || '',
+          ln_address: user.ln_address || '',
+          nip05: user.nip05 || '',
           originalData: {
             username: user.username,
             name: user.name,
@@ -138,9 +138,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
       isValid: () => {
         const state = get();
         // Required fields: username and name
-        return (
-          state.username.trim().length >= 3 && state.name.trim().length > 0
-        );
+        return state.username.trim().length >= 3 && state.name.trim().length > 0;
       },
 
       // Check if there are changes
@@ -165,7 +163,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
       reset: () => set(initialState),
     }),
     {
-      name: "profile-form-store",
-    },
-  ),
+      name: 'profile-form-store',
+    }
+  )
 );

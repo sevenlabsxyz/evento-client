@@ -1,28 +1,25 @@
-import { BlogPostClient } from "@/components/blog/BlogPostClient";
-import { Env } from "@/lib/constants/env";
-import GhostContentAPI from "@tryghost/content-api";
-import { AlertTriangle } from "lucide-react";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
+import { BlogPostClient } from '@/components/blog/BlogPostClient';
+import { Env } from '@/lib/constants/env';
+import GhostContentAPI from '@tryghost/content-api';
+import { AlertTriangle } from 'lucide-react';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 export const revalidate = 30;
 
 const Error = ({ message }: { message: string }) => (
-  <div
-    className="mx-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
-    role="alert"
-  >
-    <div className="mb-1 flex items-center gap-2">
-      <AlertTriangle className="h-5 w-5" />
-      <p className="font-semibold">Error</p>
+  <div className='mx-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700' role='alert'>
+    <div className='mb-1 flex items-center gap-2'>
+      <AlertTriangle className='h-5 w-5' />
+      <p className='font-semibold'>Error</p>
     </div>
-    <p className="text-sm">{message}</p>
+    <p className='text-sm'>{message}</p>
   </div>
 );
 
 const Loading = () => (
-  <div className="flex h-screen items-center justify-center">
-    <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-red-500"></div>
+  <div className='flex h-screen items-center justify-center'>
+    <div className='h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-red-500'></div>
   </div>
 );
 
@@ -32,7 +29,7 @@ const api =
     ? new GhostContentAPI({
         url: Env.GHOST_URL,
         key: Env.GHOST_CONTENT_API_KEY,
-        version: "v5.0",
+        version: 'v5.0',
         makeRequest: async ({ url, method, params, headers }: any) => {
           const apiUrl = new URL(url);
 
@@ -57,14 +54,14 @@ const api =
 async function getBlogPost(slug: string) {
   // Return null if API is not initialized
   if (!api) {
-    console.warn("Ghost API not initialized - missing environment variables");
+    console.warn('Ghost API not initialized - missing environment variables');
     return null;
   }
 
   try {
-    return await api.posts.read({ slug }, { include: ["tags", "authors"] });
+    return await api.posts.read({ slug }, { include: ['tags', 'authors'] });
   } catch (error) {
-    console.error("Error fetching blog post:", error);
+    console.error('Error fetching blog post:', error);
     // throw new Error('Failed to fetch blog post');
   }
 }
@@ -73,19 +70,13 @@ function PostContent({ post }: { post: any }) {
   return <BlogPostClient post={post} />;
 }
 
-export default async function BlogPost({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export default async function BlogPost({ params }: { params: { slug: string } }) {
   let post;
 
   try {
     post = await getBlogPost(params.slug);
   } catch (error) {
-    return (
-      <Error message="Failed to load blog post. Please try again later." />
-    );
+    return <Error message='Failed to load blog post. Please try again later.' />;
   }
 
   if (!post) {
@@ -99,11 +90,7 @@ export default async function BlogPost({
   );
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}) {
+export async function generateMetadata({ params }: { params: { slug: string } }) {
   try {
     const post = await getBlogPost(params.slug);
     return {
@@ -112,7 +99,7 @@ export async function generateMetadata({
       openGraph: {
         title: post.title,
         description: post.excerpt,
-        type: "article",
+        type: 'article',
         url: `https://evento.so/blog/${params.slug}`,
         images: [
           {
@@ -124,17 +111,17 @@ export async function generateMetadata({
         ],
       },
       twitter: {
-        card: "summary_large_image",
+        card: 'summary_large_image',
         title: post.title,
         description: post.excerpt,
         images: [post.feature_image],
       },
     };
   } catch (error) {
-    console.error("Error generating metadata:", error);
+    console.error('Error generating metadata:', error);
     return {
-      title: "Blog Post",
-      description: "Unable to load blog post details",
+      title: 'Blog Post',
+      description: 'Unable to load blog post details',
     };
   }
 }

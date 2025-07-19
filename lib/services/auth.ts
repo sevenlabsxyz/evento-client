@@ -1,6 +1,6 @@
-import { apiClient } from "../api/client";
-import { createClient } from "../supabase/client";
-import { ApiError, ApiResponse, UserDetails } from "../types/api";
+import { apiClient } from '../api/client';
+import { createClient } from '../supabase/client';
+import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
 export const authService = {
   /**
@@ -28,7 +28,7 @@ export const authService = {
     const { data, error } = await supabase.auth.verifyOtp({
       email,
       token: code,
-      type: "email",
+      type: 'email',
     });
 
     if (error) {
@@ -36,31 +36,25 @@ export const authService = {
     }
 
     if (!data.user) {
-      throw new Error("No user data returned from verification");
+      throw new Error('No user data returned from verification');
     }
 
-    console.log("Auth: OTP verification successful for user:", data.user.id);
+    console.log('Auth: OTP verification successful for user:', data.user.id);
 
     // Return user details - we'll get them from the backend later
     return {
       id: data.user.id,
-      username:
-        data.user.user_metadata?.username ||
-        data.user.email?.split("@")[0] ||
-        "",
-      name:
-        data.user.user_metadata?.full_name ||
-        data.user.email?.split("@")[0] ||
-        "",
-      bio: "",
-      image: data.user.user_metadata?.avatar_url || "",
-      bio_link: "",
-      x_handle: "",
-      instagram_handle: "",
-      ln_address: "",
-      nip05: "",
+      username: data.user.user_metadata?.username || data.user.email?.split('@')[0] || '',
+      name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || '',
+      bio: '',
+      image: data.user.user_metadata?.avatar_url || '',
+      bio_link: '',
+      x_handle: '',
+      instagram_handle: '',
+      ln_address: '',
+      nip05: '',
       verification_status: null,
-      verification_date: "",
+      verification_date: '',
     };
   },
 
@@ -79,17 +73,13 @@ export const authService = {
         return null; // No session means not authenticated
       }
 
-      const response =
-        await apiClient.get<ApiResponse<UserDetails[]>>("/v1/user");
+      const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
 
       // API returns array, get first user or null
       const firstUser = (response as any)?.data?.[0] || null;
       return firstUser;
     } catch (error) {
-      console.error(
-        "Auth: Failed to get current user:",
-        (error as any)?.message || error,
-      );
+      console.error('Auth: Failed to get current user:', (error as any)?.message || error);
       // Return null if user not authenticated or error occurs
       return null;
     }
@@ -101,7 +91,7 @@ export const authService = {
   loginWithGoogle: async (): Promise<void> => {
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
@@ -120,7 +110,7 @@ export const authService = {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error("Logout failed:", error);
+      console.error('Logout failed:', error);
       // Don't throw here - we want to continue even if logout fails
     }
   },
@@ -152,7 +142,7 @@ export const authService = {
       // Get user from backend
       return await authService.getCurrentUser();
     } catch (error) {
-      console.error("OAuth callback failed:", error);
+      console.error('OAuth callback failed:', error);
       return null;
     }
   },
@@ -182,7 +172,7 @@ export const authService = {
 
 // Helper function to handle API errors consistently
 export const handleAuthError = (error: unknown): string => {
-  if (error && typeof error === "object" && "message" in error) {
+  if (error && typeof error === 'object' && 'message' in error) {
     const apiError = error as ApiError;
     return apiError.message;
   }
@@ -191,15 +181,15 @@ export const handleAuthError = (error: unknown): string => {
     return error.message;
   }
 
-  return "An unexpected error occurred";
+  return 'An unexpected error occurred';
 };
 
 // Common auth error types for better error handling
 export const AuthErrorTypes = {
-  INVALID_EMAIL: "Invalid email format",
-  INVALID_CODE: "Invalid verification code",
-  CODE_EXPIRED: "Verification code has expired",
-  USER_NOT_FOUND: "User not found",
-  NETWORK_ERROR: "Network error. Please check your connection.",
-  UNKNOWN_ERROR: "An unexpected error occurred",
+  INVALID_EMAIL: 'Invalid email format',
+  INVALID_CODE: 'Invalid verification code',
+  CODE_EXPIRED: 'Verification code has expired',
+  USER_NOT_FOUND: 'User not found',
+  NETWORK_ERROR: 'Network error. Please check your connection.',
+  UNKNOWN_ERROR: 'An unexpected error occurred',
 } as const;

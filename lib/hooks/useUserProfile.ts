@@ -1,12 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import { apiClient } from "../api/client";
-import { authService } from "../services/auth";
-import { useAuthStore } from "../stores/auth-store";
-import { ApiResponse, UserDetails } from "../types/api";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
+import { apiClient } from '../api/client';
+import { authService } from '../services/auth';
+import { useAuthStore } from '../stores/auth-store';
+import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
-const USER_PROFILE_QUERY_KEY = ["user", "profile"] as const;
+const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
 
 /**
  * Hook to fetch and manage user profile data
@@ -26,12 +26,9 @@ export function useUserProfile() {
     queryFn: authService.getCurrentUser,
     retry: (failureCount, error) => {
       // Don't retry on 401 errors
-      if (error && typeof error === "object" && "message" in error) {
+      if (error && typeof error === 'object' && 'message' in error) {
         const apiError = error as { message: string };
-        if (
-          apiError.message?.includes("401") ||
-          apiError.message?.includes("Unauthorized")
-        ) {
+        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
           return false;
         }
       }
@@ -50,10 +47,7 @@ export function useUserProfile() {
     } else if (error) {
       // Clear auth on 401 errors
       const apiError = error as { message?: string };
-      if (
-        apiError.message?.includes("401") ||
-        apiError.message?.includes("Unauthorized")
-      ) {
+      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
         clearAuth();
       }
     }
@@ -77,10 +71,7 @@ export function useUpdateUserProfile() {
 
   return useMutation({
     mutationFn: async (updates: Partial<UserDetails>) => {
-      const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
-        "/v1/user",
-        updates,
-      );
+      const response = await apiClient.patch<ApiResponse<UserDetails[]>>('/v1/user', updates);
       return response.data?.[0] || null;
     },
     onSuccess: (updatedUser) => {
@@ -92,7 +83,7 @@ export function useUpdateUserProfile() {
       }
     },
     onError: (error) => {
-      console.error("Profile update failed:", error);
+      console.error('Profile update failed:', error);
     },
   });
 }
@@ -107,16 +98,16 @@ export function useUploadProfileImage() {
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append('image', file);
 
       const response = await apiClient.post<ApiResponse<UserDetails[]>>(
-        "/v1/user/details/image-upload",
+        '/v1/user/details/image-upload',
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
-        },
+        }
       );
       return response.data?.[0] || null;
     },
@@ -129,7 +120,7 @@ export function useUploadProfileImage() {
       }
     },
     onError: (error) => {
-      console.error("Profile image upload failed:", error);
+      console.error('Profile image upload failed:', error);
     },
   });
 }
@@ -141,12 +132,12 @@ export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
       const response = await apiClient.get<ApiResponse<UserDetails[]>>(
-        `/v1/user/search?q=${encodeURIComponent(query)}`,
+        `/v1/user/search?q=${encodeURIComponent(query)}`
       );
       return response.data || [];
     },
     onError: (error) => {
-      console.error("User search failed:", error);
+      console.error('User search failed:', error);
     },
   });
 }
@@ -158,29 +149,20 @@ export function useFollowUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      userId,
-      action,
-    }: {
-      userId: string;
-      action: "follow" | "unfollow";
-    }) => {
-      const response = await apiClient.post<ApiResponse<any>>(
-        "/v1/user/follow",
-        {
-          user_id: userId,
-          action,
-        },
-      );
+    mutationFn: async ({ userId, action }: { userId: string; action: 'follow' | 'unfollow' }) => {
+      const response = await apiClient.post<ApiResponse<any>>('/v1/user/follow', {
+        user_id: userId,
+        action,
+      });
       return response.data;
     },
     onSuccess: () => {
       // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ["user", "followers"] });
-      queryClient.invalidateQueries({ queryKey: ["user", "following"] });
+      queryClient.invalidateQueries({ queryKey: ['user', 'followers'] });
+      queryClient.invalidateQueries({ queryKey: ['user', 'following'] });
     },
     onError: (error) => {
-      console.error("Follow/unfollow failed:", error);
+      console.error('Follow/unfollow failed:', error);
     },
   });
 }
@@ -190,18 +172,18 @@ export function useFollowUser() {
  */
 export function useUserFollowers(userId: string) {
   return useQuery({
-    queryKey: ["user", "followers", userId],
+    queryKey: ['user', 'followers', userId],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<any[]>>(
-        `/v1/user/followers/list?id=${userId}`,
+        `/v1/user/followers/list?id=${userId}`
       );
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.follower_id,
-        username: item.user_details?.username || "",
-        name: item.user_details?.name || "",
-        image: item.user_details?.image || "",
-        verification_status: item.user_details?.verification_status || "",
+        username: item.user_details?.username || '',
+        name: item.user_details?.name || '',
+        image: item.user_details?.image || '',
+        verification_status: item.user_details?.verification_status || '',
       }));
       return transformedData;
     },
@@ -215,18 +197,18 @@ export function useUserFollowers(userId: string) {
  */
 export function useUserFollowing(userId: string) {
   return useQuery({
-    queryKey: ["user", "following", userId],
+    queryKey: ['user', 'following', userId],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<any[]>>(
-        `/v1/user/follows/list?id=${userId}`,
+        `/v1/user/follows/list?id=${userId}`
       );
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.followed_id,
-        username: item.user_details?.username || "",
-        name: item.user_details?.name || "",
-        image: item.user_details?.image || "",
-        verification_status: item.user_details?.verification_status || "",
+        username: item.user_details?.username || '',
+        name: item.user_details?.name || '',
+        image: item.user_details?.image || '',
+        verification_status: item.user_details?.verification_status || '',
       }));
       return transformedData;
     },
@@ -240,10 +222,10 @@ export function useUserFollowing(userId: string) {
  */
 export function useUserEventCount(userId: string) {
   return useQuery({
-    queryKey: ["user", "events", "count", userId],
+    queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<{ count: number }>>(
-        `/v1/user/events/count?id=${userId}`,
+        `/v1/user/events/count?id=${userId}`
       );
       return response.data?.count || 0;
     },
@@ -257,10 +239,10 @@ export function useUserEventCount(userId: string) {
  */
 export function useUserByUsername(username: string) {
   return useQuery({
-    queryKey: ["user", "profile", "username", username],
+    queryKey: ['user', 'profile', 'username', username],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<UserDetails>>(
-        `/v1/user/details?username=${encodeURIComponent(username)}`,
+        `/v1/user/details?username=${encodeURIComponent(username)}`
       );
       return response.data || null;
     },
@@ -268,7 +250,7 @@ export function useUserByUsername(username: string) {
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry on 404 errors (user not found)
-      if (error && typeof error === "object" && "status" in error) {
+      if (error && typeof error === 'object' && 'status' in error) {
         const apiError = error as { status?: number };
         if (apiError.status === 404) return false;
       }

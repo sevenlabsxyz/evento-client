@@ -1,8 +1,8 @@
-import apiClient from "@/lib/api/client";
-import { UpdateEventData, updateEventSchema } from "@/lib/schemas/event";
-import { ApiResponse } from "@/lib/types/api";
-import { toast } from "@/lib/utils/toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import apiClient from '@/lib/api/client';
+import { UpdateEventData, updateEventSchema } from '@/lib/schemas/event';
+import { ApiResponse } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateEventResponse {
   id: string;
@@ -19,34 +19,30 @@ export function useUpdateEvent() {
       const validatedData = updateEventSchema.parse(data);
 
       // Make API call - Note: the backend expects the ID in the body
-      const response = await apiClient.patch<
-        ApiResponse<UpdateEventResponse[]>
-      >("/v1/events/details", validatedData);
+      const response = await apiClient.patch<ApiResponse<UpdateEventResponse[]>>(
+        '/v1/events/details',
+        validatedData
+      );
 
       // The API returns { success: true, data: [...] }
-      if (
-        response &&
-        response.data &&
-        Array.isArray(response.data) &&
-        response.data.length > 0
-      ) {
+      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         return response.data[0];
       }
 
-      throw new Error("Failed to update event");
+      throw new Error('Failed to update event');
     },
     onSuccess: (data) => {
-      toast.success("Event updated successfully!");
+      toast.success('Event updated successfully!');
 
       // Invalidate related queries to refetch updated data
       queryClient.invalidateQueries({
-        queryKey: ["event", "details", data.id],
+        queryKey: ['event', 'details', data.id],
       });
-      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
     },
     onError: (error: any) => {
-      console.error("Update event error:", error);
-      toast.error(error.message || "Failed to update event");
+      console.error('Update event error:', error);
+      toast.error(error.message || 'Failed to update event');
     },
   });
 }
@@ -64,28 +60,24 @@ export function useUpdateEventWithCallbacks() {
       const validatedData = updateEventSchema.parse(data);
 
       // Make API call
-      const response = await apiClient.patch<
-        ApiResponse<UpdateEventResponse[]>
-      >("/v1/events/details", validatedData);
+      const response = await apiClient.patch<ApiResponse<UpdateEventResponse[]>>(
+        '/v1/events/details',
+        validatedData
+      );
 
       // The API returns { success: true, data: [...] }
-      if (
-        response &&
-        response.data &&
-        Array.isArray(response.data) &&
-        response.data.length > 0
-      ) {
+      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         return response.data[0];
       }
 
-      throw new Error("Failed to update event");
+      throw new Error('Failed to update event');
     },
     onSuccess: (data) => {
       // Invalidate related queries
       queryClient.invalidateQueries({
-        queryKey: ["event", "details", data.id],
+        queryKey: ['event', 'details', data.id],
       });
-      queryClient.invalidateQueries({ queryKey: ["events"] });
+      queryClient.invalidateQueries({ queryKey: ['events'] });
     },
   });
 }

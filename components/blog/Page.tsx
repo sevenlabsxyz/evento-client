@@ -1,28 +1,27 @@
-"use client";
-import { Sheet } from "@silk-hq/components";
-import React from "react";
-import "./Page.css";
+'use client';
+import { Sheet } from '@silk-hq/components';
+import React from 'react';
+import './Page.css';
 
 // ================================================================================================
 // Root
 // ================================================================================================
 
 type SheetRootProps = React.ComponentPropsWithoutRef<typeof Sheet.Root>;
-type PageRootProps = Omit<SheetRootProps, "license"> & {
-  license?: SheetRootProps["license"];
+type PageRootProps = Omit<SheetRootProps, 'license'> & {
+  license?: SheetRootProps['license'];
 };
 
-const PageRoot = React.forwardRef<
-  React.ElementRef<typeof Sheet.Root>,
-  PageRootProps
->(({ children, ...restProps }, ref) => {
-  return (
-    <Sheet.Root license="commercial" {...restProps} ref={ref}>
-      {children}
-    </Sheet.Root>
-  );
-});
-PageRoot.displayName = "Page.Root";
+const PageRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, PageRootProps>(
+  ({ children, ...restProps }, ref) => {
+    return (
+      <Sheet.Root license='commercial' {...restProps} ref={ref}>
+        {children}
+      </Sheet.Root>
+    );
+  }
+);
+PageRoot.displayName = 'Page.Root';
 
 // ================================================================================================
 // View
@@ -34,8 +33,8 @@ const PageView = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Sheet.View
-      className={`Page-view ${className ?? ""}`.trim()}
-      contentPlacement="right"
+      className={`Page-view ${className ?? ''}`.trim()}
+      contentPlacement='right'
       swipeOvershoot={false}
       nativeEdgeSwipePrevention={true}
       {...restProps}
@@ -45,7 +44,7 @@ const PageView = React.forwardRef<
     </Sheet.View>
   );
 });
-PageView.displayName = "Page.View";
+PageView.displayName = 'Page.View';
 
 // ================================================================================================
 // Backdrop
@@ -57,13 +56,13 @@ const PageBackdrop = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Backdrop
-      className={`Page-backdrop ${className ?? ""}`.trim()}
+      className={`Page-backdrop ${className ?? ''}`.trim()}
       {...restProps}
       ref={ref}
     />
   );
 });
-PageBackdrop.displayName = "Page.Backdrop";
+PageBackdrop.displayName = 'Page.Backdrop';
 
 // ================================================================================================
 // Content
@@ -74,16 +73,12 @@ const PageContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Sheet.Content>
 >(({ children, className, ...restProps }, ref) => {
   return (
-    <Sheet.Content
-      className={`Page-content ${className ?? ""}`.trim()}
-      {...restProps}
-      ref={ref}
-    >
+    <Sheet.Content className={`Page-content ${className ?? ''}`.trim()} {...restProps} ref={ref}>
       {children}
     </Sheet.Content>
   );
 });
-PageContent.displayName = "Page.Content";
+PageContent.displayName = 'Page.Content';
 
 // ================================================================================================
 // Unchanged Components
