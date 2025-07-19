@@ -1,7 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { toast } from "@/lib/utils/toast";
 import {
   ArrowLeft,
   Bookmark,
@@ -10,10 +8,14 @@ import {
   MapPin,
   MoreHorizontal,
 } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { useRouter, useParams } from "next/navigation";
 import { useState } from "react";
+import { toast } from "@/lib/utils/toast";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function SavedListDetailPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const [savedEvents, setSavedEvents] = useState([
@@ -60,6 +62,16 @@ export default function SavedListDetailPage() {
     setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
     toast.success("Event removed from list!");
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
@@ -114,10 +126,10 @@ export default function SavedListDetailPage() {
                   />
 
                   {/* Event Details */}
-                  <div className="min-w-0 flex-1">
-                    <div className="mb-2 flex items-start justify-between">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between mb-2">
                       <h3
-                        className="cursor-pointer truncate pr-2 text-lg font-bold leading-tight transition-colors hover:text-red-600"
+                        className="font-bold text-lg leading-tight truncate pr-2 cursor-pointer hover:text-red-600 transition-colors"
                         onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                       >
                         {event.title}
@@ -158,9 +170,9 @@ export default function SavedListDetailPage() {
                 </div>
 
                 {/* Action Buttons */}
-                <div className="mt-4 flex gap-2">
+                <div className="flex gap-2 mt-4">
                   <Button
-                    className="flex-1 bg-red-500 text-white hover:bg-red-600"
+                    className="flex-1 bg-red-500 hover:bg-red-600 text-white"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   >
                     View Details
@@ -187,7 +199,7 @@ export default function SavedListDetailPage() {
               </p>
               <Button
                 onClick={() => router.push("/feed")}
-                className="bg-red-500 text-white hover:bg-red-600"
+                className="bg-red-500 hover:bg-red-600 text-white"
               >
                 Discover Events
               </Button>

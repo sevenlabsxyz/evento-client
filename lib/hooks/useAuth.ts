@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
-import { authService } from "../services/auth";
-import { useAuthStore } from "../stores/auth-store";
-import { createClient } from "../supabase/client";
-import { ApiError } from "../types/api";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { authService } from '../services/auth';
+import { useAuthStore } from '../stores/auth-store';
+import { createClient } from '../supabase/client';
+import { ApiError } from '../types/api';
 
 // Key for user query
 const USER_QUERY_KEY = ["auth", "user"] as const;
@@ -31,8 +31,8 @@ export function useAuth() {
       // Don't retry on 401 errors
       if (
         error &&
-        typeof error === "object" &&
-        "status" in error &&
+        typeof error === 'object' &&
+        'status' in error &&
         error.status === 401
       ) {
         return false;
@@ -51,8 +51,8 @@ export function useAuth() {
       // Clear auth on 401 errors
       const apiError = authError as ApiError;
       if (
-        apiError.message?.includes("401") ||
-        apiError.message?.includes("Unauthorized")
+        apiError.message?.includes('401') ||
+        apiError.message?.includes('Unauthorized')
       ) {
         clearAuth();
       }
@@ -65,18 +65,18 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth: State changed -", event);
+      console.log('Auth: State changed -', event);
 
-      if (event === "SIGNED_IN" && session) {
+      if (event === 'SIGNED_IN' && session) {
         // User signed in - refresh user data
         queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      } else if (event === "SIGNED_OUT") {
+      } else if (event === 'SIGNED_OUT') {
         // User signed out - clear everything
         clearAuth();
         queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      } else if (event === "TOKEN_REFRESHED" && session) {
+      } else if (event === 'TOKEN_REFRESHED' && session) {
         // Token refreshed - this is automatic, no action needed
-        console.log("Auth: Token refreshed");
+        console.log('Auth: Token refreshed');
       }
     });
 
@@ -110,12 +110,18 @@ export function useAuth() {
 export function useLogin() {
   const router = useRouter();
   const { setEmail } = useAuthStore();
+  const searchParams = useSearchParams();
 
   const mutation = useMutation({
     mutationFn: authService.sendLoginCode,
     onSuccess: (_, email) => {
       setEmail(email);
-      router.push("/auth/verify");
+      const redirect = searchParams.get('redirect');
+      router.push(
+        redirect
+          ? `/auth/verify?redirect=${encodeURIComponent(redirect)}`
+          : '/auth/verify'
+      );
     },
   });
 
@@ -187,10 +193,11 @@ export function useGoogleLogin() {
 export function useRequireAuth(redirectTo = "/auth/login") {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push(redirectTo);
+      router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
 

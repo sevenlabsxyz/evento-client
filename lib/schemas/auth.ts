@@ -35,19 +35,19 @@ export const authSchema = z.object({
 export const updateProfileSchema = z.object({
   username: z
     .string()
-    .min(3, "Username must be at least 3 characters")
-    .max(20, "Username must be less than 20 characters")
+    .min(3, 'Username must be at least 3 characters')
+    .max(20, 'Username must be less than 20 characters')
     .regex(
       /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores",
+      'Username can only contain letters, numbers, and underscores'
     )
     .optional(),
   name: z
     .string()
-    .min(1, "Name is required")
-    .max(50, "Name must be less than 50 characters")
+    .min(1, 'Name is required')
+    .max(50, 'Name must be less than 50 characters')
     .optional(),
-  bio: z.string().max(280, "Bio must be less than 280 characters").optional(),
+  bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
   bio_link: z
     .string()
     .url("Please enter a valid URL")
@@ -74,10 +74,10 @@ export const updateProfileSchema = z.object({
 });
 
 // Type inference from schemas
-export type LoginForm = z.infer<typeof loginSchema>;
-export type VerifyCodeForm = z.infer<typeof verifyCodeSchema>;
-export type AuthForm = z.infer<typeof authSchema>;
-export type UpdateProfileForm = z.infer<typeof updateProfileSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
+export type VerifyCodeFormData = z.infer<typeof verifyCodeSchema>;
+export type AuthFormData = z.infer<typeof authSchema>;
+export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
 
 // Common validation messages
 export const validationMessages = {

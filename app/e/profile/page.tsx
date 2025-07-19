@@ -1,33 +1,36 @@
 "use client";
 
-import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
-import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
-import { Navbar } from "@/components/navbar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { useAuth } from "@/lib/hooks/useAuth";
 import {
+  Settings,
+  Edit3,
+  Camera,
+  Globe,
+  Zap,
+  X,
+  BadgeCheck,
+  Loader2,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { toast } from "@/lib/utils/toast";
+import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
+import {
+  useUserProfile,
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
-  useUserProfile,
 } from "@/lib/hooks/useUserProfile";
+import { useAuth } from "@/lib/hooks/useAuth";
 import { useTopBar } from "@/lib/stores/topbar-store";
-import { toast } from "@/lib/utils/toast";
-import {
-  BadgeCheck,
-  Camera,
-  Edit3,
-  Globe,
-  Loader2,
-  Settings,
-  Zap,
-} from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Navbar } from "@/components/navbar";
+import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
+import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function ProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBar, setTransparent } = useTopBar();
   const [activeTab, setActiveTab] = useState("about");
@@ -43,7 +46,6 @@ export default function ProfilePage() {
 
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
-  const { logout } = useAuth();
   const { data: eventCount } = useUserEventCount(user?.id || "");
   const { data: followers } = useUserFollowers(user?.id || "");
   const { data: following } = useUserFollowing(user?.id || "");
@@ -332,7 +334,7 @@ export default function ProfilePage() {
         acc[date].push(event);
         return acc;
       },
-      {} as Record<string, typeof events>,
+      {} as Record<string, typeof events>
     );
 
     return Object.entries(grouped).map(([date, events]) => ({
@@ -378,7 +380,7 @@ export default function ProfilePage() {
         <div className="flex gap-2">
           <button
             onClick={() => setEventsFilter("attending")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               eventsFilter === "attending"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -388,7 +390,7 @@ export default function ProfilePage() {
           </button>
           <button
             onClick={() => setEventsFilter("hosting")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               eventsFilter === "hosting"
                 ? "bg-red-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -528,7 +530,7 @@ export default function ProfilePage() {
   );
 
   // Show loading state while fetching user data
-  if (isUserLoading || !user) {
+  if (isCheckingAuth || isUserLoading || !user) {
     return (
       <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm">
         <Loader2 className="h-8 w-8 animate-spin text-red-500" />
@@ -544,14 +546,14 @@ export default function ProfilePage() {
         {/* Cover Image Section */}
         <div className="relative">
           {/* Banner */}
-          <div className="h-48 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-64" />
+          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
 
           {/* Profile Picture - Centered & Clickable */}
           <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
             <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
                 <AvatarImage src={userData.avatar || ""} alt="Profile" />
-                <AvatarFallback className="bg-white text-3xl">
+                <AvatarFallback className="text-3xl bg-white">
                   {userData.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -574,7 +576,7 @@ export default function ProfilePage() {
         {/* Profile Section */}
         <div className="mb-4 bg-white px-6 pb-6 pt-20">
           {/* User Info - Centered */}
-          <div className="mb-6 text-center">
+          <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
               {userData.name}
             </h2>
@@ -681,7 +683,7 @@ export default function ProfilePage() {
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab("about")}
-              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "about"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -691,7 +693,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("events")}
-              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "events"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -701,7 +703,7 @@ export default function ProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "stats"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -738,7 +740,7 @@ export default function ProfilePage() {
                 window.open(
                   "https://andrerfneves.com",
                   "_blank",
-                  "noopener,noreferrer",
+                  "noopener,noreferrer"
                 );
               }}
               className="w-full bg-red-500 text-white hover:bg-red-600"
@@ -756,10 +758,10 @@ export default function ProfilePage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
               <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
             </div>
-            <h3 className="mb-4 text-xl font-bold text-gray-900">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
               You are verified
             </h3>
-            <p className="mb-6 text-gray-600">
+            <p className="text-gray-600 mb-6">
               Congratulations! Your account is verified. You have premium member
               status with enhanced credibility and access to exclusive features
               on our platform.
@@ -769,7 +771,7 @@ export default function ProfilePage() {
                 onClick={() => {
                   setShowVerificationModal(false);
                   router.push(
-                    "/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.",
+                    "/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features."
                   );
                 }}
                 className="w-full bg-red-500 text-white hover:bg-red-600"

@@ -2,6 +2,7 @@
 
 import { ReusableDropdown } from "@/components/reusable-dropdown";
 import { Button } from "@/components/ui/button";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { toast } from "@/lib/utils/toast";
 import {
   ArrowLeft,
@@ -16,6 +17,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SingleChatPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const [message, setMessage] = useState("");
@@ -91,21 +93,21 @@ export default function SingleChatPage() {
   const uploadOptions = [
     {
       label: "Upload Photo",
-      icon: <ImageIcon className="h-4 w-4" />,
+      icon: <ImageIcon className="w-4 h-4" />,
       action: () => {
         toast.success("Photo upload coming soon!");
       },
     },
     {
       label: "Pick from Files",
-      icon: <Paperclip className="h-4 w-4" />,
+      icon: <Paperclip className="w-4 h-4" />,
       action: () => {
         toast.success("File picker coming soon!");
       },
     },
     {
       label: "Upload Document",
-      icon: <FileText className="h-4 w-4" />,
+      icon: <FileText className="w-4 h-4" />,
       action: () => {
         toast.success("Document upload coming soon!");
       },
@@ -136,7 +138,7 @@ export default function SingleChatPage() {
             src={currentChat.avatar || "/placeholder.svg"}
             alt={currentChat.name}
             className={`object-cover ${
-              isGroup ? "h-10 w-10 rounded-lg" : "h-10 w-10 rounded-full"
+              isGroup ? "w-10 h-10 rounded-lg" : "w-10 h-10 rounded-full"
             }`}
           />
           {!isGroup && currentChat.isOnline && (
@@ -152,6 +154,16 @@ export default function SingleChatPage() {
       </div>
     </div>
   );
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
@@ -182,7 +194,9 @@ export default function SingleChatPage() {
               className={`flex ${msg.isMe ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`flex max-w-[80%] gap-2 ${msg.isMe ? "flex-row-reverse" : "flex-row"}`}
+                className={`flex gap-2 max-w-[80%] ${
+                  msg.isMe ? "flex-row-reverse" : "flex-row"
+                }`}
               >
                 {!msg.isMe && (
                   <img
@@ -192,7 +206,9 @@ export default function SingleChatPage() {
                   />
                 )}
                 <div
-                  className={`flex flex-col ${msg.isMe ? "items-end" : "items-start"}`}
+                  className={`flex flex-col ${
+                    msg.isMe ? "items-end" : "items-start"
+                  }`}
                 >
                   {!msg.isMe && isGroup && (
                     <span className="mb-1 px-3 text-xs text-gray-500">
@@ -202,8 +218,8 @@ export default function SingleChatPage() {
                   <div
                     className={`rounded-2xl px-4 py-2 ${
                       msg.isMe
-                        ? "rounded-br-md bg-red-500 text-white"
-                        : "rounded-bl-md bg-gray-100 text-gray-900"
+                        ? "bg-red-500 text-white rounded-br-md"
+                        : "bg-gray-100 text-gray-900 rounded-bl-md"
                     }`}
                   >
                     <p className="text-sm">{msg.content}</p>
@@ -241,7 +257,7 @@ export default function SingleChatPage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Message..."
-              className="w-full rounded-full bg-gray-100 px-4 py-2 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500"
+              className="w-full px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:bg-white"
               onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
             />
           </div>

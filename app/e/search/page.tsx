@@ -1,11 +1,13 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { Calendar, Clock, MapPin, Search, Users, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SearchPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -53,6 +55,16 @@ export default function SearchPage() {
     // In a real app, this would trigger the search API
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
@@ -97,12 +109,12 @@ export default function SearchPage() {
                     alt=""
                     className={`object-cover ${
                       result.type === "user"
-                        ? "h-12 w-12 rounded-full"
-                        : "h-12 w-12 rounded-lg"
+                        ? "w-12 h-12 rounded-full"
+                        : "w-12 h-12 rounded-lg"
                     }`}
                   />
-                  <div className="min-w-0 flex-1">
-                    <h4 className="truncate font-medium text-gray-900">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-medium text-gray-900 truncate">
                       {result.type === "user" ? result.name : result.title}
                     </h4>
                     <div className="flex items-center gap-1 text-sm text-gray-500">

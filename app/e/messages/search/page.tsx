@@ -1,11 +1,13 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { ArrowLeft, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function UserSearchPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -78,6 +80,16 @@ export default function UserSearchPage() {
   const sectionTitle = searchQuery
     ? `Results for "${searchQuery}"`
     : "Suggested";
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">

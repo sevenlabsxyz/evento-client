@@ -4,6 +4,7 @@ import { APISheet } from "@/components/settings/APISheet";
 import { ChangelogSheet } from "@/components/settings/ChangelogSheet";
 import { ContactSheet } from "@/components/settings/ContactSheet";
 import { HelpSheet } from "@/components/settings/HelpSheet";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { toast } from "@/lib/utils/toast";
 import {
@@ -22,12 +23,11 @@ import {
   Shield,
   Sparkles,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import packageJson from "../../../package.json";
 
 export default function SettingsPage() {
-  const router = useRouter();
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -48,8 +48,6 @@ export default function SettingsPage() {
   const [changelogSheetOpen, setChangelogSheetOpen] = useState(false);
   const [apiSheetOpen, setApiSheetOpen] = useState(false);
   const [showApiContactForm, setShowApiContactForm] = useState(false);
-
-  // Hardcoded language to English and currency to US Dollar as per requirements
 
   const handleExternalLink = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
@@ -90,8 +88,18 @@ export default function SettingsPage() {
     setContactSheetOpen(true);
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50 px-0 pt-4">
         {/* User Profile Section */}

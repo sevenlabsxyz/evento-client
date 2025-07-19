@@ -24,13 +24,26 @@ import {
   Instagram,
   Loader2,
   Type,
-  User,
-  Zap,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { useProfileFormStore } from "@/lib/stores/profile-form-store";
+import {
+  useUserProfile,
+  useUpdateUserProfile,
+} from "@/lib/hooks/useUserProfile";
+import { toast } from "@/lib/utils/toast";
+import ProfileImageSheet from "@/components/profile-edit/profile-image-sheet";
+import UsernameSheet from "@/components/profile-edit/username-sheet";
+import NameSheet from "@/components/profile-edit/name-sheet";
+import SocialLinksSheet from "@/components/profile-edit/social-links-sheet";
+import BiographySheet from "@/components/profile-edit/biography-sheet";
+import LightningAddressSheet from "@/components/profile-edit/lightning-address-sheet";
+import NostrSheet from "@/components/profile-edit/nostr-sheet";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function EditProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const { setTopBar } = useTopBar();
   const updateProfileMutation = useUpdateUserProfile();
@@ -106,7 +119,7 @@ export default function EditProfilePage() {
   // Check if form is valid and has changes
   const canSave = isValid() && hasChanges();
 
-  if (isLoading) {
+  if (isLoading || isCheckingAuth) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
         <div className="flex items-center gap-2">

@@ -5,6 +5,7 @@ import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import {
   useUserByUsername,
   useUserEventCount,
@@ -26,6 +27,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 export default function UserProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar, setTransparent } = useTopBar();
@@ -53,7 +55,7 @@ export default function UserProfilePage() {
   const { data: following = [] } = useUserFollowing(userData?.id || "");
 
   // Handle loading state
-  if (isUserLoading) {
+  if (isUserLoading || isCheckingAuth) {
     return (
       <div className="mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm">
         <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
@@ -69,10 +71,10 @@ export default function UserProfilePage() {
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
             <UserMinus className="h-8 w-8 text-gray-400" />
           </div>
-          <h2 className="mb-2 text-xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-gray-900 mb-2">
             User not found
           </h2>
-          <p className="mb-4 text-gray-500">
+          <p className="text-gray-500 mb-4">
             The user @{username} doesn't exist or may have been deleted.
           </p>
           <Button onClick={() => router.back()} variant="outline">
@@ -254,7 +256,7 @@ export default function UserProfilePage() {
       toast.success(
         isFollowing
           ? `Unfollowed ${userProfile.name}`
-          : `Following ${userProfile.name}`,
+          : `Following ${userProfile.name}`
       );
     }
   };
@@ -289,7 +291,7 @@ export default function UserProfilePage() {
         acc[date].push(event);
         return acc;
       },
-      {} as Record<string, typeof events>,
+      {} as Record<string, typeof events>
     );
 
     return Object.entries(grouped).map(([date, events]) => ({
@@ -335,7 +337,7 @@ export default function UserProfilePage() {
         <div className="flex gap-2">
           <button
             onClick={() => setEventsFilter("attending")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               eventsFilter === "attending"
                 ? "bg-blue-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -345,7 +347,7 @@ export default function UserProfilePage() {
           </button>
           <button
             onClick={() => setEventsFilter("hosting")}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
               eventsFilter === "hosting"
                 ? "bg-red-500 text-white"
                 : "bg-gray-100 text-gray-600 hover:bg-gray-200"
@@ -369,7 +371,7 @@ export default function UserProfilePage() {
                 {group.events.map((event) => (
                   <div
                     key={event.id}
-                    className="-m-2 flex cursor-pointer items-start gap-4 rounded-xl p-2 transition-colors hover:bg-gray-50"
+                    className="flex items-start gap-4 cursor-pointer hover:bg-gray-50 rounded-xl p-2 -m-2 transition-colors"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   >
                     <img
@@ -378,7 +380,7 @@ export default function UserProfilePage() {
                       className="h-12 w-12 flex-shrink-0 rounded-xl object-cover"
                     />
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold transition-colors hover:text-red-600">
+                      <h3 className="font-semibold text-lg hover:text-red-600 transition-colors">
                         {event.title}
                       </h3>
                       <p className="text-gray-500">{event.location}</p>
@@ -500,14 +502,14 @@ export default function UserProfilePage() {
           </Button>
 
           {/* Banner */}
-          <div className="h-48 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-64" />
+          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
 
           {/* Profile Picture - Centered & Clickable */}
           <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
             <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="h-32 w-32 border-4 border-white shadow-lg">
+              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
                 <AvatarImage src={userProfile.avatar || ""} alt="Profile" />
-                <AvatarFallback className="bg-white text-3xl">
+                <AvatarFallback className="text-3xl bg-white">
                   {userProfile.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -530,7 +532,7 @@ export default function UserProfilePage() {
         {/* Profile Section */}
         <div className="mb-4 bg-white px-6 pb-6 pt-20">
           {/* User Info - Centered */}
-          <div className="mb-6 text-center">
+          <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
               {userProfile.name}
             </h2>
@@ -544,7 +546,7 @@ export default function UserProfilePage() {
               className={`flex-1 ${
                 isFollowing
                   ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-red-500 hover:bg-red-600 text-white"
               }`}
             >
               {isFollowing ? (
@@ -636,7 +638,7 @@ export default function UserProfilePage() {
           <div className="flex border-b border-gray-200">
             <button
               onClick={() => setActiveTab("about")}
-              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "about"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -646,7 +648,7 @@ export default function UserProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("events")}
-              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "events"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -656,7 +658,7 @@ export default function UserProfilePage() {
             </button>
             <button
               onClick={() => setActiveTab("stats")}
-              className={`flex-1 border-b-2 px-4 py-4 text-center text-sm font-medium transition-colors ${
+              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
                 activeTab === "stats"
                   ? "border-red-500 text-red-600"
                   : "border-transparent text-gray-500 hover:text-gray-700"
@@ -708,7 +710,7 @@ export default function UserProfilePage() {
                 window.open(
                   userProfile.website,
                   "_blank",
-                  "noopener,noreferrer",
+                  "noopener,noreferrer"
                 );
               }}
               className="w-full bg-red-500 text-white hover:bg-red-600"
@@ -726,10 +728,10 @@ export default function UserProfilePage() {
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
               <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
             </div>
-            <h3 className="mb-4 text-xl font-bold text-gray-900">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">
               This user is verified
             </h3>
-            <p className="mb-6 text-gray-600">
+            <p className="text-gray-600 mb-6">
               This user is a premium member with a verified account. Verified
               users have enhanced credibility and access to exclusive features
               on our platform.
@@ -739,7 +741,7 @@ export default function UserProfilePage() {
                 onClick={() => {
                   setShowVerificationModal(false);
                   router.push(
-                    "/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.",
+                    "/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements."
                   );
                 }}
                 className="w-full bg-red-500 text-white hover:bg-red-600"

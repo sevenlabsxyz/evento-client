@@ -17,6 +17,7 @@ import MoreFormattingSheet from "@/components/create-event/more-formatting-sheet
 import TextStylesSheet from "@/components/create-event/text-styles-sheet";
 import TimePickerSheet from "@/components/create-event/time-picker-sheet";
 import { Button } from "@/components/ui/button";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useCreateEventWithCallbacks } from "@/lib/hooks/useCreateEvent";
 import { useEventFormStore } from "@/lib/stores/event-form-store";
 import { useTopBar } from "@/lib/stores/topbar-store";
@@ -38,10 +39,10 @@ import {
   Music,
   Users,
 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function CreatePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -56,7 +57,6 @@ export default function CreatePage() {
     };
   }, [setTopBar]);
 
-  const router = useRouter();
   const createEventMutation = useCreateEventWithCallbacks();
 
   // Get state and actions from Zustand store
@@ -185,7 +185,7 @@ export default function CreatePage() {
   };
 
   const handleAttachmentType = (
-    type: "spotify" | "wavlake" | "photo" | "file" | "link",
+    type: "spotify" | "wavlake" | "photo" | "file" | "link"
   ) => {
     // This will be handled by the AttachmentSheet internally
     // For now, just handle the file pickers
@@ -256,6 +256,16 @@ export default function CreatePage() {
 
   // Check if all required fields are filled
   const isFormValid = isValid();
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
@@ -347,7 +357,9 @@ export default function CreatePage() {
               </label>
               <div className="flex items-center justify-between">
                 <span
-                  className={`font-medium ${location ? "text-gray-900" : "text-gray-400"}`}
+                  className={`font-medium ${
+                    location ? "text-gray-900" : "text-gray-400"
+                  }`}
                 >
                   {location
                     ? getLocationDisplayName(location)
@@ -365,7 +377,7 @@ export default function CreatePage() {
             onClick={() => setShowVisibilitySheet(true)}
             className="flex w-full items-center gap-4 text-left"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+            <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
               {visibility === "public" ? (
                 <Globe className="h-4 w-4 text-gray-600" />
               ) : (
@@ -395,7 +407,7 @@ export default function CreatePage() {
             <div className="flex-1">
               <div className="flex items-center justify-between">
                 <div className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium text-gray-500">
+                  <label className="text-gray-500 text-sm font-medium mb-1">
                     {hasCapacity && capacity
                       ? `Capacity ${capacity}`
                       : "Set Capacity"}
@@ -416,12 +428,12 @@ export default function CreatePage() {
                       setShowCapacitySettingSheet(true);
                     }
                   }}
-                  className={`h-6 w-12 rounded-full transition-colors ${
+                  className={`w-12 h-6 rounded-full transition-colors ${
                     hasCapacity ? "bg-purple-500" : "bg-gray-300"
                   }`}
                 >
                   <div
-                    className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                    className={`w-5 h-5 bg-white rounded-full transition-transform ${
                       hasCapacity ? "translate-x-6" : "translate-x-0.5"
                     }`}
                   ></div>
@@ -446,7 +458,11 @@ export default function CreatePage() {
               </label>
               <div className="flex items-center justify-between">
                 <span
-                  className={`${isContentEmpty(description) ? "text-gray-400" : "text-gray-900"}`}
+                  className={`${
+                    isContentEmpty(description)
+                      ? "text-gray-400"
+                      : "text-gray-900"
+                  }`}
                 >
                   {isContentEmpty(description)
                     ? "Add description about this event..."
@@ -483,8 +499,8 @@ export default function CreatePage() {
             onClick={handleCreateEvent}
             className={`w-full rounded-xl py-3 font-medium transition-all ${
               isFormValid
-                ? "bg-red-500 text-white hover:bg-red-600"
-                : "cursor-not-allowed bg-gray-300 text-gray-500"
+                ? "bg-red-500 hover:bg-red-600 text-white"
+                : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
             disabled={!isFormValid || createEventMutation.isPending}
           >

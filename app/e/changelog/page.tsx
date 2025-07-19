@@ -1,11 +1,13 @@
 "use client";
 
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { Bug, Calendar, Shield, Sparkles, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 export default function ChangelogPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -161,6 +163,16 @@ export default function ChangelogPage() {
     }
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
@@ -181,7 +193,7 @@ export default function ChangelogPage() {
                   </h3>
                   <span
                     className={`rounded-full px-2 py-1 text-xs font-medium ${getVersionBadgeColor(
-                      entry.type,
+                      entry.type
                     )}`}
                   >
                     {entry.type}
@@ -227,12 +239,12 @@ export default function ChangelogPage() {
         ))}
 
         {/* Footer */}
-        <div className="py-6 text-center">
-          <p className="text-sm text-gray-500">
+        <div className="text-center py-6">
+          <p className="text-gray-500 text-sm">
             Want to suggest a feature or report a bug?{" "}
             <button
               onClick={() => router.push("/contact")}
-              className="font-medium text-red-600 hover:underline"
+              className="text-red-600 font-medium hover:underline"
             >
               Contact us
             </button>

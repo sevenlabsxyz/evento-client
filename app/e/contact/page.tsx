@@ -3,13 +3,15 @@
 import type React from "react";
 
 import { Button } from "@/components/ui/button";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { toast } from "@/lib/utils/toast";
 import { Upload, X } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation"; // keep useSearchParams for initial read
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ContactPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -75,6 +77,16 @@ export default function ContactPage() {
       setIsLoading(false);
     }
   };
+
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">

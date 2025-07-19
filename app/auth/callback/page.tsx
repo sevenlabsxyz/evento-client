@@ -1,16 +1,19 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { authService } from "@/lib/services/auth";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/stores/auth-store";
-import { CheckCircle, Loader2, XCircle } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { authService } from "@/lib/services/auth";
+import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setUser } = useAuthStore();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(
+    "loading"
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -39,9 +42,10 @@ export default function AuthCallbackPage() {
             setUser(user);
             setStatus("success");
 
-            // Redirect to home after brief success message
+            // Redirect to original location or home after brief success message
             setTimeout(() => {
-              router.push("/");
+              const redirect = searchParams.get("redirect");
+              router.push(redirect || "/");
             }, 1500);
           } else {
             throw new Error("Failed to get user information");
@@ -64,13 +68,18 @@ export default function AuthCallbackPage() {
       } catch (error) {
         console.error("Auth callback error:", error);
         setError(
-          error instanceof Error ? error.message : "Authentication failed",
+          error instanceof Error ? error.message : "Authentication failed"
         );
         setStatus("error");
 
-        // Redirect to login after error
+        // Redirect to login after error, preserving the redirect parameter
         setTimeout(() => {
-          router.push("/auth/login");
+          const redirect = searchParams.get("redirect");
+          router.push(
+            redirect
+              ? `/auth/login?redirect=${encodeURIComponent(redirect)}`
+              : "/auth/login"
+          );
         }, 3000);
       }
     };
@@ -121,5 +130,27 @@ export default function AuthCallbackPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <CardTitle className="text-center">Loading...</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col items-center space-y-4">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              <p className="text-gray-600 text-center">Please wait...</p>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }

@@ -119,6 +119,7 @@ const SheetWithDetentView = React.forwardRef<
     return (
       <Sheet.View
         className={`SheetWithDetent-view ${className ?? ""}`.trim()}
+        detents={!reachedLastDetent ? "66vh" : undefined}
         swipeOvershoot={false}
         nativeEdgeSwipePrevention={true}
         onTravelStatusChange={(travelStatus) => {

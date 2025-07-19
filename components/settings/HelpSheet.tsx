@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
-import { Bot, Mail, Twitter } from "lucide-react";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
 
 interface HelpSheetProps {
   open: boolean;
@@ -15,22 +14,22 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
   };
 
   return (
-    <SheetWithDetent.Root
+    <SheetWithDetentFull.Root
       presented={open}
       onPresentedChange={(presented) => onOpenChange(presented)}
       activeDetent={1}
       onActiveDetentChange={() => {}}
     >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className="grid grid-rows-[min-content_1fr]">
-            <div className="border-b border-gray-100 p-4">
-              <div className="mb-4 flex justify-center">
-                <SheetWithDetent.Handle />
+      <SheetWithDetentFull.Portal>
+        <SheetWithDetentFull.View>
+          <SheetWithDetentFull.Backdrop />
+          <SheetWithDetentFull.Content className="grid grid-rows-[min-content_1fr]">
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
               </div>
               <div>
-                <h2 className="mb-2 text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Need Help?
                 </h2>
                 <p className="text-gray-600">
@@ -39,47 +38,47 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
               </div>
             </div>
 
-            <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className="min-h-0">
-                <SheetWithDetent.ScrollContent className="p-4">
+            <SheetWithDetentFull.ScrollRoot asChild>
+              <SheetWithDetentFull.ScrollView className="min-h-0">
+                <SheetWithDetentFull.ScrollContent className="p-4">
                   <div className="space-y-4">
                     {/* AI Agent Card */}
-                    <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md">
-                      <div className="mb-4 flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
+                    <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                           <Bot className="h-6 w-6 text-blue-600" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold">
+                          <h3 className="font-bold text-lg">
                             Talk to our AI agent
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-gray-500 text-sm">
                             Get instant answers to common questions
                           </p>
                         </div>
                       </div>
-                      <Button className="w-full bg-blue-500 text-white hover:bg-blue-600">
+                      <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
                         Start Chat
                       </Button>
                     </div>
 
                     {/* Twitter Card */}
-                    <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md">
-                      <div className="mb-4 flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black">
+                    <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-black rounded-full flex items-center justify-center">
                           <Twitter className="h-6 w-6 text-white" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold">
+                          <h3 className="font-bold text-lg">
                             Reach out to us on X
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-gray-500 text-sm">
                             Connect with us on social media
                           </p>
                         </div>
                       </div>
                       <Button
-                        className="w-full bg-black text-white hover:bg-gray-800"
+                        className="w-full bg-black hover:bg-gray-800 text-white"
                         onClick={() =>
                           handleExternalLink("https://x.com/evento")
                         }
@@ -89,22 +88,22 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
                     </div>
 
                     {/* Email Card */}
-                    <div className="rounded-2xl border border-gray-200 bg-white p-6 transition-shadow hover:shadow-md">
-                      <div className="mb-4 flex items-center gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+                    <div className="bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-md transition-shadow">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
                           <Mail className="h-6 w-6 text-red-600" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold">
+                          <h3 className="font-bold text-lg">
                             Email us at evento.so
                           </h3>
-                          <p className="text-sm text-gray-500">
+                          <p className="text-gray-500 text-sm">
                             Send us a detailed message
                           </p>
                         </div>
                       </div>
                       <Button
-                        className="w-full bg-red-500 text-white hover:bg-red-600"
+                        className="w-full bg-red-500 hover:bg-red-600 text-white"
                         onClick={() =>
                           handleExternalLink("mailto:hello@evento.so")
                         }
@@ -113,12 +112,12 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
                       </Button>
                     </div>
                   </div>
-                </SheetWithDetent.ScrollContent>
-              </SheetWithDetent.ScrollView>
-            </SheetWithDetent.ScrollRoot>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+                </SheetWithDetentFull.ScrollContent>
+              </SheetWithDetentFull.ScrollView>
+            </SheetWithDetentFull.ScrollRoot>
+          </SheetWithDetentFull.Content>
+        </SheetWithDetentFull.View>
+      </SheetWithDetentFull.Portal>
+    </SheetWithDetentFull.Root>
   );
 }

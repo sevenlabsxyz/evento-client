@@ -9,10 +9,17 @@ import {
   MapPin,
   MessageCircle,
   UserPlus,
+  Calendar,
+  MapPin,
+  Clock,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { Navbar } from "@/components/navbar";
+import { useState, useEffect } from "react";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function NotificationsPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -119,6 +126,16 @@ export default function NotificationsPage() {
     }
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
@@ -132,7 +149,7 @@ export default function NotificationsPage() {
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`flex items-start gap-3 px-4 py-3 transition-colors hover:bg-gray-50 ${
+            className={`flex items-start gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${
               notification.isNew ? "bg-blue-50" : ""
             }`}
           >
@@ -146,7 +163,7 @@ export default function NotificationsPage() {
                     className="h-10 w-10 rounded-full object-cover"
                   />
                   {notification.type !== "follow" && (
-                    <div className="absolute -bottom-1 -right-1 rounded-full bg-white p-0.5">
+                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
                       {getNotificationIcon(notification.type)}
                     </div>
                   )}

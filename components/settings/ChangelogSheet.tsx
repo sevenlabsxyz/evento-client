@@ -1,7 +1,7 @@
 "use client";
 
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
-import { Bug, Calendar, Shield, Sparkles, Zap } from "lucide-react";
+import { Calendar, Bug, Sparkles, Zap, Shield } from "lucide-react";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
 
 interface ChangelogSheetProps {
   open: boolean;
@@ -149,22 +149,22 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
   };
 
   return (
-    <SheetWithDetent.Root
+    <SheetWithDetentFull.Root
       presented={open}
       onPresentedChange={(presented) => onOpenChange(presented)}
       activeDetent={1}
       onActiveDetentChange={() => {}}
     >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className="grid grid-rows-[min-content_1fr]">
-            <div className="border-b border-gray-100 p-4">
-              <div className="mb-4 flex justify-center">
-                <SheetWithDetent.Handle />
+      <SheetWithDetentFull.Portal>
+        <SheetWithDetentFull.View>
+          <SheetWithDetentFull.Backdrop />
+          <SheetWithDetentFull.Content className="grid grid-rows-[min-content_1fr]">
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
               </div>
               <div>
-                <h2 className="mb-2 text-2xl font-bold text-gray-900">
+                <h2 className="text-2xl font-bold text-gray-900 mb-2">
                   Change Log
                 </h2>
                 <p className="text-gray-600">
@@ -173,32 +173,32 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
               </div>
             </div>
 
-            <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className="min-h-0">
-                <SheetWithDetent.ScrollContent className="p-4">
+            <SheetWithDetentFull.ScrollRoot asChild>
+              <SheetWithDetentFull.ScrollView className="min-h-0">
+                <SheetWithDetentFull.ScrollContent className="p-4">
                   <div className="space-y-6">
                     {changelogEntries.map((entry, index) => (
                       <div
                         key={entry.version}
-                        className="overflow-hidden rounded-2xl bg-white shadow-sm"
+                        className="bg-white rounded-2xl overflow-hidden shadow-sm"
                       >
                         {/* Version Header */}
-                        <div className="border-b border-gray-100 p-4">
-                          <div className="mb-2 flex items-center justify-between">
+                        <div className="p-4 border-b border-gray-100">
+                          <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-3">
                               <h3 className="text-lg font-bold text-gray-900">
                                 v{entry.version}
                               </h3>
                               <span
-                                className={`rounded-full px-2 py-1 text-xs font-medium ${getVersionBadgeColor(
-                                  entry.type,
+                                className={`px-2 py-1 rounded-full text-xs font-medium ${getVersionBadgeColor(
+                                  entry.type
                                 )}`}
                               >
                                 {entry.type}
                               </span>
                             </div>
                             {index === 0 && (
-                              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
+                              <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
                                 Latest
                               </span>
                             )}
@@ -210,7 +210,7 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
                         </div>
 
                         {/* Changes */}
-                        <div className="space-y-4 p-4">
+                        <div className="p-4 space-y-4">
                           {entry.changes.map(
                             (changeCategory, categoryIndex) => (
                               <div key={categoryIndex}>
@@ -220,45 +220,45 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
                                     {changeCategory.category}
                                   </h4>
                                 </div>
-                                <ul className="ml-6 space-y-2">
+                                <ul className="space-y-2 ml-6">
                                   {changeCategory.items.map(
                                     (item, itemIndex) => (
                                       <li
                                         key={itemIndex}
                                         className="flex items-start gap-2 text-sm text-gray-700"
                                       >
-                                        <div className="mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-gray-400"></div>
+                                        <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mt-2 flex-shrink-0"></div>
                                         <span>{item}</span>
                                       </li>
-                                    ),
+                                    )
                                   )}
                                 </ul>
                               </div>
-                            ),
+                            )
                           )}
                         </div>
                       </div>
                     ))}
 
                     {/* Footer */}
-                    <div className="py-6 text-center">
-                      <p className="text-sm text-gray-500">
+                    <div className="text-center py-6">
+                      <p className="text-gray-500 text-sm">
                         Want to suggest a feature or report a bug?{" "}
                         <button
                           onClick={() => onOpenChange(false)}
-                          className="font-medium text-red-600 hover:underline"
+                          className="text-red-600 font-medium hover:underline"
                         >
                           Contact us
                         </button>
                       </p>
                     </div>
                   </div>
-                </SheetWithDetent.ScrollContent>
-              </SheetWithDetent.ScrollView>
-            </SheetWithDetent.ScrollRoot>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+                </SheetWithDetentFull.ScrollContent>
+              </SheetWithDetentFull.ScrollView>
+            </SheetWithDetentFull.ScrollRoot>
+          </SheetWithDetentFull.Content>
+        </SheetWithDetentFull.View>
+      </SheetWithDetentFull.Portal>
+    </SheetWithDetentFull.Root>
   );
 }

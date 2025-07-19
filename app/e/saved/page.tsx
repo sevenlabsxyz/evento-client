@@ -1,13 +1,15 @@
 "use client";
 
+import { X, Plus, Bookmark, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTopBar } from "@/lib/stores/topbar-store";
-import { toast } from "@/lib/utils/toast";
-import { Bookmark, ChevronRight, Plus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import { toast } from "@/lib/utils/toast";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function SavedListsPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
 
   // Set TopBar content
@@ -88,8 +90,18 @@ export default function SavedListsPage() {
     router.push(`/saved/${listId}`);
   };
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
         {/* Add New List Button */}
@@ -121,7 +133,7 @@ export default function SavedListsPage() {
                       </span>
                     )}
                   </div>
-                  <p className="mb-2 text-sm text-gray-600">
+                  <p className="text-gray-600 text-sm mb-2">
                     {list.eventCount}{" "}
                     {list.eventCount === 1 ? "event" : "events"} • Updated{" "}
                     {list.lastUpdated}

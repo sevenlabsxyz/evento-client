@@ -2,13 +2,16 @@
 
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 import { useTopBar } from "@/lib/stores/topbar-store";
 import { Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function ChatPage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
+  const router = useRouter();
 
   // Set TopBar content
   useEffect(() => {
@@ -34,7 +37,6 @@ export default function ChatPage() {
 
   const [activeTab, setActiveTab] = useState("messages");
   const [searchQuery, setSearchQuery] = useState("");
-  const router = useRouter();
 
   const conversations = [
     {
@@ -112,13 +114,21 @@ export default function ChatPage() {
       conversation.user.name
         .toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      conversation.lastMessage
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()),
+      conversation.lastMessage.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  if (isCheckingAuth) {
+    return (
+      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+        <div className="flex-1 flex items-center justify-center pb-20">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
       {/* Search Bar */}
       <div className="px-4 pb-2">
         <div className="relative">
@@ -148,12 +158,12 @@ export default function ChatPage() {
                 alt={conversation.user.name}
                 className={`object-cover ${
                   conversation.type === "group"
-                    ? "h-12 w-12 rounded-xl"
-                    : "h-12 w-12 rounded-full"
+                    ? "w-12 h-12 rounded-xl"
+                    : "w-12 h-12 rounded-full"
                 }`}
               />
               {conversation.type === "user" && conversation.isOnline && (
-                <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></div>
+                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
               )}
             </div>
 
