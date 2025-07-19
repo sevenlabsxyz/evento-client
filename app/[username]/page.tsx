@@ -25,6 +25,7 @@ import {
   User,
   Calendar,
   BarChart3,
+  Share,
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -58,6 +59,87 @@ export default function UserProfilePage() {
   const { data: followers = [] } = useUserFollowers(userData?.id || "");
   const { data: following = [] } = useUserFollowing(userData?.id || "");
 
+  // Transform API data to match expected format (moved before useEffect)
+  const userProfile = userData
+    ? {
+        name: userData.name || "Unknown User",
+        username: `@${userData.username}`,
+        avatar: userData.image || "/placeholder.svg?height=80&width=80",
+        status: userData.bio || "",
+        bio: userData.bio || "",
+        website: userData.bio_link || "",
+        isVerified: userData.verification_status === "verified",
+        stats: {
+          events: eventCount,
+          following: following.length,
+          followers: followers.length,
+          countries: 0, // This would need to be calculated from events
+          mutuals: 0, // This would need to be calculated
+        },
+      }
+    : null;
+
+  // Share functionality
+  const handleShare = async () => {
+    const shareData = {
+      title: `${userProfile?.name} on Evento`,
+      text: `Check out ${userProfile?.name}'s profile on Evento`,
+      url: window.location.href,
+    };
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare(shareData)
+    ) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        // User cancelled or share failed
+        console.log("Share cancelled or failed");
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success("Profile link copied to clipboard!");
+      } catch (error) {
+        toast.error("Failed to share profile");
+      }
+    }
+  };
+
+  // Set TopBar content for overlay mode - moved before conditional returns
+  useEffect(() => {
+    // Only set TopBar if userData is loaded and available
+    if (userData && userProfile) {
+      setTopBar({
+        leftMode: "menu",
+        title: userProfile.name,
+        subtitle: userProfile.username,
+        buttons: [
+          {
+            id: "share",
+            icon: Share,
+            onClick: handleShare,
+            label: "Share Profile",
+          },
+        ],
+        showAvatar: false,
+        isOverlaid: true,
+      });
+    }
+
+    return () => {
+      setTopBar({
+        leftMode: "menu",
+        buttons: [],
+        showAvatar: true,
+        isOverlaid: false,
+      });
+    };
+  }, [userData, userProfile?.name, userProfile?.username, setTopBar]);
+
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
@@ -68,7 +150,7 @@ export default function UserProfilePage() {
   }
 
   // Handle user not found
-  if (userError || !userData) {
+  if (userError || !userData || !userProfile) {
     return (
       <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm">
         <div className="text-center">
@@ -88,39 +170,6 @@ export default function UserProfilePage() {
       </div>
     );
   }
-
-  // Transform API data to match expected format
-  const userProfile = {
-    name: userData.name || "Unknown User",
-    username: `@${userData.username}`,
-    avatar: userData.image || "/placeholder.svg?height=80&width=80",
-    status: userData.bio || "",
-    bio: userData.bio || "",
-    website: userData.bio_link || "",
-    isVerified: userData.verification_status === "verified",
-    stats: {
-      events: eventCount,
-      following: following.length,
-      followers: followers.length,
-      countries: 0, // This would need to be calculated from events
-      mutuals: 0, // This would need to be calculated
-    },
-  };
-
-  // Set TopBar content for overlay mode
-  useEffect(() => {
-    setTopBar({
-      title: userProfile.name,
-      subtitle: userProfile.username,
-      rightContent: null, // No right content for other users' profiles
-    });
-    setOverlaid(true);
-
-    return () => {
-      setTopBar({ rightContent: null });
-      setOverlaid(false);
-    };
-  }, [userProfile.name, userProfile.username, setTopBar, setOverlaid]);
 
   const attendingEvents = [
     {
@@ -273,7 +322,7 @@ export default function UserProfilePage() {
     toast.success("Message feature coming soon!");
   };
 
-  const handleZap = () => {
+  const handleTip = () => {
     toast.success("Lightning payment coming soon!");
   };
 
@@ -414,7 +463,6 @@ export default function UserProfilePage() {
     <div className="space-y-6">
       {/* Bio/Description */}
       <div>
-        <h4 className="mb-3 font-semibold text-gray-900">Bio</h4>
         <p className="text-gray-700">{userProfile.bio}</p>
       </div>
 
@@ -495,16 +543,6 @@ export default function UserProfilePage() {
       <div className="flex-1 overflow-y-auto">
         {/* Cover Image Section */}
         <div className="relative">
-          {/* Back Button - Absolute positioned */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4 z-10 rounded-full bg-white/80 backdrop-blur-sm"
-            onClick={() => router.back()}
-          >
-            <X className="h-5 w-5" />
-          </Button>
-
           {/* Banner */}
           <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
 
@@ -534,53 +572,13 @@ export default function UserProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className="mb-4 bg-white px-6 pb-6 pt-20">
+        <div className="mb-4 bg-white px-6 pb-2 pt-20">
           {/* User Info - Centered */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">
               {userProfile.name}
             </h2>
             <p className="text-gray-600">{userProfile.username}</p>
-          </div>
-
-          {/* Action Buttons */}
-          <div className="mx-auto mb-6 flex max-w-xs gap-3">
-            <Button
-              onClick={() => handleFollowToggle()}
-              className={`flex-1 ${
-                isFollowing
-                  ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-red-500 hover:bg-red-600 text-white"
-              }`}
-            >
-              {isFollowing ? (
-                <>
-                  <UserMinus className="mr-2 h-4 w-4" />
-                  Following
-                </>
-              ) : (
-                <>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Follow
-                </>
-              )}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleMessage}
-              className="flex-1 bg-transparent"
-            >
-              <MessageCircle className="mr-2 h-4 w-4" />
-              Message
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-full bg-gray-100"
-              onClick={handleZap}
-            >
-              <Zap className="h-5 w-5 text-yellow-500" />
-            </Button>
           </div>
 
           {/* Stats - Centered */}
@@ -613,25 +611,56 @@ export default function UserProfilePage() {
             </div>
           </div>
 
-          {/* Status/Bio - Centered */}
-          {userProfile.status && (
-            <div className="mb-4 text-center">
-              <p className="text-sm font-medium text-gray-600">
-                {userProfile.status}
-              </p>
-            </div>
-          )}
+          {/* Action Buttons */}
+          <div className="mb-6 flex -mx-2.5 gap-2 px-2.5">
+            <Button
+              onClick={() => handleFollowToggle()}
+              className={`flex-1 rounded-xl px-2.5 ${
+                isFollowing
+                  ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
+                  : "bg-red-500 hover:bg-red-600 text-white"
+              }`}
+            >
+              {isFollowing ? (
+                <>
+                  <UserMinus className="h-4 w-4" />
+                  Following
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4" />
+                  Follow
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleMessage}
+              className="rounded-xl bg-transparent px-3"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Message
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleTip}
+              className="rounded-xl bg-transparent group px-3 hover:bg-orange-100 hover:text-orange-700 hover:border-orange-300 transition-colors"
+            >
+              <Zap className="h-4 w-4 text-black group-hover:text-orange-700 transition-colors" />
+              Tip
+            </Button>
+          </div>
 
           {/* Social Links */}
-          {userProfile && (
-            <SocialLinks 
+          {userData && (
+            <SocialLinks
               user={{
-                bio_link: userProfile.website,
-                instagram_handle: userProfile.instagram_handle,
-                x_handle: userProfile.x_handle,
-                ln_address: userProfile.ln_address,
-                nip05: userProfile.nip05,
-              }} 
+                bio_link: userData.bio_link,
+                instagram_handle: userData.instagram_handle,
+                x_handle: userData.x_handle,
+                ln_address: userData.ln_address,
+                nip05: userData.nip05,
+              }}
             />
           )}
         </div>

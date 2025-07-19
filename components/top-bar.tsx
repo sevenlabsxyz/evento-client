@@ -25,7 +25,7 @@ export function TopBar() {
   const pathname = usePathname();
   const router = useRouter();
   const [isSpinning, setIsSpinning] = useState(false);
-  
+
   // Scroll state for overlay mode animations
   const [scrollY, setScrollY] = useState(0);
   const [isScrollingUp, setIsScrollingUp] = useState(false);
@@ -43,17 +43,17 @@ export function TopBar() {
         requestAnimationFrame(() => {
           const currentScrollY = window.scrollY;
           const scrollingUp = currentScrollY < lastScrollY;
-          
+
           setScrollY(currentScrollY);
           setIsScrollingUp(scrollingUp);
-          
+
           // Show navigation when scrolling up from >100px position
           if (scrollingUp && currentScrollY > 50) {
             setShowNavigation(true);
           } else if (!scrollingUp) {
             setShowNavigation(false);
           }
-          
+
           lastScrollY = currentScrollY;
           ticking = false;
         });
@@ -61,8 +61,8 @@ export function TopBar() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [isOverlaid]);
 
   const handleBackPress = () => {
@@ -132,35 +132,37 @@ export function TopBar() {
     if (!isOverlaid) {
       return "bg-white";
     }
-    
+
     // Always transparent when within 100px of top
     if (scrollY <= 100) {
       return "bg-transparent";
     }
-    
+
     if (showNavigation) {
       return "bg-white shadow-sm transform translate-y-0 transition-all duration-300 ease-out";
     }
-    
+
     return "bg-transparent";
   };
 
   const getContentOpacity = () => {
     if (!isOverlaid) return "opacity-100";
-    
+
     if (scrollY > 100 && !showNavigation) {
       return "opacity-0";
     }
-    
+
     return "opacity-100";
   };
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-40 w-full max-w-full h-16 md:max-w-sm transition-all duration-300 ${getTopBarStyles()}`}
+      className={`fixed top-0 left-0 right-0 z-40 mx-auto w-full max-w-full h-16 md:max-w-sm transition-all duration-300 ${getTopBarStyles()}`}
     >
       <div className="px-4 pb-4 pt-4">
-        <div className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}>
+        <div
+          className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
+        >
           <div className="flex items-center gap-3">
             {renderLeftContent()}
             {renderCenterContent()}
@@ -174,7 +176,7 @@ export function TopBar() {
                     <button
                       key={button.id}
                       onClick={button.onClick}
-                      className={`transition-all duration-300 hover:opacity-80 ${
+                      className={`flex flex-row items-center gap-2 transition-all duration-300 hover:opacity-80 ${
                         isOverlaid
                           ? "w-8 h-8 rounded-full border border-gray-200 bg-white flex items-center justify-center"
                           : "p-0"
@@ -182,7 +184,9 @@ export function TopBar() {
                     >
                       <Icon
                         className={`${
-                          isOverlaid ? "h-5 w-5 text-gray-500" : "h-6 w-6 text-gray-400"
+                          isOverlaid
+                            ? "h-5 w-5 text-gray-500"
+                            : "h-6 w-6 text-gray-400"
                         }`}
                         strokeWidth={2.5}
                       />

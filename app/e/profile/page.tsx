@@ -386,7 +386,6 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Bio/Description */}
       <div>
-        <h4 className="mb-3 font-semibold text-gray-900">Bio</h4>
         <p className="text-gray-700">{user?.bio || "Welcome to Evento"}</p>
       </div>
 
@@ -510,7 +509,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className="mb-4 bg-white px-6 pb-6 pt-20">
+        <div className="mb-4 bg-white px-6 pb-0 pt-20">
           {/* User Info - Centered */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900">

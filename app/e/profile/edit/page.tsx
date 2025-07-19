@@ -26,6 +26,7 @@ import {
   Instagram,
   Loader2,
   Type,
+  Save,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -79,12 +80,11 @@ export default function EditProfilePage() {
   useEffect(() => {
     setTopBar({
       title: "Edit Profile",
-      subtitle: "Update your information",
+      subtitle: undefined,
+      onBackPress: () => router.push("/e/profile"),
+      leftMode: "back",
+      showAvatar: false,
     });
-
-    return () => {
-      setTopBar({ rightContent: null });
-    };
   }, [setTopBar]);
 
   // Populate form when user data is loaded
@@ -121,26 +121,6 @@ export default function EditProfilePage() {
 
   return (
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-gray-100 p-4">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="rounded-full p-2 hover:bg-gray-100"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-          <h1 className="text-xl font-semibold">Edit Profile</h1>
-        </div>
-        <Button
-          onClick={handleSaveChanges}
-          className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
-          disabled={!canSave || updateProfileMutation.isPending}
-        >
-          {updateProfileMutation.isPending ? "Saving..." : "Save"}
-        </Button>
-      </div>
-
       {/* Content */}
       <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4">
         {/* Profile Image Module */}

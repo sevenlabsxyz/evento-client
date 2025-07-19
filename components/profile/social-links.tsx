@@ -49,7 +49,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
 
   return (
     <>
-      <div className="bg-gray-100 rounded-xl p-2.5 flex flex-wrap gap-1.5 -mx-2.5">
+      <div className="bg-gray-50 rounded-xl p-2.5 flex flex-wrap gap-1.5 -mx-2.5">
         {/* Website */}
         {user.bio_link && (
           <button
