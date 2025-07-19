@@ -1,15 +1,15 @@
 "use client";
 
-import { Search, Check, Bookmark } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { Navbar } from "@/components/navbar";
 import { EventCard } from "@/components/event-card";
-import { useEventsFeed } from "@/lib/hooks/useEventsFeed";
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "@/lib/utils/toast";
+import { Navbar } from "@/components/navbar";
+import { Button } from "@/components/ui/button";
 import { useRequireAuth } from "@/lib/hooks/useAuth";
+import { useEventsFeed } from "@/lib/hooks/useEventsFeed";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { toast } from "@/lib/utils/toast";
+import { Bookmark, Check, Search } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function FeedPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();

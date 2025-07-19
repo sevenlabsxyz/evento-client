@@ -49,8 +49,6 @@ export default function SettingsPage() {
   const [apiSheetOpen, setApiSheetOpen] = useState(false);
   const [showApiContactForm, setShowApiContactForm] = useState(false);
 
-  // Hardcoded language to English and currency to US Dollar as per requirements
-
   const handleExternalLink = (url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
   };
