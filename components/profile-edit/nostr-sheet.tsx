@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Hash, X } from 'lucide-react';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { Hash, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface NostrSheetProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export default function NostrSheet({
 
   const validateNip05 = (identifier: string) => {
     if (!identifier) return true;
-    
+
     // Basic NIP-05 validation (user@domain.com format)
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return regex.test(identifier);
@@ -40,7 +40,7 @@ export default function NostrSheet({
 
   const handleSave = () => {
     const trimmedNip05 = nip05.trim();
-    
+
     if (trimmedNip05 && !validateNip05(trimmedNip05)) {
       setError('Invalid Nostr identifier format (e.g., user@domain.com)');
       return;
@@ -68,7 +68,9 @@ export default function NostrSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <SheetWithDetentFull.Handle />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Nostr</h2>
                 <button
@@ -113,18 +115,20 @@ export default function NostrSheet({
                   {/* Info text */}
                   <div className="space-y-3 mb-6">
                     <p className="text-sm text-gray-500">
-                      A Nostr identifier (NIP-05) helps people find and verify your Nostr profile. 
-                      It looks like an email address but is used for the Nostr protocol.
+                      A Nostr identifier (NIP-05) helps people find and verify
+                      your Nostr profile. It looks like an email address but is
+                      used for the Nostr protocol.
                     </p>
-                    
+
                     <div className="bg-pink-50 p-4 rounded-xl">
                       <p className="text-sm text-pink-800 font-medium mb-2">
                         What is Nostr?
                       </p>
                       <p className="text-sm text-pink-700">
-                        Nostr is a decentralized social network protocol that gives you control 
-                        over your identity and content. Your NIP-05 identifier makes it easy for 
-                        others to find you across different Nostr apps.
+                        Nostr is a decentralized social network protocol that
+                        gives you control over your identity and content. Your
+                        NIP-05 identifier makes it easy for others to find you
+                        across different Nostr apps.
                       </p>
                     </div>
                   </div>

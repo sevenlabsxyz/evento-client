@@ -37,9 +37,20 @@ export default function CoverUploader({
       return;
     }
 
-    // Validate file type
-    if (!file.type.match(/^image\/(png|gif|jpg|jpeg)$/)) {
+    // Validate file type - allow GIF, PNG, JPG, JPEG
+    const validTypes = ['image/png', 'image/gif', 'image/jpeg', 'image/jpg'];
+    const isValidType = validTypes.includes(file.type);
+    const isGif = file.type === 'image/gif';
+    
+    if (!isValidType) {
       toast.error("Please select a valid image file (PNG, GIF, JPG, JPEG).");
+      event.target.value = "";
+      return;
+    }
+    
+    // For GIFs, check if they're under the size limit
+    if (isGif && file.size > 5 * 1024 * 1024) { // 5MB limit for GIFs
+      toast.error("GIFs must be smaller than 5MB. Please choose a smaller file.");
       event.target.value = "";
       return;
     }
@@ -88,7 +99,7 @@ export default function CoverUploader({
       <input
         ref={inputFileRef}
         type="file"
-        accept=".png,.gif,.jpg,.jpeg,image/png,image/gif,image/jpeg"
+        accept=".png,.gif,.jpg,.jpeg,image/png,image/gif,image/jpeg,image/jpg"
         style={{ display: "none" }}
         onChange={handleFileUpload}
       />

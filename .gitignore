@@ -18,6 +18,8 @@ yarn-error.log*
 
 # env files
 .env*
+# Exclude .env.example
+!.env.example
 
 # vercel
 .vercel

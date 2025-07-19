@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { User, X } from 'lucide-react';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { User, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface NameSheetProps {
   isOpen: boolean;
@@ -32,7 +32,7 @@ export default function NameSheet({
 
   const handleSave = () => {
     const trimmedName = name.trim();
-    
+
     if (!trimmedName) {
       setError('Name is required');
       return;
@@ -65,7 +65,9 @@ export default function NameSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <SheetWithDetentFull.Handle />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Name</h2>
                 <button
@@ -112,8 +114,8 @@ export default function NameSheet({
 
                   {/* Info text */}
                   <p className="text-sm text-gray-500 mb-6">
-                    Your display name is how you appear to others on Evento. 
-                    Use your real name or a nickname.
+                    Your display name is how you appear to others on Evento. Use
+                    your real name or a nickname.
                   </p>
 
                   {/* Save/Cancel Buttons */}

@@ -1,11 +1,9 @@
+import { Env } from '@/lib/constants/env';
 import axios, { AxiosError } from 'axios';
-
-// Use environment variable for API URL, with fallback for production
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://evento.so/api';
 
 // Create the main API client for session-based authentication
 export const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: Env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // Important: includes session cookies
   headers: {
     'Content-Type': 'application/json',
@@ -21,15 +19,18 @@ apiClient.interceptors.response.use(
   },
   (error: AxiosError) => {
     // Extract error message from response
-    const errorMessage = (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
-    
+    const errorMessage =
+      (error.response?.data as any)?.message ||
+      error.message ||
+      'An unexpected error occurred';
+
     // Create a standardized error object
     const apiError = {
       message: errorMessage,
       status: error.response?.status,
       success: false,
     };
-    
+
     return Promise.reject(apiError);
   }
 );

@@ -1,8 +1,9 @@
-import GhostContentAPI from "@tryghost/content-api";
-import { AlertTriangle } from "lucide-react";
-import { notFound } from "next/navigation";
-import { Suspense } from "react";
-import { BlogPostClient } from "@/components/blog/BlogPostClient";
+import { BlogPostClient } from '@/components/blog/BlogPostClient';
+import { Env } from '@/lib/constants/env';
+import GhostContentAPI from '@tryghost/content-api';
+import { AlertTriangle } from 'lucide-react';
+import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 export const revalidate = 30;
 
@@ -25,43 +26,45 @@ const Loading = () => (
   </div>
 );
 
-// Check for required environment variables
-const GHOST_URL = process.env.GHOST_URL;
-const GHOST_CONTENT_API_KEY = process.env.GHOST_CONTENT_API_KEY;
-
 // Only initialize the API if environment variables are present
-const api = GHOST_URL && GHOST_CONTENT_API_KEY ? new GhostContentAPI({
-  url: GHOST_URL,
-  key: GHOST_CONTENT_API_KEY,
-  version: "v5.0",
-  makeRequest: async ({ url, method, params, headers }: any) => {
-    const apiUrl = new URL(url);
+const api =
+  Env.GHOST_URL && Env.GHOST_CONTENT_API_KEY
+    ? new GhostContentAPI({
+        url: Env.GHOST_URL,
+        key: Env.GHOST_CONTENT_API_KEY,
+        version: 'v5.0',
+        makeRequest: async ({ url, method, params, headers }: any) => {
+          const apiUrl = new URL(url);
 
-    Object.keys(params).map((key) =>
-      apiUrl.searchParams.set(key, encodeURIComponent(params[key]))
-    );
+          Object.keys(params).map((key) =>
+            apiUrl.searchParams.set(key, encodeURIComponent(params[key]))
+          );
 
-    try {
-      const response = await fetch(apiUrl.toString(), { method, headers });
-      const data = await response.json();
-      return { data };
-    } catch (error) {
-      console.error(error);
-    }
-  },
-}) : null;
+          try {
+            const response = await fetch(apiUrl.toString(), {
+              method,
+              headers,
+            });
+            const data = await response.json();
+            return { data };
+          } catch (error) {
+            console.error(error);
+          }
+        },
+      })
+    : null;
 
 async function getBlogPost(slug: string) {
   // Return null if API is not initialized
   if (!api) {
-    console.warn("Ghost API not initialized - missing environment variables");
+    console.warn('Ghost API not initialized - missing environment variables');
     return null;
   }
-  
+
   try {
-    return await api.posts.read({ slug }, { include: ["tags", "authors"] });
+    return await api.posts.read({ slug }, { include: ['tags', 'authors'] });
   } catch (error) {
-    console.error("Error fetching blog post:", error);
+    console.error('Error fetching blog post:', error);
     // throw new Error('Failed to fetch blog post');
   }
 }
@@ -109,7 +112,7 @@ export async function generateMetadata({
       openGraph: {
         title: post.title,
         description: post.excerpt,
-        type: "article",
+        type: 'article',
         url: `https://evento.so/blog/${params.slug}`,
         images: [
           {
@@ -121,17 +124,17 @@ export async function generateMetadata({
         ],
       },
       twitter: {
-        card: "summary_large_image",
+        card: 'summary_large_image',
         title: post.title,
         description: post.excerpt,
         images: [post.feature_image],
       },
     };
   } catch (error) {
-    console.error("Error generating metadata:", error);
+    console.error('Error generating metadata:', error);
     return {
-      title: "Blog Post",
-      description: "Unable to load blog post details",
+      title: 'Blog Post',
+      description: 'Unable to load blog post details',
     };
   }
 }

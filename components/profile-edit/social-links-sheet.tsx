@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Instagram, X as XIcon, Globe } from 'lucide-react';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { Globe, Instagram, X as XIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface SocialLinksSheetProps {
   isOpen: boolean;
@@ -112,7 +112,7 @@ export default function SocialLinksSheet({
     onClose();
   };
 
-  const hasChanges = 
+  const hasChanges =
     instagram !== (currentLinks.instagram_handle || '') ||
     xHandle !== (currentLinks.x_handle || '') ||
     website !== (currentLinks.bio_link || '');
@@ -128,7 +128,9 @@ export default function SocialLinksSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <SheetWithDetentFull.Handle />
+              <div className="flex justify-center mb-4">
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Social Links</h2>
                 <button
@@ -146,7 +148,10 @@ export default function SocialLinksSheet({
                 <SheetWithDetentFull.ScrollContent className="p-6 space-y-6">
                   {/* Instagram */}
                   <div>
-                    <Label htmlFor="instagram" className="flex items-center gap-2 mb-2">
+                    <Label
+                      htmlFor="instagram"
+                      className="flex items-center gap-2 mb-2"
+                    >
                       <Instagram className="w-4 h-4" />
                       Instagram
                     </Label>
@@ -167,7 +172,9 @@ export default function SocialLinksSheet({
                       />
                     </div>
                     {errors.instagram && (
-                      <p className="text-sm text-red-500 mt-1">{errors.instagram}</p>
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.instagram}
+                      </p>
                     )}
                   </div>
 
@@ -202,7 +209,10 @@ export default function SocialLinksSheet({
 
                   {/* Website */}
                   <div>
-                    <Label htmlFor="website" className="flex items-center gap-2 mb-2">
+                    <Label
+                      htmlFor="website"
+                      className="flex items-center gap-2 mb-2"
+                    >
                       <Globe className="w-4 h-4" />
                       Website
                     </Label>
@@ -217,13 +227,16 @@ export default function SocialLinksSheet({
                       placeholder="yourwebsite.com"
                     />
                     {errors.website && (
-                      <p className="text-sm text-red-500 mt-1">{errors.website}</p>
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.website}
+                      </p>
                     )}
                   </div>
 
                   {/* Info text */}
                   <p className="text-sm text-gray-500">
-                    Add your social media profiles to help others connect with you outside of Evento.
+                    Add your social media profiles to help others connect with
+                    you outside of Evento.
                   </p>
 
                   {/* Save/Cancel Buttons */}

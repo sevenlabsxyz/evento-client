@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { EventCard } from '@/components/event-card';
-import { Navbar } from '@/components/navbar';
-import { Button } from '@/components/ui/button';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { useEventsFeed } from '@/lib/hooks/useEventsFeed';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
-import { Bookmark, Check, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Search, Check, Bookmark } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { Navbar } from "@/components/navbar";
+import { EventCard } from "@/components/event-card";
+import { useEventsFeed } from "@/lib/hooks/useEventsFeed";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "@/lib/utils/toast";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function FeedPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState("feed");
   const [bookmarkedEvents, setBookmarkedEvents] = useState<Set<string>>(
     new Set()
   );
@@ -25,14 +25,14 @@ export default function FeedPage() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: 'Feed',
-      subtitle: 'Your personalized event feed',
+      title: "Feed",
+      subtitle: "Your personalized event feed",
       rightContent: (
         <Button
           variant="ghost"
           size="icon"
           className="rounded-full bg-gray-100"
-          onClick={() => router.push('/e/search')}
+          onClick={() => router.push("/e/search")}
         >
           <Search className="h-5 w-5" />
         </Button>
@@ -49,9 +49,9 @@ export default function FeedPage() {
 
   // Mock saved lists - in real app this would come from API
   const [savedLists] = useState([
-    { id: 1, name: 'Event toes', isDefault: true },
-    { id: 2, name: 'Tokyo Adventures', isDefault: false },
-    { id: 3, name: 'Food Experiences', isDefault: false },
+    { id: 1, name: "Event toes", isDefault: true },
+    { id: 2, name: "Tokyo Adventures", isDefault: false },
+    { id: 3, name: "Food Experiences", isDefault: false },
   ]);
 
   const handleBookmark = (eventId: string) => {
@@ -62,7 +62,7 @@ export default function FeedPage() {
       const newBookmarkedEvents = new Set(bookmarkedEvents);
       if (bookmarkedEvents.has(eventId)) {
         newBookmarkedEvents.delete(eventId);
-        toast.success('Event removed from saved!');
+        toast.success("Event removed from saved!");
       } else {
         newBookmarkedEvents.add(eventId);
         toast.success(`Event saved to "${savedLists[0].name}"!`);
