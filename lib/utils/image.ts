@@ -6,8 +6,8 @@
  * @returns Optimized image URL
  */
 export function getOptimizedImageUrl(
-  url: string, 
-  size: number = 500, 
+  url: string,
+  size: number = 500,
   quality: number = 80
 ): string {
   if (!url) {
@@ -25,12 +25,21 @@ export function getOptimizedImageUrl(
 }
 
 /**
+ * Check if the URL is a GIF
+ * @param url - Image URL
+ * @returns true if the URL is a GIF, false otherwise
+ */
+export function isGif(url: string): boolean {
+  return url.endsWith('.gif') || url.includes('media.giphy.com');
+}
+
+/**
  * Preset image sizes for different use cases
  */
 export const ImageSizes = {
-  SMALL: 300,   // Thumbnails, avatars
-  MEDIUM: 500,  // Feed cards, list items
-  LARGE: 800,   // Detail views, hero sections
+  SMALL: 300, // Thumbnails, avatars
+  MEDIUM: 500, // Feed cards, list items
+  LARGE: 800, // Detail views, hero sections
   XLARGE: 1200, // Full-screen, high-res displays
 } as const;
 
@@ -54,7 +63,10 @@ export function getOptimizedAvatarUrl(url: string): string {
 /**
  * Get cover image URL optimized for event covers
  */
-export function getOptimizedCoverUrl(url: string, size: 'feed' | 'detail' = 'feed'): string {
+export function getOptimizedCoverUrl(
+  url: string,
+  size: 'feed' | 'detail' = 'feed'
+): string {
   const imageSize = size === 'feed' ? ImageSizes.MEDIUM : ImageSizes.LARGE;
   return getOptimizedImageUrl(url, imageSize, 80);
 }

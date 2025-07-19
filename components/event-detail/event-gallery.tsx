@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import { Plus, Eye } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { Event } from '@/lib/types/event';
+import { Eye, Plus } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface EventGalleryProps {
   event: Event;
@@ -11,11 +10,15 @@ interface EventGalleryProps {
   onImageClick?: (index: number) => void;
 }
 
-export default function EventGallery({ event, currentUserId, onImageClick }: EventGalleryProps) {
+export default function EventGallery({
+  event,
+  currentUserId,
+  onImageClick,
+}: EventGalleryProps) {
   const router = useRouter();
   const galleryImages = event.galleryImages || [];
   const isOwner = event.owner?.id === currentUserId;
-  
+
   const handleAddPhoto = () => {
     // TODO: Implement photo upload functionality
     console.log('Add photo clicked');
@@ -102,20 +105,7 @@ export default function EventGallery({ event, currentUserId, onImageClick }: Eve
             </button>
           )}
         </div>
-      ) : (
-        /* Empty state - only shown if no images exist */
-        <div className="text-center py-8 text-gray-500">
-          <p className="text-sm">No photos yet</p>
-          {isOwner && (
-            <button
-              onClick={handleAddPhoto}
-              className="mt-2 text-red-600 hover:text-red-700 font-medium text-sm"
-            >
-              Be the first to add a photo
-            </button>
-          )}
-        </div>
-      )}
+      ) : null}
     </div>
   );
 }

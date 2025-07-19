@@ -1,34 +1,27 @@
-"use client";
+'use client';
 
-import { useState, useEffect } from "react";
-import { useEditor, EditorContent } from "@tiptap/react";
-import type { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import Bold from "@tiptap/extension-bold";
-import Italic from "@tiptap/extension-italic";
-import Heading from "@tiptap/extension-heading";
-import Link from "@tiptap/extension-link";
-import BulletList from "@tiptap/extension-bullet-list";
-import ListItem from "@tiptap/extension-list-item";
-import Image from "@tiptap/extension-image";
-import Placeholder from "@tiptap/extension-placeholder";
-import { Plugin, TextSelection } from "@tiptap/pm/state";
-import { getMarkRange } from "@tiptap/core";
-import {
-  Bold as BoldIcon,
-  Italic as ItalicIcon,
-  Link as LinkIcon,
-  Type,
-  X,
-} from "lucide-react";
-import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
-import { Separator } from "@/components/ui/separator";
-import SectionOne from "./toolbar-sections/section-one";
-import SectionTwo from "./toolbar-sections/section-two";
-import SectionThree from "./toolbar-sections/section-three";
-import SectionFour from "./toolbar-sections/section-four";
-import { getOutput } from "./tiptap-utils";
-import "./description-sheet.css";
+import { Separator } from '@/components/ui/separator';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import type { Editor } from '@tiptap/core';
+import { getMarkRange } from '@tiptap/core';
+import Bold from '@tiptap/extension-bold';
+import BulletList from '@tiptap/extension-bullet-list';
+import Heading from '@tiptap/extension-heading';
+import Image from '@tiptap/extension-image';
+import Italic from '@tiptap/extension-italic';
+import Link from '@tiptap/extension-link';
+import ListItem from '@tiptap/extension-list-item';
+import Placeholder from '@tiptap/extension-placeholder';
+import { Plugin, TextSelection } from '@tiptap/pm/state';
+import { EditorContent, useEditor } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import { useEffect } from 'react';
+import './description-sheet.css';
+import { getOutput } from './tiptap-utils';
+import SectionFour from './toolbar-sections/section-four';
+import SectionOne from './toolbar-sections/section-one';
+import SectionThree from './toolbar-sections/section-three';
+import SectionTwo from './toolbar-sections/section-two';
 
 interface DescriptionSheetProps {
   isOpen: boolean;
@@ -39,14 +32,17 @@ interface DescriptionSheetProps {
   onOpenMoreFormattingSheet?: (editor: Editor) => void;
   onOpenListsSheet?: (editor: Editor) => void;
   onOpenInsertElementsSheet?: (editor: Editor) => void;
-  onOpenLinkEditSheet?: (editor: Editor, linkData: { url: string; text: string; openInNewTab: boolean }) => void;
+  onOpenLinkEditSheet?: (
+    editor: Editor,
+    linkData: { url: string; text: string; openInNewTab: boolean }
+  ) => void;
 }
 
 export default function DescriptionSheet({
   isOpen,
   onClose,
   onSave,
-  initialContent = "",
+  initialContent = '',
   onOpenTextStylesSheet,
   onOpenMoreFormattingSheet,
   onOpenListsSheet,
@@ -73,7 +69,7 @@ export default function DescriptionSheet({
       }),
       BulletList.configure({
         HTMLAttributes: {
-          class: "list-disc ml-4",
+          class: 'list-disc ml-4',
         },
       }),
       ListItem,
@@ -81,7 +77,7 @@ export default function DescriptionSheet({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-red-600 underline",
+          class: 'text-red-600 underline',
         },
       }).extend({
         inclusive: false,
@@ -122,20 +118,21 @@ export default function DescriptionSheet({
         },
       }),
       Placeholder.configure({
-        placeholder: "Add a description...",
-        emptyEditorClass: "is-editor-empty",
+        placeholder: 'Add a description...',
+        emptyEditorClass: 'is-editor-empty',
       }),
     ],
     content: initialContent,
     immediatelyRender: false, // Prevent SSR hydration issues
     editorProps: {
       attributes: {
-        class: "prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone",
+        class:
+          'prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone',
       },
     },
     onUpdate: ({ editor }) => {
       // Automatically save content on update if needed
-      const content = getOutput(editor, "html");
+      const content = getOutput(editor, 'html');
     },
   });
 
@@ -156,7 +153,7 @@ export default function DescriptionSheet({
 
   const handleOpenSheet = (sheet: string) => {
     if (!editor) return;
-    
+
     switch (sheet) {
       case 'textStyles':
         onOpenTextStylesSheet?.(editor);
@@ -185,7 +182,9 @@ export default function DescriptionSheet({
             <SheetWithDetentFull.Content className="DescriptionSheet-content">
               {/* Fixed Header */}
               <div className="DescriptionSheet-header">
-                <SheetWithDetentFull.Handle className="DescriptionSheet-handle" />
+                <div className="flex justify-center mb-4">
+                  <SheetWithDetentFull.Handle className="DescriptionSheet-handle" />
+                </div>
                 <div className="DescriptionSheet-headerBar">
                   <button
                     onClick={onClose}
@@ -193,7 +192,9 @@ export default function DescriptionSheet({
                   >
                     Cancel
                   </button>
-                  <h1 className="DescriptionSheet-headerTitle">Edit Description</h1>
+                  <h1 className="DescriptionSheet-headerTitle">
+                    Edit Description
+                  </h1>
                   <button
                     onClick={handleSave}
                     className="DescriptionSheet-headerButton DescriptionSheet-headerButton--save"
@@ -207,15 +208,33 @@ export default function DescriptionSheet({
                   <div className="DescriptionSheet-toolbarInner">
                     {editor && (
                       <>
-                        <SectionOne editor={editor} onOpenSheet={handleOpenSheet} />
-                        <Separator orientation="vertical" className="mx-2 h-7" />
-                        <SectionTwo editor={editor} onOpenSheet={handleOpenSheet} />
-                        <Separator orientation="vertical" className="mx-2 h-7" />
-                        <SectionThree editor={editor} onOpenSheet={handleOpenSheet} />
-                        <Separator orientation="vertical" className="mx-2 h-7" />
-                        <SectionFour 
-                          editor={editor} 
-                          onOpenSheet={handleOpenSheet} 
+                        <SectionOne
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionTwo
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionThree
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionFour
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
                           onOpenLinkEditSheet={onOpenLinkEditSheet}
                         />
                       </>
@@ -228,8 +247,8 @@ export default function DescriptionSheet({
               <SheetWithDetentFull.ScrollRoot asChild>
                 <SheetWithDetentFull.ScrollView className="DescriptionSheet-scrollView">
                   <SheetWithDetentFull.ScrollContent className="DescriptionSheet-scrollContent">
-                    <EditorContent 
-                      editor={editor} 
+                    <EditorContent
+                      editor={editor}
                       className="DescriptionSheet-editor"
                     />
                   </SheetWithDetentFull.ScrollContent>

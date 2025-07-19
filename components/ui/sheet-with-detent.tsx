@@ -1,7 +1,13 @@
-"use client";
-import React, { createContext, useContext, useMemo, useRef, useState } from "react";
-import { Sheet, Scroll, type SheetViewProps } from "@silk-hq/components";
-import "./sheet-with-detent.css";
+'use client';
+import { Scroll, Sheet, type SheetViewProps } from '@silk-hq/components';
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import './sheet-with-detent.css';
 
 // ================================================================================================
 // Context
@@ -13,13 +19,14 @@ type SheetWithDetentContextValue = {
   viewRef: React.RefObject<HTMLElement>;
 };
 
-const SheetWithDetentContext = createContext<SheetWithDetentContextValue | null>(null);
+const SheetWithDetentContext =
+  createContext<SheetWithDetentContextValue | null>(null);
 
 const useSheetWithDetentContext = () => {
   const context = useContext(SheetWithDetentContext);
   if (!context) {
     throw new Error(
-      "useSheetWithDetentContext must be used within a SheetWithDetentContextProvider"
+      'useSheetWithDetentContext must be used within a SheetWithDetentContextProvider'
     );
   }
   return context;
@@ -30,8 +37,8 @@ const useSheetWithDetentContext = () => {
 // ================================================================================================
 
 type SheetRootProps = React.ComponentPropsWithoutRef<typeof Sheet.Root>;
-type SheetWithDetentRootProps = Omit<SheetRootProps, "license"> & {
-  license?: SheetRootProps["license"];
+type SheetWithDetentRootProps = Omit<SheetRootProps, 'license'> & {
+  license?: SheetRootProps['license'];
 };
 
 const SheetWithDetentRoot = React.forwardRef<
@@ -55,7 +62,7 @@ const SheetWithDetentRoot = React.forwardRef<
     </SheetWithDetentContext.Provider>
   );
 });
-SheetWithDetentRoot.displayName = "SheetWithDetent.Root";
+SheetWithDetentRoot.displayName = 'SheetWithDetent.Root';
 
 // ================================================================================================
 // View
@@ -66,17 +73,25 @@ const SheetWithDetentView = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Sheet.View>
 >(
   (
-    { children, className, onTravelStatusChange, onTravelRangeChange, onTravel, ...restProps },
+    {
+      children,
+      className,
+      onTravelStatusChange,
+      onTravelRangeChange,
+      onTravel,
+      ...restProps
+    },
     ref
   ) => {
-    const { reachedLastDetent, setReachedLastDetent, viewRef } = useSheetWithDetentContext();
+    const { reachedLastDetent, setReachedLastDetent, viewRef } =
+      useSheetWithDetentContext();
 
     //
 
     const travelHandler = useMemo(() => {
       if (!reachedLastDetent) return onTravel;
 
-      const handler: SheetViewProps["onTravel"] = ({ progress, ...rest }) => {
+      const handler: SheetViewProps['onTravel'] = ({ progress, ...rest }) => {
         if (!viewRef.current) return onTravel?.({ progress, ...rest });
 
         // Dismiss the on-screen keyboard.
@@ -94,7 +109,7 @@ const SheetWithDetentView = React.forwardRef<
       // @ts-ignore - intentionally breaking the readonly nature for compatibility
       viewRef.current = node;
 
-      if (typeof ref === "function") {
+      if (typeof ref === 'function') {
         ref(node);
       } else if (ref) {
         ref.current = node;
@@ -103,12 +118,11 @@ const SheetWithDetentView = React.forwardRef<
 
     return (
       <Sheet.View
-        className={`SheetWithDetent-view ${className ?? ""}`.trim()}
-        detents={!reachedLastDetent ? "66vh" : undefined}
+        className={`SheetWithDetent-view ${className ?? ''}`.trim()}
         swipeOvershoot={false}
         nativeEdgeSwipePrevention={true}
         onTravelStatusChange={(travelStatus) => {
-          if (travelStatus === "idleOutside") setReachedLastDetent(false);
+          if (travelStatus === 'idleOutside') setReachedLastDetent(false);
           onTravelStatusChange?.(travelStatus);
         }}
         onTravelRangeChange={(range) => {
@@ -124,7 +138,7 @@ const SheetWithDetentView = React.forwardRef<
     );
   }
 );
-SheetWithDetentView.displayName = "SheetWithDetent.View";
+SheetWithDetentView.displayName = 'SheetWithDetent.View';
 
 // ================================================================================================
 // Backdrop
@@ -136,14 +150,14 @@ const SheetWithDetentBackdrop = React.forwardRef<
 >(({ className, ...restProps }, ref) => {
   return (
     <Sheet.Backdrop
-      className={`SheetWithDetent-backdrop ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-backdrop ${className ?? ''}`.trim()}
       themeColorDimming="auto"
       {...restProps}
       ref={ref}
     />
   );
 });
-SheetWithDetentBackdrop.displayName = "SheetWithDetent.Backdrop";
+SheetWithDetentBackdrop.displayName = 'SheetWithDetent.Backdrop';
 
 // ================================================================================================
 // Content
@@ -155,7 +169,7 @@ const SheetWithDetentContent = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Sheet.Content
-      className={`SheetWithDetent-content ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-content ${className ?? ''}`.trim()}
       {...restProps}
       ref={ref}
     >
@@ -163,7 +177,7 @@ const SheetWithDetentContent = React.forwardRef<
     </Sheet.Content>
   );
 });
-SheetWithDetentContent.displayName = "SheetWithDetent.Content";
+SheetWithDetentContent.displayName = 'SheetWithDetent.Content';
 
 // ================================================================================================
 // Handle
@@ -177,14 +191,14 @@ const SheetWithDetentHandle = React.forwardRef<
 
   return (
     <Sheet.Handle
-      className={`SheetWithDetent-handle ${className ?? ""}`.trim()}
-      action={reachedLastDetent ? "dismiss" : "step"}
+      className={`SheetWithDetent-handle ${className ?? ''}`.trim()}
+      action={reachedLastDetent ? 'dismiss' : 'step'}
       {...restProps}
       ref={ref}
     />
   );
 });
-SheetWithDetentHandle.displayName = "SheetWithDetent.Handle";
+SheetWithDetentHandle.displayName = 'SheetWithDetent.Handle';
 
 // ================================================================================================
 // Scroll Root
@@ -200,7 +214,7 @@ const SheetWithDetentScrollRoot = React.forwardRef<
     </Scroll.Root>
   );
 });
-SheetWithDetentScrollRoot.displayName = "SheetWithDetent.ScrollRoot";
+SheetWithDetentScrollRoot.displayName = 'SheetWithDetent.ScrollRoot';
 
 // ================================================================================================
 // Scroll View
@@ -214,9 +228,9 @@ const SheetWithDetentScrollView = React.forwardRef<
 
   return (
     <Scroll.View
-      className={`SheetWithDetent-scrollView ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-scrollView ${className ?? ''}`.trim()}
       scrollGestureTrap={{ yEnd: true }}
-      scrollGesture={!reachedLastDetent ? false : "auto"}
+      scrollGesture={!reachedLastDetent ? false : 'auto'}
       safeArea="layout-viewport"
       onScrollStart={{ dismissKeyboard: true }}
       {...restProps}
@@ -226,7 +240,7 @@ const SheetWithDetentScrollView = React.forwardRef<
     </Scroll.View>
   );
 });
-SheetWithDetentScrollView.displayName = "SheetWithDetent.ScrollView";
+SheetWithDetentScrollView.displayName = 'SheetWithDetent.ScrollView';
 
 // ================================================================================================
 // Scroll Content
@@ -238,7 +252,7 @@ const SheetWithDetentScrollContent = React.forwardRef<
 >(({ children, className, ...restProps }, ref) => {
   return (
     <Scroll.Content
-      className={`SheetWithDetent-scrollContent ${className ?? ""}`.trim()}
+      className={`SheetWithDetent-scrollContent ${className ?? ''}`.trim()}
       {...restProps}
       ref={ref}
     >
@@ -246,7 +260,7 @@ const SheetWithDetentScrollContent = React.forwardRef<
     </Scroll.Content>
   );
 });
-SheetWithDetentScrollContent.displayName = "SheetWithDetent.ScrollContent";
+SheetWithDetentScrollContent.displayName = 'SheetWithDetent.ScrollContent';
 
 // ================================================================================================
 // Unchanged Components
