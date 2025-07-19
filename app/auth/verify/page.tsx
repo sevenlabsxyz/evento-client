@@ -16,10 +16,10 @@ import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowLeft, Loader2, Mail } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useForm } from 'react-hook-form';
 
-export default function VerifyPage() {
+function VerifyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/';
@@ -233,5 +233,17 @@ export default function VerifyPage() {
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    }>
+      <VerifyContent />
+    </Suspense>
   );
 }
