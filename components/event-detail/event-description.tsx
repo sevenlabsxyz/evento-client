@@ -1,13 +1,17 @@
-import { Event } from "@/lib/types/event";
-import { ExternalLink } from "lucide-react";
+import { Event } from '@/lib/types/event';
+import { ExternalLink } from 'lucide-react';
 
 interface EventDescriptionProps {
   event: Event;
+  isOwner?: boolean;
 }
 
-export default function EventDescription({ event }: EventDescriptionProps) {
+export default function EventDescription({
+  event,
+  isOwner,
+}: EventDescriptionProps) {
   const handleExternalLink = (url: string) => {
-    window.open(url, "_blank");
+    window.open(url, '_blank');
   };
 
   return (
@@ -20,7 +24,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
         <div
           dangerouslySetInnerHTML={{ __html: event.description }}
           className="prose prose-gray max-w-none break-words"
-          style={{ wordBreak: "break-word", overflowWrap: "break-word" }}
+          style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         />
 
         {/* Objective */}
@@ -61,7 +65,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
                 onClick={() => handleExternalLink(event.details!.website!)}
                 className="flex items-center gap-1 text-red-500 hover:text-red-600"
               >
-                {event.details!.website!.replace(/^https?:\/\//, "")}
+                {event.details!.website!.replace(/^https?:\/\//, '')}
                 <ExternalLink className="h-4 w-4" />
               </button>
             </div>
@@ -70,18 +74,20 @@ export default function EventDescription({ event }: EventDescriptionProps) {
       </div>
 
       {/* Register Button at Bottom */}
-      <div className="mt-8 border-t border-gray-100 pt-6">
-        <button
-          onClick={() => {
-            if (event.registrationUrl) {
-              window.open(event.registrationUrl, "_blank");
-            }
-          }}
-          className="w-full rounded-xl bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600"
-        >
-          Register
-        </button>
-      </div>
+      {!isOwner ? (
+        <div className="fixed bottom-0 left-0 right-0 z-20 mt-8 bg-white border-t border-gray-100 p-6">
+          <button
+            onClick={() => {
+              if (event.registrationUrl) {
+                window.open(event.registrationUrl, '_blank');
+              }
+            }}
+            className="w-full rounded-xl bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600"
+          >
+            RSVP
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

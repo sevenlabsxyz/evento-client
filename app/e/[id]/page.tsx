@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import EventDescription from "@/components/event-detail/event-description";
-import EventGallery from "@/components/event-detail/event-gallery";
-import EventGuestList from "@/components/event-detail/event-guest-list";
-import EventHost from "@/components/event-detail/event-host";
-import EventInfo from "@/components/event-detail/event-info";
-import EventLocation from "@/components/event-detail/event-location";
-import { EventSpotifyEmbed } from "@/components/event-detail/event-spotify-embed";
-import { WavlakeEmbed } from "@/components/event-detail/event-wavlake-embed";
-import SwipeableHeader from "@/components/event-detail/swipeable-header";
-import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { useEventDetails } from "@/lib/hooks/useEventDetails";
-import { useEventGallery } from "@/lib/hooks/useEventGallery";
-import { useEventHosts } from "@/lib/hooks/useEventHosts";
-import { debugLog } from "@/lib/utils/debug";
-import { transformApiEventToDisplay } from "@/lib/utils/event-transform";
-import { ArrowLeft, Loader2, MoreHorizontal, Share } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import EventDescription from '@/components/event-detail/event-description';
+import EventGallery from '@/components/event-detail/event-gallery';
+import EventGuestList from '@/components/event-detail/event-guest-list';
+import EventHost from '@/components/event-detail/event-host';
+import EventInfo from '@/components/event-detail/event-info';
+import EventLocation from '@/components/event-detail/event-location';
+import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
+import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
+import SwipeableHeader from '@/components/event-detail/swipeable-header';
+import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { useEventDetails } from '@/lib/hooks/useEventDetails';
+import { useEventGallery } from '@/lib/hooks/useEventGallery';
+import { useEventHosts } from '@/lib/hooks/useEventHosts';
+import { debugLog } from '@/lib/utils/debug';
+import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { ArrowLeft, Loader2, MoreHorizontal, Share } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useRef, useState } from 'react';
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -40,7 +40,7 @@ export default function EventDetailPage() {
     useEventGallery(eventId);
 
   // Debug logging
-  debugLog("EventDetailPage", "Component render", {
+  debugLog('EventDetailPage', 'Component render', {
     eventId,
     hasEventData: !!eventData,
     eventLoading,
@@ -50,12 +50,12 @@ export default function EventDetailPage() {
   });
 
   if (eventData) {
-    debugLog("EventDetailPage", "Event data structure", {
+    debugLog('EventDetailPage', 'Event data structure', {
       keys: Object.keys(eventData),
       title: eventData.title,
-      has_start_date_day: "start_date_day" in eventData,
-      has_date: "date" in eventData,
-      has_time: "time" in eventData,
+      has_start_date_day: 'start_date_day' in eventData,
+      has_date: 'date' in eventData,
+      has_time: 'time' in eventData,
     });
   }
 
@@ -111,7 +111,7 @@ export default function EventDetailPage() {
           url: window.location.href,
         });
       } catch (error) {
-        console.log("Error sharing:", error);
+        console.log('Error sharing:', error);
       }
     } else {
       // Fallback: copy to clipboard
@@ -155,13 +155,13 @@ export default function EventDetailPage() {
           }}
         />
         <div className="px-4 pb-20">
-          <EventInfo event={event} currentUserId={user?.id || ""} />
+          <EventInfo event={event} currentUserId={user?.id || ''} />
           <EventHost event={event} />
-          <EventGuestList event={event} currentUserId={user?.id || ""} />
+          <EventGuestList event={event} currentUserId={user?.id || ''} />
           <EventLocation event={event} />
           <EventGallery
             event={event}
-            currentUserId={user?.id || ""}
+            currentUserId={user?.id || ''}
             onImageClick={(index) => {
               setLightboxImages(event.galleryImages || []);
               lightboxRef.current?.open(index);
@@ -181,7 +181,10 @@ export default function EventDetailPage() {
             </div>
           )}
 
-          <EventDescription event={event} />
+          <EventDescription
+            event={event}
+            isOwner={user?.id === event.owner?.id}
+          />
         </div>
       </div>
 
