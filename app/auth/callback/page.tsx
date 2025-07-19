@@ -5,9 +5,9 @@ import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setUser } = useAuthStore();
@@ -122,5 +122,27 @@ export default function AuthCallbackPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function AuthCallbackPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
+          <Card className='w-full max-w-md'>
+            <CardHeader>
+              <CardTitle className='text-center'>Loading...</CardTitle>
+            </CardHeader>
+            <CardContent className='flex flex-col items-center space-y-4'>
+              <Loader2 className='h-8 w-8 animate-spin text-blue-600' />
+              <p className='text-center text-gray-600'>Please wait...</p>
+            </CardContent>
+          </Card>
+        </div>
+      }
+    >
+      <AuthCallbackContent />
+    </Suspense>
   );
 }
