@@ -233,7 +233,7 @@
     animation: toast-enter-mobile 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .toast-inner-content[data-state="closed"] {
+  .toast-inner-content[data-state='closed'] {
     animation: toast-exit-mobile 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
@@ -243,19 +243,19 @@
     animation: toast-enter-desktop 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .toast-inner-content[data-state="closed"] {
+  .toast-inner-content[data-state='closed'] {
     animation: toast-exit-desktop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 }
 
 /* Stacking animation support */
-.toast-inner-content[data-stacked="true"] {
+.toast-inner-content[data-stacked='true'] {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   transform: scale(0.95) translateY(-10px);
   opacity: 0.9;
 }
 
-.toast-inner-content[data-stacked="true"]:hover {
+.toast-inner-content[data-stacked='true']:hover {
   transform: scale(1) translateY(-2px);
   opacity: 1;
 }

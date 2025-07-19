@@ -1,5 +1,5 @@
-const basePath = "/eventos/default-covers";
-const category = "tech";
+const basePath = '/eventos/default-covers';
+const category = 'tech';
 
 export const TECH_COVERS = [
   // Bitcoin release

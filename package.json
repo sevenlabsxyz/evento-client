@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "format": "prettier --config .prettierc.json --write .",
+    "format-check": "prettier --config .prettierc.json --check ."
   },
   "dependencies": {
     "@giphy/js-fetch-api": "^5.7.0",

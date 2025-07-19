@@ -15,22 +15,22 @@ export default function EventDescription({
   };
 
   return (
-    <div className="border-t border-gray-100 py-6">
-      <h2 className="mb-4 text-lg font-semibold text-gray-900">About Event</h2>
+    <div className='border-t border-gray-100 py-6'>
+      <h2 className='mb-4 text-lg font-semibold text-gray-900'>About Event</h2>
 
       {/* Combined Event Content */}
-      <div className="space-y-4 leading-relaxed text-gray-700">
+      <div className='space-y-4 leading-relaxed text-gray-700'>
         {/* Main Description */}
         <div
           dangerouslySetInnerHTML={{ __html: event.description }}
-          className="prose prose-gray max-w-none break-words"
+          className='prose prose-gray max-w-none break-words'
           style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
         />
 
         {/* Objective */}
         {event.details?.objective && (
           <div>
-            <h3 className="mb-2 font-semibold text-gray-900">Objective</h3>
+            <h3 className='mb-2 font-semibold text-gray-900'>Objective</h3>
             <p>{event.details.objective}</p>
           </div>
         )}
@@ -38,22 +38,22 @@ export default function EventDescription({
         {/* Participants */}
         {event.details?.participants && (
           <div>
-            <h3 className="mb-2 font-semibold text-gray-900">Participants</h3>
+            <h3 className='mb-2 font-semibold text-gray-900'>Participants</h3>
             <p>{event.details.participants}</p>
           </div>
         )}
 
         {/* Links */}
-        <div className="space-y-2">
+        <div className='space-y-2'>
           {/* Profile Link */}
           {event.details?.profileUrl && (
             <div>
               <button
                 onClick={() => handleExternalLink(event.details!.profileUrl!)}
-                className="flex items-center gap-1 text-red-500 hover:text-red-600"
+                className='flex items-center gap-1 text-red-500 hover:text-red-600'
               >
                 View participant profiles
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className='h-4 w-4' />
               </button>
             </div>
           )}
@@ -63,10 +63,10 @@ export default function EventDescription({
             <div>
               <button
                 onClick={() => handleExternalLink(event.details!.website!)}
-                className="flex items-center gap-1 text-red-500 hover:text-red-600"
+                className='flex items-center gap-1 text-red-500 hover:text-red-600'
               >
                 {event.details!.website!.replace(/^https?:\/\//, '')}
-                <ExternalLink className="h-4 w-4" />
+                <ExternalLink className='h-4 w-4' />
               </button>
             </div>
           )}

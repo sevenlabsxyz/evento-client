@@ -1,5 +1,5 @@
-const basePath = "/eventos/default-covers";
-const category = "party";
+const basePath = '/eventos/default-covers';
+const category = 'party';
 
 export const PARTY_COVERS = [
   // Halloween Release

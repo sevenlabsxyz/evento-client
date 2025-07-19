@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /**
  * Base event schema for form validation
@@ -6,10 +6,10 @@ import { z } from "zod";
  */
 export const eventFormSchema = z.object({
   // Required fields
-  title: z.string().min(1, "Title is required").max(200),
+  title: z.string().min(1, 'Title is required').max(200),
   description: z.string(),
-  location: z.string().min(1, "Location is required"),
-  timezone: z.string().min(1, "Timezone is required"),
+  location: z.string().min(1, 'Location is required'),
+  timezone: z.string().min(1, 'Timezone is required'),
 
   // Cover image
   cover: z.string().nullable().optional(),
@@ -29,12 +29,12 @@ export const eventFormSchema = z.object({
   end_date_minutes: z.number().min(0).max(59).nullable().optional(),
 
   // Visibility and status
-  visibility: z.enum(["public", "private"]).default("private"),
-  status: z.enum(["published", "draft"]).default("published"),
+  visibility: z.enum(['public', 'private']).default('private'),
+  status: z.enum(['published', 'draft']).default('published'),
 
   // Social media URLs
-  spotify_url: z.string().url().optional().or(z.literal("")),
-  wavlake_url: z.string().url().optional().or(z.literal("")),
+  spotify_url: z.string().url().optional().or(z.literal('')),
+  wavlake_url: z.string().url().optional().or(z.literal('')),
 
   // Contribution methods
   contrib_cashapp: z.string().optional(),
@@ -68,11 +68,9 @@ export type CreateEventData = z.infer<typeof createEventSchema>;
  * Schema for updating an event (PATCH)
  * Includes ID and excludes settings
  */
-export const updateEventSchema = eventFormSchema
-  .omit({ settings: true })
-  .extend({
-    id: z.string().min(1, "Event ID is required"),
-  });
+export const updateEventSchema = eventFormSchema.omit({ settings: true }).extend({
+  id: z.string().min(1, 'Event ID is required'),
+});
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
 

@@ -7,12 +7,7 @@ export interface EventHost {
   company?: string;
 }
 
-export type GuestStatus =
-  | "going"
-  | "invited"
-  | "not-going"
-  | "maybe"
-  | "checked-in";
+export type GuestStatus = 'going' | 'invited' | 'not-going' | 'maybe' | 'checked-in';
 
 export interface Guest {
   id: string;
@@ -80,16 +75,10 @@ export interface Event {
   };
   weather?: {
     temperature: number;
-    unit: "C" | "F";
+    unit: 'C' | 'F';
     condition: string;
   };
-  type:
-    | "conference"
-    | "networking"
-    | "workshop"
-    | "social"
-    | "business"
-    | "showcase";
+  type: 'conference' | 'networking' | 'workshop' | 'social' | 'business' | 'showcase';
   tags?: string[];
   isActive: boolean;
   registrationUrl?: string;

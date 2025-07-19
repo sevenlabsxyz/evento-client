@@ -1,8 +1,8 @@
-"use client";
-import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
-import { VisuallyHidden } from "@silk-hq/components";
-import { useState } from "react";
-import "./contact-host-sheet.css";
+'use client';
+import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { VisuallyHidden } from '@silk-hq/components';
+import { useState } from 'react';
+import './contact-host-sheet.css';
 
 interface ContactHostSheetProps {
   isOpen: boolean;
@@ -16,18 +16,18 @@ export default function ContactHostSheet({
   onSendMessage,
 }: ContactHostSheetProps) {
   const [activeDetent, setActiveDetent] = useState(1);
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
 
   const handleSend = () => {
     if (message.trim()) {
       onSendMessage(message.trim());
-      setMessage("");
+      setMessage('');
       onClose();
     }
   };
 
   const handleClose = () => {
-    setMessage("");
+    setMessage('');
     onClose();
   };
 
@@ -41,21 +41,21 @@ export default function ContactHostSheet({
       <SheetWithDetent.Portal>
         <SheetWithDetent.View>
           <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className="ContactHostSheet-content">
-            <div className="ContactHostSheet-header">
-              <SheetWithDetent.Handle className="ContactHostSheet-handle" />
-              <div className="ContactHostSheet-headerBar">
+          <SheetWithDetent.Content className='ContactHostSheet-content'>
+            <div className='ContactHostSheet-header'>
+              <SheetWithDetent.Handle className='ContactHostSheet-handle' />
+              <div className='ContactHostSheet-headerBar'>
                 <button
                   onClick={handleClose}
-                  className="ContactHostSheet-headerButton ContactHostSheet-headerButton--cancel"
+                  className='ContactHostSheet-headerButton ContactHostSheet-headerButton--cancel'
                 >
                   Cancel
                 </button>
-                <h2 className="ContactHostSheet-headerTitle">Contact Host</h2>
+                <h2 className='ContactHostSheet-headerTitle'>Contact Host</h2>
                 <button
                   onClick={handleSend}
                   disabled={!message.trim()}
-                  className="ContactHostSheet-headerButton ContactHostSheet-headerButton--send"
+                  className='ContactHostSheet-headerButton ContactHostSheet-headerButton--send'
                 >
                   Send
                 </button>
@@ -65,14 +65,14 @@ export default function ContactHostSheet({
               </VisuallyHidden.Root>
             </div>
             <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className="ContactHostSheet-scrollView">
-                <SheetWithDetent.ScrollContent className="ContactHostSheet-scrollContent">
-                  <div className="ContactHostSheet-form">
+              <SheetWithDetent.ScrollView className='ContactHostSheet-scrollView'>
+                <SheetWithDetent.ScrollContent className='ContactHostSheet-scrollContent'>
+                  <div className='ContactHostSheet-form'>
                     <textarea
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
-                      placeholder="Please enter your question for the host..."
-                      className="ContactHostSheet-textarea"
+                      placeholder='Please enter your question for the host...'
+                      className='ContactHostSheet-textarea'
                       autoFocus
                       onFocus={() => setActiveDetent(2)}
                     />

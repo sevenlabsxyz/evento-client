@@ -1,20 +1,14 @@
-"use client";
-import { Sheet, useClientMediaQuery } from "@silk-hq/components";
-import { AlertTriangle, CheckCircle, Info, XCircle } from "lucide-react";
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import "./silk-toast.css";
+'use client';
+import { Sheet, useClientMediaQuery } from '@silk-hq/components';
+import { AlertTriangle, CheckCircle, Info, XCircle } from 'lucide-react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import './silk-toast.css';
 
 // ================================================================================================
 // Types
 // ================================================================================================
 
-export type ToastType = "success" | "error" | "info" | "warning";
+export type ToastType = 'success' | 'error' | 'info' | 'warning';
 
 export interface ToastProps {
   id: string;
@@ -46,31 +40,31 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 const getToastIcon = (type: ToastType) => {
   switch (type) {
-    case "success":
-      return <CheckCircle className="h-5 w-5 text-white" />;
-    case "error":
-      return <XCircle className="h-5 w-5 text-white" />;
-    case "info":
-      return <Info className="h-5 w-5 text-white" />;
-    case "warning":
-      return <AlertTriangle className="h-5 w-5 text-white" />;
+    case 'success':
+      return <CheckCircle className='h-5 w-5 text-white' />;
+    case 'error':
+      return <XCircle className='h-5 w-5 text-white' />;
+    case 'info':
+      return <Info className='h-5 w-5 text-white' />;
+    case 'warning':
+      return <AlertTriangle className='h-5 w-5 text-white' />;
     default:
-      return <Info className="h-5 w-5 text-white" />;
+      return <Info className='h-5 w-5 text-white' />;
   }
 };
 
 const getToastColors = (type: ToastType) => {
   switch (type) {
-    case "success":
-      return "toast-success";
-    case "error":
-      return "toast-error";
-    case "info":
-      return "toast-info";
-    case "warning":
-      return "toast-warning";
+    case 'success':
+      return 'toast-success';
+    case 'error':
+      return 'toast-error';
+    case 'info':
+      return 'toast-info';
+    case 'warning':
+      return 'toast-warning';
     default:
-      return "toast-info";
+      return 'toast-info';
   }
 };
 
@@ -87,7 +81,7 @@ const ToastRoot = React.forwardRef<
 >(({ children, duration = 5000, onDismiss, ...restProps }, ref) => {
   const [presented, setPresented] = useState(true);
   const [pointerOver, setPointerOver] = useState(false);
-  const [travelStatus, setTravelStatus] = useState("idleOutside");
+  const [travelStatus, setTravelStatus] = useState('idleOutside');
   const autoCloseTimeout = useRef<ReturnType<typeof setTimeout> | undefined>();
 
   useEffect(() => {
@@ -103,7 +97,7 @@ const ToastRoot = React.forwardRef<
     };
 
     if (presented) {
-      if (travelStatus === "idleInside" && !pointerOver) {
+      if (travelStatus === 'idleInside' && !pointerOver) {
         startAutoCloseTimeout();
       } else {
         clearAutoCloseTimeout();
@@ -131,10 +125,10 @@ const ToastRoot = React.forwardRef<
       }}
     >
       <Sheet.Root
-        license="commercial"
+        license='commercial'
         presented={presented}
         onPresentedChange={handlePresentedChange}
-        sheetRole=""
+        sheetRole=''
         {...restProps}
         ref={ref}
       >
@@ -143,7 +137,7 @@ const ToastRoot = React.forwardRef<
     </ToastContext.Provider>
   );
 });
-ToastRoot.displayName = "Toast.Root";
+ToastRoot.displayName = 'Toast.Root';
 
 // ================================================================================================
 // Toast View
@@ -153,24 +147,23 @@ const ToastView = React.forwardRef<
   HTMLDivElement,
   React.ComponentPropsWithoutRef<typeof Sheet.View>
 >(({ children, className, ...restProps }, ref) => {
-  const largeViewport = useClientMediaQuery("(min-width: 1000px)");
-  const contentPlacement = largeViewport ? "right" : "top";
+  const largeViewport = useClientMediaQuery('(min-width: 1000px)');
+  const contentPlacement = largeViewport ? 'right' : 'top';
 
   const context = useContext(ToastContext);
-  if (!context)
-    throw new Error("ToastView must be used within a ToastContext.Provider");
+  if (!context) throw new Error('ToastView must be used within a ToastContext.Provider');
   const { setTravelStatus } = context;
 
   return (
     <div
-      className={`toast-container ${className ?? ""}`.trim()}
-      role="status"
-      aria-live="polite"
+      className={`toast-container ${className ?? ''}`.trim()}
+      role='status'
+      aria-live='polite'
       {...restProps}
       ref={ref}
     >
       <Sheet.View
-        className={`toast-view ${className ?? ""}`.trim()}
+        className={`toast-view ${className ?? ''}`.trim()}
         contentPlacement={contentPlacement}
         inertOutside={false}
         onPresentAutoFocus={{ focus: false }}
@@ -187,7 +180,7 @@ const ToastView = React.forwardRef<
         travelAnimation={{
           opacity: [0, 1],
           scale: [0.95, 1],
-          transformOrigin: largeViewport ? "top right" : "top center",
+          transformOrigin: largeViewport ? 'top right' : 'top center',
         }}
       >
         {children}
@@ -195,7 +188,7 @@ const ToastView = React.forwardRef<
     </div>
   );
 });
-ToastView.displayName = "Toast.View";
+ToastView.displayName = 'Toast.View';
 
 // ================================================================================================
 // Toast Content
@@ -206,18 +199,18 @@ const ToastContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Sheet.Content>
 >(({ children, className, ...restProps }, ref) => {
   const context = useContext(ToastContext);
-  if (!context) throw new Error("ToastContent must be used within ToastRoot");
+  if (!context) throw new Error('ToastContent must be used within ToastRoot');
 
   return (
     <Sheet.Content
-      className={`toast-content ${className ?? ""}`.trim()}
+      className={`toast-content ${className ?? ''}`.trim()}
       asChild
       {...restProps}
       ref={ref}
     >
       <Sheet.SpecialWrapper.Root>
         <Sheet.SpecialWrapper.Content
-          className="toast-inner-content"
+          className='toast-inner-content'
           onPointerEnter={() => context.setPointerOver(true)}
           onPointerLeave={() => context.setPointerOver(false)}
         >
@@ -227,47 +220,37 @@ const ToastContent = React.forwardRef<
     </Sheet.Content>
   );
 });
-ToastContent.displayName = "Toast.Content";
+ToastContent.displayName = 'Toast.Content';
 
 // ================================================================================================
 // Complete Toast Component
 // ================================================================================================
 
-export const SilkToast = React.forwardRef<
-  React.ElementRef<typeof Sheet.Root>,
-  ToastProps
->(({ id, type, title, description, duration, onDismiss }, ref) => {
-  const icon = getToastIcon(type);
-  const colorClass = getToastColors(type);
+export const SilkToast = React.forwardRef<React.ElementRef<typeof Sheet.Root>, ToastProps>(
+  ({ id, type, title, description, duration, onDismiss }, ref) => {
+    const icon = getToastIcon(type);
+    const colorClass = getToastColors(type);
 
-  return (
-    <ToastRoot
-      ref={ref}
-      duration={duration}
-      onDismiss={onDismiss}
-      forComponent="closest"
-    >
-      <Sheet.Portal>
-        <ToastView>
-          <ToastContent>
-            <div className={`toast-root ${colorClass}`}>
-              <div className="toast-icon">{icon}</div>
-              <div className="toast-content-wrapper">
-                {title && (
-                  <Sheet.Title className="toast-title">{title}</Sheet.Title>
-                )}
-                <Sheet.Description className="toast-description">
-                  {description}
-                </Sheet.Description>
+    return (
+      <ToastRoot ref={ref} duration={duration} onDismiss={onDismiss} forComponent='closest'>
+        <Sheet.Portal>
+          <ToastView>
+            <ToastContent>
+              <div className={`toast-root ${colorClass}`}>
+                <div className='toast-icon'>{icon}</div>
+                <div className='toast-content-wrapper'>
+                  {title && <Sheet.Title className='toast-title'>{title}</Sheet.Title>}
+                  <Sheet.Description className='toast-description'>{description}</Sheet.Description>
+                </div>
               </div>
-            </div>
-          </ToastContent>
-        </ToastView>
-      </Sheet.Portal>
-    </ToastRoot>
-  );
-});
-SilkToast.displayName = "SilkToast";
+            </ToastContent>
+          </ToastView>
+        </Sheet.Portal>
+      </ToastRoot>
+    );
+  }
+);
+SilkToast.displayName = 'SilkToast';
 
 // ================================================================================================
 // Exports

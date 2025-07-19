@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
-import { User, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { User, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface NameSheetProps {
   isOpen: boolean;
@@ -13,20 +13,15 @@ interface NameSheetProps {
   currentName?: string;
 }
 
-export default function NameSheet({
-  isOpen,
-  onClose,
-  onSave,
-  currentName = "",
-}: NameSheetProps) {
+export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }: NameSheetProps) {
   const [name, setName] = useState(currentName);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
       setName(currentName);
-      setError("");
+      setError('');
     }
   }, [isOpen, currentName]);
 
@@ -34,12 +29,12 @@ export default function NameSheet({
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      setError("Name is required");
+      setError('Name is required');
       return;
     }
 
     if (trimmedName.length > 50) {
-      setError("Name must be less than 50 characters");
+      setError('Name must be less than 50 characters');
       return;
     }
 
@@ -64,15 +59,12 @@ export default function NameSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
               <SheetWithDetentFull.Handle />
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Name</h2>
-                <button
-                  onClick={handleCancel}
-                  className="rounded-full p-2 hover:bg-gray-100"
-                >
-                  <X className="h-5 w-5" />
+              <div className='flex items-center justify-between'>
+                <h2 className='text-xl font-semibold'>Name</h2>
+                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                  <X className='h-5 w-5' />
                 </button>
               </div>
             </div>
@@ -80,56 +72,48 @@ export default function NameSheet({
             {/* Content */}
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent className="p-6">
+                <SheetWithDetentFull.ScrollContent className='p-6'>
                   {/* Input with icon */}
-                  <div className="relative mb-4">
-                    <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <User className="h-5 w-5 text-gray-400" />
+                  <div className='relative mb-4'>
+                    <div className='absolute left-3 top-1/2 -translate-y-1/2'>
+                      <User className='h-5 w-5 text-gray-400' />
                     </div>
                     <Input
-                      type="text"
+                      type='text'
                       value={name}
                       onChange={(e) => {
                         setName(e.target.value);
-                        setError("");
+                        setError('');
                       }}
-                      placeholder="Your name"
-                      className="pl-10"
+                      placeholder='Your name'
+                      className='pl-10'
                       autoFocus
                       maxLength={50}
                     />
                   </div>
 
                   {/* Error message */}
-                  {error && (
-                    <p className="mb-4 text-sm text-red-500">{error}</p>
-                  )}
+                  {error && <p className='mb-4 text-sm text-red-500'>{error}</p>}
 
                   {/* Character count */}
-                  <p className="mb-4 text-right text-sm text-gray-500">
-                    {name.length}/50
-                  </p>
+                  <p className='mb-4 text-right text-sm text-gray-500'>{name.length}/50</p>
 
                   {/* Info text */}
-                  <p className="mb-6 text-sm text-gray-500">
-                    Your display name is how you appear to others on Evento. Use
-                    your real name or a nickname.
+                  <p className='mb-6 text-sm text-gray-500'>
+                    Your display name is how you appear to others on Evento. Use your real name or a
+                    nickname.
                   </p>
 
                   {/* Save/Cancel Buttons */}
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
                       disabled={!canSave}
                     >
                       Save
                     </Button>
-                    <Button
-                      onClick={handleCancel}
-                      variant="outline"
-                      className="flex-1"
-                    >
+                    <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
                     </Button>
                   </div>

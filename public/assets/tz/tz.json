@@ -65,12 +65,7 @@
     "offset": -8,
     "isdst": false,
     "text": "(UTC-08:00) Pacific Standard Time (US & Canada)",
-    "utc": [
-      "America/Los_Angeles",
-      "America/Tijuana",
-      "America/Vancouver",
-      "PST8PDT"
-    ]
+    "utc": ["America/Los_Angeles", "America/Tijuana", "America/Vancouver", "PST8PDT"]
   },
   {
     "value": "US Mountain Standard Time",
@@ -249,11 +244,7 @@
     "offset": -5,
     "isdst": false,
     "text": "(UTC-05:00) Indiana (East)",
-    "utc": [
-      "America/Indiana/Marengo",
-      "America/Indiana/Vevay",
-      "America/Indianapolis"
-    ]
+    "utc": ["America/Indiana/Marengo", "America/Indiana/Vevay", "America/Indianapolis"]
   },
   {
     "value": "Venezuela Standard Time",
@@ -481,12 +472,7 @@
     "offset": 0,
     "isdst": false,
     "text": "(UTC) Edinburgh, London",
-    "utc": [
-      "Europe/Isle_of_Man",
-      "Europe/Guernsey",
-      "Europe/Jersey",
-      "Europe/London"
-    ]
+    "utc": ["Europe/Isle_of_Man", "Europe/Guernsey", "Europe/Jersey", "Europe/London"]
   },
   {
     "value": "British Summer Time",
@@ -494,12 +480,7 @@
     "offset": 1,
     "isdst": true,
     "text": "(UTC+01:00) Edinburgh, London",
-    "utc": [
-      "Europe/Isle_of_Man",
-      "Europe/Guernsey",
-      "Europe/Jersey",
-      "Europe/London"
-    ]
+    "utc": ["Europe/Isle_of_Man", "Europe/Guernsey", "Europe/Jersey", "Europe/London"]
   },
   {
     "value": "GMT Standard Time",
@@ -587,13 +568,7 @@
     "offset": 2,
     "isdst": true,
     "text": "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris",
-    "utc": [
-      "Africa/Ceuta",
-      "Europe/Brussels",
-      "Europe/Copenhagen",
-      "Europe/Madrid",
-      "Europe/Paris"
-    ]
+    "utc": ["Africa/Ceuta", "Europe/Brussels", "Europe/Copenhagen", "Europe/Madrid", "Europe/Paris"]
   },
   {
     "value": "Central European Standard Time",
@@ -601,12 +576,7 @@
     "offset": 2,
     "isdst": true,
     "text": "(UTC+01:00) Sarajevo, Skopje, Warsaw, Zagreb",
-    "utc": [
-      "Europe/Sarajevo",
-      "Europe/Skopje",
-      "Europe/Warsaw",
-      "Europe/Zagreb"
-    ]
+    "utc": ["Europe/Sarajevo", "Europe/Skopje", "Europe/Warsaw", "Europe/Zagreb"]
   },
   {
     "value": "W. Central Africa Standard Time",
@@ -645,12 +615,7 @@
     "offset": 3,
     "isdst": true,
     "text": "(UTC+02:00) Athens, Bucharest",
-    "utc": [
-      "Asia/Nicosia",
-      "Europe/Athens",
-      "Europe/Bucharest",
-      "Europe/Chisinau"
-    ]
+    "utc": ["Asia/Nicosia", "Europe/Athens", "Europe/Bucharest", "Europe/Chisinau"]
   },
   {
     "value": "Middle East Standard Time",
@@ -792,13 +757,7 @@
     "offset": 3,
     "isdst": false,
     "text": "(UTC+03:00) Kuwait, Riyadh",
-    "utc": [
-      "Asia/Aden",
-      "Asia/Bahrain",
-      "Asia/Kuwait",
-      "Asia/Qatar",
-      "Asia/Riyadh"
-    ]
+    "utc": ["Asia/Aden", "Asia/Bahrain", "Asia/Kuwait", "Asia/Qatar", "Asia/Riyadh"]
   },
   {
     "value": "E. Africa Standard Time",
@@ -1090,13 +1049,7 @@
     "offset": 9,
     "isdst": false,
     "text": "(UTC+09:00) Osaka, Sapporo, Tokyo",
-    "utc": [
-      "Asia/Dili",
-      "Asia/Jayapura",
-      "Asia/Tokyo",
-      "Etc/GMT-9",
-      "Pacific/Palau"
-    ]
+    "utc": ["Asia/Dili", "Asia/Jayapura", "Asia/Tokyo", "Etc/GMT-9", "Pacific/Palau"]
   },
   {
     "value": "Korea Standard Time",
@@ -1232,12 +1185,7 @@
     "offset": 12,
     "isdst": false,
     "text": "(UTC+12:00) Magadan",
-    "utc": [
-      "Asia/Anadyr",
-      "Asia/Kamchatka",
-      "Asia/Magadan",
-      "Asia/Srednekolymsk"
-    ]
+    "utc": ["Asia/Anadyr", "Asia/Kamchatka", "Asia/Magadan", "Asia/Srednekolymsk"]
   },
   {
     "value": "Kamchatka Standard Time",
@@ -1253,12 +1201,7 @@
     "offset": 13,
     "isdst": false,
     "text": "(UTC+13:00) Nuku'alofa",
-    "utc": [
-      "Etc/GMT-13",
-      "Pacific/Enderbury",
-      "Pacific/Fakaofo",
-      "Pacific/Tongatapu"
-    ]
+    "utc": ["Etc/GMT-13", "Pacific/Enderbury", "Pacific/Fakaofo", "Pacific/Tongatapu"]
   },
   {
     "value": "Samoa Standard Time",

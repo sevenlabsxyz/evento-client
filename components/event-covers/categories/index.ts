@@ -1,8 +1,8 @@
-import { CLASSIC_COVERS } from "./classic";
-import { FEATURED_COVERS } from "./featured";
-import { PARTY_COVERS } from "./party";
-import { SOCIAL_COVERS } from "./social";
-import { TECH_COVERS } from "./tech";
+import { CLASSIC_COVERS } from './classic';
+import { FEATURED_COVERS } from './featured';
+import { PARTY_COVERS } from './party';
+import { SOCIAL_COVERS } from './social';
+import { TECH_COVERS } from './tech';
 // import { LOVE_COVERS } from "./love";
 
 const COVERS = {

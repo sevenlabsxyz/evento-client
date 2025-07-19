@@ -1,5 +1,5 @@
-"use client";
-import { type ToastType } from "@/lib/contexts/toast-context";
+'use client';
+import { type ToastType } from '@/lib/contexts/toast-context';
 
 // ================================================================================================
 // Global Toast Manager
@@ -30,7 +30,7 @@ class ToastManager {
     };
   }
 
-  add(toast: Omit<ToastInstance, "id">) {
+  add(toast: Omit<ToastInstance, 'id'>) {
     const id = `toast-${this.idCounter++}`;
     const newToast: ToastInstance = {
       id,
@@ -71,37 +71,37 @@ const toastManager = new ToastManager();
 export const toast = {
   success: (description: string, title?: string, duration?: number) =>
     toastManager.add({
-      type: "success",
+      type: 'success',
       description,
-      title: title || "Success",
+      title: title || 'Success',
       duration,
     }),
 
   error: (description: string, title?: string, duration?: number) =>
     toastManager.add({
-      type: "error",
+      type: 'error',
       description,
-      title: title || "Error",
+      title: title || 'Error',
       duration,
     }),
 
   info: (description: string, title?: string, duration?: number) =>
     toastManager.add({
-      type: "info",
+      type: 'info',
       description,
-      title: title || "Info",
+      title: title || 'Info',
       duration,
     }),
 
   warning: (description: string, title?: string, duration?: number) =>
     toastManager.add({
-      type: "warning",
+      type: 'warning',
       description,
-      title: title || "Warning",
+      title: title || 'Warning',
       duration,
     }),
 
-  custom: (toast: Omit<ToastInstance, "id">) => toastManager.add(toast),
+  custom: (toast: Omit<ToastInstance, 'id'>) => toastManager.add(toast),
 
   dismiss: (id: string) => toastManager.remove(id),
 

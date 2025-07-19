@@ -1,6 +1,6 @@
-"use client";
-import { toastManager } from "@/lib/utils/toast";
-import { useEffect, useState } from "react";
+'use client';
+import { toastManager } from '@/lib/utils/toast';
+import { useEffect, useState } from 'react';
 
 // ================================================================================================
 // Hook for Global Toast Manager

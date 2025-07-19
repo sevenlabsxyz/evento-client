@@ -7,7 +7,7 @@ import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
 
 // Key for user query
-const USER_QUERY_KEY = ["auth", "user"] as const;
+const USER_QUERY_KEY = ['auth', 'user'] as const;
 
 /**
  * Main auth hook that provides authentication state and actions
@@ -15,8 +15,7 @@ const USER_QUERY_KEY = ["auth", "user"] as const;
 export function useAuth() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, isAuthenticated, email, setUser, setEmail, clearAuth } =
-    useAuthStore();
+  const { user, isAuthenticated, email, setUser, setEmail, clearAuth } = useAuthStore();
 
   // Query to check current auth status
   const {
@@ -29,12 +28,7 @@ export function useAuth() {
     queryFn: authService.getCurrentUser,
     retry: (failureCount, error) => {
       // Don't retry on 401 errors
-      if (
-        error &&
-        typeof error === 'object' &&
-        'status' in error &&
-        error.status === 401
-      ) {
+      if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
         return false;
       }
       return failureCount < 2;
@@ -50,10 +44,7 @@ export function useAuth() {
     } else if (authError) {
       // Clear auth on 401 errors
       const apiError = authError as ApiError;
-      if (
-        apiError.message?.includes('401') ||
-        apiError.message?.includes('Unauthorized')
-      ) {
+      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
         clearAuth();
       }
     }
@@ -89,7 +80,7 @@ export function useAuth() {
     onSuccess: () => {
       clearAuth();
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      router.push("/auth/login");
+      router.push('/auth/login');
     },
   });
 
@@ -118,9 +109,7 @@ export function useLogin() {
       setEmail(email);
       const redirect = searchParams.get('redirect');
       router.push(
-        redirect
-          ? `/auth/verify?redirect=${encodeURIComponent(redirect)}`
-          : '/auth/verify'
+        redirect ? `/auth/verify?redirect=${encodeURIComponent(redirect)}` : '/auth/verify'
       );
     },
   });
@@ -144,7 +133,7 @@ export function useVerifyCode() {
   const mutation = useMutation({
     mutationFn: ({ code }: { code: string }) => {
       if (!email) {
-        throw new Error("Email is required for verification");
+        throw new Error('Email is required for verification');
       }
       return authService.verifyCode(email, code);
     },
@@ -159,7 +148,7 @@ export function useVerifyCode() {
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
       // Redirect to home
-      router.push("/");
+      router.push('/');
     },
   });
 
@@ -190,7 +179,7 @@ export function useGoogleLogin() {
 /**
  * Hook to protect routes - redirects to login if not authenticated
  */
-export function useRequireAuth(redirectTo = "/auth/login") {
+export function useRequireAuth(redirectTo = '/auth/login') {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -207,7 +196,7 @@ export function useRequireAuth(redirectTo = "/auth/login") {
 /**
  * Hook to redirect authenticated users away from auth pages
  */
-export function useRedirectIfAuthenticated(redirectTo = "/") {
+export function useRedirectIfAuthenticated(redirectTo = '/') {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 

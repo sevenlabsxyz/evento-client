@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -9,20 +9,20 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { useRedirectIfAuthenticated, useVerifyCode } from "@/lib/hooks/useAuth";
-import { verifyCodeSchema, type VerifyCodeFormData } from "@/lib/schemas/auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { AlertCircle, ArrowLeft, Loader2, Mail } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, Suspense } from "react";
-import { useForm } from "react-hook-form";
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { useRedirectIfAuthenticated, useVerifyCode } from '@/lib/hooks/useAuth';
+import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertCircle, ArrowLeft, Loader2, Mail } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
 function VerifyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/";
+  const redirectUrl = searchParams.get('redirect') || '/';
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { verifyCode, isLoading, error, reset, email } = useVerifyCode();
   const [resendTimer, setResendTimer] = useState(0);
@@ -37,11 +37,11 @@ function VerifyContent() {
   } = useForm<VerifyCodeFormData>({
     resolver: zodResolver(verifyCodeSchema),
     defaultValues: {
-      code: "",
+      code: '',
     },
   });
 
-  const codeValue = watch("code");
+  const codeValue = watch('code');
 
   // Redirect to login if no email in store
   useEffect(() => {
@@ -69,10 +69,10 @@ function VerifyContent() {
     // Only allow digits
     if (value && !/^\d$/.test(value)) return;
 
-    const newCode = codeValue.split("");
+    const newCode = codeValue.split('');
     newCode[index] = value;
-    const updatedCode = newCode.join("");
-    setValue("code", updatedCode);
+    const updatedCode = newCode.join('');
+    setValue('code', updatedCode);
 
     // Auto-focus next input
     if (value && index < 5) {
@@ -85,20 +85,17 @@ function VerifyContent() {
     }
   };
 
-  const handleKeyDown = (
-    index: number,
-    e: React.KeyboardEvent<HTMLInputElement>
-  ) => {
-    if (e.key === "Backspace" && !codeValue[index] && index > 0) {
+  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !codeValue[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").slice(0, 6);
+    const pastedData = e.clipboardData.getData('text').slice(0, 6);
     if (/^\d+$/.test(pastedData)) {
-      setValue("code", pastedData);
+      setValue('code', pastedData);
       // Focus the last filled input or the next empty one
       const focusIndex = Math.min(pastedData.length, 5);
       inputRefs.current[focusIndex]?.focus();
@@ -120,94 +117,86 @@ function VerifyContent() {
   // Show loading while checking auth status
   if (isCheckingAuth || !email) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin' />
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">
-            Check your email
-          </CardTitle>
-          <CardDescription className="text-center space-y-2">
+    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
+      <Card className='w-full max-w-md'>
+        <CardHeader className='space-y-1'>
+          <CardTitle className='text-center text-2xl font-bold'>Check your email</CardTitle>
+          <CardDescription className='space-y-2 text-center'>
             <p>We've sent a 6-digit verification code to</p>
-            <p className="flex items-center justify-center gap-2 font-medium text-gray-900">
-              <Mail className="h-4 w-4" />
+            <p className='flex items-center justify-center gap-2 font-medium text-gray-900'>
+              <Mail className='h-4 w-4' />
               {email}
             </p>
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           {/* Error Alert */}
           {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+            <Alert variant='destructive'>
+              <AlertCircle className='h-4 w-4' />
               <AlertDescription>
-                {error.message || "Invalid code. Please try again."}
+                {error.message || 'Invalid code. Please try again.'}
               </AlertDescription>
             </Alert>
           )}
 
           {/* Code Input Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Verification code</label>
-              <div className="flex justify-center gap-2">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <div className='space-y-2'>
+              <label className='text-sm font-medium'>Verification code</label>
+              <div className='flex justify-center gap-2'>
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <Input
                     key={index}
                     ref={(el) => {
                       inputRefs.current[index] = el;
                     }}
-                    type="text"
-                    inputMode="numeric"
+                    type='text'
+                    inputMode='numeric'
                     maxLength={1}
-                    value={codeValue[index] || ""}
+                    value={codeValue[index] || ''}
                     onChange={(e) => handleCodeChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handlePaste}
-                    className="h-12 w-12 text-center text-lg font-semibold"
+                    className='h-12 w-12 text-center text-lg font-semibold'
                     disabled={isLoading}
                   />
                 ))}
               </div>
-              <input type="hidden" {...register("code")} />
+              <input type='hidden' {...register('code')} />
               {errors.code && (
-                <p className="text-sm text-red-500 text-center">
-                  {errors.code.message}
-                </p>
+                <p className='text-center text-sm text-red-500'>{errors.code.message}</p>
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading || codeValue.length !== 6}
-            >
+            <Button type='submit' className='w-full' disabled={isLoading || codeValue.length !== 6}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   Verifying...
                 </>
               ) : (
-                "Verify Code"
+                'Verify Code'
               )}
             </Button>
           </form>
 
-          <div className="space-y-2 text-center">
-            <p className="text-sm text-gray-600">
-              Didn't receive the code?{" "}
+          <div className='space-y-2 text-center'>
+            <p className='text-sm text-gray-600'>
+              Didn't receive the code?{' '}
               {resendTimer > 0 ? (
-                <span className="text-gray-500">Resend in {resendTimer}s</span>
+                <span className='text-gray-500'>Resend in {resendTimer}s</span>
               ) : (
                 <button
                   onClick={handleResend}
-                  className="font-medium text-blue-600 hover:underline"
+                  className='font-medium text-blue-600 hover:underline'
                   disabled={isLoading}
                 >
                   Resend code
@@ -218,16 +207,12 @@ function VerifyContent() {
         </CardContent>
         <CardFooter>
           <Button
-            variant="ghost"
-            className="w-full"
-            onClick={() =>
-              router.push(
-                `/auth/login?redirect=${encodeURIComponent(redirectUrl)}`
-              )
-            }
+            variant='ghost'
+            className='w-full'
+            onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`)}
             disabled={isLoading}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className='mr-2 h-4 w-4' />
             Back to login
           </Button>
         </CardFooter>
@@ -240,8 +225,8 @@ export default function VerifyPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex items-center justify-center min-h-screen">
-          <Loader2 className="h-8 w-8 animate-spin" />
+        <div className='flex min-h-screen items-center justify-center'>
+          <Loader2 className='h-8 w-8 animate-spin' />
         </div>
       }
     >

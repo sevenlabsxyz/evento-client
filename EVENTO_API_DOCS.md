@@ -66,7 +66,7 @@ if (!user?.id) return handle401();
 
 ```typescript
 // API key validation
-const apiKey = request.headers.get("x-evento-api-key");
+const apiKey = request.headers.get('x-evento-api-key');
 if (!VALID_API_KEYS.includes(apiKey)) return handle401();
 ```
 
@@ -78,11 +78,11 @@ All APIs follow a consistent response structure:
 
 ```json
 {
-  "success": true,
-  "message": "Operation completed successfully",
-  "data": {
-    /* response data */
-  }
+    "success": true,
+    "message": "Operation completed successfully",
+    "data": {
+        /* response data */
+    }
 }
 ```
 
@@ -90,8 +90,8 @@ All APIs follow a consistent response structure:
 
 ```json
 {
-  "success": false,
-  "message": "Error description"
+    "success": false,
+    "message": "Error description"
 }
 ```
 
@@ -111,18 +111,18 @@ All APIs follow a consistent response structure:
 
 ```typescript
 interface UserDetails {
-  id: string;
-  username: string;
-  name: string;
-  bio: string;
-  image: string;
-  bio_link: string;
-  x_handle: string;
-  instagram_handle: string;
-  ln_address: string; // Lightning address
-  nip05: string; // Nostr identifier
-  verification_status: "verified" | "pending" | null;
-  verification_date: string;
+    id: string;
+    username: string;
+    name: string;
+    bio: string;
+    image: string;
+    bio_link: string;
+    x_handle: string;
+    instagram_handle: string;
+    ln_address: string; // Lightning address
+    nip05: string; // Nostr identifier
+    verification_status: 'verified' | 'pending' | null;
+    verification_date: string;
 }
 ```
 
@@ -130,46 +130,46 @@ interface UserDetails {
 
 ```typescript
 interface Event {
-  id: string;
-  title: string;
-  description: string;
-  cover: string;
-  location: string;
-  timezone: string;
-  status: "draft" | "published" | "cancelled";
-  visibility: "public" | "private";
-  cost: number | null;
-  creator_user_id: string;
+    id: string;
+    title: string;
+    description: string;
+    cover: string;
+    location: string;
+    timezone: string;
+    status: 'draft' | 'published' | 'cancelled';
+    visibility: 'public' | 'private';
+    cost: number | null;
+    creator_user_id: string;
 
-  // Date components (stored separately for timezone handling)
-  start_date_day: number;
-  start_date_month: number;
-  start_date_year: number;
-  start_date_hours: number;
-  start_date_minutes: number;
+    // Date components (stored separately for timezone handling)
+    start_date_day: number;
+    start_date_month: number;
+    start_date_year: number;
+    start_date_hours: number;
+    start_date_minutes: number;
 
-  end_date_day: number;
-  end_date_month: number;
-  end_date_year: number;
-  end_date_hours: number;
-  end_date_minutes: number;
+    end_date_day: number;
+    end_date_month: number;
+    end_date_year: number;
+    end_date_hours: number;
+    end_date_minutes: number;
 
-  // Computed ISO dates
-  computed_start_date: string;
-  computed_end_date: string;
+    // Computed ISO dates
+    computed_start_date: string;
+    computed_end_date: string;
 
-  // Media & Links
-  spotify_url: string;
-  wavlake_url: string;
+    // Media & Links
+    spotify_url: string;
+    wavlake_url: string;
 
-  // Contribution methods
-  contrib_cashapp: string;
-  contrib_venmo: string;
-  contrib_paypal: string;
-  contrib_btclightning: string;
+    // Contribution methods
+    contrib_cashapp: string;
+    contrib_venmo: string;
+    contrib_paypal: string;
+    contrib_btclightning: string;
 
-  created_at: string;
-  updated_at: string;
+    created_at: string;
+    updated_at: string;
 }
 ```
 
@@ -177,12 +177,12 @@ interface Event {
 
 ```typescript
 interface EventRSVP {
-  id: string;
-  event_id: string;
-  user_id: string;
-  status: "yes" | "no" | "maybe";
-  created_at: string;
-  updated_at: string;
+    id: string;
+    event_id: string;
+    user_id: string;
+    status: 'yes' | 'no' | 'maybe';
+    created_at: string;
+    updated_at: string;
 }
 ```
 
@@ -190,10 +190,10 @@ interface EventRSVP {
 
 ```typescript
 interface EventSettings {
-  id: string;
-  event_id: string;
-  max_capacity: number | null;
-  show_capacity_count: boolean;
+    id: string;
+    event_id: string;
+    max_capacity: number | null;
+    show_capacity_count: boolean;
 }
 ```
 

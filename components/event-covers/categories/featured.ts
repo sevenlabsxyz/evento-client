@@ -1,4 +1,4 @@
-const basePath = "/eventos/default-covers";
+const basePath = '/eventos/default-covers';
 
 // featured covers require a different format (must pass the exact path/category) since
 // its just featuring covers from other categories

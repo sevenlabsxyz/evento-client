@@ -1,6 +1,6 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { UserDetails } from "../types/api";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { UserDetails } from '../types/api';
 
 interface AuthState {
   // State
@@ -58,7 +58,7 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: "evento-auth-storage",
+      name: 'evento-auth-storage',
 
       // Only persist non-sensitive data
       partialize: (state) => ({
@@ -75,8 +75,8 @@ export const useAuthStore = create<AuthState>()(
           state.isLoading = false;
         }
       },
-    },
-  ),
+    }
+  )
 );
 
 // Selectors for easy access to commonly used state
@@ -86,7 +86,6 @@ export const useAuth = () => {
 };
 
 export const useAuthActions = () => {
-  const { setUser, setLoading, setEmail, clearEmail, clearAuth, reset } =
-    useAuthStore();
+  const { setUser, setLoading, setEmail, clearEmail, clearAuth, reset } = useAuthStore();
   return { setUser, setLoading, setEmail, clearEmail, clearAuth, reset };
 };
