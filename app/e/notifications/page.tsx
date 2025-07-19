@@ -109,12 +109,6 @@ export default function NotificationsPage() {
         return <MessageCircle className='h-6 w-6 text-blue-500' />;
       case 'follow':
         return <UserPlus className='h-6 w-6 text-green-500' />;
-      case 'like':
-        return <Heart className='h-6 w-6 text-red-500' />;
-      case 'comment':
-        return <MessageCircle className='h-6 w-6 text-blue-500' />;
-      case 'follow':
-        return <UserPlus className='h-6 w-6 text-green-500' />;
       default:
         return null;
     }
