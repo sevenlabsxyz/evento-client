@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,23 +9,23 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   useGoogleLogin,
   useLogin,
   useRedirectIfAuthenticated,
-} from '@/lib/hooks/useAuth';
-import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Chrome, Loader2, Mail } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useState, Suspense } from 'react';
-import { useForm } from 'react-hook-form';
+} from "@/lib/hooks/useAuth";
+import { loginSchema, type LoginFormData } from "@/lib/schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Chrome, Loader2, Mail } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useForm } from "react-hook-form";
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/';
+  const redirectUrl = searchParams.get("redirect") || "/";
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
@@ -52,14 +52,14 @@ function LoginContent() {
   // Show loading while checking auth status
   if (isCheckingAuth) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
@@ -75,7 +75,7 @@ function LoginContent() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {error.message || 'An error occurred. Please try again.'}
+                {error.message || "An error occurred. Please try again."}
               </AlertDescription>
             </Alert>
           )}
@@ -89,7 +89,7 @@ function LoginContent() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
                 <Input
-                  {...register('email')}
+                  {...register("email")}
                   id="email"
                   type="email"
                   placeholder="you@example.com"
@@ -113,7 +113,7 @@ function LoginContent() {
                   Sending code...
                 </>
               ) : (
-                'Continue with Email'
+                "Continue with Email"
               )}
             </Button>
           </form>
@@ -162,11 +162,13 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    }>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
       <LoginContent />
     </Suspense>
   );

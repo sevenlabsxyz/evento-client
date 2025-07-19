@@ -1,7 +1,7 @@
-import type { Editor } from '@tiptap/core'
-import { cn } from '@/lib/utils'
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { VisuallyHidden } from '@silk-hq/components'
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@silk-hq/components";
+import type { Editor } from "@tiptap/core";
 
 interface TextStylesSheetProps {
   isOpen: boolean;
@@ -9,7 +9,11 @@ interface TextStylesSheetProps {
   editor: Editor;
 }
 
-export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesSheetProps) {
+export default function TextStylesSheet({
+  isOpen,
+  onClose,
+  editor,
+}: TextStylesSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -27,7 +31,7 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
 
             <div className="TextStylesSheet-container">
               <h3 className="TextStylesSheet-title">Text Styles</h3>
-              
+
               <div className="TextStylesSheet-options">
                 <button
                   onClick={() => {
@@ -35,7 +39,8 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                     onClose();
                   }}
                   className={cn("TextStylesSheet-option", {
-                    'TextStylesSheet-option--active': editor.isActive('paragraph')
+                    "TextStylesSheet-option--active":
+                      editor.isActive("paragraph"),
                   })}
                   aria-label="Normal text"
                 >
@@ -47,11 +52,16 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                     onClose();
                   }}
                   className={cn("TextStylesSheet-option", {
-                    'TextStylesSheet-option--active': editor.isActive('heading', { level: 1 })
+                    "TextStylesSheet-option--active": editor.isActive(
+                      "heading",
+                      { level: 1 },
+                    ),
                   })}
                   aria-label="Heading 1"
                 >
-                  <h1 className="m-0 grow text-3xl font-extrabold">Heading 1</h1>
+                  <h1 className="m-0 grow text-3xl font-extrabold">
+                    Heading 1
+                  </h1>
                 </button>
                 <button
                   onClick={() => {
@@ -59,7 +69,10 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                     onClose();
                   }}
                   className={cn("TextStylesSheet-option", {
-                    'TextStylesSheet-option--active': editor.isActive('heading', { level: 2 })
+                    "TextStylesSheet-option--active": editor.isActive(
+                      "heading",
+                      { level: 2 },
+                    ),
                   })}
                   aria-label="Heading 2"
                 >
@@ -71,7 +84,10 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
                     onClose();
                   }}
                   className={cn("TextStylesSheet-option", {
-                    'TextStylesSheet-option--active': editor.isActive('heading', { level: 3 })
+                    "TextStylesSheet-option--active": editor.isActive(
+                      "heading",
+                      { level: 3 },
+                    ),
                   })}
                   aria-label="Heading 3"
                 >
@@ -83,5 +99,5 @@ export default function TextStylesSheet({ isOpen, onClose, editor }: TextStylesS
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  )
+  );
 }

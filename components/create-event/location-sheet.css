@@ -42,7 +42,7 @@
   transform: translateY(-50%);
   width: 1.25rem;
   height: 1.25rem;
-  
+
   /* APPEARANCE */
   color: rgb(107, 114, 128);
 }
@@ -103,7 +103,7 @@
   /* INTERACTIVITY */
   cursor: pointer;
   transition: background-color 0.15s;
-  
+
   /* TEXT */
   text-align: left;
 }
@@ -182,7 +182,7 @@
   font-size: 1rem;
   font-weight: 500;
   color: rgb(31, 41, 55);
-  
+
   /* LAYOUT */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -193,7 +193,7 @@
   /* TEXT */
   font-size: 0.875rem;
   color: rgb(107, 114, 128);
-  
+
   /* LAYOUT */
   overflow: hidden;
   text-overflow: ellipsis;

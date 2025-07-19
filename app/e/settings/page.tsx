@@ -103,15 +103,15 @@ export default function SettingsPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50 px-0 pt-4">
         {/* User Profile Section */}
-        <div className="bg-white mx-4 rounded-2xl mb-4">
-          <div className="p-4 border-b border-gray-100">
+        <div className="mx-4 mb-4 rounded-2xl bg-white">
+          <div className="border-b border-gray-100 p-4">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                 <Cloud className="h-4 w-4 text-red-600" />
               </div>
               <div>
                 <p className="font-medium text-red-500">Andre Neves</p>
-                <p className="text-gray-600 text-sm">
+                <p className="text-sm text-gray-600">
                   andrerfneves@protonmail.com
                 </p>
               </div>
@@ -132,10 +132,10 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Bell className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Notifications</span>
@@ -160,19 +160,19 @@ export default function SettingsPage() {
         </div>
 
         {/* Help Center Section */}
-        <div className="px-4 mb-2">
-          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">
+        <div className="mb-2 px-4">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-gray-500">
             HELP CENTER
           </h2>
         </div>
-        <div className="bg-white mx-4 rounded-2xl mb-4">
-          <div className="p-4 border-b border-gray-100">
+        <div className="mx-4 mb-4 rounded-2xl bg-white">
+          <div className="border-b border-gray-100 p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => setHelpSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <LifeBuoy className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Need help?</span>
@@ -181,13 +181,13 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => setContactSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Mail className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Talk to us</span>
@@ -198,11 +198,11 @@ export default function SettingsPage() {
 
           <div className="p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => setChangelogSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Sparkles className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">App Updates</span>
@@ -213,19 +213,19 @@ export default function SettingsPage() {
         </div>
 
         {/* Developer Section */}
-        <div className="px-4 mb-2">
-          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">
+        <div className="mb-2 px-4">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-gray-500">
             DEVELOPER
           </h2>
         </div>
-        <div className="bg-white mx-4 rounded-2xl mb-4">
-          <div className="p-4 border-b border-gray-100">
+        <div className="mx-4 mb-4 rounded-2xl bg-white">
+          <div className="border-b border-gray-100 p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => setApiSheetOpen(true)}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Code className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Evento API</span>
@@ -236,11 +236,11 @@ export default function SettingsPage() {
 
           <div className="p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => handleExternalLink("https://docs.evento.so")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <BookOpen className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Documentation</span>
@@ -251,19 +251,19 @@ export default function SettingsPage() {
         </div>
 
         {/* About Section */}
-        <div className="px-4 mb-2">
-          <h2 className="text-gray-500 font-medium text-sm uppercase tracking-wide">
+        <div className="mb-2 px-4">
+          <h2 className="text-sm font-medium uppercase tracking-wide text-gray-500">
             ABOUT
           </h2>
         </div>
-        <div className="bg-white mx-4 rounded-2xl mb-4">
-          <div className="p-4 border-b border-gray-100">
+        <div className="mx-4 mb-4 rounded-2xl bg-white">
+          <div className="border-b border-gray-100 p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => handleExternalLink("https://evento.so")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Info className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">About Evento</span>
@@ -272,13 +272,13 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => handleExternalLink("https://evento.so/terms")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Scale className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Terms of Service</span>
@@ -287,13 +287,13 @@ export default function SettingsPage() {
             </button>
           </div>
 
-          <div className="p-4 border-b border-gray-100">
+          <div className="border-b border-gray-100 p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={() => handleExternalLink("https://evento.so/privacy")}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Shield className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Privacy Policy</span>
@@ -304,11 +304,11 @@ export default function SettingsPage() {
 
           <div className="p-4">
             <button
-              className="flex items-center justify-between w-full"
+              className="flex w-full items-center justify-between"
               onClick={handleShare}
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                   <Share className="h-4 w-4 text-red-600" />
                 </div>
                 <span className="font-medium">Share to a Friend</span>
@@ -320,7 +320,7 @@ export default function SettingsPage() {
 
         {/* Version Info */}
         <div className="px-4 pb-6 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-sm text-gray-500">
             Version: {packageJson.version}
           </p>
         </div>

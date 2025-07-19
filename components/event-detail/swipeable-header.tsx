@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Event } from '@/lib/types/event';
-import Image from 'next/image';
-import { useRef, useState } from 'react';
+import { Event } from "@/lib/types/event";
+import Image from "next/image";
+import { useRef, useState } from "react";
 
 interface SwipeableHeaderProps {
   event: Event;
@@ -62,18 +62,18 @@ export default function SwipeableHeader({
 
   if (images.length === 0) {
     return (
-      <div className="relative w-full aspect-square overflow-hidden bg-gray-200 flex items-center justify-center">
+      <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gray-200">
         <span className="text-gray-500">No image available</span>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full aspect-square overflow-hidden">
+    <div className="relative aspect-square w-full overflow-hidden">
       {/* Image Container */}
       <div
         ref={containerRef}
-        className="relative w-full h-full cursor-pointer"
+        className="relative h-full w-full cursor-pointer"
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
@@ -85,7 +85,7 @@ export default function SwipeableHeader({
           fill
           className="object-cover transition-transform duration-300 ease-out"
           priority
-          unoptimized={images[currentIndex]?.endsWith('.gif')} // Optimizing GIFs may impact performance
+          unoptimized={images[currentIndex]?.endsWith(".gif")} // Optimizing GIFs may impact performance
         />
 
         {/* Gradient Overlay */}
@@ -93,7 +93,7 @@ export default function SwipeableHeader({
 
         {/* Dot Indicators */}
         {hasMultipleImages && (
-          <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-16 left-1/2 flex -translate-x-1/2 transform gap-2">
             {images.map((_, index) => (
               <button
                 key={index}
@@ -102,7 +102,7 @@ export default function SwipeableHeader({
                   setCurrentIndex(index);
                 }}
                 className={`w-2 h-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-white' : 'bg-white/50'
+                  index === currentIndex ? "bg-white" : "bg-white/50"
                 }`}
               />
             ))}
@@ -111,7 +111,7 @@ export default function SwipeableHeader({
 
         {/* Event Title and Subtitle */}
         <div className="absolute bottom-0 left-0 right-0 p-4 text-white">
-          <h1 className="text-2xl font-bold mb-2 leading-tight">
+          <h1 className="mb-2 text-2xl font-bold leading-tight">
             {event.title}
           </h1>
           {event.subtitle && (

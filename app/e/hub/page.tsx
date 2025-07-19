@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import TravelItinerary from '../../../travel-itinerary';
+import { useRequireAuth } from "@/lib/hooks/useAuth";
+import TravelItinerary from "../../../travel-itinerary";
 
 export default function HubPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();

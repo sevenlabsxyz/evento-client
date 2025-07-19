@@ -1,6 +1,6 @@
 "use client";
-import React from "react";
 import { Sheet } from "@silk-hq/components";
+import React from "react";
 import "./Page.css";
 
 // ================================================================================================
@@ -12,15 +12,16 @@ type PageRootProps = Omit<SheetRootProps, "license"> & {
   license?: SheetRootProps["license"];
 };
 
-const PageRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, PageRootProps>(
-  ({ children, ...restProps }, ref) => {
-    return (
-      <Sheet.Root license="commercial" {...restProps} ref={ref}>
-        {children}
-      </Sheet.Root>
-    );
-  }
-);
+const PageRoot = React.forwardRef<
+  React.ElementRef<typeof Sheet.Root>,
+  PageRootProps
+>(({ children, ...restProps }, ref) => {
+  return (
+    <Sheet.Root license="commercial" {...restProps} ref={ref}>
+      {children}
+    </Sheet.Root>
+  );
+});
 PageRoot.displayName = "Page.Root";
 
 // ================================================================================================
@@ -73,7 +74,11 @@ const PageContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof Sheet.Content>
 >(({ children, className, ...restProps }, ref) => {
   return (
-    <Sheet.Content className={`Page-content ${className ?? ""}`.trim()} {...restProps} ref={ref}>
+    <Sheet.Content
+      className={`Page-content ${className ?? ""}`.trim()}
+      {...restProps}
+      ref={ref}
+    >
       {children}
     </Sheet.Content>
   );

@@ -6,7 +6,7 @@ export const apiClient = axios.create({
   baseURL: Env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // Important: includes session cookies
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
   timeout: 10000, // 10 second timeout
 });
@@ -32,7 +32,7 @@ apiClient.interceptors.response.use(
     };
 
     return Promise.reject(apiError);
-  }
+  },
 );
 
 // No request interceptor needed - cookies handle authentication automatically

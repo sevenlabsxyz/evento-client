@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import ProgressiveImage from '@/components/ui/progressive-image';
-import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
-import { isGif } from '@/lib/utils/image';
-import { Camera } from 'lucide-react';
+import ProgressiveImage from "@/components/ui/progressive-image";
+import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
+import { isGif } from "@/lib/utils/image";
+import { Camera } from "lucide-react";
 
 interface CoverImageSelectorProps {
   selectedImage?: string;
@@ -41,10 +41,10 @@ export default function CoverImageSelector({
         </div>
       ) : (
         // Default sunny character placeholder matching the screenshot
-        <div className="flex items-center justify-center h-full">
+        <div className="flex h-full items-center justify-center">
           <div className="relative">
             {/* Simplified sun character representation */}
-            <div className="w-32 h-32 bg-yellow-400 rounded-full relative">
+            <div className="relative h-32 w-32 rounded-full bg-yellow-400">
               {/* Sun rays */}
               <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-yellow-500 rounded-full"></div>
               <div className="absolute -bottom-4 left-1/2 transform -translate-x-1/2 w-1 h-8 bg-yellow-500 rounded-full"></div>
@@ -57,18 +57,18 @@ export default function CoverImageSelector({
               </div>
 
               {/* Arms and legs (simplified) */}
-              <div className="absolute -bottom-2 -left-2 w-6 h-6 bg-gray-700 rounded-full"></div>
-              <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-gray-700 rounded-full"></div>
-              <div className="absolute bottom-8 -left-4 w-4 h-8 bg-gray-700 rounded-full transform rotate-45"></div>
-              <div className="absolute bottom-8 -right-4 w-4 h-8 bg-gray-700 rounded-full transform -rotate-45"></div>
+              <div className="absolute -bottom-2 -left-2 h-6 w-6 rounded-full bg-gray-700"></div>
+              <div className="absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-gray-700"></div>
+              <div className="absolute -left-4 bottom-8 h-8 w-4 rotate-45 transform rounded-full bg-gray-700"></div>
+              <div className="absolute -right-4 bottom-8 h-8 w-4 -rotate-45 transform rounded-full bg-gray-700"></div>
             </div>
           </div>
         </div>
       )}
 
       {/* Camera icon in bottom right */}
-      <div className="absolute bottom-4 right-4 w-10 h-10 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
-        <Camera className="w-5 h-5 text-white" />
+      <div className="absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black bg-opacity-50">
+        <Camera className="h-5 w-5 text-white" />
       </div>
     </div>
   );

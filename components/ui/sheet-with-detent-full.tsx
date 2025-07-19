@@ -1,6 +1,6 @@
 "use client";
+import { Scroll, Sheet } from "@silk-hq/components";
 import React from "react";
-import { Sheet, Scroll } from "@silk-hq/components";
 import "./sheet-with-detent.css";
 
 // ================================================================================================
@@ -148,7 +148,8 @@ const SheetWithDetentFullScrollContent = React.forwardRef<
     </Scroll.Content>
   );
 });
-SheetWithDetentFullScrollContent.displayName = "SheetWithDetentFull.ScrollContent";
+SheetWithDetentFullScrollContent.displayName =
+  "SheetWithDetentFull.ScrollContent";
 
 // ================================================================================================
 // Unchanged Components

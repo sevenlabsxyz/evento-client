@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { X, Zap } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import { X, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface LightningAddressSheetProps {
   isOpen: boolean;
@@ -17,16 +17,16 @@ export default function LightningAddressSheet({
   isOpen,
   onClose,
   onSave,
-  currentAddress = '',
+  currentAddress = "",
 }: LightningAddressSheetProps) {
   const [address, setAddress] = useState(currentAddress);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
       setAddress(currentAddress);
-      setError('');
+      setError("");
     }
   }, [isOpen, currentAddress]);
 
@@ -42,7 +42,7 @@ export default function LightningAddressSheet({
     const trimmedAddress = address.trim();
 
     if (trimmedAddress && !validateLightningAddress(trimmedAddress)) {
-      setError('Invalid Lightning address format (e.g., user@wallet.com)');
+      setError("Invalid Lightning address format (e.g., user@wallet.com)");
       return;
     }
 
@@ -67,20 +67,18 @@ export default function LightningAddressSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <div className="flex justify-center mb-4">
-                <SheetWithDetentFull.Handle />
-              </div>
+            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
+              <SheetWithDetentFull.Handle />
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Bitcoin</h2>
                 <button
                   onClick={handleCancel}
-                  className="p-2 hover:bg-gray-100 rounded-full"
+                  className="rounded-full p-2 hover:bg-gray-100"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="mt-1 text-sm text-gray-500">
                 Add your Lightning Network address to receive payments.
               </p>
             </div>
@@ -92,14 +90,14 @@ export default function LightningAddressSheet({
                   {/* Input with icon */}
                   <div className="relative mb-4">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2">
-                      <Zap className="w-5 h-5 text-orange-500" />
+                      <Zap className="h-5 w-5 text-orange-500" />
                     </div>
                     <Input
                       type="text"
                       value={address}
                       onChange={(e) => {
                         setAddress(e.target.value);
-                        setError('');
+                        setError("");
                       }}
                       placeholder="andre@zbd.gg"
                       className="pl-10"
@@ -109,22 +107,24 @@ export default function LightningAddressSheet({
 
                   {/* Error message */}
                   {error && (
-                    <p className="text-sm text-red-500 mb-4">{error}</p>
+                    <p className="mb-4 text-sm text-red-500">{error}</p>
                   )}
 
                   {/* Info text */}
-                  <div className="space-y-3 mb-6">
+                  <div className="mb-6 space-y-3">
                     <p className="text-sm text-gray-500">
                       Lightning addresses allow you to receive instant Bitcoin
                       payments from anyone attending your events or visiting
-                      your profile.
+                      your profile. Lightning addresses allow you to receive
+                      instant Bitcoin payments from anyone attending your events
+                      or visiting your profile.
                     </p>
 
-                    <div className="bg-orange-50 p-4 rounded-xl">
-                      <p className="text-sm text-orange-800 font-medium mb-2">
+                    <div className="rounded-xl bg-orange-50 p-4">
+                      <p className="mb-2 text-sm font-medium text-orange-800">
                         Popular Lightning wallets:
                       </p>
-                      <ul className="text-sm text-orange-700 space-y-1">
+                      <ul className="space-y-1 text-sm text-orange-700">
                         <li>• Strike</li>
                         <li>• Cash App</li>
                         <li>• Wallet of Satoshi</li>
@@ -138,7 +138,7 @@ export default function LightningAddressSheet({
                   <div className="flex gap-3">
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
                       disabled={!hasChanges}
                     >
                       Save

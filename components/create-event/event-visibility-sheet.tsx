@@ -1,7 +1,7 @@
 "use client";
 
-import { Globe, Lock } from "lucide-react";
 import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { Globe, Lock } from "lucide-react";
 
 interface EventVisibilitySheetProps {
   isOpen: boolean;
@@ -22,8 +22,8 @@ export default function EventVisibilitySheet({
   };
 
   return (
-    <DetachedSheet.Root 
-      presented={isOpen} 
+    <DetachedSheet.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
     >
       <DetachedSheet.Portal>
@@ -32,13 +32,13 @@ export default function EventVisibilitySheet({
           <DetachedSheet.Content>
             <div className="p-6">
               {/* Handle */}
-              <div className="flex justify-center mb-4">
+              <div className="mb-4 flex justify-center">
                 <DetachedSheet.Handle />
               </div>
 
               {/* Header */}
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-center">
+                <h2 className="text-center text-xl font-semibold">
                   Event Visibility
                 </h2>
               </div>
@@ -48,7 +48,7 @@ export default function EventVisibilitySheet({
                 {/* Public Option */}
                 <button
                   onClick={() => handleVisibilitySelect("public")}
-                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                  className={`w-full rounded-xl border-2 p-4 transition-all ${
                     currentVisibility === "public"
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -56,7 +56,7 @@ export default function EventVisibilitySheet({
                 >
                   <div className="flex items-start gap-4">
                     <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentVisibility === "public"
                           ? "bg-red-500 text-white"
                           : "bg-gray-100 text-gray-600"
@@ -66,7 +66,7 @@ export default function EventVisibilitySheet({
                     </div>
                     <div className="flex-1 text-left">
                       <h3
-                        className={`font-semibold mb-1 ${
+                        className={`mb-1 font-semibold ${
                           currentVisibility === "public"
                             ? "text-red-900"
                             : "text-gray-900"
@@ -85,8 +85,8 @@ export default function EventVisibilitySheet({
                       </p>
                     </div>
                     {currentVisibility === "public" && (
-                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full" />
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500">
+                        <div className="h-2 w-2 rounded-full bg-white" />
                       </div>
                     )}
                   </div>
@@ -95,7 +95,7 @@ export default function EventVisibilitySheet({
                 {/* Private Option */}
                 <button
                   onClick={() => handleVisibilitySelect("private")}
-                  className={`w-full p-4 rounded-xl border-2 transition-all ${
+                  className={`w-full rounded-xl border-2 p-4 transition-all ${
                     currentVisibility === "private"
                       ? "border-red-500 bg-red-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -103,7 +103,7 @@ export default function EventVisibilitySheet({
                 >
                   <div className="flex items-start gap-4">
                     <div
-                      className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentVisibility === "private"
                           ? "bg-red-500 text-white"
                           : "bg-gray-100 text-gray-600"
@@ -113,7 +113,7 @@ export default function EventVisibilitySheet({
                     </div>
                     <div className="flex-1 text-left">
                       <h3
-                        className={`font-semibold mb-1 ${
+                        className={`mb-1 font-semibold ${
                           currentVisibility === "private"
                             ? "text-red-900"
                             : "text-gray-900"
@@ -132,8 +132,8 @@ export default function EventVisibilitySheet({
                       </p>
                     </div>
                     {currentVisibility === "private" && (
-                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-                        <div className="w-2 h-2 bg-white rounded-full" />
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500">
+                        <div className="h-2 w-2 rounded-full bg-white" />
                       </div>
                     )}
                   </div>

@@ -65,7 +65,7 @@ export default function ImageSelectionModal({
               <button
                 key={category.id}
                 onClick={() => setActiveTab(category.id)}
-                className={`flex flex-col items-center space-y-2 py-2 px-1 ${
+                className={`flex flex-col items-center space-y-2 px-1 py-2 ${
                   activeTab === category.id ? "text-gray-900" : "text-gray-400"
                 }`}
               >

@@ -7,7 +7,7 @@ const API_BASE_URL = Env.API_PROXY_TARGET;
 export async function apiRequest(
   method: string,
   path: string,
-  request: Request
+  request: Request,
 ) {
   try {
     const url = new URL(request.url);
@@ -15,7 +15,7 @@ export async function apiRequest(
     const targetUrl = `${API_BASE_URL}${path}${queryString}`;
 
     // Get cookies from the incoming request
-    const cookieHeader = request.headers.get('cookie') || '';
+    const cookieHeader = request.headers.get("cookie") || "";
 
     // Prepare headers for the backend request
     const headers: HeadersInit = {
@@ -27,11 +27,11 @@ export async function apiRequest(
     const options: RequestInit = {
       method,
       headers,
-      credentials: 'include',
+      credentials: "include",
     };
 
     // Add body for POST/PATCH/PUT requests
-    if (method !== 'GET' && method !== 'DELETE') {
+    if (method !== "GET" && method !== "DELETE") {
       try {
         const body = await request.json();
         options.body = JSON.stringify(body);
@@ -45,8 +45,8 @@ export async function apiRequest(
 
     // Get the response body
     let data;
-    const contentType = response.headers.get('content-type');
-    if (contentType && contentType.includes('application/json')) {
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
       data = await response.json();
     } else {
       data = await response.text();
@@ -59,15 +59,15 @@ export async function apiRequest(
     });
 
     // Forward Set-Cookie headers if any
-    const setCookieHeader = response.headers.get('set-cookie');
+    const setCookieHeader = response.headers.get("set-cookie");
     if (setCookieHeader) {
-      proxyResponse.headers.set('set-cookie', setCookieHeader);
+      proxyResponse.headers.set("set-cookie", setCookieHeader);
     }
 
     return proxyResponse;
   } catch (error) {
-    console.error('API proxy error:', error);
-    console.error('Target URL was:', `${API_BASE_URL}${path}`);
+    console.error("API proxy error:", error);
+    console.error("Target URL was:", `${API_BASE_URL}${path}`);
     return NextResponse.json(
       {
         error: 'Failed to proxy request',

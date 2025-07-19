@@ -1,8 +1,8 @@
-import type { Editor } from '@tiptap/core'
-import { cn } from '@/lib/utils'
-import { Strikethrough, Code } from 'lucide-react'
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { VisuallyHidden } from '@silk-hq/components'
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { cn } from "@/lib/utils";
+import { VisuallyHidden } from "@silk-hq/components";
+import type { Editor } from "@tiptap/core";
+import { Code, Strikethrough } from "lucide-react";
 
 interface MoreFormattingSheetProps {
   isOpen: boolean;
@@ -10,7 +10,11 @@ interface MoreFormattingSheetProps {
   editor: Editor;
 }
 
-export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFormattingSheetProps) {
+export default function MoreFormattingSheet({
+  isOpen,
+  onClose,
+  editor,
+}: MoreFormattingSheetProps) {
   return (
     <DetachedSheet.Root
       presented={isOpen}
@@ -28,20 +32,23 @@ export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFor
 
             <div className="FormattingSheet-container">
               <h3 className="FormattingSheet-title">More Formatting</h3>
-              
+
               <div className="FormattingSheet-options">
                 <button
                   onClick={() => {
                     editor.chain().focus().toggleStrike().run();
                     onClose();
                   }}
-                  disabled={!editor.can().chain().focus().toggleStrike().run() || editor.isActive('codeBlock')}
+                  disabled={
+                    !editor.can().chain().focus().toggleStrike().run() ||
+                    editor.isActive("codeBlock")
+                  }
                   className={cn("FormattingSheet-option", {
-                    'FormattingSheet-option--active': editor.isActive('strike')
+                    "FormattingSheet-option--active": editor.isActive("strike"),
                   })}
                   aria-label="Strikethrough"
                 >
-                  <Strikethrough className="h-4 w-4 mr-2" />
+                  <Strikethrough className="mr-2 h-4 w-4" />
                   <span className="grow">Strikethrough</span>
                 </button>
                 <button
@@ -49,13 +56,16 @@ export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFor
                     editor.chain().focus().toggleCode().run();
                     onClose();
                   }}
-                  disabled={!editor.can().chain().focus().toggleCode().run() || editor.isActive('codeBlock')}
+                  disabled={
+                    !editor.can().chain().focus().toggleCode().run() ||
+                    editor.isActive("codeBlock")
+                  }
                   className={cn("FormattingSheet-option", {
-                    'FormattingSheet-option--active': editor.isActive('code')
+                    "FormattingSheet-option--active": editor.isActive("code"),
                   })}
                   aria-label="Code"
                 >
-                  <Code className="h-4 w-4 mr-2" />
+                  <Code className="mr-2 h-4 w-4" />
                   <span className="grow">Code</span>
                 </button>
                 <button
@@ -63,7 +73,10 @@ export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFor
                     editor.chain().focus().unsetAllMarks().run();
                     onClose();
                   }}
-                  disabled={!editor.can().chain().focus().unsetAllMarks().run() || editor.isActive('codeBlock')}
+                  disabled={
+                    !editor.can().chain().focus().unsetAllMarks().run() ||
+                    editor.isActive("codeBlock")
+                  }
                   className={cn("FormattingSheet-option")}
                   aria-label="Clear formatting"
                 >
@@ -75,5 +88,5 @@ export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFor
         </DetachedSheet.View>
       </DetachedSheet.Portal>
     </DetachedSheet.Root>
-  )
+  );
 }

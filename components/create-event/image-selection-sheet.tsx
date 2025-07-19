@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import GiphyPicker from '@/components/giphy/giphy-picker';
-import ProgressiveImage from '@/components/ui/progressive-image';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
-import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
-import { VisuallyHidden } from '@silk-hq/components';
-import { useCallback, useState } from 'react';
-import CoverUploader from './cover-uploader';
-import './image-selection-sheet.css';
+import GiphyPicker from "@/components/giphy/giphy-picker";
+import ProgressiveImage from "@/components/ui/progressive-image";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import { CoverImage, coverImageCategories } from "@/lib/data/cover-images";
+import { getCoverImageUrl500x500 } from "@/lib/utils/cover-images";
+import { VisuallyHidden } from "@silk-hq/components";
+import { useCallback, useState } from "react";
+import CoverUploader from "./cover-uploader";
+import "./image-selection-sheet.css";
 
 interface ImageSelectionSheetProps {
   isOpen: boolean;
@@ -21,7 +21,7 @@ export default function ImageSelectionSheet({
   onClose,
   onImageSelect,
 }: ImageSelectionSheetProps) {
-  const [activeTab, setActiveTab] = useState('featured');
+  const [activeTab, setActiveTab] = useState("featured");
 
   const activeCategory = coverImageCategories.find(
     (cat) => cat.id === activeTab
@@ -72,6 +72,13 @@ export default function ImageSelectionSheet({
                 Choose from our curated collection
               </p>
 
+              <h2 className="ImageSelectionSheet-visibleTitle">
+                Add Cover Image
+              </h2>
+              <p className="ImageSelectionSheet-subtitle">
+                Choose from our curated collection
+              </p>
+
               {/* Tab Navigation */}
               <div className="ImageSelectionSheet-tabs">
                 <div className="ImageSelectionSheet-tabsContainer">
@@ -83,11 +90,14 @@ export default function ImageSelectionSheet({
                         onClick={() => setActiveTab(category.id)}
                         className={`ImageSelectionSheet-tab ${
                           activeTab === category.id
-                            ? 'ImageSelectionSheet-tab--active'
-                            : ''
+                            ? "ImageSelectionSheet-tab--active"
+                            : ""
                         }`}
                       >
                         <IconComponent className="ImageSelectionSheet-tabIcon" />
+                        <span className="ImageSelectionSheet-tabLabel">
+                          {category.name}
+                        </span>
                         <span className="ImageSelectionSheet-tabLabel">
                           {category.name}
                         </span>
@@ -105,7 +115,7 @@ export default function ImageSelectionSheet({
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView className="ImageSelectionSheet-scrollView">
                 <SheetWithDetentFull.ScrollContent className="ImageSelectionSheet-scrollContent">
-                  {activeTab === 'giphy' ? (
+                  {activeTab === "giphy" ? (
                     <div className="h-full w-full">
                       <GiphyPicker onGifSelect={handleGifSelect} />
                     </div>
@@ -119,7 +129,7 @@ export default function ImageSelectionSheet({
                         >
                           <ProgressiveImage
                             src={getCoverImageUrl500x500(image.url)}
-                            alt={image.title || 'Cover image'}
+                            alt={image.title || "Cover image"}
                             fill
                             className="ImageSelectionSheet-image"
                           />
@@ -132,7 +142,7 @@ export default function ImageSelectionSheet({
             </SheetWithDetentFull.ScrollRoot>
 
             {/* Custom Image Upload - Only show for non-GIF tabs */}
-            {activeTab !== 'giphy' && (
+            {activeTab !== "giphy" && (
               <div className="ImageSelectionSheet-footer">
                 <CoverUploader
                   onCoverUploaded={handleCoverUploaded}

@@ -1,7 +1,13 @@
 "use client";
-import React, { createContext, useContext, useState, useCallback, useRef } from "react";
+import { SilkToast, type ToastType } from "@/components/ui/silk-toast";
 import { SheetStack } from "@silk-hq/components";
-import { SilkToast, type ToastType, type ToastProps } from "@/components/ui/silk-toast";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from "react";
 
 // ================================================================================================
 // Types
@@ -32,7 +38,9 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 // Provider
 // ================================================================================================
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
   const toastIdCounter = useRef(0);
 
@@ -43,13 +51,13 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       ...toast,
       duration: toast.duration ?? 5000,
     };
-    
-    setToasts(prev => [...prev, newToast]);
+
+    setToasts((prev) => [...prev, newToast]);
     return id;
   }, []);
 
   const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
   }, []);
 
   const clearToasts = useCallback(() => {
@@ -80,7 +88,10 @@ interface ToastContainerProps {
   onDismiss: (id: string) => void;
 }
 
-const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, onDismiss }) => {
+const ToastContainer: React.FC<ToastContainerProps> = ({
+  toasts,
+  onDismiss,
+}) => {
   if (toasts.length === 0) return null;
 
   return (
@@ -119,15 +130,15 @@ export const useToast = () => {
 export const createToastApi = (addToast: ToastContextValue["addToast"]) => ({
   success: (description: string, title?: string, duration?: number) =>
     addToast({ type: "success", description, title, duration }),
-  
+
   error: (description: string, title?: string, duration?: number) =>
     addToast({ type: "error", description, title, duration }),
-  
+
   info: (description: string, title?: string, duration?: number) =>
     addToast({ type: "info", description, title, duration }),
-  
+
   warning: (description: string, title?: string, duration?: number) =>
     addToast({ type: "warning", description, title, duration }),
-  
+
   custom: (toast: Omit<ToastData, "id">) => addToast(toast),
 });

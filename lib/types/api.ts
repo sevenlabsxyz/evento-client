@@ -25,7 +25,7 @@ export interface UserDetails {
   instagram_handle: string;
   ln_address: string; // Lightning address
   nip05: string; // Nostr identifier
-  verification_status: 'verified' | 'pending' | null;
+  verification_status: "verified" | "pending" | null;
   verification_date: string;
 }
 
@@ -37,41 +37,41 @@ export interface Event {
   cover: string;
   location: string;
   timezone: string;
-  status: 'draft' | 'published' | 'cancelled' | 'archived';
-  visibility: 'public' | 'private';
+  status: "draft" | "published" | "cancelled" | "archived";
+  visibility: "public" | "private";
   cost: number | null;
   creator_user_id: string;
-  
+
   // Date components (stored separately for timezone handling)
   start_date_day: number;
   start_date_month: number;
   start_date_year: number;
   start_date_hours: number;
   start_date_minutes: number;
-  
+
   end_date_day: number;
   end_date_month: number;
   end_date_year: number;
   end_date_hours: number;
   end_date_minutes: number;
-  
+
   // Computed ISO dates
   computed_start_date: string;
   computed_end_date: string;
-  
+
   // Media & Links
   spotify_url: string;
   wavlake_url: string;
-  
+
   // Contribution methods
   contrib_cashapp: string;
   contrib_venmo: string;
   contrib_paypal: string;
   contrib_btclightning: string;
-  
+
   created_at: string;
   updated_at: string;
-  
+
   // Relations (populated in some responses)
   user_details?: UserDetails;
 }
@@ -81,7 +81,7 @@ export interface EventRSVP {
   id: string;
   event_id: string;
   user_id: string;
-  status: 'yes' | 'no' | 'maybe';
+  status: "yes" | "no" | "maybe";
   created_at: string;
   updated_at: string;
   user_details?: UserDetails;
@@ -112,29 +112,29 @@ export interface CreateEventForm {
   location: string;
   cover?: string;
   timezone: string;
-  status: 'draft' | 'published';
-  visibility: 'public' | 'private';
+  status: "draft" | "published";
+  visibility: "public" | "private";
   cost?: number;
-  
+
   start_date_day: number;
   start_date_month: number;
   start_date_year: number;
   start_date_hours: number;
   start_date_minutes: number;
-  
+
   end_date_day: number;
   end_date_month: number;
   end_date_year: number;
   end_date_hours: number;
   end_date_minutes: number;
-  
+
   spotify_url?: string;
   wavlake_url?: string;
   contrib_cashapp?: string;
   contrib_venmo?: string;
   contrib_paypal?: string;
   contrib_btclightning?: string;
-  
+
   settings?: {
     max_capacity?: number;
     show_capacity_count?: boolean;
@@ -180,7 +180,12 @@ export interface Follow {
 export interface Notification {
   id: string;
   user_id: string;
-  type: 'event_invite' | 'event_comment' | 'event_rsvp' | 'user_follow' | 'event_reminder';
+  type:
+    | "event_invite"
+    | "event_comment"
+    | "event_rsvp"
+    | "user_follow"
+    | "event_reminder";
   title: string;
   message: string;
   read: boolean;
@@ -211,7 +216,7 @@ export interface EventWithUser extends Event {
 }
 
 // Utility types
-export type RSVPStatus = 'yes' | 'no' | 'maybe';
-export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
-export type EventVisibility = 'public' | 'private';
-export type VerificationStatus = 'verified' | 'pending' | null;
+export type RSVPStatus = "yes" | "no" | "maybe";
+export type EventStatus = "draft" | "published" | "cancelled" | "archived";
+export type EventVisibility = "public" | "private";
+export type VerificationStatus = "verified" | "pending" | null;

@@ -1,7 +1,7 @@
 "use client";
 
-import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { CalendarPlus, ExternalLink } from 'lucide-react';
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { CalendarPlus, ExternalLink } from "lucide-react";
 
 interface MoreOptionsSheetProps {
   isOpen: boolean;
@@ -14,9 +14,8 @@ export default function MoreOptionsSheet({
   isOpen,
   onClose,
   onAddToCalendar,
-  onOpenInSafari
+  onOpenInSafari,
 }: MoreOptionsSheetProps) {
-  
   const handleAddToCalendar = () => {
     onAddToCalendar();
     onClose();
@@ -38,36 +37,42 @@ export default function MoreOptionsSheet({
           <DetachedSheet.Content>
             <div className="p-6">
               {/* Handle */}
-              <div className="flex justify-center mb-4">
+              <div className="mb-4 flex justify-center">
                 <DetachedSheet.Handle />
               </div>
 
               {/* Title */}
-              <h2 className="text-center font-semibold text-lg mb-6">More Options</h2>
+              <h2 className="mb-6 text-center text-lg font-semibold">
+                More Options
+              </h2>
 
               {/* Options */}
               <div className="space-y-3">
                 <button
                   onClick={handleAddToCalendar}
-                  className="w-full flex items-center gap-4 p-4 text-left border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center gap-4 rounded-xl border border-gray-200 p-4 text-left transition-colors hover:bg-gray-50"
                 >
-                  <CalendarPlus className="w-5 h-5 text-gray-600" />
-                  <span className="text-gray-900 font-medium">Add to Calendar</span>
+                  <CalendarPlus className="h-5 w-5 text-gray-600" />
+                  <span className="font-medium text-gray-900">
+                    Add to Calendar
+                  </span>
                 </button>
-                
+
                 <button
                   onClick={handleOpenInSafari}
-                  className="w-full flex items-center gap-4 p-4 text-left border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex w-full items-center gap-4 rounded-xl border border-gray-200 p-4 text-left transition-colors hover:bg-gray-50"
                 >
-                  <ExternalLink className="w-5 h-5 text-gray-600" />
-                  <span className="text-gray-900 font-medium">Open in Safari</span>
+                  <ExternalLink className="h-5 w-5 text-gray-600" />
+                  <span className="font-medium text-gray-900">
+                    Open in Safari
+                  </span>
                 </button>
               </div>
-              
+
               {/* Cancel Button */}
               <button
                 onClick={onClose}
-                className="w-full mt-6 py-3 text-gray-700 font-medium border border-gray-200 rounded-xl hover:bg-gray-50 transition-colors"
+                className="mt-6 w-full rounded-xl border border-gray-200 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50"
               >
                 Cancel
               </button>

@@ -1,6 +1,13 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState, createContext, useContext } from "react";
-import { Sheet, Scroll } from "@silk-hq/components";
+import { Scroll, Sheet } from "@silk-hq/components";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import "./LongSheet.css";
 
 // ================================================================================================
@@ -23,15 +30,16 @@ type LongSheetRootProps = Omit<SheetRootProps, "license"> & {
   license?: SheetRootProps["license"];
 };
 
-const LongSheetRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, LongSheetRootProps>(
-  ({ children, ...restProps }, ref) => {
-    return (
-      <Sheet.Root license="commercial" {...restProps} ref={ref}>
-        {children}
-      </Sheet.Root>
-    );
-  }
-);
+const LongSheetRoot = React.forwardRef<
+  React.ElementRef<typeof Sheet.Root>,
+  LongSheetRootProps
+>(({ children, ...restProps }, ref) => {
+  return (
+    <Sheet.Root license="commercial" {...restProps} ref={ref}>
+      {children}
+    </Sheet.Root>
+  );
+});
 LongSheetRoot.displayName = "LongSheet.Root";
 
 // ================================================================================================
@@ -109,7 +117,9 @@ const LongSheetContent = React.forwardRef<
   const scrollRef = useRef<any>(null);
   const context = useContext(LongSheetContext);
   if (!context) {
-    throw new Error("LongSheetContent must be used within a LongSheetContext.Provider");
+    throw new Error(
+      "LongSheetContent must be used within a LongSheetContext.Provider",
+    );
   }
   const { setTrack, restingOutside } = context;
 
@@ -118,7 +128,7 @@ const LongSheetContent = React.forwardRef<
       if (restingOutside) return; // ! Checking because it may scroll to 1 when outside
       setTrack(progress < 0.5 ? "bottom" : "top");
     },
-    [restingOutside, setTrack]
+    [restingOutside, setTrack],
   );
 
   return (
@@ -128,7 +138,11 @@ const LongSheetContent = React.forwardRef<
       {...restProps}
       ref={ref}
     >
-      <Scroll.Root className="LongSheet-scrollRoot" componentRef={scrollRef} asChild>
+      <Scroll.Root
+        className="LongSheet-scrollRoot"
+        componentRef={scrollRef}
+        asChild
+      >
         <Scroll.View className="LongSheet-scrollView" onScroll={scrollHandler}>
           <Scroll.Content className="LongSheet-scrollContent">
             <div className="LongSheet-innerContent">{children}</div>

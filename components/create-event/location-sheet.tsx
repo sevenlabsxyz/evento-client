@@ -1,9 +1,9 @@
-'use client';
-import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
-import { VisuallyHidden } from '@silk-hq/components';
-import { ChevronRight, MapPin, Plus, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import './location-sheet.css';
+"use client";
+import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { VisuallyHidden } from "@silk-hq/components";
+import { ChevronRight, MapPin, Plus, Search } from "lucide-react";
+import { useMemo, useState } from "react";
+import "./location-sheet.css";
 
 interface LocationSheetProps {
   isOpen: boolean;
@@ -46,34 +46,34 @@ export default function LocationSheet({
       zipCode: '94103',
       coordinates: { lat: 37.7849, lng: -122.4021 },
       formatted:
-        'Moscone Center, 747 Howard St, San Francisco, CA 94103, United States',
+        "Moscone Center, 747 Howard St, San Francisco, CA 94103, United States",
     },
     {
-      name: 'Golden Gate Park',
-      address: 'Golden Gate Park',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
+      name: "Golden Gate Park",
+      address: "Golden Gate Park",
+      city: "San Francisco",
+      state: "CA",
+      country: "United States",
       coordinates: { lat: 37.7694, lng: -122.4862 },
-      formatted: 'Golden Gate Park, San Francisco, CA, United States',
+      formatted: "Golden Gate Park, San Francisco, CA, United States",
     },
     {
-      name: 'Union Square',
-      address: 'Union Square',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
+      name: "Union Square",
+      address: "Union Square",
+      city: "San Francisco",
+      state: "CA",
+      country: "United States",
       coordinates: { lat: 37.788, lng: -122.4075 },
-      formatted: 'Union Square, San Francisco, CA, United States',
+      formatted: "Union Square, San Francisco, CA, United States",
     },
     {
-      name: 'Pier 39',
-      address: 'Pier 39',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
+      name: "Pier 39",
+      address: "Pier 39",
+      city: "San Francisco",
+      state: "CA",
+      country: "United States",
       coordinates: { lat: 37.8086, lng: -122.4098 },
-      formatted: 'Pier 39, San Francisco, CA, United States',
+      formatted: "Pier 39, San Francisco, CA, United States",
     },
   ];
 
@@ -81,13 +81,14 @@ export default function LocationSheet({
   const filteredLocations = useMemo(() => {
     if (!searchQuery.trim()) return placesResults;
 
+
     const query = searchQuery.toLowerCase();
     return placesResults.filter(
       (location) =>
         location.name.toLowerCase().includes(query) ||
         location.address.toLowerCase().includes(query) ||
         location.city.toLowerCase().includes(query) ||
-        location.formatted.toLowerCase().includes(query)
+        location.formatted.toLowerCase().includes(query),
     );
   }, [searchQuery]);
 
@@ -99,14 +100,16 @@ export default function LocationSheet({
   const handleCustomLocation = () => {
     if (!searchQuery.trim()) return;
 
+
     // Create a custom location from the search query
     const customLocation: LocationData = {
       name: searchQuery,
       address: searchQuery,
-      city: '',
-      country: '',
+      city: "",
+      country: "",
       formatted: searchQuery,
     };
+
 
     handleLocationSelect(customLocation);
   };
@@ -114,12 +117,13 @@ export default function LocationSheet({
   const handleCurrentLocation = () => {
     // In a real app, this would request GPS location
     const currentLocation: LocationData = {
-      name: 'Current Location',
-      address: 'Your current location',
-      city: '',
-      country: '',
-      formatted: 'Current Location',
+      name: "Current Location",
+      address: "Your current location",
+      city: "",
+      country: "",
+      formatted: "Current Location",
     };
+
 
     handleLocationSelect(currentLocation);
   };
@@ -200,6 +204,7 @@ export default function LocationSheet({
                         </button>
                       ))}
 
+
                       {/* Custom Location Option */}
                       {filteredLocations.length === 0 && searchQuery.trim() && (
                         <button
@@ -265,3 +270,4 @@ export default function LocationSheet({
     </SheetWithDetent.Root>
   );
 }
+

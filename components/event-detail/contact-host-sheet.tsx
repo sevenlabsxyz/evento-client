@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
-import { VisuallyHidden } from "@silk-hq/components";
 import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { VisuallyHidden } from "@silk-hq/components";
+import { useState } from "react";
 import "./contact-host-sheet.css";
 
 interface ContactHostSheetProps {
@@ -13,7 +13,7 @@ interface ContactHostSheetProps {
 export default function ContactHostSheet({
   isOpen,
   onClose,
-  onSendMessage
+  onSendMessage,
 }: ContactHostSheetProps) {
   const [activeDetent, setActiveDetent] = useState(1);
   const [message, setMessage] = useState("");
@@ -32,10 +32,10 @@ export default function ContactHostSheet({
   };
 
   return (
-    <SheetWithDetent.Root 
-      presented={isOpen} 
+    <SheetWithDetent.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && handleClose()}
-      activeDetent={activeDetent} 
+      activeDetent={activeDetent}
       onActiveDetentChange={setActiveDetent}
     >
       <SheetWithDetent.Portal>
@@ -45,14 +45,14 @@ export default function ContactHostSheet({
             <div className="ContactHostSheet-header">
               <SheetWithDetent.Handle className="ContactHostSheet-handle" />
               <div className="ContactHostSheet-headerBar">
-                <button 
+                <button
                   onClick={handleClose}
                   className="ContactHostSheet-headerButton ContactHostSheet-headerButton--cancel"
                 >
                   Cancel
                 </button>
                 <h2 className="ContactHostSheet-headerTitle">Contact Host</h2>
-                <button 
+                <button
                   onClick={handleSend}
                   disabled={!message.trim()}
                   className="ContactHostSheet-headerButton ContactHostSheet-headerButton--send"

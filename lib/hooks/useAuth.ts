@@ -7,7 +7,7 @@ import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
 
 // Key for user query
-const USER_QUERY_KEY = ['auth', 'user'] as const;
+const USER_QUERY_KEY = ["auth", "user"] as const;
 
 /**
  * Main auth hook that provides authentication state and actions
@@ -89,7 +89,7 @@ export function useAuth() {
     onSuccess: () => {
       clearAuth();
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      router.push('/auth/login');
+      router.push("/auth/login");
     },
   });
 
@@ -144,7 +144,7 @@ export function useVerifyCode() {
   const mutation = useMutation({
     mutationFn: ({ code }: { code: string }) => {
       if (!email) {
-        throw new Error('Email is required for verification');
+        throw new Error("Email is required for verification");
       }
       return authService.verifyCode(email, code);
     },
@@ -159,7 +159,7 @@ export function useVerifyCode() {
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
       // Redirect to home
-      router.push('/');
+      router.push("/");
     },
   });
 
@@ -190,7 +190,7 @@ export function useGoogleLogin() {
 /**
  * Hook to protect routes - redirects to login if not authenticated
  */
-export function useRequireAuth(redirectTo = '/auth/login') {
+export function useRequireAuth(redirectTo = "/auth/login") {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -207,7 +207,7 @@ export function useRequireAuth(redirectTo = '/auth/login') {
 /**
  * Hook to redirect authenticated users away from auth pages
  */
-export function useRedirectIfAuthenticated(redirectTo = '/') {
+export function useRedirectIfAuthenticated(redirectTo = "/") {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 

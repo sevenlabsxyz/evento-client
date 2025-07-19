@@ -1,6 +1,5 @@
 "use client";
 
-import { Bot, Twitter, Mail } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
 

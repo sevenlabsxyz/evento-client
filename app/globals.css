@@ -12,11 +12,11 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-  
+
   .animate-slide-up {
     animation: slideUp 0.3s ease-out;
   }
-  
+
   .animate-shimmer {
     animation: shimmer 1.5s infinite;
   }

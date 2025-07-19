@@ -214,7 +214,7 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
                           {entry.changes.map(
                             (changeCategory, categoryIndex) => (
                               <div key={categoryIndex}>
-                                <div className="flex items-center gap-2 mb-3">
+                                <div className="mb-3 flex items-center gap-2">
                                   {changeCategory.icon}
                                   <h4 className="font-semibold text-gray-900">
                                     {changeCategory.category}

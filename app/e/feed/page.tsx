@@ -87,9 +87,9 @@ export default function FeedPage() {
 
   if (isLoading || isCheckingAuth) {
     return (
-      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
-        <div className="flex-1 flex items-center justify-center pb-20">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+      <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+        <div className="flex flex-1 items-center justify-center pb-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
         </div>
         <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
@@ -97,12 +97,12 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Feed Content */}
       <div className="flex-1 overflow-y-auto pb-20">
         {error ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4">
-            <p className="text-gray-500 text-center mb-4">
+          <div className="flex flex-col items-center justify-center px-4 py-12">
+            <p className="mb-4 text-center text-gray-500">
               Failed to load events. Please try again.
             </p>
             <Button onClick={() => window.location.reload()} variant="outline">
@@ -110,11 +110,11 @@ export default function FeedPage() {
             </Button>
           </div>
         ) : events.length === 0 && !isLoading ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4">
-            <p className="text-gray-500 text-center mb-2">
+          <div className="flex flex-col items-center justify-center px-4 py-12">
+            <p className="mb-2 text-center text-gray-500">
               No events in your feed yet
             </p>
-            <p className="text-sm text-gray-400 text-center">
+            <p className="text-center text-sm text-gray-400">
               Follow other users or create your first event to see updates here
             </p>
           </div>
@@ -132,23 +132,23 @@ export default function FeedPage() {
 
       {/* Save to List Modal */}
       {showSaveModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full">
-            <h3 className="text-xl font-bold mb-4">Save to List</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm">
+            <h3 className="mb-4 text-xl font-bold">Save to List</h3>
             <div className="space-y-2">
               {savedLists.map((list) => (
                 <button
                   key={list.id}
                   onClick={() => handleSaveToList(list.id, list.name)}
-                  className="w-full flex items-center justify-between p-3 hover:bg-gray-50 rounded-xl transition-colors text-left"
+                  className="flex w-full items-center justify-between rounded-xl p-3 text-left transition-colors hover:bg-gray-50"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
                       <Bookmark className="h-4 w-4 text-red-600" />
                     </div>
                     <span className="font-medium">{list.name}</span>
                     {list.isDefault && (
-                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+                      <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
                         Default
                       </span>
                     )}
@@ -163,7 +163,7 @@ export default function FeedPage() {
                 setShowSaveModal(false);
                 setSelectedEventId(null);
               }}
-              className="w-full mt-4"
+              className="mt-4 w-full"
             >
               Cancel
             </Button>

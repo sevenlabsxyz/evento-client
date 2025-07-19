@@ -2,7 +2,7 @@ import { Env } from '@/lib/constants/env';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mark this route as dynamic since it uses dynamic parameters
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 // Helper to create error response
 function errorResponse(message: string, status: number = 500) {
@@ -12,7 +12,7 @@ function errorResponse(message: string, status: number = 500) {
 // Proxy handler for all HTTP methods
 async function handler(
   request: NextRequest,
-  { params }: { params: { path: string[] } }
+  { params }: { params: { path: string[] } },
 ) {
   try {
     // Reconstruct the path
@@ -28,12 +28,12 @@ async function handler(
 
     // Copy relevant headers from the incoming request
     const headersToForward = [
-      'content-type',
-      'accept',
-      'accept-language',
-      'user-agent',
-      'referer',
-      'authorization', // Important: forward authorization header for Supabase tokens
+      "content-type",
+      "accept",
+      "accept-language",
+      "user-agent",
+      "referer",
+      "authorization", // Important: forward authorization header for Supabase tokens
     ];
 
     headersToForward.forEach((header) => {
@@ -44,9 +44,9 @@ async function handler(
     });
 
     // Forward cookies
-    const cookies = request.headers.get('cookie');
+    const cookies = request.headers.get("cookie");
     if (cookies) {
-      headers.set('cookie', cookies);
+      headers.set("cookie", cookies);
     }
 
     // Prepare request options
@@ -54,7 +54,7 @@ async function handler(
       method: request.method,
       headers,
       // Include credentials for cookie handling
-      credentials: 'include',
+      credentials: "include",
     };
 
     // Add body for non-GET requests
@@ -83,10 +83,10 @@ async function handler(
 
     // Forward specific headers from the target response
     const headersToReturn = [
-      'content-type',
-      'cache-control',
-      'etag',
-      'last-modified',
+      "content-type",
+      "cache-control",
+      "etag",
+      "last-modified",
     ];
 
     headersToReturn.forEach((header) => {
@@ -120,7 +120,7 @@ async function handler(
       });
     }
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.error("Proxy error:", error);
     return errorResponse(
       `Proxy error: ${
         error instanceof Error ? error.message : 'Unknown error'

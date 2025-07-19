@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { Env } from '@/lib/constants/env';
-import { Event } from '@/lib/types/event';
-import { ExternalLink, MapPin, Sun } from 'lucide-react';
-import { useState } from 'react';
+import { Env } from "@/lib/constants/env";
+import { Event } from "@/lib/types/event";
+import { ExternalLink, MapPin, Sun } from "lucide-react";
+import { useState } from "react";
 
 interface EventLocationProps {
   event: Event;
@@ -13,19 +13,19 @@ export default function EventLocation({ event }: EventLocationProps) {
   const [showMapOptions, setShowMapOptions] = useState(false);
 
   const fullAddress = `${event.location.address}, ${event.location.city}, ${
-    event.location.state || ''
-  } ${event.location.zipCode || ''}`.trim();
+    event.location.state || ""
+  } ${event.location.zipCode || ""}`.trim();
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${
     Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   }&q=${encodeURIComponent(fullAddress)}&zoom=15&maptype=roadmap`;
 
-  const handleOpenMaps = (provider: 'apple' | 'google') => {
+  const handleOpenMaps = (provider: "apple" | "google") => {
     const address = encodeURIComponent(fullAddress);
 
-    if (provider === 'apple') {
-      window.open(`http://maps.apple.com/?q=${address}`, '_blank');
+    if (provider === "apple") {
+      window.open(`http://maps.apple.com/?q=${address}`, "_blank");
     } else {
-      window.open(`https://maps.google.com/?q=${address}`, '_blank');
+      window.open(`https://maps.google.com/?q=${address}`, "_blank");
     }
 
     setShowMapOptions(false);
@@ -37,7 +37,7 @@ export default function EventLocation({ event }: EventLocationProps) {
       setShowMapOptions(false);
       // Could show a toast notification here
     } catch (error) {
-      console.error('Failed to copy address:', error);
+      console.error("Failed to copy address:", error);
     }
   };
 
@@ -47,12 +47,12 @@ export default function EventLocation({ event }: EventLocationProps) {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Location</h2>
 
         {/* Location Info */}
-        <div className="flex items-start justify-between mb-4">
+        <div className="mb-4 flex items-start justify-between">
           <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 mb-1">
+            <h3 className="mb-1 font-semibold text-gray-900">
               {event.location.name}
             </h3>
-            <p className="text-gray-600 text-sm">
+            <p className="text-sm text-gray-600">
               {event.location.city}, {event.location.country}
             </p>
           </div>
@@ -60,7 +60,7 @@ export default function EventLocation({ event }: EventLocationProps) {
           {/* Weather */}
           {event.weather && (
             <div className="flex items-center gap-2 text-gray-600">
-              <Sun className="w-5 h-5" />
+              <Sun className="h-5 w-5" />
               <span className="text-sm font-medium">
                 {event.weather.temperature}°{event.weather.unit}
               </span>
@@ -80,7 +80,7 @@ export default function EventLocation({ event }: EventLocationProps) {
             src={mapUrl}
             title={`Map of ${event.location.name}`}
             aria-label={`Map showing ${event.location.name}`}
-            style={{ pointerEvents: 'auto' }}
+            style={{ pointerEvents: "auto" }}
           ></iframe>
 
           {/* Map Pin */}
@@ -124,22 +124,22 @@ export default function EventLocation({ event }: EventLocationProps) {
 
             <div className="space-y-3">
               <button
-                onClick={() => handleOpenMaps('apple')}
-                className="w-full p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => handleOpenMaps("apple")}
+                className="w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 Open in Apple Maps
               </button>
 
               <button
-                onClick={() => handleOpenMaps('google')}
-                className="w-full p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => handleOpenMaps("google")}
+                className="w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 Open in Google Maps
               </button>
 
               <button
                 onClick={handleCopyAddress}
-                className="w-full p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 Copy Address
               </button>
@@ -147,7 +147,7 @@ export default function EventLocation({ event }: EventLocationProps) {
 
             <button
               onClick={() => setShowMapOptions(false)}
-              className="w-full mt-4 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="mt-4 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>

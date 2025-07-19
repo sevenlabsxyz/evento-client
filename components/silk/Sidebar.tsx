@@ -1,41 +1,40 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { Sheet, Scroll, VisuallyHidden } from '@silk-hq/components'
-import { useSidebar } from '@/lib/stores/sidebar-store'
-import { useRouter } from 'next/navigation'
-import { useAuth } from '@/lib/hooks/useAuth'
-import { useUserProfile } from '@/lib/hooks/useUserProfile'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useAuth } from "@/lib/hooks/useAuth";
+import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { useSidebar } from "@/lib/stores/sidebar-store";
+import { Scroll, Sheet, VisuallyHidden } from "@silk-hq/components";
+import { useRouter } from "next/navigation";
 
 export function Sidebar() {
-  const { isOpen, closeSidebar } = useSidebar()
-  const router = useRouter()
-  const { logout } = useAuth()
-  const { user } = useUserProfile()
-  
+  const { isOpen, closeSidebar } = useSidebar();
+  const router = useRouter();
+  const { logout } = useAuth();
+  const { user } = useUserProfile();
+
   const handleNavigation = (path: string, isExternal?: boolean) => {
     if (isExternal) {
-      window.open(path, '_blank')
+      window.open(path, "_blank");
     } else {
-      router.push(path)
+      router.push(path);
     }
-    closeSidebar()
-  }
+    closeSidebar();
+  };
 
   const handleLogout = () => {
-    logout()
-    closeSidebar()
-  }
+    logout();
+    closeSidebar();
+  };
 
   // Menu sections
   const menuSections = [
     {
-      title: 'Menu',
+      title: "Menu",
       items: [
         {
-          name: 'Hub',
-          path: '/',
+          name: "Hub",
+          path: "/",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -55,8 +54,8 @@ export function Sidebar() {
           ),
         },
         {
-          name: 'Chat',
-          path: '/e/messages',
+          name: "Chat",
+          path: "/e/messages",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -75,8 +74,8 @@ export function Sidebar() {
           ),
         },
         {
-          name: 'Activity',
-          path: '/e/notifications',
+          name: "Activity",
+          path: "/e/notifications",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -97,11 +96,11 @@ export function Sidebar() {
       ],
     },
     {
-      title: 'Events',
+      title: "Events",
       items: [
         {
-          name: 'Create Event',
-          path: '/e/create',
+          name: "Create Event",
+          path: "/e/create",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -121,8 +120,8 @@ export function Sidebar() {
           ),
         },
         {
-          name: 'Saved Events',
-          path: '/e/saved',
+          name: "Saved Events",
+          path: "/e/saved",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -144,11 +143,11 @@ export function Sidebar() {
       ],
     },
     {
-      title: 'Account',
+      title: "Account",
       items: [
         {
-          name: 'Settings',
-          path: '/e/settings',
+          name: "Settings",
+          path: "/e/settings",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -178,11 +177,11 @@ export function Sidebar() {
       ],
     },
     {
-      title: 'Support',
+      title: "Support",
       items: [
         {
-          name: 'Help Center',
-          path: '/e/help',
+          name: "Help Center",
+          path: "/e/help",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -202,8 +201,8 @@ export function Sidebar() {
           ),
         },
         {
-          name: 'Contact Support',
-          path: '/e/contact',
+          name: "Contact Support",
+          path: "/e/contact",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -224,11 +223,11 @@ export function Sidebar() {
       ],
     },
     {
-      title: 'Evento',
+      title: "Evento",
       items: [
         {
-          name: 'Blog',
-          path: '/blog',
+          name: "Blog",
+          path: "/blog",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -248,8 +247,8 @@ export function Sidebar() {
           ),
         },
         {
-          name: 'Store',
-          path: 'https://store.evento.so',
+          name: "Store",
+          path: "https://store.evento.so",
           icon: (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -271,94 +270,94 @@ export function Sidebar() {
         },
       ],
     },
-  ]
+  ];
 
   return (
-    <Sheet.Root 
-      license="commercial" 
+    <Sheet.Root
+      license="commercial"
       presented={isOpen}
       onPresentedChange={(presented) => {
-        if (!presented) closeSidebar()
+        if (!presented) closeSidebar();
       }}
     >
       <Sheet.Portal>
-        <Sheet.View 
+        <Sheet.View
           contentPlacement="left"
           swipeOvershoot={false}
           nativeEdgeSwipePrevention={true}
           style={{
             zIndex: 50,
-            height: 'calc(var(--silk-100-lvh-dvh-pct) + 60px)',
+            height: "calc(var(--silk-100-lvh-dvh-pct) + 60px)",
           }}
         >
-          <Sheet.Backdrop 
-            className="bg-black/30"
-            onClick={closeSidebar}
-          />
+          <Sheet.Backdrop className="bg-black/30" onClick={closeSidebar} />
           <Sheet.Content
             style={{
-              width: 'min(90vw, 325px)',
-              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
-              backgroundColor: 'hsl(var(--sidebar-background))',
+              width: "min(90vw, 325px)",
+              boxShadow:
+                "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+              backgroundColor: "hsl(var(--sidebar-background))",
             }}
           >
             {/* Accessibility */}
             <VisuallyHidden.Root>
               <Sheet.Title>Navigation Menu</Sheet.Title>
               <Sheet.Description>Main navigation sidebar</Sheet.Description>
-              <Sheet.Trigger action="dismiss">Close navigation menu</Sheet.Trigger>
+              <Sheet.Trigger action="dismiss">
+                Close navigation menu
+              </Sheet.Trigger>
             </VisuallyHidden.Root>
 
-            <div className="flex flex-col h-full">
+            <div className="flex h-full flex-col">
               {/* Header with user info */}
-              <div 
-                className="bg-sidebar-accent border-b border-sidebar-border"
-                style={{ 
-                  padding: '1.5rem',
-                  paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)'
+              <div
+                className="border-b border-sidebar-border bg-sidebar-accent"
+                style={{
+                  padding: "1.5rem",
+                  paddingTop: "calc(env(safe-area-inset-top, 0px) + 1.5rem)",
                 }}
               >
                 <div className="grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5">
                   {/* User avatar */}
                   <button
-                    onClick={() => handleNavigation('/e/profile')}
-                    className="row-span-2 w-[50px] h-[50px] p-0 border-0 bg-transparent rounded-full transition-opacity hover:opacity-80 cursor-pointer"
+                    onClick={() => handleNavigation("/e/profile")}
+                    className="row-span-2 h-[50px] w-[50px] cursor-pointer rounded-full border-0 bg-transparent p-0 transition-opacity hover:opacity-80"
                     aria-label="Go to profile"
                   >
-                    <Avatar className="w-[50px] h-[50px] border border-black/10">
-                      <AvatarImage 
-                        src={user?.image || ''} 
-                        alt={user?.name || user?.username || 'User'} 
+                    <Avatar className="h-[50px] w-[50px] border border-black/10">
+                      <AvatarImage
+                        src={user?.image || ""}
+                        alt={user?.name || user?.username || "User"}
                       />
-                      <AvatarFallback className="bg-gradient-to-br from-cyan-400 via-cyan-300 to-cyan-400 text-black font-semibold">
+                      <AvatarFallback className="bg-gradient-to-br from-cyan-400 via-cyan-300 to-cyan-400 font-semibold text-black">
                         {user?.name
                           ? user.name.charAt(0).toUpperCase()
                           : user?.username
-                          ? user.username.charAt(0).toUpperCase()
-                          : 'U'}
+                            ? user.username.charAt(0).toUpperCase()
+                            : "U"}
                       </AvatarFallback>
                     </Avatar>
                   </button>
                   <button
-                    onClick={() => handleNavigation('/e/profile')}
-                    className="text-xl font-bold text-sidebar-foreground text-left p-0 border-0 bg-transparent transition-colors hover:text-sidebar-foreground/80 cursor-pointer"
+                    onClick={() => handleNavigation("/e/profile")}
+                    className="cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-bold text-sidebar-foreground transition-colors hover:text-sidebar-foreground/80"
                     aria-label="Go to profile"
                   >
-                    {user?.name || 'Evento'}
+                    {user?.name || "Evento"}
                   </button>
                   <button
-                    onClick={() => handleNavigation('/e/profile')}
-                    className="text-sm text-muted-foreground text-left p-0 border-0 bg-transparent transition-colors hover:text-muted-foreground/80 cursor-pointer"
+                    onClick={() => handleNavigation("/e/profile")}
+                    className="cursor-pointer border-0 bg-transparent p-0 text-left text-sm text-muted-foreground transition-colors hover:text-muted-foreground/80"
                     aria-label="Go to profile"
                   >
-                    {user?.username ? `@${user.username}` : 'Welcome to Evento'}
+                    {user?.username ? `@${user.username}` : "Welcome to Evento"}
                   </button>
                 </div>
               </div>
 
               {/* Scrollable menu sections */}
-              <Scroll.Root className="flex-1 min-h-0">
-                <Scroll.View 
+              <Scroll.Root className="min-h-0 flex-1">
+                <Scroll.View
                   className="h-full"
                   scrollGestureTrap={{ yEnd: true }}
                   safeArea="layout-viewport"
@@ -370,27 +369,34 @@ export function Sidebar() {
                           <h3 className="m-0 text-sm font-semibold uppercase text-muted-foreground">
                             {section.title}
                           </h3>
-                          <ul className="m-0 p-0 grid gap-5 list-none">
+                          <ul className="m-0 grid list-none gap-5 p-0">
                             {section.items.map((item) => (
                               <li key={item.path}>
                                 <button
-                                  onClick={() => handleNavigation(item.path, (item as any).isExternal)}
-                                  className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-sidebar-accent rounded-lg px-3 py-2 -mx-3 text-sidebar-foreground"
+                                  onClick={() =>
+                                    handleNavigation(
+                                      item.path,
+                                      (item as any).isExternal,
+                                    )
+                                  }
+                                  className="-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
                                 >
                                   <span className="text-[0]">{item.icon}</span>
-                                  <span className="text-lg font-medium">{item.name}</span>
+                                  <span className="text-lg font-medium">
+                                    {item.name}
+                                  </span>
                                 </button>
                               </li>
                             ))}
                           </ul>
                         </div>
                       ))}
-                      
+
                       {/* Logout button */}
-                      <div className="pt-6 border-t border-sidebar-border">
+                      <div className="border-t border-sidebar-border pt-6">
                         <button
                           onClick={handleLogout}
-                          className="w-full grid grid-cols-[auto_1fr] items-center gap-3 text-left transition-colors hover:bg-red-500/10 rounded-lg px-3 py-2 -mx-3 text-destructive"
+                          className="-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-destructive transition-colors hover:bg-red-500/10"
                         >
                           <span className="text-[0]">
                             <svg
@@ -421,5 +427,5 @@ export function Sidebar() {
         </Sheet.View>
       </Sheet.Portal>
     </Sheet.Root>
-  )
+  );
 }

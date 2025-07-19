@@ -1,19 +1,19 @@
 "use client";
 
-import { useState } from "react";
-import { Camera, File, Link, Check } from "lucide-react";
 import { SpotifySVGImage } from "@/components/icons/spotify";
 import { WavlakeSVGImage } from "@/components/icons/wavlake";
 import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { Camera, Check, File, Link } from "lucide-react";
+import { useState } from "react";
+import LinkSheet from "./link-sheet";
 import SpotifySheet from "./spotify-sheet";
 import WavlakeSheet from "./wavlake-sheet";
-import LinkSheet from "./link-sheet";
 
 interface AttachmentSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectType: (
-    type: "spotify" | "wavlake" | "photo" | "file" | "link"
+    type: "spotify" | "wavlake" | "photo" | "file" | "link",
   ) => void;
   onSaveAttachment?: (type: string, url: string) => void;
   spotifyUrl?: string;
@@ -25,8 +25,8 @@ export default function AttachmentSheet({
   onClose,
   onSelectType,
   onSaveAttachment,
-  spotifyUrl = '',
-  wavlakeUrl = '',
+  spotifyUrl = "",
+  wavlakeUrl = "",
 }: AttachmentSheetProps) {
   const [showSpotifySheet, setShowSpotifySheet] = useState(false);
   const [showWavlakeSheet, setShowWavlakeSheet] = useState(false);
@@ -72,8 +72,10 @@ export default function AttachmentSheet({
     {
       type: "spotify" as const,
       label: hasSpotify ? "Edit Spotify" : "Add Spotify",
-      icon: <SpotifySVGImage className="w-6 h-6" />,
-      description: hasSpotify ? "Modify Spotify track or playlist" : "Add Spotify track or playlist",
+      icon: <SpotifySVGImage className="h-6 w-6" />,
+      description: hasSpotify
+        ? "Modify Spotify track or playlist"
+        : "Add Spotify track or playlist",
       filled: hasSpotify,
       disabled: false,
       onClick: handleSpotifyClick,
@@ -81,8 +83,10 @@ export default function AttachmentSheet({
     {
       type: "wavlake" as const,
       label: hasWavlake ? "Edit Wavlake" : "Add Wavlake",
-      icon: <WavlakeSVGImage className="w-6 h-6" />,
-      description: hasWavlake ? "Modify Wavlake track or playlist" : "Add Wavlake track or playlist",
+      icon: <WavlakeSVGImage className="h-6 w-6" />,
+      description: hasWavlake
+        ? "Modify Wavlake track or playlist"
+        : "Add Wavlake track or playlist",
       filled: hasWavlake,
       disabled: false,
       onClick: handleWavlakeClick,
@@ -90,7 +94,7 @@ export default function AttachmentSheet({
     {
       type: "photo" as const,
       label: "Add Photo",
-      icon: <Camera className="w-6 h-6" />,
+      icon: <Camera className="h-6 w-6" />,
       description: "Select from your photos",
       filled: false,
       disabled: true,
@@ -99,7 +103,7 @@ export default function AttachmentSheet({
     {
       type: "file" as const,
       label: "Add File",
-      icon: <File className="w-6 h-6" />,
+      icon: <File className="h-6 w-6" />,
       description: "Upload a document",
       filled: false,
       disabled: true,
@@ -108,7 +112,7 @@ export default function AttachmentSheet({
     {
       type: "link" as const,
       label: "Add Link",
-      icon: <Link className="w-6 h-6" />,
+      icon: <Link className="h-6 w-6" />,
       description: "Add any web link",
       filled: false,
       disabled: false,
@@ -117,8 +121,8 @@ export default function AttachmentSheet({
   ];
 
   return (
-    <DetachedSheet.Root 
-      presented={isOpen} 
+    <DetachedSheet.Root
+      presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
       forComponent="closest"
     >
@@ -128,13 +132,15 @@ export default function AttachmentSheet({
           <DetachedSheet.Content>
             <div className="p-6">
               {/* Handle */}
-              <div className="flex justify-center mb-4">
+              <div className="mb-4 flex justify-center">
                 <DetachedSheet.Handle />
               </div>
 
               {/* Header */}
               <div className="mb-6">
-                <h2 className="text-xl font-semibold text-center">Add Attachment</h2>
+                <h2 className="text-center text-xl font-semibold">
+                  Add Attachment
+                </h2>
               </div>
 
               {/* Options */}
@@ -162,12 +168,21 @@ export default function AttachmentSheet({
 
                   const getTextStyles = () => {
                     if (option.disabled) {
-                      return { label: "font-medium text-gray-500", description: "text-sm text-gray-400" };
+                      return {
+                        label: "font-medium text-gray-500",
+                        description: "text-sm text-gray-400",
+                      };
                     }
                     if (option.filled) {
-                      return { label: "font-medium text-green-900", description: "text-sm text-green-700" };
+                      return {
+                        label: "font-medium text-green-900",
+                        description: "text-sm text-green-700",
+                      };
                     }
-                    return { label: "font-medium text-gray-900", description: "text-sm text-gray-500" };
+                    return {
+                      label: "font-medium text-gray-900",
+                      description: "text-sm text-gray-500",
+                    };
                   };
 
                   const textStyles = getTextStyles();
@@ -179,16 +194,16 @@ export default function AttachmentSheet({
                       className={getButtonStyles()}
                       disabled={option.disabled}
                     >
-                      <div className={getIconStyles()}>
-                        {option.icon}
-                      </div>
+                      <div className={getIconStyles()}>{option.icon}</div>
                       <div className="flex-1">
                         <p className={textStyles.label}>{option.label}</p>
-                        <p className={textStyles.description}>{option.description}</p>
+                        <p className={textStyles.description}>
+                          {option.description}
+                        </p>
                       </div>
                       {option.filled && (
-                        <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                          <Check className="w-4 h-4 text-white" />
+                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-500">
+                          <Check className="h-4 w-4 text-white" />
                         </div>
                       )}
                     </button>

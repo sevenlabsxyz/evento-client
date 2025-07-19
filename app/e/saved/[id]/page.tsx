@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
 import {
   ArrowLeft,
-  Calendar,
-  MapPin,
-  Clock,
   Bookmark,
+  Calendar,
+  Clock,
+  MapPin,
   MoreHorizontal,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useRouter, useParams } from 'next/navigation';
-import { useState } from 'react';
-import { toast } from '@/lib/utils/toast';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useRouter, useParams } from "next/navigation";
+import { useState } from "react";
+import { toast } from "@/lib/utils/toast";
+import { useRequireAuth } from "@/lib/hooks/useAuth";
 
 export default function SavedListDetailPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -21,46 +21,46 @@ export default function SavedListDetailPage() {
   const [savedEvents, setSavedEvents] = useState([
     {
       id: 1,
-      title: 'Eiffel Tower Night Photography',
-      date: 'Sep 20, 2025',
-      time: '7:00 PM',
-      location: 'Paris, France',
-      image: '/placeholder.svg?height=120&width=120',
-      savedDate: '2 days ago',
+      title: "Eiffel Tower Night Photography",
+      date: "Sep 20, 2025",
+      time: "7:00 PM",
+      location: "Paris, France",
+      image: "/placeholder.svg?height=120&width=120",
+      savedDate: "2 days ago",
     },
     {
       id: 2,
-      title: 'Tokyo Skytree Sunset Experience',
-      date: 'Sep 15, 2025',
-      time: '6:30 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=120&width=120',
-      savedDate: '1 week ago',
+      title: "Tokyo Skytree Sunset Experience",
+      date: "Sep 15, 2025",
+      time: "6:30 PM",
+      location: "Tokyo, Japan",
+      image: "/placeholder.svg?height=120&width=120",
+      savedDate: "1 week ago",
     },
     {
       id: 3,
-      title: 'Tegallalang Rice Terraces Tour',
-      date: 'Sep 18, 2025',
-      time: '9:00 AM',
-      location: 'Bali, Indonesia',
-      image: '/placeholder.svg?height=120&width=120',
-      savedDate: '3 days ago',
+      title: "Tegallalang Rice Terraces Tour",
+      date: "Sep 18, 2025",
+      time: "9:00 AM",
+      location: "Bali, Indonesia",
+      image: "/placeholder.svg?height=120&width=120",
+      savedDate: "3 days ago",
     },
   ]);
 
   // Mock list data - in real app this would come from API based on params.id
   const listData = {
-    '1': { name: 'Event toes', isDefault: true },
-    '2': { name: 'Tokyo Adventures', isDefault: false },
-    '3': { name: 'Food Experiences', isDefault: false },
+    "1": { name: "Event toes", isDefault: true },
+    "2": { name: "Tokyo Adventures", isDefault: false },
+    "3": { name: "Food Experiences", isDefault: false },
   };
 
   const currentList =
-    listData[params.id as keyof typeof listData] || listData['1'];
+    listData[params.id as keyof typeof listData] || listData["1"];
 
   const handleUnsaveEvent = (eventId: number) => {
     setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
-    toast.success('Event removed from list!');
+    toast.success("Event removed from list!");
   };
 
   if (isCheckingAuth) {
@@ -74,9 +74,9 @@ export default function SavedListDetailPage() {
   }
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-4 border-b border-gray-100">
+      <div className="flex items-center gap-3 border-b border-gray-100 px-4 py-4">
         <Button
           variant="ghost"
           size="icon"
@@ -89,7 +89,7 @@ export default function SavedListDetailPage() {
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold">{currentList.name}</h1>
             {currentList.isDefault && (
-              <span className="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium">
+              <span className="rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800">
                 Default
               </span>
             )}
@@ -110,18 +110,18 @@ export default function SavedListDetailPage() {
       {/* Content */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
         {savedEvents.length > 0 ? (
-          <div className="px-4 py-4 space-y-4">
+          <div className="space-y-4 px-4 py-4">
             {savedEvents.map((event) => (
               <div
                 key={event.id}
-                className="bg-white rounded-2xl p-4 shadow-sm"
+                className="rounded-2xl bg-white p-4 shadow-sm"
               >
                 <div className="flex gap-4">
                   {/* Event Image */}
                   <img
-                    src={event.image || '/placeholder.svg'}
+                    src={event.image || "/placeholder.svg"}
                     alt={event.title}
-                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0 cursor-pointer"
+                    className="h-20 w-20 flex-shrink-0 cursor-pointer rounded-xl object-cover"
                     onClick={() => router.push(`/e/event/cosmoprof-2025`)}
                   />
 
@@ -145,7 +145,7 @@ export default function SavedListDetailPage() {
                     </div>
 
                     {/* Date and Time */}
-                    <div className="flex items-center gap-3 text-sm text-gray-600 mb-2">
+                    <div className="mb-2 flex items-center gap-3 text-sm text-gray-600">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-3 w-3" />
                         <span>{event.date}</span>
@@ -157,7 +157,7 @@ export default function SavedListDetailPage() {
                     </div>
 
                     {/* Location */}
-                    <div className="flex items-center gap-1 text-sm text-gray-600 mb-2">
+                    <div className="mb-2 flex items-center gap-1 text-sm text-gray-600">
                       <MapPin className="h-3 w-3" />
                       <span className="truncate">{event.location}</span>
                     </div>
@@ -186,19 +186,19 @@ export default function SavedListDetailPage() {
           </div>
         ) : (
           /* Empty State */
-          <div className="flex-1 flex items-center justify-center px-4 py-12">
+          <div className="flex flex-1 items-center justify-center px-4 py-12">
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
                 <Bookmark className="h-8 w-8 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
                 No events in this list
               </h3>
-              <p className="text-gray-500 text-sm mb-6">
+              <p className="mb-6 text-sm text-gray-500">
                 Start saving events to see them here.
               </p>
               <Button
-                onClick={() => router.push('/feed')}
+                onClick={() => router.push("/feed")}
                 className="bg-red-500 hover:bg-red-600 text-white"
               >
                 Discover Events

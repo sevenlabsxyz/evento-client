@@ -1,9 +1,9 @@
-'use client';
-import { isGif } from '@/lib/utils/image';
-import { Scroll, VisuallyHidden } from '@silk-hq/components';
-import Image from 'next/image';
-import React, { useEffect, useImperativeHandle, useRef } from 'react';
-import { Lightbox } from './Lightbox';
+"use client";
+import { isGif } from "@/lib/utils/image";
+import { Scroll, VisuallyHidden } from "@silk-hq/components";
+import Image from "next/image";
+import React, { useEffect, useImperativeHandle, useRef } from "react";
+import { Lightbox } from "./Lightbox";
 
 interface SilkLightboxProps {
   images: string[];
@@ -28,7 +28,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
     {
       images,
       initialIndex = 0,
-      eventTitle = 'Image',
+      eventTitle = "Image",
       showComments = false,
       comments = [],
       onClose,
@@ -69,14 +69,14 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
       const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
           if (
-            mutation.type === 'attributes' &&
-            mutation.attributeName === 'aria-hidden'
+            mutation.type === "attributes" &&
+            mutation.attributeName === "aria-hidden"
           ) {
             const target = mutation.target as HTMLElement;
-            if (target.getAttribute('aria-hidden') === 'true') {
-              target.setAttribute('inert', '');
+            if (target.getAttribute("aria-hidden") === "true") {
+              target.setAttribute("inert", "");
             } else {
-              target.removeAttribute('inert');
+              target.removeAttribute("inert");
             }
           }
         });
@@ -85,7 +85,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
       if (lightboxViewRef.current) {
         observer.observe(lightboxViewRef.current, {
           attributes: true,
-          attributeFilter: ['aria-hidden'],
+          attributeFilter: ["aria-hidden"],
         });
       }
 
@@ -122,7 +122,7 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
     return (
       <Lightbox.Root>
         {/* Hidden trigger that we click programmatically - exactly like ExampleLightbox */}
-        <Lightbox.Trigger ref={triggerRef} style={{ display: 'none' }} />
+        <Lightbox.Trigger ref={triggerRef} style={{ display: "none" }} />
 
         <Lightbox.Portal>
           <Lightbox.View ref={lightboxViewRef}>
@@ -252,6 +252,6 @@ const SilkLightbox = React.forwardRef<SilkLightboxRef, SilkLightboxProps>(
   }
 );
 
-SilkLightbox.displayName = 'SilkLightbox';
+SilkLightbox.displayName = "SilkLightbox";
 
 export { SilkLightbox };

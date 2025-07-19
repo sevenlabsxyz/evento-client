@@ -1,5 +1,4 @@
 import { BlogCard } from "@/components/blog/card";
-import GhostContentAPI from "@tryghost/content-api";
 import { AlertTriangle } from "lucide-react";
 import { Suspense } from "react";
 import { Env } from "@/lib/constants/env";
@@ -8,10 +7,10 @@ export const dynamic = "force-dynamic";
 
 const Error = ({ message }: { message: string }) => (
   <div
-    className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg"
+    className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-700"
     role="alert"
   >
-    <div className="flex items-center gap-2 mb-1">
+    <div className="mb-1 flex items-center gap-2">
       <AlertTriangle className="h-5 w-5" />
       <p className="font-semibold">Error</p>
     </div>
@@ -20,15 +19,17 @@ const Error = ({ message }: { message: string }) => (
 );
 
 const Loading = () => (
-  <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+  <div className="flex h-64 items-center justify-center">
+    <div className="h-12 w-12 animate-spin rounded-full border-b-2 border-t-2 border-red-500"></div>
   </div>
 );
 
 async function getBlogPosts() {
   // Check for required environment variables
   if (!Env.GHOST_URL || !Env.GHOST_CONTENT_API_KEY) {
-    console.warn("Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set");
+    console.warn(
+      "Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set"
+    );
     return [];
   }
 
@@ -49,8 +50,10 @@ function PostList({ posts }: { posts: any[] }) {
   if (!posts || posts.length === 0) {
     return (
       <div className="px-4 py-12 text-center">
-        <div className="bg-gray-100 rounded-lg p-8">
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No posts yet</h3>
+        <div className="rounded-lg bg-gray-100 p-8">
+          <h3 className="mb-2 text-xl font-semibold text-gray-700">
+            No posts yet
+          </h3>
           <p className="text-gray-500">Check back soon for new content!</p>
         </div>
       </div>

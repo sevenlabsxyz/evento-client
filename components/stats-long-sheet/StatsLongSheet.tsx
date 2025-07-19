@@ -1,9 +1,9 @@
 "use client";
-import React from "react";
-import { VisuallyHidden } from "@silk-hq/components";
-import { LongSheet } from "./LongSheet";
-import { X, Share } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { VisuallyHidden } from "@silk-hq/components";
+import { Share, X } from "lucide-react";
+import React from "react";
+import { LongSheet } from "./LongSheet";
 import "./StatsLongSheet.css";
 
 const CircularProgress = ({
@@ -20,7 +20,7 @@ const CircularProgress = ({
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg width={size} height={size} className="transform -rotate-90">
+      <svg width={size} height={size} className="-rotate-90 transform">
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -97,28 +97,40 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                   {/* Stats Grid */}
                   <div className="StatsLongSheet-statsGrid">
                     <div className="StatsLongSheet-statItem">
-                      <div className="StatsLongSheet-statValue">{stats.events}</div>
+                      <div className="StatsLongSheet-statValue">
+                        {stats.events}
+                      </div>
                       <div className="StatsLongSheet-statLabel">Events</div>
                     </div>
                     <div className="StatsLongSheet-statItem">
-                      <div className="StatsLongSheet-statValue">{stats.countries}</div>
+                      <div className="StatsLongSheet-statValue">
+                        {stats.countries}
+                      </div>
                       <div className="StatsLongSheet-statLabel">Countries</div>
                     </div>
                     <div className="StatsLongSheet-statItem">
-                      <div className="StatsLongSheet-statValue">{stats.cities}</div>
+                      <div className="StatsLongSheet-statValue">
+                        {stats.cities}
+                      </div>
                       <div className="StatsLongSheet-statLabel">Cities</div>
                     </div>
                     <div className="StatsLongSheet-statItem">
-                      <div className="StatsLongSheet-statValue">{stats.categories}</div>
+                      <div className="StatsLongSheet-statValue">
+                        {stats.categories}
+                      </div>
                       <div className="StatsLongSheet-statLabel">Categories</div>
                     </div>
                     <div className="StatsLongSheet-statItem">
-                      <div className="StatsLongSheet-statValue">{stats.mutuals}</div>
+                      <div className="StatsLongSheet-statValue">
+                        {stats.mutuals}
+                      </div>
                       <div className="StatsLongSheet-statLabel">Mutuals</div>
                     </div>
                     <div className="StatsLongSheet-statItem">
                       <div className="StatsLongSheet-statValue">0</div>
-                      <div className="StatsLongSheet-statLabel">Connections</div>
+                      <div className="StatsLongSheet-statLabel">
+                        Connections
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -162,11 +174,15 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                     </div>
                     <div className="StatsLongSheet-progressItem">
                       <CircularProgress percentage={stats.international} />
-                      <div className="StatsLongSheet-progressLabel">International</div>
+                      <div className="StatsLongSheet-progressLabel">
+                        International
+                      </div>
                     </div>
                     <div className="StatsLongSheet-progressItem">
                       <CircularProgress percentage={stats.domestic} />
-                      <div className="StatsLongSheet-progressLabel">Domestic</div>
+                      <div className="StatsLongSheet-progressLabel">
+                        Domestic
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -213,13 +229,15 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                     </div>
 
                     <div className="StatsLongSheet-mostVisited">
-                      <h3 className="StatsLongSheet-sectionTitle">Most visited</h3>
+                      <h3 className="StatsLongSheet-sectionTitle">
+                        Most visited
+                      </h3>
                       {/* Empty state for most visited countries */}
                     </div>
 
                     <Button
                       variant="ghost"
-                      className="w-full text-red-500 font-semibold"
+                      className="w-full font-semibold text-red-500"
                     >
                       Show Visited Countries
                     </Button>
@@ -229,7 +247,9 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                 {/* Event Categories Card */}
                 <div className="StatsLongSheet-card">
                   <div className="StatsLongSheet-cardHeader">
-                    <h2 className="StatsLongSheet-cardTitle">Event Categories</h2>
+                    <h2 className="StatsLongSheet-cardTitle">
+                      Event Categories
+                    </h2>
                     <Button variant="ghost" size="icon" className="h-8 w-8">
                       <Share className="h-5 w-5 text-gray-600" />
                     </Button>

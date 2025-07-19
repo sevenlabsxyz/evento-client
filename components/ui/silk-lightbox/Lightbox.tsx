@@ -1,7 +1,14 @@
 "use client";
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { Sheet, useClientMediaQuery } from "@silk-hq/components";
 import { SheetWithDetent } from "@/components/ui/sheet-with-detent";
+import { Sheet, useClientMediaQuery } from "@silk-hq/components";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import "./Lightbox.css";
 
 // ================================================================================================
@@ -37,50 +44,54 @@ type LightboxRootProps = Omit<SheetRootProps, "license"> & {
   license?: SheetRootProps["license"];
 };
 
-const LightboxRoot = React.forwardRef<React.ElementRef<typeof Sheet.Root>, LightboxRootProps>(
-  ({ children, className, ...restProps }, ref) => {
-    const [status, setStatus] = useState("idleOutside");
-    const [range, setRange] = useState({ start: 0, end: 0 });
+const LightboxRoot = React.forwardRef<
+  React.ElementRef<typeof Sheet.Root>,
+  LightboxRootProps
+>(({ children, className, ...restProps }, ref) => {
+  const [status, setStatus] = useState("idleOutside");
+  const [range, setRange] = useState({ start: 0, end: 0 });
 
-    const [contentClicked, setContentClicked] = useState(false);
-    const contentClickHandler = useCallback(() => setContentClicked((value) => !value), []);
-    useEffect(() => {
-      // Reset the value when dismissed
-      if (status === "idleOutside") setContentClicked(false);
-    }, [status]);
+  const [contentClicked, setContentClicked] = useState(false);
+  const contentClickHandler = useCallback(
+    () => setContentClicked((value) => !value),
+    [],
+  );
+  useEffect(() => {
+    // Reset the value when dismissed
+    if (status === "idleOutside") setContentClicked(false);
+  }, [status]);
 
-    const UIVisible = useMemo(
-      () => range.start === 1 && range.end === 1 && !contentClicked,
-      [range, contentClicked]
-    );
+  const UIVisible = useMemo(
+    () => range.start === 1 && range.end === 1 && !contentClicked,
+    [range, contentClicked],
+  );
 
-    const contextValue = useMemo(
-      () => ({
-        status,
-        range,
-        contentClicked,
-        UIVisible,
-        onTravelStatusChange: setStatus,
-        onTravelRangeChange: setRange,
-        contentClickHandler,
-      }),
-      [status, range, contentClicked, UIVisible, contentClickHandler]
-    );
+  const contextValue = useMemo(
+    () => ({
+      status,
+      range,
+      contentClicked,
+      UIVisible,
+      onTravelStatusChange: setStatus,
+      onTravelRangeChange: setRange,
+      contentClickHandler,
+    }),
+    [status, range, contentClicked, UIVisible, contentClickHandler],
+  );
 
-    return (
-      <LightboxContext.Provider value={contextValue}>
-        <Sheet.Root
-          className={`Lightbox-root ${className ?? ""}`.trim()}
-          license="commercial"
-          {...restProps}
-          ref={ref}
-        >
-          {children}
-        </Sheet.Root>
-      </LightboxContext.Provider>
-    );
-  }
-);
+  return (
+    <LightboxContext.Provider value={contextValue}>
+      <Sheet.Root
+        className={`Lightbox-root ${className ?? ""}`.trim()}
+        license="commercial"
+        {...restProps}
+        ref={ref}
+      >
+        {children}
+      </Sheet.Root>
+    </LightboxContext.Provider>
+  );
+});
 LightboxRoot.displayName = "Lightbox.Root";
 
 // ================================================================================================
@@ -91,7 +102,8 @@ const LightboxView = React.forwardRef<
   React.ElementRef<typeof Sheet.View>,
   React.ComponentPropsWithoutRef<typeof Sheet.View>
 >(({ children, className, ...restProps }, ref) => {
-  const { onTravelStatusChange, onTravelRangeChange, contentClickHandler } = useLightboxContext();
+  const { onTravelStatusChange, onTravelRangeChange, contentClickHandler } =
+    useLightboxContext();
 
   return (
     <Sheet.View
@@ -143,7 +155,9 @@ LightboxBackdrop.displayName = "Lightbox.Backdrop";
 // Content
 // ================================================================================================
 
-type LightboxContentProps = React.ComponentPropsWithoutRef<typeof Sheet.Content>;
+type LightboxContentProps = React.ComponentPropsWithoutRef<
+  typeof Sheet.Content
+>;
 
 const LightboxContent = React.forwardRef<
   React.ElementRef<typeof Sheet.Content>,
@@ -243,7 +257,8 @@ const LightboxSideSheetPresentTrigger = ({
     </SheetWithDetent.Trigger>
   );
 };
-LightboxSideSheetPresentTrigger.displayName = "Lightbox.SideSheetPresentTrigger";
+LightboxSideSheetPresentTrigger.displayName =
+  "Lightbox.SideSheetPresentTrigger";
 
 // ================================================================================================
 // SideSheet View

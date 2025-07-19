@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { Button } from '@/components/ui/button';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { Textarea } from '@/components/ui/textarea';
-import { X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Button } from "@/components/ui/button";
+import { SheetWithDetentFull } from "@/components/ui/sheet-with-detent-full";
+import { Textarea } from "@/components/ui/textarea";
+import { X } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface BiographySheetProps {
   isOpen: boolean;
@@ -17,7 +17,7 @@ export default function BiographySheet({
   isOpen,
   onClose,
   onSave,
-  currentBio = '',
+  currentBio = "",
 }: BiographySheetProps) {
   const [bio, setBio] = useState(currentBio);
   const maxLength = 500;
@@ -51,17 +51,15 @@ export default function BiographySheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-4 border-b border-gray-100">
-              <div className="flex justify-center mb-4">
-                <SheetWithDetentFull.Handle />
-              </div>
+            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
+              <SheetWithDetentFull.Handle />
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">Biography</h2>
                 <button
                   onClick={handleCancel}
-                  className="p-2 hover:bg-gray-100 rounded-full"
+                  className="rounded-full p-2 hover:bg-gray-100"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
             </div>
@@ -75,18 +73,18 @@ export default function BiographySheet({
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     placeholder="Tell us about yourself..."
-                    className="min-h-[200px] resize-none mb-4"
+                    className="mb-4 min-h-[200px] resize-none"
                     maxLength={maxLength}
                     autoFocus
                   />
 
                   {/* Character count */}
-                  <p className="text-sm text-gray-500 text-right mb-4">
+                  <p className="mb-4 text-right text-sm text-gray-500">
                     {bio.length}/{maxLength}
                   </p>
 
                   {/* Info text */}
-                  <p className="text-sm text-gray-500 mb-6">
+                  <p className="mb-6 text-sm text-gray-500">
                     Write a short bio to help others get to know you. Share your
                     interests, what brings you to events, or anything else you'd
                     like people to know.
@@ -96,7 +94,7 @@ export default function BiographySheet({
                   <div className="flex gap-3">
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 hover:bg-red-600 text-white"
+                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
                       disabled={!hasChanges}
                     >
                       Save

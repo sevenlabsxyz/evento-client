@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { VisuallyHidden } from '@silk-hq/components';
-import { LinkProps } from './tiptap-utils';
-import './description-sheet.css';
+import { DetachedSheet } from "@/components/ui/detached-sheet";
+import { VisuallyHidden } from "@silk-hq/components";
+import { useEffect, useState } from "react";
+import "./description-sheet.css";
+import { LinkProps } from "./tiptap-utils";
 
 interface LinkEditSheetProps {
   isOpen: boolean;
@@ -19,8 +19,8 @@ export function LinkEditSheet({
   isOpen,
   onClose,
   onSetLink,
-  initialUrl = '',
-  initialText = '',
+  initialUrl = "",
+  initialText = "",
   initialOpenInNewTab = false,
 }: LinkEditSheetProps) {
   const [field, setField] = useState<LinkProps>({
@@ -28,7 +28,7 @@ export function LinkEditSheet({
     text: initialText,
     openInNewTab: initialOpenInNewTab,
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -37,7 +37,7 @@ export function LinkEditSheet({
         text: initialText,
         openInNewTab: initialOpenInNewTab,
       });
-      setError('');
+      setError("");
     }
   }, [isOpen, initialUrl, initialText, initialOpenInNewTab]);
 
@@ -45,7 +45,7 @@ export function LinkEditSheet({
     if (!inputUrl.trim()) return false;
     try {
       // Add protocol if missing
-      const urlToValidate = inputUrl.includes('://')
+      const urlToValidate = inputUrl.includes("://")
         ? inputUrl
         : `https://${inputUrl}`;
       new URL(urlToValidate);
@@ -59,17 +59,17 @@ export function LinkEditSheet({
     e.preventDefault();
 
     if (!field.url.trim()) {
-      setError('Please enter a URL');
+      setError("Please enter a URL");
       return;
     }
 
     if (!validateUrl(field.url)) {
-      setError('Please enter a valid URL');
+      setError("Please enter a valid URL");
       return;
     }
 
     // Add protocol if missing
-    const finalUrl = field.url.includes('://')
+    const finalUrl = field.url.includes("://")
       ? field.url
       : `https://${field.url}`;
 
@@ -109,7 +109,7 @@ export function LinkEditSheet({
                     value={field.url}
                     onChange={(e) => {
                       setField({ ...field, url: e.target.value });
-                      setError('');
+                      setError("");
                     }}
                     placeholder="Paste a link (https://...)"
                     className="LinkEditSheet-input"
@@ -117,15 +117,22 @@ export function LinkEditSheet({
                     required
                   />
                   {error && <p className="LinkEditSheet-error">{error}</p>}
+                  {error && <p className="LinkEditSheet-error">{error}</p>}
                 </div>
 
                 <div className="LinkEditSheet-field">
                   <label className="LinkEditSheet-label">
                     Display text (optional)
                   </label>
+                  <label className="LinkEditSheet-label">
+                    Display text (optional)
+                  </label>
                   <input
                     type="text"
                     value={field.text}
+                    onChange={(e) =>
+                      setField({ ...field, text: e.target.value })
+                    }
                     onChange={(e) =>
                       setField({ ...field, text: e.target.value })
                     }
@@ -139,6 +146,12 @@ export function LinkEditSheet({
                     <input
                       type="checkbox"
                       checked={field.openInNewTab}
+                      onChange={() =>
+                        setField({
+                          ...field,
+                          openInNewTab: !field.openInNewTab,
+                        })
+                      }
                       onChange={() =>
                         setField({
                           ...field,

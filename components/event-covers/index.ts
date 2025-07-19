@@ -1,4 +1,10 @@
-import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from "lucide-react";
+import {
+  Cpu,
+  Crown,
+  MessagesSquare,
+  PartyPopper,
+  Sparkles,
+} from "lucide-react";
 import COVERS from "./categories";
 
 export const NO_COVER_FALLBACK =
