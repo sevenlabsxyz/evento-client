@@ -20,20 +20,23 @@ export default function ChatPage() {
       subtitle: undefined,
       showAvatar: true,
       leftMode: 'menu',
-      rightContent: (
-        <Button
-          variant='ghost'
-          size='icon'
-          className='rounded-full bg-gray-100'
-          onClick={() => router.push('/messages/search')}
-        >
-          <Plus className='h-5 w-5' />
-        </Button>
-      ),
+      centerMode: 'title',
+      buttons: [
+        {
+          id: 'add',
+          icon: Plus,
+          onClick: () => router.push('/e/messages/search'),
+          label: 'New message',
+        },
+      ],
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ 
+        buttons: [],
+        title: '',
+        subtitle: '',
+      });
     };
   }, [setTopBar, router]);
 

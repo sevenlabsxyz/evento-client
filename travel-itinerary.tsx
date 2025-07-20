@@ -14,12 +14,18 @@ export default function TravelItinerary() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: 'Travel Itinerary',
-      subtitle: 'Your trip details',
+      title: 'Hub',
+      subtitle: undefined,
+      leftMode: 'menu',
+      showAvatar: true,
+      centerMode: 'title',
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ 
+        title: '',
+        subtitle: '',
+      });
     };
   }, [setTopBar]);
 

@@ -38,7 +38,19 @@ export default function SettingsPage() {
       subtitle: undefined,
       showAvatar: false,
       leftMode: 'back',
+      centerMode: 'title',
     });
+
+    // Cleanup function to reset topbar state when leaving this page
+    return () => {
+      setTopBar({
+        title: '',
+        subtitle: '',
+        showAvatar: true,
+        leftMode: 'menu',
+        centerMode: 'title',
+      });
+    };
   }, [setTopBar]);
 
   // Sheet states

@@ -44,8 +44,8 @@ export default function ProfilePage() {
   // Set TopBar content and enable overlay mode
   useEffect(() => {
     setTopBar({
-      title: undefined,
-      subtitle: undefined,
+      title: '',
+      subtitle: '',
       showAvatar: false,
       leftMode: 'menu',
       buttons: [
@@ -65,11 +65,18 @@ export default function ProfilePage() {
     });
     setOverlaid(true);
 
+    // Cleanup function to reset overlay and buttons when leaving this page
     return () => {
-      setTopBar({ buttons: [] });
+      setTopBar({
+        buttons: [],
+        title: '',
+        subtitle: '',
+        showAvatar: true,
+        leftMode: 'menu',
+      });
       setOverlaid(false);
     };
-  }, [user?.username, router, setTopBar, setOverlaid]);
+  }, [router, setTopBar, setOverlaid]);
 
   const userStats = {
     events: eventCount || 0,

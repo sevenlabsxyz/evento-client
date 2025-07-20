@@ -27,6 +27,7 @@ export default function FeedPage() {
       showAvatar: true,
       leftMode: 'menu',
       subtitle: undefined,
+      centerMode: 'title',
       buttons: [
         {
           id: 'search',
@@ -38,7 +39,11 @@ export default function FeedPage() {
     });
 
     return () => {
-      setTopBar({ buttons: [] });
+      setTopBar({ 
+        buttons: [],
+        title: '',
+        subtitle: '',
+      });
     };
   }, [router, setTopBar]);
 

@@ -20,7 +20,10 @@ export default function SavedListsPage() {
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ 
+        title: '',
+        subtitle: '',
+      });
     };
   }, [setTopBar]);
 

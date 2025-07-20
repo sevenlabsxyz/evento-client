@@ -79,7 +79,18 @@ export default function EditProfilePage() {
       leftMode: 'back',
       showAvatar: false,
     });
-  }, [setTopBar]);
+
+    // Cleanup function to reset topbar state when leaving this page
+    return () => {
+      setTopBar({
+        title: '',
+        subtitle: '',
+        onBackPress: null,
+        leftMode: 'menu',
+        showAvatar: true,
+      });
+    };
+  }, [setTopBar, router]);
 
   // Populate form when user data is loaded
   useEffect(() => {
