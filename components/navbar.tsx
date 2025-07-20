@@ -36,9 +36,8 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
 
           if (item.isCenter) {
             return (
-              <div className='flex justify-center'>
+              <div key={item.id} className='flex justify-center'>
                 <div
-                  key={item.id}
                   className='m-0 flex h-12 w-16 items-center justify-center rounded-xl bg-gray-200 p-0 transition-colors duration-150 hover:bg-gray-300'
                   onClick={() => handleNavigation(item)}
                 >

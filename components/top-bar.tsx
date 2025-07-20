@@ -1,18 +1,26 @@
-'use client';
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
-import { useSidebar } from '@/lib/stores/sidebar-store';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { ArrowLeft } from 'lucide-react';
-import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useUserProfile } from "@/lib/hooks/useUserProfile";
+import { useSidebar } from "@/lib/stores/sidebar-store";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import { ArrowLeft } from "lucide-react";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function TopBar() {
   const { openSidebar } = useSidebar();
-  const { leftMode, onBackPress, centerMode, title, subtitle, buttons, showAvatar, isOverlaid } =
-    useTopBar();
+  const {
+    leftMode,
+    onBackPress,
+    centerMode,
+    title,
+    subtitle,
+    buttons,
+    showAvatar,
+    isOverlaid,
+  } = useTopBar();
   const { user } = useUserProfile();
   const pathname = usePathname();
   const router = useRouter();
@@ -53,8 +61,8 @@ export function TopBar() {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [isOverlaid]);
 
   const handleBackPress = () => {
@@ -72,15 +80,15 @@ export function TopBar() {
   };
 
   const renderLeftContent = () => {
-    if (leftMode === 'back') {
+    if (leftMode === "back") {
       return (
         <button
           onClick={handleBackPress}
           className={
-            'mt-0.5 flex h-[32px] w-[32px] items-center justify-center border border-transparent'
+            "mt-0.5 flex h-[32px] w-[32px] items-center justify-center border border-transparent"
           }
         >
-          <ArrowLeft className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
+          <ArrowLeft className="h-6 w-6 text-gray-500" strokeWidth={2.5} />
         </button>
       );
     }
@@ -89,24 +97,30 @@ export function TopBar() {
       <button
         onClick={handleMenuClick}
         className={`rounded-full border border-gray-200 bg-gray-50 p-0 transition-all duration-300 hover:opacity-80 ${
-          isOverlaid ? 'border-gray-200 bg-white' : 'hover:bg-gray-100'
-        } ${isSpinning ? 'animate-spin' : ''}`}
+          isOverlaid ? "border-gray-200 bg-white" : "hover:bg-gray-100"
+        } ${isSpinning ? "animate-spin" : ""}`}
       >
-        <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={32} height={32} />
+        <Image
+          priority
+          src="/assets/img/evento-sublogo.svg"
+          alt="Evento"
+          width={32}
+          height={32}
+        />
       </button>
     );
   };
 
   const renderCenterContent = () => {
-    if (centerMode === 'empty') {
+    if (centerMode === "empty") {
       return null;
     }
 
-    if (centerMode === 'title' && !isOverlaid) {
+    if (centerMode === "title" && !isOverlaid) {
       return (
-        <div className='flex flex-1 flex-col gap-1'>
-          <h1 className='text-lg font-semibold text-gray-500'>{title}</h1>
-          {subtitle && <p className='text-sm text-gray-500'>{subtitle}</p>}
+        <div className="flex flex-1 flex-col gap-1">
+          <h1 className="text-lg font-semibold text-gray-500">{title}</h1>
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
         </div>
       );
     }
@@ -117,46 +131,46 @@ export function TopBar() {
   // Calculate styles based on scroll state
   const getTopBarStyles = () => {
     if (!isOverlaid) {
-      return 'bg-white';
+      return "bg-white";
     }
 
     // Always transparent when within 100px of top
     if (scrollY <= 100) {
-      return 'bg-transparent';
+      return "bg-transparent";
     }
 
     if (showNavigation) {
-      return 'bg-white shadow-sm transform translate-y-0 transition-all duration-300 ease-out';
+      return "bg-white shadow-sm transform translate-y-0 transition-all duration-300 ease-out";
     }
 
-    return 'bg-transparent';
+    return "bg-transparent";
   };
 
   const getContentOpacity = () => {
-    if (!isOverlaid) return 'opacity-100';
+    if (!isOverlaid) return "opacity-100";
 
     if (scrollY > 100 && !showNavigation) {
-      return 'opacity-0';
+      return "opacity-0";
     }
 
-    return 'opacity-100';
+    return "opacity-100";
   };
 
   return (
     <div
       className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-sm ${getTopBarStyles()}`}
     >
-      <div className='px-4 pb-4 pt-4'>
+      <div className="px-4 pb-4 pt-4">
         <div
           className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div className='flex items-center gap-3'>
+          <div className="flex items-center gap-3">
             {renderLeftContent()}
             {renderCenterContent()}
           </div>
-          <div className='flex items-center gap-3'>
+          <div className="flex items-center gap-3">
             {buttons.length > 0 && (
-              <div className='flex gap-3'>
+              <div className="flex gap-3">
                 {buttons.map((button) => {
                   const Icon = button.icon;
                   return (
@@ -165,13 +179,15 @@ export function TopBar() {
                       onClick={button.onClick}
                       className={`flex flex-row items-center gap-2 transition-all duration-300 hover:opacity-80 ${
                         isOverlaid
-                          ? 'flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white'
-                          : 'p-0'
+                          ? "flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white"
+                          : "p-0"
                       }`}
                     >
                       <Icon
                         className={`${
-                          isOverlaid ? 'h-5 w-5 text-gray-500' : 'h-6 w-6 text-gray-400'
+                          isOverlaid
+                            ? "h-5 w-5 text-gray-500"
+                            : "h-6 w-6 text-gray-400"
                         }`}
                         strokeWidth={2.5}
                       />
@@ -182,15 +198,18 @@ export function TopBar() {
             )}
             {showAvatar && (
               <button
-                onClick={() => router.push('/e/profile')}
+                onClick={() => router.push("/e/profile")}
                 className={`ml-1 rounded-full transition-opacity hover:opacity-80`}
               >
-                <Avatar className='h-8 w-8'>
-                  <AvatarImage src={user?.image || ''} alt={user?.name || 'Profile'} />
-                  <AvatarFallback className='bg-gray-100 text-sm'>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.image || ""}
+                    alt={user?.name || "Profile"}
+                  />
+                  <AvatarFallback className="bg-gray-100 text-sm">
                     {user?.name?.charAt(0).toUpperCase() ||
                       user?.username?.charAt(0).toUpperCase() ||
-                      'U'}
+                      "U"}
                   </AvatarFallback>
                 </Avatar>
               </button>

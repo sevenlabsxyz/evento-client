@@ -6,27 +6,15 @@ import { debugLog } from './debug';
  * Handles both new format (individual date fields) and legacy format (date/time strings)
  */
 export function transformApiEventResponse(response: any): ApiEvent | null {
-  debugLog('ApiTransform', 'Transforming API response', {
-    hasData: !!response,
-    keys: response ? Object.keys(response) : [],
-  });
-
   if (!response) return null;
 
   // Check if we have the new format with individual date fields
   if ('start_date_day' in response && 'start_date_month' in response) {
-    debugLog('ApiTransform', 'Response already in correct format');
     return response as ApiEvent;
   }
 
   // Check if we have legacy format with date/time fields
   if ('date' in response || 'time' in response) {
-    debugLog('ApiTransform', 'Found legacy date/time format - attempting transformation', {
-      date: response.date,
-      time: response.time,
-      end_date: response.end_date,
-      end_time: response.end_time,
-    });
 
     try {
       // Parse the date string (assuming format like "2024-01-15")
@@ -88,15 +76,12 @@ export function transformApiEventResponse(response: any): ApiEvent | null {
         end_date_minutes: endTimeParsed.minutes,
       };
 
-      debugLog('ApiTransform', 'Transformation complete', transformed);
       return transformed as ApiEvent;
     } catch (error) {
-      debugLog('ApiTransform', 'Failed to transform legacy format', error);
       return null;
     }
   }
 
   // If neither format is found, return as-is and let validation handle it
-  debugLog('ApiTransform', 'Unknown format - returning as-is');
   return response as ApiEvent;
 }

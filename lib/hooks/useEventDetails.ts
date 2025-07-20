@@ -8,15 +8,10 @@ export function useEventDetails(eventId: string) {
   return useQuery({
     queryKey: ['event', 'details', eventId],
     queryFn: async (): Promise<Event> => {
-      debugLog('useEventDetails', `Fetching event details for ID: ${eventId}`);
-
       try {
         const response = await apiClient.get<ApiResponse<Event>>(
           `/v1/events/details?id=${eventId}`
         );
-
-        // Log the complete raw response
-        debugApiResponse('useEventDetails', `/v1/events/details?id=${eventId}`, response);
 
         // Handle the response structure { success, message, data }
         if (!response || typeof response !== 'object') {
@@ -33,11 +28,6 @@ export function useEventDetails(eventId: string) {
         let eventData = response;
 
         if ('success' in response && 'data' in response) {
-          debugLog('useEventDetails', 'Found API response structure', {
-            success: response.success,
-            hasData: !!response.data,
-            dataKeys: response.data ? Object.keys(response.data) : [],
-          });
           eventData = response.data;
         }
 
@@ -52,11 +42,6 @@ export function useEventDetails(eventId: string) {
           );
           throw new Error('Failed to transform event data');
         }
-
-        debugLog('useEventDetails', 'Returning transformed event data', {
-          hasTransformed: !!transformed,
-          transformedKeys: Object.keys(transformed),
-        });
 
         return transformed as Event;
       } catch (error) {
