@@ -22,7 +22,10 @@ export default function ContactPage() {
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ 
+        title: '',
+        subtitle: '',
+      });
     };
   }, [setTopBar]);
 

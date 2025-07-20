@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mark this route as dynamic since it uses dynamic parameters
@@ -11,6 +12,9 @@ function errorResponse(message: string, status: number = 500) {
 
 // Proxy handler for all HTTP methods
 async function handler(request: NextRequest, { params }: { params: { path: string[] } }) {
+  const requestId = logger.generateRequestId();
+  const startTime = Date.now();
+
   try {
     // Reconstruct the path
     const path = params.path?.join('/') || '';
@@ -19,6 +23,20 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
     // Get query parameters
     const queryString = request.nextUrl.search;
     const fullUrl = `${targetUrl}${queryString}`;
+
+    // Extract request context for logging
+    const userAgent = request.headers.get('user-agent') || undefined;
+    const ip =
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
+
+    // Log the incoming request
+    logger.logApiRequest(fullUrl, {
+      requestId,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries()),
+      userAgent,
+      ip,
+    });
 
     // Prepare headers
     const headers = new Headers();
@@ -55,20 +73,29 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
     };
 
     // Add body for non-GET requests
+    let requestBody = undefined;
     if (request.method !== 'GET' && request.method !== 'HEAD') {
       const contentType = request.headers.get('content-type');
 
       if (contentType?.includes('application/json')) {
         try {
-          const body = await request.json();
-          options.body = JSON.stringify(body);
+          requestBody = await request.json();
+          options.body = JSON.stringify(requestBody);
         } catch {
           // If JSON parsing fails, try to get raw body
-          options.body = await request.text();
+          const textBody = await request.text();
+          requestBody = textBody;
+          options.body = textBody;
         }
       } else {
         // For other content types, forward as-is
-        options.body = await request.text();
+        requestBody = await request.text();
+        options.body = requestBody;
+      }
+
+      // Log request body (will be sanitized by logger)
+      if (requestBody) {
+        logger.debug(`Request body for ${fullUrl}`, { requestId, body: requestBody });
       }
     }
 
@@ -96,23 +123,68 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
 
     // Handle different response types
     const contentType = response.headers.get('content-type');
+    const duration = Date.now() - startTime;
+    let responseData;
+    let bodySize = 0;
 
     if (contentType?.includes('application/json')) {
-      const data = await response.json();
-      return NextResponse.json(data, {
+      responseData = await response.json();
+      bodySize = JSON.stringify(responseData).length;
+
+      // Log successful response
+      logger.logApiResponse(fullUrl, {
+        requestId,
+        statusCode: response.status,
+        headers: Object.fromEntries(response.headers.entries()),
+        body: responseData,
+        bodySize,
+        duration,
+      });
+
+      return NextResponse.json(responseData, {
         status: response.status,
         headers: responseHeaders,
       });
     } else {
       // For non-JSON responses, return as-is
-      const data = await response.text();
-      return new NextResponse(data, {
+      responseData = await response.text();
+      bodySize = responseData.length;
+
+      // Log successful response
+      logger.logApiResponse(fullUrl, {
+        requestId,
+        statusCode: response.status,
+        headers: Object.fromEntries(response.headers.entries()),
+        bodySize,
+        duration,
+      });
+
+      return new NextResponse(responseData, {
         status: response.status,
         headers: responseHeaders,
       });
     }
   } catch (error) {
-    console.error('Proxy error:', error);
+    const duration = Date.now() - startTime;
+
+    // Log comprehensive error information
+    logger.logApiError(
+      fullUrl || 'unknown',
+      error instanceof Error ? error : new Error(String(error)),
+      {
+        requestId,
+        method: request.method,
+        userAgent: request.headers.get('user-agent') || undefined,
+        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+        additionalContext: {
+          duration,
+          targetUrl: Env.API_PROXY_TARGET,
+          pathParams: params.path,
+          queryString: request.nextUrl.search,
+        },
+      }
+    );
+
     return errorResponse(
       `Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`,
       500

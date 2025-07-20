@@ -22,9 +22,26 @@ interface TopBarState {
   buttons: TopBarButton[];
   showAvatar: boolean;
   isOverlaid: boolean;
+  currentRoute: string | null;
 
   // Actions
   setTopBar: (
+    config: Partial<
+      Pick<
+        TopBarState,
+        | 'leftMode'
+        | 'onBackPress'
+        | 'centerMode'
+        | 'title'
+        | 'subtitle'
+        | 'buttons'
+        | 'showAvatar'
+        | 'isOverlaid'
+      >
+    >
+  ) => void;
+  setTopBarForRoute: (
+    route: string,
     config: Partial<
       Pick<
         TopBarState,
@@ -48,6 +65,7 @@ interface TopBarState {
   setShowAvatar: (show: boolean) => void;
   setOverlaid: (isOverlaid: boolean) => void;
   reset: () => void;
+  resetForRoute: (route: string) => void;
 }
 
 const initialState = {
@@ -59,14 +77,22 @@ const initialState = {
   buttons: [],
   showAvatar: true,
   isOverlaid: false,
+  currentRoute: null,
 };
 
-export const useTopBarStore = create<TopBarState>((set) => ({
+export const useTopBarStore = create<TopBarState>((set, get) => ({
   // Initial state
   ...initialState,
 
   // Actions
   setTopBar: (config) => set((state) => ({ ...state, ...config })),
+  setTopBarForRoute: (route, config) => {
+    // Only update if this is the current route or no route is set
+    const currentRoute = get().currentRoute;
+    if (!currentRoute || currentRoute === route) {
+      set((state) => ({ ...state, ...config, currentRoute: route }));
+    }
+  },
   setLeftMode: (leftMode) => set({ leftMode }),
   setBackHandler: (onBackPress) => set({ onBackPress }),
   setCenterMode: (centerMode) => set({ centerMode }),
@@ -76,6 +102,12 @@ export const useTopBarStore = create<TopBarState>((set) => ({
   setShowAvatar: (showAvatar) => set({ showAvatar }),
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
   reset: () => set(initialState),
+  resetForRoute: (route) => {
+    const currentRoute = get().currentRoute;
+    if (currentRoute === route) {
+      set(initialState);
+    }
+  },
 }));
 
 // Selector hook for easy access
@@ -88,7 +120,9 @@ export const useTopBar = () => {
   const buttons = useTopBarStore((state) => state.buttons);
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
+  const currentRoute = useTopBarStore((state) => state.currentRoute);
   const setTopBar = useTopBarStore((state) => state.setTopBar);
+  const setTopBarForRoute = useTopBarStore((state) => state.setTopBarForRoute);
   const setLeftMode = useTopBarStore((state) => state.setLeftMode);
   const setBackHandler = useTopBarStore((state) => state.setBackHandler);
   const setCenterMode = useTopBarStore((state) => state.setCenterMode);
@@ -98,6 +132,7 @@ export const useTopBar = () => {
   const setShowAvatar = useTopBarStore((state) => state.setShowAvatar);
   const setOverlaid = useTopBarStore((state) => state.setOverlaid);
   const reset = useTopBarStore((state) => state.reset);
+  const resetForRoute = useTopBarStore((state) => state.resetForRoute);
 
   return {
     leftMode,
@@ -108,7 +143,9 @@ export const useTopBar = () => {
     buttons,
     showAvatar,
     isOverlaid,
+    currentRoute,
     setTopBar,
+    setTopBarForRoute,
     setLeftMode,
     setBackHandler,
     setCenterMode,
@@ -118,5 +155,6 @@ export const useTopBar = () => {
     setShowAvatar,
     setOverlaid,
     reset,
+    resetForRoute,
   };
 };

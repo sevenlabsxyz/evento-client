@@ -27,7 +27,19 @@ export default function ManageEventPage() {
       leftMode: 'back',
       showAvatar: false,
       subtitle: undefined,
+      centerMode: 'title',
     });
+
+    // Cleanup function to reset topbar state when leaving this page
+    return () => {
+      setTopBar({
+        title: '',
+        leftMode: 'menu',
+        showAvatar: true,
+        subtitle: '',
+        centerMode: 'title',
+      });
+    };
   }, [setTopBar]);
 
   const params = useParams();

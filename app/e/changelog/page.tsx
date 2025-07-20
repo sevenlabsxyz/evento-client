@@ -18,7 +18,10 @@ export default function ChangelogPage() {
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ 
+        title: '',
+        subtitle: '',
+      });
     };
   }, [setTopBar]);
 

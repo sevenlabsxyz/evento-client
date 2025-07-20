@@ -46,7 +46,21 @@ export default function CreatePage() {
       title: 'Create Event',
       subtitle: undefined,
       showAvatar: true,
+      centerMode: 'title',
+      buttons: [], // Explicitly clear any buttons
     });
+
+    // Cleanup function to reset topbar state when leaving this page
+    return () => {
+      setTopBar({
+        leftMode: 'menu',
+        title: '',
+        subtitle: '',
+        showAvatar: true,
+        centerMode: 'title',
+        buttons: [],
+      });
+    };
   }, [setTopBar]);
 
   const createEventMutation = useCreateEventWithCallbacks();

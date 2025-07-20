@@ -17,7 +17,16 @@ export default function NotificationsPage() {
       subtitle: undefined,
       showAvatar: true,
       leftMode: 'menu',
+      centerMode: 'title',
     });
+
+    // Cleanup function to reset topbar state when leaving this page
+    return () => {
+      setTopBar({
+        title: '',
+        subtitle: '',
+      });
+    };
   }, [setTopBar]);
 
   const [activeTab, setActiveTab] = useState('notifications');
