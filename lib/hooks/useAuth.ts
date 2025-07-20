@@ -5,6 +5,7 @@ import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
+// import { debugLog } from '../utils/debug';
 
 // Key for user query
 const USER_QUERY_KEY = ['auth', 'user'] as const;
@@ -56,7 +57,7 @@ export function useAuth() {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth: State changed -', event);
+      // debugLog('Auth', 'State changed -', event);
 
       if (event === 'SIGNED_IN' && session) {
         // User signed in - refresh user data
@@ -67,7 +68,7 @@ export function useAuth() {
         queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
       } else if (event === 'TOKEN_REFRESHED' && session) {
         // Token refreshed - this is automatic, no action needed
-        console.log('Auth: Token refreshed');
+        // debugLog('Auth', 'Token refreshed');
       }
     });
 
