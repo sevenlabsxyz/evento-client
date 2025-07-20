@@ -1,28 +1,32 @@
-import type { Editor } from "@tiptap/core";
-import { cn } from '@/lib/utils'
-import { Link, Plus, ChevronDown, Minus } from 'lucide-react'
-import { ToolbarButton } from '../toolbar-button'
-import { activeItemClass, DropdownMenuItemClass } from '../tiptap-utils'
-import { LinkEditSheet } from '../link-edit-sheet'
-import { LinkProps } from '../tiptap-utils'
-import { useState } from 'react'
-import { DetachedSheet } from '@/components/ui/detached-sheet'
-import { VisuallyHidden } from '@silk-hq/components'
+import { cn } from '@/lib/utils';
+import type { Editor } from '@tiptap/core';
+import { ChevronDown, Link, Minus, Plus } from 'lucide-react';
+import { useState } from 'react';
+import { LinkEditSheet } from '../link-edit-sheet';
+import { DropdownMenuItemClass, LinkProps } from '../tiptap-utils';
+import { ToolbarButton } from '../toolbar-button';
 
 interface SectionFourProps {
   editor: Editor;
   onOpenSheet?: (sheet: string) => void;
-  onOpenLinkEditSheet?: (editor: Editor, linkData: { url: string; text: string; openInNewTab: boolean }) => void;
+  onOpenLinkEditSheet?: (
+    editor: Editor,
+    linkData: { url: string; text: string; openInNewTab: boolean }
+  ) => void;
 }
 
-export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }: SectionFourProps) {
-  const [showLinkSheet, setShowLinkSheet] = useState(false)
-  const [showInsertDropdown, setShowInsertDropdown] = useState(false)
+export default function SectionFour({
+  editor,
+  onOpenSheet,
+  onOpenLinkEditSheet,
+}: SectionFourProps) {
+  const [showLinkSheet, setShowLinkSheet] = useState(false);
+  const [showInsertDropdown, setShowInsertDropdown] = useState(false);
 
   const setLink = ({ url, text, openInNewTab }: LinkProps) => {
-    const { from, to } = editor.state.selection
-    const selectedText = editor.state.doc.textBetween(from, to)
-    
+    const { from, to } = editor.state.selection;
+    const selectedText = editor.state.doc.textBetween(from, to);
+
     if (selectedText) {
       // If there's selected text, apply link to it
       editor
@@ -30,7 +34,7 @@ export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }
         .focus()
         .extendMarkRange('link')
         .setLink({ href: url, target: openInNewTab ? '_blank' : '' })
-        .run()
+        .run();
     } else {
       // If no text selected, insert text with link
       editor
@@ -44,28 +48,28 @@ export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }
               type: 'link',
               attrs: {
                 href: url,
-                target: openInNewTab ? '_blank' : ''
-              }
-            }
-          ]
+                target: openInNewTab ? '_blank' : '',
+              },
+            },
+          ],
         })
-        .run()
+        .run();
     }
-    
-    setShowLinkSheet(false)
-  }
+
+    setShowLinkSheet(false);
+  };
 
   const insertDivider = () => {
-    editor.chain().focus().setHorizontalRule().run()
-    setShowInsertDropdown(false)
-  }
+    editor.chain().focus().setHorizontalRule().run();
+    setShowInsertDropdown(false);
+  };
 
   return (
     <>
       {/* LINK */}
-      <ToolbarButton 
-        isActive={editor.isActive('link')} 
-        tooltip="Link" 
+      <ToolbarButton
+        isActive={editor.isActive('link')}
+        tooltip='Link'
         disabled={editor.isActive('codeBlock')}
         onClick={() => {
           if (onOpenLinkEditSheet) {
@@ -75,7 +79,7 @@ export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }
                 editor.state.selection.from,
                 editor.state.selection.to
               ),
-              openInNewTab: editor.getAttributes('link').target === '_blank'
+              openInNewTab: editor.getAttributes('link').target === '_blank',
             };
             onOpenLinkEditSheet(editor, linkData);
           } else {
@@ -83,17 +87,15 @@ export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }
           }
         }}
       >
-        <Link className="h-5 w-5" />
+        <Link className='h-5 w-5' />
       </ToolbarButton>
 
       {/* INSERT ELEMENTS */}
-      <div className="relative">
+      <div className='relative'>
         <ToolbarButton
-          isActive={
-            editor.isActive("codeBlock") || editor.isActive("blockquote")
-          }
-          tooltip="Insert elements"
-          className="w-12 hidden md:flex"
+          isActive={editor.isActive('codeBlock') || editor.isActive('blockquote')}
+          tooltip='Insert elements'
+          className='hidden w-12 md:flex'
           onClick={() => {
             if (onOpenSheet && typeof window !== 'undefined' && window.innerWidth < 768) {
               onOpenSheet('insertElements');
@@ -102,23 +104,17 @@ export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }
             }
           }}
         >
-          <Plus className="h-5 w-5" />
-          <ChevronDown className="h-5 w-5" />
+          <Plus className='h-5 w-5' />
+          <ChevronDown className='h-5 w-5' />
         </ToolbarButton>
-        
+
         {showInsertDropdown && (
           <>
-            <div 
-              className="fixed inset-0 z-40" 
-              onClick={() => setShowInsertDropdown(false)}
-            />
-            <div className="absolute top-full left-0 mt-1 z-50 w-64 rounded-md border bg-white shadow-lg">
-              <button
-                onClick={insertDivider}
-                className={cn(DropdownMenuItemClass)}
-              >
-                <span className="flex grow items-center">
-                  <Minus className="mr-2 h-4 w-4" />
+            <div className='fixed inset-0 z-40' onClick={() => setShowInsertDropdown(false)} />
+            <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg'>
+              <button onClick={insertDivider} className={cn(DropdownMenuItemClass)}>
+                <span className='flex grow items-center'>
+                  <Minus className='mr-2 h-4 w-4' />
                   Divider
                 </span>
               </button>
@@ -142,5 +138,5 @@ export default function SectionFour({ editor, onOpenSheet, onOpenLinkEditSheet }
         />
       )}
     </>
-  )
+  );
 }

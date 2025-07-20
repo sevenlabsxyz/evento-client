@@ -1,47 +1,54 @@
-import { create } from 'zustand';
 import { LocationData } from '@/components/create-event/location-modal';
-import { TimeFormat, dateToApiFormat, timeToApiFormat, apiToDate, apiToTime, getDefaultEventDateTime } from '@/lib/utils/event-date';
-import { EventFormData, ApiEvent } from '@/lib/schemas/event';
-import { parseLocationString } from '@/lib/utils/location';
+import { ApiEvent, EventFormData } from '@/lib/schemas/event';
+import { debugError, debugLog } from '@/lib/utils/debug';
+import {
+  TimeFormat,
+  apiToDate,
+  apiToTime,
+  dateToApiFormat,
+  getDefaultEventDateTime,
+  timeToApiFormat,
+} from '@/lib/utils/event-date';
 import { getOptimizedImageUrl } from '@/lib/utils/image';
-import { debugLog, debugError } from '@/lib/utils/debug';
+import { parseLocationString } from '@/lib/utils/location';
+import { create } from 'zustand';
 
 interface EventFormState {
   // Initial data for change detection
   initialData: Partial<EventFormData> | null;
-  
+
   // Basic fields
   title: string;
   description: string;
   coverImage: string;
-  
+
   // Location
   location: LocationData | null;
-  
+
   // Dates and times
   startDate: Date;
   endDate: Date;
   startTime: TimeFormat;
   endTime: TimeFormat;
   timezone: string;
-  
+
   // Visibility and settings
   visibility: 'public' | 'private';
   hasCapacity: boolean;
   capacity: string;
-  
+
   // Attachments and links
   spotifyUrl: string;
   wavlakeUrl: string;
   attachments: Array<{ type: string; url?: string; data?: any }>;
-  
+
   // Contribution methods
   contribCashapp: string;
   contribVenmo: string;
   contribPaypal: string;
   contribBtclightning: string;
   cost: string;
-  
+
   // Actions
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
@@ -63,7 +70,7 @@ interface EventFormState {
   setContribPaypal: (value: string) => void;
   setContribBtclightning: (value: string) => void;
   setCost: (cost: string) => void;
-  
+
   // Utility methods
   populateFromApiEvent: (event: ApiEvent) => void;
   getFormData: () => EventFormData;
@@ -79,14 +86,14 @@ function extractRelativePath(url: string): string {
   if (!url.includes('://')) {
     return url;
   }
-  
+
   // Extract path from Supabase storage URL
   const supabasePattern = /\/storage\/v1\/object\/public\/cdn\/(.*?)(?:\?|$)/;
   const match = url.match(supabasePattern);
   if (match) {
     return match[1];
   }
-  
+
   // Return original URL if it's not a Supabase URL
   return url;
 }
@@ -120,7 +127,7 @@ const initialState = {
 
 export const useEventFormStore = create<EventFormState>((set, get) => ({
   ...initialState,
-  
+
   // Basic setters
   setTitle: (title) => set({ title }),
   setDescription: (description) => set({ description }),
@@ -142,11 +149,11 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   setContribPaypal: (contribPaypal) => set({ contribPaypal }),
   setContribBtclightning: (contribBtclightning) => set({ contribBtclightning }),
   setCost: (cost) => set({ cost }),
-  
+
   // Populate from API event
   populateFromApiEvent: (event: ApiEvent) => {
     debugLog('EventFormStore', 'populateFromApiEvent called', event);
-    
+
     // Check if we have the expected date fields
     debugLog('EventFormStore', 'Checking date field availability', {
       has_start_date_day: 'start_date_day' in event,
@@ -158,54 +165,62 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       start_date_month: event.start_date_month,
       start_date_year: event.start_date_year,
       start_date_hours: event.start_date_hours,
-      start_date_minutes: event.start_date_minutes
+      start_date_minutes: event.start_date_minutes,
     });
-    
+
     try {
       // Parse dates
       debugLog('EventFormStore', 'Parsing start date', {
         day: event.start_date_day,
         month: event.start_date_month,
-        year: event.start_date_year
+        year: event.start_date_year,
       });
-      const startDate = apiToDate(event.start_date_day, event.start_date_month, event.start_date_year);
-      
+      const startDate = apiToDate(
+        event.start_date_day,
+        event.start_date_month,
+        event.start_date_year
+      );
+
       debugLog('EventFormStore', 'Parsing end date', {
         day: event.end_date_day,
         month: event.end_date_month,
-        year: event.end_date_year
+        year: event.end_date_year,
       });
       const endDate = apiToDate(event.end_date_day, event.end_date_month, event.end_date_year);
-      
+
       debugLog('EventFormStore', 'Parsing start time', {
         hours: event.start_date_hours,
-        minutes: event.start_date_minutes
+        minutes: event.start_date_minutes,
       });
       const startTime = apiToTime(event.start_date_hours, event.start_date_minutes);
-      
+
       debugLog('EventFormStore', 'Parsing end time', {
         hours: event.end_date_hours,
-        minutes: event.end_date_minutes
+        minutes: event.end_date_minutes,
       });
       const endTime = apiToTime(event.end_date_hours, event.end_date_minutes);
-      
+
       debugLog('EventFormStore', 'Parsed dates successfully', {
         startDate,
         endDate,
         startTime,
-        endTime
+        endTime,
       });
-      
+
       // Parse location string into structured data
-      debugLog('EventFormStore', 'Parsing location', { location: event.location });
+      debugLog('EventFormStore', 'Parsing location', {
+        location: event.location,
+      });
       const location = event.location ? parseLocationString(event.location) : null;
       debugLog('EventFormStore', 'Parsed location', location);
-      
+
       // Handle cover image URL
-      debugLog('EventFormStore', 'Processing cover image', { cover: event.cover });
+      debugLog('EventFormStore', 'Processing cover image', {
+        cover: event.cover,
+      });
       const coverImage = event.cover ? getOptimizedImageUrl(event.cover, 800) : '';
       debugLog('EventFormStore', 'Processed cover image', { coverImage });
-      
+
       const formData = {
         title: event.title,
         description: event.description || '<p></p>',
@@ -225,20 +240,22 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
         contribBtclightning: event.contrib_btclightning || '',
         cost: event.cost || '',
       };
-      
+
       debugLog('EventFormStore', 'Setting form data', formData);
       set(formData);
-      
+
       // Store initial data for change detection
       debugLog('EventFormStore', 'Storing initial data for change detection');
       get().setInitialData(get().getFormData());
-      
+
       debugLog('EventFormStore', 'Population complete - Current form state', get());
     } catch (error) {
-      debugError('EventFormStore', 'Failed to populate from API event', error, { event });
+      debugError('EventFormStore', 'Failed to populate from API event', error, {
+        event,
+      });
     }
   },
-  
+
   // Get form data in API format
   getFormData: (): EventFormData => {
     const state = get();
@@ -246,53 +263,55 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
     const endDateApi = dateToApiFormat(state.endDate);
     const startTimeApi = timeToApiFormat(state.startTime);
     const endTimeApi = timeToApiFormat(state.endTime);
-    
+
     return {
       title: state.title,
       description: state.description,
       location: state.location?.formatted || '',
       timezone: state.timezone,
       cover: state.coverImage ? extractRelativePath(state.coverImage) : null,
-      
+
       // Start date/time
       start_date_day: startDateApi.day,
       start_date_month: startDateApi.month,
       start_date_year: startDateApi.year,
       start_date_hours: startTimeApi.hours,
       start_date_minutes: startTimeApi.minutes,
-      
+
       // End date/time
       end_date_day: endDateApi.day,
       end_date_month: endDateApi.month,
       end_date_year: endDateApi.year,
       end_date_hours: endTimeApi.hours,
       end_date_minutes: endTimeApi.minutes,
-      
+
       // Settings
       visibility: state.visibility,
       status: 'published',
-      
+
       // URLs
       spotify_url: state.spotifyUrl || undefined,
       wavlake_url: state.wavlakeUrl || undefined,
-      
+
       // Contribution methods
       contrib_cashapp: state.contribCashapp || undefined,
       contrib_venmo: state.contribVenmo || undefined,
       contrib_paypal: state.contribPaypal || undefined,
       contrib_btclightning: state.contribBtclightning || undefined,
-      
+
       // Cost
       cost: state.cost || undefined,
-      
+
       // Settings for capacity
-      settings: state.hasCapacity ? {
-        max_capacity: parseInt(state.capacity) || undefined,
-        show_capacity_count: true,
-      } : undefined,
+      settings: state.hasCapacity
+        ? {
+            max_capacity: parseInt(state.capacity) || undefined,
+            show_capacity_count: true,
+          }
+        : undefined,
     };
   },
-  
+
   // Reset to initial state with fresh default date/time
   reset: () => {
     const freshDefaults = getDefaultEventDateTime();
@@ -304,20 +323,20 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       endTime: freshDefaults.endTime,
     });
   },
-  
+
   // Validation
   isValid: () => {
     const state = get();
     return !!(state.title.trim() && state.location);
   },
-  
+
   // Change detection
   hasChanges: () => {
     const state = get();
     if (!state.initialData) return false;
-    
+
     const currentData = state.getFormData();
-    
+
     // Compare key fields
     return (
       currentData.title !== state.initialData.title ||
@@ -345,7 +364,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       currentData.cost !== state.initialData.cost
     );
   },
-  
+
   // Set initial data for comparison
   setInitialData: (data: Partial<EventFormData>) => set({ initialData: data }),
 }));

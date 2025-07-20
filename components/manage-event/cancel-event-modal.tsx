@@ -1,7 +1,7 @@
 'use client';
 
+import { AlertTriangle, ArrowRight, X } from 'lucide-react';
 import { useState } from 'react';
-import { X, AlertTriangle, ArrowRight } from 'lucide-react';
 
 interface CancelEventModalProps {
   isOpen: boolean;
@@ -10,11 +10,11 @@ interface CancelEventModalProps {
   eventTitle?: string;
 }
 
-export default function CancelEventModal({ 
-  isOpen, 
-  onClose, 
-  onConfirm, 
-  eventTitle 
+export default function CancelEventModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  eventTitle,
 }: CancelEventModalProps) {
   const [sendEmail, setSendEmail] = useState(true);
 
@@ -31,64 +31,57 @@ export default function CancelEventModal({
   };
 
   return (
-    <div 
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+    <div
+      className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'
       onClick={handleBackdropClick}
     >
-      <div className="bg-white rounded-2xl w-full max-w-md">
+      <div className='w-full max-w-md rounded-2xl bg-white'>
         {/* Header */}
-        <div className="flex justify-end p-4 pb-2">
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <X className="w-6 h-6 text-gray-600" />
+        <div className='flex justify-end p-4 pb-2'>
+          <button onClick={onClose} className='rounded-full p-2 hover:bg-gray-100'>
+            <X className='h-6 w-6 text-gray-600' />
           </button>
         </div>
 
         {/* Content */}
-        <div className="px-6 pb-6">
+        <div className='px-6 pb-6'>
           {/* Warning Icon */}
-          <div className="flex justify-center mb-6">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
-              <AlertTriangle className="w-8 h-8 text-red-600" />
+          <div className='mb-6 flex justify-center'>
+            <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+              <AlertTriangle className='h-8 w-8 text-red-600' />
             </div>
           </div>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-4">
-            Cancel Event
-          </h2>
+          <h2 className='mb-4 text-center text-2xl font-bold text-gray-900'>Cancel Event</h2>
 
           {/* Description */}
-          <p className="text-gray-600 text-center mb-2">
+          <p className='mb-2 text-center text-gray-600'>
             We will send a message to guests notifying them that the event has been cancelled.
           </p>
 
           {/* Warning Text */}
-          <p className="text-red-600 text-center font-medium mb-8">
+          <p className='mb-8 text-center font-medium text-red-600'>
             This action can't be reverted.
           </p>
 
           {/* Email Notification Toggle */}
-          <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <h3 className="font-medium text-gray-900 mb-1">
-                  Notify attendees via email
-                </h3>
-                <p className="text-sm text-gray-500">
+          <div className='mb-6 rounded-2xl bg-gray-50 p-4'>
+            <div className='flex items-center justify-between'>
+              <div className='flex-1'>
+                <h3 className='mb-1 font-medium text-gray-900'>Notify attendees via email</h3>
+                <p className='text-sm text-gray-500'>
                   Send cancellation notification to all registered guests
                 </p>
               </div>
               <button
                 onClick={() => setSendEmail(!sendEmail)}
-                className={`w-12 h-6 rounded-full transition-colors ml-4 ${
+                className={`ml-4 h-6 w-12 rounded-full transition-colors ${
                   sendEmail ? 'bg-red-500' : 'bg-gray-300'
                 }`}
               >
                 <div
-                  className={`w-5 h-5 bg-white rounded-full transition-transform ${
+                  className={`h-5 w-5 rounded-full bg-white transition-transform ${
                     sendEmail ? 'translate-x-6' : 'translate-x-0.5'
                   }`}
                 />
@@ -99,9 +92,9 @@ export default function CancelEventModal({
           {/* Cancel Event Button */}
           <button
             onClick={handleConfirm}
-            className="w-full bg-red-500 hover:bg-red-600 text-white py-4 px-6 rounded-2xl font-semibold flex items-center justify-center gap-3 transition-colors"
+            className='flex w-full items-center justify-center gap-3 rounded-2xl bg-red-500 px-6 py-4 font-semibold text-white transition-colors hover:bg-red-600'
           >
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className='h-5 w-5' />
             Cancel Event
           </button>
         </div>

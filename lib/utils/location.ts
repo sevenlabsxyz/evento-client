@@ -12,7 +12,7 @@ export function locationDataToEventLocation(locationData: LocationData): EventLo
     state: locationData.state,
     country: locationData.country,
     zipCode: locationData.zipCode,
-    coordinates: locationData.coordinates
+    coordinates: locationData.coordinates,
   };
 }
 
@@ -28,7 +28,7 @@ export function eventLocationToLocationData(eventLocation: EventLocation): Locat
     country: eventLocation.country,
     zipCode: eventLocation.zipCode,
     coordinates: eventLocation.coordinates,
-    formatted: formatEventLocationAddress(eventLocation)
+    formatted: formatEventLocationAddress(eventLocation),
   };
 }
 
@@ -42,9 +42,9 @@ export function formatEventLocationAddress(location: EventLocation): string {
     location.city,
     location.state,
     location.zipCode,
-    location.country
-  ].filter(part => part && part.trim() !== '');
-  
+    location.country,
+  ].filter((part) => part && part.trim() !== '');
+
   return parts.join(', ');
 }
 
@@ -52,15 +52,18 @@ export function formatEventLocationAddress(location: EventLocation): string {
  * Formats a LocationData into a display-friendly address string
  */
 export function formatLocationDataAddress(location: LocationData): string {
-  return location.formatted || formatEventLocationAddress({
-    name: location.name,
-    address: location.address,
-    city: location.city,
-    state: location.state,
-    country: location.country,
-    zipCode: location.zipCode,
-    coordinates: location.coordinates
-  });
+  return (
+    location.formatted ||
+    formatEventLocationAddress({
+      name: location.name,
+      address: location.address,
+      city: location.city,
+      state: location.state,
+      country: location.country,
+      zipCode: location.zipCode,
+      coordinates: location.coordinates,
+    })
+  );
 }
 
 /**
@@ -78,8 +81,8 @@ export function parseLocationString(locationStr: string): LocationData {
     };
   }
 
-  const parts = locationStr.split(',').map(s => s.trim());
-  
+  const parts = locationStr.split(',').map((s) => s.trim());
+
   if (parts.length === 1) {
     // Simple location like "Online" or just a city name
     return {
@@ -90,12 +93,12 @@ export function parseLocationString(locationStr: string): LocationData {
       formatted: locationStr,
     };
   }
-  
+
   if (parts.length >= 5) {
     // Full format: "Name, Address, City, State ZIP, Country"
     const stateZip = parts[3];
     const stateMatch = stateZip.match(/^([A-Z]{2})\s+(\d{5})$/);
-    
+
     return {
       name: parts[0],
       address: parts[1],
@@ -106,7 +109,7 @@ export function parseLocationString(locationStr: string): LocationData {
       formatted: locationStr,
     };
   }
-  
+
   // Fallback for other formats
   return {
     name: parts[0] || '',
@@ -130,7 +133,7 @@ export function parseAddressString(addressString: string): LocationData {
     address: addressString,
     city: '',
     country: '',
-    formatted: addressString
+    formatted: addressString,
   };
 }
 
@@ -148,10 +151,10 @@ export function getLocationDisplayName(location: LocationData): string {
   if (location.name && location.name !== location.address) {
     return location.name;
   }
-  
+
   if (location.city) {
     return location.city;
   }
-  
+
   return location.formatted.split(',')[0] || 'Unknown Location';
 }

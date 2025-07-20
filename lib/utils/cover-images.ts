@@ -9,15 +9,19 @@
  * @param height - Desired height for optimization (default: 500)
  * @returns Optimized image URL
  */
-export function getCoverImageUrl(imagePath: string, width: number = 500, height: number = 500): string {
+export function getCoverImageUrl(
+  imagePath: string,
+  width: number = 500,
+  height: number = 500
+): string {
   // If it's already a full URL, return as-is
   if (imagePath.includes('http://') || imagePath.includes('https://')) {
     return imagePath;
   }
-  
+
   // Remove leading slash if present
   const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
-  
+
   // Construct the Supabase storage URL with optimization
   return `https://api.evento.so/storage/v1/render/image/public/cdn/${cleanPath}?width=${width}&height=${height}`;
 }
@@ -60,14 +64,15 @@ export function extractRelativePath(url: string): string {
   if (!url.includes('://')) {
     return url;
   }
-  
+
   // Extract path from Supabase storage URL
-  const supabasePattern = /\/storage\/v1\/(?:object\/public|render\/image\/public)\/cdn\/(.*?)(?:\?|$)/;
+  const supabasePattern =
+    /\/storage\/v1\/(?:object\/public|render\/image\/public)\/cdn\/(.*?)(?:\?|$)/;
   const match = url.match(supabasePattern);
   if (match) {
     return match[1];
   }
-  
+
   // Return original URL if it's not a Supabase URL
   return url;
 }

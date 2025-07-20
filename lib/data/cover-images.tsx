@@ -1,6 +1,6 @@
-import React from "react";
-import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from "lucide-react";
-import { DEFAULT_COVERS } from "@/components/event-covers";
+import { DEFAULT_COVERS } from '@/components/event-covers';
+import { Clapperboard, Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from 'lucide-react';
+import React from 'react';
 
 export interface CoverImage {
   id: string;
@@ -29,35 +29,41 @@ function convertLegacyCovers(legacyCovers: { url: string }[], categoryName: stri
 
 export const coverImageCategories: CoverImageCategory[] = [
   {
-    id: "featured",
-    name: "Featured",
+    id: 'featured',
+    name: 'Featured',
     icon: Crown,
     featured: true,
-    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, "Featured"),
+    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, 'Featured'),
   },
   {
-    id: "party",
-    name: "Party",
+    id: 'giphy',
+    name: 'GIFs',
+    icon: Clapperboard,
+    images: [], // No static images, will be loaded dynamically
+  },
+  {
+    id: 'party',
+    name: 'Party',
     icon: PartyPopper,
-    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, "Party"),
+    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, 'Party'),
   },
   {
-    id: "social",
-    name: "Social",
+    id: 'social',
+    name: 'Social',
     icon: MessagesSquare,
-    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, "Social"),
+    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, 'Social'),
   },
   {
-    id: "classic",
-    name: "Classic",
+    id: 'classic',
+    name: 'Classic',
     icon: Sparkles,
-    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, "Classic"),
+    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'Classic'),
   },
   {
-    id: "tech",
-    name: "Tech",
+    id: 'tech',
+    name: 'Tech',
     icon: Cpu,
-    images: convertLegacyCovers(DEFAULT_COVERS.TECH, "Tech"),
+    images: convertLegacyCovers(DEFAULT_COVERS.TECH, 'Tech'),
   },
 ];
 

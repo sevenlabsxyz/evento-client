@@ -1,9 +1,9 @@
-import { useMutation } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { toast } from '@/lib/utils/toast';
 import apiClient from '@/lib/api/client';
 import { CreateEventData, createEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
+import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
 
 interface CreateEventResponse {
   id: string;
@@ -13,24 +13,24 @@ interface CreateEventResponse {
 
 export function useCreateEvent() {
   const router = useRouter();
-  
+
   return useMutation({
     mutationFn: async (data: CreateEventData) => {
       // Validate data
       const validatedData = createEventSchema.parse(data);
-      
+
       // Make API call
       const response = await apiClient.post<ApiResponse<CreateEventResponse[]>>(
         '/v1/events/create',
         validatedData
       );
-      
+
       // The API returns { success: true, data: [...] }
       // Check if response has the expected structure
       if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         return response.data[0];
       }
-      
+
       throw new Error('Failed to create event');
     },
     onSuccess: (data) => {
@@ -54,19 +54,19 @@ export function useCreateEventWithCallbacks() {
     mutationFn: async (data: CreateEventData) => {
       // Validate data
       const validatedData = createEventSchema.parse(data);
-      
+
       // Make API call
       const response = await apiClient.post<ApiResponse<CreateEventResponse[]>>(
         '/v1/events/create',
         validatedData
       );
-      
+
       // The API returns { success: true, data: [...] }
       // Check if response has the expected structure
       if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
         return response.data[0];
       }
-      
+
       throw new Error('Failed to create event');
     },
   });

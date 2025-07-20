@@ -30,16 +30,19 @@ export function dateToApiFormat(date: Date): Omit<ApiDateFormat, 'hours' | 'minu
 /**
  * Convert time from 12-hour format to 24-hour format for API
  */
-export function timeToApiFormat(time: TimeFormat): { hours: number; minutes: number } {
+export function timeToApiFormat(time: TimeFormat): {
+  hours: number;
+  minutes: number;
+} {
   let hours = time.hour;
-  
+
   // Convert to 24-hour format
   if (time.period === 'PM' && hours !== 12) {
     hours += 12;
   } else if (time.period === 'AM' && hours === 12) {
     hours = 0;
   }
-  
+
   return {
     hours,
     minutes: time.minute,
@@ -52,7 +55,7 @@ export function timeToApiFormat(time: TimeFormat): { hours: number; minutes: num
 export function dateTimeToApiFormat(date: Date, time: TimeFormat): ApiDateFormat {
   const dateFields = dateToApiFormat(date);
   const timeFields = timeToApiFormat(time);
-  
+
   return {
     ...dateFields,
     hours: timeFields.hours,
@@ -74,10 +77,10 @@ export function apiToTime(hours: number | null, minutes: number | null): TimeFor
   if (hours === null || minutes === null) {
     return { hour: 12, minute: 0, period: 'PM' };
   }
-  
+
   let hour = hours;
   let period: 'AM' | 'PM' = 'AM';
-  
+
   if (hours === 0) {
     hour = 12;
     period = 'AM';
@@ -87,7 +90,7 @@ export function apiToTime(hours: number | null, minutes: number | null): TimeFor
     hour = hours - 12;
     period = 'PM';
   }
-  
+
   return {
     hour,
     minute: minutes,
@@ -106,12 +109,12 @@ export function apiToDateTime(
   minutes: number | null
 ): Date {
   const date = new Date(year, month - 1, day);
-  
+
   if (hours !== null && minutes !== null) {
     date.setHours(hours);
     date.setMinutes(minutes);
   }
-  
+
   return date;
 }
 
@@ -127,11 +130,11 @@ export function isEndAfterStart(
   const start = new Date(startDate);
   const startApiTime = timeToApiFormat(startTime);
   start.setHours(startApiTime.hours, startApiTime.minutes);
-  
+
   const end = new Date(endDate);
   const endApiTime = timeToApiFormat(endTime);
   end.setHours(endApiTime.hours, endApiTime.minutes);
-  
+
   return end > start;
 }
 
@@ -167,21 +170,21 @@ export function getDefaultEventDateTime(): {
   endTime: TimeFormat;
 } {
   const now = new Date();
-  
+
   // Get tomorrow's date
   const tomorrow = new Date(now);
   tomorrow.setDate(now.getDate() + 1);
-  
+
   // Round current time to nearest 30-minute interval
   const currentHour = now.getHours();
   const currentMinute = now.getMinutes();
   const roundedMinute = currentMinute < 15 ? 0 : currentMinute < 45 ? 30 : 0;
   const adjustedHour = currentMinute >= 45 ? currentHour + 1 : currentHour;
-  
+
   // Convert to 12-hour format for start time
   let startHour = adjustedHour;
   let startPeriod: 'AM' | 'PM' = 'AM';
-  
+
   if (startHour === 0) {
     startHour = 12;
   } else if (startHour === 12) {
@@ -190,21 +193,21 @@ export function getDefaultEventDateTime(): {
     startHour = startHour - 12;
     startPeriod = 'PM';
   }
-  
+
   // Calculate end time (1 hour later)
   let endHour24 = adjustedHour + 1;
   let endMinute = roundedMinute;
-  
+
   // Handle day overflow (cap at 11:30 PM if it would go to next day)
   if (endHour24 >= 24) {
     endHour24 = 23;
     endMinute = 30;
   }
-  
+
   // Convert end time to 12-hour format
   let endHour = endHour24;
   let endPeriod: 'AM' | 'PM' = 'AM';
-  
+
   if (endHour === 0) {
     endHour = 12;
   } else if (endHour === 12) {
@@ -213,7 +216,7 @@ export function getDefaultEventDateTime(): {
     endHour = endHour - 12;
     endPeriod = 'PM';
   }
-  
+
   return {
     startDate: tomorrow,
     endDate: tomorrow, // Same day

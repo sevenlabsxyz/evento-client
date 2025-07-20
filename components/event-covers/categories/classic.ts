@@ -1,5 +1,5 @@
-const basePath = "/eventos/default-covers";
-const category = "classic";
+const basePath = '/eventos/default-covers';
+const category = 'classic';
 
 export const CLASSIC_COVERS = [
   { url: `${basePath}/${category}/1.jpg` },

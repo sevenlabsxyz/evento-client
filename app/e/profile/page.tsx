@@ -1,24 +1,31 @@
-"use client";
+'use client';
 
-import { Settings, Edit3, Camera, Globe, Zap, X, BadgeCheck, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useRouter } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
-import { toast } from "@/lib/utils/toast";
-import { SilkLightbox, SilkLightboxRef } from "@/components/ui/silk-lightbox";
-import { useUserProfile, useUserEventCount, useUserFollowers, useUserFollowing } from "@/lib/hooks/useUserProfile";
-import { useAuth } from "@/lib/hooks/useAuth";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { Navbar } from "@/components/navbar";
-import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
-import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
+import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
+import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
+import { Navbar } from '@/components/navbar';
+import SocialLinks from '@/components/profile/social-links';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { useRequireAuth } from '@/lib/hooks/useAuth';
+import {
+  useUserEventCount,
+  useUserFollowers,
+  useUserFollowing,
+  useUserProfile,
+} from '@/lib/hooks/useUserProfile';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
+import { BadgeCheck, Camera, Edit3, Loader2, Settings } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 export default function ProfilePage() {
+  const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const { setTopBar, setTransparent } = useTopBar();
-  const [activeTab, setActiveTab] = useState("about");
-  const [eventsFilter, setEventsFilter] = useState("attending");
+  const { setTopBar, setOverlaid } = useTopBar();
+  const [activeTab, setActiveTab] = useState('about');
+  const [eventsFilter, setEventsFilter] = useState('attending');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
@@ -27,47 +34,42 @@ export default function ProfilePage() {
   const lightboxRef = useRef<SilkLightboxRef>(null);
   const avatarLightboxRef = useRef<SilkLightboxRef>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  
+
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
-  const { logout } = useAuth();
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
 
-  // Set TopBar content
+  // Set TopBar content and enable overlay mode
   useEffect(() => {
     setTopBar({
-      title: "Profile",
-      subtitle: user?.username ? `@${user.username}` : "@user",
-      rightContent: (
-        <div className="flex gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
-            onClick={() => router.push("/e/profile/edit")}
-          >
-            <Edit3 className="h-5 w-5 text-white" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/30"
-            onClick={() => router.push("/e/settings")}
-          >
-            <Settings className="h-5 w-5 text-white" />
-          </Button>
-        </div>
-      ),
+      title: undefined,
+      subtitle: undefined,
+      showAvatar: false,
+      leftMode: 'menu',
+      buttons: [
+        {
+          id: 'edit',
+          icon: Edit3,
+          onClick: () => router.push('/e/profile/edit'),
+          label: 'Edit profile',
+        },
+        {
+          id: 'settings',
+          icon: Settings,
+          onClick: () => router.push('/e/settings'),
+          label: 'Settings',
+        },
+      ],
     });
-    setTransparent(true);
+    setOverlaid(true);
 
     return () => {
-      setTopBar({ rightContent: null });
-      setTransparent(false);
+      setTopBar({ buttons: [] });
+      setOverlaid(false);
     };
-  }, [user?.username, router, setTopBar, setTransparent]);
+  }, [user?.username, router, setTopBar, setOverlaid]);
 
   const userStats = {
     events: eventCount || 0,
@@ -78,164 +80,104 @@ export default function ProfilePage() {
   };
 
   const userData = {
-    name: user?.name || "User",
-    username: user?.username ? `@${user.username}` : "@user",
-    status: user?.bio || "Welcome to Evento",
-    avatar: user?.image || "/placeholder.svg?height=80&width=80",
+    name: user?.name || 'User',
+    username: user?.username ? `@${user.username}` : '@user',
+    status: user?.bio || 'Welcome to Evento',
+    avatar: user?.image || '/placeholder.svg?height=80&width=80',
     isVerified: user?.verification_status === 'verified',
   };
 
   const attendingEvents = [
     {
       id: 1,
-      title: "Paris Photography Walk",
-      date: "Sep 20, 2025",
-      time: "7:00 PM",
-      location: "Paris, France",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Paris Photography Walk',
+      date: 'Sep 20, 2025',
+      time: '7:00 PM',
+      location: 'Paris, France',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 2,
-      title: "London Art Gallery Tour",
-      date: "Oct 2, 2025",
-      time: "2:00 PM",
-      location: "London, UK",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'London Art Gallery Tour',
+      date: 'Oct 2, 2025',
+      time: '2:00 PM',
+      location: 'London, UK',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 3,
-      title: "Rome Cooking Class",
-      date: "Sep 20, 2025",
-      time: "6:30 PM",
-      location: "Rome, Italy",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Rome Cooking Class',
+      date: 'Sep 20, 2025',
+      time: '6:30 PM',
+      location: 'Rome, Italy',
+      image: '/placeholder.svg?height=60&width=60',
     },
   ];
 
   const hostingEvents = [
     {
       id: 4,
-      title: "Tokyo Food Tour",
-      date: "Sep 15, 2025",
-      time: "10:00 AM",
-      location: "Tokyo, Japan",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Tokyo Food Tour',
+      date: 'Sep 15, 2025',
+      time: '10:00 AM',
+      location: 'Tokyo, Japan',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 5,
-      title: "Bali Sunrise Hike",
-      date: "Sep 25, 2025",
-      time: "5:30 AM",
-      location: "Bali, Indonesia",
-      image: "/placeholder.svg?height=60&width=60",
+      title: 'Bali Sunrise Hike',
+      date: 'Sep 25, 2025',
+      time: '5:30 AM',
+      location: 'Bali, Indonesia',
+      image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 6,
-      title: "NYC Rooftop Party",
-      date: "Oct 8, 2025",
-      time: "8:00 PM",
-      location: "New York, USA",
-      image: "/placeholder.svg?height=60&width=60",
-    },
-  ];
-
-  const followingList = [
-    {
-      id: 1,
-      name: "Sarah Chen",
-      username: "@sarahc",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 2,
-      name: "Marcus Johnson",
-      username: "@marcusj",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 3,
-      name: "Emma Rodriguez",
-      username: "@emmar",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 4,
-      name: "Alex Kim",
-      username: "@alexk",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 5,
-      name: "Lisa Park",
-      username: "@lisap",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-  ];
-
-  const followersList = [
-    {
-      id: 6,
-      name: "David Wilson",
-      username: "@davidw",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 7,
-      name: "Maria Garcia",
-      username: "@mariag",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 8,
-      name: "John Smith",
-      username: "@johns",
-      avatar: "/placeholder.svg?height=50&width=50",
-    },
-    {
-      id: 9,
-      name: "Anna Johnson",
-      username: "@annaj",
-      avatar: "/placeholder.svg?height=50&width=50",
+      title: 'NYC Rooftop Party',
+      date: 'Oct 8, 2025',
+      time: '8:00 PM',
+      location: 'New York, USA',
+      image: '/placeholder.svg?height=60&width=60',
     },
   ];
 
   const profilePhotos = [
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
   ];
 
   const profileQuestions = [
     {
-      question: "My travel style",
-      answer: "Adventure seeker with a love for local culture",
+      question: 'My travel style',
+      answer: 'Adventure seeker with a love for local culture',
     },
     {
-      question: "Dream destination",
-      answer: "New Zealand - for the landscapes and adventure sports",
+      question: 'Dream destination',
+      answer: 'New Zealand - for the landscapes and adventure sports',
     },
     {
       question: "Can't travel without",
-      answer: "My camera and a good playlist",
+      answer: 'My camera and a good playlist',
     },
     {
-      question: "Best travel memory",
-      answer: "Watching sunrise from Mount Fuji in Japan",
+      question: 'Best travel memory',
+      answer: 'Watching sunrise from Mount Fuji in Japan',
     },
   ];
 
   const interestTags = [
-    "Photography",
-    "Food",
-    "Adventure",
-    "Culture",
-    "Music",
-    "Art",
-    "Nature",
-    "Architecture",
+    'Photography',
+    'Food',
+    'Adventure',
+    'Culture',
+    'Music',
+    'Art',
+    'Nature',
+    'Architecture',
   ];
 
   const handleSocialClick = (platform: string) => {
@@ -244,10 +186,10 @@ export default function ProfilePage() {
       x: user?.x_handle ? `https://x.com/${user.x_handle}` : null,
       website: user?.bio_link || null,
     };
-    
+
     const url = urls[platform as keyof typeof urls];
     if (url) {
-      window.open(url, "_blank", "noopener,noreferrer");
+      window.open(url, '_blank', 'noopener,noreferrer');
     } else {
       toast.error(`No ${platform} link available`);
     }
@@ -257,16 +199,16 @@ export default function ProfilePage() {
     if (user?.ln_address) {
       toast.success(`Lightning: ${user.ln_address}`);
     } else {
-      toast.error("No Lightning address available");
+      toast.error('No Lightning address available');
     }
   };
 
   const handleWebsiteClick = () => {
     if (!user?.bio_link) {
-      toast.error("No website link available");
+      toast.error('No website link available');
       return;
     }
-    
+
     setShowWebsiteModal(true);
     setCountdown(3);
 
@@ -275,7 +217,7 @@ export default function ProfilePage() {
         if (prev <= 1) {
           clearInterval(timer);
           setShowWebsiteModal(false);
-          window.open(user.bio_link, "_blank", "noopener,noreferrer");
+          window.open(user.bio_link, '_blank', 'noopener,noreferrer');
           return 3;
         }
         return prev - 1;
@@ -287,16 +229,16 @@ export default function ProfilePage() {
     const newFollowingUsers = new Set(followingUsers);
     if (followingUsers.has(userId)) {
       newFollowingUsers.delete(userId);
-      toast.success("Unfollowed user");
+      toast.success('Unfollowed user');
     } else {
       newFollowingUsers.add(userId);
-      toast.success("Following user");
+      toast.success('Following user');
     }
     setFollowingUsers(newFollowingUsers);
   };
 
   const handleUserClick = (username: string) => {
-    router.push(`/${username.replace("@", "")}`);
+    router.push(`/${username.replace('@', '')}`);
   };
 
   const handleProfilePhotoClick = (index: number) => {
@@ -308,14 +250,17 @@ export default function ProfilePage() {
   };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce((acc, event) => {
-      const date = event.date;
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(event);
-      return acc;
-    }, {} as Record<string, typeof events>);
+    const grouped = events.reduce(
+      (acc, event) => {
+        const date = event.date;
+        if (!acc[date]) {
+          acc[date] = [];
+        }
+        acc[date].push(event);
+        return acc;
+      },
+      {} as Record<string, typeof events>
+    );
 
     return Object.entries(grouped).map(([date, events]) => ({
       date,
@@ -325,21 +270,21 @@ export default function ProfilePage() {
   };
 
   const formatDateHeader = (dateStr: string) => {
-    const date = new Date(dateStr + ", 2025");
-    const dayNames = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+    const date = new Date(dateStr + ', 2025');
+    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     const monthNames = [
-      "JANUARY",
-      "FEBRUARY",
-      "MARCH",
-      "APRIL",
-      "MAY",
-      "JUNE",
-      "JULY",
-      "AUGUST",
-      "SEPTEMBER",
-      "OCTOBER",
-      "NOVEMBER",
-      "DECEMBER",
+      'JANUARY',
+      'FEBRUARY',
+      'MARCH',
+      'APRIL',
+      'MAY',
+      'JUNE',
+      'JULY',
+      'AUGUST',
+      'SEPTEMBER',
+      'OCTOBER',
+      'NOVEMBER',
+      'DECEMBER',
     ];
 
     const dayName = dayNames[date.getDay()];
@@ -350,30 +295,29 @@ export default function ProfilePage() {
   };
 
   const renderEventsTab = () => {
-    const currentEvents =
-      eventsFilter === "attending" ? attendingEvents : hostingEvents;
+    const currentEvents = eventsFilter === 'attending' ? attendingEvents : hostingEvents;
     const groupedEvents = groupEventsByDate(currentEvents);
 
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {/* Filter Badges */}
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <button
-            onClick={() => setEventsFilter("attending")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              eventsFilter === "attending"
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            onClick={() => setEventsFilter('attending')}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              eventsFilter === 'attending'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Attending
           </button>
           <button
-            onClick={() => setEventsFilter("hosting")}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              eventsFilter === "hosting"
-                ? "bg-red-500 text-white"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            onClick={() => setEventsFilter('hosting')}
+            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+              eventsFilter === 'hosting'
+                ? 'bg-red-500 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             }`}
           >
             Hosting
@@ -381,31 +325,27 @@ export default function ProfilePage() {
         </div>
 
         {/* Events List with Date Dividers */}
-        <div className="space-y-6">
+        <div className='space-y-6'>
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.date}>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-gray-500 font-medium text-sm">
-                  {group.formattedDate}
-                </h2>
+              <div className='mb-4 flex items-center justify-between'>
+                <h2 className='text-sm font-medium text-gray-500'>{group.formattedDate}</h2>
               </div>
 
-              <div className="space-y-4">
+              <div className='space-y-4'>
                 {group.events.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4">
+                  <div key={event.id} className='flex items-start gap-4'>
                     <img
-                      src={event.image || "/placeholder.svg"}
+                      src={event.image || '/placeholder.svg'}
                       alt={event.title}
-                      className="w-12 h-12 rounded-xl object-cover flex-shrink-0"
+                      className='h-12 w-12 flex-shrink-0 rounded-xl object-cover'
                     />
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-lg">{event.title}</h3>
-                      <p className="text-gray-500">{event.location}</p>
+                    <div className='flex-1'>
+                      <h3 className='text-lg font-semibold'>{event.title}</h3>
+                      <p className='text-gray-500'>{event.location}</p>
                     </div>
-                    <div className="text-right">
-                      <span className="text-gray-600 text-sm">
-                        {event.time}
-                      </span>
+                    <div className='text-right'>
+                      <span className='text-sm text-gray-600'>{event.time}</span>
                     </div>
                   </div>
                 ))}
@@ -415,8 +355,8 @@ export default function ProfilePage() {
         </div>
 
         {currentEvents.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-gray-500">No {eventsFilter} events yet</p>
+          <div className='py-8 text-center'>
+            <p className='text-gray-500'>No {eventsFilter} events yet</p>
           </div>
         )}
       </div>
@@ -424,24 +364,20 @@ export default function ProfilePage() {
   };
 
   const renderAboutTab = () => (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       {/* Bio/Description */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Bio</h4>
-        <p className="text-gray-700">
-          Travel enthusiast exploring the world one event at a time. Love
-          photography, food, and meeting new people! ✈️📸
-        </p>
+        <p className='text-gray-700'>{user?.bio || 'Welcome to Evento'}</p>
       </div>
 
       {/* Interest Tags */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">Interests</h4>
-        <div className="flex flex-wrap gap-2">
+        <h4 className='mb-3 font-semibold text-gray-900'>Interests</h4>
+        <div className='flex flex-wrap gap-2'>
           {interestTags.map((tag, index) => (
             <span
               key={index}
-              className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-gray-100 text-gray-800"
+              className='inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'
             >
               {tag}
             </span>
@@ -451,14 +387,12 @@ export default function ProfilePage() {
 
       {/* Profile Questions */}
       <div>
-        <h4 className="font-semibold text-gray-900 mb-3">About Me</h4>
-        <div className="space-y-3">
+        <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
+        <div className='space-y-3'>
           {profileQuestions.map((item, index) => (
-            <div key={index} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-sm font-medium text-gray-700 mb-1">
-                {item.question}
-              </p>
-              <p className="text-sm text-gray-900">{item.answer}</p>
+            <div key={index} className='rounded-xl bg-gray-50 p-3'>
+              <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
+              <p className='text-sm text-gray-900'>{item.answer}</p>
             </div>
           ))}
         </div>
@@ -466,24 +400,24 @@ export default function ProfilePage() {
 
       {/* Photo Album */}
       <div>
-        <div className="flex items-center justify-between mb-3">
-          <h4 className="font-semibold text-gray-900">Photos</h4>
-          <Button variant="ghost" size="sm" className="text-red-600">
-            <Camera className="h-4 w-4 mr-1" />
+        <div className='mb-3 flex items-center justify-between'>
+          <h4 className='font-semibold text-gray-900'>Photos</h4>
+          <Button variant='ghost' size='sm' className='text-red-600'>
+            <Camera className='mr-1 h-4 w-4' />
             Add
           </Button>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className='grid grid-cols-3 gap-2'>
           {profilePhotos.map((photo, index) => (
             <button
               key={index}
               onClick={() => handleProfilePhotoClick(index)}
-              className="aspect-square rounded-lg overflow-hidden bg-gray-100 hover:opacity-90 transition-opacity"
+              className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
             >
               <img
-                src={photo || "/placeholder.svg"}
+                src={photo || '/placeholder.svg'}
                 alt={`Profile photo ${index + 1}`}
-                className="w-full h-full object-cover"
+                className='h-full w-full object-cover'
               />
             </button>
           ))}
@@ -493,50 +427,43 @@ export default function ProfilePage() {
   );
 
   const renderStatsTab = () => (
-    <div className="grid grid-cols-2 gap-4">
-      <div className="text-center p-4 bg-blue-50 rounded-xl">
-        <div className="text-3xl font-bold text-blue-600">
-          {userStats.countries}
-        </div>
-        <div className="text-sm text-gray-600">Countries</div>
+    <div className='grid grid-cols-2 gap-4'>
+      <div className='rounded-xl bg-blue-50 p-4 text-center'>
+        <div className='text-3xl font-bold text-blue-600'>{userStats.countries}</div>
+        <div className='text-sm text-gray-600'>Countries</div>
       </div>
-      <div className="text-center p-4 bg-green-50 rounded-xl">
-        <div className="text-3xl font-bold text-green-600">
-          {userStats.mutuals}
-        </div>
-        <div className="text-sm text-gray-600">Mutuals</div>
+      <div className='rounded-xl bg-green-50 p-4 text-center'>
+        <div className='text-3xl font-bold text-green-600'>{userStats.mutuals}</div>
+        <div className='text-sm text-gray-600'>Mutuals</div>
       </div>
     </div>
   );
 
   // Show loading state while fetching user data
-  if (isUserLoading || !user) {
+  if (isCheckingAuth || isUserLoading || !user) {
     return (
-      <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
-        <p className="mt-2 text-gray-600">Loading profile...</p>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm'>
+        <Loader2 className='h-8 w-8 animate-spin text-red-500' />
+        <p className='mt-2 text-gray-600'>Loading profile...</p>
       </div>
     );
   }
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen flex flex-col relative">
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className='flex-1 overflow-y-auto pb-20'>
         {/* Cover Image Section */}
-        <div className="relative">
+        <div className='relative'>
           {/* Banner */}
-          <div className="w-full h-48 md:h-64 bg-gradient-to-br from-red-400 to-red-600" />
-          
+          <div className='h-40 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-48' />
+
           {/* Profile Picture - Centered & Clickable */}
-          <div className="absolute left-1/2 transform -translate-x-1/2 -bottom-16">
-            <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="w-32 h-32 border-4 border-white shadow-lg">
-                <AvatarImage 
-                  src={userData.avatar || ''} 
-                  alt="Profile" 
-                />
-                <AvatarFallback className="text-3xl bg-white">
+          <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'>
+            <button onClick={handleAvatarClick} className='relative'>
+              <Avatar className='h-32 w-32 border-4 border-white shadow-lg'>
+                <AvatarImage src={userData.avatar || ''} alt='Profile' />
+                <AvatarFallback className='bg-white text-3xl'>
                   {userData.name.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
@@ -547,9 +474,9 @@ export default function ProfilePage() {
                     e.stopPropagation();
                     setShowVerificationModal(true);
                   }}
-                  className="absolute bottom-0 right-0 hover:scale-105 transition-transform"
+                  className='absolute bottom-0 right-0 transition-transform hover:scale-105'
                 >
-                  <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+                  <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
                 </button>
               )}
             </button>
@@ -557,137 +484,65 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className="bg-white px-6 pt-20 pb-6 mb-4">
+        <div className='mb-4 bg-white px-6 pb-0 pt-20'>
           {/* User Info - Centered */}
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">{userData.name}</h2>
-            <p className="text-gray-600">{userData.username}</p>
+          <div className='mb-6 text-center'>
+            <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
+            <p className='text-gray-600'>{userData.username}</p>
           </div>
 
           {/* Stats - Centered */}
-          <div className="flex justify-center mb-6">
-            <div className="grid grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="text-xl font-bold text-gray-900">
-                  {userStats.events}
-                </div>
-                <div className="text-sm text-gray-500">Events</div>
+          <div className='mb-6 flex justify-center'>
+            <div className='grid grid-cols-3 gap-8'>
+              <div className='text-center'>
+                <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
+                <div className='text-sm text-gray-500'>Events</div>
               </div>
-              <button
-                className="text-center"
-                onClick={() => setShowFollowingSheet(true)}
-              >
-                <div className="text-xl font-bold text-gray-900">
-                  {userStats.following}
-                </div>
-                <div className="text-sm text-gray-500">Following</div>
+              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
+                <div className='text-sm text-gray-500'>Following</div>
               </button>
-              <button
-                className="text-center"
-                onClick={() => setShowFollowersSheet(true)}
-              >
-                <div className="text-xl font-bold text-gray-900">
-                  {userStats.followers}
-                </div>
-                <div className="text-sm text-gray-500">Followers</div>
+              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
+                <div className='text-sm text-gray-500'>Followers</div>
               </button>
             </div>
           </div>
 
-          {/* Status/Title - Centered */}
-          {userData.status && (
-            <div className="text-center mb-4">
-              <p className="text-gray-600 text-sm font-medium">
-                {userData.status}
-              </p>
-            </div>
-          )}
-
-          {/* Website - Centered */}
-          {user?.bio_link && (
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <Globe className="h-4 w-4 text-gray-500" />
-              <button
-                onClick={handleWebsiteClick}
-                className="text-blue-600 hover:underline text-sm"
-              >
-                {user.bio_link.replace(/^https?:\/\//, '')}
-              </button>
-            </div>
-          )}
-
-          {/* Social Links - Centered */}
-          <div className="flex justify-center gap-3">
-            {/* Instagram */}
-            {user?.instagram_handle && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => handleSocialClick("instagram")}
-              >
-                <div className="w-5 h-5 bg-gradient-to-br from-purple-500 via-pink-500 to-red-400 rounded-sm flex items-center justify-center">
-                  <div className="w-3 h-3 border border-white rounded-sm"></div>
-                </div>
-              </Button>
-            )}
-            {/* X (Twitter) */}
-            {user?.x_handle && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={() => handleSocialClick("x")}
-              >
-                <div className="w-5 h-5 bg-black rounded-sm flex items-center justify-center text-white text-xs font-bold">
-                  𝕏
-                </div>
-              </Button>
-            )}
-            {/* Lightning Zap */}
-            {user?.ln_address && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-full bg-gray-100"
-                onClick={handleZap}
-              >
-                <Zap className="h-5 w-5 text-yellow-500" />
-              </Button>
-            )}
-          </div>
+          {/* Social Links */}
+          {user && <SocialLinks user={user} />}
         </div>
 
         {/* Tabbed Section */}
-        <div className="bg-white mb-4">
+        <div className='mb-4 bg-white'>
           {/* Tab Headers */}
-          <div className="flex border-b border-gray-200">
+          <div className='flex gap-2 px-4 py-3'>
             <button
-              onClick={() => setActiveTab("about")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "about"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+              onClick={() => setActiveTab('about')}
+              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+                activeTab === 'about'
+                  ? 'bg-gray-100 text-black'
+                  : 'bg-white text-black hover:bg-gray-50'
               }`}
             >
               About
             </button>
             <button
-              onClick={() => setActiveTab("events")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "events"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+              onClick={() => setActiveTab('events')}
+              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+                activeTab === 'events'
+                  ? 'bg-gray-100 text-black'
+                  : 'bg-white text-black hover:bg-gray-50'
               }`}
             >
               Events
             </button>
             <button
-              onClick={() => setActiveTab("stats")}
-              className={`flex-1 py-4 px-4 text-sm font-medium text-center border-b-2 transition-colors ${
-                activeTab === "stats"
-                  ? "border-red-500 text-red-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+              onClick={() => setActiveTab('stats')}
+              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+                activeTab === 'stats'
+                  ? 'bg-gray-100 text-black'
+                  : 'bg-white text-black hover:bg-gray-50'
               }`}
             >
               Stats
@@ -695,38 +550,29 @@ export default function ProfilePage() {
           </div>
 
           {/* Tab Content */}
-          <div className="p-4">
-            {activeTab === "about" && renderAboutTab()}
-            {activeTab === "events" && renderEventsTab()}
-            {activeTab === "stats" && renderStatsTab()}
+          <div className='p-4'>
+            {activeTab === 'about' && renderAboutTab()}
+            {activeTab === 'events' && renderEventsTab()}
+            {activeTab === 'stats' && renderStatsTab()}
           </div>
         </div>
       </div>
 
-
-
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full md:max-w-sm max-w-full text-center">
-            <h3 className="text-xl font-bold mb-4">Leaving Evento</h3>
-            <p className="text-gray-600 mb-6">
-              Are you about to leave Evento and be redirected to
-              andrerfneves.com?
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+            <h3 className='mb-4 text-xl font-bold'>Leaving Evento</h3>
+            <p className='mb-6 text-gray-600'>
+              Are you about to leave Evento and be redirected to andrerfneves.com?
             </p>
-            <div className="text-6xl font-bold text-red-500 mb-6">
-              {countdown}
-            </div>
+            <div className='mb-6 text-6xl font-bold text-red-500'>{countdown}</div>
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(
-                  "https://andrerfneves.com",
-                  "_blank",
-                  "noopener,noreferrer"
-                );
+                window.open('https://andrerfneves.com', '_blank', 'noopener,noreferrer');
               }}
-              className="w-full bg-red-500 hover:bg-red-600 text-white"
+              className='w-full bg-red-500 text-white hover:bg-red-600'
             >
               Take me to andrerfneves.com
             </Button>
@@ -736,29 +582,32 @@ export default function ProfilePage() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full md:max-w-sm max-w-full p-6 text-center">
-            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <BadgeCheck className="w-8 h-8 bg-red-600 text-white rounded-full shadow-sm" />
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
+              <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-4">You are verified</h3>
-            <p className="text-gray-600 mb-6">
-              Congratulations! Your account is verified. You have premium member status with enhanced credibility and access to exclusive features on our platform.
+            <h3 className='mb-4 text-xl font-bold text-gray-900'>You are verified</h3>
+            <p className='mb-6 text-gray-600'>
+              Congratulations! Your account is verified. You have premium member status with
+              enhanced credibility and access to exclusive features on our platform.
             </p>
-            <div className="flex flex-col gap-3">
+            <div className='flex flex-col gap-3'>
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
-                  router.push('/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.');
+                  router.push(
+                    '/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.'
+                  );
                 }}
-                className="w-full bg-red-500 hover:bg-red-600 text-white"
+                className='w-full bg-red-500 text-white hover:bg-red-600'
               >
                 Contact support
               </Button>
               <Button
-                variant="ghost"
+                variant='ghost'
                 onClick={() => setShowVerificationModal(false)}
-                className="w-full"
+                className='w-full'
               >
                 Close
               </Button>
@@ -775,11 +624,7 @@ export default function ProfilePage() {
       />
 
       {/* Profile Photos Lightbox */}
-      <SilkLightbox
-        ref={lightboxRef}
-        images={profilePhotos}
-        eventTitle="Profile Photos"
-      />
+      <SilkLightbox ref={lightboxRef} images={profilePhotos} eventTitle='Profile Photos' />
 
       {/* Bottom Navbar */}
       <Navbar />
@@ -788,16 +633,16 @@ export default function ProfilePage() {
       <FollowersSheet
         isOpen={showFollowersSheet}
         onClose={() => setShowFollowersSheet(false)}
-        userId={user?.id || ""}
-        username={user?.username || "user"}
+        userId={user?.id || ''}
+        username={user?.username || 'user'}
       />
 
       {/* Following Sheet */}
       <FollowingSheet
         isOpen={showFollowingSheet}
         onClose={() => setShowFollowingSheet(false)}
-        userId={user?.id || ""}
-        username={user?.username || "user"}
+        userId={user?.id || ''}
+        username={user?.username || 'user'}
       />
     </div>
   );

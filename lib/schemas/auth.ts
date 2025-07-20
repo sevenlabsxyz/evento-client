@@ -44,19 +44,9 @@ export const updateProfileSchema = z.object({
     .min(1, 'Name is required')
     .max(50, 'Name must be less than 50 characters')
     .optional(),
-  bio: z
-    .string()
-    .max(280, 'Bio must be less than 280 characters')
-    .optional(),
-  bio_link: z
-    .string()
-    .url('Please enter a valid URL')
-    .optional()
-    .or(z.literal('')),
-  x_handle: z
-    .string()
-    .max(50, 'X handle must be less than 50 characters')
-    .optional(),
+  bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
+  bio_link: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  x_handle: z.string().max(50, 'X handle must be less than 50 characters').optional(),
   instagram_handle: z
     .string()
     .max(50, 'Instagram handle must be less than 50 characters')
@@ -74,10 +64,10 @@ export const updateProfileSchema = z.object({
 });
 
 // Type inference from schemas
-export type LoginForm = z.infer<typeof loginSchema>;
-export type VerifyCodeForm = z.infer<typeof verifyCodeSchema>;
-export type AuthForm = z.infer<typeof authSchema>;
-export type UpdateProfileForm = z.infer<typeof updateProfileSchema>;
+export type LoginFormData = z.infer<typeof loginSchema>;
+export type VerifyCodeFormData = z.infer<typeof verifyCodeSchema>;
+export type AuthFormData = z.infer<typeof authSchema>;
+export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;
 
 // Common validation messages
 export const validationMessages = {

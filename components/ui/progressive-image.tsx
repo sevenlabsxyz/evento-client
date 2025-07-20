@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useState, useCallback } from 'react';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
 
 interface ProgressiveImageProps {
   src: string;
@@ -52,23 +52,23 @@ export default function ProgressiveImage({
       const tinyUrl = imageUrl.replace(/width=\d+/, 'width=10').replace(/height=\d+/, 'height=10');
       return tinyUrl;
     }
-    
+
     // For direct Supabase URLs with width/height params, create tiny version
     if (imageUrl.includes('width=') && imageUrl.includes('height=')) {
       const tinyUrl = imageUrl.replace(/width=\d+/, 'width=10').replace(/height=\d+/, 'height=10');
       return tinyUrl;
     }
-    
+
     // Fallback to a generic blur data URL
-    return "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K";
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
   };
 
   if (hasError) {
     return (
-      <div 
+      <div
         className={cn(
-          "bg-gray-200 flex items-center justify-center text-gray-400 text-sm",
-          fill ? "absolute inset-0" : "",
+          'flex items-center justify-center bg-gray-200 text-sm text-gray-400',
+          fill ? 'absolute inset-0' : '',
           className
         )}
         style={!fill ? { width, height } : undefined}
@@ -79,7 +79,7 @@ export default function ProgressiveImage({
   }
 
   return (
-    <div className={cn("relative overflow-hidden", fill ? "w-full h-full" : "inline-block")}>
+    <div className={cn('relative overflow-hidden', fill ? 'h-full w-full' : 'inline-block')}>
       <Image
         src={src}
         alt={alt}
@@ -87,8 +87,8 @@ export default function ProgressiveImage({
         height={fill ? undefined : height}
         fill={fill}
         className={cn(
-          "transition-opacity duration-300 ease-in-out",
-          isLoaded ? "opacity-100" : "opacity-0",
+          'transition-opacity duration-300 ease-in-out',
+          isLoaded ? 'opacity-100' : 'opacity-0',
           className
         )}
         priority={priority}
@@ -98,17 +98,17 @@ export default function ProgressiveImage({
         onLoad={handleLoad}
         onError={handleError}
       />
-      
+
       {/* Loading skeleton */}
       {!isLoaded && (
-        <div 
+        <div
           className={cn(
-            "absolute inset-0 bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 animate-pulse",
-            fill ? "absolute inset-0" : ""
+            'absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200',
+            fill ? 'absolute inset-0' : ''
           )}
           style={!fill ? { width, height } : undefined}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer" />
+          <div className='animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent' />
         </div>
       )}
     </div>

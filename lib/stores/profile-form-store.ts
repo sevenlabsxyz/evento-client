@@ -1,6 +1,6 @@
+import { UserDetails } from '@/lib/types/api';
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
-import { UserDetails } from '@/lib/types/api';
 
 interface ProfileFormState {
   // Profile fields matching API
@@ -13,10 +13,10 @@ interface ProfileFormState {
   instagram_handle: string;
   ln_address: string;
   nip05: string;
-  
+
   // Original values for change detection
   originalData: Partial<UserDetails> | null;
-  
+
   // Actions
   setUsername: (username: string) => void;
   setName: (name: string) => void;
@@ -27,17 +27,17 @@ interface ProfileFormState {
   setInstagramHandle: (instagram_handle: string) => void;
   setLnAddress: (ln_address: string) => void;
   setNip05: (nip05: string) => void;
-  
+
   // Populate from API data
   populateFromUser: (user: UserDetails) => void;
-  
+
   // Get form data for API submission
   getFormData: () => Partial<UserDetails>;
-  
+
   // Validation
   isValid: () => boolean;
   hasChanges: () => boolean;
-  
+
   // Reset
   reset: () => void;
 }
@@ -59,7 +59,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
   devtools(
     (set, get) => ({
       ...initialState,
-      
+
       // Setters
       setUsername: (username) => set({ username }),
       setName: (name) => set({ name }),
@@ -70,7 +70,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
       setInstagramHandle: (instagram_handle) => set({ instagram_handle }),
       setLnAddress: (ln_address) => set({ ln_address }),
       setNip05: (nip05) => set({ nip05 }),
-      
+
       // Populate from user data
       populateFromUser: (user) => {
         set({
@@ -96,12 +96,12 @@ export const useProfileFormStore = create<ProfileFormState>()(
           },
         });
       },
-      
+
       // Get form data for API
       getFormData: () => {
         const state = get();
         const formData: Partial<UserDetails> = {};
-        
+
         // Only include changed fields
         if (state.username !== state.originalData?.username) {
           formData.username = state.username;
@@ -130,22 +130,22 @@ export const useProfileFormStore = create<ProfileFormState>()(
         if (state.nip05 !== state.originalData?.nip05) {
           formData.nip05 = state.nip05;
         }
-        
+
         return formData;
       },
-      
+
       // Validation
       isValid: () => {
         const state = get();
         // Required fields: username and name
         return state.username.trim().length >= 3 && state.name.trim().length > 0;
       },
-      
+
       // Check if there are changes
       hasChanges: () => {
         const state = get();
         if (!state.originalData) return false;
-        
+
         return (
           state.username !== state.originalData.username ||
           state.name !== state.originalData.name ||
@@ -158,7 +158,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
           state.nip05 !== state.originalData.nip05
         );
       },
-      
+
       // Reset
       reset: () => set(initialState),
     }),

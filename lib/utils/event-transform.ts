@@ -1,5 +1,5 @@
 import { Event as ApiEvent } from '@/lib/types/api';
-import { Event as DisplayEvent, EventLocation, EventHost } from '@/lib/types/event';
+import { Event as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
 
@@ -11,14 +11,17 @@ export function transformApiEventToDisplay(
   hosts: { user_details: any }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
-  const { date, time, timeWithTz } = formatEventDate(apiEvent.computed_start_date, apiEvent.timezone);
+  const { date, time, timeWithTz } = formatEventDate(
+    apiEvent.computed_start_date,
+    apiEvent.timezone
+  );
   const endDateTime = formatEventDate(apiEvent.computed_end_date, apiEvent.timezone);
-  
+
   // Parse location string to structured format
   const location = parseLocationString(apiEvent.location);
-  
+
   // Transform hosts
-  const transformedHosts: EventHost[] = hosts.map(host => ({
+  const transformedHosts: EventHost[] = hosts.map((host) => ({
     id: host.user_details.id,
     name: host.user_details.name || host.user_details.username,
     username: host.user_details.username,
@@ -26,7 +29,7 @@ export function transformApiEventToDisplay(
     title: host.user_details.bio ? 'Host' : undefined,
     company: undefined,
   }));
-  
+
   // Add creator as first host if not already included and we have user details
   if (apiEvent.user_details) {
     const creatorHost: EventHost = {
@@ -37,16 +40,17 @@ export function transformApiEventToDisplay(
       title: 'Creator',
       company: undefined,
     };
-    
-    if (!transformedHosts.find(h => h.id === creatorHost.id)) {
+
+    if (!transformedHosts.find((h) => h.id === creatorHost.id)) {
       transformedHosts.unshift(creatorHost);
     }
   }
-  
+
   return {
     id: apiEvent.id,
     title: apiEvent.title,
-    subtitle: location.city && location.state ? `${location.city}, ${location.state}` : location.name,
+    subtitle:
+      location.city && location.state ? `${location.city}, ${location.state}` : location.name,
     description: apiEvent.description || '',
     date: date,
     startTime: time,
@@ -56,7 +60,7 @@ export function transformApiEventToDisplay(
     computedEndDate: apiEvent.computed_end_date,
     location: location,
     coverImages: apiEvent.cover ? [getOptimizedCoverUrl(apiEvent.cover, 'detail')] : [],
-    galleryImages: galleryItems.map(item => getOptimizedCoverUrl(item.url, 'detail')),
+    galleryImages: galleryItems.map((item) => getOptimizedCoverUrl(item.url, 'detail')),
     hosts: transformedHosts,
     guests: [], // Not provided by API currently
     guestListSettings: {
@@ -75,11 +79,13 @@ export function transformApiEventToDisplay(
     isActive: apiEvent.status === 'published',
     registrationUrl: undefined, // Not in current API
     contactEnabled: true, // Default
-    owner: apiEvent.user_details ? {
-      id: apiEvent.creator_user_id,
-      name: apiEvent.user_details.name || apiEvent.user_details.username,
-      username: apiEvent.user_details.username,
-    } : undefined,
+    owner: apiEvent.user_details
+      ? {
+          id: apiEvent.creator_user_id,
+          name: apiEvent.user_details.name || apiEvent.user_details.username,
+          username: apiEvent.user_details.username,
+        }
+      : undefined,
   };
 }
 
@@ -96,15 +102,15 @@ function parseLocationString(locationStr: string): EventLocation {
       country: '',
     };
   }
-  
-  const parts = locationStr.split(',').map(s => s.trim());
-  
+
+  const parts = locationStr.split(',').map((s) => s.trim());
+
   // Common patterns:
   // "Venue Name, Address, City, State, Country"
   // "City, State, Country"
   // "Venue Name, City"
   // "Online"
-  
+
   if (parts.length === 1) {
     return {
       name: parts[0],
@@ -113,7 +119,7 @@ function parseLocationString(locationStr: string): EventLocation {
       country: '',
     };
   }
-  
+
   if (parts.length === 2) {
     return {
       name: parts[0],
@@ -123,7 +129,7 @@ function parseLocationString(locationStr: string): EventLocation {
       country: '',
     };
   }
-  
+
   if (parts.length === 3) {
     return {
       name: parts[0],
@@ -133,7 +139,7 @@ function parseLocationString(locationStr: string): EventLocation {
       country: '',
     };
   }
-  
+
   // 4 or more parts
   return {
     name: parts[0],
@@ -149,7 +155,7 @@ function parseLocationString(locationStr: string): EventLocation {
  */
 export function getContributionMethods(event: ApiEvent) {
   const methods = [];
-  
+
   if (event.contrib_cashapp) {
     methods.push({
       type: 'cashapp',
@@ -157,15 +163,15 @@ export function getContributionMethods(event: ApiEvent) {
       label: 'Cash App',
     });
   }
-  
+
   if (event.contrib_venmo) {
     methods.push({
-      type: 'venmo', 
+      type: 'venmo',
       value: event.contrib_venmo,
       label: 'Venmo',
     });
   }
-  
+
   if (event.contrib_paypal) {
     methods.push({
       type: 'paypal',
@@ -173,7 +179,7 @@ export function getContributionMethods(event: ApiEvent) {
       label: 'PayPal',
     });
   }
-  
+
   if (event.contrib_btclightning) {
     methods.push({
       type: 'lightning',
@@ -181,6 +187,6 @@ export function getContributionMethods(event: ApiEvent) {
       label: 'Bitcoin Lightning',
     });
   }
-  
+
   return methods;
 }

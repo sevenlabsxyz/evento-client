@@ -1,27 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { MapPin, Sun, ExternalLink } from 'lucide-react';
-import { Event } from '@/lib/types/event';
+import { Env } from "@/lib/constants/env";
+import { Event } from "@/lib/types/event";
+import { WeatherData } from "@/lib/types/weather";
+import { ExternalLink, MapPin, Sun } from "lucide-react";
+import { useState } from "react";
+import WeatherDetailSheet from "./weather-detail-sheet";
 
 interface EventLocationProps {
   event: Event;
+  weather?: WeatherData | null;
 }
 
-export default function EventLocation({ event }: EventLocationProps) {
+export default function EventLocation({ event, weather }: EventLocationProps) {
   const [showMapOptions, setShowMapOptions] = useState(false);
+  const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
-  const fullAddress = `${event.location.address}, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`.trim();
+  const fullAddress = `${event.location.address}, ${event.location.city}, ${
+    event.location.state || ""
+  } ${event.location.zipCode || ""}`.trim();
+  const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${
+    Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  }&q=${encodeURIComponent(fullAddress)}&zoom=15&maptype=roadmap`;
 
-  const handleOpenMaps = (provider: 'apple' | 'google') => {
+  const handleOpenMaps = (provider: "apple" | "google") => {
     const address = encodeURIComponent(fullAddress);
-    
-    if (provider === 'apple') {
-      window.open(`http://maps.apple.com/?q=${address}`, '_blank');
+
+    if (provider === "apple") {
+      window.open(`http://maps.apple.com/?q=${address}`, "_blank");
     } else {
-      window.open(`https://maps.google.com/?q=${address}`, '_blank');
+      window.open(`https://maps.google.com/?q=${address}`, "_blank");
     }
-    
+
     setShowMapOptions(false);
   };
 
@@ -31,106 +41,126 @@ export default function EventLocation({ event }: EventLocationProps) {
       setShowMapOptions(false);
       // Could show a toast notification here
     } catch (error) {
-      console.error('Failed to copy address:', error);
+      console.error("Failed to copy address:", error);
     }
   };
 
   return (
     <>
-      <div className="py-6 border-t border-gray-100">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Location</h2>
-        
+      <div className="border-t border-gray-100 py-6">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Location</h2>
+
         {/* Location Info */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 mb-1">
+        <div className="mb-4 flex items-start justify-between">
+          <div className="flex-1" onClick={() => setShowMapOptions(true)}>
+            <h3 className="mb-1 font-semibold text-gray-900">
               {event.location.name}
             </h3>
-            <p className="text-gray-600 text-sm">
+            <p className="text-sm text-gray-600">
               {event.location.city}, {event.location.country}
             </p>
           </div>
-          
+
           {/* Weather */}
-          {event.weather && (
-            <div className="flex items-center gap-2 text-gray-600">
-              <Sun className="w-5 h-5" />
+          {weather && (
+            <button
+              onClick={() => setShowWeatherDetail(true)}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors cursor-pointer p-1 rounded-lg hover:bg-gray-100"
+            >
+              <Sun className="h-5 w-5" />
               <span className="text-sm font-medium">
-                {event.weather.temperature}°{event.weather.unit}
+                {weather.temperature}°{weather.unit}
               </span>
-            </div>
+            </button>
           )}
         </div>
 
-        {/* Map Placeholder */}
-        <div 
-          className="relative h-32 bg-gray-200 rounded-xl overflow-hidden cursor-pointer hover:bg-gray-300 transition-colors"
-          onClick={() => setShowMapOptions(true)}
-        >
+        {/* Google Maps Embed */}
+        <div className="relative h-48 overflow-hidden rounded-xl border border-gray-200">
+          <iframe
+            width="100%"
+            height="100%"
+            className="border-0"
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            src={mapUrl}
+            title={`Map of ${event.location.name}`}
+            aria-label={`Map showing ${event.location.name}`}
+            style={{ pointerEvents: "auto" }}
+          ></iframe>
+
           {/* Map Pin */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="bg-red-500 rounded-full p-2">
-              <MapPin className="w-6 h-6 text-white" />
+          <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
+            <div className="-translate-y-1/2 transform rounded-full bg-red-500 p-2">
+              <MapPin className="h-4 w-4 text-white" />
             </div>
           </div>
-          
+
           {/* Address overlay */}
-          <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white p-3">
-            <p className="text-sm font-medium">{event.location.name}</p>
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 pt-8 text-white">
+            <p className="text-sm font-medium">{fullAddress}</p>
           </div>
-          
-          {/* Expand hint */}
-          <div className="absolute top-2 right-2 bg-white bg-opacity-90 rounded-full p-1">
-            <ExternalLink className="w-4 h-4 text-gray-600" />
-          </div>
+
+          {/* Expand button */}
+          <button
+            onClick={() => setShowMapOptions(true)}
+            className="absolute right-2 top-2 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100"
+          >
+            <ExternalLink className="h-4 w-4 text-gray-700" />
+          </button>
         </div>
-        
-        {/* Full Address - Clickable */}
-        <button 
-          className="text-sm text-gray-600 mt-3 hover:text-red-600 transition-colors text-left"
-          onClick={() => setShowMapOptions(true)}
-        >
-          {fullAddress}
-        </button>
       </div>
 
       {/* Map Options Modal */}
       {showMapOptions && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl p-6 w-full max-w-sm">
-            <h3 className="text-lg font-semibold mb-4 text-center">Open in Maps</h3>
-            
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-6">
+            <h3 className="mb-4 text-center text-lg font-semibold">
+              Open in Maps
+            </h3>
+
             <div className="space-y-3">
               <button
-                onClick={() => handleOpenMaps('apple')}
-                className="w-full p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => handleOpenMaps("apple")}
+                className="w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 Open in Apple Maps
               </button>
-              
+
               <button
-                onClick={() => handleOpenMaps('google')}
-                className="w-full p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={() => handleOpenMaps("google")}
+                className="w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 Open in Google Maps
               </button>
 
               <button
                 onClick={handleCopyAddress}
-                className="w-full p-3 text-left border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50"
               >
                 Copy Address
               </button>
             </div>
-            
+
             <button
               onClick={() => setShowMapOptions(false)}
-              className="w-full mt-4 py-2 px-4 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="mt-4 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50"
             >
               Cancel
             </button>
           </div>
         </div>
+      )}
+
+      {/* Weather Detail Sheet */}
+      {weather && (
+        <WeatherDetailSheet
+          weather={weather}
+          locationName={`${event.location.city}, ${event.location.country}`}
+          isOpen={showWeatherDetail}
+          onClose={() => setShowWeatherDetail(false)}
+        />
       )}
     </>
   );

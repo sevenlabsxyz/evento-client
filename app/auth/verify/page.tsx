@@ -1,20 +1,29 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useVerifyCode, useRedirectIfAuthenticated } from '@/lib/hooks/useAuth';
-import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, ArrowLeft, AlertCircle, Mail } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { useRedirectIfAuthenticated, useVerifyCode } from '@/lib/hooks/useAuth';
+import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { AlertCircle, ArrowLeft, Loader2, Mail } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-export default function VerifyPage() {
+function VerifyContent() {
   const router = useRouter();
-  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated();
+  const searchParams = useSearchParams();
+  const redirectUrl = searchParams.get('redirect') || '/';
+  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { verifyCode, isLoading, error, reset, email } = useVerifyCode();
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -37,9 +46,9 @@ export default function VerifyPage() {
   // Redirect to login if no email in store
   useEffect(() => {
     if (!isCheckingAuth && !email) {
-      router.push('/auth/login');
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
     }
-  }, [email, isCheckingAuth, router]);
+  }, [email, isCheckingAuth, redirectUrl, router]);
 
   // Countdown timer for resend
   useEffect(() => {
@@ -90,7 +99,7 @@ export default function VerifyPage() {
       // Focus the last filled input or the next empty one
       const focusIndex = Math.min(pastedData.length, 5);
       inputRefs.current[focusIndex]?.focus();
-      
+
       // Auto-submit if 6 digits
       if (pastedData.length === 6) {
         handleSubmit(onSubmit)();
@@ -108,30 +117,30 @@ export default function VerifyPage() {
   // Show loading while checking auth status
   if (isCheckingAuth || !email) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin' />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gray-50">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Check your email</CardTitle>
-          <CardDescription className="text-center space-y-2">
+    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
+      <Card className='w-full max-w-md'>
+        <CardHeader className='space-y-1'>
+          <CardTitle className='text-center text-2xl font-bold'>Check your email</CardTitle>
+          <CardDescription className='space-y-2 text-center'>
             <p>We've sent a 6-digit verification code to</p>
-            <p className="font-medium text-gray-900 flex items-center justify-center gap-2">
-              <Mail className="h-4 w-4" />
+            <p className='flex items-center justify-center gap-2 font-medium text-gray-900'>
+              <Mail className='h-4 w-4' />
               {email}
             </p>
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           {/* Error Alert */}
           {error && (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+            <Alert variant='destructive'>
+              <AlertCircle className='h-4 w-4' />
               <AlertDescription>
                 {error.message || 'Invalid code. Please try again.'}
               </AlertDescription>
@@ -139,42 +148,38 @@ export default function VerifyPage() {
           )}
 
           {/* Code Input Form */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Verification code</label>
-              <div className="flex gap-2 justify-center">
+          <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
+            <div className='space-y-2'>
+              <label className='text-sm font-medium'>Verification code</label>
+              <div className='flex justify-center gap-2'>
                 {[0, 1, 2, 3, 4, 5].map((index) => (
                   <Input
                     key={index}
                     ref={(el) => {
                       inputRefs.current[index] = el;
                     }}
-                    type="text"
-                    inputMode="numeric"
+                    type='text'
+                    inputMode='numeric'
                     maxLength={1}
                     value={codeValue[index] || ''}
                     onChange={(e) => handleCodeChange(index, e.target.value)}
                     onKeyDown={(e) => handleKeyDown(index, e)}
                     onPaste={handlePaste}
-                    className="w-12 h-12 text-center text-lg font-semibold"
+                    className='h-12 w-12 text-center text-lg font-semibold'
                     disabled={isLoading}
                   />
                 ))}
               </div>
-              <input type="hidden" {...register('code')} />
+              <input type='hidden' {...register('code')} />
               {errors.code && (
-                <p className="text-sm text-red-500 text-center">{errors.code.message}</p>
+                <p className='text-center text-sm text-red-500'>{errors.code.message}</p>
               )}
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={isLoading || codeValue.length !== 6}
-            >
+            <Button type='submit' className='w-full' disabled={isLoading || codeValue.length !== 6}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   Verifying...
                 </>
               ) : (
@@ -183,17 +188,15 @@ export default function VerifyPage() {
             </Button>
           </form>
 
-          <div className="text-center space-y-2">
-            <p className="text-sm text-gray-600">
+          <div className='space-y-2 text-center'>
+            <p className='text-sm text-gray-600'>
               Didn't receive the code?{' '}
               {resendTimer > 0 ? (
-                <span className="text-gray-500">
-                  Resend in {resendTimer}s
-                </span>
+                <span className='text-gray-500'>Resend in {resendTimer}s</span>
               ) : (
                 <button
                   onClick={handleResend}
-                  className="text-blue-600 hover:underline font-medium"
+                  className='font-medium text-blue-600 hover:underline'
                   disabled={isLoading}
                 >
                   Resend code
@@ -204,16 +207,30 @@ export default function VerifyPage() {
         </CardContent>
         <CardFooter>
           <Button
-            variant="ghost"
-            className="w-full"
-            onClick={() => router.push('/auth/login')}
+            variant='ghost'
+            className='w-full'
+            onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`)}
             disabled={isLoading}
           >
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <ArrowLeft className='mr-2 h-4 w-4' />
             Back to login
           </Button>
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className='flex min-h-screen items-center justify-center'>
+          <Loader2 className='h-8 w-8 animate-spin' />
+        </div>
+      }
+    >
+      <VerifyContent />
+    </Suspense>
   );
 }

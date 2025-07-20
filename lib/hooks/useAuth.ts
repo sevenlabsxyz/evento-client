@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '../stores/auth-store';
-import { authService } from '../services/auth';
-import { ApiError } from '../types/api';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
+import { authService } from '../services/auth';
+import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
+import { ApiError } from '../types/api';
+// import { debugLog } from '../utils/debug';
 
 // Key for user query
 const USER_QUERY_KEY = ['auth', 'user'] as const;
@@ -15,21 +16,14 @@ const USER_QUERY_KEY = ['auth', 'user'] as const;
 export function useAuth() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { 
-    user, 
-    isAuthenticated, 
-    email,
-    setUser, 
-    setEmail,
-    clearAuth 
-  } = useAuthStore();
+  const { user, isAuthenticated, email, setUser, setEmail, clearAuth } = useAuthStore();
 
   // Query to check current auth status
-  const { 
-    data: userData, 
+  const {
+    data: userData,
     isLoading: isCheckingAuth,
     error: authError,
-    refetch: checkAuth
+    refetch: checkAuth,
   } = useQuery({
     queryKey: USER_QUERY_KEY,
     queryFn: authService.getCurrentUser,
@@ -60,23 +54,23 @@ export function useAuth() {
   // Listen for auth state changes
   useEffect(() => {
     const supabase = createClient();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth: State changed -', event);
-        
-        if (event === 'SIGNED_IN' && session) {
-          // User signed in - refresh user data
-          queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-        } else if (event === 'SIGNED_OUT') {
-          // User signed out - clear everything
-          clearAuth();
-          queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-        } else if (event === 'TOKEN_REFRESHED' && session) {
-          // Token refreshed - this is automatic, no action needed
-          console.log('Auth: Token refreshed');
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // debugLog('Auth', 'State changed -', event);
+
+      if (event === 'SIGNED_IN' && session) {
+        // User signed in - refresh user data
+        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+      } else if (event === 'SIGNED_OUT') {
+        // User signed out - clear everything
+        clearAuth();
+        queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+      } else if (event === 'TOKEN_REFRESHED' && session) {
+        // Token refreshed - this is automatic, no action needed
+        // debugLog('Auth', 'Token refreshed');
       }
-    );
+    });
 
     return () => subscription.unsubscribe();
   }, [queryClient, clearAuth]);
@@ -108,12 +102,16 @@ export function useAuth() {
 export function useLogin() {
   const router = useRouter();
   const { setEmail } = useAuthStore();
+  const searchParams = useSearchParams();
 
   const mutation = useMutation({
     mutationFn: authService.sendLoginCode,
     onSuccess: (_, email) => {
       setEmail(email);
-      router.push('/auth/verify');
+      const redirect = searchParams.get('redirect');
+      router.push(
+        redirect ? `/auth/verify?redirect=${encodeURIComponent(redirect)}` : '/auth/verify'
+      );
     },
   });
 
@@ -143,13 +141,13 @@ export function useVerifyCode() {
     onSuccess: (data) => {
       // Set user data
       setUser(data);
-      
+
       // Clear email from store
       clearEmail();
-      
+
       // Invalidate user query to ensure fresh data
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
-      
+
       // Redirect to home
       router.push('/');
     },
@@ -185,10 +183,11 @@ export function useGoogleLogin() {
 export function useRequireAuth(redirectTo = '/auth/login') {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push(redirectTo);
+      router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [isAuthenticated, isLoading, router, redirectTo]);
 

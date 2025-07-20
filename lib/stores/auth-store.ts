@@ -8,7 +8,7 @@ interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   email: string | null; // Store email during login flow
-  
+
   // Actions
   setUser: (user: UserDetails | null) => void;
   setLoading: (loading: boolean) => void;
@@ -26,50 +26,47 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       isLoading: false,
       email: null,
-      
+
       // Actions
-      setUser: (user) => 
-        set({ 
-          user, 
+      setUser: (user) =>
+        set({
+          user,
           isAuthenticated: !!user,
-          isLoading: false 
-        }),
-      
-      setLoading: (loading) => 
-        set({ isLoading: loading }),
-      
-      setEmail: (email) => 
-        set({ email }),
-      
-      clearEmail: () => 
-        set({ email: null }),
-      
-      clearAuth: () => 
-        set({ 
-          user: null, 
-          isAuthenticated: false, 
           isLoading: false,
-          email: null 
         }),
-      
-      reset: () => 
+
+      setLoading: (loading) => set({ isLoading: loading }),
+
+      setEmail: (email) => set({ email }),
+
+      clearEmail: () => set({ email: null }),
+
+      clearAuth: () =>
         set({
           user: null,
           isAuthenticated: false,
           isLoading: false,
-          email: null
+          email: null,
+        }),
+
+      reset: () =>
+        set({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          email: null,
         }),
     }),
     {
       name: 'evento-auth-storage',
-      
+
       // Only persist non-sensitive data
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
         // Don't persist email for security
       }),
-      
+
       // Rehydrate the store on app start
       onRehydrateStorage: () => (state) => {
         if (state) {

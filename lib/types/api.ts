@@ -41,37 +41,37 @@ export interface Event {
   visibility: 'public' | 'private';
   cost: number | null;
   creator_user_id: string;
-  
+
   // Date components (stored separately for timezone handling)
   start_date_day: number;
   start_date_month: number;
   start_date_year: number;
   start_date_hours: number;
   start_date_minutes: number;
-  
+
   end_date_day: number;
   end_date_month: number;
   end_date_year: number;
   end_date_hours: number;
   end_date_minutes: number;
-  
+
   // Computed ISO dates
   computed_start_date: string;
   computed_end_date: string;
-  
+
   // Media & Links
   spotify_url: string;
   wavlake_url: string;
-  
+
   // Contribution methods
   contrib_cashapp: string;
   contrib_venmo: string;
   contrib_paypal: string;
   contrib_btclightning: string;
-  
+
   created_at: string;
   updated_at: string;
-  
+
   // Relations (populated in some responses)
   user_details?: UserDetails;
 }
@@ -115,26 +115,26 @@ export interface CreateEventForm {
   status: 'draft' | 'published';
   visibility: 'public' | 'private';
   cost?: number;
-  
+
   start_date_day: number;
   start_date_month: number;
   start_date_year: number;
   start_date_hours: number;
   start_date_minutes: number;
-  
+
   end_date_day: number;
   end_date_month: number;
   end_date_year: number;
   end_date_hours: number;
   end_date_minutes: number;
-  
+
   spotify_url?: string;
   wavlake_url?: string;
   contrib_cashapp?: string;
   contrib_venmo?: string;
   contrib_paypal?: string;
   contrib_btclightning?: string;
-  
+
   settings?: {
     max_capacity?: number;
     show_capacity_count?: boolean;

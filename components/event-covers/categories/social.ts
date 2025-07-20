@@ -1,5 +1,5 @@
-const basePath = "/eventos/default-covers";
-const category = "social";
+const basePath = '/eventos/default-covers';
+const category = 'social';
 
 export const SOCIAL_COVERS = [
   // Xmas Release
