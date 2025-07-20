@@ -12,8 +12,7 @@ export interface TopBarButton {
   disabled?: boolean;
 }
 
-interface TopBarState {
-  // State
+interface TopBarConfig {
   leftMode: LeftMode;
   onBackPress: (() => void) | null;
   centerMode: CenterMode;
@@ -22,40 +21,16 @@ interface TopBarState {
   buttons: TopBarButton[];
   showAvatar: boolean;
   isOverlaid: boolean;
+}
+
+interface TopBarState extends TopBarConfig {
+  // Route tracking
   currentRoute: string | null;
+  routeConfigs: Map<string, Partial<TopBarConfig>>;
 
   // Actions
-  setTopBar: (
-    config: Partial<
-      Pick<
-        TopBarState,
-        | 'leftMode'
-        | 'onBackPress'
-        | 'centerMode'
-        | 'title'
-        | 'subtitle'
-        | 'buttons'
-        | 'showAvatar'
-        | 'isOverlaid'
-      >
-    >
-  ) => void;
-  setTopBarForRoute: (
-    route: string,
-    config: Partial<
-      Pick<
-        TopBarState,
-        | 'leftMode'
-        | 'onBackPress'
-        | 'centerMode'
-        | 'title'
-        | 'subtitle'
-        | 'buttons'
-        | 'showAvatar'
-        | 'isOverlaid'
-      >
-    >
-  ) => void;
+  setTopBar: (config: Partial<TopBarConfig>) => void;
+  setTopBarForRoute: (route: string, config: Partial<TopBarConfig>) => void;
   setLeftMode: (mode: LeftMode) => void;
   setBackHandler: (handler: (() => void) | null) => void;
   setCenterMode: (mode: CenterMode) => void;
@@ -66,9 +41,11 @@ interface TopBarState {
   setOverlaid: (isOverlaid: boolean) => void;
   reset: () => void;
   resetForRoute: (route: string) => void;
+  clearRoute: (route: string) => void;
+  applyRouteConfig: (route: string) => void;
 }
 
-const initialState = {
+const initialState: TopBarConfig = {
   leftMode: 'menu' as LeftMode,
   onBackPress: null,
   centerMode: 'title' as CenterMode,
@@ -77,22 +54,63 @@ const initialState = {
   buttons: [],
   showAvatar: true,
   isOverlaid: false,
-  currentRoute: null,
 };
 
 export const useTopBarStore = create<TopBarState>((set, get) => ({
   // Initial state
   ...initialState,
+  currentRoute: null,
+  routeConfigs: new Map(),
 
   // Actions
-  setTopBar: (config) => set((state) => ({ ...state, ...config })),
-  setTopBarForRoute: (route, config) => {
-    // Only update if this is the current route or no route is set
+  setTopBar: (config) => {
     const currentRoute = get().currentRoute;
-    if (!currentRoute || currentRoute === route) {
-      set((state) => ({ ...state, ...config, currentRoute: route }));
+    
+    // Store configuration for current route
+    if (currentRoute) {
+      const routeConfigs = new Map(get().routeConfigs);
+      routeConfigs.set(currentRoute, { ...routeConfigs.get(currentRoute), ...config });
+      set((state) => ({ ...state, ...config, routeConfigs }));
+    } else {
+      set((state) => ({ ...state, ...config }));
     }
   },
+  
+  setTopBarForRoute: (route, config) => {
+    const routeConfigs = new Map(get().routeConfigs);
+    routeConfigs.set(route, { ...routeConfigs.get(route), ...config });
+    
+    // Only update UI state if this is the current route
+    if (get().currentRoute === route) {
+      set((state) => ({ ...state, ...config, routeConfigs, currentRoute: route }));
+    } else {
+      set((state) => ({ ...state, routeConfigs }));
+    }
+  },
+  
+  applyRouteConfig: (route) => {
+    const routeConfigs = get().routeConfigs;
+    const routeConfig = routeConfigs.get(route);
+    
+    if (routeConfig) {
+      set((state) => ({ ...state, ...initialState, ...routeConfig, currentRoute: route }));
+    } else {
+      set((state) => ({ ...state, ...initialState, currentRoute: route }));
+    }
+  },
+  
+  clearRoute: (route) => {
+    const routeConfigs = new Map(get().routeConfigs);
+    routeConfigs.delete(route);
+    
+    // If clearing current route, reset to initial state
+    if (get().currentRoute === route) {
+      set({ ...initialState, currentRoute: null, routeConfigs });
+    } else {
+      set((state) => ({ ...state, routeConfigs }));
+    }
+  },
+  
   setLeftMode: (leftMode) => set({ leftMode }),
   setBackHandler: (onBackPress) => set({ onBackPress }),
   setCenterMode: (centerMode) => set({ centerMode }),
@@ -101,11 +119,13 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setButtons: (buttons) => set({ buttons }),
   setShowAvatar: (showAvatar) => set({ showAvatar }),
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
-  reset: () => set(initialState),
+  
+  reset: () => set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
+  
   resetForRoute: (route) => {
     const currentRoute = get().currentRoute;
     if (currentRoute === route) {
-      set(initialState);
+      set({ ...initialState, currentRoute: null, routeConfigs: new Map(get().routeConfigs) });
     }
   },
 }));
@@ -133,6 +153,8 @@ export const useTopBar = () => {
   const setOverlaid = useTopBarStore((state) => state.setOverlaid);
   const reset = useTopBarStore((state) => state.reset);
   const resetForRoute = useTopBarStore((state) => state.resetForRoute);
+  const clearRoute = useTopBarStore((state) => state.clearRoute);
+  const applyRouteConfig = useTopBarStore((state) => state.applyRouteConfig);
 
   return {
     leftMode,
@@ -156,5 +178,7 @@ export const useTopBar = () => {
     setOverlaid,
     reset,
     resetForRoute,
+    clearRoute,
+    applyRouteConfig,
   };
 };

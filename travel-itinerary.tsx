@@ -9,25 +9,30 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function TravelItinerary() {
-  const { setTopBar } = useTopBar();
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    const pathname = '/e/hub'; // This component is always used for hub
+    
+    // Apply any existing configuration for this route
+    applyRouteConfig(pathname);
+    
+    // Set configuration for this specific route
+    setTopBarForRoute(pathname, {
       title: 'Hub',
-      subtitle: undefined,
+      subtitle: '',
       leftMode: 'menu',
       showAvatar: true,
       centerMode: 'title',
+      buttons: [],
     });
 
+    // Cleanup on unmount
     return () => {
-      setTopBar({ 
-        title: '',
-        subtitle: '',
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
 
   const [activeDate, setActiveDate] = useState(2);
   const [activeTab, setActiveTab] = useState('hub');

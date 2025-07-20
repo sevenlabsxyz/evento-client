@@ -5,19 +5,24 @@ import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Plus, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { setTopBar } = useTopBar();
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const router = useRouter();
+  const pathname = usePathname();
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    // Apply any existing configuration for this route
+    applyRouteConfig(pathname);
+    
+    // Set configuration for this specific route
+    setTopBarForRoute(pathname, {
       title: 'Chat',
-      subtitle: undefined,
+      subtitle: '',
       showAvatar: true,
       leftMode: 'menu',
       centerMode: 'title',
@@ -31,14 +36,11 @@ export default function ChatPage() {
       ],
     });
 
+    // Cleanup on unmount
     return () => {
-      setTopBar({ 
-        buttons: [],
-        title: '',
-        subtitle: '',
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar, router]);
+  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, router]);
 
   const [activeTab, setActiveTab] = useState('messages');
   const [searchQuery, setSearchQuery] = useState('');
