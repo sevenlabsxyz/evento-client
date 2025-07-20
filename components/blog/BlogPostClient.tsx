@@ -19,7 +19,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className='min-h-screen bg-gray-50'>
       <Scroll.Root asChild>
         <Scroll.View className='BlogPost-scrollView'>
           <Scroll.Content asChild>
@@ -40,8 +40,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                 <h1 className='BlogPost-title'>{post.title}</h1>
                 {post.excerpt && <h2 className='BlogPost-subtitle'>{post.excerpt}</h2>}
                 <div className='BlogPost-author'>
-                  by <span className='BlogPost-authorName'>{authorName}</span> •{' '}
-                  {publishedDate}
+                  by <span className='BlogPost-authorName'>{authorName}</span> • {publishedDate}
                 </div>
                 <div
                   className='BlogPost-articleBody'

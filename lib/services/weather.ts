@@ -1,10 +1,8 @@
 import {
   GeocodeResponse,
   OpenWeatherMapForecastResponse,
-  OpenWeatherMapHistoricalResponse,
   OpenWeatherMapResponse,
   WeatherData,
-  WeatherError,
 } from '@/lib/types/weather';
 
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
@@ -38,10 +36,13 @@ class WeatherService {
     return response.json();
   }
 
-  private transformWeatherData(data: OpenWeatherMapResponse | any, unit: 'C' | 'F' = 'C'): WeatherData {
+  private transformWeatherData(
+    data: OpenWeatherMapResponse | any,
+    unit: 'C' | 'F' = 'C'
+  ): WeatherData {
     const weather = data.weather?.[0];
     const main = data.main || data;
-    
+
     return {
       temperature: Math.round(main.temp || main.temperature),
       unit,
@@ -66,7 +67,7 @@ class WeatherService {
       );
 
       const data = await this.handleResponse<GeocodeResponse[]>(response);
-      
+
       if (!data || data.length === 0) {
         throw new Error('location_not_found');
       }
@@ -76,18 +77,18 @@ class WeatherService {
         lon: data[0].lon,
       };
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith('api_') || error.message.startsWith('location_') || error.message.startsWith('network_')) {
+      if (
+        (error instanceof Error && error.message.startsWith('api_')) ||
+        error.message.startsWith('location_') ||
+        error.message.startsWith('network_')
+      ) {
         throw error;
       }
       throw new Error('unknown_error');
     }
   }
 
-  async getCurrentWeather(
-    lat: number,
-    lon: number,
-    unit: 'C' | 'F' = 'C'
-  ): Promise<WeatherData> {
+  async getCurrentWeather(lat: number, lon: number, unit: 'C' | 'F' = 'C'): Promise<WeatherData> {
     if (!this.validateApiKey()) {
       throw new Error('api_key_missing');
     }
@@ -101,7 +102,11 @@ class WeatherService {
       const data = await this.handleResponse<OpenWeatherMapResponse>(response);
       return this.transformWeatherData(data, unit);
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith('api_') || error.message.startsWith('location_') || error.message.startsWith('network_')) {
+      if (
+        (error instanceof Error && error.message.startsWith('api_')) ||
+        error.message.startsWith('location_') ||
+        error.message.startsWith('network_')
+      ) {
         throw error;
       }
       throw new Error('unknown_error');
@@ -125,7 +130,7 @@ class WeatherService {
       );
 
       const data = await this.handleResponse<OpenWeatherMapForecastResponse>(response);
-      
+
       // Find the forecast entry closest to the target date
       const targetTimestamp = targetDate.getTime() / 1000;
       let closestEntry = null;
@@ -143,13 +148,20 @@ class WeatherService {
         return null;
       }
 
-      return this.transformWeatherData({
-        weather: closestEntry.weather,
-        main: closestEntry.main,
-        wind: closestEntry.wind,
-      }, unit);
+      return this.transformWeatherData(
+        {
+          weather: closestEntry.weather,
+          main: closestEntry.main,
+          wind: closestEntry.wind,
+        },
+        unit
+      );
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith('api_') || error.message.startsWith('location_') || error.message.startsWith('network_')) {
+      if (
+        (error instanceof Error && error.message.startsWith('api_')) ||
+        error.message.startsWith('location_') ||
+        error.message.startsWith('network_')
+      ) {
         throw error;
       }
       throw new Error('unknown_error');
@@ -169,15 +181,19 @@ class WeatherService {
     try {
       const timestamp = Math.floor(targetDate.getTime() / 1000);
       const units = unit === 'C' ? 'metric' : 'imperial';
-      
+
       // Note: Historical weather API requires a paid plan for OpenWeatherMap
       // For free tier, we'll fallback to current weather as a reasonable estimate
       const daysDiff = Math.abs(Date.now() - targetDate.getTime()) / (1000 * 60 * 60 * 24);
-      
+
       // Use current weather as a reasonable estimate for any past date
       return this.getCurrentWeather(lat, lon, unit);
     } catch (error) {
-      if (error instanceof Error && error.message.startsWith('api_') || error.message.startsWith('location_') || error.message.startsWith('network_')) {
+      if (
+        (error instanceof Error && error.message.startsWith('api_')) ||
+        error.message.startsWith('location_') ||
+        error.message.startsWith('network_')
+      ) {
         throw error;
       }
       throw new Error('unknown_error');

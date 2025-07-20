@@ -1,7 +1,7 @@
 import { apiClient } from '@/lib/api/client';
 import { ApiResponse, Event } from '@/lib/types/api';
 import { transformApiEventResponse } from '@/lib/utils/api-transform';
-import { debugApiResponse, debugError, debugLog } from '@/lib/utils/debug';
+import { debugError } from '@/lib/utils/debug';
 import { useQuery } from '@tanstack/react-query';
 
 export function useEventDetails(eventId: string) {

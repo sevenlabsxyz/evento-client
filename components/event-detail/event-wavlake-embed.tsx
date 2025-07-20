@@ -11,7 +11,7 @@ export const WavlakeEmbed = ({ link }: { link: string }) => {
         width='100%'
         height='120'
         frameBorder='0'
-        allowtransparency="true"
+        allowtransparency='true'
         allow='encrypted-media'
         style={{ maxHeight: '120px', overflow: 'hidden' }}
       ></iframe>

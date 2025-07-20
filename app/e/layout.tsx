@@ -33,13 +33,15 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
         leftMode: 'back',
         centerMode: 'empty',
         showAvatar: false,
-        buttons: [{
-          id: 'share',
-          icon: Share,
-          onClick: handleShare,
-          label: 'Share'
-        }],
-        isOverlaid: false
+        buttons: [
+          {
+            id: 'share',
+            icon: Share,
+            onClick: handleShare,
+            label: 'Share',
+          },
+        ],
+        isOverlaid: false,
       });
     } else {
       // Reset to default for other routes
@@ -48,7 +50,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
         centerMode: 'title',
         showAvatar: true,
         buttons: [],
-        isOverlaid: false
+        isOverlaid: false,
       });
     }
   }, [pathname, setTopBar]);
