@@ -8,25 +8,30 @@ import { useEventsFeed } from '@/lib/hooks/useEventsFeed';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { Bookmark, Check, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function FeedPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { setTopBar } = useTopBar();
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const [activeTab, setActiveTab] = useState('feed');
   const [bookmarkedEvents, setBookmarkedEvents] = useState<Set<string>>(new Set());
   const [showSaveModal, setShowSaveModal] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    // Apply any existing configuration for this route
+    applyRouteConfig(pathname);
+    
+    // Set configuration for this specific route
+    setTopBarForRoute(pathname, {
       title: 'Feed',
       showAvatar: true,
       leftMode: 'menu',
-      subtitle: undefined,
+      subtitle: '',
       centerMode: 'title',
       buttons: [
         {
@@ -38,14 +43,11 @@ export default function FeedPage() {
       ],
     });
 
+    // Cleanup on unmount
     return () => {
-      setTopBar({ 
-        buttons: [],
-        title: '',
-        subtitle: '',
-      });
+      clearRoute(pathname);
     };
-  }, [router, setTopBar]);
+  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, router]);
 
   // Fetch events feed
   const { data: events = [], isLoading, error } = useEventsFeed();

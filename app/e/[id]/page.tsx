@@ -15,18 +15,58 @@ import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useEventGallery } from '@/lib/hooks/useEventGallery';
 import { useEventHosts } from '@/lib/hooks/useEventHosts';
 import { useEventWeather } from '@/lib/hooks/useEventWeather';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
-import { Loader2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useMemo, useRef, useState } from 'react';
+import { Loader2, Share } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const eventId = params.id as string;
   const { user } = useAuth();
+  const { setTopBarForRoute, clearRoute } = useTopBar();
   const lightboxRef = useRef<SilkLightboxRef>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+
+  // Configure TopBar for event pages
+  useEffect(() => {
+    const handleShare = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: document.title,
+            url: window.location.href,
+          });
+        } catch (error) {
+          console.log('Error sharing:', error);
+        }
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+      }
+    };
+
+    setTopBarForRoute(pathname, {
+      leftMode: 'back',
+      centerMode: 'empty',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'share',
+          icon: Share,
+          onClick: handleShare,
+          label: 'Share',
+        },
+      ],
+      isOverlaid: false,
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [pathname, setTopBarForRoute, clearRoute]);
 
   // Fetch event data from API
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
