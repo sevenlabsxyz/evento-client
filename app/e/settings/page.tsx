@@ -4,14 +4,13 @@ import { APISheet } from '@/components/settings/APISheet';
 import { ChangelogSheet } from '@/components/settings/ChangelogSheet';
 import { ContactSheet } from '@/components/settings/ContactSheet';
 import { HelpSheet } from '@/components/settings/HelpSheet';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useAuth, useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
   Bell,
   BookOpen,
   ChevronRight,
-  Cloud,
   Code,
   DollarSign,
   Info,
@@ -22,6 +21,7 @@ import {
   Share,
   Shield,
   Sparkles,
+  UserCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import packageJson from '../../../package.json';
@@ -29,6 +29,7 @@ import packageJson from '../../../package.json';
 export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
+  const { user, email } = useAuth();
 
   // Set TopBar content
   useEffect(() => {
@@ -103,11 +104,11 @@ export default function SettingsPage() {
           <div className='border-b border-gray-100 p-4'>
             <div className='flex items-center gap-3'>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                <Cloud className='h-4 w-4 text-red-600' />
+                <UserCircle className='h-4 w-4 text-red-600' />
               </div>
               <div>
-                <p className='font-medium text-red-500'>Andre Neves</p>
-                <p className='text-sm text-gray-600'>andrerfneves@protonmail.com</p>
+                <p className='font-medium text-red-500'>{user?.name || 'Guest'}</p>
+                <p className='text-sm text-gray-600'>{email}</p>
               </div>
             </div>
           </div>

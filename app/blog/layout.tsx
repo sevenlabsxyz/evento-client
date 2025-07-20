@@ -44,12 +44,14 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
         title: '',
         subtitle: '',
         showAvatar: false,
-        buttons: [{
-          id: 'share',
-          icon: Share,
-          onClick: handleShare,
-          label: 'Share'
-        }],
+        buttons: [
+          {
+            id: 'share',
+            icon: Share,
+            onClick: handleShare,
+            label: 'Share',
+          },
+        ],
         isOverlaid: false,
       });
     } else {
@@ -60,12 +62,14 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
         title: 'Blog',
         subtitle: '',
         showAvatar: true,
-        buttons: [{
-          id: 'share',
-          icon: Share,
-          onClick: handleShare,
-          label: 'Share'
-        }],
+        buttons: [
+          {
+            id: 'share',
+            icon: Share,
+            onClick: handleShare,
+            label: 'Share',
+          },
+        ],
         isOverlaid: false,
       });
     }

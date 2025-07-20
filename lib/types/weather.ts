@@ -136,7 +136,7 @@ export interface GeocodeResponse {
   state?: string;
 }
 
-export type WeatherError = 
+export type WeatherError =
   | 'api_key_missing'
   | 'location_not_found'
   | 'api_limit_exceeded'

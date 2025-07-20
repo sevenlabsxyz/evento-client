@@ -1,5 +1,4 @@
 import { ApiEvent } from '@/lib/schemas/event';
-import { debugLog } from './debug';
 
 /**
  * Transform API response to ensure it has the expected format
@@ -15,7 +14,6 @@ export function transformApiEventResponse(response: any): ApiEvent | null {
 
   // Check if we have legacy format with date/time fields
   if ('date' in response || 'time' in response) {
-
     try {
       // Parse the date string (assuming format like "2024-01-15")
       const startDateParts = response.date?.split('-');

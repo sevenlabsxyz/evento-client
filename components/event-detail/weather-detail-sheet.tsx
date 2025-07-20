@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { DetachedSheet } from "@/components/ui/detached-sheet";
-import { WeatherData } from "@/lib/types/weather";
-import { Droplets, MoreHorizontal, Thermometer, Wind } from "lucide-react";
-import Image from "next/image";
-import { useState } from "react";
+import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { WeatherData } from '@/lib/types/weather';
+import { Droplets, MoreHorizontal, Thermometer, Wind } from 'lucide-react';
+import Image from 'next/image';
+import { useState } from 'react';
 
 // Temperature conversion helper functions
 const celsiusToFahrenheit = (celsius: number): number => {
@@ -31,18 +31,14 @@ export default function WeatherDetailSheet({
   const iconUrl = `https://openweathermap.org/img/wn/${weather.icon}@2x.png`;
 
   // Local unit toggle state (resets when sheet reopens)
-  const [displayUnit, setDisplayUnit] = useState<"F" | "C">(weather.unit);
+  const [displayUnit, setDisplayUnit] = useState<'F' | 'C'>(weather.unit);
   const [showUnitMenu, setShowUnitMenu] = useState(false);
 
   // Helper function to get temperature in desired unit
-  const getTemperature = (
-    temp: number,
-    originalUnit: "F" | "C",
-    targetUnit: "F" | "C"
-  ): number => {
+  const getTemperature = (temp: number, originalUnit: 'F' | 'C', targetUnit: 'F' | 'C'): number => {
     if (originalUnit === targetUnit) return temp;
 
-    if (originalUnit === "F" && targetUnit === "C") {
+    if (originalUnit === 'F' && targetUnit === 'C') {
       return fahrenheitToCelsius(temp);
     } else {
       return celsiusToFahrenheit(temp);
@@ -50,16 +46,13 @@ export default function WeatherDetailSheet({
   };
 
   // Convert wind speed to appropriate unit (mph for F, m/s for C)
-  const getWindSpeed = (
-    speed: number,
-    unit: "F" | "C"
-  ): { speed: string; unit: string } => {
-    if (unit === "F") {
+  const getWindSpeed = (speed: number, unit: 'F' | 'C'): { speed: string; unit: string } => {
+    if (unit === 'F') {
       // Convert m/s to mph: multiply by 2.237
       const mph = (speed * 2.237).toFixed(1);
-      return { speed: mph, unit: "mph" };
+      return { speed: mph, unit: 'mph' };
     } else {
-      return { speed: speed.toFixed(1), unit: "m/s" };
+      return { speed: speed.toFixed(1), unit: 'm/s' };
     }
   };
 
@@ -72,57 +65,55 @@ export default function WeatherDetailSheet({
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
           <DetachedSheet.Content>
-            <div className="p-6">
+            <div className='p-6'>
               {/* Handle */}
-              <div className="mb-4 flex justify-center">
+              <div className='mb-4 flex justify-center'>
                 <DetachedSheet.Handle />
               </div>
 
               {/* Header */}
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex-1"></div>
-                  <h2 className="text-xl font-semibold text-gray-900">
-                    Current Weather
-                  </h2>
-                  <div className="flex-1 flex justify-end">
+              <div className='mb-6'>
+                <div className='mb-2 flex items-center justify-between'>
+                  <div className='flex-1'></div>
+                  <h2 className='text-xl font-semibold text-gray-900'>Current Weather</h2>
+                  <div className='flex flex-1 justify-end'>
                     {/* Temperature Unit Menu */}
-                    <div className="relative">
+                    <div className='relative'>
                       <button
                         onClick={() => setShowUnitMenu(!showUnitMenu)}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className='rounded-full p-2 transition-colors hover:bg-gray-100'
                       >
-                        <MoreHorizontal className="h-5 w-5 text-gray-600" />
+                        <MoreHorizontal className='h-5 w-5 text-gray-600' />
                       </button>
-                      
+
                       {showUnitMenu && (
-                        <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10 min-w-[120px]">
+                        <div className='absolute right-0 top-full z-10 mt-1 min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg'>
                           <button
                             onClick={() => {
-                              setDisplayUnit("F");
+                              setDisplayUnit('F');
                               setShowUnitMenu(false);
                             }}
-                            className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center justify-between ${
-                              displayUnit === "F" ? "text-red-600 font-medium" : "text-gray-700"
+                            className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-gray-50 ${
+                              displayUnit === 'F' ? 'font-medium text-red-600' : 'text-gray-700'
                             }`}
                           >
                             <span>Fahrenheit</span>
-                            {displayUnit === "F" && (
-                              <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                            {displayUnit === 'F' && (
+                              <div className='h-2 w-2 rounded-full bg-red-600'></div>
                             )}
                           </button>
                           <button
                             onClick={() => {
-                              setDisplayUnit("C");
+                              setDisplayUnit('C');
                               setShowUnitMenu(false);
                             }}
-                            className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 flex items-center justify-between ${
-                              displayUnit === "C" ? "text-red-600 font-medium" : "text-gray-700"
+                            className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-gray-50 ${
+                              displayUnit === 'C' ? 'font-medium text-red-600' : 'text-gray-700'
                             }`}
                           >
                             <span>Celsius</span>
-                            {displayUnit === "C" && (
-                              <div className="w-2 h-2 bg-red-600 rounded-full"></div>
+                            {displayUnit === 'C' && (
+                              <div className='h-2 w-2 rounded-full bg-red-600'></div>
                             )}
                           </button>
                         </div>
@@ -130,79 +121,55 @@ export default function WeatherDetailSheet({
                     </div>
                   </div>
                 </div>
-                <p className="text-center text-sm text-gray-600">
-                  {locationName}
-                </p>
+                <p className='text-center text-sm text-gray-600'>{locationName}</p>
               </div>
 
               {/* Main Weather Display */}
-              <div className="flex items-center justify-center mb-8">
-                <div className="text-center">
-                  <div className="flex items-center justify-center mb-2">
+              <div className='mb-8 flex items-center justify-center'>
+                <div className='text-center'>
+                  <div className='mb-2 flex items-center justify-center'>
                     <Image
                       src={iconUrl}
                       alt={weather.description}
                       width={80}
                       height={80}
-                      className="w-20 h-20"
+                      className='h-20 w-20'
                     />
                   </div>
-                  <div className="text-4xl font-bold text-gray-900 mb-1">
-                    {getTemperature(
-                      weather.temperature,
-                      weather.unit,
-                      displayUnit
-                    )}
-                    °{displayUnit}
+                  <div className='mb-1 text-4xl font-bold text-gray-900'>
+                    {getTemperature(weather.temperature, weather.unit, displayUnit)}°{displayUnit}
                   </div>
-                  <div className="text-lg text-gray-600 capitalize mb-1">
-                    {weather.description}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {weather.condition}
-                  </div>
+                  <div className='mb-1 text-lg capitalize text-gray-600'>{weather.description}</div>
+                  <div className='text-sm text-gray-500'>{weather.condition}</div>
                 </div>
               </div>
 
               {/* Weather Details - 3 Cards Side by Side */}
-              <div className="grid grid-cols-3 gap-4">
+              <div className='grid grid-cols-3 gap-4'>
                 {weather.feelsLike && (
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <Thermometer className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                    <div className="text-xs font-medium text-gray-900 mb-1">
-                      Feels like
-                    </div>
-                    <div className="text-sm font-semibold text-gray-700">
-                      {getTemperature(
-                        weather.feelsLike,
-                        weather.unit,
-                        displayUnit
-                      )}
-                      °{displayUnit}
+                  <div className='rounded-lg bg-gray-50 p-4 text-center'>
+                    <Thermometer className='mx-auto mb-2 h-6 w-6 text-gray-600' />
+                    <div className='mb-1 text-xs font-medium text-gray-900'>Feels like</div>
+                    <div className='text-sm font-semibold text-gray-700'>
+                      {getTemperature(weather.feelsLike, weather.unit, displayUnit)}°{displayUnit}
                     </div>
                   </div>
                 )}
 
                 {weather.humidity && (
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <Droplets className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                    <div className="text-xs font-medium text-gray-900 mb-1">
-                      Humidity
-                    </div>
-                    <div className="text-sm font-semibold text-gray-700">
-                      {weather.humidity}%
-                    </div>
+                  <div className='rounded-lg bg-gray-50 p-4 text-center'>
+                    <Droplets className='mx-auto mb-2 h-6 w-6 text-gray-600' />
+                    <div className='mb-1 text-xs font-medium text-gray-900'>Humidity</div>
+                    <div className='text-sm font-semibold text-gray-700'>{weather.humidity}%</div>
                   </div>
                 )}
 
                 {weather.windSpeed && (
-                  <div className="bg-gray-50 rounded-lg p-4 text-center">
-                    <Wind className="h-6 w-6 text-gray-600 mx-auto mb-2" />
-                    <div className="text-xs font-medium text-gray-900 mb-1">
-                      Wind
-                    </div>
-                    <div className="text-sm font-semibold text-gray-700">
-                      {getWindSpeed(weather.windSpeed, displayUnit).speed}{" "}
+                  <div className='rounded-lg bg-gray-50 p-4 text-center'>
+                    <Wind className='mx-auto mb-2 h-6 w-6 text-gray-600' />
+                    <div className='mb-1 text-xs font-medium text-gray-900'>Wind</div>
+                    <div className='text-sm font-semibold text-gray-700'>
+                      {getWindSpeed(weather.windSpeed, displayUnit).speed}{' '}
                       {getWindSpeed(weather.windSpeed, displayUnit).unit}
                     </div>
                   </div>
@@ -210,11 +177,10 @@ export default function WeatherDetailSheet({
               </div>
 
               {/* Disclaimer */}
-              <div className="mt-6 p-3 bg-blue-50 rounded-lg">
-                <div className="text-xs text-blue-800">
-                  <strong>Note:</strong> This shows current weather conditions
-                  at the event location, not the actual weather from the event
-                  date.
+              <div className='mt-6 rounded-lg bg-blue-50 p-3'>
+                <div className='text-xs text-blue-800'>
+                  <strong>Note:</strong> This shows current weather conditions at the event
+                  location, not the actual weather from the event date.
                 </div>
               </div>
             </div>

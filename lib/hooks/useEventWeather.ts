@@ -34,7 +34,7 @@ export function useEventWeather({
 
     try {
       const date = new Date(eventDate);
-      
+
       // Validate the date
       if (isNaN(date.getTime())) {
         setError('invalid_date');
@@ -55,7 +55,7 @@ export function useEventWeather({
       setWeather(weatherData);
     } catch (err) {
       console.warn('Weather fetch error:', err);
-      
+
       // Map error types
       if (err instanceof Error) {
         switch (err.message) {
@@ -80,12 +80,19 @@ export function useEventWeather({
       } else {
         setError('unknown_error');
       }
-      
+
       setWeather(null);
     } finally {
       setLoading(false);
     }
-  }, [location.city, location.country, location.coordinates?.lat, location.coordinates?.lng, eventDate, enabled]);
+  }, [
+    location.city,
+    location.country,
+    location.coordinates?.lat,
+    location.coordinates?.lng,
+    eventDate,
+    enabled,
+  ]);
 
   useEffect(() => {
     fetchWeather();
