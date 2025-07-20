@@ -15,7 +15,6 @@ import {
   MessageCircleQuestion,
   Plus,
   Settings,
-  ShoppingBag,
   Star,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -94,12 +93,6 @@ export function Sidebar() {
           name: 'Read Blog',
           path: '/blog',
           icon: <BookOpen className='h-5 w-5' strokeWidth={2.5} />,
-        },
-        {
-          name: 'Evento Store',
-          path: 'https://store.evento.so',
-          icon: <ShoppingBag className='h-5 w-5' strokeWidth={2.5} />,
-          isExternal: true,
         },
         {
           name: 'Contact Support',
