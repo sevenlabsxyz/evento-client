@@ -1,7 +1,7 @@
 /**
  * Utilities for optimizing and transforming blog post images
  */
-import { isGif, ImageSizes } from './image';
+import { ImageSizes, isGif } from './image';
 
 interface ImageDimensions {
   width: number;
@@ -22,11 +22,7 @@ function getEstimatedDimensions(src: string): ImageDimensions {
   };
 
   // For portrait images (often used in testimonials, team photos)
-  if (
-    src.includes('portrait') ||
-    src.includes('profile') ||
-    src.includes('avatar')
-  ) {
+  if (src.includes('portrait') || src.includes('profile') || src.includes('avatar')) {
     return {
       width: ImageSizes.MEDIUM,
       height: Math.round(ImageSizes.MEDIUM * (4 / 3)),
@@ -34,11 +30,7 @@ function getEstimatedDimensions(src: string): ImageDimensions {
   }
 
   // For square images (icons, thumbnails)
-  if (
-    src.includes('icon') ||
-    src.includes('logo') ||
-    src.includes('thumbnail')
-  ) {
+  if (src.includes('icon') || src.includes('logo') || src.includes('thumbnail')) {
     return {
       width: ImageSizes.MEDIUM,
       height: ImageSizes.MEDIUM,
@@ -56,12 +48,7 @@ function getEstimatedDimensions(src: string): ImageDimensions {
  * @param height - Image height
  * @returns String representation of the Next.js Image component
  */
-function generateImageComponent(
-  src: string,
-  alt: string,
-  width: number,
-  height: number
-): string {
+function generateImageComponent(src: string, alt: string, width: number, height: number): string {
   // For GIFs, use regular img tag to maintain animation
   if (isGif(src)) {
     return `<img src="${src}" alt="${alt}" width="${width}" height="${height}" style="max-width:100%;height:auto;" loading="lazy" />`;
@@ -95,31 +82,20 @@ export function optimizeBlogImages(html: string): string {
   // Pattern to match <img> tags with various attributes
   const imgPattern = /<img\s+([^>]*)src="([^"]*)"([^>]*)>/gi;
 
-  return html.replace(
-    imgPattern,
-    (match, preAttributes, src, postAttributes) => {
-      // Extract alt text if present
-      const altMatch = (preAttributes + postAttributes).match(/alt="([^"]*)"/i);
-      const alt = altMatch ? altMatch[1] : '';
+  return html.replace(imgPattern, (match, preAttributes, src, postAttributes) => {
+    // Extract alt text if present
+    const altMatch = (preAttributes + postAttributes).match(/alt="([^"]*)"/i);
+    const alt = altMatch ? altMatch[1] : '';
 
-      // Extract width and height if present in the original img tag
-      const widthMatch = (preAttributes + postAttributes).match(
-        /width="([^"]*)"/i
-      );
-      const heightMatch = (preAttributes + postAttributes).match(
-        /height="([^"]*)"/i
-      );
+    // Extract width and height if present in the original img tag
+    const widthMatch = (preAttributes + postAttributes).match(/width="([^"]*)"/i);
+    const heightMatch = (preAttributes + postAttributes).match(/height="([^"]*)"/i);
 
-      // Use specified dimensions or estimate based on the image source
-      const width = widthMatch
-        ? parseInt(widthMatch[1], 10)
-        : getEstimatedDimensions(src).width;
-      const height = heightMatch
-        ? parseInt(heightMatch[1], 10)
-        : getEstimatedDimensions(src).height;
+    // Use specified dimensions or estimate based on the image source
+    const width = widthMatch ? parseInt(widthMatch[1], 10) : getEstimatedDimensions(src).width;
+    const height = heightMatch ? parseInt(heightMatch[1], 10) : getEstimatedDimensions(src).height;
 
-      // Replace the img tag with a Next.js Image component
-      return generateImageComponent(src, alt, width, height);
-    }
-  );
+    // Replace the img tag with a Next.js Image component
+    return generateImageComponent(src, alt, width, height);
+  });
 }

@@ -65,7 +65,7 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   // Actions
   setTopBar: (config) => {
     const currentRoute = get().currentRoute;
-    
+
     // Store configuration for current route
     if (currentRoute) {
       const routeConfigs = new Map(get().routeConfigs);
@@ -75,11 +75,11 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
       set((state) => ({ ...state, ...config }));
     }
   },
-  
+
   setTopBarForRoute: (route, config) => {
     const routeConfigs = new Map(get().routeConfigs);
     routeConfigs.set(route, { ...routeConfigs.get(route), ...config });
-    
+
     // Only update UI state if this is the current route
     if (get().currentRoute === route) {
       set((state) => ({ ...state, ...config, routeConfigs, currentRoute: route }));
@@ -87,22 +87,22 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
       set((state) => ({ ...state, routeConfigs }));
     }
   },
-  
+
   applyRouteConfig: (route) => {
     const routeConfigs = get().routeConfigs;
     const routeConfig = routeConfigs.get(route);
-    
+
     if (routeConfig) {
       set((state) => ({ ...state, ...initialState, ...routeConfig, currentRoute: route }));
     } else {
       set((state) => ({ ...state, ...initialState, currentRoute: route }));
     }
   },
-  
+
   clearRoute: (route) => {
     const routeConfigs = new Map(get().routeConfigs);
     routeConfigs.delete(route);
-    
+
     // If clearing current route, reset to initial state
     if (get().currentRoute === route) {
       set({ ...initialState, currentRoute: null, routeConfigs });
@@ -110,7 +110,7 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
       set((state) => ({ ...state, routeConfigs }));
     }
   },
-  
+
   setLeftMode: (leftMode) => set({ leftMode }),
   setBackHandler: (onBackPress) => set({ onBackPress }),
   setCenterMode: (centerMode) => set({ centerMode }),
@@ -119,9 +119,9 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setButtons: (buttons) => set({ buttons }),
   setShowAvatar: (showAvatar) => set({ showAvatar }),
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
-  
+
   reset: () => set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
-  
+
   resetForRoute: (route) => {
     const currentRoute = get().currentRoute;
     if (currentRoute === route) {

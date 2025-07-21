@@ -17,7 +17,7 @@ export default function HelpPage() {
     });
 
     return () => {
-      setTopBar({ 
+      setTopBar({
         title: '',
         subtitle: '',
       });

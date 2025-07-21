@@ -1,5 +1,5 @@
 import { DEFAULT_COVERS } from '@/components/event-covers';
-import { Clapperboard, Cpu, Crown, MessagesSquare, PartyPopper, Image } from 'lucide-react';
+import { Clapperboard, Cpu, Crown, Image, MessagesSquare, PartyPopper } from 'lucide-react';
 import React from 'react';
 
 export interface CoverImage {

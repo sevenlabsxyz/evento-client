@@ -14,10 +14,10 @@ export default function TravelItinerary() {
   // Set TopBar content
   useEffect(() => {
     const pathname = '/e/hub'; // This component is always used for hub
-    
+
     // Apply any existing configuration for this route
     applyRouteConfig(pathname);
-    
+
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
       title: 'Hub',

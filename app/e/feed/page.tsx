@@ -25,7 +25,7 @@ export default function FeedPage() {
   useEffect(() => {
     // Apply any existing configuration for this route
     applyRouteConfig(pathname);
-    
+
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
       title: 'Feed',
