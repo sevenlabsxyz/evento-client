@@ -6,7 +6,8 @@ import SocialLinks from '@/components/profile/social-links';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LightboxViewer } from '@/components/lightbox-viewer';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { 
+} from '@/lib/hooks/useAuth';
 import {
   useUserByUsername,
   useUserEventCount,
@@ -20,7 +21,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function UserProfilePage() {
-  const { isLoading: isCheckingAuth } = useRequireAuth();
+  // Fetch auth state but don’t enforce login – allows public profile view
+  const { isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar, setOverlaid } = useTopBar();
@@ -549,12 +551,12 @@ export default function UserProfilePage() {
         {/* Cover Image Section */}
         <div className='relative'>
           {/* Banner */}
-          <div className='h-48 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-64' />
+          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
 
           {/* Profile Picture - Centered & Clickable */}
           <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'>
             <button onClick={handleAvatarClick} className='relative'>
-              <Avatar className='h-32 w-32 border-4 border-white shadow-lg'>
+              <Avatar className='h-36 w-36 border-4 border-white shadow-lg'>
                 <AvatarImage src={userProfile.avatar || ''} alt='Profile' />
                 <AvatarFallback className='bg-white text-3xl'>
                   {userProfile.name.charAt(0).toUpperCase()}
