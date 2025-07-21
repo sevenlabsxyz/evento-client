@@ -124,14 +124,14 @@ export default function EventDetailPage() {
     <div className='space-y-6'>
       <EventHost event={event} />
       <EventGuestList event={event} currentUserId={user?.id || ''} />
-      
+
       <EventDescription
         event={event}
         isOwner={!!(user?.id && event.owner?.id && user.id === event.owner.id)}
       />
-      
+
       <EventLocation event={event} weather={weather} />
-      
+
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
         <div className='space-y-4'>
@@ -206,7 +206,7 @@ export default function EventDetailPage() {
           <div className='px-4'>
             <EventInfo event={event} currentUserId={user?.id || ''} />
           </div>
-          
+
           {/* Tabbed Section */}
           <div className='bg-white'>
             {/* Tab Headers with top border */}
