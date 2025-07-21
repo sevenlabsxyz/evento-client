@@ -79,7 +79,7 @@ export default function ImageSelectionSheet({
                           activeTab === category.id ? 'ImageSelectionSheet-tab--active' : ''
                         }`}
                       >
-                        <IconComponent className='ImageSelectionSheet-tabIcon' />
+                        <IconComponent className='ImageSelectionSheet-tabIcon' strokeWidth={2.5} />
                         <span className='ImageSelectionSheet-tabLabel'>{category.name}</span>
                         {activeTab === category.id && (
                           <div className='ImageSelectionSheet-tabIndicator'></div>
