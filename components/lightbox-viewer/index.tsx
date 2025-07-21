@@ -328,10 +328,7 @@ export const LightboxViewer = ({
                     }
                   />
                   <AvatarFallback>
-                    {images[selectedImage]?.user_details?.username.substr(
-                      0,
-                      1
-                    ) || 'E'}
+                    {images[selectedImage]?.user_details?.username?.slice(0, 1) || 'E'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
