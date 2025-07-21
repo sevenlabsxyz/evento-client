@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import { ApiResponse, UserDetails } from '@/lib/types/api';
+import { UserDetails } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
 export interface EventComment {
@@ -11,13 +11,14 @@ export interface EventComment {
   parent_comment_id: string | null;
   user_details: UserDetails;
   replies: EventComment[];
+  optimistic?: boolean; // Flag for optimistic UI updates
 }
 
 export function useEventComments(eventId: string) {
   return useQuery({
     queryKey: ['event', 'comments', eventId],
     queryFn: async (): Promise<EventComment[]> => {
-      const response = await apiClient.get<ApiResponse<EventComment[]>>(
+      const response = await apiClient.get<EventComment[]>(
         `/v1/events/comments?event_id=${eventId}`
       );
 
@@ -28,11 +29,11 @@ export function useEventComments(eventId: string) {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
-        return response.data || [];
+        return (response.data || []) as EventComment[];
       }
 
       // Fallback for direct data response
-      return response as EventComment[];
+      return response as unknown as EventComment[];
     },
     enabled: !!eventId,
     staleTime: 1000 * 60 * 2, // Cache for 2 minutes (comments update more frequently)
