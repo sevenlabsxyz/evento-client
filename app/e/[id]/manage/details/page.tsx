@@ -359,6 +359,7 @@ export default function EditEventDetailsPage() {
         onDateSelect={setEndDate}
         selectedDate={endDate}
         title='End Date'
+        referenceDate={startDate}
       />
 
       <TimePickerSheet

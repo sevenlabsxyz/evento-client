@@ -9,6 +9,7 @@ interface DatePickerSheetProps {
   onDateSelect: (date: Date) => void;
   selectedDate?: Date;
   title: string;
+  referenceDate?: Date; // For showing start date in end date picker
 }
 
 export default function DatePickerSheet({
@@ -17,6 +18,7 @@ export default function DatePickerSheet({
   onDateSelect,
   selectedDate,
   title,
+  referenceDate,
 }: DatePickerSheetProps) {
   const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
   const [viewMonth, setViewMonth] = useState(currentDate.getMonth());
@@ -79,6 +81,15 @@ export default function DatePickerSheet({
     const today = new Date();
     return (
       today.getDate() === day && today.getMonth() === viewMonth && today.getFullYear() === viewYear
+    );
+  };
+
+  const isReferenceDate = (day: number) => {
+    if (!day || !referenceDate) return false;
+    return (
+      referenceDate.getDate() === day &&
+      referenceDate.getMonth() === viewMonth &&
+      referenceDate.getFullYear() === viewYear
     );
   };
 
@@ -197,9 +208,11 @@ export default function DatePickerSheet({
                       className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? 'invisible' : ''} ${
                         isSelectedDate(day)
                           ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
-                          : isToday(day)
-                            ? 'bg-gray-100 border border-gray-200 text-black'
-                            : 'hover:bg-gray-100'
+                          : isReferenceDate(day)
+                            ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500 ring-offset-2'
+                            : isToday(day)
+                              ? 'bg-gray-100 border border-gray-200 text-black'
+                              : 'hover:bg-gray-100'
                       } `}
                     >
                       {day}
