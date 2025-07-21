@@ -17,6 +17,7 @@ import MoreFormattingSheet from '@/components/create-event/more-formatting-sheet
 import TextStylesSheet from '@/components/create-event/text-styles-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import { Button } from '@/components/ui/button';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useCreateEventWithCallbacks } from '@/lib/hooks/useCreateEvent';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
@@ -479,17 +480,13 @@ export default function CreatePage() {
       {/* Fixed Bottom Button */}
       <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
         <div className='mx-auto max-w-full md:max-w-sm'>
-          <Button
+          <SubmitButton
             onClick={handleCreateEvent}
-            className={`w-full rounded-xl py-3 font-medium transition-all ${
-              isFormValid
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'cursor-not-allowed bg-gray-300 text-gray-500'
-            }`}
             disabled={!isFormValid || createEventMutation.isPending}
+            loading={createEventMutation.isPending}
           >
-            {createEventMutation.isPending ? 'Creating...' : 'Create Event'}
-          </Button>
+            Create Event
+          </SubmitButton>
         </div>
       </div>
 
