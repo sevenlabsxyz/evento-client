@@ -1,7 +1,7 @@
 'use client';
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface DatePickerSheetProps {
   isOpen: boolean;
@@ -23,6 +23,16 @@ export default function DatePickerSheet({
   const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
   const [viewMonth, setViewMonth] = useState(currentDate.getMonth());
   const [viewYear, setViewYear] = useState(currentDate.getFullYear());
+
+  // Sync currentDate with selectedDate when prop changes or sheet opens
+  useEffect(() => {
+    if (isOpen) {
+      const dateToUse = selectedDate || new Date();
+      setCurrentDate(dateToUse);
+      setViewMonth(dateToUse.getMonth());
+      setViewYear(dateToUse.getFullYear());
+    }
+  }, [selectedDate, isOpen]);
 
   const monthNames = [
     'January',
