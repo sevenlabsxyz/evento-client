@@ -28,7 +28,10 @@ export function useUserProfile() {
       // Don't retry on 401 errors
       if (error && typeof error === 'object' && 'message' in error) {
         const apiError = error as { message: string };
-        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+        if (
+          apiError.message?.includes('401') ||
+          apiError.message?.includes('Unauthorized')
+        ) {
           return false;
         }
       }
@@ -47,7 +50,10 @@ export function useUserProfile() {
     } else if (error) {
       // Clear auth on 401 errors
       const apiError = error as { message?: string };
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      if (
+        apiError.message?.includes('401') ||
+        apiError.message?.includes('Unauthorized')
+      ) {
         clearAuth();
       }
     }
@@ -71,7 +77,10 @@ export function useUpdateUserProfile() {
 
   return useMutation({
     mutationFn: async (updates: Partial<UserDetails>) => {
-      const response = await apiClient.patch<ApiResponse<UserDetails[]>>('/v1/user', updates);
+      const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
+        '/v1/user',
+        updates
+      );
       return response.data?.[0] || null;
     },
     onSuccess: (updatedUser) => {
@@ -143,26 +152,71 @@ export function useSearchUsers() {
 }
 
 /**
- * Hook to follow/unfollow a user
+ * Hook to check if the current user follows another user
  */
-export function useFollowUser() {
+export function useFollowStatus(userId: string) {
+  return useQuery({
+    queryKey: ['user', 'follow', 'status', userId],
+    queryFn: async () => {
+      if (!userId) return { isFollowing: false };
+
+      const response = await apiClient.get<{ isFollowing: boolean }>(
+        `/v1/user/follow?id=${userId}`
+      );
+      return response.data || { isFollowing: false };
+    },
+    enabled: !!userId,
+    staleTime: 60 * 1000, // 1 minute - shorter time because follow status might change frequently
+  });
+}
+
+/**
+ * Hook to follow or unfollow a user
+ */
+export function useFollowAction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, action }: { userId: string; action: 'follow' | 'unfollow' }) => {
-      const response = await apiClient.post<ApiResponse<any>>('/v1/user/follow', {
-        user_id: userId,
-        action,
-      });
-      return response.data;
+    mutationFn: async ({
+      userId,
+      action,
+    }: {
+      userId: string;
+      action: 'follow' | 'unfollow';
+    }) => {
+      let response;
+      if (action === 'follow') {
+        response = await apiClient.post('/v1/user/follow', {
+          followId: userId,
+        });
+      } else {
+        response = await apiClient.delete('/v1/user/follow', {
+          data: {
+            followId: userId,
+          },
+        });
+      }
+      return { data: response.data, action };
     },
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
+      const { action, userId } = variables;
+      const isFollowing = action === 'follow';
+
+      // Update follow status in cache
+      queryClient.setQueryData(['user', 'follow', 'status', userId], {
+        isFollowing,
+      });
+
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: ['user', 'followers'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'following'] });
     },
-    onError: (error) => {
-      console.error('Follow/unfollow failed:', error);
+    onError: (error, variables) => {
+      const { action } = variables;
+      console.error(
+        `${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`,
+        error
+      );
     },
   });
 }
@@ -241,7 +295,7 @@ export function useUserByUsername(username: string) {
   return useQuery({
     queryKey: ['user', 'profile', 'username', username],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<UserDetails>>(
+      const response = await apiClient.get<UserDetails>(
         `/v1/user/details?username=${encodeURIComponent(username)}`
       );
       return response.data || null;
