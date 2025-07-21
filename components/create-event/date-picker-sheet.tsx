@@ -198,7 +198,7 @@ export default function DatePickerSheet({
                         isSelectedDate(day)
                           ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
                           : isToday(day)
-                            ? 'text-gray-400'
+                            ? 'bg-gray-100 border border-gray-200 text-black'
                             : 'hover:bg-gray-100'
                       } `}
                     >
