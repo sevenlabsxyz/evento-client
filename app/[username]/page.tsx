@@ -5,7 +5,7 @@ import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import SocialLinks from '@/components/profile/social-links';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
   useUserByUsername,
@@ -17,7 +17,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { BadgeCheck, MessageCircle, Share, UserMinus, UserPlus, Zap } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function UserProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -33,8 +33,8 @@ export default function UserProfilePage() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const avatarLightboxRef = useRef<SilkLightboxRef>(null);
-  const photosLightboxRef = useRef<SilkLightboxRef>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -307,11 +307,33 @@ export default function UserProfilePage() {
   };
 
   const handleProfilePhotoClick = (index: number) => {
-    photosLightboxRef.current?.open(index);
+    setSelectedImageIndex(index);
   };
 
   const handleAvatarClick = () => {
-    avatarLightboxRef.current?.open();
+    setSelectedAvatarIndex(0);
+  };
+
+  // Format avatar data for LightboxViewer
+  const avatarImages = [
+    {
+      id: 'avatar-1',
+      image: userProfile.avatar,
+      user_details: {
+        id: userProfile.id,
+        username: userProfile.username,
+        name: userProfile.name,
+        image: userProfile.avatar,
+        verification_status: userProfile.verification_status,
+      },
+      created_at: new Date().toISOString(),
+    },
+  ];
+
+  // Placeholder delete function for avatar (should not be used)
+  const handleAvatarDelete = async (photoId: string) => {
+    // Avatar deletion should typically not be allowed from lightbox
+    return { success: false };
   };
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
@@ -740,17 +762,27 @@ export default function UserProfilePage() {
       )}
 
       {/* Avatar Lightbox */}
-      <SilkLightbox
-        ref={avatarLightboxRef}
-        images={[userProfile.avatar]}
-        eventTitle={`${userProfile.name}'s Profile`}
+      <LightboxViewer
+        images={avatarImages}
+        selectedImage={selectedAvatarIndex}
+        onClose={() => setSelectedAvatarIndex(null)}
+        onImageChange={setSelectedAvatarIndex}
+        showDropdownMenu={false}
+        handleDelete={handleAvatarDelete}
+        userId=""
+        eventId=""
       />
 
       {/* Profile Photos Lightbox */}
-      <SilkLightbox
-        ref={photosLightboxRef}
+      <LightboxViewer
         images={profilePhotos}
-        eventTitle={`${userProfile.name}'s Photos`}
+        selectedImage={selectedImageIndex}
+        onClose={() => setSelectedImageIndex(null)}
+        onImageChange={setSelectedImageIndex}
+        showDropdownMenu={false}
+        handleDelete={async (photoId: string) => ({ success: false })}
+        userId=""
+        eventId=""
       />
     </div>
   );

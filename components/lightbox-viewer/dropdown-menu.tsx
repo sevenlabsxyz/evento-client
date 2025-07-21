@@ -1,14 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { MoreHorizontal, Trash2, Loader2 } from 'lucide-react';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { DeleteConfirmation } from './delete-confirmation';
 import { toast } from '@/lib/utils/toast';
 
@@ -41,25 +36,27 @@ export const GalleryDropdownMenu = ({
     }
   };
 
+  const dropdownItems = [
+    {
+      label: 'Delete photo',
+      icon: <Trash2 className="h-4 w-4" />,
+      action: () => setIsDialogOpen(true),
+      destructive: true,
+    },
+  ];
+
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
+      <ReusableDropdown
+        trigger={
           <Button variant="secondary" size="icon">
             <MoreHorizontal className="h-4 w-4" />
             <span className="sr-only">Open menu</span>
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem
-            onClick={() => setIsDialogOpen(true)}
-            className="text-red-600 focus:text-red-600"
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Delete photo
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        }
+        items={dropdownItems}
+        align="right"
+      />
 
       <DeleteConfirmation
         isOpen={isDialogOpen}
