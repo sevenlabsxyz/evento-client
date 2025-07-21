@@ -1,8 +1,13 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Event } from '@/lib/types/event';
-import { Eye, Plus } from 'lucide-react';
+import { isGif } from '@/lib/utils/image';
+import { Camera, Share2 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import PhotoUploadSheet from './photo-upload-sheet';
 
 interface EventGalleryProps {
   event: Event;
@@ -10,96 +15,152 @@ interface EventGalleryProps {
   onImageClick?: (index: number) => void;
 }
 
-export default function EventGallery({ event, currentUserId, onImageClick }: EventGalleryProps) {
-  const router = useRouter();
-  const galleryImages = event.galleryImages || [];
-  const isOwner = event.owner?.id === currentUserId;
+interface GalleryImageProps {
+  src: string;
+  index: number;
+  onImageClick?: (index: number) => void;
+}
 
-  const handleAddPhoto = () => {
-    // TODO: Implement photo upload functionality
-    console.log('Add photo clicked');
-  };
-
-  const handleViewAll = () => {
-    router.push(`/e/event/${event.id}/gallery`);
-  };
-
-  const handleImageClick = (index: number) => {
+function GalleryImage({ src, index, onImageClick }: GalleryImageProps) {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const handleImageClick = () => {
     if (onImageClick) {
       onImageClick(index);
     }
   };
 
-  // Show up to 3 images in the grid
-  const displayImages = galleryImages.slice(0, 3);
-  const hasMoreImages = galleryImages.length > 3;
+  return (
+    <div
+      onClick={handleImageClick}
+      className="relative aspect-square overflow-hidden rounded-md cursor-pointer"
+    >
+      {isGif(src) ? (
+        <img
+          src={src}
+          alt={`Gallery image ${index + 1}`}
+          className={`h-full w-full object-cover transition-opacity ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setIsLoaded(true)}
+        />
+      ) : (
+        <Image
+          src={src}
+          alt={`Gallery image ${index + 1}`}
+          fill
+          sizes="(max-width: 768px) 33vw, 20vw"
+          className={`object-cover transition-opacity ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setIsLoaded(true)}
+        />
+      )}
+      {!isLoaded && (
+        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+          <div className="w-8 h-8 border-t-2 border-red-500 border-solid rounded-full animate-spin"></div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function EventGallery({
+  event,
+  onImageClick,
+}: EventGalleryProps) {
+  const galleryImages = event.galleryImages || [];
+  const [uploadSheetOpen, setUploadSheetOpen] = useState(false);
+
+  const handleAddPhoto = () => {
+    setUploadSheetOpen(true);
+  };
+
+  const handleShareAlbum = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: `${event.title} - Photo Gallery`,
+          text: `Check out photos from ${event.title}`,
+          url: window.location.href,
+        });
+      } catch (error) {
+        console.log('Error sharing:', error);
+      }
+    } else {
+      // Fallback to copying URL
+      navigator.clipboard.writeText(window.location.href);
+      // You would typically show a toast notification here
+      console.log('URL copied to clipboard');
+    }
+  };
 
   return (
-    <div className='border-b border-gray-100 py-6'>
-      {/* Header */}
-      <div className='mb-4 flex items-center justify-between'>
-        <h3 className='text-lg font-semibold text-gray-900'>Gallery</h3>
-        <div className='flex items-center gap-3'>
-          {galleryImages.length > 0 && (
-            <button
-              onClick={handleViewAll}
-              className='text-sm font-medium text-red-600 hover:text-red-700'
-            >
-              View All
-            </button>
-          )}
-          {isOwner && (
-            <button
-              onClick={handleAddPhoto}
-              className='text-sm font-medium text-gray-600 hover:text-gray-700'
-            >
-              Add Photo
-            </button>
-          )}
+    <div className="py-6">
+      {/* Action Buttons */}
+      {galleryImages.length > 0 && (
+        <div className="mb-6 flex items-center justify-between gap-3">
+          <Button
+            onClick={handleAddPhoto}
+            variant="outline"
+            className="flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black"
+          >
+            <Camera className="h-4 w-4" />
+            Add Photos
+          </Button>
+
+          <Button
+            onClick={handleShareAlbum}
+            variant="outline"
+            className="flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black"
+          >
+            <Share2 className="h-4 w-4" />
+            Share Album
+          </Button>
         </div>
-      </div>
+      )}
 
       {/* Gallery Grid */}
       {galleryImages.length > 0 ? (
-        <div className='grid grid-cols-4 gap-2'>
-          {/* Display up to 3 images */}
-          {displayImages.map((image, index) => (
-            <button
+        <div className="grid grid-cols-3 gap-1 md:gap-2">
+          {galleryImages.map((image, index) => (
+            <GalleryImage
               key={index}
-              onClick={() => handleImageClick(index)}
-              className='aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90'
-            >
-              <img
-                src={image}
-                alt={`Gallery image ${index + 1}`}
-                className='h-full w-full object-cover'
-              />
-            </button>
+              src={image}
+              index={index}
+              onImageClick={onImageClick}
+            />
           ))}
-
-          {/* Add Photo button (only for owners and when less than 4 images shown) */}
-          {isOwner && displayImages.length < 3 && (
-            <button
-              onClick={handleAddPhoto}
-              className='flex aspect-square flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:border-red-400 hover:bg-red-50'
-            >
-              <Plus className='h-6 w-6 text-gray-400' />
-              <span className='mt-1 text-xs text-gray-500'>Add Photo</span>
-            </button>
-          )}
-
-          {/* View More indicator (when there are more than 3 images) */}
-          {hasMoreImages && displayImages.length === 3 && (
-            <button
-              onClick={handleViewAll}
-              className='flex aspect-square flex-col items-center justify-center rounded-lg bg-gray-100 transition-colors hover:bg-gray-200'
-            >
-              <Eye className='h-6 w-6 text-gray-600' />
-              <span className='mt-1 text-xs text-gray-600'>+{galleryImages.length - 3}</span>
-            </button>
-          )}
         </div>
-      ) : null}
+      ) : (
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+            <Camera className="h-8 w-8 text-gray-400" />
+          </div>
+          <h3 className="mb-2 text-lg font-medium text-gray-900">
+            No Photos Yet
+          </h3>
+          <p className="mb-6 max-w-xs text-sm text-gray-500">
+            Be the first to add photos to this event. Photos added here will be
+            visible to all event guests.
+          </p>
+
+          <Button
+            onClick={handleAddPhoto}
+            variant="default"
+            className="gap-2 rounded-full px-5 py-2.5"
+          >
+            <Camera className="h-4 w-4" />
+            Add Photos
+          </Button>
+        </div>
+      )}
+
+      {/* Photo Upload Sheet */}
+      <PhotoUploadSheet
+        isOpen={uploadSheetOpen}
+        onClose={() => setUploadSheetOpen(false)}
+        eventId={event.id}
+      />
     </div>
   );
 }
