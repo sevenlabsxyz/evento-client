@@ -510,6 +510,7 @@ export default function CreatePage() {
           onDateSelect={setEndDate}
           selectedDate={endDate}
           title='End Date'
+          referenceDate={startDate}
         />
 
         {/* Time Picker Sheets */}
