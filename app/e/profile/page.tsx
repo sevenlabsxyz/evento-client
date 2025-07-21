@@ -6,7 +6,7 @@ import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
   useUserEventCount,
@@ -18,7 +18,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { BadgeCheck, Camera, Edit3, Loader2, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -31,8 +31,8 @@ export default function ProfilePage() {
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
-  const lightboxRef = useRef<SilkLightboxRef>(null);
-  const avatarLightboxRef = useRef<SilkLightboxRef>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // Get user data from API
@@ -249,12 +249,48 @@ export default function ProfilePage() {
   };
 
   const handleProfilePhotoClick = (index: number) => {
-    lightboxRef.current?.open(index);
+    setSelectedImageIndex(index);
   };
 
   const handleAvatarClick = () => {
-    avatarLightboxRef.current?.open();
+    setSelectedAvatarIndex(0);
   };
+
+  // Format avatar data for LightboxViewer
+  const avatarImages = [
+    {
+      id: 'avatar-1',
+      image: userData.avatar,
+      user_details: {
+        id: user?.id,
+        username: user?.username,
+        name: user?.name,
+        image: userData.avatar,
+        verification_status: user?.verification_status,
+      },
+      created_at: new Date().toISOString(),
+    },
+  ];
+
+  // Placeholder delete function for avatar (should not be used)
+  const handleAvatarDelete = async (photoId: string) => {
+    // Avatar deletion should typically not be allowed from lightbox
+    return { success: false };
+  };
+
+  // Format profile photos for LightboxViewer
+  const formattedProfilePhotos = profilePhotos.map((photoUrl, index) => ({
+    id: `profile-photo-${index}`,
+    image: photoUrl,
+    user_details: {
+      id: user?.id,
+      username: user?.username,
+      name: user?.name,
+      image: userData.avatar,
+      verification_status: user?.verification_status,
+    },
+    created_at: new Date().toISOString(),
+  }));
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
     const grouped = events.reduce(
@@ -624,14 +660,28 @@ export default function ProfilePage() {
       )}
 
       {/* Avatar Lightbox */}
-      <SilkLightbox
-        ref={avatarLightboxRef}
-        images={[userData.avatar]}
-        eventTitle={`${userData.name}'s Profile`}
+      <LightboxViewer
+        images={avatarImages}
+        selectedImage={selectedAvatarIndex}
+        onClose={() => setSelectedAvatarIndex(null)}
+        onImageChange={setSelectedAvatarIndex}
+        showDropdownMenu={false}
+        handleDelete={handleAvatarDelete}
+        userId={user?.id || ''}
+        eventId=""
       />
 
       {/* Profile Photos Lightbox */}
-      <SilkLightbox ref={lightboxRef} images={profilePhotos} eventTitle='Profile Photos' />
+      <LightboxViewer
+        images={formattedProfilePhotos}
+        selectedImage={selectedImageIndex}
+        onClose={() => setSelectedImageIndex(null)}
+        onImageChange={setSelectedImageIndex}
+        showDropdownMenu={true}
+        handleDelete={async (photoId: string) => ({ success: false })}
+        userId={user?.id || ''}
+        eventId=""
+      />
 
       {/* Bottom Navbar */}
       <Navbar />
