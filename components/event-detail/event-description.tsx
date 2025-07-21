@@ -3,7 +3,7 @@ import { ExternalLink } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { FixedSubmitButton } from '@/components/ui/fixed-submit-button';
+import { SubmitButton } from '@/components/ui/submit-button';
 
 interface EventDescriptionProps {
   event: Event;
@@ -76,15 +76,17 @@ export default function EventDescription({ event, isOwner }: EventDescriptionPro
 
       {/* Register Button at Bottom */}
       {!isOwner ? (
-        <FixedSubmitButton
-          onClick={() => {
-            if (event.registrationUrl) {
-              window.open(event.registrationUrl, '_blank');
-            }
-          }}
-        >
-          RSVP
-        </FixedSubmitButton>
+        <div className='fixed bottom-0 left-0 right-0 z-20 mt-8 border-t border-gray-100 bg-white p-6'>
+          <SubmitButton
+            onClick={() => {
+              if (event.registrationUrl) {
+                window.open(event.registrationUrl, '_blank');
+              }
+            }}
+          >
+            RSVP
+          </SubmitButton>
+        </div>
       ) : null}
     </div>
   );

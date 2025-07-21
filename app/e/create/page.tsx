@@ -17,7 +17,7 @@ import MoreFormattingSheet from '@/components/create-event/more-formatting-sheet
 import TextStylesSheet from '@/components/create-event/text-styles-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import { Button } from '@/components/ui/button';
-import { FixedSubmitButton } from '@/components/ui/fixed-submit-button';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useCreateEventWithCallbacks } from '@/lib/hooks/useCreateEvent';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
@@ -478,13 +478,17 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <FixedSubmitButton
-        onClick={handleCreateEvent}
-        disabled={!isFormValid || createEventMutation.isPending}
-        loading={createEventMutation.isPending}
-      >
-        Create Event
-      </FixedSubmitButton>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
+        <div className='mx-auto max-w-full md:max-w-sm'>
+          <SubmitButton
+            onClick={handleCreateEvent}
+            disabled={!isFormValid || createEventMutation.isPending}
+            loading={createEventMutation.isPending}
+          >
+            Create Event
+          </SubmitButton>
+        </div>
+      </div>
 
       {/* Modals and Sheets */}
       <SheetStack.Root>
