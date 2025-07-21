@@ -1,11 +1,9 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { VerificationBadgeCheck } from '@/components/ui/verification-badge';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MiniListItem } from '@/components/ui/mini-list-item';
 import { DeleteConfirmation } from './delete-confirmation';
-import { VERIFICATION_STATUS } from '@/lib/constants/user';
 import { GalleryDropdownMenu } from './dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { useSwipeable } from 'react-swipeable';
@@ -341,10 +339,8 @@ export const LightboxViewer = ({
                     <p className="cursor-pointer text-sm font-medium leading-none font-semibold text-gray-500">
                       @{images[selectedImage]?.user_details?.username}
                     </p>
-                    {images[selectedImage]?.user_details
-                      ?.verification_status !==
-                    VERIFICATION_STATUS.VERIFIED ? null : (
-                      <VerificationBadgeCheck size="sm" />
+                    {images[selectedImage]?.user_details?.verification_status === 'verified' && (
+                      <span className="ml-1 text-sm">✓</span>
                     )}
                   </div>
                   {!images[selectedImage]?.user_details?.name ? null : (

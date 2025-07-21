@@ -36,9 +36,9 @@ import { LightboxViewer } from '@/components/lightbox-viewer';
 - **Swipe Navigation**: Swipe left/right to navigate, swipe down to close
 - **Keyboard Navigation**: Arrow keys to navigate, Escape to close
 - **Image Download**: Support for iOS share API and traditional download
-- **User Details**: Shows uploader avatar, username, verification badge
+- **User Details**: Shows uploader avatar, username, verification status
 - **Delete Functionality**: Mobile and desktop delete menus
-- **Responsive**: Adapts to mobile and desktop interfaces
+- **Responsive**: Adapts to mobile and desktop interfaces using responsive Modal
 
 ## Components
 
@@ -46,10 +46,12 @@ import { LightboxViewer } from '@/components/lightbox-viewer';
 - `LikeButton`: Photo like button (placeholder)
 - `DeleteConfirmation`: Delete confirmation dialog
 - `GalleryDropdownMenu`: Desktop dropdown menu
-- `MobileGalleryMenu`: Mobile bottom sheet menu
+- `MobileGalleryMenu`: Mobile modal menu
+- `Modal`: Responsive modal (Dialog on desktop, Drawer on mobile)
 
 ## Dependencies
 
 - `react-swipeable`: For swipe gesture support
 - `@/components/ui/*`: Various UI components from the project
+- `@/hooks/use-media-query`: Media query hook for responsive behavior
 - `lucide-react`: Icons
