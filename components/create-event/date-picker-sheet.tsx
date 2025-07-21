@@ -66,11 +66,11 @@ export default function DatePickerSheet({
   };
 
   const isSelectedDate = (day: number) => {
-    if (!selectedDate || !day) return false;
+    if (!day) return false;
     return (
-      selectedDate.getDate() === day &&
-      selectedDate.getMonth() === viewMonth &&
-      selectedDate.getFullYear() === viewYear
+      currentDate.getDate() === day &&
+      currentDate.getMonth() === viewMonth &&
+      currentDate.getFullYear() === viewYear
     );
   };
 
@@ -198,34 +198,11 @@ export default function DatePickerSheet({
                         isSelectedDate(day)
                           ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
                           : isToday(day)
-                            ? 'border border-gray-300 bg-gray-50 text-gray-900'
+                            ? 'text-gray-400'
                             : 'hover:bg-gray-100'
                       } `}
                     >
                       {day}
-                      {/* Event indicators */}
-                      {day && day <= 15 && (
-                        <div className='absolute mt-6 flex gap-0.5'>
-                          {day === 3 && <div className='h-1 w-1 rounded-full bg-purple-500' />}
-                          {day === 4 && (
-                            <>
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                            </>
-                          )}
-                          {day === 5 && (
-                            <>
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                            </>
-                          )}
-                          {day === 9 && <div className='h-1 w-1 rounded-full bg-red-500' />}
-                          {day === 11 && <div className='h-1 w-1 rounded-full bg-red-500' />}
-                          {day === 15 && <div className='h-1 w-1 rounded-full bg-red-500' />}
-                          {day === 16 && <div className='h-1 w-1 rounded-full bg-blue-500' />}
-                        </div>
-                      )}
                     </button>
                   ))}
                 </div>
