@@ -52,6 +52,8 @@ import { LightboxViewer } from '@/components/lightbox-viewer';
 ## Dependencies
 
 - `react-swipeable`: For swipe gesture support
+- `framer-motion`: For smooth animations in the like button
 - `@/components/ui/*`: Various UI components from the project
-- `@/hooks/use-media-query`: Media query hook for responsive behavior
+- `@/hooks/use-media-query`: Enhanced media query hook with device detection
+- `@/hooks/use-photo-likes`: Photo likes management hook
 - `lucide-react`: Icons
