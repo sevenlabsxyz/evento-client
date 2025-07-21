@@ -133,9 +133,59 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   setDescription: (description) => set({ description }),
   setCoverImage: (coverImage) => set({ coverImage }),
   setLocation: (location) => set({ location }),
-  setStartDate: (startDate) => set({ startDate }),
+  setStartDate: (startDate) => set((state) => {
+    // If the new start date is after the current end date,
+    // automatically adjust the end date to match the start date
+    const updates: Partial<EventFormState> = { startDate };
+    
+    if (startDate > state.endDate) {
+      // Set end date to match start date (same day)
+      updates.endDate = new Date(startDate);
+      
+      // If end time is before or equal to start time, adjust it to be 1 hour after
+      const startHours = state.startTime.hours;
+      const startMinutes = state.startTime.minutes;
+      const endHours = state.endTime.hours;
+      const endMinutes = state.endTime.minutes;
+      
+      const startTotalMinutes = startHours * 60 + startMinutes;
+      const endTotalMinutes = endHours * 60 + endMinutes;
+      
+      if (endTotalMinutes <= startTotalMinutes) {
+        // Add 1 hour to start time
+        const newEndTotalMinutes = startTotalMinutes + 60;
+        updates.endTime = {
+          hours: Math.floor(newEndTotalMinutes / 60) % 24,
+          minutes: newEndTotalMinutes % 60,
+          is24Hour: state.endTime.is24Hour
+        };
+      }
+    }
+    
+    return updates;
+  }),
   setEndDate: (endDate) => set({ endDate }),
-  setStartTime: (startTime) => set({ startTime }),
+  setStartTime: (startTime) => set((state) => {
+    const updates: Partial<EventFormState> = { startTime };
+    
+    // If start and end dates are the same day, ensure end time is after start time
+    if (state.startDate.toDateString() === state.endDate.toDateString()) {
+      const startTotalMinutes = startTime.hours * 60 + startTime.minutes;
+      const endTotalMinutes = state.endTime.hours * 60 + state.endTime.minutes;
+      
+      if (endTotalMinutes <= startTotalMinutes) {
+        // Add 1 hour to the new start time
+        const newEndTotalMinutes = startTotalMinutes + 60;
+        updates.endTime = {
+          hours: Math.floor(newEndTotalMinutes / 60) % 24,
+          minutes: newEndTotalMinutes % 60,
+          is24Hour: state.endTime.is24Hour
+        };
+      }
+    }
+    
+    return updates;
+  }),
   setEndTime: (endTime) => set({ endTime }),
   setTimezone: (timezone) => set({ timezone }),
   setVisibility: (visibility) => set({ visibility }),
