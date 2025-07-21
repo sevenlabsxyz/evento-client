@@ -3,7 +3,7 @@ import React from 'react';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
-import { ApiResponse, UserDetails } from '../types/api';
+import { UserDetails } from '../types/api';
 
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
@@ -13,7 +13,6 @@ const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
  */
 export function useUserProfile() {
   const { user, setUser, clearAuth } = useAuthStore();
-  const queryClient = useQueryClient();
 
   // Query to fetch current user profile
   const {
@@ -73,13 +72,20 @@ export function useUserProfile() {
  */
 export function useUpdateUserProfile() {
   const queryClient = useQueryClient();
-  const { setUser } = useAuthStore();
+  const { user, setUser } = useAuthStore();
 
   return useMutation({
     mutationFn: async (updates: Partial<UserDetails>) => {
-      const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
+      // Only send the fields that are being updated
+      const filteredUpdates = Object.fromEntries(
+        Object.entries(updates).filter(
+          ([_, value]) => value !== undefined || value !== null
+        )
+      );
+
+      const response = await apiClient.patch<UserDetails[]>(
         '/v1/user',
-        updates
+        filteredUpdates
       );
       return response.data?.[0] || null;
     },
@@ -109,7 +115,7 @@ export function useUploadProfileImage() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await apiClient.post<ApiResponse<UserDetails[]>>(
+      const response = await apiClient.post<UserDetails[]>(
         '/v1/user/details/image-upload',
         formData,
         {
@@ -140,7 +146,7 @@ export function useUploadProfileImage() {
 export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.get<ApiResponse<UserDetails[]>>(
+      const response = await apiClient.get<UserDetails[]>(
         `/v1/user/search?q=${encodeURIComponent(query)}`
       );
       return response.data || [];
@@ -152,28 +158,9 @@ export function useSearchUsers() {
 }
 
 /**
- * Hook to check if the current user follows another user
+ * Hook to follow/unfollow a user
  */
-export function useFollowStatus(userId: string) {
-  return useQuery({
-    queryKey: ['user', 'follow', 'status', userId],
-    queryFn: async () => {
-      if (!userId) return { isFollowing: false };
-
-      const response = await apiClient.get<{ isFollowing: boolean }>(
-        `/v1/user/follow?id=${userId}`
-      );
-      return response.data || { isFollowing: false };
-    },
-    enabled: !!userId,
-    staleTime: 60 * 1000, // 1 minute - shorter time because follow status might change frequently
-  });
-}
-
-/**
- * Hook to follow or unfollow a user
- */
-export function useFollowAction() {
+export function useFollowUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -184,39 +171,19 @@ export function useFollowAction() {
       userId: string;
       action: 'follow' | 'unfollow';
     }) => {
-      let response;
-      if (action === 'follow') {
-        response = await apiClient.post('/v1/user/follow', {
-          followId: userId,
-        });
-      } else {
-        response = await apiClient.delete('/v1/user/follow', {
-          data: {
-            followId: userId,
-          },
-        });
-      }
-      return { data: response.data, action };
-    },
-    onSuccess: (_result, variables) => {
-      const { action, userId } = variables;
-      const isFollowing = action === 'follow';
-
-      // Update follow status in cache
-      queryClient.setQueryData(['user', 'follow', 'status', userId], {
-        isFollowing,
+      const response = await apiClient.post<any>('/v1/user/follow', {
+        user_id: userId,
+        action,
       });
-
+      return response.data;
+    },
+    onSuccess: () => {
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: ['user', 'followers'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'following'] });
     },
-    onError: (error, variables) => {
-      const { action } = variables;
-      console.error(
-        `${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`,
-        error
-      );
+    onError: (error) => {
+      console.error('Follow/unfollow failed:', error);
     },
   });
 }
@@ -228,7 +195,7 @@ export function useUserFollowers(userId: string) {
   return useQuery({
     queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<any[]>>(
+      const response = await apiClient.get<any[]>(
         `/v1/user/followers/list?id=${userId}`
       );
       // Transform the API response to match UI expectations
@@ -253,7 +220,7 @@ export function useUserFollowing(userId: string) {
   return useQuery({
     queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<any[]>>(
+      const response = await apiClient.get<any[]>(
         `/v1/user/follows/list?id=${userId}`
       );
       // Transform the API response to match UI expectations
@@ -278,7 +245,7 @@ export function useUserEventCount(userId: string) {
   return useQuery({
     queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<{ count: number }>>(
+      const response = await apiClient.get<{ count: number }>(
         `/v1/user/events/count?id=${userId}`
       );
       return response.data?.count || 0;
