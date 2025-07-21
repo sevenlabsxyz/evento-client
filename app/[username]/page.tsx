@@ -320,11 +320,11 @@ export default function UserProfilePage() {
       id: 'avatar-1',
       image: userProfile.avatar,
       user_details: {
-        id: userProfile.id,
-        username: userProfile.username,
-        name: userProfile.name,
+        id: userData?.id,
+        username: userData?.username,
+        name: userData?.name,
         image: userProfile.avatar,
-        verification_status: userProfile.verification_status,
+        verification_status: userData?.verification_status,
       },
       created_at: new Date().toISOString(),
     },
@@ -335,6 +335,20 @@ export default function UserProfilePage() {
     // Avatar deletion should typically not be allowed from lightbox
     return { success: false };
   };
+
+  // Format profile photos for LightboxViewer
+  const formattedProfilePhotos = profilePhotos.map((photoUrl, index) => ({
+    id: `profile-photo-${index}`,
+    image: photoUrl,
+    user_details: {
+      id: userData?.id,
+      username: userData?.username,
+      name: userData?.name,
+      image: userProfile.avatar,
+      verification_status: userData?.verification_status,
+    },
+    created_at: new Date().toISOString(),
+  }));
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
     const grouped = events.reduce(
@@ -775,7 +789,7 @@ export default function UserProfilePage() {
 
       {/* Profile Photos Lightbox */}
       <LightboxViewer
-        images={profilePhotos}
+        images={formattedProfilePhotos}
         selectedImage={selectedImageIndex}
         onClose={() => setSelectedImageIndex(null)}
         onImageChange={setSelectedImageIndex}

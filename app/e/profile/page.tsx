@@ -278,6 +278,20 @@ export default function ProfilePage() {
     return { success: false };
   };
 
+  // Format profile photos for LightboxViewer
+  const formattedProfilePhotos = profilePhotos.map((photoUrl, index) => ({
+    id: `profile-photo-${index}`,
+    image: photoUrl,
+    user_details: {
+      id: user?.id,
+      username: user?.username,
+      name: user?.name,
+      image: userData.avatar,
+      verification_status: user?.verification_status,
+    },
+    created_at: new Date().toISOString(),
+  }));
+
   const groupEventsByDate = (events: typeof attendingEvents) => {
     const grouped = events.reduce(
       (acc, event) => {
@@ -659,7 +673,7 @@ export default function ProfilePage() {
 
       {/* Profile Photos Lightbox */}
       <LightboxViewer
-        images={profilePhotos}
+        images={formattedProfilePhotos}
         selectedImage={selectedImageIndex}
         onClose={() => setSelectedImageIndex(null)}
         onImageChange={setSelectedImageIndex}
