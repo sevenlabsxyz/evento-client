@@ -47,6 +47,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.23.6",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.454.0",
     "next": "14.2.16",
     "react": "^18",
@@ -63,6 +64,7 @@
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^22",
     "@types/react": "^18",
     "@types/react-dom": "^18",

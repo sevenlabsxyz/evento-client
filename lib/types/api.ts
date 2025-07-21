@@ -29,6 +29,15 @@ export interface UserDetails {
   verification_date: string;
 }
 
+// User search results
+export interface UserSearchResult {
+  id: string;
+  username: string;
+  name: string;
+  verification_status: string;
+  image: string;
+}
+
 // Event - complete event information
 export interface Event {
   id: string;

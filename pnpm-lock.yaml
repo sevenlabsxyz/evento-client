@@ -116,6 +116,9 @@ importers:
       framer-motion:
         specifier: ^12.23.6
         version: 12.23.6(@emotion/is-prop-valid@1.2.2)(react-dom@18.0.0(react@18.0.0))(react@18.0.0)
+      lodash.debounce:
+        specifier: ^4.0.8
+        version: 4.0.8
       lucide-react:
         specifier: ^0.454.0
         version: 0.454.0(react@18.0.0)
@@ -159,6 +162,9 @@ importers:
       '@trivago/prettier-plugin-sort-imports':
         specifier: ^5.2.2
         version: 5.2.2(prettier@3.6.2)
+      '@types/lodash.debounce':
+        specifier: ^4.0.9
+        version: 4.0.9
       '@types/node':
         specifier: ^22
         version: 22.0.0
@@ -1040,6 +1046,12 @@ packages:
 
   '@types/linkify-it@5.0.0':
     resolution: {integrity: sha512-sVDA58zAw4eWAffKOaQH5/5j3XeayukzDk+ewSsnv3p4yJEZHCCzMDiZM8e0OUrRvmpGZ85jf4yDHkHsgBNr9Q==}
+
+  '@types/lodash.debounce@4.0.9':
+    resolution: {integrity: sha512-Ma5JcgTREwpLRwMM+XwBR7DaWe96nC38uCBDFKZWbNKD+osjVzdpnUSwBcqCptrp16sSOLBAUb50Car5I0TCsQ==}
+
+  '@types/lodash@4.17.20':
+    resolution: {integrity: sha512-H3MHACvFUEiujabxhaI/ImO6gUrd8oOurg7LQtS7mbwIXA/cUqWrvBsaeJ23aZEPk1TAYkurjfMbSELfoCXlGA==}
 
   '@types/markdown-it@14.1.2':
     resolution: {integrity: sha512-promo4eFwuiW+TfGxhi+0x3czqTYJkG8qB17ZUJiVF10Xm7NLVRSLUsfRTU/6h1e24VvRnXCx+hG7li58lkzog==}
@@ -2108,6 +2120,9 @@ packages:
 
   linkifyjs@4.3.1:
     resolution: {integrity: sha512-DRSlB9DKVW04c4SUdGvKK5FR6be45lTU9M76JnngqPeeGDqPwYc0zdUErtsNVMtxPXgUWV4HbXbnC4sNyBxkYg==}
+
+  lodash.debounce@4.0.8:
+    resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
 
   lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
@@ -3991,6 +4006,12 @@ snapshots:
 
   '@types/linkify-it@5.0.0': {}
 
+  '@types/lodash.debounce@4.0.9':
+    dependencies:
+      '@types/lodash': 4.17.20
+
+  '@types/lodash@4.17.20': {}
+
   '@types/markdown-it@14.1.2':
     dependencies:
       '@types/linkify-it': 5.0.0
@@ -5205,6 +5226,8 @@ snapshots:
       uc.micro: 2.1.0
 
   linkifyjs@4.3.1: {}
+
+  lodash.debounce@4.0.8: {}
 
   lodash.merge@4.6.2: {}
 
