@@ -6,8 +6,7 @@ import SocialLinks from '@/components/profile/social-links';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { LightboxViewer } from '@/components/lightbox-viewer';
-import { 
-} from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 import {
   useUserByUsername,
   useUserEventCount,
