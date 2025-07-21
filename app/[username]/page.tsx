@@ -513,7 +513,7 @@ export default function UserProfilePage() {
         {/* Cover Image Section */}
         <div className='relative'>
           {/* Banner */}
-          <div className='h-44 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-60' />
+          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
 
           {/* Profile Picture - Centered & Clickable */}
           <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'>
