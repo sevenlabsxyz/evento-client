@@ -6,7 +6,7 @@ import SocialLinks from '@/components/profile/social-links';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 import {
   useUserByUsername,
   useUserEventCount,
@@ -20,7 +20,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function UserProfilePage() {
-  const { isLoading: isCheckingAuth } = useRequireAuth();
+  // Fetch auth state but don’t enforce login – allows public profile view
+  const { isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar, setOverlaid } = useTopBar();
