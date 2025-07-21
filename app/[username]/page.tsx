@@ -513,12 +513,12 @@ export default function UserProfilePage() {
         {/* Cover Image Section */}
         <div className='relative'>
           {/* Banner */}
-          <div className='h-48 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-64' />
+          <div className='h-44 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-60' />
 
           {/* Profile Picture - Centered & Clickable */}
           <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'>
             <button onClick={handleAvatarClick} className='relative'>
-              <Avatar className='h-32 w-32 border-4 border-white shadow-lg'>
+              <Avatar className='h-36 w-36 border-4 border-white shadow-lg'>
                 <AvatarImage src={userProfile.avatar || ''} alt='Profile' />
                 <AvatarFallback className='bg-white text-3xl'>
                   {userProfile.name.charAt(0).toUpperCase()}
