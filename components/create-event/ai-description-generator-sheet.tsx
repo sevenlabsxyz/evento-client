@@ -120,7 +120,6 @@ export function AIDescriptionGeneratorSheet({
 
       // Call the API through our hook
       const result = await generateDescriptionMutation.mutateAsync(params);
-      console.log('GENERATED DESCRIPTION', result.description);
 
       // Set the generated content from the API response
       setGeneratedContent(result.description);
