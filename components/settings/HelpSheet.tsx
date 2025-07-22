@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import useWebView from '@/hooks/useWebView';
 import { Bot, Mail, Twitter } from 'lucide-react';
 
 interface HelpSheetProps {
@@ -10,8 +11,10 @@ interface HelpSheetProps {
 }
 
 export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
+  const { openWebView } = useWebView();
+  
   const handleExternalLink = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    openWebView(url);
   };
 
   return (

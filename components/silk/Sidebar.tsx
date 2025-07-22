@@ -4,6 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
+import useWebView from '@/hooks/useWebView';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import {
   BookOpen,
@@ -24,10 +25,11 @@ export function Sidebar() {
   const router = useRouter();
   const { logout } = useAuth();
   const { user } = useUserProfile();
+  const { openWebView } = useWebView();
 
   const handleNavigation = (path: string, isExternal?: boolean) => {
     if (isExternal) {
-      window.open(path, '_blank');
+      openWebView(path);
     } else {
       router.push(path);
     }

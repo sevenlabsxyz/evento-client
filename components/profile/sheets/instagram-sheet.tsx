@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { getDomainFromUrl } from '@/lib/utils/url';
+import useWebView from '@/hooks/useWebView';
 import { ExternalLink, Instagram } from 'lucide-react';
 
 interface InstagramSheetProps {
@@ -11,9 +13,11 @@ interface InstagramSheetProps {
 }
 
 export default function InstagramSheet({ isOpen, onClose, handle }: InstagramSheetProps) {
+  const { openWebView } = useWebView();
+  
   const handleOpenInstagram = () => {
     const instagramUrl = `https://instagram.com/${handle}`;
-    window.open(instagramUrl, '_blank', 'noopener,noreferrer');
+    openWebView(instagramUrl, `@${handle} on Instagram`);
     onClose();
   };
 
@@ -49,7 +53,7 @@ export default function InstagramSheet({ isOpen, onClose, handle }: InstagramShe
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600'>
-                  You're about to visit this Instagram profile. This will open in a new tab.
+                  You're about to visit this Instagram profile. This will open in our in-app browser.
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3'>
                   <p className='text-sm text-gray-700'>instagram.com/{handle}</p>

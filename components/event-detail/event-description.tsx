@@ -4,6 +4,7 @@ import { formatDistanceToNow } from 'date-fns';
 import { Calendar, Clock, MapPin, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SubmitButton } from '@/components/ui/submit-button';
+import useWebView from '@/hooks/useWebView';
 
 interface EventDescriptionProps {
   event: Event;
@@ -11,8 +12,10 @@ interface EventDescriptionProps {
 }
 
 export default function EventDescription({ event, isOwner }: EventDescriptionProps) {
+  const { openWebView } = useWebView();
+  
   const handleExternalLink = (url: string) => {
-    window.open(url, '_blank');
+    openWebView(url);
   };
 
   return (
@@ -80,7 +83,7 @@ export default function EventDescription({ event, isOwner }: EventDescriptionPro
           <SubmitButton
             onClick={() => {
               if (event.registrationUrl) {
-                window.open(event.registrationUrl, '_blank');
+                openWebView(event.registrationUrl, 'Event Registration');
               }
             }}
           >

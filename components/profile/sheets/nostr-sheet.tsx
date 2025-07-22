@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { toast } from '@/lib/utils/toast';
+import useWebView from '@/hooks/useWebView';
 import { Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
@@ -26,9 +27,11 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
     }
   };
 
+  const { openWebView } = useWebView();
+
   const handleOpenNostr = () => {
     const nostrUrl = `nostr:${nip05}`;
-    window.open(nostrUrl, '_blank');
+    openWebView(nostrUrl, 'Nostr Profile');
     onClose();
   };
 
@@ -66,8 +69,7 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600'>
-                  This is a Nostr identifier (NIP-05). Nostr is a decentralized protocol for social
-                  networking.
+                  You're about to open a Nostr client. This will open in our in-app browser or an external app if supported by your device.
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3'>
                   <p className='break-all font-mono text-sm text-gray-700'>{nip05}</p>

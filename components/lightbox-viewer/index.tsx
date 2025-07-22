@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import { LikeButton } from './like-button';
 import { Modal } from '@/components/ui/modal';
 import { toast } from '@/lib/utils/toast';
+import useWebView from '@/hooks/useWebView';
 import {
   XIcon,
   Trash2,
@@ -98,6 +99,7 @@ export const LightboxViewer = ({
   eventId,
 }: LightboxViewerProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const { openWebView } = useWebView();
 
   const goToNext = () => {
     if (selectedImage !== null) {
@@ -162,15 +164,15 @@ export const LightboxViewer = ({
               } catch (error) {
                 if ((error as Error).name !== 'AbortError') {
                   console.error('Error sharing:', error);
-                  // Fallback to opening in new tab if sharing fails
-                  window.open(imageUrl, '_blank');
-                  toast.info('Image opened in new tab');
+                  // Fallback to opening in WebView if sharing fails
+                  openWebView(imageUrl);
+                  toast.info('Image opened in app browser');
                 }
               }
             } else {
               // Fallback for iOS devices without Share API support
-              window.open(imageUrl, '_blank');
-              toast.info('Image opened in new tab');
+              openWebView(imageUrl);
+              toast.info('Image opened in app browser');
             }
           } else {
             // Non-iOS devices: Use traditional download

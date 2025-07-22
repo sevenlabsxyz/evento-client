@@ -7,6 +7,7 @@ import { HelpSheet } from '@/components/settings/HelpSheet';
 import { useAuth, useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
+import useWebView from '@/hooks/useWebView';
 import {
   Bell,
   BookOpen,
@@ -30,6 +31,7 @@ export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
   const { user, email } = useAuth();
+  const { openWebView } = useWebView();
 
   // Set TopBar content
   useEffect(() => {
@@ -61,7 +63,7 @@ export default function SettingsPage() {
   const [showApiContactForm, setShowApiContactForm] = useState(false);
 
   const handleExternalLink = (url: string) => {
-    window.open(url, '_blank', 'noopener,noreferrer');
+    openWebView(url);
   };
 
   const handleShare = async () => {

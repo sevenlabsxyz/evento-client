@@ -3,6 +3,7 @@
 import { Env } from '@/lib/constants/env';
 import { Event } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
+import useWebView from '@/hooks/useWebView';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
 import WeatherDetailSheet from './weather-detail-sheet';
@@ -15,6 +16,7 @@ interface EventLocationProps {
 export default function EventLocation({ event, weather }: EventLocationProps) {
   const [showMapOptions, setShowMapOptions] = useState(false);
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
+  const { openWebView } = useWebView();
 
   const fullAddress = `${event.location.address}, ${event.location.city}, ${
     event.location.state || ''
@@ -27,9 +29,9 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
     const address = encodeURIComponent(fullAddress);
 
     if (provider === 'apple') {
-      window.open(`http://maps.apple.com/?q=${address}`, '_blank');
+      openWebView(`http://maps.apple.com/?q=${address}`, 'Apple Maps');
     } else {
-      window.open(`https://maps.google.com/?q=${address}`, '_blank');
+      openWebView(`https://maps.google.com/?q=${address}`, 'Google Maps');
     }
 
     setShowMapOptions(false);

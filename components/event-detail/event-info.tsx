@@ -3,6 +3,7 @@
 import { Event } from '@/lib/types/event';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
 import { useState } from 'react';
+import useWebView from '@/hooks/useWebView';
 import ContactHostSheet from './contact-host-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
@@ -15,10 +16,11 @@ interface EventInfoProps {
 export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [showMoreSheet, setShowMoreSheet] = useState(false);
+  const { openWebView } = useWebView();
 
   const handleRegister = () => {
     if (event.registrationUrl) {
-      window.open(event.registrationUrl, '_blank');
+      openWebView(event.registrationUrl, 'Event Registration');
     }
   };
 
@@ -105,7 +107,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
 
   const handleOpenInSafari = () => {
     if (event.registrationUrl) {
-      window.open(event.registrationUrl, '_blank');
+      openWebView(event.registrationUrl, 'Event Registration');
     }
   };
 

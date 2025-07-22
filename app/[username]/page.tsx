@@ -17,6 +17,7 @@ import {
 } from '@/lib/hooks/useUserProfile';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
+import useWebView from '@/hooks/useWebView';
 import {
   BadgeCheck,
   MessageCircle,
@@ -34,6 +35,7 @@ export default function UserProfilePage() {
   const router = useRouter();
   const params = useParams();
   const { setTopBar } = useTopBar();
+  const { openWebView } = useWebView();
   const [activeTab, setActiveTab] = useState('about');
   const [eventsFilter, setEventsFilter] = useState('attending');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -735,11 +737,7 @@ export default function UserProfilePage() {
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(
-                  userProfile.website,
-                  '_blank',
-                  'noopener,noreferrer'
-                );
+                openWebView(userProfile.website);
               }}
               className="w-full bg-red-500 text-white hover:bg-red-600"
             >

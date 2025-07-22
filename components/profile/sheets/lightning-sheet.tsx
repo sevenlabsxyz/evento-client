@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { toast } from '@/lib/utils/toast';
+import useWebView from '@/hooks/useWebView';
 import { Copy, ExternalLink, Zap } from 'lucide-react';
 import { useState } from 'react';
 
@@ -26,9 +27,11 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
     }
   };
 
+  const { openWebView } = useWebView();
+
   const handleOpenLightning = () => {
     const lightningUrl = `lightning:${address}`;
-    window.open(lightningUrl, '_blank');
+    openWebView(lightningUrl, 'Lightning Address');
     onClose();
   };
 
@@ -64,8 +67,7 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600'>
-                  This is a Bitcoin Lightning Network address. You can use it to send instant,
-                  low-fee Bitcoin payments.
+                  You're about to open a Lightning wallet. This will open in our in-app browser or an external app if supported by your device.
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3'>
                   <p className='break-all font-mono text-sm text-gray-700'>{address}</p>
