@@ -215,20 +215,25 @@ export default function EventDetailPage() {
       id: `cover-${index}`,
       image: imageUrl,
       user_details: null, // No user details for cover images
-      created_at: new Date().toISOString(),
+      created_at: eventData?.created_at || null, // Use event creation date or null
     }));
-  }, [event]);
+  }, [event, eventData]);
 
   // Format gallery images for LightboxViewer
   const formattedGalleryImages = useMemo(() => {
     if (!event || !event.galleryImages || event.galleryImages.length === 0) return [];
-    return event.galleryImages.map((imageUrl, index) => ({
-      id: `gallery-${index}`,
-      image: imageUrl,
-      user_details: null, // Could be enhanced later if gallery images have user data
-      created_at: new Date().toISOString(),
-    }));
-  }, [event]);
+    // Map gallery images with their actual timestamps if available
+    return event.galleryImages.map((imageUrl, index) => {
+      // Try to find the corresponding gallery item with timestamp
+      const galleryItem = galleryData?.[index];
+      return {
+        id: galleryItem?.id || `gallery-${index}`,
+        image: imageUrl,
+        user_details: galleryItem?.user_details || null,
+        created_at: galleryItem?.created_at || null, // Use actual timestamp or null
+      };
+    });
+  }, [event, galleryData]);
 
   // Placeholder delete handler (covers shouldn't be deletable from lightbox)
   const handleImageDelete = async (photoId: string) => {
