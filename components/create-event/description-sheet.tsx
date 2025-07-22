@@ -10,7 +10,6 @@ import Heading from '@tiptap/extension-heading';
 import Image from '@tiptap/extension-image';
 import Italic from '@tiptap/extension-italic';
 import Link from '@tiptap/extension-link';
-import ListItem from '@tiptap/extension-list-item';
 import Placeholder from '@tiptap/extension-placeholder';
 import { Plugin, TextSelection } from '@tiptap/pm/state';
 import { EditorContent, useEditor } from '@tiptap/react';
@@ -22,6 +21,9 @@ import SectionFour from './toolbar-sections/section-four';
 import SectionOne from './toolbar-sections/section-one';
 import SectionThree from './toolbar-sections/section-three';
 import SectionTwo from './toolbar-sections/section-two';
+
+// Import the EventData type from ai-description-generator-sheet
+import { EventData } from './ai-description-generator-sheet';
 
 interface DescriptionSheetProps {
   isOpen: boolean;
@@ -36,6 +38,7 @@ interface DescriptionSheetProps {
     editor: Editor,
     linkData: { url: string; text: string; openInNewTab: boolean }
   ) => void;
+  event?: EventData; // Event data for AI description generator
 }
 
 export default function DescriptionSheet({
@@ -48,6 +51,7 @@ export default function DescriptionSheet({
   onOpenListsSheet,
   onOpenInsertElementsSheet,
   onOpenLinkEditSheet,
+  event,
 }: DescriptionSheetProps) {
   // No longer need activeDetent as it always opens at full height
 
@@ -72,7 +76,6 @@ export default function DescriptionSheet({
           class: 'list-disc ml-4',
         },
       }),
-      ListItem,
       Image,
       Link.configure({
         openOnClick: false,
@@ -87,7 +90,10 @@ export default function DescriptionSheet({
               props: {
                 handleClick(view, pos) {
                   const { schema, doc, tr } = view.state;
-                  const range = getMarkRange(doc.resolve(pos), schema.marks.link);
+                  const range = getMarkRange(
+                    doc.resolve(pos),
+                    schema.marks.link
+                  );
 
                   if (!range) {
                     return;
@@ -103,7 +109,9 @@ export default function DescriptionSheet({
 
                   const $start = doc.resolve(start);
                   const $end = doc.resolve(end);
-                  const transaction = tr.setSelection(new TextSelection($start, $end));
+                  const transaction = tr.setSelection(
+                    new TextSelection($start, $end)
+                  );
 
                   view.dispatch(transaction);
                 },
@@ -121,7 +129,8 @@ export default function DescriptionSheet({
     immediatelyRender: false, // Prevent SSR hydration issues
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone',
+        class:
+          'prose prose-sm max-w-none focus:outline-none px-4 py-3 min-h-[200px] prose-stone',
       },
     },
     onUpdate: ({ editor }) => {
@@ -173,43 +182,64 @@ export default function DescriptionSheet({
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='DescriptionSheet-content'>
+            <SheetWithDetentFull.Content className="DescriptionSheet-content">
               {/* Fixed Header */}
-              <div className='DescriptionSheet-header'>
-                <div className='mb-4 flex justify-center'>
-                  <SheetWithDetentFull.Handle className='DescriptionSheet-handle' />
+              <div className="DescriptionSheet-header">
+                <div className="mb-4 flex justify-center">
+                  <SheetWithDetentFull.Handle className="DescriptionSheet-handle" />
                 </div>
-                <div className='DescriptionSheet-headerBar'>
+                <div className="DescriptionSheet-headerBar">
                   <button
                     onClick={onClose}
-                    className='DescriptionSheet-headerButton DescriptionSheet-headerButton--cancel'
+                    className="DescriptionSheet-headerButton DescriptionSheet-headerButton--cancel"
                   >
                     Cancel
                   </button>
-                  <h1 className='DescriptionSheet-headerTitle'>Edit Description</h1>
+                  <h1 className="DescriptionSheet-headerTitle">
+                    Edit Description
+                  </h1>
                   <button
                     onClick={handleSave}
-                    className='DescriptionSheet-headerButton DescriptionSheet-headerButton--save'
+                    className="DescriptionSheet-headerButton DescriptionSheet-headerButton--save"
                   >
                     Save
                   </button>
                 </div>
 
                 {/* Toolbar at top */}
-                <div className='DescriptionSheet-toolbar'>
-                  <div className='DescriptionSheet-toolbarInner'>
+                <div className="DescriptionSheet-toolbar">
+                  <div className="DescriptionSheet-toolbarInner">
                     {editor && (
                       <>
-                        <SectionOne editor={editor} onOpenSheet={handleOpenSheet} />
-                        <Separator orientation='vertical' className='mx-2 h-7' />
-                        <SectionTwo editor={editor} onOpenSheet={handleOpenSheet} />
-                        <Separator orientation='vertical' className='mx-2 h-7' />
-                        <SectionThree editor={editor} onOpenSheet={handleOpenSheet} />
-                        <Separator orientation='vertical' className='mx-2 h-7' />
+                        <SectionOne
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionTwo
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
+                        <SectionThree
+                          editor={editor}
+                          onOpenSheet={handleOpenSheet}
+                        />
+                        <Separator
+                          orientation="vertical"
+                          className="mx-2 h-7"
+                        />
                         <SectionFour
                           editor={editor}
                           onOpenSheet={handleOpenSheet}
                           onOpenLinkEditSheet={onOpenLinkEditSheet}
+                          event={event}
                         />
                       </>
                     )}
@@ -219,9 +249,12 @@ export default function DescriptionSheet({
 
               {/* Scrollable Editor Content */}
               <SheetWithDetentFull.ScrollRoot asChild>
-                <SheetWithDetentFull.ScrollView className='DescriptionSheet-scrollView'>
-                  <SheetWithDetentFull.ScrollContent className='DescriptionSheet-scrollContent'>
-                    <EditorContent editor={editor} className='DescriptionSheet-editor' />
+                <SheetWithDetentFull.ScrollView className="DescriptionSheet-scrollView">
+                  <SheetWithDetentFull.ScrollContent className="DescriptionSheet-scrollContent">
+                    <EditorContent
+                      editor={editor}
+                      className="DescriptionSheet-editor"
+                    />
                   </SheetWithDetentFull.ScrollContent>
                 </SheetWithDetentFull.ScrollView>
               </SheetWithDetentFull.ScrollRoot>

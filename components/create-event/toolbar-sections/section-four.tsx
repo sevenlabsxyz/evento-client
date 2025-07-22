@@ -1,7 +1,8 @@
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
-import { ChevronDown, Link, Minus, Plus } from 'lucide-react';
+import { BrainCircuit, ChevronDown, Link, Minus, Plus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { AIDescriptionGeneratorSheet, EventData } from '../ai-description-generator-sheet';
 import { LinkEditSheet } from '../link-edit-sheet';
 import { DropdownMenuItemClass, LinkProps } from '../tiptap-utils';
 import { ToolbarButton } from '../toolbar-button';
@@ -13,15 +14,18 @@ interface SectionFourProps {
     editor: Editor,
     linkData: { url: string; text: string; openInNewTab: boolean }
   ) => void;
+  event?: EventData; // Optional event data for AI description generator
 }
 
 export default function SectionFour({
   editor,
   onOpenSheet,
   onOpenLinkEditSheet,
+  event,
 }: SectionFourProps) {
   const [showLinkSheet, setShowLinkSheet] = useState(false);
   const [showInsertDropdown, setShowInsertDropdown] = useState(false);
+  const [showAIDescriptionSheet, setShowAIDescriptionSheet] = useState(false);
 
   const setLink = ({ url, text, openInNewTab }: LinkProps) => {
     const { from, to } = editor.state.selection;
@@ -66,6 +70,16 @@ export default function SectionFour({
 
   return (
     <>
+      {/* AI DESCRIPTION GENERATOR */}
+      <ToolbarButton
+        tooltip='AI Description'
+        onClick={() => setShowAIDescriptionSheet(true)}
+        disabled={!event?.title}
+        className={!event?.title ? 'opacity-50 cursor-not-allowed' : ''}
+      >
+        <Sparkles className='h-5 w-5' />
+      </ToolbarButton>
+      
       {/* LINK */}
       <ToolbarButton
         isActive={editor.isActive('link')}
@@ -135,6 +149,16 @@ export default function SectionFour({
             editor.state.selection.to
           )}
           initialOpenInNewTab={editor.getAttributes('link').target === '_blank'}
+        />
+      )}
+
+      {/* AI Description Generator Sheet */}
+      {event && (
+        <AIDescriptionGeneratorSheet
+          isOpen={showAIDescriptionSheet}
+          onClose={() => setShowAIDescriptionSheet(false)}
+          editor={editor}
+          event={event}
         />
       )}
     </>
