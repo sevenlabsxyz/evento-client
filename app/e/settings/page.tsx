@@ -8,7 +8,6 @@ import { useAuth, useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
-  Bell,
   BookOpen,
   ChevronRight,
   Code,
@@ -29,7 +28,7 @@ import packageJson from '../../../package.json';
 export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
-  const { user, email } = useAuth();
+  const { user } = useAuth();
 
   // Set TopBar content
   useEffect(() => {
@@ -120,7 +119,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <p className='font-medium text-red-500'>{user?.name || 'Guest'}</p>
-                <p className='text-sm text-gray-600'>{email}</p>
+                <p className='text-sm text-gray-600'>{user?.email}</p>
               </div>
             </div>
           </div>
@@ -139,17 +138,7 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          <div className='border-b border-gray-100 p-4'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                  <Bell className='h-4 w-4 text-red-600' />
-                </div>
-                <span className='font-medium'>Notifications</span>
-              </div>
-              <ChevronRight className='h-4 w-4 text-gray-400' />
-            </div>
-          </div>
+
 
           <div className='p-4'>
             <div className='flex items-center justify-between'>
