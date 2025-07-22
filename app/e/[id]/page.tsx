@@ -171,7 +171,7 @@ export default function EventDetailPage() {
 
   const renderGalleryTab = () => {
     // Check if there are any gallery images
-    if (!event.galleryImages || event.galleryImages.length === 0) {
+    if (!event || !event.galleryImages || event.galleryImages.length === 0) {
       return (
         <div className='flex flex-col items-center justify-center py-12'>
           <svg
@@ -200,7 +200,9 @@ export default function EventDetailPage() {
         event={event}
         currentUserId={user?.id || ''}
         onImageClick={(index) => {
-          setSelectedGalleryImageIndex(index);
+          if (event && event.galleryImages && event.galleryImages.length > 0) {
+            setSelectedGalleryImageIndex(index);
+          }
         }}
       />
     );
@@ -208,7 +210,7 @@ export default function EventDetailPage() {
 
   // Format cover images for LightboxViewer
   const formattedCoverImages = useMemo(() => {
-    if (!event) return [];
+    if (!event || !event.coverImages || event.coverImages.length === 0) return [];
     return event.coverImages.map((imageUrl, index) => ({
       id: `cover-${index}`,
       image: imageUrl,
@@ -219,8 +221,8 @@ export default function EventDetailPage() {
 
   // Format gallery images for LightboxViewer
   const formattedGalleryImages = useMemo(() => {
-    if (!event) return [];
-    return (event.galleryImages || []).map((imageUrl, index) => ({
+    if (!event || !event.galleryImages || event.galleryImages.length === 0) return [];
+    return event.galleryImages.map((imageUrl, index) => ({
       id: `gallery-${index}`,
       image: imageUrl,
       user_details: null, // Could be enhanced later if gallery images have user data
@@ -240,7 +242,9 @@ export default function EventDetailPage() {
         <SwipeableHeader
           event={event}
           onImageClick={(index) => {
-            setSelectedCoverImageIndex(index);
+            if (event && event.coverImages && event.coverImages.length > 0) {
+              setSelectedCoverImageIndex(index);
+            }
           }}
         />
         <div className='pb-20'>
@@ -297,28 +301,32 @@ export default function EventDetailPage() {
       </div>
 
       {/* Cover Images Lightbox */}
-      <LightboxViewer
-        images={formattedCoverImages}
-        selectedImage={selectedCoverImageIndex}
-        onClose={() => setSelectedCoverImageIndex(null)}
-        onImageChange={setSelectedCoverImageIndex}
-        showDropdownMenu={false}
-        handleDelete={handleImageDelete}
-        userId={user?.id || ''}
-        eventId={eventId}
-      />
+      {event && formattedCoverImages.length > 0 && (
+        <LightboxViewer
+          images={formattedCoverImages}
+          selectedImage={selectedCoverImageIndex}
+          onClose={() => setSelectedCoverImageIndex(null)}
+          onImageChange={setSelectedCoverImageIndex}
+          showDropdownMenu={false}
+          handleDelete={handleImageDelete}
+          userId={user?.id || ''}
+          eventId={eventId}
+        />
+      )}
 
       {/* Gallery Images Lightbox */}
-      <LightboxViewer
-        images={formattedGalleryImages}
-        selectedImage={selectedGalleryImageIndex}
-        onClose={() => setSelectedGalleryImageIndex(null)}
-        onImageChange={setSelectedGalleryImageIndex}
-        showDropdownMenu={false}
-        handleDelete={handleImageDelete}
-        userId={user?.id || ''}
-        eventId={eventId}
-      />
+      {event && formattedGalleryImages.length > 0 && (
+        <LightboxViewer
+          images={formattedGalleryImages}
+          selectedImage={selectedGalleryImageIndex}
+          onClose={() => setSelectedGalleryImageIndex(null)}
+          onImageChange={setSelectedGalleryImageIndex}
+          showDropdownMenu={false}
+          handleDelete={handleImageDelete}
+          userId={user?.id || ''}
+          eventId={eventId}
+        />
+      )}
     </div>
   );
 }
