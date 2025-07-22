@@ -63,7 +63,6 @@ export default function DescriptionSheet({
         italic: false,
         heading: false,
         bulletList: false,
-        listItem: false, // Disable default listItem
         link: false, // Disable default link to prevent duplication
       }),
       Bold,
