@@ -69,7 +69,7 @@ export default function UserProfilePage() {
     ? {
         name: userData.name || 'Unknown User',
         username: `@${userData.username}`,
-        avatar: userData.image || '/placeholder.svg?height=80&width=80',
+        avatar: userData.image,
         status: userData.bio || '',
         bio: userData.bio || '',
         website: userData.bio_link || '',

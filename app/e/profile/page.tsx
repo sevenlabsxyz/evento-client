@@ -17,6 +17,7 @@ import {
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { BadgeCheck, Camera, Edit3, Loader2, Settings } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -31,8 +32,12 @@ export default function ProfilePage() {
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
+    null
+  );
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // Get user data from API
@@ -90,7 +95,7 @@ export default function ProfilePage() {
     name: user?.name || 'User',
     username: user?.username ? `@${user.username}` : '@user',
     status: user?.bio || 'Welcome to Evento',
-    avatar: user?.image || '/placeholder.svg?height=80&width=80',
+    avatar: user?.image,
     isVerified: user?.verification_status === 'verified',
   };
 
@@ -189,7 +194,9 @@ export default function ProfilePage() {
 
   const handleSocialClick = (platform: string) => {
     const urls = {
-      instagram: user?.instagram_handle ? `https://instagram.com/${user.instagram_handle}` : null,
+      instagram: user?.instagram_handle
+        ? `https://instagram.com/${user.instagram_handle}`
+        : null,
       x: user?.x_handle ? `https://x.com/${user.x_handle}` : null,
       website: user?.bio_link || null,
     };
@@ -293,17 +300,14 @@ export default function ProfilePage() {
   }));
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce(
-      (acc, event) => {
-        const date = event.date;
-        if (!acc[date]) {
-          acc[date] = [];
-        }
-        acc[date].push(event);
-        return acc;
-      },
-      {} as Record<string, typeof events>
-    );
+    const grouped = events.reduce((acc, event) => {
+      const date = event.date;
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(event);
+      return acc;
+    }, {} as Record<string, typeof events>);
 
     return Object.entries(grouped).map(([date, events]) => ({
       date,
@@ -338,13 +342,14 @@ export default function ProfilePage() {
   };
 
   const renderEventsTab = () => {
-    const currentEvents = eventsFilter === 'attending' ? attendingEvents : hostingEvents;
+    const currentEvents =
+      eventsFilter === 'attending' ? attendingEvents : hostingEvents;
     const groupedEvents = groupEventsByDate(currentEvents);
 
     return (
-      <div className='space-y-4'>
+      <div className="space-y-4">
         {/* Filter Badges */}
-        <div className='flex gap-2'>
+        <div className="flex gap-2">
           <button
             onClick={() => setEventsFilter('attending')}
             className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
@@ -368,27 +373,31 @@ export default function ProfilePage() {
         </div>
 
         {/* Events List with Date Dividers */}
-        <div className='space-y-6'>
+        <div className="space-y-6">
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.date}>
-              <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-sm font-medium text-gray-500'>{group.formattedDate}</h2>
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="text-sm font-medium text-gray-500">
+                  {group.formattedDate}
+                </h2>
               </div>
 
-              <div className='space-y-4'>
+              <div className="space-y-4">
                 {group.events.map((event) => (
-                  <div key={event.id} className='flex items-start gap-4'>
+                  <div key={event.id} className="flex items-start gap-4">
                     <img
                       src={event.image || '/placeholder.svg'}
                       alt={event.title}
-                      className='h-12 w-12 flex-shrink-0 rounded-xl object-cover'
+                      className="h-12 w-12 flex-shrink-0 rounded-xl object-cover"
                     />
-                    <div className='flex-1'>
-                      <h3 className='text-lg font-semibold'>{event.title}</h3>
-                      <p className='text-gray-500'>{event.location}</p>
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold">{event.title}</h3>
+                      <p className="text-gray-500">{event.location}</p>
                     </div>
-                    <div className='text-right'>
-                      <span className='text-sm text-gray-600'>{event.time}</span>
+                    <div className="text-right">
+                      <span className="text-sm text-gray-600">
+                        {event.time}
+                      </span>
                     </div>
                   </div>
                 ))}
@@ -398,8 +407,8 @@ export default function ProfilePage() {
         </div>
 
         {currentEvents.length === 0 && (
-          <div className='py-8 text-center'>
-            <p className='text-gray-500'>No {eventsFilter} events yet</p>
+          <div className="py-8 text-center">
+            <p className="text-gray-500">No {eventsFilter} events yet</p>
           </div>
         )}
       </div>
@@ -407,20 +416,20 @@ export default function ProfilePage() {
   };
 
   const renderAboutTab = () => (
-    <div className='space-y-6'>
+    <div className="space-y-6">
       {/* Bio/Description */}
       <div>
-        <p className='text-gray-700'>{user?.bio || 'Welcome to Evento'}</p>
+        <p className="text-gray-700">{user?.bio || 'Welcome to Evento'}</p>
       </div>
 
       {/* Interest Tags */}
       <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>Interests</h4>
-        <div className='flex flex-wrap gap-2'>
+        <h4 className="mb-3 font-semibold text-gray-900">Interests</h4>
+        <div className="flex flex-wrap gap-2">
           {interestTags.map((tag, index) => (
             <span
               key={index}
-              className='inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'
+              className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800"
             >
               {tag}
             </span>
@@ -430,12 +439,14 @@ export default function ProfilePage() {
 
       {/* Profile Questions */}
       <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
-        <div className='space-y-3'>
+        <h4 className="mb-3 font-semibold text-gray-900">About Me</h4>
+        <div className="space-y-3">
           {profileQuestions.map((item, index) => (
-            <div key={index} className='rounded-xl bg-gray-50 p-3'>
-              <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
-              <p className='text-sm text-gray-900'>{item.answer}</p>
+            <div key={index} className="rounded-xl bg-gray-50 p-3">
+              <p className="mb-1 text-sm font-medium text-gray-700">
+                {item.question}
+              </p>
+              <p className="text-sm text-gray-900">{item.answer}</p>
             </div>
           ))}
         </div>
@@ -443,24 +454,24 @@ export default function ProfilePage() {
 
       {/* Photo Album */}
       <div>
-        <div className='mb-3 flex items-center justify-between'>
-          <h4 className='font-semibold text-gray-900'>Photos</h4>
-          <Button variant='ghost' size='sm' className='text-red-600'>
-            <Camera className='mr-1 h-4 w-4' />
+        <div className="mb-3 flex items-center justify-between">
+          <h4 className="font-semibold text-gray-900">Photos</h4>
+          <Button variant="ghost" size="sm" className="text-red-600">
+            <Camera className="mr-1 h-4 w-4" />
             Add
           </Button>
         </div>
-        <div className='grid grid-cols-3 gap-2'>
+        <div className="grid grid-cols-3 gap-2">
           {profilePhotos.map((photo, index) => (
             <button
               key={index}
               onClick={() => handleProfilePhotoClick(index)}
-              className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
+              className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
             >
               <img
-                src={photo || '/placeholder.svg'}
+                src={photo || '/assets/img/evento-sublogo.svg'}
                 alt={`Profile photo ${index + 1}`}
-                className='h-full w-full object-cover'
+                className="h-full w-full object-cover"
               />
             </button>
           ))}
@@ -470,14 +481,18 @@ export default function ProfilePage() {
   );
 
   const renderStatsTab = () => (
-    <div className='grid grid-cols-2 gap-4'>
-      <div className='rounded-xl bg-blue-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-blue-600'>{userStats.countries}</div>
-        <div className='text-sm text-gray-600'>Countries</div>
+    <div className="grid grid-cols-2 gap-4">
+      <div className="rounded-xl bg-blue-50 p-4 text-center">
+        <div className="text-3xl font-bold text-blue-600">
+          {userStats.countries}
+        </div>
+        <div className="text-sm text-gray-600">Countries</div>
       </div>
-      <div className='rounded-xl bg-green-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-green-600'>{userStats.mutuals}</div>
-        <div className='text-sm text-gray-600'>Mutuals</div>
+      <div className="rounded-xl bg-green-50 p-4 text-center">
+        <div className="text-3xl font-bold text-green-600">
+          {userStats.mutuals}
+        </div>
+        <div className="text-sm text-gray-600">Mutuals</div>
       </div>
     </div>
   );
@@ -485,9 +500,9 @@ export default function ProfilePage() {
   // Show loading state while fetching user data
   if (isCheckingAuth || isUserLoading || !user) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm'>
-        <Loader2 className='h-8 w-8 animate-spin text-red-500' />
-        <p className='mt-2 text-gray-600'>Loading profile...</p>
+      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm">
+        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
+        <p className="mt-2 text-gray-600">Loading profile...</p>
       </div>
     );
   }

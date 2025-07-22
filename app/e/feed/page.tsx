@@ -44,7 +44,9 @@ export default function FeedPage() {
   const [showSearchSheet, setShowSearchSheet] = useState(false);
   const [activeDetent, setActiveDetent] = useState(0);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
-  const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>('date-desc');
+  const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>(
+    'date-desc'
+  );
   const router = useRouter();
   const pathname = usePathname();
 
@@ -61,15 +63,19 @@ export default function FeedPage() {
 
   // Click away handler for sort menu
   const sortButtonRef = useRef<HTMLDivElement>(null);
-  
+
   // Handle clicks outside of sort menu to close it
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (sortButtonRef.current && !sortButtonRef.current.contains(event.target as Node) && sortMenuOpen) {
+      if (
+        sortButtonRef.current &&
+        !sortButtonRef.current.contains(event.target as Node) &&
+        sortMenuOpen
+      ) {
         setSortMenuOpen(false);
       }
     };
-    
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -170,15 +176,15 @@ export default function FeedPage() {
 
   // Fetch events feed
   const { data: rawEvents = [], isLoading, error } = useEventsFeed();
-  
+
   // Sort events based on sort option
   const events = useMemo(() => {
     if (!rawEvents.length) return [];
-    
+
     return [...rawEvents].sort((a, b) => {
       const timeA = new Date(a.computed_start_date).getTime();
       const timeB = new Date(b.computed_start_date).getTime();
-      
+
       return sortOption === 'date-asc' ? timeA - timeB : timeB - timeA;
     });
   }, [rawEvents, sortOption]);
@@ -205,7 +211,7 @@ export default function FeedPage() {
       groupedEvents[date].sort((a, b) => {
         const timeA = new Date(a.computed_start_date).getTime();
         const timeB = new Date(b.computed_start_date).getTime();
-        
+
         // Apply sort direction based on the selected option
         return sortOption === 'date-asc' ? timeA - timeB : timeB - timeA;
       });
@@ -218,12 +224,14 @@ export default function FeedPage() {
   const sortedDates = useMemo(() => {
     // Get all dates
     const dates = Object.keys(eventsByDate);
-    
+
     // Sort dates based on the selected sort option
     return dates.sort((a, b) => {
       // For date-asc, use the default string sort (which works for ISO dates)
       // For date-desc, reverse the sort order
-      return sortOption === 'date-asc' ? a.localeCompare(b) : b.localeCompare(a);
+      return sortOption === 'date-asc'
+        ? a.localeCompare(b)
+        : b.localeCompare(a);
     });
   }, [eventsByDate, sortOption]);
 
@@ -291,7 +299,7 @@ export default function FeedPage() {
               <ArrowDownAZ className="mr-1.5 h-3.5 w-3.5" />
               Sort
             </button>
-            
+
             {sortMenuOpen && (
               <div className="absolute left-0 top-full mt-1 w-44 rounded-md bg-white p-1 shadow-lg ring-1 ring-black ring-opacity-5">
                 <button
@@ -299,7 +307,11 @@ export default function FeedPage() {
                     setSortOption('date-desc');
                     setSortMenuOpen(false);
                   }}
-                  className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${sortOption === 'date-desc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}`}
+                  className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${
+                    sortOption === 'date-desc'
+                      ? 'bg-gray-100 font-medium'
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
                   <Clock className="mr-2 h-3.5 w-3.5" />
                   Newest first
@@ -309,7 +321,11 @@ export default function FeedPage() {
                     setSortOption('date-asc');
                     setSortMenuOpen(false);
                   }}
-                  className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${sortOption === 'date-asc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}`}
+                  className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${
+                    sortOption === 'date-asc'
+                      ? 'bg-gray-100 font-medium'
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
                   <Clock className="mr-2 h-3.5 w-3.5" />
                   Oldest first
@@ -317,14 +333,14 @@ export default function FeedPage() {
               </div>
             )}
           </div>
-          
+
           {/* View Mode Toggle */}
           <div className="flex items-center rounded-full bg-gray-100 p-1">
             <button
               onClick={() => setFeedViewMode('card')}
               className={`flex h-8 items-center justify-center rounded-full px-3 text-xs font-medium transition-all ${
-                feedViewMode === 'card' 
-                  ? 'bg-white text-gray-900 shadow-sm' 
+                feedViewMode === 'card'
+                  ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-500'
               }`}
             >
@@ -334,8 +350,8 @@ export default function FeedPage() {
             <button
               onClick={() => setFeedViewMode('compact')}
               className={`flex h-8 items-center justify-center rounded-full px-3 text-xs font-medium transition-all ${
-                feedViewMode === 'compact' 
-                  ? 'bg-white text-gray-900 shadow-sm' 
+                feedViewMode === 'compact'
+                  ? 'bg-white text-gray-900 shadow-sm'
                   : 'text-gray-500'
               }`}
             >
@@ -344,7 +360,7 @@ export default function FeedPage() {
             </button>
           </div>
         </div>
-        
+
         {error ? (
           <div className="flex flex-col items-center justify-center px-4 py-12">
             <p className="mb-4 text-center text-gray-500">
@@ -510,7 +526,7 @@ export default function FeedPage() {
                                   <img
                                     src={
                                       user.image ||
-                                      '/placeholder.svg?height=60&width=60'
+                                      '/assets/img/evento-sublogo.svg'
                                     }
                                     alt={user.name}
                                     className="h-12 w-12 rounded-full object-cover"
@@ -576,7 +592,7 @@ export default function FeedPage() {
                                   <img
                                     src={
                                       user.image ||
-                                      '/placeholder.svg?height=60&width=60'
+                                      '/assets/img/evento-sublogo.svg'
                                     }
                                     alt={user.name}
                                     className="h-10 w-10 rounded-full object-cover"

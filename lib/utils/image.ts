@@ -11,7 +11,7 @@ export function getOptimizedImageUrl(
   quality: number = 80
 ): string {
   if (!url) {
-    return '/placeholder.svg';
+    return '/assets/img/evento-sublogo.svg';
   }
 
   // If URL already contains https, return as-is (external image)

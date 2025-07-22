@@ -1,6 +1,5 @@
 'use client';
 
-import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { BadgeCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
@@ -31,6 +30,10 @@ export function UserAvatar({
   height,
   width,
 }: UserAvatarProps) {
+  // Use user's image if provided through user object, otherwise use directly provided image
+  const avatarImage = user?.image || image;
+  const isVerified = verified || user?.verification_status === 'verified';
+
   // Size variants configuration
   const sizeVariants = {
     xs: {
