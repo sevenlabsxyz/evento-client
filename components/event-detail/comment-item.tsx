@@ -5,10 +5,7 @@ import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { toast } from '@/hooks/use-toast';
 import { useAddComment } from '@/lib/hooks/useAddComment';
-import {
-  ReactionType,
-  useCommentReactions,
-} from '@/lib/hooks/useCommentReactions';
+import { useCommentReactions } from '@/lib/hooks/useCommentReactions';
 import { useDeleteComment } from '@/lib/hooks/useDeleteComment';
 import { useEditComment } from '@/lib/hooks/useEditComment';
 import { EventComment } from '@/lib/hooks/useEventComments';
@@ -21,8 +18,8 @@ import {
   MoreHorizontal,
   Reply,
   SendHorizontal,
-  ThumbsUp,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import {
   DropdownMenu,
@@ -48,6 +45,7 @@ export default function CommentItem({
   activeReplyId,
   setActiveReplyId,
 }: CommentItemProps) {
+  const router = useRouter();
   const isReplying = activeReplyId === comment.id;
   const [replyText, setReplyText] = useState('');
   const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -125,8 +123,8 @@ export default function CommentItem({
     }
   };
 
-  const handleReaction = (type: ReactionType) => {
-    toggleReaction(type);
+  const handleReaction = () => {
+    toggleReaction('like');
   };
 
   const handleReplyClick = () => {
@@ -174,10 +172,11 @@ export default function CommentItem({
       <div className="flex gap-3">
         <div className="flex-shrink-0">
           <UserAvatar
-            image={comment.user_details.image}
-            fallback={comment.user_details.username?.[0] || 'U'}
-            verified={comment.user_details.verification_status === 'verified'}
-            className="h-8 w-8"
+            user={comment.user_details}
+            size="sm"
+            onAvatarClick={() =>
+              router.push(`/u/${comment.user_details.username}`)
+            }
           />
         </div>
 
@@ -249,48 +248,38 @@ export default function CommentItem({
 
           {/* Comment actions */}
           {!isEditing && (
-            <div className="flex items-center space-x-4 pt-1">
-              <button
-                onClick={() => handleReaction('like')}
+            <div className="flex items-center space-x-4 pt-2">
+              <Button
+                variant="ghost"
+                size="sm"
                 className={cn(
-                  'flex items-center space-x-1 text-xs',
+                  'h-8 w-8 rounded-full flex gap-1 items-center justify-center',
                   userReaction === 'like'
-                    ? 'text-red-500'
-                    : 'text-gray-500 hover:text-gray-700'
+                    ? 'bg-red-50 text-red-500'
+                    : 'bg-gray-100 text-gray-600 hover:text-gray-900',
+                  reactions.like > 0 && 'px-6'
                 )}
+                onClick={() => handleReaction()}
                 disabled={isToggling}
               >
                 <Heart
-                  className="h-3.5 w-3.5"
+                  className="h-5 w-5"
                   fill={userReaction === 'like' ? 'currentColor' : 'none'}
                 />
-                <span>{reactions.like || ''}</span>
-              </button>
-
-              <button
-                onClick={() => handleReaction('thumbsup')}
-                className={cn(
-                  'flex items-center space-x-1 text-xs',
-                  userReaction === 'thumbsup'
-                    ? 'text-blue-500'
-                    : 'text-gray-500 hover:text-gray-700'
+                {reactions.like > 0 && (
+                  <span className="text-sm font-medium">{reactions.like}</span>
                 )}
-                disabled={isToggling}
-              >
-                <ThumbsUp
-                  className="h-3.5 w-3.5"
-                  fill={userReaction === 'thumbsup' ? 'currentColor' : 'none'}
-                />
-                <span>{reactions.thumbsup || ''}</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 flex items-center gap-1"
                 onClick={handleReplyClick}
-                className="flex items-center space-x-1 text-xs text-gray-500 hover:text-gray-700"
               >
-                <Reply className="h-3.5 w-3.5" />
-                <span>Reply</span>
-              </button>
+                <Reply className="h-4 w-4" />
+                <span className="text-xs">Reply</span>
+              </Button>
             </div>
           )}
 
@@ -300,8 +289,11 @@ export default function CommentItem({
               <div className="flex gap-3">
                 <div className="flex-shrink-0">
                   <UserAvatar
-                    fallback={currentUser?.username?.[0] || 'U'}
-                    className="h-6 w-6"
+                    user={comment.user_details}
+                    size="sm"
+                    onAvatarClick={() =>
+                      router.push(`/u/${comment.user_details.username}`)
+                    }
                   />
                 </div>
                 <div className="flex relative flex-grow">

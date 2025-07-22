@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import { useEventComments } from '@/lib/hooks/useEventComments';
 import { cn } from '@/lib/utils';
 import { Loader2, MessageCircle, SendHorizontal } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 interface EventCommentsProps {
@@ -15,6 +16,7 @@ interface EventCommentsProps {
 
 export default function EventComments({ eventId }: EventCommentsProps) {
   const { user } = useAuth();
+  const router = useRouter();
   const { data: comments = [], isLoading, error } = useEventComments(eventId);
   const addCommentMutation = useAddComment();
   const [commentText, setCommentText] = useState('');
@@ -82,9 +84,14 @@ export default function EventComments({ eventId }: EventCommentsProps) {
         <div className="flex gap-3">
           <div className="flex-shrink-0">
             <UserAvatar
-              user={user || undefined}
-              className="h-8 w-8"
-              fallback={user?.username?.[0] || 'U'}
+              user={{
+                name: user?.name,
+                username: user?.username,
+                image: user?.image,
+                verification_status: user?.verification_status,
+              }}
+              size="sm"
+              onAvatarClick={() => router.push(`/u/${user?.username}`)}
             />
           </div>
           <div className="flex relative flex-grow">

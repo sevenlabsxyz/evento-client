@@ -5,13 +5,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 export interface CommentReactions {
   reactions: {
     like: number;
-    thumbsup: number;
     [key: string]: number; // Allow indexing with string keys
   };
   user_reaction: string | null;
 }
 
-export type ReactionType = 'like' | 'thumbsup';
+export type ReactionType = 'like';
 
 export function useCommentReactions(commentId: string) {
   // Query to get current reactions
@@ -138,7 +137,7 @@ export function useCommentReactions(commentId: string) {
   };
 
   return {
-    reactions: query.data?.reactions || { like: 0, thumbsup: 0 },
+    reactions: query.data?.reactions || { like: 0 },
     userReaction: query.data?.user_reaction,
     isLoading: query.isLoading,
     toggleReaction,
