@@ -28,7 +28,7 @@ import packageJson from '../../../package.json';
 export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
-  const { user } = useAuth();
+  const { user, email } = useAuth();
 
   // Set TopBar content
   useEffect(() => {
@@ -119,7 +119,7 @@ export default function SettingsPage() {
               </div>
               <div>
                 <p className='font-medium text-red-500'>{user?.name || 'Guest'}</p>
-                <p className='text-sm text-gray-600'>{user?.email}</p>
+                <p className='text-sm text-gray-600'>{email}</p>
               </div>
             </div>
           </div>

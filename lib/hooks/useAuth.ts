@@ -38,10 +38,26 @@ export function useAuth() {
     refetchOnWindowFocus: false,
   });
 
-  // Sync user data with store
+  // Sync user data with store and get email from Supabase
   useEffect(() => {
     if (userData) {
       setUser(userData);
+      
+      // Get email from Supabase auth if not already set
+      if (!email) {
+        const getSupabaseEmail = async () => {
+          try {
+            const supabase = createClient();
+            const { data: { user: supabaseUser } } = await supabase.auth.getUser();
+            if (supabaseUser?.email) {
+              setEmail(supabaseUser.email);
+            }
+          } catch (error) {
+            console.log('Failed to get email from Supabase:', error);
+          }
+        };
+        getSupabaseEmail();
+      }
     } else if (authError) {
       // Clear auth on 401 errors
       const apiError = authError as ApiError;
@@ -49,7 +65,7 @@ export function useAuth() {
         clearAuth();
       }
     }
-  }, [userData, authError, setUser, clearAuth]);
+  }, [userData, authError, setUser, setEmail, clearAuth, email]);
 
   // Listen for auth state changes
   useEffect(() => {
