@@ -1,6 +1,7 @@
 'use client';
 
 import EventDescription from '@/components/event-detail/event-description';
+import EventComments from '@/components/event-detail/event-comments';
 import EventGallery from '@/components/event-detail/event-gallery';
 import EventGuestList from '@/components/event-detail/event-guest-list';
 import EventHost from '@/components/event-detail/event-host';
@@ -18,19 +19,25 @@ import { useEventWeather } from '@/lib/hooks/useEventWeather';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Loader2, MessageCircle, Share } from 'lucide-react';
-import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const eventId = params.id as string;
   const { user } = useAuth();
   const { setTopBarForRoute, clearRoute } = useTopBar();
   const lightboxRef = useRef<SilkLightboxRef>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
-  const [activeTab, setActiveTab] = useState('details');
+  
+  // Initialize activeTab from URL query parameter or default to 'details'
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabParam = searchParams.get('tab');
+    return tabParam === 'comments' || tabParam === 'gallery' ? tabParam : 'details';
+  });
 
   // Configure TopBar for event pages
   useEffect(() => {
@@ -90,6 +97,21 @@ export default function EventDetailPage() {
     enabled: !!event?.location.city && !!event?.location.country && !!event?.computedStartDate,
   });
 
+  // Handle tab changes and update URL
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    
+    // Update URL without full page reload
+    const params = new URLSearchParams(searchParams);
+    if (tab === 'details') {
+      // Remove tab parameter for default tab to keep URL clean
+      params.delete('tab');
+    } else {
+      params.set('tab', tab);
+    }
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
+
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
   if (isLoading) {
@@ -144,13 +166,7 @@ export default function EventDetailPage() {
   );
 
   const renderCommentsTab = () => (
-    <div className='flex flex-col items-center justify-center py-12'>
-      <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
-      <h3 className='mb-2 text-lg font-medium text-gray-900'>No Comments Yet</h3>
-      <p className='text-center text-sm text-gray-500'>
-        Be the first to leave a comment about this event.
-      </p>
-    </div>
+    <EventComments eventId={eventId} />
   );
 
   const renderGalleryTab = () => {
@@ -213,7 +229,7 @@ export default function EventDetailPage() {
             <div className='border-t border-gray-100'>
               <div className='flex gap-2 px-4 py-3'>
                 <button
-                  onClick={() => setActiveTab('details')}
+                  onClick={() => handleTabChange('details')}
                   className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
                     activeTab === 'details'
                       ? 'bg-gray-100 text-black'
@@ -223,7 +239,7 @@ export default function EventDetailPage() {
                   Details
                 </button>
                 <button
-                  onClick={() => setActiveTab('comments')}
+                  onClick={() => handleTabChange('comments')}
                   className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
                     activeTab === 'comments'
                       ? 'bg-gray-100 text-black'
@@ -233,7 +249,7 @@ export default function EventDetailPage() {
                   Comments
                 </button>
                 <button
-                  onClick={() => setActiveTab('gallery')}
+                  onClick={() => handleTabChange('gallery')}
                   className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
                     activeTab === 'gallery'
                       ? 'bg-gray-100 text-black'
