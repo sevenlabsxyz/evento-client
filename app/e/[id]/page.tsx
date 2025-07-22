@@ -10,7 +10,7 @@ import EventLocation from '@/components/event-detail/event-location';
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useEventGallery } from '@/lib/hooks/useEventGallery';
@@ -20,7 +20,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Loader2, MessageCircle, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -30,8 +30,8 @@ export default function EventDetailPage() {
   const eventId = params.id as string;
   const { user } = useAuth();
   const { setTopBarForRoute, clearRoute } = useTopBar();
-  const lightboxRef = useRef<SilkLightboxRef>(null);
-  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [selectedCoverImageIndex, setSelectedCoverImageIndex] = useState<number | null>(null);
+  const [selectedGalleryImageIndex, setSelectedGalleryImageIndex] = useState<number | null>(null);
   
   // Initialize activeTab from URL query parameter or default to 'details'
   const [activeTab, setActiveTab] = useState(() => {
@@ -200,11 +200,37 @@ export default function EventDetailPage() {
         event={event}
         currentUserId={user?.id || ''}
         onImageClick={(index) => {
-          setLightboxImages(event.galleryImages || []);
-          lightboxRef.current?.open(index);
+          setSelectedGalleryImageIndex(index);
         }}
       />
     );
+  };
+
+  // Format cover images for LightboxViewer
+  const formattedCoverImages = useMemo(() => {
+    if (!event) return [];
+    return event.coverImages.map((imageUrl, index) => ({
+      id: `cover-${index}`,
+      image: imageUrl,
+      user_details: null, // No user details for cover images
+      created_at: new Date().toISOString(),
+    }));
+  }, [event]);
+
+  // Format gallery images for LightboxViewer
+  const formattedGalleryImages = useMemo(() => {
+    if (!event) return [];
+    return (event.galleryImages || []).map((imageUrl, index) => ({
+      id: `gallery-${index}`,
+      image: imageUrl,
+      user_details: null, // Could be enhanced later if gallery images have user data
+      created_at: new Date().toISOString(),
+    }));
+  }, [event]);
+
+  // Placeholder delete handler (covers shouldn't be deletable from lightbox)
+  const handleImageDelete = async (photoId: string) => {
+    return { success: false };
   };
 
   return (
@@ -214,8 +240,7 @@ export default function EventDetailPage() {
         <SwipeableHeader
           event={event}
           onImageClick={(index) => {
-            setLightboxImages(event.coverImages);
-            lightboxRef.current?.open(index);
+            setSelectedCoverImageIndex(index);
           }}
         />
         <div className='pb-20'>
@@ -271,11 +296,28 @@ export default function EventDetailPage() {
         </div>
       </div>
 
-      {/* Image Lightbox */}
-      <SilkLightbox
-        ref={lightboxRef}
-        images={lightboxImages.length > 0 ? lightboxImages : event.coverImages}
-        eventTitle={event.title}
+      {/* Cover Images Lightbox */}
+      <LightboxViewer
+        images={formattedCoverImages}
+        selectedImage={selectedCoverImageIndex}
+        onClose={() => setSelectedCoverImageIndex(null)}
+        onImageChange={setSelectedCoverImageIndex}
+        showDropdownMenu={false}
+        handleDelete={handleImageDelete}
+        userId={user?.id || ''}
+        eventId={eventId}
+      />
+
+      {/* Gallery Images Lightbox */}
+      <LightboxViewer
+        images={formattedGalleryImages}
+        selectedImage={selectedGalleryImageIndex}
+        onClose={() => setSelectedGalleryImageIndex(null)}
+        onImageChange={setSelectedGalleryImageIndex}
+        showDropdownMenu={false}
+        handleDelete={handleImageDelete}
+        userId={user?.id || ''}
+        eventId={eventId}
       />
     </div>
   );
