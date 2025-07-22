@@ -196,10 +196,17 @@ ToastView.displayName = 'Toast.View';
 
 const ToastContent = React.forwardRef<
   React.ElementRef<typeof Sheet.Content>,
-  React.ComponentPropsWithoutRef<typeof Sheet.Content>
->(({ children, className, ...restProps }, ref) => {
+  React.ComponentPropsWithoutRef<typeof Sheet.Content> & {
+    onDismiss?: () => void;
+  }
+>(({ children, className, onDismiss, ...restProps }, ref) => {
   const context = useContext(ToastContext);
   if (!context) throw new Error('ToastContent must be used within ToastRoot');
+
+  const handleClick = () => {
+    context.setPresented(false);
+    onDismiss?.();
+  };
 
   return (
     <Sheet.Content
@@ -213,6 +220,7 @@ const ToastContent = React.forwardRef<
           className='toast-inner-content'
           onPointerEnter={() => context.setPointerOver(true)}
           onPointerLeave={() => context.setPointerOver(false)}
+          onClick={handleClick}
         >
           {children}
         </Sheet.SpecialWrapper.Content>
@@ -235,7 +243,7 @@ export const SilkToast = React.forwardRef<React.ElementRef<typeof Sheet.Root>, T
       <ToastRoot ref={ref} duration={duration} onDismiss={onDismiss} forComponent='closest'>
         <Sheet.Portal>
           <ToastView>
-            <ToastContent>
+            <ToastContent onDismiss={onDismiss}>
               <div className={`toast-root ${colorClass}`}>
                 <div className='toast-icon'>{icon}</div>
                 <div className='toast-content-wrapper'>
