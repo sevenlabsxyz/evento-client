@@ -4,8 +4,8 @@ import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import SocialLinks from '@/components/profile/social-links';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/useAuth';
 import {
   useFollowAction,
@@ -539,28 +539,13 @@ export default function UserProfilePage() {
           <div className="h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44" />
 
           {/* Profile Picture - Centered & Clickable */}
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
-            <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="h-36 w-36 border-4 border-white shadow-lg">
-                <AvatarImage src={userProfile.avatar || ''} alt="Profile" />
-                <AvatarFallback className="bg-white text-3xl">
-                  {userProfile.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {/* Verification Badge */}
-              {userProfile.isVerified && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowVerificationModal(true);
-                  }}
-                  className="absolute bottom-0 right-0 transition-transform hover:scale-105"
-                >
-                  <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
-                </button>
-              )}
-            </button>
-          </div>
+          <UserAvatar
+            user={userData}
+            size="lg"
+            onAvatarClick={handleAvatarClick}
+            onVerificationClick={() => setShowVerificationModal(true)}
+            className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform"
+          />
         </div>
 
         {/* Profile Section */}
