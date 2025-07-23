@@ -1,30 +1,35 @@
 'use client';
 
 import { EventCard } from '@/components/event-card';
+import { EventDateGroup } from '@/components/event-date-group';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useEventsFeed } from '@/lib/hooks/useEventsFeed';
 import { useUserSearch } from '@/lib/hooks/useSearch';
-import { useTopBar } from '@/lib/stores/topbar-store';
 import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
-import { UserSearchResult } from '@/lib/types/api';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { useViewModeStore } from '@/lib/stores/view-mode-store';
+import { EventWithUser, UserSearchResult } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import {
+  ArrowDownAZ,
   BadgeCheck,
   Bookmark,
   Calendar,
   Check,
   Clock,
+  LayoutGrid,
+  LayoutList,
   MapPin,
   Search,
   Users,
   X,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export default function FeedPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -38,15 +43,38 @@ export default function FeedPage() {
   const [searchText, setSearchText] = useState('');
   const [showSearchSheet, setShowSearchSheet] = useState(false);
   const [activeDetent, setActiveDetent] = useState(0);
+  const [sortMenuOpen, setSortMenuOpen] = useState(false);
+  const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>('date-desc');
   const router = useRouter();
   const pathname = usePathname();
+
+  // View mode state from Zustand store
+  const { feedViewMode, setFeedViewMode } = useViewModeStore();
 
   const userSearchMutation = useUserSearch();
   const [searchResults, setSearchResults] = useState<UserSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
-  
+
   // Use the Zustand store for recent searches
-  const { recentSearches, addRecentSearch, clearRecentSearches } = useRecentSearchesStore();
+  const { recentSearches, addRecentSearch, clearRecentSearches } =
+    useRecentSearchesStore();
+
+  // Click away handler for sort menu
+  const sortButtonRef = useRef<HTMLDivElement>(null);
+  
+  // Handle clicks outside of sort menu to close it
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortButtonRef.current && !sortButtonRef.current.contains(event.target as Node) && sortMenuOpen) {
+        setSortMenuOpen(false);
+      }
+    };
+    
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [sortMenuOpen]);
 
   // Debounced search function
   const debouncedSearch = useRef(
@@ -90,6 +118,12 @@ export default function FeedPage() {
     { icon: <Clock className="h-4 w-4" />, text: 'Upcoming events' },
   ];
 
+  // Toggle view mode function with useCallback to prevent infinite rerenders
+  const toggleViewMode = useCallback(() => {
+    const newMode = feedViewMode === 'card' ? 'compact' : 'card';
+    setFeedViewMode(newMode);
+  }, [feedViewMode, setFeedViewMode]);
+
   // Set TopBar content
   useEffect(() => {
     // Apply any existing configuration for this route
@@ -104,6 +138,15 @@ export default function FeedPage() {
       centerMode: 'title',
       buttons: [
         {
+          id: 'viewMode',
+          icon: feedViewMode === 'card' ? LayoutList : LayoutGrid,
+          onClick: toggleViewMode,
+          label:
+            feedViewMode === 'card'
+              ? 'Switch to compact view'
+              : 'Switch to card view',
+        },
+        {
           id: 'search',
           icon: Search,
           onClick: () => setShowSearchSheet(true),
@@ -116,10 +159,73 @@ export default function FeedPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, router]);
+  }, [
+    pathname,
+    setTopBarForRoute,
+    clearRoute,
+    applyRouteConfig,
+    router,
+    feedViewMode,
+  ]);
 
   // Fetch events feed
-  const { data: events = [], isLoading, error } = useEventsFeed();
+  const { data: rawEvents = [], isLoading, error } = useEventsFeed();
+  
+  // Sort events based on sort option
+  const events = useMemo(() => {
+    if (!rawEvents.length) return [];
+    
+    return [...rawEvents].sort((a, b) => {
+      const timeA = new Date(a.computed_start_date).getTime();
+      const timeB = new Date(b.computed_start_date).getTime();
+      
+      return sortOption === 'date-asc' ? timeA - timeB : timeB - timeA;
+    });
+  }, [rawEvents, sortOption]);
+
+  // Group events by date for chronological view
+  const eventsByDate = useMemo(() => {
+    if (!events?.length) return {};
+
+    const groupedEvents: Record<string, EventWithUser[]> = {};
+
+    events.forEach((event) => {
+      // Extract just the date part (YYYY-MM-DD) for grouping
+      const dateOnly = event.computed_start_date.split('T')[0];
+
+      if (!groupedEvents[dateOnly]) {
+        groupedEvents[dateOnly] = [];
+      }
+
+      groupedEvents[dateOnly].push(event);
+    });
+
+    // Sort each group by time, respecting the sort option
+    Object.keys(groupedEvents).forEach((date) => {
+      groupedEvents[date].sort((a, b) => {
+        const timeA = new Date(a.computed_start_date).getTime();
+        const timeB = new Date(b.computed_start_date).getTime();
+        
+        // Apply sort direction based on the selected option
+        return sortOption === 'date-asc' ? timeA - timeB : timeB - timeA;
+      });
+    });
+
+    return groupedEvents;
+  }, [events]);
+
+  // Get sorted dates for rendering
+  const sortedDates = useMemo(() => {
+    // Get all dates
+    const dates = Object.keys(eventsByDate);
+    
+    // Sort dates based on the selected sort option
+    return dates.sort((a, b) => {
+      // For date-asc, use the default string sort (which works for ISO dates)
+      // For date-desc, reverse the sort order
+      return sortOption === 'date-asc' ? a.localeCompare(b) : b.localeCompare(a);
+    });
+  }, [eventsByDate, sortOption]);
 
   // Mock saved lists - in real app this would come from API
   const [savedLists] = useState([
@@ -174,6 +280,71 @@ export default function FeedPage() {
     <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Feed Content */}
       <div className="flex-1 overflow-y-auto pb-20">
+        {/* Feed Header with Sort and View Mode Toggle */}
+        <div className="sticky top-0 z-10 flex items-center justify-between bg-white px-4 py-2 shadow-sm">
+          {/* Sorting Button */}
+          <div className="relative" ref={sortButtonRef}>
+            <button
+              onClick={() => setSortMenuOpen(!sortMenuOpen)}
+              className="flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200"
+            >
+              <ArrowDownAZ className="mr-1.5 h-3.5 w-3.5" />
+              Sort
+            </button>
+            
+            {sortMenuOpen && (
+              <div className="absolute left-0 top-full mt-1 w-44 rounded-md bg-white p-1 shadow-lg ring-1 ring-black ring-opacity-5">
+                <button
+                  onClick={() => {
+                    setSortOption('date-desc');
+                    setSortMenuOpen(false);
+                  }}
+                  className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${sortOption === 'date-desc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}`}
+                >
+                  <Clock className="mr-2 h-3.5 w-3.5" />
+                  Newest first
+                </button>
+                <button
+                  onClick={() => {
+                    setSortOption('date-asc');
+                    setSortMenuOpen(false);
+                  }}
+                  className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${sortOption === 'date-asc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'}`}
+                >
+                  <Clock className="mr-2 h-3.5 w-3.5" />
+                  Oldest first
+                </button>
+              </div>
+            )}
+          </div>
+          
+          {/* View Mode Toggle */}
+          <div className="flex items-center rounded-full bg-gray-100 p-1">
+            <button
+              onClick={() => setFeedViewMode('card')}
+              className={`flex h-8 items-center justify-center rounded-full px-3 text-xs font-medium transition-all ${
+                feedViewMode === 'card' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-500'
+              }`}
+            >
+              <LayoutGrid className="mr-1.5 h-3.5 w-3.5" />
+              Card
+            </button>
+            <button
+              onClick={() => setFeedViewMode('compact')}
+              className={`flex h-8 items-center justify-center rounded-full px-3 text-xs font-medium transition-all ${
+                feedViewMode === 'compact' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-500'
+              }`}
+            >
+              <LayoutList className="mr-1.5 h-3.5 w-3.5" />
+              List
+            </button>
+          </div>
+        </div>
+        
         {error ? (
           <div className="flex flex-col items-center justify-center px-4 py-12">
             <p className="mb-4 text-center text-gray-500">
@@ -192,7 +363,21 @@ export default function FeedPage() {
               Follow other users or create your first event to see updates here
             </p>
           </div>
+        ) : feedViewMode === 'compact' ? (
+          // Compact chronological view
+          <div className="space-y-6 px-4 pt-2">
+            {sortedDates.map((dateStr) => (
+              <EventDateGroup
+                key={dateStr}
+                date={dateStr}
+                events={eventsByDate[dateStr]}
+                onBookmark={handleBookmark}
+                bookmarkedEvents={bookmarkedEvents}
+              />
+            ))}
+          </div>
         ) : (
+          // Standard card view
           events.map((event) => (
             <EventCard
               key={event.id}
