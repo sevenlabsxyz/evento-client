@@ -1,10 +1,12 @@
 'use client';
 
+import { TagSection } from '@/components/fancy-tag/section';
 import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
+import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
@@ -16,7 +18,14 @@ import {
 } from '@/lib/hooks/useUserProfile';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { BadgeCheck, Camera, Edit3, Loader2, Settings } from 'lucide-react';
+import {
+  BadgeCheck,
+  Camera,
+  Edit3,
+  Loader2,
+  Settings,
+  User,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -429,22 +438,25 @@ export default function ProfilePage() {
   const renderAboutTab = () => (
     <div className='space-y-6'>
       {/* Bio/Description */}
-      <div>
-        <p className='text-gray-700'>{user?.bio || 'Welcome to Evento'}</p>
-      </div>
+      {!user?.bio ? null : (
+        <div>
+          <RowCard
+            title={'Bio'}
+            subtitle={user?.bio}
+            icon={<User className='h-4 w-4' />}
+          />
+        </div>
+      )}
 
       {/* Interest Tags */}
       <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>Interests</h4>
         <div className='flex flex-wrap gap-2'>
-          {interestTags.map((tag, index) => (
-            <span
-              key={index}
-              className='inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'
-            >
-              {tag}
-            </span>
-          ))}
+          <TagSection
+            title='Interests'
+            items={interestTags}
+            selectedItems={[]}
+            onToggleItem={() => {}}
+          />
         </div>
       </div>
 
@@ -587,33 +599,23 @@ export default function ProfilePage() {
           <div className='flex gap-2 px-4 py-3'>
             <button
               onClick={() => setActiveTab('about')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+              className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
                 activeTab === 'about'
                   ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
+                  : 'bg-white text-gray-500 hover:bg-gray-50'
               }`}
             >
               About
             </button>
             <button
               onClick={() => setActiveTab('events')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+              className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
                 activeTab === 'events'
                   ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
+                  : 'bg-white text-gray-500 hover:bg-gray-50'
               }`}
             >
               Events
-            </button>
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                activeTab === 'stats'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
-              }`}
-            >
-              Stats
             </button>
           </div>
 
@@ -621,7 +623,6 @@ export default function ProfilePage() {
           <div className='p-4'>
             {activeTab === 'about' && renderAboutTab()}
             {activeTab === 'events' && renderEventsTab()}
-            {activeTab === 'stats' && renderStatsTab()}
           </div>
         </div>
       </div>

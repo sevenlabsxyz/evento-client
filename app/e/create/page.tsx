@@ -28,6 +28,7 @@ import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type Attachment = {
@@ -38,11 +39,14 @@ type Attachment = {
 
 export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { setTopBar } = useTopBar();
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
+  const pathname = usePathname();
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    
+    setTopBarForRoute(pathname, {
       leftMode: 'back',
       title: 'Create Event',
       subtitle: undefined,
@@ -53,16 +57,9 @@ export default function CreatePage() {
 
     // Cleanup function to reset topbar state when leaving this page
     return () => {
-      setTopBar({
-        leftMode: 'menu',
-        title: '',
-        subtitle: '',
-        showAvatar: true,
-        centerMode: 'title',
-        buttons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar]);
+  }, [pathname, applyRouteConfig, setTopBarForRoute, clearRoute]);
 
   const createEventMutation = useCreateEventWithCallbacks();
 

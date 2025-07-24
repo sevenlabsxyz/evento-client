@@ -53,7 +53,7 @@ export default function UsernameSheet({
     };
 
     checkAvailability();
-  }, [debouncedUsername, currentUsername, checkUsernameMutation]);
+  }, [debouncedUsername, currentUsername]);
 
   const handleSave = async () => {
     if (!username || username === currentUsername) {
