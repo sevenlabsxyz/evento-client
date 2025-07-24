@@ -30,10 +30,6 @@ export function UserAvatar({
   height,
   width,
 }: UserAvatarProps) {
-  // Use user's image if provided through user object, otherwise use directly provided image
-  const avatarImage = user?.image || image;
-  const isVerified = verified || user?.verification_status === 'verified';
-
   // Size variants configuration
   const sizeVariants = {
     xs: {
@@ -76,7 +72,7 @@ export function UserAvatar({
             // Only use size config if no explicit dimensions are provided
             !height && !width ? sizeConfig.avatar : '',
             sizeConfig.border,
-            'border-white shadow-lg'
+            'bg-white border-gray-200 shadow-lg'
           )}
           style={
             height && width
@@ -84,7 +80,10 @@ export function UserAvatar({
               : undefined
           }
         >
-          <AvatarImage src={user?.image || ''} alt="Profile" />
+          <AvatarImage
+            src={user?.image || '/assets/img/evento-sublogo.svg'}
+            alt="Profile"
+          />
           <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
             {user?.name?.charAt(0).toUpperCase() ||
               user?.username?.charAt(0).toUpperCase() ||
