@@ -3,125 +3,227 @@
 import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
-import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useAuth } from '@/lib/hooks/useAuth';
 import {
+  useFollowAction,
+  useFollowStatus,
+  useUserByUsername,
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
-  useUserProfile,
 } from '@/lib/hooks/useUserProfile';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { BadgeCheck, Camera, Edit3, Loader2, Settings } from 'lucide-react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import {
+  BadgeCheck,
+  MessageCircle,
+  Share,
+  UserMinus,
+  UserPlus,
+  Zap,
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function ProfilePage() {
-  const { isLoading: isCheckingAuth } = useRequireAuth();
+export default function UserProfilePageClient() {
+  // Fetch auth state but don’t enforce login – allows public profile view
+  const { isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
-  const { setTopBar, setOverlaid } = useTopBar();
+  const params = useParams();
+  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [eventsFilter, setEventsFilter] = useState('attending');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
-  const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
+  const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
     null
   );
-  const [showVerificationModal, setShowVerificationModal] = useState(false);
 
-  // Get user data from API
-  const { user, isLoading: isUserLoading } = useUserProfile();
-  const { data: eventCount } = useUserEventCount(user?.id || '');
-  const { data: followers } = useUserFollowers(user?.id || '');
-  const { data: following } = useUserFollowing(user?.id || '');
+  // Fetch user data from API
+  const username = params.username as string;
+  const {
+    data: userData,
+    isLoading: isUserLoading,
+    error: userError,
+  } = useUserByUsername(username);
+  // Get follow status for this user
+  const { data: followStatus, isLoading: isFollowStatusLoading } =
+    useFollowStatus(userData?.id || '');
+  // Consolidated follow/unfollow mutation
+  const followActionMutation = useFollowAction();
+  const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
+  const { data: followers = [] } = useUserFollowers(userData?.id || '');
+  const { data: following = [] } = useUserFollowing(userData?.id || '');
 
-  // Set TopBar content and enable overlay mode
+  // Transform API data to match expected format (moved before useEffect)
+  const userProfile = userData
+    ? {
+        name: userData.name || 'Unknown User',
+        username: `@${userData.username}`,
+        avatar: userData.image || '/placeholder.svg?height=80&width=80',
+        status: userData.bio || '',
+        bio: userData.bio || '',
+        website: userData.bio_link || '',
+        isVerified: userData.verification_status === 'verified',
+        stats: {
+          events: eventCount,
+          following: following.length,
+          followers: followers.length,
+          countries: 0, // This would need to be calculated from events
+          mutuals: 0, // This would need to be calculated
+        },
+      }
+    : null;
+
+  const handleFollowToggle = () => {
+    if (!userData?.id) {
+      toast.error('Unable to identify user');
+      return;
+    }
+
+    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
+
+    followActionMutation.mutate(
+      { userId: userData.id, action },
+      {
+        onSuccess: () => {
+          if (action === 'follow') {
+            toast.success(`You followed ${userData.name || 'this user'}!`);
+          } else {
+            toast.success(`You unfollowed ${userData.name || 'this user'}`);
+          }
+        },
+        onError: () => {
+          toast.error(`Failed to ${action}. Please try again.`);
+        },
+      }
+    );
+  };
+
+  // Share functionality
+  const handleShare = async () => {
+    const shareData = {
+      title: `${userProfile?.name} on Evento`,
+      text: `Check out ${userProfile?.name}'s profile on Evento`,
+      url: window.location.href,
+    };
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare(shareData)
+    ) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        // User cancelled or share failed
+        console.log('Share cancelled or failed');
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Profile link copied to clipboard!');
+      } catch (error) {
+        toast.error('Failed to share profile');
+      }
+    }
+  };
+
+  // Set TopBar content for overlay mode - moved before conditional returns
   useEffect(() => {
-    setTopBar({
-      title: '',
-      subtitle: '',
-      showAvatar: false,
-      leftMode: 'menu',
-      buttons: [
-        {
-          id: 'edit',
-          icon: Edit3,
-          onClick: () => router.push('/e/profile/edit'),
-          label: 'Edit profile',
-        },
-        {
-          id: 'settings',
-          icon: Settings,
-          onClick: () => router.push('/e/settings'),
-          label: 'Settings',
-        },
-      ],
-    });
-    setOverlaid(true);
+    // Only set TopBar if userData is loaded and available
+    if (userData && userProfile) {
+      setTopBar({
+        leftMode: 'menu',
+        title: userProfile.name,
+        subtitle: userProfile.username,
+        buttons: [
+          {
+            id: 'share',
+            icon: Share,
+            onClick: handleShare,
+            label: 'Share Profile',
+          },
+        ],
+        showAvatar: false,
+        isOverlaid: true,
+      });
+    }
 
-    // Cleanup function to reset overlay and buttons when leaving this page
     return () => {
       setTopBar({
-        buttons: [],
-        title: '',
-        subtitle: '',
-        showAvatar: true,
         leftMode: 'menu',
+        buttons: [],
+        showAvatar: true,
+        isOverlaid: false,
       });
-      setOverlaid(false);
     };
-  }, [router, setTopBar, setOverlaid]);
+  }, [userData, userProfile?.name, userProfile?.username, setTopBar]);
 
-  const userStats = {
-    events: eventCount || 0,
-    countries: 8, // This would come from a different API endpoint
-    mutuals: 156, // This would come from a different API endpoint
-    following: following?.length || 0,
-    followers: followers?.length || 0,
-  };
+  // Handle loading state
+  if (isUserLoading || isCheckingAuth) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm">
+        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
 
-  const userData = {
-    name: user?.name || 'User',
-    username: user?.username ? `@${user.username}` : '@user',
-    status: user?.bio || 'Welcome to Evento',
-    avatar: user?.image,
-    isVerified: user?.verification_status === 'verified',
-  };
+  // Handle user not found
+  if (userError || !userData || !userProfile) {
+    return (
+      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm">
+        <div className="text-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+            <UserMinus className="h-8 w-8 text-gray-400" />
+          </div>
+          <h2 className="mb-2 text-xl font-bold text-gray-900">
+            User not found
+          </h2>
+          <p className="mb-4 text-gray-500">
+            The user @{username} doesn't exist or may have been deleted.
+          </p>
+          <Button onClick={() => router.back()} variant="outline">
+            Go Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   const attendingEvents = [
     {
       id: 1,
-      title: 'Paris Photography Walk',
-      date: 'Sep 20, 2025',
-      time: '7:00 PM',
-      location: 'Paris, France',
+      title: 'Tokyo Skytree Sunset',
+      date: 'Sep 15, 2025',
+      time: '6:30 PM',
+      location: 'Tokyo, Japan',
       image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 2,
-      title: 'London Art Gallery Tour',
-      date: 'Oct 2, 2025',
-      time: '2:00 PM',
-      location: 'London, UK',
+      title: 'Shibuya Food Tour',
+      date: 'Sep 20, 2025',
+      time: '7:00 PM',
+      location: 'Tokyo, Japan',
       image: '/placeholder.svg?height=60&width=60',
     },
     {
       id: 3,
-      title: 'Rome Cooking Class',
-      date: 'Sep 20, 2025',
-      time: '6:30 PM',
-      location: 'Rome, Italy',
+      title: 'Kyoto Temple Walk',
+      date: 'Sep 25, 2025',
+      time: '9:00 AM',
+      location: 'Kyoto, Japan',
       image: '/placeholder.svg?height=60&width=60',
     },
   ];
@@ -129,26 +231,10 @@ export default function ProfilePage() {
   const hostingEvents = [
     {
       id: 4,
-      title: 'Tokyo Food Tour',
-      date: 'Sep 15, 2025',
-      time: '10:00 AM',
+      title: 'Photography Meetup',
+      date: 'Sep 18, 2025',
+      time: '2:00 PM',
       location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 5,
-      title: 'Bali Sunrise Hike',
-      date: 'Sep 25, 2025',
-      time: '5:30 AM',
-      location: 'Bali, Indonesia',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 6,
-      title: 'NYC Rooftop Party',
-      date: 'Oct 8, 2025',
-      time: '8:00 PM',
-      location: 'New York, USA',
       image: '/placeholder.svg?height=60&width=60',
     },
   ];
@@ -165,94 +251,38 @@ export default function ProfilePage() {
   const profileQuestions = [
     {
       question: 'My travel style',
-      answer: 'Adventure seeker with a love for local culture',
+      answer: 'Slow travel with deep cultural immersion',
     },
     {
       question: 'Dream destination',
-      answer: 'New Zealand - for the landscapes and adventure sports',
+      answer: 'Patagonia - for the untouched wilderness',
     },
     {
       question: "Can't travel without",
-      answer: 'My camera and a good playlist',
+      answer: 'My Fujifilm camera and matcha powder',
     },
     {
       question: 'Best travel memory',
-      answer: 'Watching sunrise from Mount Fuji in Japan',
+      answer: 'Sunrise hot air balloon ride over Cappadocia',
     },
   ];
 
   const interestTags = [
     'Photography',
     'Food',
-    'Adventure',
     'Culture',
-    'Music',
-    'Art',
-    'Nature',
     'Architecture',
+    'Street Art',
+    'Coffee',
+    'Hiking',
   ];
 
-  const handleSocialClick = (platform: string) => {
-    const urls = {
-      instagram: user?.instagram_handle
-        ? `https://instagram.com/${user.instagram_handle}`
-        : null,
-      x: user?.x_handle ? `https://x.com/${user.x_handle}` : null,
-      website: user?.bio_link || null,
-    };
-
-    const url = urls[platform as keyof typeof urls];
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
-      toast.error(`No ${platform} link available`);
-    }
+  const handleMessage = () => {
+    toast.success('Message feature coming soon!');
   };
 
-  const handleZap = () => {
-    if (user?.ln_address) {
-      toast.success(`Lightning: ${user.ln_address}`);
-    } else {
-      toast.error('No Lightning address available');
-    }
-  };
-
-  const handleWebsiteClick = () => {
-    if (!user?.bio_link) {
-      toast.error('No website link available');
-      return;
-    }
-
-    setShowWebsiteModal(true);
-    setCountdown(3);
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setShowWebsiteModal(false);
-          window.open(user.bio_link, '_blank', 'noopener,noreferrer');
-          return 3;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleFollowToggle = (userId: number) => {
-    const newFollowingUsers = new Set(followingUsers);
-    if (followingUsers.has(userId)) {
-      newFollowingUsers.delete(userId);
-      toast.success('Unfollowed user');
-    } else {
-      newFollowingUsers.add(userId);
-      toast.success('Following user');
-    }
-    setFollowingUsers(newFollowingUsers);
-  };
-
-  const handleUserClick = (username: string) => {
-    router.push(`/${username.replace('@', '')}`);
+  const handleTip = () => {
+    toast.success('Lightning payment coming soon!');
   };
 
   const handleProfilePhotoClick = (index: number) => {
@@ -267,13 +297,13 @@ export default function ProfilePage() {
   const avatarImages = [
     {
       id: 'avatar-1',
-      image: userData.avatar,
+      image: userProfile.avatar,
       user_details: {
-        id: user?.id,
-        username: user?.username,
-        name: user?.name,
-        image: userData.avatar,
-        verification_status: user?.verification_status,
+        id: userData?.id,
+        username: userData?.username,
+        name: userData?.name,
+        image: userProfile.avatar,
+        verification_status: userData?.verification_status,
       },
       created_at: new Date().toISOString(),
     },
@@ -290,11 +320,11 @@ export default function ProfilePage() {
     id: `profile-photo-${index}`,
     image: photoUrl,
     user_details: {
-      id: user?.id,
-      username: user?.username,
-      name: user?.name,
-      image: userData.avatar,
-      verification_status: user?.verification_status,
+      id: userData?.id,
+      username: userData?.username,
+      name: userData?.name,
+      image: userProfile.avatar,
+      verification_status: userData?.verification_status,
     },
     created_at: new Date().toISOString(),
   }));
@@ -384,14 +414,20 @@ export default function ProfilePage() {
 
               <div className="space-y-4">
                 {group.events.map((event) => (
-                  <div key={event.id} className="flex items-start gap-4">
+                  <div
+                    key={event.id}
+                    className="-m-2 flex cursor-pointer items-start gap-4 rounded-xl p-2 transition-colors hover:bg-gray-50"
+                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+                  >
                     <img
                       src={event.image || '/placeholder.svg'}
                       alt={event.title}
                       className="h-12 w-12 flex-shrink-0 rounded-xl object-cover"
                     />
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold">{event.title}</h3>
+                      <h3 className="text-lg font-semibold transition-colors hover:text-red-600">
+                        {event.title}
+                      </h3>
                       <p className="text-gray-500">{event.location}</p>
                     </div>
                     <div className="text-right">
@@ -419,7 +455,7 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Bio/Description */}
       <div>
-        <p className="text-gray-700">{user?.bio || 'Welcome to Evento'}</p>
+        <p className="text-gray-700">{userProfile.bio}</p>
       </div>
 
       {/* Interest Tags */}
@@ -456,10 +492,6 @@ export default function ProfilePage() {
       <div>
         <div className="mb-3 flex items-center justify-between">
           <h4 className="font-semibold text-gray-900">Photos</h4>
-          <Button variant="ghost" size="sm" className="text-red-600">
-            <Camera className="mr-1 h-4 w-4" />
-            Add
-          </Button>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {profilePhotos.map((photo, index) => (
@@ -469,7 +501,7 @@ export default function ProfilePage() {
               className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
             >
               <img
-                src={photo || '/assets/img/evento-sublogo.svg'}
+                src={photo || '/placeholder.svg'}
                 alt={`Profile photo ${index + 1}`}
                 className="h-full w-full object-cover"
               />
@@ -484,33 +516,23 @@ export default function ProfilePage() {
     <div className="grid grid-cols-2 gap-4">
       <div className="rounded-xl bg-blue-50 p-4 text-center">
         <div className="text-3xl font-bold text-blue-600">
-          {userStats.countries}
+          {userProfile.stats.countries}
         </div>
         <div className="text-sm text-gray-600">Countries</div>
       </div>
       <div className="rounded-xl bg-green-50 p-4 text-center">
         <div className="text-3xl font-bold text-green-600">
-          {userStats.mutuals}
+          {userProfile.stats.mutuals}
         </div>
         <div className="text-sm text-gray-600">Mutuals</div>
       </div>
     </div>
   );
 
-  // Show loading state while fetching user data
-  if (isCheckingAuth || isUserLoading || !user) {
-    return (
-      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm">
-        <Loader2 className="h-8 w-8 animate-spin text-red-500" />
-        <p className="mt-2 text-gray-600">Loading profile...</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className="flex-1 overflow-y-auto">
         {/* Cover Image Section */}
         <div className="relative">
           {/* Banner */}
@@ -527,13 +549,13 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className="mb-4 bg-white px-6 pb-0 pt-20">
+        <div className="mb-4 bg-white px-6 pb-2 pt-20">
           {/* User Info - Centered */}
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-gray-900">
-              {userData.name}
+              {userProfile.name}
             </h2>
-            <p className="text-gray-600">{userData.username}</p>
+            <p className="text-gray-600">{userProfile.username}</p>
           </div>
 
           {/* Stats - Centered */}
@@ -541,7 +563,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-3 gap-8">
               <div className="text-center">
                 <div className="text-xl font-bold text-gray-900">
-                  {userStats.events}
+                  {userProfile.stats.events}
                 </div>
                 <div className="text-sm text-gray-500">Events</div>
               </div>
@@ -550,7 +572,7 @@ export default function ProfilePage() {
                 onClick={() => setShowFollowingSheet(true)}
               >
                 <div className="text-xl font-bold text-gray-900">
-                  {userStats.following}
+                  {userProfile.stats.following}
                 </div>
                 <div className="text-sm text-gray-500">Following</div>
               </button>
@@ -559,15 +581,68 @@ export default function ProfilePage() {
                 onClick={() => setShowFollowersSheet(true)}
               >
                 <div className="text-xl font-bold text-gray-900">
-                  {userStats.followers}
+                  {userProfile.stats.followers}
                 </div>
                 <div className="text-sm text-gray-500">Followers</div>
               </button>
             </div>
           </div>
 
+          {/* Action Buttons */}
+          <div className="-mx-2.5 mb-6 flex gap-2 px-2.5">
+            <Button
+              onClick={handleFollowToggle}
+              disabled={isFollowStatusLoading || followActionMutation.isPending}
+              className={`flex-1 rounded-xl px-2.5 ${
+                followStatus?.isFollowing
+                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-red-500 text-white hover:bg-red-600'
+              }`}
+            >
+              {followStatus?.isFollowing ? (
+                <>
+                  <UserMinus className="h-4 w-4 mr-2" />
+                  {followActionMutation.isPending
+                    ? 'Unfollowing...'
+                    : 'Following'}
+                </>
+              ) : (
+                <>
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                </>
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleMessage}
+              className="rounded-xl bg-transparent px-3"
+            >
+              <MessageCircle className="h-4 w-4" />
+              Message
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleTip}
+              className="group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700"
+            >
+              <Zap className="h-4 w-4 text-black transition-colors group-hover:text-orange-700" />
+              Tip
+            </Button>
+          </div>
+
           {/* Social Links */}
-          {user && <SocialLinks user={user} />}
+          {userData && (
+            <SocialLinks
+              user={{
+                bio_link: userData.bio_link,
+                instagram_handle: userData.instagram_handle,
+                x_handle: userData.x_handle,
+                ln_address: userData.ln_address,
+                nip05: userData.nip05,
+              }}
+            />
+          )}
         </div>
 
         {/* Tabbed Section */}
@@ -615,14 +690,29 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Followers Sheet */}
+      <FollowersSheet
+        isOpen={showFollowersSheet}
+        onClose={() => setShowFollowersSheet(false)}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
+      />
+
+      {/* Following Sheet */}
+      <FollowingSheet
+        isOpen={showFollowingSheet}
+        onClose={() => setShowFollowingSheet(false)}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
+      />
+
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
           <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
             <h3 className="mb-4 text-xl font-bold">Leaving Evento</h3>
             <p className="mb-6 text-gray-600">
-              Are you about to leave Evento and be redirected to
-              andrerfneves.com?
+              Are you about to leave Evento and be redirected to sarahchen.com?
             </p>
             <div className="mb-6 text-6xl font-bold text-red-500">
               {countdown}
@@ -631,14 +721,14 @@ export default function ProfilePage() {
               onClick={() => {
                 setShowWebsiteModal(false);
                 window.open(
-                  'https://andrerfneves.com',
+                  userProfile.website,
                   '_blank',
                   'noopener,noreferrer'
                 );
               }}
               className="w-full bg-red-500 text-white hover:bg-red-600"
             >
-              Take me to andrerfneves.com
+              Take me to sarahchen.com
             </Button>
           </div>
         </div>
@@ -652,11 +742,11 @@ export default function ProfilePage() {
               <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
             </div>
             <h3 className="mb-4 text-xl font-bold text-gray-900">
-              You are verified
+              This user is verified
             </h3>
             <p className="mb-6 text-gray-600">
-              Congratulations! Your account is verified. You have premium member
-              status with enhanced credibility and access to exclusive features
+              This user is a premium member with a verified account. Verified
+              users have enhanced credibility and access to exclusive features
               on our platform.
             </p>
             <div className="flex flex-col gap-3">
@@ -664,12 +754,12 @@ export default function ProfilePage() {
                 onClick={() => {
                   setShowVerificationModal(false);
                   router.push(
-                    '/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.'
+                    '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
                   );
                 }}
                 className="w-full bg-red-500 text-white hover:bg-red-600"
               >
-                Contact support
+                Get in touch about verification
               </Button>
               <Button
                 variant="ghost"
@@ -691,7 +781,7 @@ export default function ProfilePage() {
         onImageChange={setSelectedAvatarIndex}
         showDropdownMenu={false}
         handleDelete={handleAvatarDelete}
-        userId={user?.id || ''}
+        userId=""
         eventId=""
       />
 
@@ -701,29 +791,10 @@ export default function ProfilePage() {
         selectedImage={selectedImageIndex}
         onClose={() => setSelectedImageIndex(null)}
         onImageChange={setSelectedImageIndex}
-        showDropdownMenu={true}
+        showDropdownMenu={false}
         handleDelete={async (photoId: string) => ({ success: false })}
-        userId={user?.id || ''}
+        userId=""
         eventId=""
-      />
-
-      {/* Bottom Navbar */}
-      <Navbar />
-
-      {/* Followers Sheet */}
-      <FollowersSheet
-        isOpen={showFollowersSheet}
-        onClose={() => setShowFollowersSheet(false)}
-        userId={user?.id || ''}
-        username={user?.username || 'user'}
-      />
-
-      {/* Following Sheet */}
-      <FollowingSheet
-        isOpen={showFollowingSheet}
-        onClose={() => setShowFollowingSheet(false)}
-        userId={user?.id || ''}
-        username={user?.username || 'user'}
       />
     </div>
   );

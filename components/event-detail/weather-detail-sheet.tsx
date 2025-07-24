@@ -2,9 +2,8 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { WeatherData } from '@/lib/types/weather';
-import { Droplets, MoreHorizontal, Thermometer, Wind } from 'lucide-react';
-import Image from 'next/image';
-import { useState } from 'react';
+import { Droplets, MoreHorizontal, Sun, Thermometer, Wind } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 // Temperature conversion helper functions
 const celsiusToFahrenheit = (celsius: number): number => {
@@ -33,6 +32,32 @@ export default function WeatherDetailSheet({
   // Local unit toggle state (resets when sheet reopens)
   const [displayUnit, setDisplayUnit] = useState<'F' | 'C'>(weather.unit);
   const [showUnitMenu, setShowUnitMenu] = useState(false);
+  const [iconError, setIconError] = useState(false); // Track image load errors
+  const [iconLoaded, setIconLoaded] = useState(false); // Track if icon loaded successfully
+  const iconRef = useRef<HTMLImageElement>(null);
+  
+  // Check if weather icon can be loaded
+  useEffect(() => {
+    const img = new Image();
+    img.src = iconUrl;
+    
+    img.onload = () => {
+      setIconLoaded(true);
+      setIconError(false);
+    };
+    
+    img.onerror = () => {
+      setIconError(true);
+      setIconLoaded(false);
+      console.log('Weather icon failed to load:', iconUrl);
+    };
+    
+    // Clean up
+    return () => {
+      img.onload = null;
+      img.onerror = null;
+    };
+  }, [iconUrl]);
 
   // Helper function to get temperature in desired unit
   const getTemperature = (temp: number, originalUnit: 'F' | 'C', targetUnit: 'F' | 'C'): number => {
@@ -128,13 +153,21 @@ export default function WeatherDetailSheet({
               <div className='mb-8 flex items-center justify-center'>
                 <div className='text-center'>
                   <div className='mb-2 flex items-center justify-center'>
-                    <Image
-                      src={iconUrl}
-                      alt={weather.description}
-                      width={80}
-                      height={80}
-                      className='h-20 w-20'
-                    />
+                    {!iconError && iconLoaded ? (
+                      <img
+                        ref={iconRef}
+                        src={iconUrl}
+                        alt={weather.description}
+                        className='h-20 w-20'
+                        width={80}
+                        height={80}
+                        loading='lazy'
+                      />
+                    ) : (
+                      <div className='flex h-20 w-20 items-center justify-center rounded-full bg-blue-50'>
+                        <Sun className='h-10 w-10 text-blue-400' />
+                      </div>
+                    )}
                   </div>
                   <div className='mb-1 text-4xl font-bold text-gray-900'>
                     {getTemperature(weather.temperature, weather.unit, displayUnit)}°{displayUnit}

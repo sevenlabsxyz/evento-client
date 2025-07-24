@@ -1,6 +1,5 @@
 'use client';
 
-import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { BadgeCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
@@ -73,7 +72,7 @@ export function UserAvatar({
             // Only use size config if no explicit dimensions are provided
             !height && !width ? sizeConfig.avatar : '',
             sizeConfig.border,
-            'border-white shadow-lg'
+            'bg-white border-gray-200 shadow-lg'
           )}
           style={
             height && width
@@ -81,7 +80,10 @@ export function UserAvatar({
               : undefined
           }
         >
-          <AvatarImage src={user?.image || ''} alt="Profile" />
+          <AvatarImage
+            src={user?.image || '/assets/img/evento-sublogo.svg'}
+            alt="Profile"
+          />
           <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
             {user?.name?.charAt(0).toUpperCase() ||
               user?.username?.charAt(0).toUpperCase() ||

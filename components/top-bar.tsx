@@ -80,7 +80,7 @@ export function TopBar() {
             'mt-0.5 flex h-[32px] w-[32px] items-center justify-center border border-transparent'
           }
         >
-          <ArrowLeft className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
+          <ArrowLeft className="h-6 w-6 text-gray-500" strokeWidth={2.5} />
         </button>
       );
     }
@@ -92,7 +92,13 @@ export function TopBar() {
           isOverlaid ? 'border-gray-200 bg-white' : 'hover:bg-gray-100'
         } ${isSpinning ? 'animate-spin' : ''}`}
       >
-        <Image priority src='/assets/img/evento-sublogo.svg' alt='Evento' width={32} height={32} />
+        <Image
+          priority
+          src="/assets/img/evento-sublogo.svg"
+          alt="Evento"
+          width={32}
+          height={32}
+        />
       </button>
     );
   };
@@ -104,9 +110,9 @@ export function TopBar() {
 
     if (centerMode === 'title' && !isOverlaid) {
       return (
-        <div className='flex flex-1 flex-col gap-1'>
-          <h1 className='text-lg font-semibold text-gray-500'>{title}</h1>
-          {subtitle && <p className='text-sm text-gray-500'>{subtitle}</p>}
+        <div className="flex flex-1 flex-col gap-1">
+          <h1 className="text-lg font-semibold text-gray-500">{title}</h1>
+          {subtitle && <p className="text-sm text-gray-500">{subtitle}</p>}
         </div>
       );
     }
@@ -146,17 +152,17 @@ export function TopBar() {
     <div
       className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-sm ${getTopBarStyles()}`}
     >
-      <div className='px-4 pb-4 pt-4'>
+      <div className="px-4 pb-4 pt-4">
         <div
           className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div className='flex items-center gap-3'>
+          <div className="flex items-center gap-3">
             {renderLeftContent()}
             {renderCenterContent()}
           </div>
-          <div className='flex items-center gap-3'>
+          <div className="flex items-center gap-3">
             {buttons.length > 0 && (
-              <div className='flex gap-3'>
+              <div className="flex gap-3">
                 {buttons.map((button) => {
                   const Icon = button.icon;
                   return (
@@ -171,7 +177,9 @@ export function TopBar() {
                     >
                       <Icon
                         className={`${
-                          isOverlaid ? 'h-5 w-5 text-gray-500' : 'h-6 w-6 text-gray-400'
+                          isOverlaid
+                            ? 'h-5 w-5 text-gray-500'
+                            : 'h-6 w-6 text-gray-400'
                         }`}
                         strokeWidth={2.5}
                       />
@@ -185,12 +193,19 @@ export function TopBar() {
                 onClick={() => router.push('/e/profile')}
                 className={`ml-1 rounded-full transition-opacity hover:opacity-80`}
               >
-                <Avatar className='h-8 w-8'>
-                  <AvatarImage src={user?.image || ''} alt={user?.name || 'Profile'} />
-                  <AvatarFallback className='bg-gray-100 text-sm'>
-                    {user?.name?.charAt(0).toUpperCase() ||
-                      user?.username?.charAt(0).toUpperCase() ||
-                      'U'}
+                <Avatar className="h-8 w-8">
+                  <AvatarImage
+                    src={user?.image}
+                    alt={user?.name || 'Profile'}
+                  />
+                  <AvatarFallback className="bg-gray-100">
+                    <Image
+                      src="/assets/img/evento-sublogo.svg"
+                      alt="Evento"
+                      width={32}
+                      height={32}
+                      className="h-full w-full p-1"
+                    />
                   </AvatarFallback>
                 </Avatar>
               </button>

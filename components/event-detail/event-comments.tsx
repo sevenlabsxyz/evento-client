@@ -6,6 +6,7 @@ import { useAddComment } from '@/lib/hooks/useAddComment';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useEventComments } from '@/lib/hooks/useEventComments';
 import { cn } from '@/lib/utils';
+import { toast } from '@/lib/utils/toast';
 import { Loader2, MessageCircle, SendHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -35,15 +36,26 @@ export default function EventComments({ eventId }: EventCommentsProps) {
   const handleAddComment = async () => {
     if (!commentText.trim() || !user) return;
 
+    // Store the comment text before clearing for better UX
+    const message = commentText.trim();
+    
+    // Clear text immediately for better UX
+    setCommentText('');
+
     try {
       await addCommentMutation.mutateAsync({
         event_id: eventId,
-        message: commentText.trim(),
+        message,
       });
-
-      setCommentText('');
     } catch (error) {
       console.error('Error adding comment:', error);
+      
+      // Show detailed error message
+      const errorMessage = error instanceof Error 
+        ? error.message 
+        : 'Your comment was not saved. Please try again.';
+        
+      toast.error(errorMessage);
     }
   };
 
@@ -103,7 +115,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
               onKeyDown={handleKeyDown}
               placeholder="Add a comment"
               className="min-h-[40px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
-              disabled={!user || addCommentMutation.isPending}
+              disabled={!user}
               rows={1}
             />
             <button
@@ -115,14 +127,10 @@ export default function EventComments({ eventId }: EventCommentsProps) {
               )}
               onClick={handleAddComment}
               disabled={
-                !commentText.trim() || !user || addCommentMutation.isPending
+                !commentText.trim() || !user
               }
             >
-              {addCommentMutation.isPending ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
                 <SendHorizontal className="h-5 w-5" />
-              )}
             </button>
           </div>
         </div>

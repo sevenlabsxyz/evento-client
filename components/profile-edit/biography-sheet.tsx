@@ -3,13 +3,16 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Textarea } from '@/components/ui/textarea';
-import { X } from 'lucide-react';
+import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { toast } from '@/lib/utils/toast';
+import { Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface BiographySheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (bio: string) => void;
+  onSave?: (bio: string) => void;
   currentBio?: string;
 }
 
@@ -21,6 +24,7 @@ export default function BiographySheet({
 }: BiographySheetProps) {
   const [bio, setBio] = useState(currentBio);
   const maxLength = 500;
+  const updateProfileMutation = useUpdateUserProfile();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -29,9 +33,34 @@ export default function BiographySheet({
     }
   }, [isOpen, currentBio]);
 
-  const handleSave = () => {
-    onSave(bio.trim());
-    onClose();
+  const handleSave = async () => {
+    const trimmedBio = bio.trim();
+    
+    if (onSave) {
+      onSave(trimmedBio);
+    }
+    
+    try {
+      // Directly save to API
+      const updateData = { bio: trimmedBio };
+      
+      // Validate data
+      const validation = validateUpdateUserProfile(updateData);
+      if (!validation.valid) {
+        toast.error(validation.error || 'Invalid bio');
+        return;
+      }
+      
+      // Save to API
+      await updateProfileMutation.mutateAsync(updateData);
+      toast.success('Bio updated successfully');
+
+      // Close sheet
+      onClose();
+    } catch (error) {
+      console.error('Failed to update bio:', error);
+      toast.error((error as string) || 'Failed to update bio');
+    }
   };
 
   const handleCancel = () => {
@@ -40,6 +69,7 @@ export default function BiographySheet({
   };
 
   const hasChanges = bio !== currentBio;
+  const isSaving = updateProfileMutation.isPending;
 
   return (
     <SheetWithDetentFull.Root
@@ -52,7 +82,9 @@ export default function BiographySheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
-              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+                </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Biography</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -90,10 +122,17 @@ export default function BiographySheet({
                   <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
+                      disabled={!hasChanges || isSaving}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!hasChanges}
                     >
-                      Save
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel

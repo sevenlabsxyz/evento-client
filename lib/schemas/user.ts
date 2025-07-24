@@ -6,7 +6,10 @@ export const updateUserProfileSchema = z.object({
     .string()
     .min(3, 'Username must be at least 3 characters')
     .max(20, 'Username must be less than 20 characters')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers, and underscores')
+    .regex(
+      /^[a-zA-Z0-9]+$/,
+      'Username can only contain letters and numbers'
+    )
     .optional(),
 
   name: z
@@ -17,24 +20,27 @@ export const updateUserProfileSchema = z.object({
 
   bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
 
-  bio_link: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  bio_link: z
+    .string()
+    .url('Please enter a valid URL')
+    .optional()
+    .or(z.literal('')),
 
-  x_handle: z.string().max(50, 'X handle must be less than 50 characters').optional(),
+  x_handle: z
+    .string()
+    .max(50, 'X handle must be less than 50 characters')
+    .optional(),
 
   instagram_handle: z
     .string()
     .max(50, 'Instagram handle must be less than 50 characters')
     .optional(),
 
-  ln_address: z
-    .string()
-    .email('Please enter a valid Lightning address')
-    .optional()
-    .or(z.literal('')),
+  ln_address: z.email('Please enter a valid Lightning address').optional(),
 
-  nip05: z.string().email('Please enter a valid NIP-05 identifier').optional().or(z.literal('')),
+  nip05: z.email('Please enter a valid NIP-05 identifier').optional(),
 
-  image: z.string().url('Please enter a valid image URL').optional().or(z.literal('')),
+  image: z.url('Please enter a valid image URL').optional().or(z.literal('')),
 });
 
 // User search schema
@@ -49,7 +55,7 @@ export const userSearchSchema = z.object({
 export const followUserSchema = z.object({
   user_id: z.string().min(1, 'User ID is required'),
   action: z.enum(['follow', 'unfollow'], {
-    required_error: 'Action must be either "follow" or "unfollow"',
+    error: 'Action must be either "follow" or "unfollow"',
   }),
 });
 
@@ -76,10 +82,31 @@ export type FollowUserData = z.infer<typeof followUserSchema>;
 export type UserDetailsData = z.infer<typeof userDetailsSchema>;
 
 // Validation helper functions
-export const validateUserProfile = (data: unknown): UpdateUserProfileData => {
-  return updateUserProfileSchema.parse(data);
-};
-
+/**
+ * Validates profile data and returns an error message if invalid
+ */
+export function validateUpdateUserProfile(data: Record<string, any>): {
+  valid: boolean;
+  error?: string;
+} {
+  try {
+    updateUserProfileSchema.parse(data);
+    return { valid: true };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      // Return the first error message
+      const formattedError = z.treeifyError(error);
+      // Get the first error message from the formatted error
+      const firstErrorPath = Object.keys(formattedError)[0];
+      const firstErrorMessage = firstErrorPath && formattedError.errors[0];
+      return {
+        valid: false,
+        error: firstErrorMessage || 'Invalid profile data',
+      };
+    }
+    return { valid: false, error: 'Invalid profile data' };
+  }
+}
 export const validateUserSearch = (data: unknown): UserSearchData => {
   return userSearchSchema.parse(data);
 };

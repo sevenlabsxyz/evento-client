@@ -17,6 +17,7 @@ import {
   Settings,
   Star,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 
 export function Sidebar() {
@@ -47,22 +48,22 @@ export function Sidebar() {
         {
           name: 'Home',
           path: '/',
-          icon: <Home className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Home className="h-5 w-5" strokeWidth={2.5} />,
         },
         {
           name: 'Chat',
           path: '/e/messages',
-          icon: <MessageCircle className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <MessageCircle className="h-5 w-5" strokeWidth={2.5} />,
         },
         {
           name: 'Inbox',
           path: '/e/notifications',
-          icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Inbox className="h-5 w-5" strokeWidth={2.5} />,
         },
         {
           name: 'Settings',
           path: '/e/settings',
-          icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Settings className="h-5 w-5" strokeWidth={2.5} />,
         },
       ],
     },
@@ -72,17 +73,17 @@ export function Sidebar() {
         {
           name: 'View All Events',
           path: '/e/create',
-          icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Calendar1 className="h-5 w-5" strokeWidth={2.5} />,
         },
         {
           name: 'Saved Events',
           path: '/e/saved',
-          icon: <Star className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Star className="h-5 w-5" strokeWidth={2.5} />,
         },
         {
           name: 'Create Event',
           path: '/e/create',
-          icon: <Plus className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Plus className="h-5 w-5" strokeWidth={2.5} />,
         },
       ],
     },
@@ -92,12 +93,12 @@ export function Sidebar() {
         {
           name: 'Read Blog',
           path: '/blog',
-          icon: <BookOpen className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <BookOpen className="h-5 w-5" strokeWidth={2.5} />,
         },
         {
           name: 'Contact Support',
           path: '/e/contact',
-          icon: <MessageCircleQuestion className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <MessageCircleQuestion className="h-5 w-5" strokeWidth={2.5} />,
         },
       ],
     },
@@ -105,7 +106,7 @@ export function Sidebar() {
 
   return (
     <Sheet.Root
-      license='commercial'
+      license="commercial"
       presented={isOpen}
       onPresentedChange={(presented) => {
         if (!presented) closeSidebar();
@@ -113,7 +114,7 @@ export function Sidebar() {
     >
       <Sheet.Portal>
         <Sheet.View
-          contentPlacement='left'
+          contentPlacement="left"
           swipeOvershoot={false}
           nativeEdgeSwipePrevention={true}
           style={{
@@ -121,11 +122,12 @@ export function Sidebar() {
             height: 'calc(var(--silk-100-lvh-dvh-pct) + 60px)',
           }}
         >
-          <Sheet.Backdrop className='bg-black/30' onClick={closeSidebar} />
+          <Sheet.Backdrop className="bg-black/30" onClick={closeSidebar} />
           <Sheet.Content
             style={{
               width: 'min(90vw, 325px)',
-              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+              boxShadow:
+                '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
               backgroundColor: 'hsl(var(--sidebar-background))',
             }}
           >
@@ -133,50 +135,54 @@ export function Sidebar() {
             <VisuallyHidden.Root>
               <Sheet.Title>Navigation Menu</Sheet.Title>
               <Sheet.Description>Main navigation sidebar</Sheet.Description>
-              <Sheet.Trigger action='dismiss'>Close navigation menu</Sheet.Trigger>
+              <Sheet.Trigger action="dismiss">
+                Close navigation menu
+              </Sheet.Trigger>
             </VisuallyHidden.Root>
 
-            <div className='flex h-full flex-col'>
+            <div className="flex h-full flex-col">
               {/* Header with user info */}
               <div
-                className='border-b border-sidebar-border bg-sidebar-accent'
+                className="border-b border-sidebar-border bg-sidebar-accent"
                 style={{
                   padding: '1.5rem',
                   paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)',
                 }}
               >
-                <div className='grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5'>
+                <div className="grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5">
                   {/* User avatar */}
                   <button
                     onClick={() => handleNavigation('/e/profile')}
-                    className='row-span-2 h-[50px] w-[50px] cursor-pointer rounded-full border-0 bg-transparent p-0 transition-opacity hover:opacity-80'
-                    aria-label='Go to profile'
+                    className="row-span-2 h-[50px] w-[50px] cursor-pointer rounded-full border-0 bg-transparent p-0 transition-opacity hover:opacity-80"
+                    aria-label="Go to profile"
                   >
-                    <Avatar className='h-[50px] w-[50px] border border-black/10'>
+                    <Avatar className="h-[50px] w-[50px] border border-black/10">
                       <AvatarImage
                         src={user?.image || ''}
                         alt={user?.name || user?.username || 'User'}
                       />
-                      <AvatarFallback className='bg-gradient-to-br from-cyan-400 via-cyan-300 to-cyan-400 font-semibold text-black'>
-                        {user?.name
-                          ? user.name.charAt(0).toUpperCase()
-                          : user?.username
-                            ? user.username.charAt(0).toUpperCase()
-                            : 'U'}
+                      <AvatarFallback className="bg-gradient-to-br bg-white">
+                        <Image
+                          src="/assets/img/evento-sublogo.svg"
+                          width={32}
+                          height={32}
+                          alt="Evento"
+                          className="h-full w-full p-1"
+                        />
                       </AvatarFallback>
                     </Avatar>
                   </button>
                   <button
                     onClick={() => handleNavigation('/e/profile')}
-                    className='cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-bold text-sidebar-foreground transition-colors hover:text-sidebar-foreground/80'
-                    aria-label='Go to profile'
+                    className="cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-bold text-sidebar-foreground transition-colors hover:text-sidebar-foreground/80"
+                    aria-label="Go to profile"
                   >
                     {user?.name || 'Evento'}
                   </button>
                   <button
                     onClick={() => handleNavigation('/e/profile')}
-                    className='cursor-pointer border-0 bg-transparent p-0 text-left text-sm text-muted-foreground transition-colors hover:text-muted-foreground/80'
-                    aria-label='Go to profile'
+                    className="cursor-pointer border-0 bg-transparent p-0 text-left text-sm text-muted-foreground transition-colors hover:text-muted-foreground/80"
+                    aria-label="Go to profile"
                   >
                     {user?.username ? `@${user.username}` : 'Welcome to Evento'}
                   </button>
@@ -184,30 +190,35 @@ export function Sidebar() {
               </div>
 
               {/* Scrollable menu sections */}
-              <Scroll.Root className='min-h-0 flex-1'>
+              <Scroll.Root className="min-h-0 flex-1">
                 <Scroll.View
-                  className='h-full'
+                  className="h-full"
                   scrollGestureTrap={{ yEnd: true }}
-                  safeArea='layout-viewport'
+                  safeArea="layout-viewport"
                 >
-                  <Scroll.Content className='p-6'>
-                    <div className='grid gap-10'>
+                  <Scroll.Content className="p-6">
+                    <div className="grid gap-10">
                       {menuSections.map((section) => (
-                        <div key={section.title} className='grid gap-5'>
-                          <h3 className='m-0 text-sm font-semibold uppercase text-gray-400'>
+                        <div key={section.title} className="grid gap-5">
+                          <h3 className="m-0 text-sm font-semibold uppercase text-gray-400">
                             {section.title}
                           </h3>
-                          <ul className='m-0 grid list-none gap-2.5 p-0'>
+                          <ul className="m-0 grid list-none gap-2.5 p-0">
                             {section.items.map((item) => (
                               <li key={item.path}>
                                 <button
                                   onClick={() =>
-                                    handleNavigation(item.path, (item as any).isExternal)
+                                    handleNavigation(
+                                      item.path,
+                                      (item as any).isExternal
+                                    )
                                   }
-                                  className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent'
+                                  className="-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent"
                                 >
-                                  <span className='text-[0]'>{item.icon}</span>
-                                  <span className='text-lg font-medium'>{item.name}</span>
+                                  <span className="text-[0]">{item.icon}</span>
+                                  <span className="text-lg font-medium">
+                                    {item.name}
+                                  </span>
                                 </button>
                               </li>
                             ))}
@@ -216,15 +227,15 @@ export function Sidebar() {
                       ))}
 
                       {/* Logout button */}
-                      <div className='border-t border-sidebar-border pt-6'>
+                      <div className="border-t border-sidebar-border pt-6">
                         <button
                           onClick={handleLogout}
-                          className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-destructive transition-colors hover:bg-red-500/10'
+                          className="-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-destructive transition-colors hover:bg-red-500/10"
                         >
-                          <span className='text-[0]'>
-                            <LogOut className='h-5 w-5' strokeWidth={2.5} />
+                          <span className="text-[0]">
+                            <LogOut className="h-5 w-5" strokeWidth={2.5} />
                           </span>
-                          <span className='text-lg font-medium'>Log Out</span>
+                          <span className="text-lg font-medium">Log Out</span>
                         </button>
                       </div>
                     </div>
