@@ -97,15 +97,14 @@ export default function ProfileImageSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
-              <SheetWithDetentFull.Handle />
-              <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">Profile Image</h2>
-                <button
-                  onClick={handleCancel}
-                  className="rounded-full p-2 hover:bg-gray-100"
-                >
-                  <X className="h-5 w-5" />
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+              </div>
+              <div className='flex items-center justify-between'>
+                <h2 className='text-xl font-semibold'>Profile Image</h2>
+                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                  <X className='h-5 w-5' />
                 </button>
               </div>
               <p className="mt-1 text-sm text-gray-500">Choose your photo</p>

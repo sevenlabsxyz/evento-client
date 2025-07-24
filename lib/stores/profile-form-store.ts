@@ -74,15 +74,15 @@ export const useProfileFormStore = create<ProfileFormState>()(
       // Populate from user data
       populateFromUser: (user) => {
         set({
-          username: user.username || '',
-          name: user.name || '',
-          bio: user.bio || '',
-          image: user.image || '',
-          bio_link: user.bio_link || '',
-          x_handle: user.x_handle || '',
-          instagram_handle: user.instagram_handle || '',
-          ln_address: user.ln_address || '',
-          nip05: user.nip05 || '',
+          username: user.username,
+          name: user.name,
+          bio: user.bio,
+          image: user.image,
+          bio_link: user.bio_link,
+          x_handle: user.x_handle,
+          instagram_handle: user.instagram_handle,
+          ln_address: user.ln_address,
+          nip05: user.nip05,
           originalData: {
             username: user.username,
             name: user.name,
