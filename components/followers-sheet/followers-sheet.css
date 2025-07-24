@@ -1,417 +1,417 @@
 /* Base component styles */
 .FollowersSheet-content {
-  /* SELF-LAYOUT */
-  box-sizing: border-box;
-  height: calc(100% - max(env(safe-area-inset-top), 6px));
-  max-width: 800px;
-  width: 100%;
+	/* SELF-LAYOUT */
+	box-sizing: border-box;
+	height: calc(100% - max(env(safe-area-inset-top), 6px));
+	max-width: 800px;
+	width: 100%;
 
-  /* APPEARANCE */
-  border-radius: 24px 24px 0 0;
-  overflow: hidden;
-  background-color: white;
+	/* APPEARANCE */
+	border-radius: 24px 24px 0 0;
+	overflow: hidden;
+	background-color: white;
 
-  /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
+	/* INNER-LAYOUT */
+	display: flex;
+	flex-direction: column;
 }
 
 @media (min-width: 800px) {
-  .FollowersSheet-content {
-    /* SELF-LAYOUT */
-    height: calc(100% - max(env(safe-area-inset-top), 5vh));
+	.FollowersSheet-content {
+		/* SELF-LAYOUT */
+		height: calc(100% - max(env(safe-area-inset-top), 5vh));
 
-    /* APPEARANCE */
-    box-shadow:
-      0 10px 15px -3px rgb(0 0 0 / 0.1),
-      0 4px 6px -4px rgb(0 0 0 / 0.1);
-    border-radius: 24px;
-  }
+		/* APPEARANCE */
+		box-shadow:
+			0 10px 15px -3px rgb(0 0 0 / 0.1),
+			0 4px 6px -4px rgb(0 0 0 / 0.1);
+		border-radius: 24px;
+	}
 }
 
 /* Handle */
 .FollowersSheet-handle {
-  /* SELF-LAYOUT */
-  width: 50px;
-  height: 6px;
+	/* SELF-LAYOUT */
+	width: 50px;
+	height: 6px;
 
-  /* APPEARANCE */
-  border: 0;
-  border-radius: 9999px;
-  background-color: rgb(209, 213, 219);
+	/* APPEARANCE */
+	border: 0;
+	border-radius: 9999px;
+	background-color: rgb(209, 213, 219);
 
-  /* INTERACTIVITY */
-  cursor: pointer;
+	/* INTERACTIVITY */
+	cursor: pointer;
 }
 
 /* Title */
 .FollowersSheet-title {
-  /* ACCESSIBILITY */
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  border: 0;
+	/* ACCESSIBILITY */
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 
 /* Header */
 .FollowersSheet-header {
-  /* SELF-LAYOUT */
-  flex-shrink: 0;
-  width: 100%;
-  box-sizing: border-box;
+	/* SELF-LAYOUT */
+	flex-shrink: 0;
+	width: 100%;
+	box-sizing: border-box;
 
-  /* INNER-LAYOUT */
-  padding: 1rem 1.5rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
+	/* INNER-LAYOUT */
+	padding: 1rem 1.5rem 0;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1rem;
 
-  /* APPEARANCE */
-  background-color: white;
-  border-bottom: 1px solid rgb(243, 244, 246);
+	/* APPEARANCE */
+	background-color: white;
+	border-bottom: 1px solid rgb(243, 244, 246);
 }
 
 .FollowersSheet-titleContainer {
-  /* SELF-LAYOUT */
-  width: 100%;
+	/* SELF-LAYOUT */
+	width: 100%;
 
-  /* TEXT */
-  text-align: center;
+	/* TEXT */
+	text-align: center;
 }
 
 .FollowersSheet-titleText {
-  /* TEXT */
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: rgb(17, 24, 39);
-  margin: 0;
+	/* TEXT */
+	font-size: 1.25rem;
+	font-weight: 700;
+	color: rgb(17, 24, 39);
+	margin: 0;
 }
 
 .FollowersSheet-subtitle {
-  /* TEXT */
-  font-size: 0.875rem;
-  color: rgb(107, 114, 128);
-  margin: 0.25rem 0 0;
+	/* TEXT */
+	font-size: 0.875rem;
+	color: rgb(107, 114, 128);
+	margin: 0.25rem 0 0;
 }
 
 /* Search */
 .FollowersSheet-searchContainer {
-  /* SELF-LAYOUT */
-  position: relative;
-  width: 100%;
-  margin-bottom: 1rem;
+	/* SELF-LAYOUT */
+	position: relative;
+	width: 100%;
+	margin-bottom: 1rem;
 }
 
 .FollowersSheet-searchIcon {
-  /* SELF-LAYOUT */
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  z-index: 1;
+	/* SELF-LAYOUT */
+	position: absolute;
+	left: 1rem;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 1.25rem;
+	height: 1.25rem;
+	z-index: 1;
 
-  /* APPEARANCE */
-  color: rgb(107, 114, 128);
-  pointer-events: none;
+	/* APPEARANCE */
+	color: rgb(107, 114, 128);
+	pointer-events: none;
 }
 
 .FollowersSheet-input {
-  /* SELF-LAYOUT */
-  width: 100%;
-  height: 3rem;
+	/* SELF-LAYOUT */
+	width: 100%;
+	height: 3rem;
 
-  /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 12px;
-  outline: none;
+	/* APPEARANCE */
+	background-color: rgb(243, 244, 246);
+	border: 1px solid rgb(229, 231, 235);
+	border-radius: 12px;
+	outline: none;
 
-  /* INNER-LAYOUT */
-  padding-left: 3rem;
-  padding-right: 1rem;
+	/* INNER-LAYOUT */
+	padding-left: 3rem;
+	padding-right: 1rem;
 
-  /* TEXT */
-  font-size: 1rem;
-  color: rgb(17, 24, 39);
+	/* TEXT */
+	font-size: 1rem;
+	color: rgb(17, 24, 39);
 }
 
 .FollowersSheet-input:focus {
-  /* APPEARANCE */
-  border-color: rgb(59, 130, 246);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+	/* APPEARANCE */
+	border-color: rgb(59, 130, 246);
+	box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
 }
 
 .FollowersSheet-input::placeholder {
-  /* TEXT */
-  color: rgb(107, 114, 128);
+	/* TEXT */
+	color: rgb(107, 114, 128);
 }
 
 /* Scroll View */
 .FollowersSheet-scrollView {
-  /* SELF-LAYOUT */
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: 100%;
-  box-sizing: border-box;
+	/* SELF-LAYOUT */
+	flex: 1;
+	overflow-y: auto;
+	overflow-x: hidden;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .FollowersSheet-scrollContent {
-  /* INNER-LAYOUT */
-  padding: 1rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 0;
+	/* INNER-LAYOUT */
+	padding: 1rem 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+	width: 100%;
+	box-sizing: border-box;
+	min-height: 0;
 }
 
 /* User Item */
 .FollowersSheet-userItem {
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgb(243, 244, 246);
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	padding: 0.75rem 0;
+	border-bottom: 1px solid rgb(243, 244, 246);
+	width: 100%;
+	box-sizing: border-box;
+	min-width: 0;
 }
 
 .FollowersSheet-userItem:last-child {
-  /* APPEARANCE */
-  border-bottom: none;
+	/* APPEARANCE */
+	border-bottom: none;
 }
 
 .FollowersSheet-userButton {
-  /* SELF-LAYOUT */
-  flex: 1;
+	/* SELF-LAYOUT */
+	flex: 1;
 
-  /* APPEARANCE */
-  background: none;
-  border: none;
-  cursor: pointer;
+	/* APPEARANCE */
+	background: none;
+	border: none;
+	cursor: pointer;
 
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0;
-  text-align: left;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0;
+	text-align: left;
 }
 
 .FollowersSheet-userButton:hover {
-  /* APPEARANCE */
-  opacity: 0.8;
+	/* APPEARANCE */
+	opacity: 0.8;
 }
 
 .FollowersSheet-avatar {
-  /* SELF-LAYOUT */
-  width: 3rem;
-  height: 3rem;
-  flex-shrink: 0;
+	/* SELF-LAYOUT */
+	width: 3rem;
+	height: 3rem;
+	flex-shrink: 0;
 
-  /* APPEARANCE */
-  border: 1px solid rgb(229, 231, 235);
+	/* APPEARANCE */
+	border: 1px solid rgb(229, 231, 235);
 }
 
 .FollowersSheet-avatarFallback {
-  /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
+	/* APPEARANCE */
+	background-color: rgb(243, 244, 246);
 
-  /* TEXT */
-  font-weight: 600;
-  color: rgb(107, 114, 128);
+	/* TEXT */
+	font-weight: 600;
+	color: rgb(107, 114, 128);
 }
 
 .FollowersSheet-userDetails {
-  /* SELF-LAYOUT */
-  flex: 1;
-  min-width: 0;
+	/* SELF-LAYOUT */
+	flex: 1;
+	min-width: 0;
 
-  /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
 }
 
 .FollowersSheet-userInfo {
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 .FollowersSheet-username {
-  /* TEXT */
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgb(17, 24, 39);
+	/* TEXT */
+	font-size: 0.875rem;
+	font-weight: 600;
+	color: rgb(17, 24, 39);
 }
 
 .FollowersSheet-verified {
-  /* SELF-LAYOUT */
-  flex-shrink: 0;
-  width: 1rem;
-  height: 1rem;
+	/* SELF-LAYOUT */
+	flex-shrink: 0;
+	width: 1rem;
+	height: 1rem;
 
-  /* APPEARANCE */
-  background-color: rgb(239, 68, 68);
-  border-radius: 50%;
+	/* APPEARANCE */
+	background-color: rgb(239, 68, 68);
+	border-radius: 50%;
 
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	justify-content: center;
 
-  /* TEXT */
-  color: white;
-  font-size: 0.75rem;
-  font-weight: 600;
+	/* TEXT */
+	color: white;
+	font-size: 0.75rem;
+	font-weight: 600;
 }
 
 .FollowersSheet-name {
-  /* TEXT */
-  font-size: 0.875rem;
-  color: rgb(107, 114, 128);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+	/* TEXT */
+	font-size: 0.875rem;
+	color: rgb(107, 114, 128);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .FollowersSheet-actions {
-  /* INNER-LAYOUT */
-  display: flex;
-  gap: 0.5rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	gap: 0.5rem;
 }
 
 .FollowersSheet-actionButton {
-  /* SELF-LAYOUT */
-  width: 2.5rem;
-  height: 2.5rem;
+	/* SELF-LAYOUT */
+	width: 2.5rem;
+	height: 2.5rem;
 
-  /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
-  border: 1px solid rgb(229, 231, 235);
+	/* APPEARANCE */
+	background-color: rgb(243, 244, 246);
+	border: 1px solid rgb(229, 231, 235);
 }
 
 .FollowersSheet-actionButton:hover {
-  /* APPEARANCE */
-  background-color: rgb(229, 231, 235);
+	/* APPEARANCE */
+	background-color: rgb(229, 231, 235);
 }
 
 .FollowersSheet-actionIcon {
-  /* SELF-LAYOUT */
-  width: 1rem;
-  height: 1rem;
+	/* SELF-LAYOUT */
+	width: 1rem;
+	height: 1rem;
 
-  /* APPEARANCE */
-  color: rgb(107, 114, 128);
+	/* APPEARANCE */
+	color: rgb(107, 114, 128);
 }
 
 /* Loading States */
 .FollowersSheet-loading {
-  /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
 }
 
 .FollowersSheet-loadingItem {
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
 }
 
 .FollowersSheet-loadingAvatar {
-  /* SELF-LAYOUT */
-  width: 3rem;
-  height: 3rem;
-  flex-shrink: 0;
+	/* SELF-LAYOUT */
+	width: 3rem;
+	height: 3rem;
+	flex-shrink: 0;
 
-  /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
-  border-radius: 50%;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	/* APPEARANCE */
+	background-color: rgb(243, 244, 246);
+	border-radius: 50%;
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .FollowersSheet-loadingText {
-  /* SELF-LAYOUT */
-  flex: 1;
+	/* SELF-LAYOUT */
+	flex: 1;
 
-  /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
 }
 
 .FollowersSheet-loadingLine {
-  /* SELF-LAYOUT */
-  height: 1rem;
-  width: 100%;
+	/* SELF-LAYOUT */
+	height: 1rem;
+	width: 100%;
 
-  /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
-  border-radius: 0.25rem;
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	/* APPEARANCE */
+	background-color: rgb(243, 244, 246);
+	border-radius: 0.25rem;
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .FollowersSheet-loadingLine--short {
-  /* SELF-LAYOUT */
-  width: 60%;
+	/* SELF-LAYOUT */
+	width: 60%;
 }
 
 /* Error State */
 .FollowersSheet-error {
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 3rem 1rem;
 }
 
 .FollowersSheet-errorText {
-  /* TEXT */
-  color: rgb(239, 68, 68);
-  font-size: 0.875rem;
-  text-align: center;
+	/* TEXT */
+	color: rgb(239, 68, 68);
+	font-size: 0.875rem;
+	text-align: center;
 }
 
 /* Empty State */
 .FollowersSheet-empty {
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem 1rem;
+	/* INNER-LAYOUT */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 3rem 1rem;
 }
 
 .FollowersSheet-emptyText {
-  /* TEXT */
-  color: rgb(107, 114, 128);
-  font-size: 0.875rem;
-  text-align: center;
+	/* TEXT */
+	color: rgb(107, 114, 128);
+	font-size: 0.875rem;
+	text-align: center;
 }
 
 /* Animations */
 @keyframes pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
 }

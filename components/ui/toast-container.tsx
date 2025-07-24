@@ -9,25 +9,25 @@ import React from 'react';
 // ================================================================================================
 
 export const ToastContainer: React.FC = () => {
-  const { toasts, removeToast } = useToastManager();
+	const { toasts, removeToast } = useToastManager();
 
-  if (toasts.length === 0) return null;
+	if (toasts.length === 0) return null;
 
-  return (
-    <SheetStack.Root>
-      {toasts.map((toast) => (
-        <SilkToast
-          key={toast.id}
-          id={toast.id}
-          type={toast.type}
-          title={toast.title}
-          description={toast.description}
-          duration={toast.duration}
-          onDismiss={() => removeToast(toast.id)}
-        />
-      ))}
-    </SheetStack.Root>
-  );
+	return (
+		<SheetStack.Root>
+			{toasts.map((toast) => (
+				<SilkToast
+					key={toast.id}
+					id={toast.id}
+					type={toast.type}
+					title={toast.title}
+					description={toast.description}
+					duration={toast.duration}
+					onDismiss={() => removeToast(toast.id)}
+				/>
+			))}
+		</SheetStack.Root>
+	);
 };
 
 // ================================================================================================
@@ -35,10 +35,10 @@ export const ToastContainer: React.FC = () => {
 // ================================================================================================
 
 export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <>
-      {children}
-      <ToastContainer />
-    </>
-  );
+	return (
+		<>
+			{children}
+			<ToastContainer />
+		</>
+	);
 };

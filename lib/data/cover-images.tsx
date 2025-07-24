@@ -3,81 +3,81 @@ import { Clapperboard, Cpu, Crown, Image, MessagesSquare, PartyPopper } from 'lu
 import React from 'react';
 
 export interface CoverImage {
-  id: string;
-  url: string;
-  title?: string;
-  category: string;
+	id: string;
+	url: string;
+	title?: string;
+	category: string;
 }
 
 export interface CoverImageCategory {
-  id: string;
-  name: string;
-  icon: React.ComponentType<{ className?: string }>;
-  featured?: boolean;
-  images: CoverImage[];
+	id: string;
+	name: string;
+	icon: React.ComponentType<{ className?: string }>;
+	featured?: boolean;
+	images: CoverImage[];
 }
 
 // Helper function to convert legacy cover format to new format
 function convertLegacyCovers(legacyCovers: { url: string }[], categoryName: string): CoverImage[] {
-  return legacyCovers.map((cover, index) => ({
-    id: `${categoryName.toLowerCase()}-${index + 1}`,
-    url: cover.url,
-    title: `${categoryName} Cover ${index + 1}`,
-    category: categoryName.toLowerCase(),
-  }));
+	return legacyCovers.map((cover, index) => ({
+		id: `${categoryName.toLowerCase()}-${index + 1}`,
+		url: cover.url,
+		title: `${categoryName} Cover ${index + 1}`,
+		category: categoryName.toLowerCase(),
+	}));
 }
 
 export const coverImageCategories: CoverImageCategory[] = [
-  {
-    id: 'featured',
-    name: 'Featured',
-    icon: Crown,
-    featured: true,
-    images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, 'Featured'),
-  },
-  {
-    id: 'giphy',
-    name: 'GIFs',
-    icon: Clapperboard,
-    images: [], // No static images, will be loaded dynamically
-  },
-  {
-    id: 'party',
-    name: 'Party',
-    icon: PartyPopper,
-    images: convertLegacyCovers(DEFAULT_COVERS.PARTY, 'Party'),
-  },
-  {
-    id: 'social',
-    name: 'Social',
-    icon: MessagesSquare,
-    images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, 'Social'),
-  },
-  {
-    id: 'classic',
-    name: 'Classic',
-    icon: Image,
-    images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'Classic'),
-  },
-  {
-    id: 'tech',
-    name: 'Tech',
-    icon: Cpu,
-    images: convertLegacyCovers(DEFAULT_COVERS.TECH, 'Tech'),
-  },
+	{
+		id: 'featured',
+		name: 'Featured',
+		icon: Crown,
+		featured: true,
+		images: convertLegacyCovers(DEFAULT_COVERS.FEATURED, 'Featured'),
+	},
+	{
+		id: 'giphy',
+		name: 'GIFs',
+		icon: Clapperboard,
+		images: [], // No static images, will be loaded dynamically
+	},
+	{
+		id: 'party',
+		name: 'Party',
+		icon: PartyPopper,
+		images: convertLegacyCovers(DEFAULT_COVERS.PARTY, 'Party'),
+	},
+	{
+		id: 'social',
+		name: 'Social',
+		icon: MessagesSquare,
+		images: convertLegacyCovers(DEFAULT_COVERS.SOCIAL, 'Social'),
+	},
+	{
+		id: 'classic',
+		name: 'Classic',
+		icon: Image,
+		images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'Classic'),
+	},
+	{
+		id: 'tech',
+		name: 'Tech',
+		icon: Cpu,
+		images: convertLegacyCovers(DEFAULT_COVERS.TECH, 'Tech'),
+	},
 ];
 
 export const getFeaturedImages = () => {
-  return coverImageCategories
-    .filter((category) => category.featured)
-    .flatMap((category) => category.images);
+	return coverImageCategories
+		.filter((category) => category.featured)
+		.flatMap((category) => category.images);
 };
 
 export const getImagesByCategory = (categoryId: string) => {
-  const category = coverImageCategories.find((cat) => cat.id === categoryId);
-  return category?.images || [];
+	const category = coverImageCategories.find((cat) => cat.id === categoryId);
+	return category?.images || [];
 };
 
 export const getCategoryById = (categoryId: string) => {
-  return coverImageCategories.find((cat) => cat.id === categoryId);
+	return coverImageCategories.find((cat) => cat.id === categoryId);
 };

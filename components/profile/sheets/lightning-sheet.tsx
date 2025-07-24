@@ -7,93 +7,93 @@ import { Copy, ExternalLink, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 interface LightningSheetProps {
-  isOpen: boolean;
-  onClose: () => void;
-  address: string;
+	isOpen: boolean;
+	onClose: () => void;
+	address: string;
 }
 
 export default function LightningSheet({ isOpen, onClose, address }: LightningSheetProps) {
-  const [copied, setCopied] = useState(false);
+	const [copied, setCopied] = useState(false);
 
-  const handleCopyAddress = async () => {
-    try {
-      await navigator.clipboard.writeText(address);
-      setCopied(true);
-      toast.success('Lightning address copied!');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      toast.error('Failed to copy address');
-    }
-  };
+	const handleCopyAddress = async () => {
+		try {
+			await navigator.clipboard.writeText(address);
+			setCopied(true);
+			toast.success('Lightning address copied!');
+			setTimeout(() => setCopied(false), 2000);
+		} catch (error) {
+			toast.error('Failed to copy address');
+		}
+	};
 
-  const handleOpenLightning = () => {
-    const lightningUrl = `lightning:${address}`;
-    window.open(lightningUrl, '_blank');
-    onClose();
-  };
+	const handleOpenLightning = () => {
+		const lightningUrl = `lightning:${address}`;
+		window.open(lightningUrl, '_blank');
+		onClose();
+	};
 
-  return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-    >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6'>
-              {/* Handle */}
-              <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
-              </div>
+	return (
+		<DetachedSheet.Root
+			presented={isOpen}
+			onPresentedChange={(presented) => !presented && onClose()}
+		>
+			<DetachedSheet.Portal>
+				<DetachedSheet.View>
+					<DetachedSheet.Backdrop />
+					<DetachedSheet.Content>
+						<div className='p-6'>
+							{/* Handle */}
+							<div className='mb-4 flex justify-center'>
+								<DetachedSheet.Handle />
+							</div>
 
-              {/* Title */}
-              <h2 className='mb-6 text-center text-lg font-semibold'>Lightning Address</h2>
+							{/* Title */}
+							<h2 className='mb-6 text-center text-lg font-semibold'>Lightning Address</h2>
 
-              {/* Lightning Info */}
-              <div className='mb-6 flex items-center gap-3'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100'>
-                  <Zap className='h-6 w-6 text-yellow-600' />
-                </div>
-                <div>
-                  <h3 className='font-semibold text-gray-900'>Bitcoin Lightning</h3>
-                  <p className='text-sm text-gray-500'>Lightning Network address</p>
-                </div>
-              </div>
+							{/* Lightning Info */}
+							<div className='mb-6 flex items-center gap-3'>
+								<div className='flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100'>
+									<Zap className='h-6 w-6 text-yellow-600' />
+								</div>
+								<div>
+									<h3 className='font-semibold text-gray-900'>Bitcoin Lightning</h3>
+									<p className='text-sm text-gray-500'>Lightning Network address</p>
+								</div>
+							</div>
 
-              {/* Description */}
-              <div className='mb-6'>
-                <p className='mb-4 text-gray-600'>
-                  This is a Bitcoin Lightning Network address. You can use it to send instant,
-                  low-fee Bitcoin payments.
-                </p>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='break-all font-mono text-sm text-gray-700'>{address}</p>
-                </div>
-              </div>
+							{/* Description */}
+							<div className='mb-6'>
+								<p className='mb-4 text-gray-600'>
+									This is a Bitcoin Lightning Network address. You can use it to send instant,
+									low-fee Bitcoin payments.
+								</p>
+								<div className='rounded-lg bg-gray-50 p-3'>
+									<p className='break-all font-mono text-sm text-gray-700'>{address}</p>
+								</div>
+							</div>
 
-              {/* Actions */}
-              <div className='flex flex-col gap-3'>
-                <Button
-                  onClick={handleOpenLightning}
-                  className='w-full bg-red-600 text-white hover:bg-red-700'
-                >
-                  <ExternalLink className='mr-2 h-4 w-4' />
-                  Open in Wallet
-                </Button>
-                <Button onClick={handleCopyAddress} className='w-full' variant='outline'>
-                  <Copy className='mr-2 h-4 w-4' />
-                  {copied ? 'Copied!' : 'Copy Address'}
-                </Button>
-              </div>
+							{/* Actions */}
+							<div className='flex flex-col gap-3'>
+								<Button
+									onClick={handleOpenLightning}
+									className='w-full bg-red-600 text-white hover:bg-red-700'
+								>
+									<ExternalLink className='mr-2 h-4 w-4' />
+									Open in Wallet
+								</Button>
+								<Button onClick={handleCopyAddress} className='w-full' variant='outline'>
+									<Copy className='mr-2 h-4 w-4' />
+									{copied ? 'Copied!' : 'Copy Address'}
+								</Button>
+							</div>
 
-              <Button variant='outline' onClick={onClose} className='mt-3 w-full'>
-                Close
-              </Button>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
-  );
+							<Button variant='outline' onClick={onClose} className='mt-3 w-full'>
+								Close
+							</Button>
+						</div>
+					</DetachedSheet.Content>
+				</DetachedSheet.View>
+			</DetachedSheet.Portal>
+		</DetachedSheet.Root>
+	);
 }

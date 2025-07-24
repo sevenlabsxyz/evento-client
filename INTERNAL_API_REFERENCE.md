@@ -22,23 +22,23 @@ Get the authenticated user's profile information.
 
 ```json
 {
-    "success": true,
-    "message": "User fetched successfully",
-    "data": [
-        {
-            "id": "user_123",
-            "username": "johndoe",
-            "bio": "Event organizer and tech enthusiast",
-            "verification_status": "verified",
-            "image": "https://...",
-            "name": "John Doe",
-            "bio_link": "https://johndoe.com",
-            "x_handle": "johndoe",
-            "instagram_handle": "johndoe",
-            "ln_address": "john@getalby.com",
-            "nip05": "john@nostr.com"
-        }
-    ]
+	"success": true,
+	"message": "User fetched successfully",
+	"data": [
+		{
+			"id": "user_123",
+			"username": "johndoe",
+			"bio": "Event organizer and tech enthusiast",
+			"verification_status": "verified",
+			"image": "https://...",
+			"name": "John Doe",
+			"bio_link": "https://johndoe.com",
+			"x_handle": "johndoe",
+			"instagram_handle": "johndoe",
+			"ln_address": "john@getalby.com",
+			"nip05": "john@nostr.com"
+		}
+	]
 }
 ```
 
@@ -54,15 +54,15 @@ Update the authenticated user's profile information.
 
 ```json
 {
-    "username": "newusername",
-    "name": "New Name",
-    "bio": "Updated bio",
-    "bio_link": "https://newsite.com",
-    "x_handle": "newhandle",
-    "instagram_handle": "newinstagram",
-    "image": "https://new-avatar-url.com",
-    "ln_address": "new@getalby.com",
-    "nip05": "new@nostr.com"
+	"username": "newusername",
+	"name": "New Name",
+	"bio": "Updated bio",
+	"bio_link": "https://newsite.com",
+	"x_handle": "newhandle",
+	"instagram_handle": "newinstagram",
+	"image": "https://new-avatar-url.com",
+	"ln_address": "new@getalby.com",
+	"nip05": "new@nostr.com"
 }
 ```
 
@@ -100,8 +100,8 @@ Follow or unfollow a user.
 
 ```json
 {
-    "user_id": "target_user_id",
-    "action": "follow" // or "unfollow"
+	"user_id": "target_user_id",
+	"action": "follow" // or "unfollow"
 }
 ```
 
@@ -141,38 +141,38 @@ Create a new event.
 
 ```json
 {
-    "title": "Tech Conference 2024",
-    "description": "Annual technology conference",
-    "location": "San Francisco, CA",
-    "cover": "https://cover-image-url.com",
-    "timezone": "America/Los_Angeles",
-    "status": "published", // "draft" | "published"
-    "visibility": "public", // "public" | "private"
-    "cost": 50.0,
+	"title": "Tech Conference 2024",
+	"description": "Annual technology conference",
+	"location": "San Francisco, CA",
+	"cover": "https://cover-image-url.com",
+	"timezone": "America/Los_Angeles",
+	"status": "published", // "draft" | "published"
+	"visibility": "public", // "public" | "private"
+	"cost": 50.0,
 
-    "start_date_day": 20,
-    "start_date_month": 3,
-    "start_date_year": 2024,
-    "start_date_hours": 10,
-    "start_date_minutes": 0,
+	"start_date_day": 20,
+	"start_date_month": 3,
+	"start_date_year": 2024,
+	"start_date_hours": 10,
+	"start_date_minutes": 0,
 
-    "end_date_day": 20,
-    "end_date_month": 3,
-    "end_date_year": 2024,
-    "end_date_hours": 18,
-    "end_date_minutes": 0,
+	"end_date_day": 20,
+	"end_date_month": 3,
+	"end_date_year": 2024,
+	"end_date_hours": 18,
+	"end_date_minutes": 0,
 
-    "spotify_url": "https://open.spotify.com/playlist/...",
-    "wavlake_url": "https://wavlake.com/...",
-    "contrib_cashapp": "$johndoe",
-    "contrib_venmo": "@johndoe",
-    "contrib_paypal": "johndoe@example.com",
-    "contrib_btclightning": "lnbc1...",
+	"spotify_url": "https://open.spotify.com/playlist/...",
+	"wavlake_url": "https://wavlake.com/...",
+	"contrib_cashapp": "$johndoe",
+	"contrib_venmo": "@johndoe",
+	"contrib_paypal": "johndoe@example.com",
+	"contrib_btclightning": "lnbc1...",
 
-    "settings": {
-        "max_capacity": 100,
-        "show_capacity_count": true
-    }
+	"settings": {
+		"max_capacity": 100,
+		"show_capacity_count": true
+	}
 }
 ```
 
@@ -200,7 +200,7 @@ POST /api/v1/events/cancel
 
 ```json
 {
-    "event_id": "event_123"
+	"event_id": "event_123"
 }
 ```
 
@@ -274,8 +274,8 @@ PATCH /api/v1/events/rsvps
 
 ```json
 {
-    "event_id": "event_123",
-    "status": "yes" // "yes" | "no" | "maybe"
+	"event_id": "event_123",
+	"status": "yes" // "yes" | "no" | "maybe"
 }
 ```
 
@@ -311,8 +311,8 @@ POST /api/v1/events/comments
 
 ```json
 {
-    "event_id": "event_123",
-    "content": "Great event!"
+	"event_id": "event_123",
+	"content": "Great event!"
 }
 ```
 
@@ -326,7 +326,7 @@ POST /api/v1/events/comments/{commentId}/reactions
 
 ```json
 {
-    "type": "like" // reaction type
+	"type": "like" // reaction type
 }
 ```
 
@@ -366,7 +366,7 @@ POST /api/v1/events/favorites/add
 
 ```json
 {
-    "event_id": "event_123"
+	"event_id": "event_123"
 }
 ```
 
@@ -421,8 +421,8 @@ POST /api/v1/events/invites
 
 ```json
 {
-    "event_id": "event_123",
-    "user_ids": ["user_1", "user_2"]
+	"event_id": "event_123",
+	"user_ids": ["user_1", "user_2"]
 }
 ```
 
@@ -576,8 +576,8 @@ All endpoints return standardized error responses:
 
 ```json
 {
-    "success": false,
-    "message": "Specific error description"
+	"success": false,
+	"message": "Specific error description"
 }
 ```
 

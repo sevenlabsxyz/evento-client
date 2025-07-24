@@ -8,177 +8,177 @@ import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 export default function SavedListDetailPage() {
-  const { isLoading: isCheckingAuth } = useRequireAuth();
-  const router = useRouter();
-  const params = useParams();
-  const [savedEvents, setSavedEvents] = useState([
-    {
-      id: 1,
-      title: 'Eiffel Tower Night Photography',
-      date: 'Sep 20, 2025',
-      time: '7:00 PM',
-      location: 'Paris, France',
-      image: '/placeholder.svg?height=120&width=120',
-      savedDate: '2 days ago',
-    },
-    {
-      id: 2,
-      title: 'Tokyo Skytree Sunset Experience',
-      date: 'Sep 15, 2025',
-      time: '6:30 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=120&width=120',
-      savedDate: '1 week ago',
-    },
-    {
-      id: 3,
-      title: 'Tegallalang Rice Terraces Tour',
-      date: 'Sep 18, 2025',
-      time: '9:00 AM',
-      location: 'Bali, Indonesia',
-      image: '/placeholder.svg?height=120&width=120',
-      savedDate: '3 days ago',
-    },
-  ]);
+	const { isLoading: isCheckingAuth } = useRequireAuth();
+	const router = useRouter();
+	const params = useParams();
+	const [savedEvents, setSavedEvents] = useState([
+		{
+			id: 1,
+			title: 'Eiffel Tower Night Photography',
+			date: 'Sep 20, 2025',
+			time: '7:00 PM',
+			location: 'Paris, France',
+			image: '/placeholder.svg?height=120&width=120',
+			savedDate: '2 days ago',
+		},
+		{
+			id: 2,
+			title: 'Tokyo Skytree Sunset Experience',
+			date: 'Sep 15, 2025',
+			time: '6:30 PM',
+			location: 'Tokyo, Japan',
+			image: '/placeholder.svg?height=120&width=120',
+			savedDate: '1 week ago',
+		},
+		{
+			id: 3,
+			title: 'Tegallalang Rice Terraces Tour',
+			date: 'Sep 18, 2025',
+			time: '9:00 AM',
+			location: 'Bali, Indonesia',
+			image: '/placeholder.svg?height=120&width=120',
+			savedDate: '3 days ago',
+		},
+	]);
 
-  // Mock list data - in real app this would come from API based on params.id
-  const listData = {
-    '1': { name: 'Event toes', isDefault: true },
-    '2': { name: 'Tokyo Adventures', isDefault: false },
-    '3': { name: 'Food Experiences', isDefault: false },
-  };
+	// Mock list data - in real app this would come from API based on params.id
+	const listData = {
+		'1': { name: 'Event toes', isDefault: true },
+		'2': { name: 'Tokyo Adventures', isDefault: false },
+		'3': { name: 'Food Experiences', isDefault: false },
+	};
 
-  const currentList = listData[params.id as keyof typeof listData] || listData['1'];
+	const currentList = listData[params.id as keyof typeof listData] || listData['1'];
 
-  const handleUnsaveEvent = (eventId: number) => {
-    setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
-    toast.success('Event removed from list!');
-  };
+	const handleUnsaveEvent = (eventId: number) => {
+		setSavedEvents(savedEvents.filter((event) => event.id !== eventId));
+		toast.success('Event removed from list!');
+	};
 
-  if (isCheckingAuth) {
-    return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-        </div>
-      </div>
-    );
-  }
+	if (isCheckingAuth) {
+		return (
+			<div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+				<div className='flex flex-1 items-center justify-center pb-20'>
+					<div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+				</div>
+			</div>
+		);
+	}
 
-  return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center gap-3 border-b border-gray-100 px-4 py-4'>
-        <Button variant='ghost' size='icon' className='h-8 w-8' onClick={() => router.back()}>
-          <ArrowLeft className='h-5 w-5' />
-        </Button>
-        <div className='flex-1'>
-          <div className='flex items-center gap-2'>
-            <h1 className='text-xl font-bold'>{currentList.name}</h1>
-            {currentList.isDefault && (
-              <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800'>
-                Default
-              </span>
-            )}
-          </div>
-          <p className='text-sm text-gray-500'>{savedEvents.length} events saved</p>
-        </div>
-        <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100'>
-          <MoreHorizontal className='h-5 w-5' />
-        </Button>
-      </div>
+	return (
+		<div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+			{/* Header */}
+			<div className='flex items-center gap-3 border-b border-gray-100 px-4 py-4'>
+				<Button variant='ghost' size='icon' className='h-8 w-8' onClick={() => router.back()}>
+					<ArrowLeft className='h-5 w-5' />
+				</Button>
+				<div className='flex-1'>
+					<div className='flex items-center gap-2'>
+						<h1 className='text-xl font-bold'>{currentList.name}</h1>
+						{currentList.isDefault && (
+							<span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800'>
+								Default
+							</span>
+						)}
+					</div>
+					<p className='text-sm text-gray-500'>{savedEvents.length} events saved</p>
+				</div>
+				<Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100'>
+					<MoreHorizontal className='h-5 w-5' />
+				</Button>
+			</div>
 
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-gray-50'>
-        {savedEvents.length > 0 ? (
-          <div className='space-y-4 px-4 py-4'>
-            {savedEvents.map((event) => (
-              <div key={event.id} className='rounded-2xl bg-white p-4 shadow-sm'>
-                <div className='flex gap-4'>
-                  {/* Event Image */}
-                  <img
-                    src={event.image || '/placeholder.svg'}
-                    alt={event.title}
-                    className='h-20 w-20 flex-shrink-0 cursor-pointer rounded-xl object-cover'
-                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-                  />
+			{/* Content */}
+			<div className='flex-1 overflow-y-auto bg-gray-50'>
+				{savedEvents.length > 0 ? (
+					<div className='space-y-4 px-4 py-4'>
+						{savedEvents.map((event) => (
+							<div key={event.id} className='rounded-2xl bg-white p-4 shadow-sm'>
+								<div className='flex gap-4'>
+									{/* Event Image */}
+									<img
+										src={event.image || '/placeholder.svg'}
+										alt={event.title}
+										className='h-20 w-20 flex-shrink-0 cursor-pointer rounded-xl object-cover'
+										onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+									/>
 
-                  {/* Event Details */}
-                  <div className='min-w-0 flex-1'>
-                    <div className='mb-2 flex items-start justify-between'>
-                      <h3
-                        className='cursor-pointer truncate pr-2 text-lg font-bold leading-tight transition-colors hover:text-red-600'
-                        onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-                      >
-                        {event.title}
-                      </h3>
-                      <Button
-                        variant='ghost'
-                        size='icon'
-                        className='h-8 w-8 flex-shrink-0'
-                        onClick={() => handleUnsaveEvent(event.id)}
-                      >
-                        <Bookmark className='h-4 w-4 fill-current text-red-600' />
-                      </Button>
-                    </div>
+									{/* Event Details */}
+									<div className='min-w-0 flex-1'>
+										<div className='mb-2 flex items-start justify-between'>
+											<h3
+												className='cursor-pointer truncate pr-2 text-lg font-bold leading-tight transition-colors hover:text-red-600'
+												onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+											>
+												{event.title}
+											</h3>
+											<Button
+												variant='ghost'
+												size='icon'
+												className='h-8 w-8 flex-shrink-0'
+												onClick={() => handleUnsaveEvent(event.id)}
+											>
+												<Bookmark className='h-4 w-4 fill-current text-red-600' />
+											</Button>
+										</div>
 
-                    {/* Date and Time */}
-                    <div className='mb-2 flex items-center gap-3 text-sm text-gray-600'>
-                      <div className='flex items-center gap-1'>
-                        <Calendar className='h-3 w-3' />
-                        <span>{event.date}</span>
-                      </div>
-                      <div className='flex items-center gap-1'>
-                        <Clock className='h-3 w-3' />
-                        <span>{event.time}</span>
-                      </div>
-                    </div>
+										{/* Date and Time */}
+										<div className='mb-2 flex items-center gap-3 text-sm text-gray-600'>
+											<div className='flex items-center gap-1'>
+												<Calendar className='h-3 w-3' />
+												<span>{event.date}</span>
+											</div>
+											<div className='flex items-center gap-1'>
+												<Clock className='h-3 w-3' />
+												<span>{event.time}</span>
+											</div>
+										</div>
 
-                    {/* Location */}
-                    <div className='mb-2 flex items-center gap-1 text-sm text-gray-600'>
-                      <MapPin className='h-3 w-3' />
-                      <span className='truncate'>{event.location}</span>
-                    </div>
+										{/* Location */}
+										<div className='mb-2 flex items-center gap-1 text-sm text-gray-600'>
+											<MapPin className='h-3 w-3' />
+											<span className='truncate'>{event.location}</span>
+										</div>
 
-                    {/* Saved Date */}
-                    <p className='text-xs text-gray-500'>Saved {event.savedDate}</p>
-                  </div>
-                </div>
+										{/* Saved Date */}
+										<p className='text-xs text-gray-500'>Saved {event.savedDate}</p>
+									</div>
+								</div>
 
-                {/* Action Buttons */}
-                <div className='mt-4 flex gap-2'>
-                  <Button
-                    className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-                  >
-                    View Details
-                  </Button>
-                  <Button variant='outline' className='flex-1 bg-transparent'>
-                    Share Event
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          /* Empty State */
-          <div className='flex flex-1 items-center justify-center px-4 py-12'>
-            <div className='text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Bookmark className='h-8 w-8 text-gray-400' />
-              </div>
-              <h3 className='mb-2 text-lg font-semibold text-gray-900'>No events in this list</h3>
-              <p className='mb-6 text-sm text-gray-500'>Start saving events to see them here.</p>
-              <Button
-                onClick={() => router.push('/feed')}
-                className='bg-red-500 text-white hover:bg-red-600'
-              >
-                Discover Events
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
+								{/* Action Buttons */}
+								<div className='mt-4 flex gap-2'>
+									<Button
+										className='flex-1 bg-red-500 text-white hover:bg-red-600'
+										onClick={() => router.push(`/e/event/cosmoprof-2025`)}
+									>
+										View Details
+									</Button>
+									<Button variant='outline' className='flex-1 bg-transparent'>
+										Share Event
+									</Button>
+								</div>
+							</div>
+						))}
+					</div>
+				) : (
+					/* Empty State */
+					<div className='flex flex-1 items-center justify-center px-4 py-12'>
+						<div className='text-center'>
+							<div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+								<Bookmark className='h-8 w-8 text-gray-400' />
+							</div>
+							<h3 className='mb-2 text-lg font-semibold text-gray-900'>No events in this list</h3>
+							<p className='mb-6 text-sm text-gray-500'>Start saving events to see them here.</p>
+							<Button
+								onClick={() => router.push('/feed')}
+								className='bg-red-500 text-white hover:bg-red-600'
+							>
+								Discover Events
+							</Button>
+						</div>
+					</div>
+				)}
+			</div>
+		</div>
+	);
 }

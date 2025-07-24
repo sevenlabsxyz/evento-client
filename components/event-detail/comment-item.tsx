@@ -12,358 +12,353 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
-import {
-  Heart,
-  MoreHorizontal,
-  Reply,
-  SendHorizontal
-} from 'lucide-react';
+import { Heart, MoreHorizontal, Reply, SendHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 
 interface CommentItemProps {
-  comment: EventComment;
-  currentUser: UserDetails | null;
-  eventId: string;
-  isReply?: boolean;
-  activeReplyId: string | null;
-  setActiveReplyId: React.Dispatch<React.SetStateAction<string | null>>;
+	comment: EventComment;
+	currentUser: UserDetails | null;
+	eventId: string;
+	isReply?: boolean;
+	activeReplyId: string | null;
+	setActiveReplyId: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export default function CommentItem({
-  comment,
-  currentUser,
-  eventId,
-  isReply = false,
-  activeReplyId,
-  setActiveReplyId,
+	comment,
+	currentUser,
+	eventId,
+	isReply = false,
+	activeReplyId,
+	setActiveReplyId,
 }: CommentItemProps) {
-  const router = useRouter();
-  const isReplying = activeReplyId === comment.id;
-  const [replyText, setReplyText] = useState('');
-  const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
-  const addCommentMutation = useAddComment();
-  const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(comment.message);
-  const [showReplies, setShowReplies] = useState(true);
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const deleteCommentMutation = useDeleteComment();
-  const editCommentMutation = useEditComment();
-  const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(comment.id);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const router = useRouter();
+	const isReplying = activeReplyId === comment.id;
+	const [replyText, setReplyText] = useState('');
+	const replyTextareaRef = useRef<HTMLTextAreaElement>(null);
+	const addCommentMutation = useAddComment();
+	const [isEditing, setIsEditing] = useState(false);
+	const [editText, setEditText] = useState(comment.message);
+	const [showReplies, setShowReplies] = useState(true);
+	const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+	const deleteCommentMutation = useDeleteComment();
+	const editCommentMutation = useEditComment();
+	const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(comment.id);
+	const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const createdDate = new Date(comment.created_at);
-  const timeAgo = formatDistance(createdDate, new Date(), { addSuffix: true });
-  const formattedDate = format(createdDate, "MMM d, yyyy 'at' h:mm a");
-  const isAuthor = currentUser ? comment.user_id === currentUser.id : false;
+	const createdDate = new Date(comment.created_at);
+	const timeAgo = formatDistance(createdDate, new Date(), { addSuffix: true });
+	const formattedDate = format(createdDate, "MMM d, yyyy 'at' h:mm a");
+	const isAuthor = currentUser ? comment.user_id === currentUser.id : false;
 
-  // Auto-grow textarea as content grows
-  useEffect(() => {
-    if (textareaRef.current && isEditing) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-      textareaRef.current.focus();
-    }
-  }, [isEditing, editText]);
+	// Auto-grow textarea as content grows
+	useEffect(() => {
+		if (textareaRef.current && isEditing) {
+			textareaRef.current.style.height = 'auto';
+			textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+			textareaRef.current.focus();
+		}
+	}, [isEditing, editText]);
 
-  // Auto-grow reply textarea as content grows
-  useEffect(() => {
-    if (replyTextareaRef.current && isReplying) {
-      replyTextareaRef.current.style.height = 'auto';
-      replyTextareaRef.current.style.height = `${replyTextareaRef.current.scrollHeight}px`;
-      replyTextareaRef.current.focus();
-    }
-  }, [isReplying, replyText]);
+	// Auto-grow reply textarea as content grows
+	useEffect(() => {
+		if (replyTextareaRef.current && isReplying) {
+			replyTextareaRef.current.style.height = 'auto';
+			replyTextareaRef.current.style.height = `${replyTextareaRef.current.scrollHeight}px`;
+			replyTextareaRef.current.focus();
+		}
+	}, [isReplying, replyText]);
 
-  const handleDelete = async () => {
-    // Open the confirmation sheet instead of using window.confirm
-    setShowDeleteConfirmation(true);
-  };
+	const handleDelete = async () => {
+		// Open the confirmation sheet instead of using window.confirm
+		setShowDeleteConfirmation(true);
+	};
 
-  const confirmDelete = async () => {
-    try {
-      await deleteCommentMutation.mutateAsync({
-        commentId: comment.id,
-        eventId,
-      });
-      setShowDeleteConfirmation(false);
-    } catch (error) {
-      toast.error('Failed to delete comment');
-    }
-  };
+	const confirmDelete = async () => {
+		try {
+			await deleteCommentMutation.mutateAsync({
+				commentId: comment.id,
+				eventId,
+			});
+			setShowDeleteConfirmation(false);
+		} catch (error) {
+			toast.error('Failed to delete comment');
+		}
+	};
 
-  const handleEdit = async () => {
-    if (!editText.trim()) return;
+	const handleEdit = async () => {
+		if (!editText.trim()) return;
 
-    try {
-      await editCommentMutation.mutateAsync({
-        commentId: comment.id,
-        message: editText.trim(),
-        eventId,
-      });
-      setIsEditing(false);
-    } catch (error) {
-      toast.error('Failed to edit comment');
-    }
-  };
+		try {
+			await editCommentMutation.mutateAsync({
+				commentId: comment.id,
+				message: editText.trim(),
+				eventId,
+			});
+			setIsEditing(false);
+		} catch (error) {
+			toast.error('Failed to edit comment');
+		}
+	};
 
-  const handleReaction = () => {
-    toggleReaction('like');
-  };
+	const handleReaction = () => {
+		toggleReaction('like');
+	};
 
-  const handleReplyClick = () => {
-    setActiveReplyId(comment.id);
+	const handleReplyClick = () => {
+		setActiveReplyId(comment.id);
 
-    // Use setTimeout to ensure the reply textarea is rendered before focusing
-    setTimeout(() => {
-      if (replyTextareaRef.current) {
-        replyTextareaRef.current.focus();
-      }
-    }, 0);
-  };
+		// Use setTimeout to ensure the reply textarea is rendered before focusing
+		setTimeout(() => {
+			if (replyTextareaRef.current) {
+				replyTextareaRef.current.focus();
+			}
+		}, 0);
+	};
 
-  const handleSubmitReply = async () => {
-    if (!replyText.trim() || !currentUser) return;
+	const handleSubmitReply = async () => {
+		if (!replyText.trim() || !currentUser) return;
 
-    // Store the message before clearing input
-    const replyMessage = replyText.trim();
-    
-    // Clear the input immediately and remove the active reply ID for better UX
-    setReplyText('');
-    setActiveReplyId(null);
-    
-    try {
-      await addCommentMutation.mutateAsync({
-        event_id: eventId,
-        message: replyMessage,
-        parent_comment_id: comment.id,
-      });
-    } catch {
-      toast.error('Failed to add reply');
-    }
-  };
+		// Store the message before clearing input
+		const replyMessage = replyText.trim();
 
-  const handleReplyKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Ctrl+Enter or Cmd+Enter
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      handleSubmitReply();
-    }
-  };
+		// Clear the input immediately and remove the active reply ID for better UX
+		setReplyText('');
+		setActiveReplyId(null);
 
-  return (
-    <div 
-      className={cn(
-        'group', 
-        isReply ? 'ml-8' : '',
-        comment.optimistic ? 'opacity-70 cursor-not-allowed pointer-events-none' : ''
-      )}
-    >
-      <div className="flex gap-3">
-        <div className="flex-shrink-0">
-          <UserAvatar
-            user={comment.user_details}
-            size='sm'
-            onAvatarClick={() => router.push(`/u/${comment.user_details.username}`)}
-          />
-        </div>
+		try {
+			await addCommentMutation.mutateAsync({
+				event_id: eventId,
+				message: replyMessage,
+				parent_comment_id: comment.id,
+			});
+		} catch {
+			toast.error('Failed to add reply');
+		}
+	};
 
-        <div className='flex-grow space-y-1'>
-          {/* Comment header */}
-          <div className='flex items-center justify-between'>
-            <div className='flex items-center'>
-              <span className='font-medium'>@{comment.user_details.username}</span>
-              <span className='ml-2 text-xs text-gray-500' title={formattedDate}>
-                {timeAgo}
-              </span>
-            </div>
+	const handleReplyKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+		// Submit on Ctrl+Enter or Cmd+Enter
+		if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+			e.preventDefault();
+			handleSubmitReply();
+		}
+	};
 
-            {isAuthor && (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className='rounded-full p-1 text-gray-500 hover:bg-gray-100'>
-                    <MoreHorizontal className='h-4 w-4' />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>Edit</DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={handleDelete}
-                    className='text-red-600 focus:bg-red-50 focus:text-red-600'
-                  >
-                    Delete
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+	return (
+		<div
+			className={cn(
+				'group',
+				isReply ? 'ml-8' : '',
+				comment.optimistic ? 'pointer-events-none cursor-not-allowed opacity-70' : ''
+			)}
+		>
+			<div className='flex gap-3'>
+				<div className='flex-shrink-0'>
+					<UserAvatar
+						user={comment.user_details}
+						size='sm'
+						onAvatarClick={() => router.push(`/u/${comment.user_details.username}`)}
+					/>
+				</div>
 
-          {/* Comment content */}
-          {isEditing ? (
-            <div className='space-y-2'>
-              <textarea
-                ref={textareaRef}
-                value={editText}
-                onChange={(e) => setEditText(e.target.value)}
-                className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm'
-              />
-              <div className='flex justify-end gap-2'>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => {
-                    setIsEditing(false);
-                    setEditText(comment.message);
-                  }}
-                >
-                  Cancel
-                </Button>
-                <Button size='sm' onClick={handleEdit}>
-                  Save
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <p className='text-sm text-gray-800'>{comment.message}</p>
-          )}
+				<div className='flex-grow space-y-1'>
+					{/* Comment header */}
+					<div className='flex items-center justify-between'>
+						<div className='flex items-center'>
+							<span className='font-medium'>@{comment.user_details.username}</span>
+							<span className='ml-2 text-xs text-gray-500' title={formattedDate}>
+								{timeAgo}
+							</span>
+						</div>
 
-          {/* Comment actions */}
-          {!isEditing && (
-            <div className='flex items-center space-x-4 pt-2'>
-              <Button
-                variant='ghost'
-                size='sm'
-                className={cn(
-                  'flex h-8 w-8 items-center justify-center gap-1 rounded-full',
-                  userReaction === 'like'
-                    ? 'bg-red-50 text-red-500'
-                    : 'bg-gray-100 text-gray-600 hover:text-gray-900',
-                  reactions.like > 0 && 'px-6'
-                )}
-                onClick={() => handleReaction()}
-                disabled={isToggling}
-              >
-                <Heart
-                  className='h-5 w-5'
-                  fill={userReaction === 'like' ? 'currentColor' : 'none'}
-                />
-                {reactions.like > 0 && (
-                  <span className='text-sm font-medium'>{reactions.like}</span>
-                )}
-              </Button>
+						{isAuthor && (
+							<DropdownMenu>
+								<DropdownMenuTrigger asChild>
+									<button className='rounded-full p-1 text-gray-500 hover:bg-gray-100'>
+										<MoreHorizontal className='h-4 w-4' />
+									</button>
+								</DropdownMenuTrigger>
+								<DropdownMenuContent align='end'>
+									<DropdownMenuItem onClick={() => setIsEditing(true)}>Edit</DropdownMenuItem>
+									<DropdownMenuItem
+										onClick={handleDelete}
+										className='text-red-600 focus:bg-red-50 focus:text-red-600'
+									>
+										Delete
+									</DropdownMenuItem>
+								</DropdownMenuContent>
+							</DropdownMenu>
+						)}
+					</div>
 
-              <Button
-                variant='ghost'
-                size='sm'
-                className='flex h-8 items-center gap-1 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900'
-                onClick={handleReplyClick}
-              >
-                <Reply className='h-4 w-4' />
-                <span className='text-xs'>Reply</span>
-              </Button>
-            </div>
-          )}
+					{/* Comment content */}
+					{isEditing ? (
+						<div className='space-y-2'>
+							<textarea
+								ref={textareaRef}
+								value={editText}
+								onChange={(e) => setEditText(e.target.value)}
+								className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm'
+							/>
+							<div className='flex justify-end gap-2'>
+								<Button
+									variant='ghost'
+									size='sm'
+									onClick={() => {
+										setIsEditing(false);
+										setEditText(comment.message);
+									}}
+								>
+									Cancel
+								</Button>
+								<Button size='sm' onClick={handleEdit}>
+									Save
+								</Button>
+							</div>
+						</div>
+					) : (
+						<p className='text-sm text-gray-800'>{comment.message}</p>
+					)}
 
-          {/* Inline Reply UI */}
-          {isReplying && !isEditing && (
-            <div className='!mt-5 space-y-2'>
-              <div className='flex gap-3'>
-                <div className='flex-shrink-0'>
-                  <UserAvatar
-                    user={comment.user_details}
-                    size='sm'
-                    onAvatarClick={() => router.push(`/u/${comment.user_details.username}`)}
-                  />
-                </div>
-                <div className='relative flex flex-grow'>
-                  <textarea
-                    ref={replyTextareaRef}
-                    value={replyText}
-                    onChange={(e) => setReplyText(e.target.value)}
-                    onKeyDown={handleReplyKeyDown}
-                    placeholder={`Reply to @${comment.user_details.username}`}
-                    className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
-                    rows={1}
-                  />
-                  <button
-                    className={cn(
-                      'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
-                      replyText.trim()
-                        ? 'text-red-500 hover:text-red-600'
-                        : 'cursor-default text-gray-300'
-                    )}
-                    onClick={handleSubmitReply}
-                    disabled={!replyText.trim()}
-                  >
-                      <SendHorizontal className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-              <div className='flex justify-end'>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  onClick={() => setActiveReplyId(null)}
-                  className='h-7 px-3 py-1 text-xs'
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
+					{/* Comment actions */}
+					{!isEditing && (
+						<div className='flex items-center space-x-4 pt-2'>
+							<Button
+								variant='ghost'
+								size='sm'
+								className={cn(
+									'flex h-8 w-8 items-center justify-center gap-1 rounded-full',
+									userReaction === 'like'
+										? 'bg-red-50 text-red-500'
+										: 'bg-gray-100 text-gray-600 hover:text-gray-900',
+									reactions.like > 0 && 'px-6'
+								)}
+								onClick={() => handleReaction()}
+								disabled={isToggling}
+							>
+								<Heart
+									className='h-5 w-5'
+									fill={userReaction === 'like' ? 'currentColor' : 'none'}
+								/>
+								{reactions.like > 0 && (
+									<span className='text-sm font-medium'>{reactions.like}</span>
+								)}
+							</Button>
 
-      {/* Replies */}
-      {comment.replies && comment.replies.length > 0 && (
-        <div className='mt-3'>
-          {comment.replies.length > 0 && (
-            <button
-              className='mb-2 ml-11 text-xs font-medium text-gray-500 hover:text-gray-700'
-              onClick={() => setShowReplies(!showReplies)}
-            >
-              {showReplies
-                ? `Hide ${comment.replies.length} ${
-                    comment.replies.length === 1 ? 'reply' : 'replies'
-                  }`
-                : `Show ${comment.replies.length} ${
-                    comment.replies.length === 1 ? 'reply' : 'replies'
-                  }`}
-            </button>
-          )}
+							<Button
+								variant='ghost'
+								size='sm'
+								className='flex h-8 items-center gap-1 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900'
+								onClick={handleReplyClick}
+							>
+								<Reply className='h-4 w-4' />
+								<span className='text-xs'>Reply</span>
+							</Button>
+						</div>
+					)}
 
-          {showReplies && (
-            <div className='mt-2 space-y-4'>
-              {comment.replies.map((reply) => (
-                <CommentItem
-                  key={reply.id}
-                  comment={reply}
-                  currentUser={currentUser}
-                  eventId={eventId}
-                  isReply={true}
-                  activeReplyId={activeReplyId}
-                  setActiveReplyId={setActiveReplyId}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+					{/* Inline Reply UI */}
+					{isReplying && !isEditing && (
+						<div className='!mt-5 space-y-2'>
+							<div className='flex gap-3'>
+								<div className='flex-shrink-0'>
+									<UserAvatar
+										user={comment.user_details}
+										size='sm'
+										onAvatarClick={() => router.push(`/u/${comment.user_details.username}`)}
+									/>
+								</div>
+								<div className='relative flex flex-grow'>
+									<textarea
+										ref={replyTextareaRef}
+										value={replyText}
+										onChange={(e) => setReplyText(e.target.value)}
+										onKeyDown={handleReplyKeyDown}
+										placeholder={`Reply to @${comment.user_details.username}`}
+										className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
+										rows={1}
+									/>
+									<button
+										className={cn(
+											'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
+											replyText.trim()
+												? 'text-red-500 hover:text-red-600'
+												: 'cursor-default text-gray-300'
+										)}
+										onClick={handleSubmitReply}
+										disabled={!replyText.trim()}
+									>
+										<SendHorizontal className='h-4 w-4' />
+									</button>
+								</div>
+							</div>
+							<div className='flex justify-end'>
+								<Button
+									variant='ghost'
+									size='sm'
+									onClick={() => setActiveReplyId(null)}
+									className='h-7 px-3 py-1 text-xs'
+								>
+									Cancel
+								</Button>
+							</div>
+						</div>
+					)}
+				</div>
+			</div>
 
-      {/* Delete Confirmation Sheet */}
-      <DeleteConfirmationSheet
-        isOpen={showDeleteConfirmation}
-        onClose={() => setShowDeleteConfirmation(false)}
-        onConfirm={confirmDelete}
-        itemType={isReply ? 'reply' : 'comment'}
-        isLoading={deleteCommentMutation.isPending}
-      />
-    </div>
-  );
+			{/* Replies */}
+			{comment.replies && comment.replies.length > 0 && (
+				<div className='mt-3'>
+					{comment.replies.length > 0 && (
+						<button
+							className='mb-2 ml-11 text-xs font-medium text-gray-500 hover:text-gray-700'
+							onClick={() => setShowReplies(!showReplies)}
+						>
+							{showReplies
+								? `Hide ${comment.replies.length} ${
+										comment.replies.length === 1 ? 'reply' : 'replies'
+									}`
+								: `Show ${comment.replies.length} ${
+										comment.replies.length === 1 ? 'reply' : 'replies'
+									}`}
+						</button>
+					)}
+
+					{showReplies && (
+						<div className='mt-2 space-y-4'>
+							{comment.replies.map((reply) => (
+								<CommentItem
+									key={reply.id}
+									comment={reply}
+									currentUser={currentUser}
+									eventId={eventId}
+									isReply={true}
+									activeReplyId={activeReplyId}
+									setActiveReplyId={setActiveReplyId}
+								/>
+							))}
+						</div>
+					)}
+				</div>
+			)}
+
+			{/* Delete Confirmation Sheet */}
+			<DeleteConfirmationSheet
+				isOpen={showDeleteConfirmation}
+				onClose={() => setShowDeleteConfirmation(false)}
+				onConfirm={confirmDelete}
+				itemType={isReply ? 'reply' : 'comment'}
+				isLoading={deleteCommentMutation.isPending}
+			/>
+		</div>
+	);
 }

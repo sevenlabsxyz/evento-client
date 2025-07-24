@@ -18,3 +18,4 @@ coverage
 public/**/*.ico
 public/**/*.png
 !.prettierrc.json
+*.mjs
