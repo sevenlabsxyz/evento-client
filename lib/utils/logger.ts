@@ -3,6 +3,8 @@
  * Provides structured logging with request tracing and data sanitization
  */
 
+import { Env } from "../constants/env";
+
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 
 interface LogContext {
@@ -45,8 +47,8 @@ interface ApiErrorLog extends LogContext {
 type LogEntry = ApiRequestLog | ApiResponseLog | ApiErrorLog;
 
 class Logger {
-  private isDevelopment = process.env.NODE_ENV === 'development';
-  private isProduction = process.env.NODE_ENV === 'production';
+  private isDevelopment = Env.NODE_ENV === 'development';
+  private isProduction = Env.NODE_ENV === 'production';
 
   /**
    * Generate a unique request ID for tracing
