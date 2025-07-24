@@ -157,10 +157,30 @@ export function useSearchUsers() {
   });
 }
 
+
 /**
- * Hook to follow/unfollow a user
+ * Hook to check if the current user follows another user
  */
-export function useFollowUser() {
+export function useFollowStatus(userId: string) {
+  return useQuery({
+    queryKey: ['user', 'follow', 'status', userId],
+    queryFn: async () => {
+      if (!userId) return { isFollowing: false };
+
+      const response = await apiClient.get<{ isFollowing: boolean }>(
+        `/v1/user/follow?id=${userId}`
+      );
+      return response.data || { isFollowing: false };
+    },
+    enabled: !!userId,
+    staleTime: 60 * 1000, // 1 minute - shorter time because follow status might change frequently
+  });
+}
+
+/**
+ * Hook to follow or unfollow a user
+ */
+export function useFollowAction() {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -171,19 +191,39 @@ export function useFollowUser() {
       userId: string;
       action: 'follow' | 'unfollow';
     }) => {
-      const response = await apiClient.post<any>('/v1/user/follow', {
-        user_id: userId,
-        action,
-      });
-      return response.data;
+      let response;
+      if (action === 'follow') {
+        response = await apiClient.post('/v1/user/follow', {
+          followId: userId,
+        });
+      } else {
+        response = await apiClient.delete('/v1/user/follow', {
+          data: {
+            followId: userId,
+          },
+        });
+      }
+      return { data: response.data, action };
     },
-    onSuccess: () => {
+    onSuccess: (_result, variables) => {
+      const { action, userId } = variables;
+      const isFollowing = action === 'follow';
+
+      // Update follow status in cache
+      queryClient.setQueryData(['user', 'follow', 'status', userId], {
+        isFollowing,
+      });
+
       // Invalidate related queries
       queryClient.invalidateQueries({ queryKey: ['user', 'followers'] });
       queryClient.invalidateQueries({ queryKey: ['user', 'following'] });
     },
-    onError: (error) => {
-      console.error('Follow/unfollow failed:', error);
+    onError: (error, variables) => {
+      const { action } = variables;
+      console.error(
+        `${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`,
+        error
+      );
     },
   });
 }
