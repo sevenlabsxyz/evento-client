@@ -9,7 +9,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { AtSign, CheckCircle, Loader2, X, XCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface UsernameSheetProps {
@@ -27,19 +26,16 @@ export default function UsernameSheet({
 }: UsernameSheetProps) {
   const [username, setUsername] = useState(currentUsername);
   const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const [error, setError] = useState('');
 
   const debouncedUsername = useDebounce(username, 500);
   const checkUsernameMutation = useCheckUsername();
   const updateProfileMutation = useUpdateUserProfile();
-  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
       setUsername(currentUsername);
       setIsAvailable(null);
-      setError('');
     }
   }, [isOpen, currentUsername]);
 
@@ -47,7 +43,6 @@ export default function UsernameSheet({
   useEffect(() => {
     if (!debouncedUsername || debouncedUsername === currentUsername) {
       setIsAvailable(null);
-      setError('');
       return;
     }
 
@@ -55,11 +50,6 @@ export default function UsernameSheet({
     const checkAvailability = async () => {
       const result = await checkUsernameMutation.mutateAsync(debouncedUsername);
       setIsAvailable(result.available);
-      if (!result.available && result.message) {
-        setError(result.message);
-      } else {
-        setError('');
-      }
     };
 
     checkAvailability();
@@ -88,7 +78,7 @@ export default function UsernameSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        setError(validation.error || 'Invalid username');
+        toast.error(validation.error || 'Invalid username');
         return;
       }
       
@@ -96,8 +86,8 @@ export default function UsernameSheet({
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Username updated successfully');
       
-      // Navigate back to profile page
-      router.push('/e/profile');
+      // Close sheet
+      onClose();
     } catch (error) {
       console.error('Failed to update username:', error);
       toast.error('Failed to update username');
@@ -171,12 +161,14 @@ export default function UsernameSheet({
                     )}
                   </div>
 
-                  {/* Error message */}
-                  {error && <p className='mb-4 text-sm text-red-500'>{error}</p>}
-
                   {/* Success message */}
                   {isAvailable && username !== currentUsername && (
                     <p className='mb-4 text-sm text-green-500'>Username is available!</p>
+                  )}
+
+                  {/* Error message */}
+                  {!isAvailable && username !== currentUsername && (
+                    <p className='mb-4 text-sm text-red-500'>Username is not available.</p>
                   )}
 
                   {/* Info text */}

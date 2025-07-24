@@ -8,7 +8,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { Globe, Instagram, Loader2, X as XIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface SocialLinksSheetProps {
@@ -38,7 +37,6 @@ export default function SocialLinksSheet({
   });
   
   const updateProfileMutation = useUpdateUserProfile();
-  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -122,8 +120,8 @@ export default function SocialLinksSheet({
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Social links updated successfully');
       
-      // Navigate back to profile page
-      router.push('/e/profile');
+      // Close sheet
+      onClose();
     } catch (error) {
       console.error('Failed to update social links:', error);
       toast.error('Failed to update social links');

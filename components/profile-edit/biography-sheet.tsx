@@ -7,7 +7,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface BiographySheetProps {
@@ -26,8 +25,6 @@ export default function BiographySheet({
   const [bio, setBio] = useState(currentBio);
   const maxLength = 500;
   const updateProfileMutation = useUpdateUserProfile();
-  const router = useRouter();
-  const [error, setError] = useState('');
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -50,16 +47,16 @@ export default function BiographySheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        setError(validation.error || 'Invalid bio');
+        toast.error(validation.error || 'Invalid bio');
         return;
       }
       
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Bio updated successfully');
-      
-      // Navigate back to profile page
-      router.push('/e/profile');
+
+      // Close sheet
+      onClose();
     } catch (error) {
       console.error('Failed to update bio:', error);
       toast.error((error as string) || 'Failed to update bio');

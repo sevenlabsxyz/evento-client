@@ -7,7 +7,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { Hash, Loader2, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface NostrSheetProps {
@@ -24,15 +23,12 @@ export default function NostrSheet({
   currentNip05 = '',
 }: NostrSheetProps) {
   const [nip05, setNip05] = useState(currentNip05);
-  const [error, setError] = useState('');
   const updateProfileMutation = useUpdateUserProfile();
-  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
       setNip05(currentNip05);
-      setError('');
     }
   }, [isOpen, currentNip05]);
 
@@ -48,7 +44,7 @@ export default function NostrSheet({
     const trimmedNip05 = nip05.trim();
 
     if (trimmedNip05 && !validateNip05(trimmedNip05)) {
-      setError('Invalid Nostr identifier format (e.g., user@domain.com)');
+      toast.error('Invalid Nostr identifier format (e.g., user@domain.com)');
       return;
     }
 
@@ -63,7 +59,7 @@ export default function NostrSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        setError(validation.error || 'Invalid Nostr identifier');
+        toast.error(validation.error || 'Invalid Nostr identifier');
         return;
       }
       
@@ -71,8 +67,8 @@ export default function NostrSheet({
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Nostr identifier updated successfully');
       
-      // Navigate back to profile page
-      router.push('/e/profile');
+      // Close sheet
+      onClose();
     } catch (error) {
       console.error('Failed to update Nostr identifier:', error);
       toast.error('Failed to update Nostr identifier');
@@ -124,16 +120,12 @@ export default function NostrSheet({
                       value={nip05}
                       onChange={(e) => {
                         setNip05(e.target.value);
-                        setError('');
                       }}
                       placeholder='user@domain.com'
                       className='pl-10'
                       autoFocus
                     />
                   </div>
-
-                  {/* Error message */}
-                  {error && <p className='mb-4 text-sm text-red-500'>{error}</p>}
 
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>

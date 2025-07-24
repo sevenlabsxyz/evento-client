@@ -7,7 +7,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, User, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface NameSheetProps {
@@ -19,15 +18,12 @@ interface NameSheetProps {
 
 export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }: NameSheetProps) {
   const [name, setName] = useState(currentName);
-  const [error, setError] = useState('');
   const updateProfileMutation = useUpdateUserProfile();
-  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
       setName(currentName);
-      setError('');
     }
   }, [isOpen, currentName]);
 
@@ -35,12 +31,12 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      setError('Name is required');
+      toast.error('Name is required');
       return;
     }
 
     if (trimmedName.length > 50) {
-      setError('Name must be less than 50 characters');
+      toast.error('Name must be less than 50 characters');
       return;
     }
 
@@ -55,7 +51,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        setError(validation.error || 'Invalid name');
+        toast.error(validation.error || 'Invalid name');
         return;
       }
       
@@ -63,8 +59,8 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Name updated successfully');
       
-      // Navigate back to profile page
-      router.push('/e/profile');
+      // Close sheet
+      onClose();
     } catch (error) {
       console.error('Failed to update name:', error);
       toast.error('Failed to update name');
@@ -115,7 +111,6 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                       value={name}
                       onChange={(e) => {
                         setName(e.target.value);
-                        setError('');
                       }}
                       placeholder='Your name'
                       className='pl-10'
@@ -123,9 +118,6 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                       maxLength={50}
                     />
                   </div>
-
-                  {/* Error message */}
-                  {error && <p className='mb-4 text-sm text-red-500'>{error}</p>}
 
                   {/* Character count */}
                   <p className='mb-4 text-right text-sm text-gray-500'>{name.length}/50</p>

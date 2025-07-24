@@ -7,7 +7,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, X, Zap } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface LightningAddressSheetProps {
@@ -24,15 +23,12 @@ export default function LightningAddressSheet({
   currentAddress = '',
 }: LightningAddressSheetProps) {
   const [address, setAddress] = useState(currentAddress);
-  const [error, setError] = useState('');
   const updateProfileMutation = useUpdateUserProfile();
-  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
       setAddress(currentAddress);
-      setError('');
     }
   }, [isOpen, currentAddress]);
 
@@ -48,7 +44,7 @@ export default function LightningAddressSheet({
     const trimmedAddress = address.trim();
 
     if (trimmedAddress && !validateLightningAddress(trimmedAddress)) {
-      setError('Invalid Lightning address format (e.g., user@wallet.com)');
+      toast.error('Invalid Lightning address format (e.g., user@wallet.com)');
       return;
     }
 
@@ -63,7 +59,7 @@ export default function LightningAddressSheet({
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
-        setError(validation.error || 'Invalid Lightning address');
+        toast.error(validation.error || 'Invalid Lightning address');
         return;
       }
       
@@ -71,8 +67,8 @@ export default function LightningAddressSheet({
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Lightning address updated successfully');
       
-      // Navigate back to profile page
-      router.push('/e/profile');
+      // Close sheet
+      onClose();
     } catch (error) {
       console.error('Failed to update Lightning address:', error);
       toast.error('Failed to update Lightning address');
@@ -126,16 +122,12 @@ export default function LightningAddressSheet({
                       value={address}
                       onChange={(e) => {
                         setAddress(e.target.value);
-                        setError('');
                       }}
                       placeholder='andre@zbd.gg'
                       className='pl-10'
                       autoFocus
                     />
                   </div>
-
-                  {/* Error message */}
-                  {error && <p className='mb-4 text-sm text-red-500'>{error}</p>}
 
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>
