@@ -1,7 +1,6 @@
 'use client';
 
 import { Navbar } from '@/components/navbar';
-import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Plus, Search } from 'lucide-react';
@@ -18,7 +17,7 @@ export default function ChatPage() {
   useEffect(() => {
     // Apply any existing configuration for this route
     applyRouteConfig(pathname);
-    
+
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
       title: 'Chat',

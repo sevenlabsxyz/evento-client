@@ -1,7 +1,7 @@
 'use client';
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface DatePickerSheetProps {
   isOpen: boolean;
@@ -9,6 +9,7 @@ interface DatePickerSheetProps {
   onDateSelect: (date: Date) => void;
   selectedDate?: Date;
   title: string;
+  referenceDate?: Date; // For showing start date in end date picker
 }
 
 export default function DatePickerSheet({
@@ -17,10 +18,21 @@ export default function DatePickerSheet({
   onDateSelect,
   selectedDate,
   title,
+  referenceDate,
 }: DatePickerSheetProps) {
   const [currentDate, setCurrentDate] = useState(selectedDate || new Date());
   const [viewMonth, setViewMonth] = useState(currentDate.getMonth());
   const [viewYear, setViewYear] = useState(currentDate.getFullYear());
+
+  // Sync currentDate with selectedDate when prop changes or sheet opens
+  useEffect(() => {
+    if (isOpen) {
+      const dateToUse = selectedDate || new Date();
+      setCurrentDate(dateToUse);
+      setViewMonth(dateToUse.getMonth());
+      setViewYear(dateToUse.getFullYear());
+    }
+  }, [selectedDate, isOpen]);
 
   const monthNames = [
     'January',
@@ -66,11 +78,11 @@ export default function DatePickerSheet({
   };
 
   const isSelectedDate = (day: number) => {
-    if (!selectedDate || !day) return false;
+    if (!day) return false;
     return (
-      selectedDate.getDate() === day &&
-      selectedDate.getMonth() === viewMonth &&
-      selectedDate.getFullYear() === viewYear
+      currentDate.getDate() === day &&
+      currentDate.getMonth() === viewMonth &&
+      currentDate.getFullYear() === viewYear
     );
   };
 
@@ -79,6 +91,15 @@ export default function DatePickerSheet({
     const today = new Date();
     return (
       today.getDate() === day && today.getMonth() === viewMonth && today.getFullYear() === viewYear
+    );
+  };
+
+  const isReferenceDate = (day: number) => {
+    if (!day || !referenceDate) return false;
+    return (
+      referenceDate.getDate() === day &&
+      referenceDate.getMonth() === viewMonth &&
+      referenceDate.getFullYear() === viewYear
     );
   };
 
@@ -197,35 +218,14 @@ export default function DatePickerSheet({
                       className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? 'invisible' : ''} ${
                         isSelectedDate(day)
                           ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
-                          : isToday(day)
-                            ? 'border border-gray-300 bg-gray-50 text-gray-900'
-                            : 'hover:bg-gray-100'
+                          : isReferenceDate(day)
+                            ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500 ring-offset-2'
+                            : isToday(day)
+                              ? 'bg-gray-100 border border-gray-200 text-black'
+                              : 'hover:bg-gray-100'
                       } `}
                     >
                       {day}
-                      {/* Event indicators */}
-                      {day && day <= 15 && (
-                        <div className='absolute mt-6 flex gap-0.5'>
-                          {day === 3 && <div className='h-1 w-1 rounded-full bg-purple-500' />}
-                          {day === 4 && (
-                            <>
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                            </>
-                          )}
-                          {day === 5 && (
-                            <>
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                              <div className='h-1 w-1 rounded-full bg-red-500' />
-                            </>
-                          )}
-                          {day === 9 && <div className='h-1 w-1 rounded-full bg-red-500' />}
-                          {day === 11 && <div className='h-1 w-1 rounded-full bg-red-500' />}
-                          {day === 15 && <div className='h-1 w-1 rounded-full bg-red-500' />}
-                          {day === 16 && <div className='h-1 w-1 rounded-full bg-blue-500' />}
-                        </div>
-                      )}
                     </button>
                   ))}
                 </div>

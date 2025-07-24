@@ -1,0 +1,36 @@
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
+import { UserSearchResult } from '@/lib/types/api';
+
+interface RecentSearchesState {
+  recentSearches: UserSearchResult[];
+  addRecentSearch: (user: UserSearchResult) => void;
+  clearRecentSearches: () => void;
+}
+
+const MAX_RECENT_SEARCHES = 5;
+
+export const useRecentSearchesStore = create<RecentSearchesState>()(
+  persist(
+    (set) => ({
+      recentSearches: [],
+      
+      addRecentSearch: (user) => set((state) => {
+        // Remove any existing duplicate before adding
+        const filteredSearches = state.recentSearches.filter(
+          (item) => item.id !== user.id
+        );
+        
+        // Add new search to the beginning and limit to MAX_RECENT_SEARCHES
+        return {
+          recentSearches: [user, ...filteredSearches].slice(0, MAX_RECENT_SEARCHES)
+        };
+      }),
+      
+      clearRecentSearches: () => set({ recentSearches: [] })
+    }),
+    {
+      name: 'evento-recent-searches', // Unique name for localStorage
+    }
+  )
+);

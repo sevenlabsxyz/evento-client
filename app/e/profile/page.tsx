@@ -2,11 +2,11 @@
 
 import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
   useUserEventCount,
@@ -18,7 +18,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { BadgeCheck, Camera, Edit3, Loader2, Settings } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -31,8 +31,8 @@ export default function ProfilePage() {
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
-  const lightboxRef = useRef<SilkLightboxRef>(null);
-  const avatarLightboxRef = useRef<SilkLightboxRef>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // Get user data from API
@@ -249,12 +249,48 @@ export default function ProfilePage() {
   };
 
   const handleProfilePhotoClick = (index: number) => {
-    lightboxRef.current?.open(index);
+    setSelectedImageIndex(index);
   };
 
   const handleAvatarClick = () => {
-    avatarLightboxRef.current?.open();
+    setSelectedAvatarIndex(0);
   };
+
+  // Format avatar data for LightboxViewer
+  const avatarImages = [
+    {
+      id: 'avatar-1',
+      image: userData.avatar,
+      user_details: {
+        id: user?.id,
+        username: user?.username,
+        name: user?.name,
+        image: userData.avatar,
+        verification_status: user?.verification_status,
+      },
+      created_at: new Date().toISOString(),
+    },
+  ];
+
+  // Placeholder delete function for avatar (should not be used)
+  const handleAvatarDelete = async (photoId: string) => {
+    // Avatar deletion should typically not be allowed from lightbox
+    return { success: false };
+  };
+
+  // Format profile photos for LightboxViewer
+  const formattedProfilePhotos = profilePhotos.map((photoUrl, index) => ({
+    id: `profile-photo-${index}`,
+    image: photoUrl,
+    user_details: {
+      id: user?.id,
+      username: user?.username,
+      name: user?.name,
+      image: userData.avatar,
+      verification_status: user?.verification_status,
+    },
+    created_at: new Date().toISOString(),
+  }));
 
   const groupEventsByDate = (events: typeof attendingEvents) => {
     const grouped = events.reduce(
@@ -457,61 +493,60 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
       {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20'>
+      <div className="flex-1 overflow-y-auto pb-20">
         {/* Cover Image Section */}
-        <div className='relative'>
+        <div className="relative">
           {/* Banner */}
-          <div className='h-40 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-48' />
+          <div className="h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44" />
 
           {/* Profile Picture - Centered & Clickable */}
-          <div className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'>
-            <button onClick={handleAvatarClick} className='relative'>
-              <Avatar className='h-32 w-32 border-4 border-white shadow-lg'>
-                <AvatarImage src={userData.avatar || ''} alt='Profile' />
-                <AvatarFallback className='bg-white text-3xl'>
-                  {userData.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {/* Verification Badge */}
-              {userData.isVerified && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowVerificationModal(true);
-                  }}
-                  className='absolute bottom-0 right-0 transition-transform hover:scale-105'
-                >
-                  <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
-                </button>
-              )}
-            </button>
-          </div>
+          <UserAvatar
+            user={userData}
+            size="lg"
+            onAvatarClick={handleAvatarClick}
+            onVerificationClick={() => setShowVerificationModal(true)}
+            className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform"
+          />
         </div>
 
         {/* Profile Section */}
-        <div className='mb-4 bg-white px-6 pb-0 pt-20'>
+        <div className="mb-4 bg-white px-6 pb-0 pt-20">
           {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
-            <p className='text-gray-600'>{userData.username}</p>
+          <div className="mb-6 text-center">
+            <h2 className="text-2xl font-bold text-gray-900">
+              {userData.name}
+            </h2>
+            <p className="text-gray-600">{userData.username}</p>
           </div>
 
           {/* Stats - Centered */}
-          <div className='mb-6 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
-                <div className='text-sm text-gray-500'>Events</div>
+          <div className="mb-6 flex justify-center">
+            <div className="grid grid-cols-3 gap-8">
+              <div className="text-center">
+                <div className="text-xl font-bold text-gray-900">
+                  {userStats.events}
+                </div>
+                <div className="text-sm text-gray-500">Events</div>
               </div>
-              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
-                <div className='text-sm text-gray-500'>Following</div>
+              <button
+                className="text-center"
+                onClick={() => setShowFollowingSheet(true)}
+              >
+                <div className="text-xl font-bold text-gray-900">
+                  {userStats.following}
+                </div>
+                <div className="text-sm text-gray-500">Following</div>
               </button>
-              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
+              <button
+                className="text-center"
+                onClick={() => setShowFollowersSheet(true)}
+              >
+                <div className="text-xl font-bold text-gray-900">
+                  {userStats.followers}
+                </div>
+                <div className="text-sm text-gray-500">Followers</div>
               </button>
             </div>
           </div>
@@ -521,9 +556,9 @@ export default function ProfilePage() {
         </div>
 
         {/* Tabbed Section */}
-        <div className='mb-4 bg-white'>
+        <div className="mb-4 bg-white">
           {/* Tab Headers */}
-          <div className='flex gap-2 px-4 py-3'>
+          <div className="flex gap-2 px-4 py-3">
             <button
               onClick={() => setActiveTab('about')}
               className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
@@ -557,7 +592,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Tab Content */}
-          <div className='p-4'>
+          <div className="p-4">
             {activeTab === 'about' && renderAboutTab()}
             {activeTab === 'events' && renderEventsTab()}
             {activeTab === 'stats' && renderStatsTab()}
@@ -567,19 +602,26 @@ export default function ProfilePage() {
 
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
-            <h3 className='mb-4 text-xl font-bold'>Leaving Evento</h3>
-            <p className='mb-6 text-gray-600'>
-              Are you about to leave Evento and be redirected to andrerfneves.com?
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
+            <h3 className="mb-4 text-xl font-bold">Leaving Evento</h3>
+            <p className="mb-6 text-gray-600">
+              Are you about to leave Evento and be redirected to
+              andrerfneves.com?
             </p>
-            <div className='mb-6 text-6xl font-bold text-red-500'>{countdown}</div>
+            <div className="mb-6 text-6xl font-bold text-red-500">
+              {countdown}
+            </div>
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open('https://andrerfneves.com', '_blank', 'noopener,noreferrer');
+                window.open(
+                  'https://andrerfneves.com',
+                  '_blank',
+                  'noopener,noreferrer'
+                );
               }}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
+              className="w-full bg-red-500 text-white hover:bg-red-600"
             >
               Take me to andrerfneves.com
             </Button>
@@ -589,17 +631,20 @@ export default function ProfilePage() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
-              <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
+              <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
             </div>
-            <h3 className='mb-4 text-xl font-bold text-gray-900'>You are verified</h3>
-            <p className='mb-6 text-gray-600'>
-              Congratulations! Your account is verified. You have premium member status with
-              enhanced credibility and access to exclusive features on our platform.
+            <h3 className="mb-4 text-xl font-bold text-gray-900">
+              You are verified
+            </h3>
+            <p className="mb-6 text-gray-600">
+              Congratulations! Your account is verified. You have premium member
+              status with enhanced credibility and access to exclusive features
+              on our platform.
             </p>
-            <div className='flex flex-col gap-3'>
+            <div className="flex flex-col gap-3">
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
@@ -607,14 +652,14 @@ export default function ProfilePage() {
                     '/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.'
                   );
                 }}
-                className='w-full bg-red-500 text-white hover:bg-red-600'
+                className="w-full bg-red-500 text-white hover:bg-red-600"
               >
                 Contact support
               </Button>
               <Button
-                variant='ghost'
+                variant="ghost"
                 onClick={() => setShowVerificationModal(false)}
-                className='w-full'
+                className="w-full"
               >
                 Close
               </Button>
@@ -624,14 +669,28 @@ export default function ProfilePage() {
       )}
 
       {/* Avatar Lightbox */}
-      <SilkLightbox
-        ref={avatarLightboxRef}
-        images={[userData.avatar]}
-        eventTitle={`${userData.name}'s Profile`}
+      <LightboxViewer
+        images={avatarImages}
+        selectedImage={selectedAvatarIndex}
+        onClose={() => setSelectedAvatarIndex(null)}
+        onImageChange={setSelectedAvatarIndex}
+        showDropdownMenu={false}
+        handleDelete={handleAvatarDelete}
+        userId={user?.id || ''}
+        eventId=""
       />
 
       {/* Profile Photos Lightbox */}
-      <SilkLightbox ref={lightboxRef} images={profilePhotos} eventTitle='Profile Photos' />
+      <LightboxViewer
+        images={formattedProfilePhotos}
+        selectedImage={selectedImageIndex}
+        onClose={() => setSelectedImageIndex(null)}
+        onImageChange={setSelectedImageIndex}
+        showDropdownMenu={true}
+        handleDelete={async (photoId: string) => ({ success: false })}
+        userId={user?.id || ''}
+        eventId=""
+      />
 
       {/* Bottom Navbar */}
       <Navbar />

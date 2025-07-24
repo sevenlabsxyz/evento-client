@@ -16,7 +16,7 @@ export default function EventHost({ event }: EventHostProps) {
   };
 
   return (
-    <div className='border-t border-gray-100 py-6'>
+    <div className='py-6'>
       <div className='mb-4 flex items-center justify-between'>
         <h2 className='text-lg font-semibold text-gray-900'>
           {event.hosts.length === 1 ? 'Host' : 'Hosts'}

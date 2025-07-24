@@ -30,6 +30,9 @@ export function getOptimizedImageUrl(
  * @returns true if the URL is a GIF, false otherwise
  */
 export function isGif(url: string): boolean {
+  if (!url) {
+    return false;
+  }
   return url.endsWith('.gif') || url.includes('media.giphy.com');
 }
 

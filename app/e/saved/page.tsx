@@ -20,7 +20,7 @@ export default function SavedListsPage() {
     });
 
     return () => {
-      setTopBar({ 
+      setTopBar({
         title: '',
         subtitle: '',
       });

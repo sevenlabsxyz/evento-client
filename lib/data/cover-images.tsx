@@ -1,5 +1,5 @@
 import { DEFAULT_COVERS } from '@/components/event-covers';
-import { Clapperboard, Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from 'lucide-react';
+import { Clapperboard, Cpu, Crown, Image, MessagesSquare, PartyPopper } from 'lucide-react';
 import React from 'react';
 
 export interface CoverImage {
@@ -56,7 +56,7 @@ export const coverImageCategories: CoverImageCategory[] = [
   {
     id: 'classic',
     name: 'Classic',
-    icon: Sparkles,
+    icon: Image,
     images: convertLegacyCovers(DEFAULT_COVERS.CLASSIC, 'Classic'),
   },
   {

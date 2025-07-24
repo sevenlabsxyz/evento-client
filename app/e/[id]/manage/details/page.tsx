@@ -9,6 +9,7 @@ import LocationModal from '@/components/create-event/location-modal';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { Button } from '@/components/ui/button';
+import { EmojiSelector } from '@/components/emoji-selector';
 import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
 import { apiEventSchema } from '@/lib/schemas/event';
@@ -51,6 +52,7 @@ export default function EditEventDetailsPage() {
     endTime,
     timezone,
     visibility,
+    emoji,
     setTitle,
     setDescription,
     setCoverImage,
@@ -61,6 +63,7 @@ export default function EditEventDetailsPage() {
     setEndTime,
     setTimezone,
     setVisibility,
+    setEmoji,
     populateFromApiEvent,
     getFormData,
     isValid,
@@ -209,13 +212,19 @@ export default function EditEventDetailsPage() {
         <div className='rounded-2xl bg-white p-4'>
           <div className='space-y-2'>
             <label className='text-sm font-medium text-gray-500'>Event Title</label>
-            <input
-              type='text'
-              placeholder='Enter event name'
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
-            />
+            <div className='flex items-center gap-3'>
+              <EmojiSelector
+                selectedEmoji={emoji}
+                onEmojiSelect={setEmoji}
+              />
+              <input
+                type='text'
+                placeholder='Enter event name'
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
+              />
+            </div>
           </div>
         </div>
 
@@ -359,6 +368,7 @@ export default function EditEventDetailsPage() {
         onDateSelect={setEndDate}
         selectedDate={endDate}
         title='End Date'
+        referenceDate={startDate}
       />
 
       <TimePickerSheet

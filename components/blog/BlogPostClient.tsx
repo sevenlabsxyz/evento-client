@@ -2,6 +2,7 @@
 
 import { Scroll } from '@silk-hq/components';
 import './BlogPost.css';
+import EnhancedBlogContent from './EnhancedBlogContent';
 
 interface BlogPostClientProps {
   post: any;
@@ -42,10 +43,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                 <div className='BlogPost-author'>
                   by <span className='BlogPost-authorName'>{authorName}</span> • {publishedDate}
                 </div>
-                <div
-                  className='BlogPost-articleBody'
-                  dangerouslySetInnerHTML={{ __html: post.html || '' }}
-                />
+                <EnhancedBlogContent html={post.html || ''} className='BlogPost-articleBody' />
               </div>
             </article>
           </Scroll.Content>

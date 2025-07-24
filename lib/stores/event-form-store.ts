@@ -1,6 +1,7 @@
 import { LocationData } from '@/components/create-event/location-modal';
 import { ApiEvent, EventFormData } from '@/lib/schemas/event';
 import { debugError, debugLog } from '@/lib/utils/debug';
+import { extractEmojiFromTitle, buildTitleWithEmoji } from '@/lib/utils/emoji';
 import {
   TimeFormat,
   apiToDate,
@@ -21,6 +22,9 @@ interface EventFormState {
   title: string;
   description: string;
   coverImage: string;
+  
+  // Emoji for title
+  emoji: string | null;
 
   // Location
   location: LocationData | null;
@@ -53,6 +57,7 @@ interface EventFormState {
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
   setCoverImage: (image: string) => void;
+  setEmoji: (emoji: string | null) => void;
   setLocation: (location: LocationData | null) => void;
   setStartDate: (date: Date) => void;
   setEndDate: (date: Date) => void;
@@ -106,6 +111,7 @@ const initialState = {
   title: '',
   description: '<p></p>',
   coverImage: '',
+  emoji: null,
   location: null,
   startDate: defaultDateTime.startDate,
   endDate: defaultDateTime.endDate,
@@ -132,10 +138,61 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   setTitle: (title) => set({ title }),
   setDescription: (description) => set({ description }),
   setCoverImage: (coverImage) => set({ coverImage }),
+  setEmoji: (emoji) => set({ emoji }),
   setLocation: (location) => set({ location }),
-  setStartDate: (startDate) => set({ startDate }),
+  setStartDate: (startDate) => set((state) => {
+    // If the new start date is after the current end date,
+    // automatically adjust the end date to match the start date
+    const updates: Partial<EventFormState> = { startDate };
+    
+    if (startDate > state.endDate) {
+      // Set end date to match start date (same day)
+      updates.endDate = new Date(startDate);
+      
+      // If end time is before or equal to start time, adjust it to be 1 hour after
+      const startHours = state.startTime.hour;
+      const startMinutes = state.startTime.minute;
+      const endHours = state.endTime.hour;
+      const endMinutes = state.endTime.minute;
+      
+      const startTotalMinutes = startHours * 60 + startMinutes;
+      const endTotalMinutes = endHours * 60 + endMinutes;
+      
+      if (endTotalMinutes <= startTotalMinutes) {
+        // Add 1 hour to start time
+        const newEndTotalMinutes = startTotalMinutes + 60;
+        updates.endTime = {
+          hour: Math.floor(newEndTotalMinutes / 60) % 24,
+          minute: newEndTotalMinutes % 60,
+          period: state.endTime.period
+        };
+      }
+    }
+    
+    return updates;
+  }),
   setEndDate: (endDate) => set({ endDate }),
-  setStartTime: (startTime) => set({ startTime }),
+  setStartTime: (startTime) => set((state) => {
+    const updates: Partial<EventFormState> = { startTime };
+    
+    // If start and end dates are the same day, ensure end time is after start time
+    if (state.startDate.toDateString() === state.endDate.toDateString()) {
+      const startTotalMinutes = startTime.hour * 60 + startTime.minute;
+      const endTotalMinutes = state.endTime.hour * 60 + state.endTime.minute;
+      
+      if (endTotalMinutes <= startTotalMinutes) {
+        // Add 1 hour to the new start time
+        const newEndTotalMinutes = startTotalMinutes + 60;
+        updates.endTime = {
+          hour: Math.floor(newEndTotalMinutes / 60) % 24,
+          minute: newEndTotalMinutes % 60,
+          period: state.endTime.period
+        };
+      }
+    }
+    
+    return updates;
+  }),
   setEndTime: (endTime) => set({ endTime }),
   setTimezone: (timezone) => set({ timezone }),
   setVisibility: (visibility) => set({ visibility }),
@@ -221,8 +278,13 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       const coverImage = event.cover ? getOptimizedImageUrl(event.cover, 800) : '';
       debugLog('EventFormStore', 'Processed cover image', { coverImage });
 
+      // Extract emoji from title
+      const { emoji, cleanTitle } = extractEmojiFromTitle(event.title);
+      debugLog('EventFormStore', 'Extracted emoji from title', { emoji, cleanTitle, originalTitle: event.title });
+
       const formData = {
-        title: event.title,
+        title: cleanTitle,
+        emoji,
         description: event.description || '<p></p>',
         coverImage,
         location,
@@ -264,8 +326,11 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
     const startTimeApi = timeToApiFormat(state.startTime);
     const endTimeApi = timeToApiFormat(state.endTime);
 
+    // Combine emoji and title for the final title
+    const finalTitle = buildTitleWithEmoji(state.emoji, state.title);
+
     return {
-      title: state.title,
+      title: finalTitle,
       description: state.description,
       location: state.location?.formatted || '',
       timezone: state.timezone,

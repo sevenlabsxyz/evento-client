@@ -22,7 +22,7 @@ export default function ContactPage() {
     });
 
     return () => {
-      setTopBar({ 
+      setTopBar({
         title: '',
         subtitle: '',
       });

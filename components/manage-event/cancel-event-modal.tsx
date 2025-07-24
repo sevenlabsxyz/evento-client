@@ -1,104 +1,153 @@
 'use client';
 
-import { AlertTriangle, ArrowRight, X } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { useCancelEvent } from '@/lib/hooks/useCancelEvent';
+import { AlertTriangle, Trash2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface CancelEventModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (sendEmail: boolean) => void;
+  eventId: string;
   eventTitle?: string;
 }
 
 export default function CancelEventModal({
   isOpen,
   onClose,
-  onConfirm,
+  eventId,
   eventTitle,
 }: CancelEventModalProps) {
   const [sendEmail, setSendEmail] = useState(true);
-
-  if (!isOpen) return null;
+  const router = useRouter();
+  const cancelEventMutation = useCancelEvent();
 
   const handleConfirm = () => {
-    onConfirm(sendEmail);
-  };
-
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
+    cancelEventMutation.mutate(
+      { eventId, sendEmails: sendEmail },
+      {
+        onSuccess: () => {
+          onClose();
+          // Redirect to feed page after successful cancellation
+          router.push('/e/feed');
+        },
+      }
+    );
   };
 
   return (
-    <div
-      className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'
-      onClick={handleBackdropClick}
+    <DetachedSheet.Root
+      presented={isOpen}
+      onPresentedChange={(presented) => !presented && onClose()}
     >
-      <div className='w-full max-w-md rounded-2xl bg-white'>
-        {/* Header */}
-        <div className='flex justify-end p-4 pb-2'>
-          <button onClick={onClose} className='rounded-full p-2 hover:bg-gray-100'>
-            <X className='h-6 w-6 text-gray-600' />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className='px-6 pb-6'>
-          {/* Warning Icon */}
-          <div className='mb-6 flex justify-center'>
-            <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-              <AlertTriangle className='h-8 w-8 text-red-600' />
-            </div>
-          </div>
-
-          {/* Title */}
-          <h2 className='mb-4 text-center text-2xl font-bold text-gray-900'>Cancel Event</h2>
-
-          {/* Description */}
-          <p className='mb-2 text-center text-gray-600'>
-            We will send a message to guests notifying them that the event has been cancelled.
-          </p>
-
-          {/* Warning Text */}
-          <p className='mb-8 text-center font-medium text-red-600'>
-            This action can't be reverted.
-          </p>
-
-          {/* Email Notification Toggle */}
-          <div className='mb-6 rounded-2xl bg-gray-50 p-4'>
-            <div className='flex items-center justify-between'>
-              <div className='flex-1'>
-                <h3 className='mb-1 font-medium text-gray-900'>Notify attendees via email</h3>
-                <p className='text-sm text-gray-500'>
-                  Send cancellation notification to all registered guests
-                </p>
+      <DetachedSheet.Portal>
+        <DetachedSheet.View>
+          <DetachedSheet.Backdrop />
+          <DetachedSheet.Content>
+            <div className="p-6">
+              {/* Handle */}
+              <div className="mb-4 flex justify-center">
+                <DetachedSheet.Handle />
               </div>
-              <button
-                onClick={() => setSendEmail(!sendEmail)}
-                className={`ml-4 h-6 w-12 rounded-full transition-colors ${
-                  sendEmail ? 'bg-red-500' : 'bg-gray-300'
-                }`}
-              >
-                <div
-                  className={`h-5 w-5 rounded-full bg-white transition-transform ${
-                    sendEmail ? 'translate-x-6' : 'translate-x-0.5'
-                  }`}
-                />
-              </button>
-            </div>
-          </div>
 
-          {/* Cancel Event Button */}
-          <button
-            onClick={handleConfirm}
-            className='flex w-full items-center justify-center gap-3 rounded-2xl bg-red-500 px-6 py-4 font-semibold text-white transition-colors hover:bg-red-600'
-          >
-            <ArrowRight className='h-5 w-5' />
-            Cancel Event
-          </button>
-        </div>
-      </div>
-    </div>
+              {/* Header with close button */}
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Cancel Event
+                </h2>
+                <button
+                  onClick={onClose}
+                  className="rounded-full p-2 hover:bg-gray-100"
+                >
+                  <X className="h-5 w-5 text-gray-600" />
+                </button>
+              </div>
+
+              {/* Warning Icon */}
+              <div className="mb-6 flex justify-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                  <AlertTriangle className="h-8 w-8 text-red-600" />
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="mb-6 space-y-4 text-center">
+                <p className="text-gray-600">
+                  You are about to cancel{' '}
+                  <strong>{eventTitle || 'this event'}</strong>.
+                </p>
+
+                {/* Warning Text */}
+                <div className="rounded-xl bg-red-50 p-4 text-left">
+                  <p className="mb-2 font-medium text-red-600">
+                    Warning: This action is permanent and cannot be undone.
+                  </p>
+                  <ul className="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                    <li>All event data will be permanently deleted</li>
+                    <li>All RSVPs, comments, and photos will be removed</li>
+                    <li>Links to this event will no longer work</li>
+                    <li>This action cannot be reversed</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Email Notification Toggle */}
+              <div className="mb-6 rounded-2xl bg-gray-50 p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h3 className="mb-1 font-medium text-gray-900">
+                      Notify attendees via email
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      Send cancellation notification to all registered guests
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSendEmail(!sendEmail)}
+                    className={`ml-4 h-6 w-12 rounded-full transition-colors ${
+                      sendEmail ? 'bg-red-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                        sendEmail ? 'translate-x-6' : 'translate-x-0.5'
+                      }`}
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {/* Cancel Event Button */}
+              <Button
+                onClick={handleConfirm}
+                disabled={cancelEventMutation.isPending}
+                className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white disabled:bg-gray-300 disabled:cursor-not-allowed"
+                size="lg"
+              >
+                {cancelEventMutation.isPending ? (
+                  <span className="animate-pulse">Cancelling...</span>
+                ) : (
+                  <>
+                    <Trash2 className="h-5 w-5 mr-2" />
+                    Cancel Event
+                  </>
+                )}
+              </Button>
+
+              {/* Close button */}
+              <Button
+                variant="outline"
+                onClick={onClose}
+                className="w-full mt-3"
+              >
+                Close
+              </Button>
+            </div>
+          </DetachedSheet.Content>
+        </DetachedSheet.View>
+      </DetachedSheet.Portal>
+    </DetachedSheet.Root>
   );
 }

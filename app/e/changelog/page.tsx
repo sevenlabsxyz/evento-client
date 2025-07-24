@@ -18,7 +18,7 @@ export default function ChangelogPage() {
     });
 
     return () => {
-      setTopBar({ 
+      setTopBar({
         title: '',
         subtitle: '',
       });
