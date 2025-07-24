@@ -3,13 +3,17 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { Hash, X } from 'lucide-react';
+import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { toast } from '@/lib/utils/toast';
+import { Hash, Loader2, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface NostrSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (nip05: string) => void;
+  onSave?: (nip05: string) => void;
   currentNip05?: string;
 }
 
@@ -21,6 +25,8 @@ export default function NostrSheet({
 }: NostrSheetProps) {
   const [nip05, setNip05] = useState(currentNip05);
   const [error, setError] = useState('');
+  const updateProfileMutation = useUpdateUserProfile();
+  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -38,7 +44,7 @@ export default function NostrSheet({
     return regex.test(identifier);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmedNip05 = nip05.trim();
 
     if (trimmedNip05 && !validateNip05(trimmedNip05)) {
@@ -46,8 +52,31 @@ export default function NostrSheet({
       return;
     }
 
-    onSave(trimmedNip05);
-    onClose();
+    if (onSave) {
+      onSave(trimmedNip05);
+    }
+    
+    try {
+      // Directly save to API
+      const updateData = { nip05: trimmedNip05 };
+      
+      // Validate data
+      const validation = validateUpdateUserProfile(updateData);
+      if (!validation.valid) {
+        setError(validation.error || 'Invalid Nostr identifier');
+        return;
+      }
+      
+      // Save to API
+      await updateProfileMutation.mutateAsync(updateData);
+      toast.success('Nostr identifier updated successfully');
+      
+      // Navigate back to profile page
+      router.push('/e/profile');
+    } catch (error) {
+      console.error('Failed to update Nostr identifier:', error);
+      toast.error('Failed to update Nostr identifier');
+    }
   };
 
   const handleCancel = () => {
@@ -56,6 +85,7 @@ export default function NostrSheet({
   };
 
   const hasChanges = nip05 !== currentNip05;
+  const isSaving = updateProfileMutation.isPending;
 
   return (
     <SheetWithDetentFull.Root
@@ -68,7 +98,9 @@ export default function NostrSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
-              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Nostr</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -129,10 +161,17 @@ export default function NostrSheet({
                   <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
+                      disabled={!hasChanges || isSaving}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!hasChanges}
                     >
-                      Save
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel

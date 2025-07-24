@@ -4,13 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { Globe, Instagram, X as XIcon } from 'lucide-react';
+import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { toast } from '@/lib/utils/toast';
+import { Globe, Instagram, Loader2, X as XIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface SocialLinksSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (links: { instagram_handle: string; x_handle: string; bio_link: string }) => void;
+  onSave?: (links: { instagram_handle: string; x_handle: string; bio_link: string }) => void;
   currentLinks: {
     instagram_handle?: string;
     x_handle?: string;
@@ -32,6 +36,9 @@ export default function SocialLinksSheet({
     x: '',
     website: '',
   });
+  
+  const updateProfileMutation = useUpdateUserProfile();
+  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -58,7 +65,7 @@ export default function SocialLinksSheet({
     return handle.replace(/^@/, '').trim();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const newErrors = { instagram: '', x: '', website: '' };
     let hasError = false;
 
@@ -92,13 +99,35 @@ export default function SocialLinksSheet({
     if (website && !website.startsWith('http')) {
       formattedWebsite = `https://${website}`;
     }
-
-    onSave({
+    
+    const updateData = {
       instagram_handle: cleanedInstagram,
       x_handle: cleanedX,
       bio_link: formattedWebsite,
-    });
-    onClose();
+    };
+    
+    if (onSave) {
+      onSave(updateData);
+    }
+    
+    try {
+      // Validate data
+      const validation = validateUpdateUserProfile(updateData);
+      if (!validation.valid) {
+        toast.error(validation.error || 'Invalid social links data');
+        return;
+      }
+      
+      // Save to API
+      await updateProfileMutation.mutateAsync(updateData);
+      toast.success('Social links updated successfully');
+      
+      // Navigate back to profile page
+      router.push('/e/profile');
+    } catch (error) {
+      console.error('Failed to update social links:', error);
+      toast.error('Failed to update social links');
+    }
   };
 
   const handleCancel = () => {
@@ -112,6 +141,8 @@ export default function SocialLinksSheet({
     instagram !== (currentLinks.instagram_handle || '') ||
     xHandle !== (currentLinks.x_handle || '') ||
     website !== (currentLinks.bio_link || '');
+    
+  const isSaving = updateProfileMutation.isPending;
 
   return (
     <SheetWithDetentFull.Root
@@ -124,7 +155,9 @@ export default function SocialLinksSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
-              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Social Links</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -223,10 +256,17 @@ export default function SocialLinksSheet({
                   <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!hasChanges}
+                      disabled={!hasChanges || isSaving}
+                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
                     >
-                      Save
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel

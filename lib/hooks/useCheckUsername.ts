@@ -1,5 +1,4 @@
 import { apiClient } from '@/lib/api/client';
-import { ApiResponse } from '@/lib/types/api';
 import { useMutation } from '@tanstack/react-query';
 
 interface UsernameCheckResponse {
@@ -39,7 +38,7 @@ export function useCheckUsername() {
       }
 
       try {
-        const response = await apiClient.get<ApiResponse<UsernameCheckResponse>>(
+        const response = await apiClient.get<UsernameCheckResponse>(
           `/v1/user/check-username?username=${encodeURIComponent(cleanUsername)}`
         );
 

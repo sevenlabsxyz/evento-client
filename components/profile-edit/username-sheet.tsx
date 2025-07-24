@@ -5,14 +5,17 @@ import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useCheckUsername } from '@/lib/hooks/useCheckUsername';
 import { useDebounce } from '@/lib/hooks/useDebounce';
+import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
-import { AtSign, CheckCircle, X, XCircle } from 'lucide-react';
+import { AtSign, CheckCircle, Loader2, X, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface UsernameSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (username: string) => void;
+  onSave?: (username: string) => void;
   currentUsername?: string;
 }
 
@@ -28,6 +31,8 @@ export default function UsernameSheet({
 
   const debouncedUsername = useDebounce(username, 500);
   const checkUsernameMutation = useCheckUsername();
+  const updateProfileMutation = useUpdateUserProfile();
+  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -60,7 +65,7 @@ export default function UsernameSheet({
     checkAvailability();
   }, [debouncedUsername, currentUsername, checkUsernameMutation]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!username || username === currentUsername) {
       onClose();
       return;
@@ -70,9 +75,33 @@ export default function UsernameSheet({
       toast.error('Please choose an available username');
       return;
     }
-
-    onSave(username);
-    onClose();
+    
+    // Update local state if onSave is provided (for backward compatibility)
+    if (onSave) {
+      onSave(username);
+    }
+    
+    try {
+      // Directly save to API
+      const updateData = { username };
+      
+      // Validate data
+      const validation = validateUpdateUserProfile(updateData);
+      if (!validation.valid) {
+        setError(validation.error || 'Invalid username');
+        return;
+      }
+      
+      // Save to API
+      await updateProfileMutation.mutateAsync(updateData);
+      toast.success('Username updated successfully');
+      
+      // Navigate back to profile page
+      router.push('/e/profile');
+    } catch (error) {
+      console.error('Failed to update username:', error);
+      toast.error('Failed to update username');
+    }
   };
 
   const handleCancel = () => {
@@ -81,6 +110,7 @@ export default function UsernameSheet({
   };
 
   const canSave = username && username !== currentUsername && isAvailable;
+  const isSaving = updateProfileMutation.isPending;
 
   return (
     <SheetWithDetentFull.Root
@@ -93,7 +123,9 @@ export default function UsernameSheet({
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
-              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Username</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -114,7 +146,6 @@ export default function UsernameSheet({
                     <Input
                       type='text'
                       value={username}
-                      onChange={(e) => setUsername(e.target.value.toLowerCase())}
                       onChange={(e) => setUsername(e.target.value.toLowerCase())}
                       placeholder='username'
                       className='pl-10 pr-10'
@@ -156,15 +187,22 @@ export default function UsernameSheet({
 
                   {/* Save/Cancel Buttons */}
                   <div className='flex gap-3'>
-                    <Button
-                      onClick={handleSave}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!canSave}
-                    >
-                      Save
-                    </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
+                    </Button>
+                    <Button
+                      onClick={handleSave}
+                      disabled={!canSave || isSaving}
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                    >
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

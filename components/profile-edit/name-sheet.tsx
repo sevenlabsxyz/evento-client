@@ -3,19 +3,25 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { User, X } from 'lucide-react';
+import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { toast } from '@/lib/utils/toast';
+import { Loader2, User, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface NameSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave?: (name: string) => void;
   currentName?: string;
 }
 
 export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }: NameSheetProps) {
   const [name, setName] = useState(currentName);
   const [error, setError] = useState('');
+  const updateProfileMutation = useUpdateUserProfile();
+  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -25,7 +31,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
     }
   }, [isOpen, currentName]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmedName = name.trim();
 
     if (!trimmedName) {
@@ -38,8 +44,31 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
       return;
     }
 
-    onSave(trimmedName);
-    onClose();
+    if (onSave) {
+      onSave(trimmedName);
+    }
+    
+    try {
+      // Directly save to API
+      const updateData = { name: trimmedName };
+      
+      // Validate data
+      const validation = validateUpdateUserProfile(updateData);
+      if (!validation.valid) {
+        setError(validation.error || 'Invalid name');
+        return;
+      }
+      
+      // Save to API
+      await updateProfileMutation.mutateAsync(updateData);
+      toast.success('Name updated successfully');
+      
+      // Navigate back to profile page
+      router.push('/e/profile');
+    } catch (error) {
+      console.error('Failed to update name:', error);
+      toast.error('Failed to update name');
+    }
   };
 
   const handleCancel = () => {
@@ -48,6 +77,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
   };
 
   const canSave = name.trim() && name.trim() !== currentName;
+  const isSaving = updateProfileMutation.isPending;
 
   return (
     <SheetWithDetentFull.Root
@@ -60,7 +90,9 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
           <SheetWithDetentFull.Content>
             {/* Header */}
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
-              <SheetWithDetentFull.Handle />
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+              </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Name</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -106,15 +138,18 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
 
                   {/* Save/Cancel Buttons */}
                   <div className='flex gap-3'>
-                    <Button
-                      onClick={handleSave}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!canSave}
-                    >
-                      Save
-                    </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
+                    </Button>
+                    <Button onClick={handleSave} disabled={!canSave || isSaving} className='flex-1' variant="default">
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>

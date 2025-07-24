@@ -9,24 +9,21 @@ import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/useUserProfile';
-import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
 import {
   AtSign,
   Camera,
-  Check,
   ChevronRight,
   Hash,
   Instagram,
   Loader2,
   Type,
   User,
-  Zap,
+  Zap
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -77,48 +74,6 @@ export default function EditProfilePage() {
   const [showLightningSheet, setShowLightningSheet] = useState(false);
   const [showNostrSheet, setShowNostrSheet] = useState(false);
 
-  // Check if form is valid and has changes
-  // Include all form fields in dependencies so it updates when any field changes
-  const canSave = useMemo(() => {
-    return isValid() && hasChanges();
-  }, [
-    isValid,
-    hasChanges,
-    // Adding all form fields as dependencies to ensure reactivity
-    username,
-    name,
-    bio,
-    image,
-    bio_link,
-    x_handle,
-    instagram_handle,
-    ln_address,
-    nip05,
-  ]);
-
-  // Handle save changes
-  const handleSaveChanges = useCallback(async () => {
-    try {
-      const formData = getFormData();
-
-      // Validate form data
-      const validation = validateUpdateUserProfile(formData);
-      if (!validation.valid) {
-        toast.error(validation.error || 'Invalid profile data');
-        return;
-      }
-
-      await updateProfileMutation.mutateAsync(formData);
-      toast.success('Profile updated successfully');
-      reset();
-
-      router.push('/e/profile');
-    } catch (error) {
-      toast.error('Failed to update profile');
-      console.error('Profile update error:', error);
-    }
-  }, [getFormData, updateProfileMutation, router]);
-
   // Set TopBar content
   useEffect(() => {
     setTopBar({
@@ -126,17 +81,7 @@ export default function EditProfilePage() {
       subtitle: undefined,
       onBackPress: () => router.push('/e/profile'),
       leftMode: 'back',
-      buttons: canSave
-        ? [
-            {
-              id: 'save-profile',
-              icon: Check,
-              onClick: handleSaveChanges,
-              label: 'Save',
-              disabled: !canSave,
-            },
-          ]
-        : [],
+      buttons: [], // No save button as saving is handled in individual sheets
       showAvatar: false,
     });
 
@@ -320,27 +265,7 @@ export default function EditProfilePage() {
           </div>
         </div>
 
-        {/* Save button for mobile */}
-        <div className="sticky bottom-0 border-t border-gray-100 bg-white p-4 md:hidden">
-          <button
-            onClick={handleSaveChanges}
-            disabled={!canSave || updateProfileMutation.isPending}
-            className={`w-full rounded-xl py-3 text-center font-medium ${
-              canSave && !updateProfileMutation.isPending
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-400'
-            }`}
-          >
-            {updateProfileMutation.isPending ? (
-              <span className="flex items-center justify-center gap-2">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                Saving...
-              </span>
-            ) : (
-              'Save Changes'
-            )}
-          </button>
-        </div>
+        {/* Save button removed as saving is now handled in individual sheets */}
       </div>
 
       {/* Sheet Components */}

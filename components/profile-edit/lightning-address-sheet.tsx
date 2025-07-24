@@ -3,13 +3,17 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { X, Zap } from 'lucide-react';
+import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { toast } from '@/lib/utils/toast';
+import { Loader2, X, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface LightningAddressSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (address: string) => void;
+  onSave?: (address: string) => void;
   currentAddress?: string;
 }
 
@@ -21,6 +25,8 @@ export default function LightningAddressSheet({
 }: LightningAddressSheetProps) {
   const [address, setAddress] = useState(currentAddress);
   const [error, setError] = useState('');
+  const updateProfileMutation = useUpdateUserProfile();
+  const router = useRouter();
 
   // Reset state when sheet opens
   useEffect(() => {
@@ -38,7 +44,7 @@ export default function LightningAddressSheet({
     return regex.test(addr);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     const trimmedAddress = address.trim();
 
     if (trimmedAddress && !validateLightningAddress(trimmedAddress)) {
@@ -46,8 +52,31 @@ export default function LightningAddressSheet({
       return;
     }
 
-    onSave(trimmedAddress);
-    onClose();
+    if (onSave) {
+      onSave(trimmedAddress);
+    }
+    
+    try {
+      // Directly save to API
+      const updateData = { ln_address: trimmedAddress };
+      
+      // Validate data
+      const validation = validateUpdateUserProfile(updateData);
+      if (!validation.valid) {
+        setError(validation.error || 'Invalid Lightning address');
+        return;
+      }
+      
+      // Save to API
+      await updateProfileMutation.mutateAsync(updateData);
+      toast.success('Lightning address updated successfully');
+      
+      // Navigate back to profile page
+      router.push('/e/profile');
+    } catch (error) {
+      console.error('Failed to update Lightning address:', error);
+      toast.error('Failed to update Lightning address');
+    }
   };
 
   const handleCancel = () => {
@@ -56,6 +85,7 @@ export default function LightningAddressSheet({
   };
 
   const hasChanges = address !== currentAddress;
+  const isSaving = updateProfileMutation.isPending;
 
   return (
     <SheetWithDetentFull.Root
@@ -67,8 +97,10 @@ export default function LightningAddressSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
-              <SheetWithDetentFull.Handle />
+            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
+                 <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle />
+                </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Bitcoin</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -132,10 +164,17 @@ export default function LightningAddressSheet({
                   <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
+                      disabled={!hasChanges || isSaving}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!hasChanges}
                     >
-                      Save
+                      {isSaving ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Saving...
+                        </>
+                      ) : (
+                        'Save'
+                      )}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
