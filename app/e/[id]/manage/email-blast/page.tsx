@@ -18,8 +18,6 @@ export default function EmailBlastPage() {
 
   // Fetch email blasts data
   const { data: emailBlasts = [], isLoading, error } = useEmailBlasts(eventId);
-  console.log('EMAIL BLASTS', emailBlasts);
-
   // Transform API data for UI
   const transformedBlasts = (emailBlasts || []).map(transformEmailBlastForUI);
 
