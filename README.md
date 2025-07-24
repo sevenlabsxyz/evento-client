@@ -1,4 +1,4 @@
-# Evento App (app.evento.so)
+# Evento App ([app.evento.so](https://app.evento.so))
 
 ## Overview
 
@@ -96,7 +96,7 @@ All environment variables are centralized in `lib/constants/env.ts`. Always use 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 // ✅ Good
-import { Env } from '@/lib/constants/env';
+import { Env } from "@/lib/constants/env";
 const apiUrl = Env.NEXT_PUBLIC_API_URL;
 ```
 
