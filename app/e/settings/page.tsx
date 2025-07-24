@@ -3,19 +3,16 @@
 import { APISheet } from '@/components/settings/APISheet';
 import { ChangelogSheet } from '@/components/settings/ChangelogSheet';
 import { ContactSheet } from '@/components/settings/ContactSheet';
-import { HelpSheet } from '@/components/settings/HelpSheet';
 import { useAuth, useRequireAuth } from '@/lib/hooks/useAuth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
-  Bell,
   BookOpen,
   ChevronRight,
   Code,
   DollarSign,
   Info,
   Languages,
-  LifeBuoy,
   Mail,
   Scale,
   Share,
@@ -32,12 +29,13 @@ export default function SettingsPage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
   const { user, email } = useAuth();
+  console.log('user', email);
 
   // Set TopBar content
   useEffect(() => {
     // Apply any existing route configuration first
     applyRouteConfig(pathname);
-    
+
     // Set route-specific configuration
     setTopBarForRoute(pathname, {
       title: 'Settings',
@@ -54,7 +52,6 @@ export default function SettingsPage() {
   }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   // Sheet states
-  const [helpSheetOpen, setHelpSheetOpen] = useState(false);
   const [contactSheetOpen, setContactSheetOpen] = useState(false);
   const [changelogSheetOpen, setChangelogSheetOpen] = useState(false);
   const [apiSheetOpen, setApiSheetOpen] = useState(false);
@@ -85,7 +82,9 @@ export default function SettingsPage() {
         await navigator.clipboard.writeText('https://evento.so');
         toast.success('Link copied to clipboard!');
       } catch (clipboardError) {
-        toast.error('Unable to share. Please copy the link manually: evento.so');
+        toast.error(
+          'Unable to share. Please copy the link manually: evento.so'
+        );
       }
     }
   };
@@ -119,7 +118,9 @@ export default function SettingsPage() {
                 <UserCircle className='h-4 w-4 text-red-600' />
               </div>
               <div>
-                <p className='font-medium text-red-500'>{user?.name || 'Guest'}</p>
+                <p className='font-medium text-red-500'>
+                  {user?.name || 'Guest'}
+                </p>
                 <p className='text-sm text-gray-600'>{email}</p>
               </div>
             </div>
@@ -136,18 +137,6 @@ export default function SettingsPage() {
               <div>
                 <span className='text-gray-500'>English</span>
               </div>
-            </div>
-          </div>
-
-          <div className='border-b border-gray-100 p-4'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                  <Bell className='h-4 w-4 text-red-600' />
-                </div>
-                <span className='font-medium'>Notifications</span>
-              </div>
-              <ChevronRight className='h-4 w-4 text-gray-400' />
             </div>
           </div>
 
@@ -168,24 +157,11 @@ export default function SettingsPage() {
 
         {/* Help Center Section */}
         <div className='mb-2 px-4'>
-          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>HELP CENTER</h2>
+          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
+            HELP CENTER
+          </h2>
         </div>
         <div className='mx-4 mb-4 rounded-2xl bg-white'>
-          <div className='border-b border-gray-100 p-4'>
-            <button
-              className='flex w-full items-center justify-between'
-              onClick={() => setHelpSheetOpen(true)}
-            >
-              <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                  <LifeBuoy className='h-4 w-4 text-red-600' />
-                </div>
-                <span className='font-medium'>Need help?</span>
-              </div>
-              <ChevronRight className='h-4 w-4 text-gray-400' />
-            </button>
-          </div>
-
           <div className='border-b border-gray-100 p-4'>
             <button
               className='flex w-full items-center justify-between'
@@ -219,7 +195,9 @@ export default function SettingsPage() {
 
         {/* Developer Section */}
         <div className='mb-2 px-4'>
-          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
+          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
+            DEVELOPER
+          </h2>
         </div>
         <div className='mx-4 mb-4 rounded-2xl bg-white'>
           <div className='border-b border-gray-100 p-4'>
@@ -255,7 +233,9 @@ export default function SettingsPage() {
 
         {/* About Section */}
         <div className='mb-2 px-4'>
-          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ABOUT</h2>
+          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
+            ABOUT
+          </h2>
         </div>
         <div className='mx-4 mb-4 rounded-2xl bg-white'>
           <div className='border-b border-gray-100 p-4'>
@@ -304,7 +284,10 @@ export default function SettingsPage() {
           </div>
 
           <div className='p-4'>
-            <button className='flex w-full items-center justify-between' onClick={handleShare}>
+            <button
+              className='flex w-full items-center justify-between'
+              onClick={handleShare}
+            >
               <div className='flex items-center gap-3'>
                 <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
                   <Share className='h-4 w-4 text-red-600' />
@@ -318,12 +301,13 @@ export default function SettingsPage() {
 
         {/* Version Info */}
         <div className='px-4 pb-6 text-center'>
-          <p className='text-sm text-gray-500'>Version: {packageJson.version}</p>
+          <p className='text-sm text-gray-500'>
+            Version: {packageJson.version}
+          </p>
         </div>
       </div>
 
       {/* Sheet Components */}
-      <HelpSheet open={helpSheetOpen} onOpenChange={setHelpSheetOpen} />
       <ContactSheet
         open={contactSheetOpen}
         onOpenChange={(open) => {
@@ -337,7 +321,10 @@ export default function SettingsPage() {
             : ''
         }
       />
-      <ChangelogSheet open={changelogSheetOpen} onOpenChange={setChangelogSheetOpen} />
+      <ChangelogSheet
+        open={changelogSheetOpen}
+        onOpenChange={setChangelogSheetOpen}
+      />
       <APISheet
         open={apiSheetOpen}
         onOpenChange={setApiSheetOpen}
