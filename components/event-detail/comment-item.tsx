@@ -3,7 +3,6 @@
 import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { toast } from '@/hooks/use-toast';
 import { useAddComment } from '@/lib/hooks/useAddComment';
 import { useCommentReactions } from '@/lib/hooks/useCommentReactions';
 import { useDeleteComment } from '@/lib/hooks/useDeleteComment';
@@ -11,13 +10,13 @@ import { useEditComment } from '@/lib/hooks/useEditComment';
 import { EventComment } from '@/lib/hooks/useEventComments';
 import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
+import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
 import {
   Heart,
-  Loader2,
   MoreHorizontal,
   Reply,
-  SendHorizontal,
+  SendHorizontal
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
@@ -96,11 +95,7 @@ export default function CommentItem({
       });
       setShowDeleteConfirmation(false);
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to delete comment',
-      });
+      toast.error('Failed to delete comment');
     }
   };
 
@@ -115,11 +110,7 @@ export default function CommentItem({
       });
       setIsEditing(false);
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to edit comment',
-      });
+      toast.error('Failed to edit comment');
     }
   };
 
@@ -141,21 +132,21 @@ export default function CommentItem({
   const handleSubmitReply = async () => {
     if (!replyText.trim() || !currentUser) return;
 
+    // Store the message before clearing input
+    const replyMessage = replyText.trim();
+    
+    // Clear the input immediately and remove the active reply ID for better UX
+    setReplyText('');
+    setActiveReplyId(null);
+    
     try {
       await addCommentMutation.mutateAsync({
         event_id: eventId,
-        message: replyText.trim(),
+        message: replyMessage,
         parent_comment_id: comment.id,
       });
-
-      setReplyText('');
-      setActiveReplyId(null);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Failed to add reply',
-      });
+    } catch {
+      toast.error('Failed to add reply');
     }
   };
 
@@ -168,7 +159,13 @@ export default function CommentItem({
   };
 
   return (
-    <div className={cn('group', isReply ? 'ml-8' : '')}>
+    <div 
+      className={cn(
+        'group', 
+        isReply ? 'ml-8' : '',
+        comment.optimistic ? 'opacity-70 cursor-not-allowed pointer-events-none' : ''
+      )}
+    >
       <div className="flex gap-3">
         <div className="flex-shrink-0">
           <UserAvatar
@@ -314,13 +311,9 @@ export default function CommentItem({
                         : 'text-gray-300 cursor-default'
                     )}
                     onClick={handleSubmitReply}
-                    disabled={!replyText.trim() || addCommentMutation.isPending}
+                    disabled={!replyText.trim()}
                   >
-                    {addCommentMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
                       <SendHorizontal className="h-4 w-4" />
-                    )}
                   </button>
                 </div>
               </div>
