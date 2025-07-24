@@ -107,25 +107,22 @@ export default function ProfileImageSheet({
                   <X className='h-5 w-5' />
                 </button>
               </div>
-              <p className="mt-1 text-sm text-gray-500">Choose your photo</p>
+              <p className='mt-1 text-sm text-gray-500'>Choose your photo</p>
             </div>
 
             {/* Content */}
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent className="p-6">
+                <SheetWithDetentFull.ScrollContent className='p-6'>
                   {/* Avatar Preview */}
-                  <div className="mb-8 flex flex-col items-center">
-                    <Avatar className="mb-4 h-32 w-32">
-                      <AvatarImage
-                        src={selectedImage || currentImage || ''}
-                        alt="Profile"
-                      />
+                  <div className='mb-8 flex flex-col items-center'>
+                    <Avatar className='mb-4 h-32 w-32'>
+                      <AvatarImage src={selectedImage || currentImage || ''} alt='Profile' />
                       <AvatarFallback>
                         <Image
-                          src="/assets/img/evento-sublogo.svg"
-                          alt="Evento"
-                          className="h-full w-full p-1"
+                          src='/assets/img/evento-sublogo.svg'
+                          alt='Evento'
+                          className='h-full w-full p-1'
                         />
                       </AvatarFallback>
                     </Avatar>
@@ -133,45 +130,37 @@ export default function ProfileImageSheet({
                     {/* Camera Icon Overlay */}
                     <button
                       onClick={triggerFileInput}
-                      className="absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg"
+                      className='absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg'
                     >
-                      <Camera className="h-6 w-6 text-gray-600" />
+                      <Camera className='h-6 w-6 text-gray-600' />
                     </button>
                   </div>
 
                   {/* Upload Button */}
-                  <Button
-                    onClick={triggerFileInput}
-                    variant="outline"
-                    className="mb-6 w-full"
-                  >
-                    <Upload className="mr-2 h-5 w-5" />
+                  <Button onClick={triggerFileInput} variant='outline' className='mb-6 w-full'>
+                    <Upload className='mr-2 h-5 w-5' />
                     Choose from Library
                   </Button>
 
                   {/* Hidden file input */}
                   <input
                     ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
+                    type='file'
+                    accept='image/*'
                     onChange={handleFileSelect}
-                    className="hidden"
+                    className='hidden'
                   />
 
                   {/* Save/Cancel Buttons */}
-                  <div className="flex gap-3">
+                  <div className='flex gap-3'>
                     <Button
                       onClick={handleSave}
-                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
                       disabled={!selectedFile || isUploading}
                     >
                       {isUploading ? 'Uploading...' : 'Save'}
                     </Button>
-                    <Button
-                      onClick={handleCancel}
-                      variant="outline"
-                      className="flex-1"
-                    >
+                    <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
                     </Button>
                   </div>

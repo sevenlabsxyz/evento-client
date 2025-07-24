@@ -23,17 +23,11 @@ export function TagSection({
 }: TagSectionProps) {
   return (
     <Card
-      className={`
-        w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm 
-        transition-all duration-200 
-        ${isClickable ? 'hover:shadow-md cursor-pointer active:scale-[0.98]' : ''} 
-      `}
+      className={`w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98]' : ''} `}
       onClick={onClick}
     >
       <div className='p-6'>
-        <h2 className='text-black text-lg font-semibold mb-4 text-left'>
-          {title}
-        </h2>
+        <h2 className='mb-4 text-left text-lg font-semibold text-black'>{title}</h2>
         <motion.div
           className='flex flex-wrap gap-3 overflow-visible'
           layout

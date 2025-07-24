@@ -35,7 +35,7 @@ export default function SocialLinksSheet({
     x: '',
     website: '',
   });
-  
+
   const updateProfileMutation = useUpdateUserProfile();
 
   // Reset state when sheet opens
@@ -97,17 +97,17 @@ export default function SocialLinksSheet({
     if (website && !website.startsWith('http')) {
       formattedWebsite = `https://${website}`;
     }
-    
+
     const updateData = {
       instagram_handle: cleanedInstagram,
       x_handle: cleanedX,
       bio_link: formattedWebsite,
     };
-    
+
     if (onSave) {
       onSave(updateData);
     }
-    
+
     try {
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
@@ -115,11 +115,11 @@ export default function SocialLinksSheet({
         toast.error(validation.error || 'Invalid social links data');
         return;
       }
-      
+
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Social links updated successfully');
-      
+
       // Close sheet
       onClose();
     } catch (error) {
@@ -139,7 +139,7 @@ export default function SocialLinksSheet({
     instagram !== (currentLinks.instagram_handle || '') ||
     xHandle !== (currentLinks.x_handle || '') ||
     website !== (currentLinks.bio_link || '');
-    
+
   const isSaving = updateProfileMutation.isPending;
 
   return (
@@ -255,11 +255,11 @@ export default function SocialLinksSheet({
                     <Button
                       onClick={handleSave}
                       disabled={!hasChanges || isSaving}
-                      className="flex-1 bg-red-500 text-white hover:bg-red-600"
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
                         </>
                       ) : (

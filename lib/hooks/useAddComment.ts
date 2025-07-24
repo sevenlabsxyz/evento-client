@@ -74,10 +74,10 @@ export function useAddComment() {
             ['event', 'comments', newComment.event_id],
             (old) => {
               if (!old) return [];
-              
+
               // Always create a deep copy to avoid state mutation issues
               const commentsCopy = JSON.parse(JSON.stringify(old || []));
-              
+
               // Recursive function to find a comment by ID at any nesting level
               const findAndAddReply = (comments: EventComment[]): boolean => {
                 for (let i = 0; i < comments.length; i++) {
@@ -91,7 +91,7 @@ export function useAddComment() {
                     comments[i].replies.unshift(optimisticComment);
                     return true; // Found and updated
                   }
-                  
+
                   // If this comment has replies, search within them recursively
                   if (comments[i].replies && comments[i].replies.length > 0) {
                     if (findAndAddReply(comments[i].replies)) {
@@ -101,7 +101,7 @@ export function useAddComment() {
                 }
                 return false; // Not found in this branch
               };
-              
+
               // Start the recursive search from the top level
               if (findAndAddReply(commentsCopy)) {
                 return commentsCopy;

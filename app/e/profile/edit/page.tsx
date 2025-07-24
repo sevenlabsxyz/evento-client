@@ -20,9 +20,9 @@ import {
   Loader2,
   Type,
   User,
-  Zap
+  Zap,
 } from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
@@ -37,8 +37,7 @@ export default function EditProfilePage() {
 
   // Form store - use stable selector functions to prevent rerenders
   // Get just the methods from the store
-  const { getFormData, hasChanges, isValid, populateFromUser, reset } =
-    useProfileFormStore();
+  const { getFormData, hasChanges, isValid, populateFromUser, reset } = useProfileFormStore();
 
   // Get the form field values
   const username = useProfileFormStore((state) => state.username);
@@ -47,9 +46,7 @@ export default function EditProfilePage() {
   const image = useProfileFormStore((state) => state.image);
   const bio_link = useProfileFormStore((state) => state.bio_link);
   const x_handle = useProfileFormStore((state) => state.x_handle);
-  const instagram_handle = useProfileFormStore(
-    (state) => state.instagram_handle
-  );
+  const instagram_handle = useProfileFormStore((state) => state.instagram_handle);
   const ln_address = useProfileFormStore((state) => state.ln_address);
   const nip05 = useProfileFormStore((state) => state.nip05);
 
@@ -60,9 +57,7 @@ export default function EditProfilePage() {
   const setImage = useProfileFormStore((state) => state.setImage);
   const setBioLink = useProfileFormStore((state) => state.setBioLink);
   const setXHandle = useProfileFormStore((state) => state.setXHandle);
-  const setInstagramHandle = useProfileFormStore(
-    (state) => state.setInstagramHandle
-  );
+  const setInstagramHandle = useProfileFormStore((state) => state.setInstagramHandle);
   const setLnAddress = useProfileFormStore((state) => state.setLnAddress);
   const setNip05 = useProfileFormStore((state) => state.setNip05);
 
@@ -79,7 +74,7 @@ export default function EditProfilePage() {
   useEffect(() => {
     // Apply any existing route configuration first
     applyRouteConfig(pathname);
-    
+
     // Set route-specific configuration
     setTopBarForRoute(pathname, {
       title: 'Edit Profile',
@@ -105,13 +100,11 @@ export default function EditProfilePage() {
 
   if (isLoading || isCheckingAuth || updateProfileMutation.isPending) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="flex items-center gap-2">
-          <Loader2 className="h-6 w-6 animate-spin" />
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='flex items-center gap-2'>
+          <Loader2 className='h-6 w-6 animate-spin' />
           <span>
-            {updateProfileMutation.isPending
-              ? 'Saving profile...'
-              : 'Loading profile...'}
+            {updateProfileMutation.isPending ? 'Saving profile...' : 'Loading profile...'}
           </span>
         </div>
       </div>
@@ -120,146 +113,134 @@ export default function EditProfilePage() {
 
   return (
     <>
-      <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         {/* Content */}
-        <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4">
+        <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4'>
           {/* Profile Image Module */}
-          <div className="rounded-2xl bg-white p-4">
+          <div className='rounded-2xl bg-white p-4'>
             <button
               onClick={() => setShowProfileImageSheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100">
-                <Camera className="h-6 w-6 text-gray-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100'>
+                <Camera className='h-6 w-6 text-gray-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Profile Picture</h3>
-                <p className="text-sm text-gray-500">
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Profile Picture</h3>
+                <p className='text-sm text-gray-500'>
                   {image ? 'Tap to change photo' : 'Add a profile photo'}
                 </p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
           </div>
 
           {/* Basic Info Module */}
-          <div className="space-y-4 rounded-2xl bg-white p-4">
+          <div className='space-y-4 rounded-2xl bg-white p-4'>
             {/* Username */}
             <button
               onClick={() => setShowUsernameSheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
-                <AtSign className="h-6 w-6 text-blue-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
+                <AtSign className='h-6 w-6 text-blue-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Username</h3>
-                <p className="text-sm text-gray-500">
-                  {username || 'Choose a username'}
-                </p>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Username</h3>
+                <p className='text-sm text-gray-500'>{username || 'Choose a username'}</p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
 
             {/* Name */}
             <button
               onClick={() => setShowNameSheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
-                <User className="h-6 w-6 text-blue-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
+                <User className='h-6 w-6 text-blue-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Name</h3>
-                <p className="text-sm text-gray-500">
-                  {name || 'Add your name'}
-                </p>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Name</h3>
+                <p className='text-sm text-gray-500'>{name || 'Add your name'}</p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
           </div>
 
           {/* Social Links Module */}
-          <div className="rounded-2xl bg-white p-4">
+          <div className='rounded-2xl bg-white p-4'>
             <button
               onClick={() => setShowSocialLinksSheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100">
-                <Instagram className="h-6 w-6 text-purple-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
+                <Instagram className='h-6 w-6 text-purple-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Social Links</h3>
-                <p className="text-sm text-gray-500">
-                  {[
-                    instagram_handle && 'Instagram',
-                    x_handle && 'X',
-                    bio_link && 'Website',
-                  ]
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Social Links</h3>
+                <p className='text-sm text-gray-500'>
+                  {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
                     .filter(Boolean)
                     .join(', ') || 'Add your social profiles'}
                 </p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
           </div>
 
           {/* Biography Module */}
-          <div className="rounded-2xl bg-white p-4">
+          <div className='rounded-2xl bg-white p-4'>
             <button
               onClick={() => setShowBiographySheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
-                <Type className="h-6 w-6 text-green-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-green-100'>
+                <Type className='h-6 w-6 text-green-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Biography</h3>
-                <p className="text-sm text-gray-500">
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Biography</h3>
+                <p className='text-sm text-gray-500'>
                   {bio
                     ? bio.replace(/<[^>]*>/g, '').substring(0, 40) + '...'
                     : 'Tell us about yourself'}
                 </p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
           </div>
 
           {/* Bitcoin Module */}
-          <div className="rounded-2xl bg-white p-4">
+          <div className='rounded-2xl bg-white p-4'>
             <button
               onClick={() => setShowLightningSheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100">
-                <Zap className="h-6 w-6 text-orange-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100'>
+                <Zap className='h-6 w-6 text-orange-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Bitcoin</h3>
-                <p className="text-sm text-gray-500">
-                  {ln_address || 'Add Lightning address'}
-                </p>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Bitcoin</h3>
+                <p className='text-sm text-gray-500'>{ln_address || 'Add Lightning address'}</p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
           </div>
 
           {/* Nostr Module */}
-          <div className="rounded-2xl bg-white p-4">
+          <div className='rounded-2xl bg-white p-4'>
             <button
               onClick={() => setShowNostrSheet(true)}
-              className="flex w-full items-center gap-4 text-left"
+              className='flex w-full items-center gap-4 text-left'
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100">
-                <Hash className="h-6 w-6 text-pink-600" />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
+                <Hash className='h-6 w-6 text-pink-600' />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">Nostr</h3>
-                <p className="text-sm text-gray-500">
-                  {nip05 || 'Add Nostr identifier'}
-                </p>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Nostr</h3>
+                <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
               </div>
-              <ChevronRight className="h-5 w-5 text-gray-400" />
+              <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
           </div>
         </div>

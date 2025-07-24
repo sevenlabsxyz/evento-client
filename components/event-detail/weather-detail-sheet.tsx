@@ -35,23 +35,23 @@ export default function WeatherDetailSheet({
   const [iconError, setIconError] = useState(false); // Track image load errors
   const [iconLoaded, setIconLoaded] = useState(false); // Track if icon loaded successfully
   const iconRef = useRef<HTMLImageElement>(null);
-  
+
   // Check if weather icon can be loaded
   useEffect(() => {
     const img = new Image();
     img.src = iconUrl;
-    
+
     img.onload = () => {
       setIconLoaded(true);
       setIconError(false);
     };
-    
+
     img.onerror = () => {
       setIconError(true);
       setIconLoaded(false);
       console.log('Weather icon failed to load:', iconUrl);
     };
-    
+
     // Clean up
     return () => {
       img.onload = null;

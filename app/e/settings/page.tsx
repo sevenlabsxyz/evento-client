@@ -20,8 +20,8 @@ import {
   Sparkles,
   UserCircle,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import packageJson from '../../../package.json';
 
 export default function SettingsPage() {
@@ -82,9 +82,7 @@ export default function SettingsPage() {
         await navigator.clipboard.writeText('https://evento.so');
         toast.success('Link copied to clipboard!');
       } catch (clipboardError) {
-        toast.error(
-          'Unable to share. Please copy the link manually: evento.so'
-        );
+        toast.error('Unable to share. Please copy the link manually: evento.so');
       }
     }
   };
@@ -118,9 +116,7 @@ export default function SettingsPage() {
                 <UserCircle className='h-4 w-4 text-red-600' />
               </div>
               <div>
-                <p className='font-medium text-red-500'>
-                  {user?.name || 'Guest'}
-                </p>
+                <p className='font-medium text-red-500'>{user?.name || 'Guest'}</p>
                 <p className='text-sm text-gray-600'>{email}</p>
               </div>
             </div>
@@ -157,9 +153,7 @@ export default function SettingsPage() {
 
         {/* Help Center Section */}
         <div className='mb-2 px-4'>
-          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
-            HELP CENTER
-          </h2>
+          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>HELP CENTER</h2>
         </div>
         <div className='mx-4 mb-4 rounded-2xl bg-white'>
           <div className='border-b border-gray-100 p-4'>
@@ -195,9 +189,7 @@ export default function SettingsPage() {
 
         {/* Developer Section */}
         <div className='mb-2 px-4'>
-          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
-            DEVELOPER
-          </h2>
+          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
         </div>
         <div className='mx-4 mb-4 rounded-2xl bg-white'>
           <div className='border-b border-gray-100 p-4'>
@@ -233,9 +225,7 @@ export default function SettingsPage() {
 
         {/* About Section */}
         <div className='mb-2 px-4'>
-          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
-            ABOUT
-          </h2>
+          <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ABOUT</h2>
         </div>
         <div className='mx-4 mb-4 rounded-2xl bg-white'>
           <div className='border-b border-gray-100 p-4'>
@@ -284,10 +274,7 @@ export default function SettingsPage() {
           </div>
 
           <div className='p-4'>
-            <button
-              className='flex w-full items-center justify-between'
-              onClick={handleShare}
-            >
+            <button className='flex w-full items-center justify-between' onClick={handleShare}>
               <div className='flex items-center gap-3'>
                 <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
                   <Share className='h-4 w-4 text-red-600' />
@@ -301,9 +288,7 @@ export default function SettingsPage() {
 
         {/* Version Info */}
         <div className='px-4 pb-6 text-center'>
-          <p className='text-sm text-gray-500'>
-            Version: {packageJson.version}
-          </p>
+          <p className='text-sm text-gray-500'>Version: {packageJson.version}</p>
         </div>
       </div>
 
@@ -321,10 +306,7 @@ export default function SettingsPage() {
             : ''
         }
       />
-      <ChangelogSheet
-        open={changelogSheetOpen}
-        onOpenChange={setChangelogSheetOpen}
-      />
+      <ChangelogSheet open={changelogSheetOpen} onOpenChange={setChangelogSheetOpen} />
       <APISheet
         open={apiSheetOpen}
         onOpenChange={setApiSheetOpen}

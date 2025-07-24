@@ -15,7 +15,7 @@ export default function NotificationsPage() {
   // Set TopBar content
   useEffect(() => {
     applyRouteConfig(pathname);
-    
+
     setTopBarForRoute(pathname, {
       title: 'Inbox',
       subtitle: undefined,
@@ -45,14 +45,15 @@ export default function NotificationsPage() {
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Coming Soon Content */}
-      <div className='flex flex-1 flex-col items-center justify-center pb-20 px-4'>
+      <div className='flex flex-1 flex-col items-center justify-center px-4 pb-20'>
         <div className='flex flex-col items-center text-center'>
           <div className='mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100'>
             <Inbox className='h-10 w-10 text-gray-400' />
           </div>
           <h2 className='mb-3 text-xl font-semibold text-gray-900'>Coming Soon</h2>
-          <p className='text-gray-600 max-w-sm'>
-            Notification functionality is coming soon. Stay tuned for updates on likes, comments, and activity!
+          <p className='max-w-sm text-gray-600'>
+            Notification functionality is coming soon. Stay tuned for updates on likes, comments,
+            and activity!
           </p>
         </div>
       </div>

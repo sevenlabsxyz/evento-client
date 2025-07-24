@@ -6,10 +6,7 @@ export const updateUserProfileSchema = z.object({
     .string()
     .min(3, 'Username must be at least 3 characters')
     .max(20, 'Username must be less than 20 characters')
-    .regex(
-      /^[a-zA-Z0-9]+$/,
-      'Username can only contain letters and numbers'
-    )
+    .regex(/^[a-zA-Z0-9]+$/, 'Username can only contain letters and numbers')
     .optional(),
 
   name: z
@@ -20,16 +17,9 @@ export const updateUserProfileSchema = z.object({
 
   bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
 
-  bio_link: z
-    .string()
-    .url('Please enter a valid URL')
-    .optional()
-    .or(z.literal('')),
+  bio_link: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
 
-  x_handle: z
-    .string()
-    .max(50, 'X handle must be less than 50 characters')
-    .optional(),
+  x_handle: z.string().max(50, 'X handle must be less than 50 characters').optional(),
 
   instagram_handle: z
     .string()

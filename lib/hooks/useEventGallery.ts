@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import { ApiResponse, UserDetails } from '@/lib/types/api';
+import { UserDetails } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
 export interface GalleryItem {
@@ -17,9 +17,7 @@ export function useEventGallery(eventId: string) {
   return useQuery({
     queryKey: ['event', 'gallery', eventId],
     queryFn: async (): Promise<GalleryItem[]> => {
-      const response = await apiClient.get<GalleryItem[]>(
-        `/v1/events/gallery?id=${eventId}`
-      );
+      const response = await apiClient.get<GalleryItem[]>(`/v1/events/gallery?id=${eventId}`);
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

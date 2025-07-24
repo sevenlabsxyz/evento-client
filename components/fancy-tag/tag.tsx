@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
 interface TagProps {
@@ -31,11 +31,7 @@ export function Tag({ text, isSelected, onToggle }: TagProps) {
         mass: 0.5,
         backgroundColor: { duration: 0.1 },
       }}
-      className={`
-        inline-flex items-center px-4 py-2 rounded-full text-base font-medium
-        whitespace-nowrap overflow-hidden ring-1 ring-inset
-        ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)]' : 'text-gray-600 ring-[rgba(0,0,0,0.06)]'}
-      `}
+      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-base font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)]' : 'text-gray-600 ring-[rgba(0,0,0,0.06)]'} `}
     >
       <motion.div
         className='relative flex items-center'
@@ -63,8 +59,8 @@ export function Tag({ text, isSelected, onToggle }: TagProps) {
               }}
               className='absolute right-0'
             >
-              <div className='w-4 h-4 rounded-full bg-red-600 flex items-center justify-center'>
-                <Check className='w-3 h-3 text-white' strokeWidth={1.5} />
+              <div className='flex h-4 w-4 items-center justify-center rounded-full bg-red-600'>
+                <Check className='h-3 w-3 text-white' strokeWidth={1.5} />
               </div>
             </motion.span>
           )}

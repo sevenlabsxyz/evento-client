@@ -6,7 +6,7 @@
 export const Env = {
   // Node Environment
   NODE_ENV: process.env.NODE_ENV || 'development',
-  
+
   // API URLs
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://evento.so/api',
   API_PROXY_TARGET: process.env.API_PROXY_TARGET || 'http://localhost:3002/api',

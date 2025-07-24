@@ -17,35 +17,22 @@ import {
   useUserProfile,
 } from '@/lib/hooks/useUserProfile';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
-import {
-  BadgeCheck,
-  Camera,
-  Edit3,
-  Loader2,
-  Settings,
-  User,
-} from 'lucide-react';
-import { useRouter, usePathname } from 'next/navigation';
+import { BadgeCheck, Camera, Edit3, Loader2, Settings, User } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } =
-    useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('about');
   const [eventsFilter, setEventsFilter] = useState('attending');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null
-  );
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
-    null
-  );
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
 
   // Get user data from API
@@ -88,14 +75,7 @@ export default function ProfilePage() {
       clearRoute(pathname);
       setOverlaid(false);
     };
-  }, [
-    router,
-    pathname,
-    setTopBarForRoute,
-    applyRouteConfig,
-    clearRoute,
-    setOverlaid,
-  ]);
+  }, [router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid]);
 
   const userStats = {
     events: eventCount || 0,
@@ -290,8 +270,7 @@ export default function ProfilePage() {
   };
 
   const renderEventsTab = () => {
-    const currentEvents =
-      eventsFilter === 'attending' ? attendingEvents : hostingEvents;
+    const currentEvents = eventsFilter === 'attending' ? attendingEvents : hostingEvents;
     const groupedEvents = groupEventsByDate(currentEvents);
 
     return (
@@ -325,9 +304,7 @@ export default function ProfilePage() {
           {groupedEvents.map((group, groupIndex) => (
             <div key={group.date}>
               <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-sm font-medium text-gray-500'>
-                  {group.formattedDate}
-                </h2>
+                <h2 className='text-sm font-medium text-gray-500'>{group.formattedDate}</h2>
               </div>
 
               <div className='space-y-4'>
@@ -343,9 +320,7 @@ export default function ProfilePage() {
                       <p className='text-gray-500'>{event.location}</p>
                     </div>
                     <div className='text-right'>
-                      <span className='text-sm text-gray-600'>
-                        {event.time}
-                      </span>
+                      <span className='text-sm text-gray-600'>{event.time}</span>
                     </div>
                   </div>
                 ))}
@@ -371,11 +346,7 @@ export default function ProfilePage() {
       {/* Bio/Description */}
       {!user?.bio ? null : (
         <div>
-          <RowCard
-            title={'Bio'}
-            subtitle={user?.bio}
-            icon={<User className='h-4 w-4' />}
-          />
+          <RowCard title={'Bio'} subtitle={user?.bio} icon={<User className='h-4 w-4' />} />
         </div>
       )}
 
@@ -397,9 +368,7 @@ export default function ProfilePage() {
         <div className='space-y-3'>
           {profileQuestions.map((item, index) => (
             <div key={index} className='rounded-xl bg-gray-50 p-3'>
-              <p className='mb-1 text-sm font-medium text-gray-700'>
-                {item.question}
-              </p>
+              <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
               <p className='text-sm text-gray-900'>{item.answer}</p>
             </div>
           ))}
@@ -437,15 +406,11 @@ export default function ProfilePage() {
   const renderStatsTab = () => (
     <div className='grid grid-cols-2 gap-4'>
       <div className='rounded-xl bg-blue-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-blue-600'>
-          {userStats.countries}
-        </div>
+        <div className='text-3xl font-bold text-blue-600'>{userStats.countries}</div>
         <div className='text-sm text-gray-600'>Countries</div>
       </div>
       <div className='rounded-xl bg-green-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-green-600'>
-          {userStats.mutuals}
-        </div>
+        <div className='text-3xl font-bold text-green-600'>{userStats.mutuals}</div>
         <div className='text-sm text-gray-600'>Mutuals</div>
       </div>
     </div>
@@ -484,9 +449,7 @@ export default function ProfilePage() {
         <div className='mb-4 bg-white px-4 pb-0 pt-20'>
           {/* User Info - Centered */}
           <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>
-              {userData.name}
-            </h2>
+            <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
             <p className='text-gray-600'>{userData.username}</p>
           </div>
 
@@ -494,39 +457,27 @@ export default function ProfilePage() {
           <div className='mb-4 flex justify-center'>
             <div className='grid grid-cols-3 gap-8'>
               <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>
-                  {userStats.events}
-                </div>
+                <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
                 <div className='text-sm text-gray-500'>Events</div>
               </div>
-              <button
-                className='text-center'
-                onClick={() => setShowFollowingSheet(true)}
-              >
-                <div className='text-xl font-bold text-gray-900'>
-                  {userStats.following}
-                </div>
+              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
                 <div className='text-sm text-gray-500'>Following</div>
               </button>
-              <button
-                className='text-center'
-                onClick={() => setShowFollowersSheet(true)}
-              >
-                <div className='text-xl font-bold text-gray-900'>
-                  {userStats.followers}
-                </div>
+              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
                 <div className='text-sm text-gray-500'>Followers</div>
               </button>
             </div>
           </div>
 
           {/* Tabbed Section */}
-          <div className='mb-4 bg-white w-full'>
+          <div className='mb-4 w-full bg-white'>
             {/* Tab Headers */}
-            <div className='flex flex-row items-center justify-center gap-2 px-4 py-3 mb-2'>
+            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
               <button
                 onClick={() => setActiveTab('about')}
-                className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
+                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'about'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
@@ -536,7 +487,7 @@ export default function ProfilePage() {
               </button>
               <button
                 onClick={() => setActiveTab('events')}
-                className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
+                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'events'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
@@ -562,13 +513,10 @@ export default function ProfilePage() {
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
               <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
-            <h3 className='mb-4 text-xl font-bold text-gray-900'>
-              You are verified
-            </h3>
+            <h3 className='mb-4 text-xl font-bold text-gray-900'>You are verified</h3>
             <p className='mb-6 text-gray-600'>
-              Congratulations! Your account is verified. You have premium member
-              status with enhanced credibility and access to exclusive features
-              on our platform.
+              Congratulations! Your account is verified. You have premium member status with
+              enhanced credibility and access to exclusive features on our platform.
             </p>
             <div className='flex flex-col gap-3'>
               <Button

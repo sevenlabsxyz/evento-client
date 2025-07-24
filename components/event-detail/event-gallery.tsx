@@ -5,7 +5,6 @@ import { Event } from '@/lib/types/event';
 import { isGif } from '@/lib/utils/image';
 import { Camera, Share2 } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import PhotoUploadSheet from './photo-upload-sheet';
 
@@ -32,7 +31,7 @@ function GalleryImage({ src, index, onImageClick }: GalleryImageProps) {
   return (
     <div
       onClick={handleImageClick}
-      className="relative aspect-square overflow-hidden rounded-md cursor-pointer"
+      className='relative aspect-square cursor-pointer overflow-hidden rounded-md'
     >
       {isGif(src) ? (
         <img
@@ -48,26 +47,21 @@ function GalleryImage({ src, index, onImageClick }: GalleryImageProps) {
           src={src}
           alt={`Gallery image ${index + 1}`}
           fill
-          sizes="(max-width: 768px) 33vw, 20vw"
-          className={`object-cover transition-opacity ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
+          sizes='(max-width: 768px) 33vw, 20vw'
+          className={`object-cover transition-opacity ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setIsLoaded(true)}
         />
       )}
       {!isLoaded && (
-        <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-          <div className="w-8 h-8 border-t-2 border-red-500 border-solid rounded-full animate-spin"></div>
+        <div className='absolute inset-0 flex items-center justify-center bg-gray-100'>
+          <div className='h-8 w-8 animate-spin rounded-full border-t-2 border-solid border-red-500'></div>
         </div>
       )}
     </div>
   );
 }
 
-export default function EventGallery({
-  event,
-  onImageClick,
-}: EventGalleryProps) {
+export default function EventGallery({ event, onImageClick }: EventGalleryProps) {
   const galleryImages = event.galleryImages || [];
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false);
 
@@ -95,25 +89,25 @@ export default function EventGallery({
   };
 
   return (
-    <div className="py-6">
+    <div className='py-6'>
       {/* Action Buttons */}
       {galleryImages.length > 0 && (
-        <div className="mb-6 flex items-center justify-between gap-3">
+        <div className='mb-6 flex items-center justify-between gap-3'>
           <Button
             onClick={handleAddPhoto}
-            variant="outline"
-            className="flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black"
+            variant='outline'
+            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black'
           >
-            <Camera className="h-4 w-4" />
+            <Camera className='h-4 w-4' />
             Add Photos
           </Button>
 
           <Button
             onClick={handleShareAlbum}
-            variant="outline"
-            className="flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black"
+            variant='outline'
+            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black'
           >
-            <Share2 className="h-4 w-4" />
+            <Share2 className='h-4 w-4' />
             Share Album
           </Button>
         </div>
@@ -121,35 +115,28 @@ export default function EventGallery({
 
       {/* Gallery Grid */}
       {galleryImages.length > 0 ? (
-        <div className="grid grid-cols-3 gap-1 md:gap-2">
+        <div className='grid grid-cols-3 gap-1 md:gap-2'>
           {galleryImages.map((image, index) => (
-            <GalleryImage
-              key={index}
-              src={image}
-              index={index}
-              onImageClick={onImageClick}
-            />
+            <GalleryImage key={index} src={image} index={index} onImageClick={onImageClick} />
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-            <Camera className="h-8 w-8 text-gray-400" />
+        <div className='flex flex-col items-center justify-center py-12 text-center'>
+          <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+            <Camera className='h-8 w-8 text-gray-400' />
           </div>
-          <h3 className="mb-2 text-lg font-medium text-gray-900">
-            No Photos Yet
-          </h3>
-          <p className="mb-6 max-w-xs text-sm text-gray-500">
-            Be the first to add photos to this event. Photos added here will be
-            visible to all event guests.
+          <h3 className='mb-2 text-lg font-medium text-gray-900'>No Photos Yet</h3>
+          <p className='mb-6 max-w-xs text-sm text-gray-500'>
+            Be the first to add photos to this event. Photos added here will be visible to all event
+            guests.
           </p>
 
           <Button
             onClick={handleAddPhoto}
-            variant="default"
-            className="gap-2 rounded-full px-5 py-2.5"
+            variant='default'
+            className='gap-2 rounded-full px-5 py-2.5'
           >
-            <Camera className="h-4 w-4" />
+            <Camera className='h-4 w-4' />
             Add Photos
           </Button>
         </div>

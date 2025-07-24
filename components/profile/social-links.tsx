@@ -26,11 +26,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
 
   // Check if user has any social links
   const hasAnyLinks =
-    user.bio_link ||
-    user.instagram_handle ||
-    user.x_handle ||
-    user.ln_address ||
-    user.nip05;
+    user.bio_link || user.instagram_handle || user.x_handle || user.ln_address || user.nip05;
 
   if (!hasAnyLinks) {
     return null;
@@ -38,10 +34,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
 
   return (
     <>
-      <div
-        className='flex flex-wrap gap-2 rounded-xl bg-gray-50 p-2.5 w-full max-w-md bg-white border border-gray-200 rounded-2xl shadow-sm 
-        transition-all duration-200 justify-center'
-      >
+      <div className='flex w-full max-w-md flex-wrap justify-center gap-2 rounded-2xl rounded-xl border border-gray-200 bg-gray-50 bg-white p-2.5 shadow-sm transition-all duration-200'>
         {/* Website */}
         {user.bio_link && (
           <button

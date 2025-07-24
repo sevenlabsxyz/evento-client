@@ -38,7 +38,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
 
     // Store the comment text before clearing for better UX
     const message = commentText.trim();
-    
+
     // Clear text immediately for better UX
     setCommentText('');
 
@@ -49,12 +49,11 @@ export default function EventComments({ eventId }: EventCommentsProps) {
       });
     } catch (error) {
       console.error('Error adding comment:', error);
-      
+
       // Show detailed error message
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Your comment was not saved. Please try again.';
-        
+      const errorMessage =
+        error instanceof Error ? error.message : 'Your comment was not saved. Please try again.';
+
       toast.error(errorMessage);
     }
   };
@@ -111,8 +110,8 @@ export default function EventComments({ eventId }: EventCommentsProps) {
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Add a comment"
-              className="min-h-[40px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+              placeholder='Add a comment'
+              className='min-h-[40px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
               disabled={!user}
               rows={1}
             />
@@ -124,11 +123,9 @@ export default function EventComments({ eventId }: EventCommentsProps) {
                   : 'cursor-default text-gray-300'
               )}
               onClick={handleAddComment}
-              disabled={
-                !commentText.trim() || !user
-              }
+              disabled={!commentText.trim() || !user}
             >
-                <SendHorizontal className="h-5 w-5" />
+              <SendHorizontal className='h-5 w-5' />
             </button>
           </div>
         </div>

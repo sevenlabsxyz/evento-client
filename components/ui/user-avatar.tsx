@@ -72,14 +72,11 @@ export function UserAvatar({
             // Only use size config if no explicit dimensions are provided
             !height && !width ? sizeConfig.avatar : '',
             sizeConfig.border,
-            'bg-white border-gray-200 shadow-lg'
+            'border-gray-200 bg-white shadow-lg'
           )}
           style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
         >
-          <AvatarImage
-            src={user?.image || '/assets/img/evento-sublogo.svg'}
-            alt='Profile'
-          />
+          <AvatarImage src={user?.image || '/assets/img/evento-sublogo.svg'} alt='Profile' />
           <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
             {user?.name?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
           </AvatarFallback>

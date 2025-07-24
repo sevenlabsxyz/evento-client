@@ -65,27 +65,27 @@ export default function UsernameSheet({
       toast.error('Please choose an available username');
       return;
     }
-    
+
     // Update local state if onSave is provided (for backward compatibility)
     if (onSave) {
       onSave(username);
     }
-    
+
     try {
       // Directly save to API
       const updateData = { username };
-      
+
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
         toast.error(validation.error || 'Invalid username');
         return;
       }
-      
+
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Username updated successfully');
-      
+
       // Close sheet
       onClose();
     } catch (error) {
@@ -189,7 +189,7 @@ export default function UsernameSheet({
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
                         </>
                       ) : (

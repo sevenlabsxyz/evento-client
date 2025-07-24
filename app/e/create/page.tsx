@@ -45,7 +45,7 @@ export default function CreatePage() {
   // Set TopBar content
   useEffect(() => {
     applyRouteConfig(pathname);
-    
+
     setTopBarForRoute(pathname, {
       leftMode: 'back',
       title: 'Create Event',
@@ -272,11 +272,11 @@ export default function CreatePage() {
   }
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Header */}
 
       {/* Cover Image Selector */}
-      <div className="mb-2 mt-2 px-4">
+      <div className='mb-2 mt-2 px-4'>
         <CoverImageSelector
           selectedImage={coverImage}
           onImageClick={() => setShowImageModal(true)}
@@ -284,7 +284,7 @@ export default function CreatePage() {
       </div>
 
       {/* Form Content */}
-      <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4">
+      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
         {/* Event Title Module - Moved to top */}
         <div className='rounded-2xl bg-white p-4'>
           <div className='space-y-2'>
@@ -292,58 +292,54 @@ export default function CreatePage() {
             <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
-                type="text"
-                placeholder="Enter event name"
+                type='text'
+                placeholder='Enter event name'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none"
+                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
               />
             </div>
           </div>
         </div>
 
         {/* Date & Time Module */}
-        <div className="space-y-4 rounded-2xl bg-white p-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100">
-              <Calendar className="h-4 w-4 text-gray-600" />
+        <div className='space-y-4 rounded-2xl bg-white p-4'>
+          <div className='flex items-center gap-4'>
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Calendar className='h-4 w-4 text-gray-600' />
             </div>
-            <span className="w-12 min-w-10 font-medium text-gray-700">
-              Starts
-            </span>
-            <div className="flex flex-1 gap-2">
+            <span className='w-12 min-w-10 font-medium text-gray-700'>Starts</span>
+            <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900"
+                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className="whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600"
+                className='whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(startTime)}
               </button>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100">
-              <Calendar className="h-4 w-4 text-gray-600" />
+          <div className='flex items-center gap-4'>
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Calendar className='h-4 w-4 text-gray-600' />
             </div>
-            <span className="w-12 min-w-10 font-medium text-gray-700">
-              Ends
-            </span>
-            <div className="flex flex-1 gap-2">
+            <span className='w-12 min-w-10 font-medium text-gray-700'>Ends</span>
+            <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className="flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900"
+                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className="whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600"
+                className='whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -352,79 +348,67 @@ export default function CreatePage() {
         </div>
 
         {/* Address Module */}
-        <div className="rounded-2xl bg-white p-4">
+        <div className='rounded-2xl bg-white p-4'>
           <button
             onClick={() => setShowLocationModal(true)}
-            className="flex w-full items-center gap-4 text-left"
+            className='flex w-full items-center gap-4 text-left'
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-              <MapPin className="h-4 w-4 text-gray-600" />
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <MapPin className='h-4 w-4 text-gray-600' />
             </div>
-            <div className="flex-1">
-              <label className="mb-1 block text-sm font-medium text-gray-500">
-                Address
-              </label>
-              <div className="flex items-center justify-between">
-                <span
-                  className={`font-medium ${
-                    location ? 'text-gray-900' : 'text-gray-400'
-                  }`}
-                >
-                  {location
-                    ? getLocationDisplayName(location)
-                    : 'Choose address'}
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
+              <div className='flex items-center justify-between'>
+                <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
+                  {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className='h-4 w-4 text-gray-400' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Event Visibility */}
-        <div className="rounded-2xl bg-white p-4">
+        <div className='rounded-2xl bg-white p-4'>
           <button
             onClick={() => setShowVisibilitySheet(true)}
-            className="flex w-full items-center gap-4 text-left"
+            className='flex w-full items-center gap-4 text-left'
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
               {visibility === 'public' ? (
-                <Globe className="h-4 w-4 text-gray-600" />
+                <Globe className='h-4 w-4 text-gray-600' />
               ) : (
-                <Lock className="h-4 w-4 text-gray-600" />
+                <Lock className='h-4 w-4 text-gray-600' />
               )}
             </div>
-            <div className="flex-1">
-              <label className="mb-1 block text-sm font-medium text-gray-500">
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>
                 Event Visibility
               </label>
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-gray-900">
+              <div className='flex items-center justify-between'>
+                <span className='font-medium text-gray-900'>
                   {visibility === 'public' ? 'Public' : 'Private'}
                 </span>
-                <ChevronRight className="h-4 w-4 text-gray-400" />
+                <ChevronRight className='h-4 w-4 text-gray-400' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Capacity Options */}
-        <div className="rounded-2xl bg-white p-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-              <Users className="h-4 w-4 text-gray-600" />
+        <div className='rounded-2xl bg-white p-4'>
+          <div className='flex items-center gap-4'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Users className='h-4 w-4 text-gray-600' />
             </div>
-            <div className="flex-1">
-              <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                  <label className="mb-1 text-sm font-medium text-gray-500">
-                    {hasCapacity && capacity
-                      ? `Capacity ${capacity}`
-                      : 'Set Capacity'}
+            <div className='flex-1'>
+              <div className='flex items-center justify-between'>
+                <div className='flex flex-col'>
+                  <label className='mb-1 text-sm font-medium text-gray-500'>
+                    {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
                   </label>
                   {hasCapacity && capacity && (
-                    <span className="text-xs text-gray-400">
-                      Maximum attendees: {capacity}
-                    </span>
+                    <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
                   )}
                 </div>
                 <button
@@ -453,46 +437,40 @@ export default function CreatePage() {
         </div>
 
         {/* Description Module */}
-        <div className="rounded-2xl bg-white p-4">
+        <div className='rounded-2xl bg-white p-4'>
           <button
             onClick={() => setShowDescriptionModal(true)}
-            className="flex w-full items-start gap-4 text-left"
+            className='flex w-full items-start gap-4 text-left'
           >
-            <div className="mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-              <Edit3 className="h-4 w-4 text-gray-600" />
+            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Edit3 className='h-4 w-4 text-gray-600' />
             </div>
-            <div className="flex-1">
-              <label className="mb-2 block text-sm font-medium text-gray-500">
-                Description
-              </label>
-              <div className="flex items-center justify-between">
+            <div className='flex-1'>
+              <label className='mb-2 block text-sm font-medium text-gray-500'>Description</label>
+              <div className='flex items-center justify-between'>
                 <span
-                  className={`${
-                    isContentEmpty(description)
-                      ? 'text-gray-400'
-                      : 'text-gray-900'
-                  }`}
+                  className={`${isContentEmpty(description) ? 'text-gray-400' : 'text-gray-900'}`}
                 >
                   {isContentEmpty(description)
                     ? 'Add description about this event...'
                     : getContentPreview(description, 80)}
                 </span>
-                <ChevronRight className="h-4 w-4 flex-shrink-0 text-gray-400" />
+                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
               </div>
             </div>
           </button>
         </div>
 
         {/* Attachments Module */}
-        <div className="rounded-2xl bg-white p-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-              <Music className="h-4 w-4 text-gray-600" />
+        <div className='rounded-2xl bg-white p-4'>
+          <div className='flex items-center gap-4'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+              <Music className='h-4 w-4 text-gray-600' />
             </div>
-            <div className="flex-1">
+            <div className='flex-1'>
               <button
                 onClick={() => setShowAttachmentModal(true)}
-                className="text-left font-medium text-gray-500"
+                className='text-left font-medium text-gray-500'
               >
                 Add Music, Photo, File or Link
               </button>
@@ -502,8 +480,8 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4">
-        <div className="mx-auto max-w-full md:max-w-sm">
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
+        <div className='mx-auto max-w-full md:max-w-sm'>
           <SubmitButton
             onClick={handleCreateEvent}
             disabled={!isFormValid || createEventMutation.isPending}
@@ -522,7 +500,7 @@ export default function CreatePage() {
           onClose={() => setShowStartDateModal(false)}
           onDateSelect={setStartDate}
           selectedDate={startDate}
-          title="Start Date"
+          title='Start Date'
         />
 
         <DatePickerSheet
@@ -530,7 +508,7 @@ export default function CreatePage() {
           onClose={() => setShowEndDateModal(false)}
           onDateSelect={setEndDate}
           selectedDate={endDate}
-          title="End Date"
+          title='End Date'
           referenceDate={startDate}
         />
 
@@ -542,7 +520,7 @@ export default function CreatePage() {
           onTimezoneSelect={setTimezone}
           selectedTime={startTime}
           timezone={timezone}
-          title="Start Time"
+          title='Start Time'
         />
 
         <TimePickerSheet
@@ -552,7 +530,7 @@ export default function CreatePage() {
           onTimezoneSelect={setTimezone}
           selectedTime={endTime}
           timezone={timezone}
-          title="End Time"
+          title='End Time'
         />
 
         {/* Attachment Sheet */}

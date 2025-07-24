@@ -35,22 +35,22 @@ export default function BiographySheet({
 
   const handleSave = async () => {
     const trimmedBio = bio.trim();
-    
+
     if (onSave) {
       onSave(trimmedBio);
     }
-    
+
     try {
       // Directly save to API
       const updateData = { bio: trimmedBio };
-      
+
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
         toast.error(validation.error || 'Invalid bio');
         return;
       }
-      
+
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Bio updated successfully');
@@ -84,7 +84,7 @@ export default function BiographySheet({
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
-                </div>
+              </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Biography</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -127,7 +127,7 @@ export default function BiographySheet({
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
                         </>
                       ) : (

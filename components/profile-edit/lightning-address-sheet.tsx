@@ -51,22 +51,22 @@ export default function LightningAddressSheet({
     if (onSave) {
       onSave(trimmedAddress);
     }
-    
+
     try {
       // Directly save to API
       const updateData = { ln_address: trimmedAddress };
-      
+
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
         toast.error(validation.error || 'Invalid Lightning address');
         return;
       }
-      
+
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Lightning address updated successfully');
-      
+
       // Close sheet
       onClose();
     } catch (error) {
@@ -93,10 +93,10 @@ export default function LightningAddressSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className="sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4">
-                 <div className='flex items-center justify-center'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+              <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
-                </div>
+              </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Bitcoin</h2>
                 <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
@@ -161,7 +161,7 @@ export default function LightningAddressSheet({
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
                         </>
                       ) : (

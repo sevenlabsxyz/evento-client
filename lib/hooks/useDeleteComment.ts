@@ -38,9 +38,9 @@ export function useDeleteComment() {
       }
 
       // Fallback
-          // We do this here to ensure the UI is updated before we return
+      // We do this here to ensure the UI is updated before we return
       // Invalidate the comments query to refetch comments
-     await queryClient.invalidateQueries({
+      await queryClient.invalidateQueries({
         queryKey: ['event', 'comments', eventId],
       });
       return { id: commentId };

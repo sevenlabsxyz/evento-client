@@ -43,22 +43,22 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
     if (onSave) {
       onSave(trimmedName);
     }
-    
+
     try {
       // Directly save to API
       const updateData = { name: trimmedName };
-      
+
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
         toast.error(validation.error || 'Invalid name');
         return;
       }
-      
+
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Name updated successfully');
-      
+
       // Close sheet
       onClose();
     } catch (error) {
@@ -133,10 +133,15 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel
                     </Button>
-                    <Button onClick={handleSave} disabled={!canSave || isSaving} className='flex-1' variant="default">
+                    <Button
+                      onClick={handleSave}
+                      disabled={!canSave || isSaving}
+                      className='flex-1'
+                      variant='default'
+                    >
                       {isSaving ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
                         </>
                       ) : (

@@ -5,7 +5,7 @@ interface EventDescriptionProps {
 }
 
 export default function EventDescription({ event }: EventDescriptionProps) {
-  if (event.description && event.description !== "<p></p>") {
+  if (event.description && event.description !== '<p></p>') {
     return (
       <div className='border-t border-gray-100 py-6'>
         <h2 className='mb-4 text-lg font-semibold text-gray-900'>About Event</h2>

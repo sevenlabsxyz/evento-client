@@ -47,10 +47,9 @@ export function useGalleryItemLikes(itemId?: string) {
     mutationFn: async (): Promise<LikeActionResponse> => {
       if (!itemId) throw new Error('No gallery item ID provided');
 
-      const response = await apiClient.post<LikeActionResponse>(
-        '/v1/events/gallery/likes',
-        { itemId }
-      );
+      const response = await apiClient.post<LikeActionResponse>('/v1/events/gallery/likes', {
+        itemId,
+      });
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {
@@ -81,9 +80,7 @@ export function useGalleryItemLikes(itemId?: string) {
       if (previousData) {
         const newData = {
           ...previousData,
-          likes: previousData.has_liked
-            ? previousData.likes - 1
-            : previousData.likes + 1,
+          likes: previousData.has_liked ? previousData.likes - 1 : previousData.likes + 1,
           has_liked: !previousData.has_liked,
         };
 
@@ -95,10 +92,7 @@ export function useGalleryItemLikes(itemId?: string) {
     onError: (err, _, context) => {
       // Revert to the previous value if mutation fails
       if (context?.previousData) {
-        queryClient.setQueryData(
-          ['gallery', 'likes', itemId],
-          context.previousData
-        );
+        queryClient.setQueryData(['gallery', 'likes', itemId], context.previousData);
       }
       toast.error('Failed to update like. Please try again.');
     },

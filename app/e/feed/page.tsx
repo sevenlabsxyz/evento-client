@@ -42,9 +42,7 @@ export default function FeedPage() {
   const [showSearchSheet, setShowSearchSheet] = useState(false);
   const [activeDetent, setActiveDetent] = useState(0);
   const [sortMenuOpen, setSortMenuOpen] = useState(false);
-  const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>(
-    'date-desc'
-  );
+  const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>('date-desc');
   const router = useRouter();
   const pathname = usePathname();
 
@@ -216,9 +214,7 @@ export default function FeedPage() {
     return dates.sort((a, b) => {
       // For date-asc, use the default string sort (which works for ISO dates)
       // For date-desc, reverse the sort order
-      return sortOption === 'date-asc'
-        ? a.localeCompare(b)
-        : b.localeCompare(a);
+      return sortOption === 'date-asc' ? a.localeCompare(b) : b.localeCompare(a);
     });
   }, [eventsByDate, sortOption]);
 
@@ -295,9 +291,7 @@ export default function FeedPage() {
                     setSortMenuOpen(false);
                   }}
                   className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${
-                    sortOption === 'date-desc'
-                      ? 'bg-gray-100 font-medium'
-                      : 'hover:bg-gray-50'
+                    sortOption === 'date-desc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'
                   }`}
                 >
                   <Clock className='mr-2 h-3.5 w-3.5' />
@@ -309,9 +303,7 @@ export default function FeedPage() {
                     setSortMenuOpen(false);
                   }}
                   className={`flex w-full items-center rounded-md px-3 py-2 text-xs ${
-                    sortOption === 'date-asc'
-                      ? 'bg-gray-100 font-medium'
-                      : 'hover:bg-gray-50'
+                    sortOption === 'date-asc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'
                   }`}
                 >
                   <Clock className='mr-2 h-3.5 w-3.5' />
@@ -326,9 +318,7 @@ export default function FeedPage() {
             <button
               onClick={() => setFeedViewMode('card')}
               className={`flex h-8 items-center justify-center rounded-full px-3 text-xs font-medium transition-all ${
-                feedViewMode === 'card'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500'
+                feedViewMode === 'card' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
               <LayoutGrid className='mr-1.5 h-3.5 w-3.5' />
@@ -337,9 +327,7 @@ export default function FeedPage() {
             <button
               onClick={() => setFeedViewMode('compact')}
               className={`flex h-8 items-center justify-center rounded-full px-3 text-xs font-medium transition-all ${
-                feedViewMode === 'compact'
-                  ? 'bg-white text-gray-900 shadow-sm'
-                  : 'text-gray-500'
+                feedViewMode === 'compact' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
               <LayoutList className='mr-1.5 h-3.5 w-3.5' />
@@ -507,10 +495,7 @@ export default function FeedPage() {
                                   }}
                                 >
                                   <img
-                                    src={
-                                      user.image ||
-                                      '/assets/img/evento-sublogo.svg'
-                                    }
+                                    src={user.image || '/assets/img/evento-sublogo.svg'}
                                     alt={user.name}
                                     className='h-12 w-12 rounded-full object-cover'
                                   />
@@ -566,10 +551,7 @@ export default function FeedPage() {
                                   }}
                                 >
                                   <img
-                                    src={
-                                      user.image ||
-                                      '/assets/img/evento-sublogo.svg'
-                                    }
+                                    src={user.image || '/assets/img/evento-sublogo.svg'}
                                     alt={user.name}
                                     className='h-10 w-10 rounded-full object-cover'
                                   />

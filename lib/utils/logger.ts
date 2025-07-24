@@ -3,7 +3,7 @@
  * Provides structured logging with request tracing and data sanitization
  */
 
-import { Env } from "../constants/env";
+import { Env } from '../constants/env';
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 

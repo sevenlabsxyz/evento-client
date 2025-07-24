@@ -51,22 +51,22 @@ export default function NostrSheet({
     if (onSave) {
       onSave(trimmedNip05);
     }
-    
+
     try {
       // Directly save to API
       const updateData = { nip05: trimmedNip05 };
-      
+
       // Validate data
       const validation = validateUpdateUserProfile(updateData);
       if (!validation.valid) {
         toast.error(validation.error || 'Invalid Nostr identifier');
         return;
       }
-      
+
       // Save to API
       await updateProfileMutation.mutateAsync(updateData);
       toast.success('Nostr identifier updated successfully');
-      
+
       // Close sheet
       onClose();
     } catch (error) {
@@ -158,7 +158,7 @@ export default function NostrSheet({
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
                         </>
                       ) : (

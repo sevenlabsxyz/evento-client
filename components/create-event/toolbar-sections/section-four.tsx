@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
-import { BrainCircuit, ChevronDown, Link, Minus, Plus, Sparkles } from 'lucide-react';
+import { ChevronDown, Link, Minus, Plus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { AIDescriptionGeneratorSheet, EventData } from '../ai-description-generator-sheet';
 import { LinkEditSheet } from '../link-edit-sheet';
@@ -75,11 +75,11 @@ export default function SectionFour({
         tooltip='AI Description'
         onClick={() => setShowAIDescriptionSheet(true)}
         disabled={!event?.title}
-        className={!event?.title ? 'opacity-50 cursor-not-allowed' : ''}
+        className={!event?.title ? 'cursor-not-allowed opacity-50' : ''}
       >
         <Sparkles className='h-5 w-5' />
       </ToolbarButton>
-      
+
       {/* LINK */}
       <ToolbarButton
         isActive={editor.isActive('link')}

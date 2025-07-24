@@ -11,15 +11,8 @@ export const LoadingLogo = ({ size = 'md', className }: LoadingLogoProps) => {
   const height = size === 'sm' ? 24 : size === 'md' ? 32 : 48;
 
   return (
-    <div
-      className={cn('flex items-center justify-center animate-spin', className)}
-    >
-      <Image
-        src="/assets/img/evento-sublogo.svg"
-        alt="Evento Logo"
-        width={width}
-        height={height}
-      />
+    <div className={cn('flex animate-spin items-center justify-center', className)}>
+      <Image src='/assets/img/evento-sublogo.svg' alt='Evento Logo' width={width} height={height} />
     </div>
   );
 };

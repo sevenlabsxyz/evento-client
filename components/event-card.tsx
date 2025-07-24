@@ -5,11 +5,7 @@ import { Button } from '@/components/ui/button';
 import { EventWithUser } from '@/lib/types/api';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
-import {
-  getOptimizedAvatarUrl,
-  getOptimizedCoverUrl,
-  isGif,
-} from '@/lib/utils/image';
+import { getOptimizedAvatarUrl, getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
   Bookmark,
@@ -32,26 +28,15 @@ interface EventCardProps {
   isBookmarked?: boolean;
 }
 
-export function EventCard({
-  event,
-  onBookmark,
-  isBookmarked = false,
-}: EventCardProps) {
+export function EventCard({ event, onBookmark, isBookmarked = false }: EventCardProps) {
   const router = useRouter();
-  const { date, timeWithTz } = formatEventDate(
-    event.computed_start_date,
-    event.timezone
-  );
+  const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
   const timeAgo = getRelativeTime(event.created_at);
 
-  const getDropdownItems = (
-    eventId: string,
-    userName: string,
-    userUsername: string
-  ) => [
+  const getDropdownItems = (eventId: string, userName: string, userUsername: string) => [
     {
       label: 'Share Event',
-      icon: <Share className="h-4 w-4" />,
+      icon: <Share className='h-4 w-4' />,
       action: async () => {
         const eventUrl = `${window.location.origin}/e/${eventId}`;
 
@@ -79,7 +64,7 @@ export function EventCard({
     },
     {
       label: 'Copy Link',
-      icon: <Copy className="h-4 w-4" />,
+      icon: <Copy className='h-4 w-4' />,
       action: () => {
         navigator.clipboard.writeText(`${window.location.origin}/e/${eventId}`);
         toast.success('Link copied to clipboard!');
@@ -87,7 +72,7 @@ export function EventCard({
     },
     {
       label: 'View Profile',
-      icon: <User className="h-4 w-4" />,
+      icon: <User className='h-4 w-4' />,
       action: () => {
         router.push(`/${userUsername}`);
       },

@@ -12,12 +12,7 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
-import {
-  Heart,
-  MoreHorizontal,
-  Reply,
-  SendHorizontal
-} from 'lucide-react';
+import { Heart, MoreHorizontal, Reply, SendHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import {
@@ -133,11 +128,11 @@ export default function CommentItem({
 
     // Store the message before clearing input
     const replyMessage = replyText.trim();
-    
+
     // Clear the input immediately and remove the active reply ID for better UX
     setReplyText('');
     setActiveReplyId(null);
-    
+
     try {
       await addCommentMutation.mutateAsync({
         event_id: eventId,
@@ -158,15 +153,15 @@ export default function CommentItem({
   };
 
   return (
-    <div 
+    <div
       className={cn(
-        'group', 
+        'group',
         isReply ? 'ml-8' : '',
-        comment.optimistic ? 'opacity-70 cursor-not-allowed pointer-events-none' : ''
+        comment.optimistic ? 'pointer-events-none cursor-not-allowed opacity-70' : ''
       )}
     >
-      <div className="flex gap-3">
-        <div className="flex-shrink-0">
+      <div className='flex gap-3'>
+        <div className='flex-shrink-0'>
           <UserAvatar
             user={comment.user_details}
             size='sm'
@@ -301,7 +296,7 @@ export default function CommentItem({
                     onClick={handleSubmitReply}
                     disabled={!replyText.trim()}
                   >
-                      <SendHorizontal className="h-4 w-4" />
+                    <SendHorizontal className='h-4 w-4' />
                   </button>
                 </div>
               </div>

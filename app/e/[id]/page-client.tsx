@@ -18,12 +18,7 @@ import { useEventWeather } from '@/lib/hooks/useEventWeather';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Loader2, MessageCircle, Share } from 'lucide-react';
-import {
-  useParams,
-  usePathname,
-  useRouter,
-  useSearchParams,
-} from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function EventDetailPageClient() {
@@ -36,9 +31,7 @@ export default function EventDetailPageClient() {
   const lightboxRef = useRef<SilkLightboxRef>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState(
-    searchParams.get('tab') || 'details'
-  );
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
 
   // Handle tab changes and update URL
   const handleTabChange = (tab: string) => {
@@ -106,21 +99,13 @@ export default function EventDetailPageClient() {
   }, [pathname, setTopBarForRoute, clearRoute]);
 
   // Fetch event data from API
-  const {
-    data: eventData,
-    isLoading: eventLoading,
-    error: eventError,
-  } = useEventDetails(eventId);
-  const { data: hostsData = [], isLoading: hostsLoading } =
-    useEventHosts(eventId);
-  const { data: galleryData = [], isLoading: galleryLoading } =
-    useEventGallery(eventId);
+  const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
+  const { data: hostsData = [], isLoading: hostsLoading } = useEventHosts(eventId);
+  const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
 
   // Transform API data to display format
   const event = useMemo(() => {
-    return eventData
-      ? transformApiEventToDisplay(eventData, hostsData, galleryData)
-      : null;
+    return eventData ? transformApiEventToDisplay(eventData, hostsData, galleryData) : null;
   }, [eventData, hostsData, galleryData]);
 
   // Fetch weather data for the event
@@ -131,20 +116,17 @@ export default function EventDetailPageClient() {
       coordinates: event?.location.coordinates,
     },
     eventDate: event?.computedStartDate || '',
-    enabled:
-      !!event?.location.city &&
-      !!event?.location.country &&
-      !!event?.computedStartDate,
+    enabled: !!event?.location.city && !!event?.location.country && !!event?.computedStartDate,
   });
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="mx-auto mb-4 h-8 w-8 animate-spin text-red-500" />
-          <p className="text-gray-600">Loading event details...</p>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
+          <p className='text-gray-600'>Loading event details...</p>
         </div>
       </div>
     );
@@ -152,17 +134,13 @@ export default function EventDetailPageClient() {
 
   if (eventError || !event) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <h1 className="mb-2 text-2xl font-bold text-gray-900">
-            Event Not Found
-          </h1>
-          <p className="mb-4 text-gray-600">
-            The event you're looking for doesn't exist.
-          </p>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
+          <p className='mb-4 text-gray-600'>The event you're looking for doesn't exist.</p>
           <button
             onClick={() => router.back()}
-            className="rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
             Go Back
           </button>
@@ -172,7 +150,7 @@ export default function EventDetailPageClient() {
   }
 
   const renderDetailsTab = () => (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <EventHost event={event} />
       <EventGuestList event={event} currentUserId={user?.id || ''} />
 
@@ -185,26 +163,20 @@ export default function EventDetailPageClient() {
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Music</h3>
-          {eventData.spotify_url && (
-            <EventSpotifyEmbed link={eventData.spotify_url} />
-          )}
-          {eventData.wavlake_url && (
-            <WavlakeEmbed link={eventData.wavlake_url} />
-          )}
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold text-gray-900'>Music</h3>
+          {eventData.spotify_url && <EventSpotifyEmbed link={eventData.spotify_url} />}
+          {eventData.wavlake_url && <WavlakeEmbed link={eventData.wavlake_url} />}
         </div>
       )}
     </div>
   );
 
   const renderCommentsTab = () => (
-    <div className="flex flex-col items-center justify-center py-12">
-      <MessageCircle className="mb-4 h-12 w-12 text-gray-300" />
-      <h3 className="mb-2 text-lg font-medium text-gray-900">
-        No Comments Yet
-      </h3>
-      <p className="text-center text-sm text-gray-500">
+    <div className='flex flex-col items-center justify-center py-12'>
+      <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
+      <h3 className='mb-2 text-lg font-medium text-gray-900'>No Comments Yet</h3>
+      <p className='text-center text-sm text-gray-500'>
         Be the first to leave a comment about this event.
       </p>
     </div>
@@ -223,9 +195,9 @@ export default function EventDetailPageClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className='min-h-screen bg-gray-50'>
       {/* Main content */}
-      <div className="mx-auto max-w-full bg-white md:max-w-sm">
+      <div className='mx-auto max-w-full bg-white md:max-w-sm'>
         <SwipeableHeader
           event={event}
           onImageClick={(index) => {
@@ -233,16 +205,16 @@ export default function EventDetailPageClient() {
             lightboxRef.current?.open(index);
           }}
         />
-        <div className="pb-20">
-          <div className="px-4">
+        <div className='pb-20'>
+          <div className='px-4'>
             <EventInfo event={event} currentUserId={user?.id || ''} />
           </div>
 
           {/* Tabbed Section */}
-          <div className="bg-white">
+          <div className='bg-white'>
             {/* Tab Headers with top border */}
-            <div className="border-t border-gray-100">
-              <div className="flex gap-2 px-4 py-3">
+            <div className='border-t border-gray-100'>
+              <div className='flex gap-2 px-4 py-3'>
                 <button
                   onClick={() => handleTabChange('details')}
                   className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
@@ -280,7 +252,7 @@ export default function EventDetailPageClient() {
             </div>
 
             {/* Tab Content */}
-            <div className="px-4">
+            <div className='px-4'>
               {activeTab === 'details' && renderDetailsTab()}
               {activeTab === 'comments' && renderCommentsTab()}
               {activeTab === 'gallery' && renderGalleryTab()}
