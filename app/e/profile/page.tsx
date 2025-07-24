@@ -26,7 +26,6 @@ import {
   Settings,
   User,
 } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -41,8 +40,6 @@ export default function ProfilePage() {
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
-  const [countdown, setCountdown] = useState(3);
-  const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
   );
@@ -209,69 +206,6 @@ export default function ProfilePage() {
     'Architecture',
   ];
 
-  const handleSocialClick = (platform: string) => {
-    const urls = {
-      instagram: user?.instagram_handle
-        ? `https://instagram.com/${user.instagram_handle}`
-        : null,
-      x: user?.x_handle ? `https://x.com/${user.x_handle}` : null,
-      website: user?.bio_link || null,
-    };
-
-    const url = urls[platform as keyof typeof urls];
-    if (url) {
-      window.open(url, '_blank', 'noopener,noreferrer');
-    } else {
-      toast.error(`No ${platform} link available`);
-    }
-  };
-
-  const handleZap = () => {
-    if (user?.ln_address) {
-      toast.success(`Lightning: ${user.ln_address}`);
-    } else {
-      toast.error('No Lightning address available');
-    }
-  };
-
-  const handleWebsiteClick = () => {
-    if (!user?.bio_link) {
-      toast.error('No website link available');
-      return;
-    }
-
-    setShowWebsiteModal(true);
-    setCountdown(3);
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setShowWebsiteModal(false);
-          window.open(user.bio_link, '_blank', 'noopener,noreferrer');
-          return 3;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleFollowToggle = (userId: number) => {
-    const newFollowingUsers = new Set(followingUsers);
-    if (followingUsers.has(userId)) {
-      newFollowingUsers.delete(userId);
-      toast.success('Unfollowed user');
-    } else {
-      newFollowingUsers.add(userId);
-      toast.success('Following user');
-    }
-    setFollowingUsers(newFollowingUsers);
-  };
-
-  const handleUserClick = (username: string) => {
-    router.push(`/${username.replace('@', '')}`);
-  };
-
   const handleProfilePhotoClick = (index: number) => {
     setSelectedImageIndex(index);
   };
@@ -295,12 +229,6 @@ export default function ProfilePage() {
       created_at: new Date().toISOString(),
     },
   ];
-
-  // Placeholder delete function for avatar (should not be used)
-  const handleAvatarDelete = async (photoId: string) => {
-    // Avatar deletion should typically not be allowed from lightbox
-    return { success: false };
-  };
 
   // Format profile photos for LightboxViewer
   const formattedProfilePhotos = profilePhotos.map((photoUrl, index) => ({
@@ -436,7 +364,10 @@ export default function ProfilePage() {
   };
 
   const renderAboutTab = () => (
-    <div className='space-y-6'>
+    <div className='space-y-4'>
+      {/* Social Links */}
+      {user && <SocialLinks user={user} />}
+
       {/* Bio/Description */}
       {!user?.bio ? null : (
         <div>
@@ -550,7 +481,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Profile Section */}
-        <div className='mb-4 bg-white px-6 pb-0 pt-20'>
+        <div className='mb-4 bg-white px-4 pb-0 pt-20'>
           {/* User Info - Centered */}
           <div className='mb-6 text-center'>
             <h2 className='text-2xl font-bold text-gray-900'>
@@ -560,7 +491,7 @@ export default function ProfilePage() {
           </div>
 
           {/* Stats - Centered */}
-          <div className='mb-6 flex justify-center'>
+          <div className='mb-4 flex justify-center'>
             <div className='grid grid-cols-3 gap-8'>
               <div className='text-center'>
                 <div className='text-xl font-bold text-gray-900'>
@@ -589,72 +520,40 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Social Links */}
-          {user && <SocialLinks user={user} />}
-        </div>
+          {/* Tabbed Section */}
+          <div className='mb-4 bg-white w-full'>
+            {/* Tab Headers */}
+            <div className='flex flex-row items-center justify-center gap-2 px-4 py-3 mb-2'>
+              <button
+                onClick={() => setActiveTab('about')}
+                className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
+                  activeTab === 'about'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                About
+              </button>
+              <button
+                onClick={() => setActiveTab('events')}
+                className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
+                  activeTab === 'events'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                Events
+              </button>
+            </div>
 
-        {/* Tabbed Section */}
-        <div className='mb-4 bg-white'>
-          {/* Tab Headers */}
-          <div className='flex gap-2 px-4 py-3'>
-            <button
-              onClick={() => setActiveTab('about')}
-              className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
-                activeTab === 'about'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-gray-500 hover:bg-gray-50'
-              }`}
-            >
-              About
-            </button>
-            <button
-              onClick={() => setActiveTab('events')}
-              className={`rounded-xl uppercase px-4 py-2 text-sm text- font-normal transition-all ${
-                activeTab === 'events'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-gray-500 hover:bg-gray-50'
-              }`}
-            >
-              Events
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className='p-4'>
-            {activeTab === 'about' && renderAboutTab()}
-            {activeTab === 'events' && renderEventsTab()}
+            {/* Tab Content */}
+            <div>
+              {activeTab === 'about' && renderAboutTab()}
+              {activeTab === 'events' && renderEventsTab()}
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Website Redirect Modal */}
-      {showWebsiteModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
-            <h3 className='mb-4 text-xl font-bold'>Leaving Evento</h3>
-            <p className='mb-6 text-gray-600'>
-              Are you about to leave Evento and be redirected to
-              andrerfneves.com?
-            </p>
-            <div className='mb-6 text-6xl font-bold text-red-500'>
-              {countdown}
-            </div>
-            <Button
-              onClick={() => {
-                setShowWebsiteModal(false);
-                window.open(
-                  'https://andrerfneves.com',
-                  '_blank',
-                  'noopener,noreferrer'
-                );
-              }}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
-            >
-              Take me to andrerfneves.com
-            </Button>
-          </div>
-        </div>
-      )}
 
       {/* Verification Modal */}
       {showVerificationModal && (
@@ -702,7 +601,7 @@ export default function ProfilePage() {
         onClose={() => setSelectedAvatarIndex(null)}
         onImageChange={setSelectedAvatarIndex}
         showDropdownMenu={false}
-        handleDelete={handleAvatarDelete}
+        handleDelete={() => Promise.resolve({ success: false })}
         userId={user?.id || ''}
         eventId=''
       />
