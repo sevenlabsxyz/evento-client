@@ -4,13 +4,13 @@ import { apiRequest } from '@/lib/api/api-request';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
-	return apiRequest('GET', '/v1/events/comments', request);
+  return apiRequest('GET', '/v1/events/comments', request);
 }
 
 export async function POST(request: Request) {
-	return apiRequest('POST', '/v1/events/comments', request);
+  return apiRequest('POST', '/v1/events/comments', request);
 }
 
 export async function DELETE(request: Request) {
-	return apiRequest('DELETE', '/v1/events/comments', request);
+  return apiRequest('DELETE', '/v1/events/comments', request);
 }

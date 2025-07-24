@@ -8,53 +8,53 @@
  * @returns Object with emoji and clean title
  */
 export const extractEmojiFromTitle = (
-	title: string
+  title: string
 ): { emoji: string | null; cleanTitle: string } => {
-	if (!title) return { emoji: null, cleanTitle: '' };
+  if (!title) return { emoji: null, cleanTitle: '' };
 
-	const trimmed = title.trim();
+  const trimmed = title.trim();
 
-	// Enhanced emoji detection that handles most common cases
-	// Split into segments and check if first segment is an emoji
-	const spaceIndex = trimmed.indexOf(' ');
-	if (spaceIndex > 0) {
-		const possibleEmoji = trimmed.substring(0, spaceIndex);
-		const remainingText = trimmed.substring(spaceIndex + 1);
+  // Enhanced emoji detection that handles most common cases
+  // Split into segments and check if first segment is an emoji
+  const spaceIndex = trimmed.indexOf(' ');
+  if (spaceIndex > 0) {
+    const possibleEmoji = trimmed.substring(0, spaceIndex);
+    const remainingText = trimmed.substring(spaceIndex + 1);
 
-		// Check if the first segment looks like an emoji
-		// This handles most emoji including compound ones
-		if (possibleEmoji.length <= 8 && containsEmoji(possibleEmoji)) {
-			return { emoji: possibleEmoji, cleanTitle: remainingText };
-		}
-	}
+    // Check if the first segment looks like an emoji
+    // This handles most emoji including compound ones
+    if (possibleEmoji.length <= 8 && containsEmoji(possibleEmoji)) {
+      return { emoji: possibleEmoji, cleanTitle: remainingText };
+    }
+  }
 
-	return { emoji: null, cleanTitle: trimmed };
+  return { emoji: null, cleanTitle: trimmed };
 };
 
 /**
  * Helper function to detect if a string contains emoji characters
  */
 function containsEmoji(str: string): boolean {
-	// Check for common emoji unicode ranges
-	for (let i = 0; i < str.length; i++) {
-		const charCode = str.codePointAt(i) || 0;
+  // Check for common emoji unicode ranges
+  for (let i = 0; i < str.length; i++) {
+    const charCode = str.codePointAt(i) || 0;
 
-		// Common emoji ranges
-		if (
-			(charCode >= 0x1f600 && charCode <= 0x1f64f) || // Emoticons
-			(charCode >= 0x1f300 && charCode <= 0x1f5ff) || // Misc symbols
-			(charCode >= 0x1f680 && charCode <= 0x1f6ff) || // Transport
-			(charCode >= 0x1f1e6 && charCode <= 0x1f1ff) || // Regional indicators
-			(charCode >= 0x2600 && charCode <= 0x26ff) || // Misc symbols
-			(charCode >= 0x2700 && charCode <= 0x27bf) || // Dingbats
-			(charCode >= 0x1f900 && charCode <= 0x1f9ff) || // Supplemental symbols
-			(charCode >= 0x1fa70 && charCode <= 0x1faff) // Extended symbols
-		) {
-			return true;
-		}
-	}
+    // Common emoji ranges
+    if (
+      (charCode >= 0x1f600 && charCode <= 0x1f64f) || // Emoticons
+      (charCode >= 0x1f300 && charCode <= 0x1f5ff) || // Misc symbols
+      (charCode >= 0x1f680 && charCode <= 0x1f6ff) || // Transport
+      (charCode >= 0x1f1e6 && charCode <= 0x1f1ff) || // Regional indicators
+      (charCode >= 0x2600 && charCode <= 0x26ff) || // Misc symbols
+      (charCode >= 0x2700 && charCode <= 0x27bf) || // Dingbats
+      (charCode >= 0x1f900 && charCode <= 0x1f9ff) || // Supplemental symbols
+      (charCode >= 0x1fa70 && charCode <= 0x1faff) // Extended symbols
+    ) {
+      return true;
+    }
+  }
 
-	return false;
+  return false;
 }
 
 /**
@@ -64,9 +64,9 @@ function containsEmoji(str: string): boolean {
  * @returns The final title with emoji prefix if applicable
  */
 export const buildTitleWithEmoji = (emoji: string | null, cleanTitle: string): string => {
-	if (!emoji) return cleanTitle;
-	if (!cleanTitle) return cleanTitle; // Don't add emoji to empty title
-	return `${emoji} ${cleanTitle}`;
+  if (!emoji) return cleanTitle;
+  if (!cleanTitle) return cleanTitle; // Don't add emoji to empty title
+  return `${emoji} ${cleanTitle}`;
 };
 
 /**
@@ -75,8 +75,8 @@ export const buildTitleWithEmoji = (emoji: string | null, cleanTitle: string): s
  * @returns Clean title for display
  */
 export const getDisplayTitle = (title: string): string => {
-	const { cleanTitle } = extractEmojiFromTitle(title);
-	return cleanTitle;
+  const { cleanTitle } = extractEmojiFromTitle(title);
+  return cleanTitle;
 };
 
 /**
@@ -85,6 +85,6 @@ export const getDisplayTitle = (title: string): string => {
  * @returns The emoji if present
  */
 export const getEmojiFromTitle = (title: string): string | null => {
-	const { emoji } = extractEmojiFromTitle(title);
-	return emoji;
+  const { emoji } = extractEmojiFromTitle(title);
+  return emoji;
 };

@@ -1,125 +1,125 @@
 /* Contact Host Sheet Styles */
 .ContactHostSheet-content {
-	/* INNER-LAYOUT */
-	display: grid;
-	grid-template-rows: min-content 1fr;
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr;
 }
 
 .ContactHostSheet-header {
-	/* APPEARANCE */
-	border-bottom-style: solid;
-	border-bottom-color: rgb(229, 231, 235);
+  /* APPEARANCE */
+  border-bottom-style: solid;
+  border-bottom-color: rgb(229, 231, 235);
 
-	/* INNER-LAYOUT */
-	border-bottom-width: 1px;
-	display: grid;
-	grid-template-rows: min-content min-content;
+  /* INNER-LAYOUT */
+  border-bottom-width: 1px;
+  display: grid;
+  grid-template-rows: min-content min-content;
 
-	/* TEXT */
-	font-size: 0; /* Fix Webkit bug causing space added when typing */
+  /* TEXT */
+  font-size: 0; /* Fix Webkit bug causing space added when typing */
 }
 
 .ContactHostSheet-handle {
-	/* SELF-LAYOUT */
-	grid-area: 1 / -1;
-	margin-top: 0.5rem;
-	justify-self: center;
-	align-self: start;
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
 }
 
 .ContactHostSheet-headerBar {
-	/* INNER-LAYOUT */
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 1rem;
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
 }
 
 .ContactHostSheet-headerButton {
-	/* APPEARANCE */
-	background: none;
-	border: none;
-	outline: none;
+  /* APPEARANCE */
+  background: none;
+  border: none;
+  outline: none;
 
-	/* TEXT */
-	font-weight: 500;
-	font-size: 1rem;
+  /* TEXT */
+  font-weight: 500;
+  font-size: 1rem;
 
-	/* INTERACTIVITY */
-	cursor: pointer;
+  /* INTERACTIVITY */
+  cursor: pointer;
 }
 
 .ContactHostSheet-headerButton--cancel {
-	/* TEXT */
-	color: rgb(107, 114, 128);
+  /* TEXT */
+  color: rgb(107, 114, 128);
 }
 
 .ContactHostSheet-headerButton--send {
-	/* TEXT */
-	color: rgb(239, 68, 68);
+  /* TEXT */
+  color: rgb(239, 68, 68);
 }
 
 .ContactHostSheet-headerButton--send:disabled {
-	/* TEXT */
-	color: rgb(209, 213, 219);
+  /* TEXT */
+  color: rgb(209, 213, 219);
 
-	/* INTERACTIVITY */
-	cursor: not-allowed;
+  /* INTERACTIVITY */
+  cursor: not-allowed;
 }
 
 .ContactHostSheet-headerTitle {
-	/* TEXT */
-	font-size: 1.125rem;
-	font-weight: 600;
-	color: rgb(17, 24, 39);
-	margin: 0;
+  /* TEXT */
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: rgb(17, 24, 39);
+  margin: 0;
 }
 
 .ContactHostSheet-scrollView {
-	/* SELF-LAYOUT */
-	min-height: 0;
+  /* SELF-LAYOUT */
+  min-height: 0;
 }
 
 .ContactHostSheet-scrollContent {
-	/* INNER-LAYOUT */
-	padding: 0;
+  /* INNER-LAYOUT */
+  padding: 0;
 }
 
 .ContactHostSheet-form {
-	/* INNER-LAYOUT */
-	padding: 1rem;
+  /* INNER-LAYOUT */
+  padding: 1rem;
 }
 
 .ContactHostSheet-textarea {
-	/* APPEARANCE */
-	width: 100%;
-	min-height: 200px;
-	padding: 1rem;
-	border-style: solid;
-	border-color: rgb(209, 213, 219);
-	border-width: 1px;
-	border-radius: 0.75rem;
-	background-color: rgb(249, 250, 251);
-	resize: none;
+  /* APPEARANCE */
+  width: 100%;
+  min-height: 200px;
+  padding: 1rem;
+  border-style: solid;
+  border-color: rgb(209, 213, 219);
+  border-width: 1px;
+  border-radius: 0.75rem;
+  background-color: rgb(249, 250, 251);
+  resize: none;
 
-	/* TEXT */
-	font-size: 1rem;
-	line-height: 1.5;
-	color: rgb(17, 24, 39);
+  /* TEXT */
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgb(17, 24, 39);
 
-	/* INTERACTIVITY */
-	outline: none;
-	transition: all 0.15s;
+  /* INTERACTIVITY */
+  outline: none;
+  transition: all 0.15s;
 }
 
 .ContactHostSheet-textarea::placeholder {
-	/* TEXT */
-	color: rgb(156, 163, 175);
+  /* TEXT */
+  color: rgb(156, 163, 175);
 }
 
 .ContactHostSheet-textarea:focus {
-	/* APPEARANCE */
-	border-color: rgb(239, 68, 68);
-	background-color: white;
-	box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+  /* APPEARANCE */
+  border-color: rgb(239, 68, 68);
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
 }

@@ -6,18 +6,18 @@ import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function EventoLayout({ children }: { children: React.ReactNode }) {
-	const { isOverlaid, applyRouteConfig } = useTopBar();
-	const pathname = usePathname();
+  const { isOverlaid, applyRouteConfig } = useTopBar();
+  const pathname = usePathname();
 
-	// Simply apply any existing route configuration
-	useEffect(() => {
-		applyRouteConfig(pathname);
-	}, [pathname, applyRouteConfig]);
+  // Simply apply any existing route configuration
+  useEffect(() => {
+    applyRouteConfig(pathname);
+  }, [pathname, applyRouteConfig]);
 
-	return (
-		<>
-			<TopBar />
-			<div className={isOverlaid ? '' : 'pt-16'}>{children}</div>
-		</>
-	);
+  return (
+    <>
+      <TopBar />
+      <div className={isOverlaid ? '' : 'pt-16'}>{children}</div>
+    </>
+  );
 }

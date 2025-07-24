@@ -7,19 +7,19 @@ import { useEffect, useState } from 'react';
 // ================================================================================================
 
 export const useToastManager = () => {
-	const [toasts, setToasts] = useState(() => toastManager.getToasts());
+  const [toasts, setToasts] = useState(() => toastManager.getToasts());
 
-	useEffect(() => {
-		const unsubscribe = toastManager.subscribe(setToasts);
-		return unsubscribe;
-	}, []);
+  useEffect(() => {
+    const unsubscribe = toastManager.subscribe(setToasts);
+    return unsubscribe;
+  }, []);
 
-	const removeToast = (id: string) => {
-		toastManager.remove(id);
-	};
+  const removeToast = (id: string) => {
+    toastManager.remove(id);
+  };
 
-	return {
-		toasts,
-		removeToast,
-	};
+  return {
+    toasts,
+    removeToast,
+  };
 };

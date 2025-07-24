@@ -4,5 +4,5 @@ import { apiRequest } from '@/lib/api/api-request';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
-	return apiRequest('POST', '/v1/cover-upload', request);
+  return apiRequest('POST', '/v1/cover-upload', request);
 }

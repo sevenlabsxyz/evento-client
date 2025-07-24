@@ -10,20 +10,20 @@
  * @returns Optimized image URL
  */
 export function getCoverImageUrl(
-	imagePath: string,
-	width: number = 500,
-	height: number = 500
+  imagePath: string,
+  width: number = 500,
+  height: number = 500
 ): string {
-	// If it's already a full URL, return as-is
-	if (imagePath.includes('http://') || imagePath.includes('https://')) {
-		return imagePath;
-	}
+  // If it's already a full URL, return as-is
+  if (imagePath.includes('http://') || imagePath.includes('https://')) {
+    return imagePath;
+  }
 
-	// Remove leading slash if present
-	const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
+  // Remove leading slash if present
+  const cleanPath = imagePath.startsWith('/') ? imagePath.slice(1) : imagePath;
 
-	// Construct the Supabase storage URL with optimization
-	return `https://api.evento.so/storage/v1/render/image/public/cdn/${cleanPath}?width=${width}&height=${height}`;
+  // Construct the Supabase storage URL with optimization
+  return `https://api.evento.so/storage/v1/render/image/public/cdn/${cleanPath}?width=${width}&height=${height}`;
 }
 
 /**
@@ -32,7 +32,7 @@ export function getCoverImageUrl(
  * @returns Optimized 500x500 image URL
  */
 export function getCoverImageUrl500x500(imagePath: string): string {
-	return getCoverImageUrl(imagePath, 500, 500);
+  return getCoverImageUrl(imagePath, 500, 500);
 }
 
 /**
@@ -41,7 +41,7 @@ export function getCoverImageUrl500x500(imagePath: string): string {
  * @returns Optimized 150x150 image URL
  */
 export function getCoverImageThumbnail(imagePath: string): string {
-	return getCoverImageUrl(imagePath, 150, 150);
+  return getCoverImageUrl(imagePath, 150, 150);
 }
 
 /**
@@ -50,7 +50,7 @@ export function getCoverImageThumbnail(imagePath: string): string {
  * @returns Optimized 800x800 image URL
  */
 export function getCoverImageLarge(imagePath: string): string {
-	return getCoverImageUrl(imagePath, 800, 800);
+  return getCoverImageUrl(imagePath, 800, 800);
 }
 
 /**
@@ -60,19 +60,19 @@ export function getCoverImageLarge(imagePath: string): string {
  * @returns Relative path or original URL if not a Supabase URL
  */
 export function extractRelativePath(url: string): string {
-	// If it's already a relative path, return as-is
-	if (!url.includes('://')) {
-		return url;
-	}
+  // If it's already a relative path, return as-is
+  if (!url.includes('://')) {
+    return url;
+  }
 
-	// Extract path from Supabase storage URL
-	const supabasePattern =
-		/\/storage\/v1\/(?:object\/public|render\/image\/public)\/cdn\/(.*?)(?:\?|$)/;
-	const match = url.match(supabasePattern);
-	if (match) {
-		return match[1];
-	}
+  // Extract path from Supabase storage URL
+  const supabasePattern =
+    /\/storage\/v1\/(?:object\/public|render\/image\/public)\/cdn\/(.*?)(?:\?|$)/;
+  const match = url.match(supabasePattern);
+  if (match) {
+    return match[1];
+  }
 
-	// Return original URL if it's not a Supabase URL
-	return url;
+  // Return original URL if it's not a Supabase URL
+  return url;
 }

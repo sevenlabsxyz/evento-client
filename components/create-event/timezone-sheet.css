@@ -1,140 +1,140 @@
 .TimezoneSheet-content {
-	/* INNER-LAYOUT */
-	display: grid;
-	grid-template-rows: min-content 1fr min-content;
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
 }
 
 .TimezoneSheet-header {
-	/* APPEARANCE */
-	border-bottom-style: solid;
-	border-bottom-color: rgb(229, 231, 235);
+  /* APPEARANCE */
+  border-bottom-style: solid;
+  border-bottom-color: rgb(229, 231, 235);
 
-	/* INNER-LAYOUT */
-	border-bottom-width: 1px;
-	padding: 0 1.25rem 0.75rem;
-	display: grid;
-	grid-template-rows: min-content 1fr;
-	gap: 0.75rem;
+  /* INNER-LAYOUT */
+  border-bottom-width: 1px;
+  padding: 0 1.25rem 0.75rem;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  gap: 0.75rem;
 
-	/* TEXT */
-	font-size: 0; /* Fix Webkit bug causing space added when typing */
+  /* TEXT */
+  font-size: 0; /* Fix Webkit bug causing space added when typing */
 }
 
 .TimezoneSheet-handle {
-	/* SELF-LAYOUT */
-	grid-area: 1 / -1;
-	margin-top: 0.5rem;
-	justify-self: center;
-	align-self: start;
+  /* SELF-LAYOUT */
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
 }
 
 .TimezoneSheet-input {
-	/* SELF-LAYOUT */
-	width: 100%;
-	height: 2.75rem;
-	box-sizing: border-box;
+  /* SELF-LAYOUT */
+  width: 100%;
+  height: 2.75rem;
+  box-sizing: border-box;
 
-	/* APPEARANCE */
-	outline: none;
-	border: none;
-	border-radius: 12px;
-	background-color: rgb(229, 231, 235);
+  /* APPEARANCE */
+  outline: none;
+  border: none;
+  border-radius: 12px;
+  background-color: rgb(229, 231, 235);
 
-	/* INNER-LAYOUT */
-	padding: 0 0.75rem;
+  /* INNER-LAYOUT */
+  padding: 0 0.75rem;
 
-	/* TEXT */
-	appearance: none;
-	font-size: 1.125rem;
-	color: rgb(31, 41, 55);
+  /* TEXT */
+  appearance: none;
+  font-size: 1.125rem;
+  color: rgb(31, 41, 55);
 }
 
 .TimezoneSheet-input::placeholder {
-	/* TEXT */
-	color: rgb(107, 114, 128);
+  /* TEXT */
+  color: rgb(107, 114, 128);
 }
 
 .TimezoneSheet-scrollView {
-	/* SELF-LAYOUT */
-	min-height: 0;
+  /* SELF-LAYOUT */
+  min-height: 0;
 }
 
 .TimezoneSheet-scrollContent {
-	/* INNER-LAYOUT */
-	padding: 0;
-	display: grid;
+  /* INNER-LAYOUT */
+  padding: 0;
+  display: grid;
 }
 
 .TimezoneSheet-timezoneContainer {
-	/* SELF-LAYOUT */
-	width: 100%;
+  /* SELF-LAYOUT */
+  width: 100%;
 
-	/* APPEARANCE */
-	appearance: none;
-	border: none;
-	background: none;
-	border-bottom: 1px solid rgb(243, 244, 246);
+  /* APPEARANCE */
+  appearance: none;
+  border: none;
+  background: none;
+  border-bottom: 1px solid rgb(243, 244, 246);
 
-	/* INNER-LAYOUT */
-	padding: 1rem 1.25rem;
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 1rem;
+  /* INNER-LAYOUT */
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 
-	/* INTERACTIVITY */
-	cursor: pointer;
-	transition: background-color 0.15s;
+  /* INTERACTIVITY */
+  cursor: pointer;
+  transition: background-color 0.15s;
 }
 
 .TimezoneSheet-timezoneContainer:hover {
-	background-color: rgb(249, 250, 251);
+  background-color: rgb(249, 250, 251);
 }
 
 .TimezoneSheet-timezoneDetails {
-	/* SELF-LAYOUT */
-	flex: 1;
-	text-align: left;
+  /* SELF-LAYOUT */
+  flex: 1;
+  text-align: left;
 
-	/* INNER-LAYOUT */
-	display: grid;
-	gap: 0.125rem;
+  /* INNER-LAYOUT */
+  display: grid;
+  gap: 0.125rem;
 }
 
 .TimezoneSheet-timezoneCity {
-	/* TEXT */
-	font-size: 1rem;
-	font-weight: 500;
-	color: rgb(31, 41, 55);
+  /* TEXT */
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgb(31, 41, 55);
 }
 
 .TimezoneSheet-timezoneOffset {
-	/* TEXT */
-	font-size: 0.875rem;
-	font-weight: 500;
-	color: rgb(239, 68, 68);
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgb(239, 68, 68);
 }
 
 .TimezoneSheet-sectionHeader {
-	/* INNER-LAYOUT */
-	padding: 1rem 1.25rem 0.5rem;
+  /* INNER-LAYOUT */
+  padding: 1rem 1.25rem 0.5rem;
 
-	/* TEXT */
-	font-size: 0.875rem;
-	font-weight: 600;
-	color: rgb(107, 114, 128);
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
+  /* TEXT */
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgb(107, 114, 128);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .TimezoneSheet-noResults {
-	/* INNER-LAYOUT */
-	padding: 3rem 1.25rem;
-	display: flex;
-	justify-content: center;
-	align-items: center;
+  /* INNER-LAYOUT */
+  padding: 3rem 1.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
-	/* TEXT */
-	font-size: 1rem;
-	color: rgb(107, 114, 128);
+  /* TEXT */
+  font-size: 1rem;
+  color: rgb(107, 114, 128);
 }

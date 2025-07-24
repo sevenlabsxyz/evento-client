@@ -1,344 +1,344 @@
 .StatsLongSheet-article {
-	/* INNER-LAYOUT */
-	position: relative;
-	display: grid;
+  /* INNER-LAYOUT */
+  position: relative;
+  display: grid;
 }
 
 .StatsLongSheet-dismissTrigger {
-	/* SELF-LAYOUT */
-	position: absolute;
-	z-index: 1;
-	justify-self: end;
-	top: 1rem;
-	right: 1rem;
-	width: 40px;
-	height: 40px;
+  /* SELF-LAYOUT */
+  position: absolute;
+  z-index: 1;
+  justify-self: end;
+  top: 1rem;
+  right: 1rem;
+  width: 40px;
+  height: 40px;
 
-	/* APPEARANCE */
-	appearance: none;
-	border: none;
-	border-radius: 9999px;
-	background-color: rgba(255, 255, 255, 0.2);
-	backdrop-filter: blur(10px);
+  /* APPEARANCE */
+  appearance: none;
+  border: none;
+  border-radius: 9999px;
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
 
-	/* INTERACTIVITY */
-	cursor: pointer;
+  /* INTERACTIVITY */
+  cursor: pointer;
 
-	/* INNER-LAYOUT */
-	padding: 0;
-	display: grid;
-	place-items: center;
+  /* INNER-LAYOUT */
+  padding: 0;
+  display: grid;
+  place-items: center;
 
-	/* TEXT */
-	color: white;
+  /* TEXT */
+  color: white;
 }
 
 .StatsLongSheet-dismissIcon {
-	/* SELF-LAYOUT */
-	width: 24px;
-	height: 24px;
+  /* SELF-LAYOUT */
+  width: 24px;
+  height: 24px;
 
-	/* APPEARANCE */
-	stroke-width: 2.5px;
+  /* APPEARANCE */
+  stroke-width: 2.5px;
 }
 
 .StatsLongSheet-header {
-	/* SELF-LAYOUT */
-	width: 100%;
+  /* SELF-LAYOUT */
+  width: 100%;
 
-	/* APPEARANCE */
-	background-color: rgb(17, 24, 39);
-	position: relative;
+  /* APPEARANCE */
+  background-color: rgb(17, 24, 39);
+  position: relative;
 }
 
 .StatsLongSheet-headerContent {
-	/* INNER-LAYOUT */
-	padding: 3rem 1.5rem 2rem;
-	text-align: center;
-	color: white;
+  /* INNER-LAYOUT */
+  padding: 3rem 1.5rem 2rem;
+  text-align: center;
+  color: white;
 }
 
 .StatsLongSheet-title {
-	/* SELF-LAYOUT */
-	margin-top: 0;
-	margin-bottom: 1rem;
+  /* SELF-LAYOUT */
+  margin-top: 0;
+  margin-bottom: 1rem;
 
-	/* TEXT */
-	text-align: center;
-	font-size: 1.5rem;
-	font-weight: 700;
-	color: white;
+  /* TEXT */
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
 }
 @media (min-width: 768px) {
-	.StatsLongSheet-title {
-		font-size: 2rem;
-	}
+  .StatsLongSheet-title {
+    font-size: 2rem;
+  }
 }
 
 .StatsLongSheet-subtitle {
-	/* SELF-LAYOUT */
-	margin-bottom: 3rem;
+  /* SELF-LAYOUT */
+  margin-bottom: 3rem;
 
-	/* TEXT */
-	color: rgb(209, 213, 219);
-	font-size: 1rem;
+  /* TEXT */
+  color: rgb(209, 213, 219);
+  font-size: 1rem;
 }
 
 .StatsLongSheet-statsGrid {
-	/* INNER-LAYOUT */
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 2rem;
-	margin-bottom: 2rem;
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .StatsLongSheet-statItem {
-	/* TEXT */
-	text-align: center;
+  /* TEXT */
+  text-align: center;
 }
 
 .StatsLongSheet-statValue {
-	/* TEXT */
-	font-size: 2rem;
-	font-weight: 700;
-	margin-bottom: 0.5rem;
+  /* TEXT */
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .StatsLongSheet-statLabel {
-	/* TEXT */
-	color: rgb(209, 213, 219);
-	font-size: 0.875rem;
+  /* TEXT */
+  color: rgb(209, 213, 219);
+  font-size: 0.875rem;
 }
 
 .StatsLongSheet-articleContent {
-	/* SELF-LAYOUT */
-	padding: 0 1rem 2rem;
-	margin-top: -1rem;
+  /* SELF-LAYOUT */
+  padding: 0 1rem 2rem;
+  margin-top: -1rem;
 
-	/* INNER-LAYOUT */
-	display: grid;
-	gap: 1rem;
+  /* INNER-LAYOUT */
+  display: grid;
+  gap: 1rem;
 }
 
 .StatsLongSheet-card {
-	/* APPEARANCE */
-	background-color: white;
-	border-radius: 1rem;
-	box-shadow:
-		0 1px 3px 0 rgb(0 0 0 / 0.1),
-		0 1px 2px -1px rgb(0 0 0 / 0.1);
+  /* APPEARANCE */
+  background-color: white;
+  border-radius: 1rem;
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
 
-	/* INNER-LAYOUT */
-	padding: 1.5rem;
+  /* INNER-LAYOUT */
+  padding: 1.5rem;
 }
 
 .StatsLongSheet-cardHeader {
-	/* INNER-LAYOUT */
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 1.5rem;
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
 }
 
 .StatsLongSheet-cardTitle {
-	/* TEXT */
-	font-size: 1.5rem;
-	font-weight: 700;
-	margin: 0;
+  /* TEXT */
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0;
 }
 
 /* Total Card Styles */
 .StatsLongSheet-totalStats {
-	/* INNER-LAYOUT */
-	display: flex;
-	align-items: end;
-	gap: 2rem;
-	margin-bottom: 2rem;
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: end;
+  gap: 2rem;
+  margin-bottom: 2rem;
 }
 
 .StatsLongSheet-totalItem {
-	/* TEXT */
-	text-align: center;
+  /* TEXT */
+  text-align: center;
 }
 
 .StatsLongSheet-totalValue {
-	/* TEXT */
-	font-size: 3.75rem;
-	font-weight: 700;
-	margin-bottom: 0.5rem;
-	line-height: 1;
+  /* TEXT */
+  font-size: 3.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1;
 }
 
 .StatsLongSheet-totalValue--primary {
-	/* TEXT */
-	color: rgb(79, 70, 229);
+  /* TEXT */
+  color: rgb(79, 70, 229);
 }
 
 .StatsLongSheet-totalValue--secondary {
-	/* TEXT */
-	color: rgb(156, 163, 175);
+  /* TEXT */
+  color: rgb(156, 163, 175);
 }
 
 .StatsLongSheet-totalLabel {
-	/* TEXT */
-	font-weight: 500;
+  /* TEXT */
+  font-weight: 500;
 }
 
 .StatsLongSheet-totalLabel--primary {
-	/* TEXT */
-	color: rgb(79, 70, 229);
+  /* TEXT */
+  color: rgb(79, 70, 229);
 }
 
 .StatsLongSheet-totalLabel--secondary {
-	/* TEXT */
-	color: rgb(156, 163, 175);
+  /* TEXT */
+  color: rgb(156, 163, 175);
 }
 
 .StatsLongSheet-progressGrid {
-	/* INNER-LAYOUT */
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 1.5rem;
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
 }
 
 .StatsLongSheet-progressItem {
-	/* TEXT */
-	text-align: center;
+  /* TEXT */
+  text-align: center;
 }
 
 .StatsLongSheet-progressLabel {
-	/* SELF-LAYOUT */
-	margin-top: 0.75rem;
+  /* SELF-LAYOUT */
+  margin-top: 0.75rem;
 
-	/* TEXT */
-	font-weight: 600;
+  /* TEXT */
+  font-weight: 600;
 }
 
 /* Countries Card Styles */
 .StatsLongSheet-countriesContent {
-	/* INNER-LAYOUT */
-	display: grid;
-	gap: 1.5rem;
+  /* INNER-LAYOUT */
+  display: grid;
+  gap: 1.5rem;
 }
 
 .StatsLongSheet-countriesStats {
-	/* INNER-LAYOUT */
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .StatsLongSheet-countriesLeft {
-	/* INNER-LAYOUT */
-	display: flex;
-	align-items: end;
-	gap: 1rem;
+  /* INNER-LAYOUT */
+  display: flex;
+  align-items: end;
+  gap: 1rem;
 }
 
 .StatsLongSheet-countryItem {
-	/* TEXT */
-	text-align: center;
+  /* TEXT */
+  text-align: center;
 }
 
 .StatsLongSheet-countryValue {
-	/* TEXT */
-	font-size: 3rem;
-	font-weight: 700;
-	margin-bottom: 0.5rem;
-	line-height: 1;
+  /* TEXT */
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  line-height: 1;
 }
 
 .StatsLongSheet-countryValue--visited {
-	/* TEXT */
-	color: rgb(239, 68, 68);
+  /* TEXT */
+  color: rgb(239, 68, 68);
 }
 
 .StatsLongSheet-countryValue--total {
-	/* TEXT */
-	color: rgb(156, 163, 175);
+  /* TEXT */
+  color: rgb(156, 163, 175);
 }
 
 .StatsLongSheet-countryLabel {
-	/* TEXT */
-	font-weight: 500;
+  /* TEXT */
+  font-weight: 500;
 }
 
 .StatsLongSheet-countryLabel--visited {
-	/* TEXT */
-	color: rgb(239, 68, 68);
+  /* TEXT */
+  color: rgb(239, 68, 68);
 }
 
 .StatsLongSheet-countryLabel--total {
-	/* TEXT */
-	color: rgb(156, 163, 175);
+  /* TEXT */
+  color: rgb(156, 163, 175);
 }
 
 .StatsLongSheet-mostVisited {
-	/* INNER-LAYOUT */
-	margin-bottom: 1rem;
+  /* INNER-LAYOUT */
+  margin-bottom: 1rem;
 }
 
 .StatsLongSheet-sectionTitle {
-	/* TEXT */
-	color: rgb(107, 114, 128);
-	font-weight: 500;
-	margin-bottom: 1rem;
+  /* TEXT */
+  color: rgb(107, 114, 128);
+  font-weight: 500;
+  margin-bottom: 1rem;
 }
 
 /* Categories Card Styles */
 .StatsLongSheet-categoriesStats {
-	/* INNER-LAYOUT */
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	gap: 1.5rem;
-	margin-bottom: 1.5rem;
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .StatsLongSheet-categoryItem {
-	/* TEXT */
-	text-align: center;
+  /* TEXT */
+  text-align: center;
 }
 
 .StatsLongSheet-categoryValue {
-	/* TEXT */
-	font-size: 2rem;
-	font-weight: 700;
-	margin-bottom: 0.5rem;
+  /* TEXT */
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .StatsLongSheet-categoryValue--primary {
-	/* TEXT */
-	color: rgb(59, 130, 246);
+  /* TEXT */
+  color: rgb(59, 130, 246);
 }
 
 .StatsLongSheet-categoryValue--secondary {
-	/* TEXT */
-	color: rgb(34, 197, 94);
+  /* TEXT */
+  color: rgb(34, 197, 94);
 }
 
 .StatsLongSheet-categoryLabel {
-	/* TEXT */
-	font-weight: 500;
+  /* TEXT */
+  font-weight: 500;
 }
 
 .StatsLongSheet-categoryLabel--primary {
-	/* TEXT */
-	color: rgb(59, 130, 246);
+  /* TEXT */
+  color: rgb(59, 130, 246);
 }
 
 .StatsLongSheet-categoryLabel--secondary {
-	/* TEXT */
-	color: rgb(34, 197, 94);
+  /* TEXT */
+  color: rgb(34, 197, 94);
 }
 
 .StatsLongSheet-popularCategories {
-	/* INNER-LAYOUT */
-	margin-top: 1.5rem;
+  /* INNER-LAYOUT */
+  margin-top: 1.5rem;
 }
 
 .StatsLongSheet-emptyState {
-	/* TEXT */
-	text-align: center;
-	color: rgb(156, 163, 175);
-	font-size: 0.875rem;
+  /* TEXT */
+  text-align: center;
+  color: rgb(156, 163, 175);
+  font-size: 0.875rem;
 }
