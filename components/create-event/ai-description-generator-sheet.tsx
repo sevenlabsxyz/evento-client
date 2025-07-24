@@ -16,8 +16,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useState } from 'react';
-// Import local loading dots component directly with relative path
-import { LoadingDots } from '../ui/loading-dots';
+import { LoadingLogo } from '../ui/loading-logo';
 
 // Define event object structure to match API requirements
 export interface EventData {
@@ -201,7 +200,7 @@ export function AIDescriptionGeneratorSheet({
             {/* Loading overlay */}
             {generateDescriptionMutation.isPending && (
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-white bg-opacity-90 p-4 text-center z-10">
-                <LoadingDots size="lg" className="mb-4 text-red-600" />
+                <LoadingLogo size="lg" className="mb-4 text-red-600" />
                 <p className="text-sm text-gray-600">
                   Creating the perfect description for your event...
                 </p>
@@ -215,6 +214,33 @@ export function AIDescriptionGeneratorSheet({
                   <div className="px-4 py-4">
                     {!generatedContent ? (
                       <>
+                        {/* Custom Prompt */}
+                        <div className="mb-6">
+                          <h2 className="text-base font-medium mb-2">
+                            Custom Prompt (Optional)
+                          </h2>
+                          <p className="text-sm text-gray-500 mb-2">
+                            Add specific details you'd like to include in your
+                            description
+                          </p>
+                          <textarea
+                            className={cn(
+                              'w-full p-3 border rounded-md resize-none transition-colors',
+                              !hasTitleField
+                                ? 'border-gray-200 bg-gray-50 text-gray-400'
+                                : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50'
+                            )}
+                            placeholder="e.g. Include information about food, dress code, or parking..."
+                            rows={3}
+                            value={customPrompt}
+                            onChange={(e) => setCustomPrompt(e.target.value)}
+                            disabled={
+                              generateDescriptionMutation.isPending ||
+                              !hasTitleField
+                            }
+                          />
+                        </div>
+
                         {/* Description Length Selection */}
                         <div className="mb-6">
                           <h2 className="text-base font-medium mb-2">
@@ -278,33 +304,6 @@ export function AIDescriptionGeneratorSheet({
                               </button>
                             ))}
                           </div>
-                        </div>
-
-                        {/* Custom Prompt */}
-                        <div className="mb-6">
-                          <h2 className="text-base font-medium mb-2">
-                            Custom Prompt (Optional)
-                          </h2>
-                          <p className="text-sm text-gray-500 mb-2">
-                            Add specific details you'd like to include in your
-                            description
-                          </p>
-                          <textarea
-                            className={cn(
-                              'w-full p-3 border rounded-md resize-none transition-colors',
-                              !hasTitleField
-                                ? 'border-gray-200 bg-gray-50 text-gray-400'
-                                : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50'
-                            )}
-                            placeholder="e.g. Include information about food, dress code, or parking..."
-                            rows={3}
-                            value={customPrompt}
-                            onChange={(e) => setCustomPrompt(e.target.value)}
-                            disabled={
-                              generateDescriptionMutation.isPending ||
-                              !hasTitleField
-                            }
-                          />
                         </div>
 
                         {/* Generate Button */}
