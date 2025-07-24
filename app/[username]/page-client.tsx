@@ -4,10 +4,12 @@ import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import SocialLinks from '@/components/profile/social-links';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/useAuth';
 import {
+  useFollowAction,
+  useFollowStatus,
   useUserByUsername,
   useUserEventCount,
   useUserFollowers,
@@ -31,15 +33,13 @@ export default function UserProfilePageClient() {
   const { isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
   const params = useParams();
-  const { setTopBar, setOverlaid } = useTopBar();
+  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [eventsFilter, setEventsFilter] = useState('attending');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followingUsers, setFollowingUsers] = useState(new Set([1, 3, 5]));
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
     null
@@ -55,6 +55,11 @@ export default function UserProfilePageClient() {
     isLoading: isUserLoading,
     error: userError,
   } = useUserByUsername(username);
+  // Get follow status for this user
+  const { data: followStatus, isLoading: isFollowStatusLoading } =
+    useFollowStatus(userData?.id || '');
+  // Consolidated follow/unfollow mutation
+  const followActionMutation = useFollowAction();
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
   const { data: followers = [] } = useUserFollowers(userData?.id || '');
   const { data: following = [] } = useUserFollowing(userData?.id || '');
@@ -78,6 +83,31 @@ export default function UserProfilePageClient() {
         },
       }
     : null;
+
+  const handleFollowToggle = () => {
+    if (!userData?.id) {
+      toast.error('Unable to identify user');
+      return;
+    }
+
+    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
+
+    followActionMutation.mutate(
+      { userId: userData.id, action },
+      {
+        onSuccess: () => {
+          if (action === 'follow') {
+            toast.success(`You followed ${userData.name || 'this user'}!`);
+          } else {
+            toast.success(`You unfollowed ${userData.name || 'this user'}`);
+          }
+        },
+        onError: () => {
+          toast.error(`Failed to ${action}. Please try again.`);
+        },
+      }
+    );
+  };
 
   // Share functionality
   const handleShare = async () => {
@@ -209,35 +239,6 @@ export default function UserProfilePageClient() {
     },
   ];
 
-  const followingList = following.map((user) => ({
-    id: user.id,
-    name: user.name || 'Unknown User',
-    username: `@${user.username}`,
-    avatar: user.image || '/placeholder.svg?height=50&width=50',
-  }));
-
-  const followersList = followers.map((user) => ({
-    id: user.id,
-    name: user.name || 'Unknown User',
-    username: `@${user.username}`,
-    avatar: user.image || '/placeholder.svg?height=50&width=50',
-  }));
-
-  const mockFollowingList = [
-    {
-      id: 1,
-      name: 'Marcus Johnson',
-      username: '@marcusj',
-      avatar: '/placeholder.svg?height=50&width=50',
-    },
-    {
-      id: 2,
-      name: 'Emma Rodriguez',
-      username: '@emmar',
-      avatar: '/placeholder.svg?height=50&width=50',
-    },
-  ];
-
   const profilePhotos = [
     '/placeholder.svg?height=120&width=120',
     '/placeholder.svg?height=120&width=120',
@@ -275,48 +276,6 @@ export default function UserProfilePageClient() {
     'Coffee',
     'Hiking',
   ];
-
-  const handleWebsiteClick = () => {
-    setShowWebsiteModal(true);
-    setCountdown(3);
-
-    const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setShowWebsiteModal(false);
-          window.open(userProfile.website, '_blank', 'noopener,noreferrer');
-          return 3;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-  };
-
-  const handleFollowToggle = (userId?: number) => {
-    if (userId) {
-      const newFollowingUsers = new Set(followingUsers);
-      if (followingUsers.has(userId)) {
-        newFollowingUsers.delete(userId);
-        toast.success('Unfollowed user');
-      } else {
-        newFollowingUsers.add(userId);
-        toast.success('Following user');
-      }
-      setFollowingUsers(newFollowingUsers);
-    } else {
-      setIsFollowing(!isFollowing);
-      toast.success(
-        isFollowing
-          ? `Unfollowed ${userProfile.name}`
-          : `Following ${userProfile.name}`
-      );
-    }
-  };
-
-  const handleUserClick = (username: string) => {
-    router.push(`/${username.replace('@', '')}`);
-  };
 
   const handleMessage = () => {
     toast.success('Message feature coming soon!');
@@ -580,28 +539,13 @@ export default function UserProfilePageClient() {
           <div className="h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44" />
 
           {/* Profile Picture - Centered & Clickable */}
-          <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform">
-            <button onClick={handleAvatarClick} className="relative">
-              <Avatar className="h-36 w-36 border-4 border-white shadow-lg">
-                <AvatarImage src={userProfile.avatar || ''} alt="Profile" />
-                <AvatarFallback className="bg-white text-3xl">
-                  {userProfile.name.charAt(0).toUpperCase()}
-                </AvatarFallback>
-              </Avatar>
-              {/* Verification Badge */}
-              {userProfile.isVerified && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowVerificationModal(true);
-                  }}
-                  className="absolute bottom-0 right-0 transition-transform hover:scale-105"
-                >
-                  <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
-                </button>
-              )}
-            </button>
-          </div>
+          <UserAvatar
+            user={userData}
+            size="lg"
+            onAvatarClick={handleAvatarClick}
+            onVerificationClick={() => setShowVerificationModal(true)}
+            className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform"
+          />
         </div>
 
         {/* Profile Section */}
@@ -647,22 +591,25 @@ export default function UserProfilePageClient() {
           {/* Action Buttons */}
           <div className="-mx-2.5 mb-6 flex gap-2 px-2.5">
             <Button
-              onClick={() => handleFollowToggle()}
+              onClick={handleFollowToggle}
+              disabled={isFollowStatusLoading || followActionMutation.isPending}
               className={`flex-1 rounded-xl px-2.5 ${
-                isFollowing
+                followStatus?.isFollowing
                   ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
                   : 'bg-red-500 text-white hover:bg-red-600'
               }`}
             >
-              {isFollowing ? (
+              {followStatus?.isFollowing ? (
                 <>
-                  <UserMinus className="h-4 w-4" />
-                  Following
+                  <UserMinus className="h-4 w-4 mr-2" />
+                  {followActionMutation.isPending
+                    ? 'Unfollowing...'
+                    : 'Following'}
                 </>
               ) : (
                 <>
-                  <UserPlus className="h-4 w-4" />
-                  Follow
+                  <UserPlus className="h-4 w-4 mr-2" />
+                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
                 </>
               )}
             </Button>
