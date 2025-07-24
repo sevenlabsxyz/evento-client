@@ -1,79 +1,106 @@
-import apiClient from '@/lib/api/client';
-import { Metadata, ResolvingMetadata } from 'next';
-import UserProfilePageClient from './page-client';
+import { createClient } from "@supabase/supabase-js";
+import UserProfilePageClient from "./page-client";
 
-// Define the types for props and params
-type Props = {
-  params: { username: string };
-  searchParams: { [key: string]: string | string[] | undefined };
-};
+export async function generateMetadata({ params }: any, parent: any) {
+  const { username } = params;
 
-// Generate metadata for the user profile page
-export async function generateMetadata(
-  { params }: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
-  // Get the username from params
-  const username = params.username;
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabase = createClient(supabaseUrl, supabaseKey);
+
+  // fallback to parent SEO metadata image details
+  const previousImages = (await parent).openGraph?.images || [];
 
   try {
-    // Fetch user data from API
-    const userResponse = await apiClient.get(
-      `/v1/user/profile?username=${username}`
-    );
-    const userData = userResponse.data;
+    const { data: user, error } = await supabase
+      .from("user_details")
+      .select("name, username, image")
+      .eq("username", username)
+      .single();
 
-    if (!userData?.data || !userData?.data[0]) {
-      return {
-        title: 'User Not Found | Evento',
-        description: 'The user profile you are looking for does not exist.',
-      };
+    if (error) throw error;
+
+    if (!user) {
+      console.log("No user found for username:", username);
+      return getDefaultMetadata(previousImages);
     }
 
-    const user = userData.data[0];
+    const title = user.name
+      ? `${user.name} (@${user.username}) on Evento`
+      : `@${user.username} on Evento`;
 
-    // Profile image (avatar)
-    const profileImage = user.image || '/assets/default-avatar.png';
-    const displayName = user.name || user.username || 'Evento User';
-    const userBio = user.bio || `${displayName} is on Evento`;
+    const getProperURL = (url: string) => {
+      if (!url || !url.includes("https")) {
+        return `https://api.evento.so/storage/v1/object/public/cdn${url}?width=400&height=400`;
+      }
 
-    // Generate metadata
+      return url;
+    };
+
     return {
-      title: `${displayName} (@${user.username}) | Evento`,
-      description: userBio,
+      title: { absolute: title },
+      keywords: ["events", "partiful", "social", "evento", "evento.so"],
+      alternates: {
+        canonical: `https://evento.so/${user.username}`,
+      },
+      description: `View all events by ${
+        user.name || `@${user.username}`
+      } on Evento.`,
       openGraph: {
-        title: `${displayName} (@${user.username})`,
-        description: userBio,
+        url: `https://evento.so/${user.username}`,
+        locale: "en_US",
+        type: "profile",
+        siteName: "Evento",
         images: [
           {
-            url: profileImage,
-            width: 600,
-            height: 600,
-            alt: displayName,
+            url: getProperURL(user.image),
+            width: 400,
+            height: 400,
+            alt: `Profile picture of ${user.name || user.username}`,
           },
         ],
-        locale: 'en_US',
-        type: 'profile',
+      },
+      robots: {
+        index: true,
+        follow: true,
+        nocache: true,
       },
       twitter: {
-        card: 'summary',
-        title: `${displayName} (@${user.username})`,
-        description: userBio,
-        images: [profileImage],
-        creator: `@${user.username}`,
+        card: "summary_large_image",
+        title,
+        description: `View all events by ${
+          user.name || `@${user.username}`
+        } on Evento.`,
+        creator: "@evento_so",
+        images: [getProperURL(user.image)],
       },
     };
   } catch (error) {
-    console.error('Error generating user profile metadata:', error);
-    return {
-      title: `${username} | Evento`,
-      description: 'View this user profile on Evento',
-    };
+    console.error("Error fetching user data:", error);
+    return getDefaultMetadata(previousImages);
   }
 }
 
-export default async function UserProfilePage({ params }: Props) {
-  // Server component simply renders the client component
-  // All metadata is handled by generateMetadata function
+function getDefaultMetadata(previousImages: any[]) {
+  return {
+    title: { absolute: "Evento" },
+    keywords: ["events", "partiful", "social", "evento", "evento.so"],
+    alternates: { canonical: `https://evento.so/` },
+    description: "Events made social -- evento.so",
+    openGraph: {
+      url: `https://evento.so/`,
+      images: [...previousImages],
+    },
+  };
+}
+
+export const dynamic = "force-dynamic";
+
+export default function Page({
+  params,
+  ...rest
+}: {
+  params: { username: string };
+}) {
   return <UserProfilePageClient />;
 }

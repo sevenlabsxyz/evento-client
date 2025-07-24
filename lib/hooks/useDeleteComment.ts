@@ -16,6 +16,7 @@ export function useDeleteComment() {
   return useMutation({
     mutationFn: async ({
       commentId,
+      eventId,
     }: DeleteCommentParams): Promise<DeleteCommentResponse> => {
       const response = await apiClient.delete<DeleteCommentResponse>(
         `/v1/events/comments?id=${commentId}`
@@ -28,17 +29,24 @@ export function useDeleteComment() {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
+        // We do this here to ensure the UI is updated before we return
+        // Invalidate the comments query to refetch comments
+        await queryClient.invalidateQueries({
+          queryKey: ['event', 'comments', eventId],
+        });
         return response.data || { id: commentId };
       }
 
       // Fallback
+          // We do this here to ensure the UI is updated before we return
+      // Invalidate the comments query to refetch comments
+     await queryClient.invalidateQueries({
+        queryKey: ['event', 'comments', eventId],
+      });
       return { id: commentId };
     },
     onSuccess: (_, variables) => {
-      // Invalidate the comments query to refetch comments
-      queryClient.invalidateQueries({
-        queryKey: ['event', 'comments', variables.eventId],
-      });
+      // This is not needed as we are invalidating the query in mutationFn
     },
   });
 }

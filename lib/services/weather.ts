@@ -4,6 +4,7 @@ import {
   OpenWeatherMapResponse,
   WeatherData,
 } from '@/lib/types/weather';
+import { Env } from '../constants/env';
 
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
 const OPENWEATHER_GEO_URL = 'https://api.openweathermap.org/geo/1.0';
@@ -12,7 +13,7 @@ class WeatherService {
   private apiKey: string | undefined;
 
   constructor() {
-    this.apiKey = process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
+    this.apiKey = Env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY;
   }
 
   private validateApiKey(): boolean {
