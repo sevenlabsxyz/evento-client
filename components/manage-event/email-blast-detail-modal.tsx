@@ -1,6 +1,18 @@
 'use client';
 
-import { X, Mail, Users, CheckCircle, XCircle, AlertCircle, Clock, Copy, CalendarClock } from 'lucide-react';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { VisuallyHidden } from '@silk-hq/components';
+import {
+  AlertCircle,
+  CalendarClock,
+  CheckCircle,
+  Clock,
+  Copy,
+  Mail,
+  Users,
+  X,
+  XCircle,
+} from 'lucide-react';
 
 interface EmailBlast {
   id: string;
@@ -25,7 +37,7 @@ interface EmailBlastDetailModalProps {
 export default function EmailBlastDetailModal({
   blast,
   isOpen,
-  onClose
+  onClose,
 }: EmailBlastDetailModalProps) {
   if (!isOpen) return null;
 
@@ -37,7 +49,7 @@ export default function EmailBlastDetailModal({
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -45,16 +57,16 @@ export default function EmailBlastDetailModal({
     switch (status) {
       case 'delivered':
       case 'sent':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className='h-5 w-5 text-green-600' />;
       case 'pending':
       case 'sending':
-        return <AlertCircle className="w-5 h-5 text-yellow-600" />;
+        return <AlertCircle className='h-5 w-5 text-yellow-600' />;
       case 'scheduled':
-        return <CalendarClock className="w-5 h-5 text-blue-600" />;
+        return <CalendarClock className='h-5 w-5 text-blue-600' />;
       case 'failed':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className='h-5 w-5 text-red-600' />;
       default:
-        return <Clock className="w-5 h-5 text-gray-600" />;
+        return <Clock className='h-5 w-5 text-gray-600' />;
     }
   };
 
@@ -80,146 +92,161 @@ export default function EmailBlastDetailModal({
     // TODO: Show toast notification
   };
 
-  const deliveryRate = blast.recipientCount > 0 ? 
-    Math.round((blast.delivered / blast.recipientCount) * 100) : 0;
+  const deliveryRate =
+    blast.recipientCount > 0 ? Math.round((blast.delivered / blast.recipientCount) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <div className="flex items-center gap-3">
-            <Mail className="w-6 h-6 text-red-500" />
-            <h2 className="text-xl font-semibold text-gray-900">Email Blast Details</h2>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <X className="w-5 h-5 text-gray-500" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-          {/* Status and Basic Info */}
-          <div className="mb-6">
-            <div className="flex items-center gap-3 mb-4">
-              {getStatusIcon(blast.status)}
-              <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(blast.status)}`}>
-                {blast.status.charAt(0).toUpperCase() + blast.status.slice(1)}
-              </span>
+    <SheetWithDetentFull.Root
+      presented={isOpen}
+      onPresentedChange={(presented) => !presented && onClose()}
+    >
+      <SheetWithDetentFull.Portal>
+        <SheetWithDetentFull.View>
+          <SheetWithDetentFull.Backdrop />
+          <SheetWithDetentFull.Content className='relative flex h-full flex-col'>
+            {/* Handle */}
+            <div className='mb-4 flex justify-center p-6 pt-4'>
+              <SheetWithDetentFull.Handle />
             </div>
-            
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">{blast.subject}</h3>
-            
-            {/* Display scheduling information if scheduled */}
-            {blast.status === 'scheduled' && blast.scheduled_for ? (
-              <div className="flex items-center gap-2 text-blue-600 mb-2">
-                <CalendarClock className="w-4 h-4" />
-                <p className="text-sm font-medium">Scheduled to send at: {formatDate(blast.scheduled_for)}</p>
+
+            {/* Header */}
+            <div className='flex items-center justify-between border-b border-gray-100 px-6 pb-4'>
+              <div className='flex items-center gap-3'>
+                <Mail className='h-6 w-6 text-red-500' />
+                <h2 className='text-xl font-semibold text-gray-900'>Email Blast Details</h2>
               </div>
-            ) : null}
-            
-            <p className="text-gray-600 mb-4">Created: {formatDate(blast.created_at)}</p>
-            
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <span>ID: {blast.id}</span>
               <button
-                onClick={handleCopyId}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
-                title="Copy ID"
+                onClick={onClose}
+                className='rounded-full p-2 transition-colors hover:bg-gray-100'
               >
-                <Copy className="w-3 h-3" />
+                <X className='h-5 w-5 text-gray-500' />
               </button>
             </div>
-          </div>
 
-          {/* Recipients Info */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-              <Users className="w-4 h-4" />
-              Recipients
-            </h4>
-            <div className="bg-gray-50 rounded-lg p-4">
-              <p className="text-sm text-gray-700 mb-2">
-                <strong>Target:</strong> {blast.recipients}
-              </p>
-              <p className="text-sm text-gray-700">
-                <strong>Total Recipients:</strong> {blast.recipientCount}
-              </p>
-            </div>
-          </div>
+            <VisuallyHidden.Root asChild>
+              <SheetWithDetentFull.Title>Email Blast Details</SheetWithDetentFull.Title>
+            </VisuallyHidden.Root>
 
-          {/* Delivery Statistics */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-3">Delivery Statistics</h4>
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                <div className="flex items-center gap-2 mb-1">
-                  <CheckCircle className="w-4 h-4 text-green-600" />
-                  <span className="text-sm font-medium text-green-900">Delivered</span>
-                </div>
-                <p className="text-2xl font-bold text-green-600">{blast.delivered}</p>
-              </div>
-              
-              {blast.failed > 0 && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <XCircle className="w-4 h-4 text-red-600" />
-                    <span className="text-sm font-medium text-red-900">Failed</span>
+            {/* Content */}
+            <SheetWithDetentFull.ScrollRoot asChild className='flex-1 overflow-hidden'>
+              <SheetWithDetentFull.ScrollView className='h-full flex-1'>
+                <SheetWithDetentFull.ScrollContent className='p-6'>
+                  {/* Status and Basic Info */}
+                  <div className='mb-6'>
+                    <div className='mb-4 flex items-center gap-3'>
+                      {getStatusIcon(blast.status)}
+                      <span
+                        className={`rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(blast.status)}`}
+                      >
+                        {blast.status.charAt(0).toUpperCase() + blast.status.slice(1)}
+                      </span>
+                    </div>
+
+                    <h3 className='mb-2 text-lg font-semibold text-gray-900'>{blast.subject}</h3>
+
+                    {/* Display scheduling information if scheduled */}
+                    {blast.status === 'scheduled' && blast.scheduled_for ? (
+                      <div className='mb-2 flex items-center gap-2 text-blue-600'>
+                        <CalendarClock className='h-4 w-4' />
+                        <p className='text-sm font-medium'>
+                          Scheduled to send at: {formatDate(blast.scheduled_for)}
+                        </p>
+                      </div>
+                    ) : null}
+
+                    <p className='mb-4 text-gray-600'>Created: {formatDate(blast.created_at)}</p>
+
+                    <div className='flex items-center gap-2 text-sm text-gray-500'>
+                      <span>ID: {blast.id}</span>
+                      <button
+                        onClick={handleCopyId}
+                        className='rounded p-1 transition-colors hover:bg-gray-100'
+                        title='Copy ID'
+                      >
+                        <Copy className='h-3 w-3' />
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-red-600">{blast.failed}</p>
-                </div>
-              )}
-              
-              {blast.pending > 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                  <div className="flex items-center gap-2 mb-1">
-                    <AlertCircle className="w-4 h-4 text-yellow-600" />
-                    <span className="text-sm font-medium text-yellow-900">Pending</span>
+
+                  {/* Recipients Info */}
+                  <div className='mb-6'>
+                    <h4 className='mb-3 flex items-center gap-2 font-semibold text-gray-900'>
+                      <Users className='h-4 w-4' />
+                      Recipients
+                    </h4>
+                    <div className='rounded-lg bg-gray-50 p-4'>
+                      <p className='mb-2 text-sm text-gray-700'>
+                        <strong>Target:</strong> {blast.recipients}
+                      </p>
+                      <p className='text-sm text-gray-700'>
+                        <strong>Total Recipients:</strong> {blast.recipientCount}
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-2xl font-bold text-yellow-600">{blast.pending}</p>
-                </div>
-              )}
-            </div>
-            
-            <div className="bg-gray-50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">Delivery Rate</span>
-                <span className="text-sm font-bold text-gray-900">{deliveryRate}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div 
-                  className="bg-green-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${deliveryRate}%` }}
-                ></div>
-              </div>
-            </div>
-          </div>
 
-          {/* Message Preview */}
-          <div className="mb-6">
-            <h4 className="font-semibold text-gray-900 mb-3">Message</h4>
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-              <div 
-                className="prose prose-sm max-w-none text-gray-700"
-                dangerouslySetInnerHTML={{ __html: blast.message }}
-              />
-            </div>
-          </div>
-        </div>
+                  {/* Delivery Statistics */}
+                  <div className='mb-6'>
+                    <h4 className='mb-3 font-semibold text-gray-900'>Delivery Statistics</h4>
+                    <div className='mb-4 grid grid-cols-2 gap-4'>
+                      <div className='rounded-lg border border-green-200 bg-green-50 p-4'>
+                        <div className='mb-1 flex items-center gap-2'>
+                          <CheckCircle className='h-4 w-4 text-green-600' />
+                          <span className='text-sm font-medium text-green-900'>Delivered</span>
+                        </div>
+                        <p className='text-2xl font-bold text-green-600'>{blast.delivered}</p>
+                      </div>
 
-        {/* Footer */}
-        <div className="p-6 border-t border-gray-100">
-          <button
-            onClick={onClose}
-            className="w-full py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    </div>
+                      {blast.failed > 0 && (
+                        <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
+                          <div className='mb-1 flex items-center gap-2'>
+                            <XCircle className='h-4 w-4 text-red-600' />
+                            <span className='text-sm font-medium text-red-900'>Failed</span>
+                          </div>
+                          <p className='text-2xl font-bold text-red-600'>{blast.failed}</p>
+                        </div>
+                      )}
+
+                      {blast.pending > 0 && (
+                        <div className='rounded-lg border border-yellow-200 bg-yellow-50 p-4'>
+                          <div className='mb-1 flex items-center gap-2'>
+                            <AlertCircle className='h-4 w-4 text-yellow-600' />
+                            <span className='text-sm font-medium text-yellow-900'>Pending</span>
+                          </div>
+                          <p className='text-2xl font-bold text-yellow-600'>{blast.pending}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className='rounded-lg bg-gray-50 p-4'>
+                      <div className='mb-2 flex items-center justify-between'>
+                        <span className='text-sm font-medium text-gray-700'>Delivery Rate</span>
+                        <span className='text-sm font-bold text-gray-900'>{deliveryRate}%</span>
+                      </div>
+                      <div className='h-2 w-full rounded-full bg-gray-200'>
+                        <div
+                          className='h-2 rounded-full bg-green-500 transition-all duration-300'
+                          style={{ width: `${deliveryRate}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Message Preview */}
+                  <div className='mb-6'>
+                    <h4 className='mb-3 font-semibold text-gray-900'>Message</h4>
+                    <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                      <div
+                        className='prose prose-sm max-w-none text-gray-700'
+                        dangerouslySetInnerHTML={{ __html: blast.message }}
+                      />
+                    </div>
+                  </div>
+                </SheetWithDetentFull.ScrollContent>
+              </SheetWithDetentFull.ScrollView>
+            </SheetWithDetentFull.ScrollRoot>
+          </SheetWithDetentFull.Content>
+        </SheetWithDetentFull.View>
+      </SheetWithDetentFull.Portal>
+    </SheetWithDetentFull.Root>
   );
 }

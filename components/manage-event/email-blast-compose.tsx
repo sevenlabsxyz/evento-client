@@ -1,11 +1,9 @@
 'use client';
 
+import { Switch } from '@/components/ui/switch';
 import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/useEmailBlasts';
 import { getRecipientCount, useRSVPStats } from '@/lib/hooks/useRSVPStats';
-import {
-  CreateEmailBlastForm,
-  EmailBlastRecipientFilter,
-} from '@/lib/types/api';
+import { CreateEmailBlastForm, EmailBlastRecipientFilter } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -16,31 +14,24 @@ import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { CalendarClock, Clock, Loader2, Mail, Send, Users } from 'lucide-react';
 import { useState } from 'react';
-import DatePickerModal from '../shared/date-picker-modal';
-import TimePickerModal from '../shared/time-picker-modal';
+import DatePickerSheet from '../create-event/date-picker-sheet';
+import TimePickerSheet from '../create-event/time-picker-sheet';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface EmailBlastComposeProps {
   eventId: string;
-  onSend: (data: {
-    recipients: string;
-    subject: string;
-    message: string;
-  }) => void;
+  onSend: (data: { recipients: string; subject: string; message: string }) => void;
   onCancel: () => void;
 }
 
-export default function EmailBlastCompose({
-  eventId,
-  onSend,
-  onCancel,
-}: EmailBlastComposeProps) {
-  const [recipients, setRecipients] =
-    useState<EmailBlastRecipientFilter>('all');
+export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBlastComposeProps) {
+  const [recipients, setRecipients] = useState<EmailBlastRecipientFilter>('all');
   const [subject, setSubject] = useState('');
   const [editorContent, setEditorContent] = useState('');
   const [scheduled, setScheduled] = useState(false);
   const [scheduledDate, setScheduledDate] = useState('');
   const [scheduledTime, setScheduledTime] = useState('');
+  const [timezone, setTimezone] = useState('');
 
   // State for date/time picker modals
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -80,11 +71,7 @@ export default function EmailBlastCompose({
   };
 
   // Handle time selection from the time picker
-  const handleTimeSelect = (time: {
-    hour: number;
-    minute: number;
-    period: 'AM' | 'PM';
-  }) => {
+  const handleTimeSelect = (time: { hour: number; minute: number; period: 'AM' | 'PM' }) => {
     // Convert to 24-hour format for the input value
     let hour24 = time.hour;
     if (time.period === 'PM' && time.hour < 12) hour24 += 12;
@@ -107,9 +94,9 @@ export default function EmailBlastCompose({
       value: 'all' as const,
       label: 'All RSVPs',
       description: (count: number) =>
-        `Send to all ${!isLoadingStats ? count : ''} guest${
+        `Send to ${!isLoadingStats ? count : ''} guest${
           count === 1 ? '' : 's'
-        } who have RSVPd`,
+        } who ha${!isLoadingStats && count !== 1 ? 've' : 's'} RSVPd`,
       count: getRecipientCount(rsvpStats, 'all'),
     },
     {
@@ -119,34 +106,14 @@ export default function EmailBlastCompose({
         `Send to ${!isLoadingStats ? count : ''} guest${
           count === 1 ? '' : 's'
         } who confirmed attendance`,
-      count: getRecipientCount(rsvpStats, 'rsvp-yes'),
+      count: getRecipientCount(rsvpStats, 'yes_only'),
     },
     {
       value: 'rsvp-maybe' as const,
       label: 'RSVP: Maybe',
       description: (count: number) =>
-        `Send to ${!isLoadingStats ? count : ''} guest${
-          count === 1 ? '' : 's'
-        } who might attend`,
-      count: getRecipientCount(rsvpStats, 'rsvp-maybe'),
-    },
-    {
-      value: 'rsvp-no' as const,
-      label: 'RSVP: No',
-      description: (count: number) =>
-        `Send to ${!isLoadingStats ? count : ''} guest${
-          count === 1 ? '' : 's'
-        } who declined`,
-      count: getRecipientCount(rsvpStats, 'rsvp-no'),
-    },
-    {
-      value: 'invited' as const,
-      label: 'All Invited',
-      description: (count: number) =>
-        `Send to all ${!isLoadingStats ? count : ''} invited guest${
-          count === 1 ? '' : 's'
-        }`,
-      count: getRecipientCount(rsvpStats, 'invited'),
+        `Send to ${!isLoadingStats ? count : ''} guest${count === 1 ? '' : 's'} who might attend`,
+      count: getRecipientCount(rsvpStats, 'yes_and_maybe'),
     },
   ];
 
@@ -200,9 +167,7 @@ export default function EmailBlastCompose({
     },
   });
 
-  const selectedOption = recipientOptions.find(
-    (option) => option.value === recipients
-  );
+  const selectedOption = recipientOptions.find((option) => option.value === recipients);
 
   const handleSend = async () => {
     if (!editor || !subject.trim()) return;
@@ -216,9 +181,7 @@ export default function EmailBlastCompose({
       if (scheduled && scheduledDate && scheduledTime) {
         try {
           // Combine date and time into ISO string
-          scheduledFor = new Date(
-            `${scheduledDate}T${scheduledTime}`
-          ).toISOString();
+          scheduledFor = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
         } catch (e) {
           toast.error('Invalid date or time format');
           return;
@@ -249,8 +212,7 @@ export default function EmailBlastCompose({
     } catch (error) {
       console.error('Failed to send email blast:', error);
       // Show error toast with specific message
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to send email blast';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send email blast';
       toast.error(errorMessage);
     }
   };
@@ -259,30 +221,32 @@ export default function EmailBlastCompose({
   const isLoading = createEmailBlastMutation.isPending;
 
   return (
-    <div className="EmailBlastCompose-form">
+    <div className='EmailBlastCompose-form'>
       {/* Recipients Field */}
-      <div className="EmailBlastCompose-field">
-        <label className="EmailBlastCompose-label">
-          <Users className="w-4 h-4 inline mr-2" />
+      <div className='EmailBlastCompose-field'>
+        <label className='EmailBlastCompose-label'>
+          <Users className='mr-2 inline h-4 w-4' />
           Recipients
         </label>
-        <select
+        <Select
           value={recipients}
-          onChange={(e) =>
-            setRecipients(e.target.value as EmailBlastRecipientFilter)
-          }
-          className="EmailBlastCompose-select"
+          onValueChange={(value: string) => setRecipients(value as EmailBlastRecipientFilter)}
         >
-          {recipientOptions.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label} {!isLoadingStats && `(${option.count})`}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className='EmailBlastCompose-select'>
+            <SelectValue placeholder='Select recipients' />
+          </SelectTrigger>
+          <SelectContent>
+            {recipientOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label} {!isLoadingStats && `(${option.count})`}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         {selectedOption && (
-          <div className="EmailBlastCompose-recipientOption">
-            <div className="EmailBlastCompose-recipientInfo">
-              <div className="EmailBlastCompose-recipientDescription">
+          <div className='EmailBlastCompose-recipientOption'>
+            <div className='EmailBlastCompose-recipientInfo'>
+              <div className='EmailBlastCompose-recipientDescription'>
                 {selectedOption.description(selectedOption.count)}
               </div>
             </div>
@@ -291,48 +255,48 @@ export default function EmailBlastCompose({
       </div>
 
       {/* Subject Field */}
-      <div className="EmailBlastCompose-field">
-        <label className="EmailBlastCompose-label">
-          <Mail className="w-4 h-4 inline mr-2" />
+      <div className='EmailBlastCompose-field'>
+        <label className='EmailBlastCompose-label'>
+          <Mail className='mr-2 inline h-4 w-4' />
           Subject
         </label>
         <input
-          type="text"
+          type='text'
           value={subject}
           onChange={(e) => setSubject(e.target.value)}
-          placeholder="Enter email subject..."
-          className="EmailBlastCompose-input"
+          placeholder='Enter email subject...'
+          className='EmailBlastCompose-input'
         />
       </div>
 
       {/* Message Field */}
-      <div className="EmailBlastCompose-field">
-        <label className="EmailBlastCompose-label" htmlFor="message">
+      <div className='EmailBlastCompose-field'>
+        <label className='EmailBlastCompose-label' htmlFor='message'>
           Message
         </label>
 
         {/* Simple Toolbar */}
         {editor && (
-          <div className="flex items-center gap-2 p-2 border border-gray-200 rounded-t-lg bg-gray-50">
+          <div className='flex items-center gap-2 rounded-t-lg border border-gray-200 bg-gray-50 p-2'>
             <button
               onClick={() => editor.chain().focus().toggleBold().run()}
-              className={`p-2 rounded hover:bg-gray-200 transition-colors ${
+              className={`rounded p-2 transition-colors hover:bg-gray-200 ${
                 editor.isActive('bold') ? 'bg-gray-200' : ''
               }`}
-              type="button"
+              type='button'
             >
               <strong>B</strong>
             </button>
             <button
               onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={`p-2 rounded hover:bg-gray-200 transition-colors ${
+              className={`rounded p-2 transition-colors hover:bg-gray-200 ${
                 editor.isActive('italic') ? 'bg-gray-200' : ''
               }`}
-              type="button"
+              type='button'
             >
               <em>I</em>
             </button>
-            <div className="w-px h-6 bg-gray-300 mx-1" />
+            <div className='mx-1 h-6 w-px bg-gray-300' />
             <button
               onClick={() => {
                 const url = window.prompt('Enter URL:');
@@ -340,74 +304,66 @@ export default function EmailBlastCompose({
                   editor.chain().focus().setLink({ href: url }).run();
                 }
               }}
-              className={`p-2 rounded hover:bg-gray-200 transition-colors ${
+              className={`rounded p-2 transition-colors hover:bg-gray-200 ${
                 editor.isActive('link') ? 'bg-gray-200' : ''
               }`}
-              type="button"
+              type='button'
             >
               🔗
             </button>
           </div>
         )}
 
-        <div className="EmailBlastCompose-editor border-t-0">
+        <div className='EmailBlastCompose-editor border-t-0'>
           <EditorContent editor={editor} />
         </div>
       </div>
 
       {/* Scheduling Options */}
-      <div className="EmailBlastCompose-field">
-        <div className="flex items-center">
-          <label className="EmailBlastCompose-label flex items-center">
-            <input
-              type="checkbox"
-              checked={scheduled}
-              onChange={(e) => setScheduled(e.target.checked)}
-              className="mr-2 h-4 w-4 rounded border-gray-300 text-red-600 focus:ring-red-600"
-            />
-            <CalendarClock className="w-4 h-4 inline mr-2" />
+      <div className='EmailBlastCompose-field'>
+        <div className='flex items-center space-x-3'>
+          <Switch id='schedule-toggle' checked={scheduled} onCheckedChange={setScheduled} />
+          <label
+            htmlFor='schedule-toggle'
+            className='EmailBlastCompose-label flex cursor-pointer items-center'
+          >
+            <CalendarClock className='mr-2 inline h-4 w-4' />
             Schedule for later
           </label>
         </div>
 
         {scheduled && (
-          <div className="flex flex-col sm:flex-row gap-4 mt-4">
-            <div className="flex-1">
-              <label
-                className="block text-sm font-medium mb-1"
-                htmlFor="schedule-date"
-              >
-                <Clock className="w-4 h-4 inline mr-2" />
+          <div className='mt-4 flex flex-col gap-4 sm:flex-row'>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium' htmlFor='schedule-date'>
+                <Clock className='mr-2 inline h-4 w-4' />
                 Date
               </label>
               <button
-                type="button"
+                type='button'
                 onClick={() => setIsDatePickerOpen(true)}
-                className="EmailBlastCompose-input flex items-center justify-between w-full text-left"
+                className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
               >
                 {scheduledDate ? formattedDate : 'Select date'}
-                <CalendarClock className="w-4 h-4 text-gray-400" />
+                <CalendarClock className='h-4 w-4 text-gray-400' />
               </button>
             </div>
-            <div className="flex-1">
-              <label
-                className="block text-sm font-medium mb-1"
-                htmlFor="schedule-time"
-              >
-                <Clock className="w-4 h-4 inline mr-2" />
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium' htmlFor='schedule-time'>
+                <Clock className='mr-2 inline h-4 w-4' />
                 Time
               </label>
               <button
-                type="button"
+                type='button'
                 onClick={() => setIsTimePickerOpen(true)}
-                className="EmailBlastCompose-input flex items-center justify-between w-full text-left"
+                className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
               >
                 {scheduledTime
                   ? `${getTimeComponents().hour}:${getTimeComponents()
                       .minute.toString()
                       .padStart(2, '0')} ${getTimeComponents().period}`
                   : 'Select time'}
-                <Clock className="w-4 h-4 text-gray-400" />
+                <Clock className='h-4 w-4 text-gray-400' />
               </button>
             </div>
           </div>
@@ -415,24 +371,21 @@ export default function EmailBlastCompose({
       </div>
 
       {/* Preview Info */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="font-semibold text-blue-900 mb-2">Email Preview</h4>
-        <div className="text-sm text-blue-800">
+      <div className='rounded-lg border border-blue-200 bg-blue-50 p-4'>
+        <h4 className='mb-2 font-semibold text-blue-900'>Email Preview</h4>
+        <div className='text-sm text-blue-800'>
           <p>
-            <strong>To:</strong> {selectedOption?.label} (
-            {selectedOption?.count} recipients)
+            <strong>To:</strong> {selectedOption?.label} ({selectedOption?.count} recipients)
           </p>
           <p>
             <strong>Subject:</strong> {subject || 'No subject'}
           </p>
           <p>
             <strong>Message:</strong>{' '}
-            {editor?.getText()
-              ? `${editor.getText().slice(0, 100)}...`
-              : 'No message'}
+            {editor?.getText() ? `${editor.getText().slice(0, 100)}...` : 'No message'}
           </p>
           {scheduled && scheduledDate && scheduledTime && (
-            <p className="mt-2 text-blue-700">
+            <p className='mt-2 text-blue-700'>
               <strong>Scheduled for:</strong>{' '}
               {new Date(`${scheduledDate}T${scheduledTime}`).toLocaleString()}
             </p>
@@ -441,28 +394,28 @@ export default function EmailBlastCompose({
       </div>
 
       {/* Actions */}
-      <div className="EmailBlastCompose-actions">
+      <div className='EmailBlastCompose-actions'>
         <button
           onClick={onCancel}
-          className="EmailBlastCompose-button EmailBlastCompose-button--cancel"
-          type="button"
+          className='EmailBlastCompose-button EmailBlastCompose-button--cancel'
+          type='button'
         >
           Cancel
         </button>
         <button
           onClick={handleSend}
           disabled={!isValid || isLoading}
-          className="EmailBlastCompose-button EmailBlastCompose-button--send"
-          type="button"
+          className='EmailBlastCompose-button EmailBlastCompose-button--send'
+          type='button'
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
               {scheduled ? 'Scheduling...' : 'Sending...'}
             </>
           ) : (
             <>
-              <Send className="w-4 h-4 mr-2" />
+              <Send className='mr-2 h-4 w-4' />
               {scheduled ? 'Schedule Email Blast' : 'Send Email Blast'}
             </>
           )}
@@ -470,21 +423,25 @@ export default function EmailBlastCompose({
       </div>
 
       {/* Date Picker Modal */}
-      <DatePickerModal
+      <DatePickerSheet
         isOpen={isDatePickerOpen}
         onClose={() => setIsDatePickerOpen(false)}
         onDateSelect={handleDateSelect}
         selectedDate={scheduledDate ? new Date(scheduledDate) : undefined}
-        title="Schedule Date"
+        title='Schedule Date'
       />
 
       {/* Time Picker Modal */}
-      <TimePickerModal
+      <TimePickerSheet
         isOpen={isTimePickerOpen}
         onClose={() => setIsTimePickerOpen(false)}
         onTimeSelect={handleTimeSelect}
         selectedTime={getTimeComponents()}
-        title="Schedule Time"
+        title='Schedule Time'
+        onTimezoneSelect={function (timezone: string): void {
+          setTimezone(timezone);
+        }}
+        timezone={timezone}
       />
     </div>
   );

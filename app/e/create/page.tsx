@@ -286,12 +286,10 @@ export default function CreatePage() {
       {/* Form Content */}
       <div className="flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4">
         {/* Event Title Module - Moved to top */}
-        <div className="rounded-2xl bg-white p-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-500">
-              Event Title
-            </label>
-            <div className="flex items-center gap-3">
+        <div className='rounded-2xl bg-white p-4'>
+          <div className='space-y-2'>
+            <label className='text-sm font-medium text-gray-500'>Event Title</label>
+            <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
                 type="text"

@@ -3,25 +3,22 @@
 import EmailBlastCard from '@/components/manage-event/email-blast-card';
 import EmailBlastDetailModal from '@/components/manage-event/email-blast-detail-modal';
 import EmailBlastSheet from '@/components/manage-event/email-blast-sheet';
-import {
-  transformEmailBlastForUI,
-  useEmailBlasts,
-} from '@/lib/hooks/useEmailBlasts';
+import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/useEmailBlasts';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { ArrowLeft, Loader2, Mail, Plus } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { Loader2, Mail, Plus } from 'lucide-react';
+import { useParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EmailBlastPage() {
   const { setTopBar } = useTopBar();
   const params = useParams();
-  const router = useRouter();
   const eventId = params.id as string;
   const [showEmailBlastSheet, setShowEmailBlastSheet] = useState(false);
   const [selectedBlast, setSelectedBlast] = useState<any | null>(null);
 
   // Fetch email blasts data
   const { data: emailBlasts = [], isLoading, error } = useEmailBlasts(eventId);
+  console.log('EMAIL BLASTS', emailBlasts);
 
   // Transform API data for UI
   const transformedBlasts = (emailBlasts || []).map(transformEmailBlastForUI);
@@ -31,10 +28,19 @@ export default function EmailBlastPage() {
     setTopBar({
       title: 'Email Blast',
       subtitle: 'Send updates to your guests',
+      buttons: [
+        {
+          icon: Plus,
+          onClick: handleCreateBlast,
+          label: 'Create Blast',
+          id: 'create-blast',
+        },
+      ],
+      leftMode: 'back',
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({ leftMode: 'menu', buttons: [] });
     };
   }, [setTopBar]);
 
@@ -47,83 +53,55 @@ export default function EmailBlastPage() {
   };
 
   return (
-    <div className="md:max-w-sm max-w-full mx-auto bg-white min-h-screen">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => router.back()}
-            className="p-2 hover:bg-gray-100 rounded-full"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-          <h1 className="text-xl font-semibold">Email Blast</h1>
-        </div>
-        <button
-          onClick={handleCreateBlast}
-          className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          <span className="text-sm font-medium">New Blast</span>
-        </button>
-      </div>
-
+    <div className='mx-auto mt-2 min-h-screen max-w-full bg-white md:max-w-sm'>
       {/* Content */}
-      <div className="p-4">
+      <div className='p-4'>
         {/* Email Blast History */}
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Recent Email Blasts
-          </h2>
+        <div className='space-y-3'>
+          <h2 className='mb-4 text-lg font-semibold text-gray-900'>Recent Email Blasts</h2>
 
           {isLoading ? (
-            <div className="text-center py-12">
-              <Loader2 className="h-8 w-8 animate-spin text-red-500 mx-auto mb-4" />
-              <p className="text-gray-600">Loading email blasts...</p>
+            <div className='py-12 text-center'>
+              <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
+              <p className='text-gray-600'>Loading email blasts...</p>
             </div>
           ) : error ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-8 h-8 text-red-400" />
+            <div className='py-12 text-center'>
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+                <Mail className='h-8 w-8 text-red-400' />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className='mb-2 text-lg font-medium text-gray-900'>
                 Failed to load email blasts
               </h3>
-              <p className="text-gray-500 mb-6">
+              <p className='mb-6 text-gray-500'>
                 There was an error loading your email blasts. Please try again.
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className='rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600'
               >
                 Retry
               </button>
             </div>
           ) : transformedBlasts.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Mail className="w-8 h-8 text-gray-400" />
+            <div className='py-12 text-center'>
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+                <Mail className='h-8 w-8 text-gray-400' />
               </div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No email blasts yet
-              </h3>
-              <p className="text-gray-500 mb-6">
+              <h3 className='mb-2 text-lg font-medium text-gray-900'>No email blasts yet</h3>
+              <p className='mb-6 text-gray-500'>
                 Send your first email blast to keep your guests informed
               </p>
               <button
                 onClick={handleCreateBlast}
-                className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                className='rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600'
               >
                 Create Email Blast
               </button>
             </div>
           ) : (
             transformedBlasts.map((blast: any) => (
-              <EmailBlastCard
-                key={blast.id}
-                blast={blast}
-                onClick={handleBlastClick}
-              />
+              <EmailBlastCard key={blast.id} blast={blast} onClick={handleBlastClick} />
             ))
           )}
         </div>

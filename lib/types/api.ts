@@ -189,12 +189,7 @@ export interface Follow {
 export interface Notification {
   id: string;
   user_id: string;
-  type:
-    | 'event_invite'
-    | 'event_comment'
-    | 'event_rsvp'
-    | 'user_follow'
-    | 'event_reminder';
+  type: 'event_invite' | 'event_comment' | 'event_rsvp' | 'user_follow' | 'event_reminder';
   title: string;
   message: string;
   read: boolean;
@@ -230,7 +225,7 @@ export interface EmailBlast {
   event_id: string;
   user_id: string;
   message: string;
-  recipient_filter: 'all' | 'yes_only' | 'yes_and_maybe';
+  recipient_filter: EmailBlastRecipientFilter;
   status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
   scheduled_for: string | null;
   created_at: string;
@@ -256,3 +251,4 @@ export type RSVPStatus = 'yes' | 'no' | 'maybe';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
+export type EmailBlastRecipientFilter = 'all' | 'yes_only' | 'yes_and_maybe';

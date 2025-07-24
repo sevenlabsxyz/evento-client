@@ -14,11 +14,7 @@ interface EmailBlastSheetProps {
   eventId: string;
 }
 
-export default function EmailBlastSheet({
-  isOpen,
-  onClose,
-  eventId,
-}: EmailBlastSheetProps) {
+export default function EmailBlastSheet({ isOpen, onClose, eventId }: EmailBlastSheetProps) {
   const [activeTab, setActiveTab] = useState<'compose' | 'history'>('compose');
 
   const handleClose = () => {
@@ -26,11 +22,7 @@ export default function EmailBlastSheet({
     onClose();
   };
 
-  const handleSendBlast = (data: {
-    recipients: string;
-    subject: string;
-    message: string;
-  }) => {
+  const handleSendBlast = (data: { recipients: string; subject: string; message: string }) => {
     console.log('Email blast sent successfully:', data);
     // Switch to history tab to show the new blast
     setActiveTab('history');
@@ -45,32 +37,32 @@ export default function EmailBlastSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className="EmailBlastSheet-content">
+          <SheetWithDetentFull.Content className='EmailBlastSheet-content'>
             {/* Fixed Header */}
-            <div className="EmailBlastSheet-header">
-              <div className="flex justify-center mb-4">
-                <SheetWithDetentFull.Handle className="EmailBlastSheet-handle" />
+            <div className='EmailBlastSheet-header'>
+              <div className='mb-4 flex justify-center pt-4'>
+                <SheetWithDetentFull.Handle className='EmailBlastSheet-handle' />
               </div>
-              <div className="EmailBlastSheet-headerBar">
+              <div className='EmailBlastSheet-headerBar'>
                 <button
                   onClick={handleClose}
-                  className="EmailBlastSheet-headerButton EmailBlastSheet-headerButton--cancel"
+                  className='EmailBlastSheet-headerButton EmailBlastSheet-headerButton--cancel'
                 >
                   Cancel
                 </button>
-                <h1 className="EmailBlastSheet-headerTitle">Email Blast</h1>
-                <div className="w-16" /> {/* Spacer for centering */}
+                <h1 className='EmailBlastSheet-headerTitle'>Email Blast</h1>
+                <div className='w-16' /> {/* Spacer for centering */}
               </div>
 
               {/* Tabs */}
-              <div className="EmailBlastSheet-tabs">
+              <div className='EmailBlastSheet-tabs'>
                 <button
                   onClick={() => setActiveTab('compose')}
                   className={`EmailBlastSheet-tab ${
                     activeTab === 'compose' ? 'EmailBlastSheet-tab--active' : ''
                   }`}
                 >
-                  <Mail className="w-4 h-4" />
+                  <Mail className='h-4 w-4' />
                   <span>Compose</span>
                 </button>
                 <button
@@ -79,7 +71,7 @@ export default function EmailBlastSheet({
                     activeTab === 'history' ? 'EmailBlastSheet-tab--active' : ''
                   }`}
                 >
-                  <Clock className="w-4 h-4" />
+                  <Clock className='h-4 w-4' />
                   <span>History</span>
                 </button>
               </div>
@@ -91,8 +83,8 @@ export default function EmailBlastSheet({
 
             {/* Scrollable Content */}
             <SheetWithDetentFull.ScrollRoot asChild>
-              <SheetWithDetentFull.ScrollView className="EmailBlastSheet-scrollView">
-                <SheetWithDetentFull.ScrollContent className="EmailBlastSheet-scrollContent">
+              <SheetWithDetentFull.ScrollView className='EmailBlastSheet-scrollView'>
+                <SheetWithDetentFull.ScrollContent className='EmailBlastSheet-scrollContent'>
                   {activeTab === 'compose' ? (
                     <EmailBlastCompose
                       eventId={eventId}

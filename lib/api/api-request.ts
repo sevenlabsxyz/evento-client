@@ -5,11 +5,7 @@ import { NextResponse } from 'next/server';
 // Use the backend target URL directly for server-side requests
 const API_BASE_URL = Env.API_PROXY_TARGET;
 
-export async function apiRequest(
-  method: string,
-  path: string,
-  request: Request
-) {
+export async function apiRequest(method: string, path: string, request: Request) {
   const requestId = logger.generateRequestId();
   const startTime = Date.now();
 
@@ -21,9 +17,7 @@ export async function apiRequest(
     // Extract request context for logging
     const userAgent = request.headers.get('user-agent') || undefined;
     const ip =
-      request.headers.get('x-forwarded-for') ||
-      request.headers.get('x-real-ip') ||
-      'unknown';
+      request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Get cookies from the incoming request
     const cookieHeader = request.headers.get('cookie') || '';
@@ -111,26 +105,19 @@ export async function apiRequest(
     const targetUrl = `${API_BASE_URL}${path}${new URL(request.url).search}`;
 
     // Log comprehensive error information
-    logger.logApiError(
-      targetUrl,
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        requestId,
-        method,
-        userAgent: request.headers.get('user-agent') || undefined,
-        ip:
-          request.headers.get('x-forwarded-for') ||
-          request.headers.get('x-real-ip') ||
-          'unknown',
-        additionalContext: {
-          duration,
-          apiBaseUrl: API_BASE_URL,
-          requestPath: path,
-          queryString: new URL(request.url).search,
-          cookiePresent: !!request.headers.get('cookie'),
-        },
-      }
-    );
+    logger.logApiError(targetUrl, error instanceof Error ? error : new Error(String(error)), {
+      requestId,
+      method,
+      userAgent: request.headers.get('user-agent') || undefined,
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      additionalContext: {
+        duration,
+        apiBaseUrl: API_BASE_URL,
+        requestPath: path,
+        queryString: new URL(request.url).search,
+        cookiePresent: !!request.headers.get('cookie'),
+      },
+    });
 
     return NextResponse.json(
       {

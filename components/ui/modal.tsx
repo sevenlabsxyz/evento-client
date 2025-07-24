@@ -1,24 +1,24 @@
-"use client";
+'use client';
 
-import * as React from "react";
+import * as React from 'react';
 
-import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   Dialog,
-  DialogTitle,
-  DialogHeader,
   DialogContent,
-  DialogTrigger,
   DialogDescription,
-} from "@/components/ui/dialog";
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import {
   Drawer,
-  DrawerTitle,
-  DrawerHeader,
   DrawerContent,
-  DrawerTrigger,
   DrawerDescription,
-} from "@/components/ui/drawer";
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from '@/components/ui/drawer';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 export const Modal = ({
   open,
@@ -49,9 +49,7 @@ export const Modal = ({
 }) => {
   const { isMobile } = useMediaQuery();
 
-  const dialogContentClassName = isWideDialog
-    ? "min-w-[650px]"
-    : "min-w-[425px]";
+  const dialogContentClassName = isWideDialog ? 'min-w-[650px]' : 'min-w-[425px]';
 
   if (!isMobile) {
     return (
@@ -64,10 +62,8 @@ export const Modal = ({
         >
           {(title || description) && (
             <DialogHeader>
-              {title && <DialogTitle className="text-2xl">{title}</DialogTitle>}
-              {description && (
-                <DialogDescription>{description}</DialogDescription>
-              )}
+              {title && <DialogTitle className='text-2xl'>{title}</DialogTitle>}
+              {description && <DialogDescription>{description}</DialogDescription>}
             </DialogHeader>
           )}
           {children}
@@ -90,14 +86,10 @@ export const Modal = ({
         hideCloseButton={hideCloseButton || disableClose}
       >
         {!hideMobileHeader && (title || description) ? (
-          <DrawerHeader className="pb-4 text-center">
-            {title && (
-              <DrawerTitle className="text-2xl font-medium">
-                {title}
-              </DrawerTitle>
-            )}
+          <DrawerHeader className='pb-4 text-center'>
+            {title && <DrawerTitle className='text-2xl font-medium'>{title}</DrawerTitle>}
             {description && (
-              <DrawerDescription className="text-base md:text-lg px-6">
+              <DrawerDescription className='px-6 text-base md:text-lg'>
                 {description}
               </DrawerDescription>
             )}

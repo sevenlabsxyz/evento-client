@@ -48,21 +48,19 @@ export default function DeleteConfirmationSheet({
 
               {/* Body */}
               <div className='mb-8 text-gray-600'>
-                <p>Are you sure you want to delete this {itemType}? This action cannot be undone.</p>
+                <p>
+                  Are you sure you want to delete this {itemType}? This action cannot be undone.
+                </p>
               </div>
 
               {/* Actions */}
               <div className='flex flex-col gap-3 sm:flex-row'>
-                <Button
-                  onClick={onClose}
-                  variant="outline"
-                  className='w-full'
-                >
+                <Button onClick={onClose} variant='outline' className='w-full'>
                   Cancel
                 </Button>
                 <Button
                   onClick={handleConfirm}
-                  variant="destructive"
+                  variant='destructive'
                   className='w-full'
                   disabled={isLoading}
                 >

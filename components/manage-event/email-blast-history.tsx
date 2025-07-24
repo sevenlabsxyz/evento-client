@@ -1,13 +1,10 @@
 'use client';
 
-import { Mail, Loader2, AlertCircle } from 'lucide-react';
+import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/useEmailBlasts';
+import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import { useState } from 'react';
 import EmailBlastCard from './email-blast-card';
 import EmailBlastDetailModal from './email-blast-detail-modal';
-import {
-  useEmailBlasts,
-  transformEmailBlastForUI,
-} from '@/lib/hooks/useEmailBlasts';
 
 interface EmailBlastHistoryProps {
   eventId: string;
@@ -25,11 +22,9 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
   // Loading state
   if (isLoading) {
     return (
-      <div className="EmailBlastHistory-loading">
-        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-        <p className="text-sm text-gray-500 mt-2">
-          Loading email blast history...
-        </p>
+      <div className='EmailBlastHistory-loading'>
+        <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+        <p className='mt-2 text-sm text-gray-500'>Loading email blast history...</p>
       </div>
     );
   }
@@ -37,12 +32,10 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
   // Error state
   if (error) {
     return (
-      <div className="EmailBlastHistory-error">
-        <AlertCircle className="w-6 h-6 text-red-400" />
-        <p className="text-sm text-red-600 mt-2">
-          Failed to load email blast history
-        </p>
-        <p className="text-xs text-gray-500 mt-1">{error.message}</p>
+      <div className='EmailBlastHistory-error'>
+        <AlertCircle className='h-6 w-6 text-red-400' />
+        <p className='mt-2 text-sm text-red-600'>Failed to load email blast history</p>
+        <p className='mt-1 text-xs text-gray-500'>{error.message}</p>
       </div>
     );
   }
@@ -50,14 +43,13 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
   // Empty state
   if (transformedBlasts.length === 0) {
     return (
-      <div className="EmailBlastHistory-empty">
-        <div className="EmailBlastHistory-emptyIcon">
-          <Mail className="w-8 h-8 text-gray-400" />
+      <div className='EmailBlastHistory-empty'>
+        <div className='EmailBlastHistory-emptyIcon'>
+          <Mail className='h-8 w-8 text-gray-400' />
         </div>
-        <h3 className="EmailBlastHistory-emptyTitle">No email blasts yet</h3>
-        <p className="EmailBlastHistory-emptyDescription">
-          Your email blast history will appear here once you send your first
-          blast.
+        <h3 className='EmailBlastHistory-emptyTitle'>No email blasts yet</h3>
+        <p className='EmailBlastHistory-emptyDescription'>
+          Your email blast history will appear here once you send your first blast.
         </p>
       </div>
     );
@@ -65,13 +57,9 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
 
   return (
     <>
-      <div className="space-y-3">
+      <div className='space-y-3'>
         {transformedBlasts.map((blast: any) => (
-          <EmailBlastCard
-            key={blast.id}
-            blast={blast}
-            onClick={setSelectedBlast}
-          />
+          <EmailBlastCard key={blast.id} blast={blast} onClick={setSelectedBlast} />
         ))}
       </div>
 

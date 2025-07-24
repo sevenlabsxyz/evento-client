@@ -297,4 +297,4 @@ export const logger = new Logger();
 export default logger;
 
 // Export types for use in other files
-export type { LogLevel, LogContext, ApiRequestLog, ApiResponseLog, ApiErrorLog };
+export type { ApiErrorLog, ApiRequestLog, ApiResponseLog, LogContext, LogLevel };

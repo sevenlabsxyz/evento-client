@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useState, useRef, useEffect } from "react";
-import { EmojiPicker, EmojiPickerSearch, EmojiPickerContent } from "@/components/ui/emoji-picker";
-import { cn } from "@/lib/utils";
-import { Smile } from "lucide-react";
+import { EmojiPicker, EmojiPickerContent, EmojiPickerSearch } from '@/components/ui/emoji-picker';
+import { cn } from '@/lib/utils';
+import { Smile } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
 interface EmojiSelectorProps {
   selectedEmoji?: string | null;
@@ -30,8 +30,8 @@ export function EmojiSelector({ selectedEmoji, onEmojiSelect, className }: Emoji
     }
 
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [isOpen]);
 
@@ -51,38 +51,35 @@ export function EmojiSelector({ selectedEmoji, onEmojiSelect, className }: Emoji
   };
 
   return (
-    <div className={cn("relative", className)} ref={containerRef}>
+    <div className={cn('relative', className)} ref={containerRef}>
       {/* Emoji Button */}
       <button
-        type="button"
+        type='button'
         onClick={handleButtonClick}
         className={cn(
-          "flex h-12 w-12 items-center justify-center rounded-xl border-2 border-gray-200 bg-white transition-colors hover:border-gray-300 hover:bg-gray-50",
-          isOpen && "border-blue-500 bg-blue-50"
+          'flex h-12 w-12 items-center justify-center rounded-xl border-2 border-gray-200 bg-white transition-colors hover:border-gray-300 hover:bg-gray-50',
+          isOpen && 'border-blue-500 bg-blue-50'
         )}
       >
         {selectedEmoji ? (
-          <div className="relative flex items-center justify-center text-xl">
+          <div className='relative flex items-center justify-center text-xl'>
             {selectedEmoji}
             {/* Small X button to remove emoji */}
             <button
               onClick={handleRemoveEmoji}
-              className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-500 text-white text-xs hover:bg-gray-600"
+              className='absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-500 text-xs text-white hover:bg-gray-600'
             >
               ×
             </button>
           </div>
         ) : (
-          <Smile className="h-5 w-5 text-gray-400" />
+          <Smile className='h-5 w-5 text-gray-400' />
         )}
       </button>
 
       {/* Emoji Picker Dropdown */}
       {isOpen && (
-        <div
-          ref={pickerRef}
-          className="absolute top-full left-0 z-50 mt-2 shadow-lg"
-        >
+        <div ref={pickerRef} className='absolute left-0 top-full z-50 mt-2 shadow-lg'>
           <EmojiPicker onEmojiSelect={handleEmojiSelect}>
             <EmojiPickerSearch />
             <EmojiPickerContent />

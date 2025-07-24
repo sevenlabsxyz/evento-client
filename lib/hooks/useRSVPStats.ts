@@ -1,19 +1,13 @@
 'use client';
 
 import { apiClient } from '@/lib/api/client';
-import {
-  ApiResponse,
-  EmailBlastRecipientFilter,
-  EventRSVP,
-} from '@/lib/types/api';
+import { ApiResponse, EmailBlastRecipientFilter, EventRSVP } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useQuery } from '@tanstack/react-query';
 
 export interface RSVPStats {
-  total: number;
-  yes: number;
-  no: number;
-  maybe: number;
+  all: number;
+  yes_only: number;
   yes_and_maybe: number;
 }
 
@@ -27,20 +21,16 @@ export function useRSVPStats(eventId: string) {
       try {
         // Fetch RSVPs using the correct API endpoint with query parameter
         const response = await apiClient.get<ApiResponse<EventRSVP[]>>(
-          `/v1/events/rsvps?id=${eventId}`
+          `/v1/events/rsvps?event_id=${eventId}`
         );
 
         if (response && response.data && Array.isArray(response.data)) {
           const rsvps = response.data;
           const stats: RSVPStats = {
-            total: rsvps.length,
-            yes: rsvps.filter((rsvp) => rsvp.status === 'yes').length,
-            no: rsvps.filter((rsvp) => rsvp.status === 'no').length,
-            maybe: rsvps.filter((rsvp) => rsvp.status === 'maybe').length,
-            yes_and_maybe: 0,
+            all: rsvps.length,
+            yes_only: rsvps.filter((rsvp) => rsvp.status === 'yes').length,
+            yes_and_maybe: rsvps.filter((rsvp) => rsvp.status === 'maybe').length,
           };
-
-          stats.yes_and_maybe = stats.yes + stats.maybe;
 
           return stats;
         }
@@ -51,10 +41,8 @@ export function useRSVPStats(eventId: string) {
 
       // Fallback: return default stats when no RSVPs or API error
       return {
-        total: 0,
-        yes: 0,
-        no: 0,
-        maybe: 0,
+        all: 0,
+        yes_only: 0,
         yes_and_maybe: 0,
       };
     },
@@ -75,15 +63,11 @@ export function getRecipientCount(
 
   switch (filter) {
     case 'all':
-      return stats.total;
-    case 'rsvp-yes':
-      return stats.yes;
-    case 'rsvp-no':
-      return stats.no;
-    case 'rsvp-maybe':
-      return stats.maybe;
-    case 'invited':
-      return stats.total; // Assuming all people in the stats are invited
+      return stats.all;
+    case 'yes_only':
+      return stats.yes_only;
+    case 'yes_and_maybe':
+      return stats.yes_and_maybe;
     default:
       return 0;
   }

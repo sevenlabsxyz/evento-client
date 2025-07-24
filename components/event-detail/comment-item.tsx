@@ -55,8 +55,7 @@ export default function CommentItem({
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const deleteCommentMutation = useDeleteComment();
   const editCommentMutation = useEditComment();
-  const { reactions, userReaction, toggleReaction, isToggling } =
-    useCommentReactions(comment.id);
+  const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(comment.id);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const createdDate = new Date(comment.created_at);
@@ -170,24 +169,17 @@ export default function CommentItem({
         <div className="flex-shrink-0">
           <UserAvatar
             user={comment.user_details}
-            size="sm"
-            onAvatarClick={() =>
-              router.push(`/u/${comment.user_details.username}`)
-            }
+            size='sm'
+            onAvatarClick={() => router.push(`/u/${comment.user_details.username}`)}
           />
         </div>
 
-        <div className="flex-grow space-y-1">
+        <div className='flex-grow space-y-1'>
           {/* Comment header */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <span className="font-medium">
-                @{comment.user_details.username}
-              </span>
-              <span
-                className="ml-2 text-xs text-gray-500"
-                title={formattedDate}
-              >
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center'>
+              <span className='font-medium'>@{comment.user_details.username}</span>
+              <span className='ml-2 text-xs text-gray-500' title={formattedDate}>
                 {timeAgo}
               </span>
             </div>
@@ -195,17 +187,15 @@ export default function CommentItem({
             {isAuthor && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="rounded-full p-1 text-gray-500 hover:bg-gray-100">
-                    <MoreHorizontal className="h-4 w-4" />
+                  <button className='rounded-full p-1 text-gray-500 hover:bg-gray-100'>
+                    <MoreHorizontal className='h-4 w-4' />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={() => setIsEditing(true)}>
-                    Edit
-                  </DropdownMenuItem>
+                <DropdownMenuContent align='end'>
+                  <DropdownMenuItem onClick={() => setIsEditing(true)}>Edit</DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={handleDelete}
-                    className="text-red-600 focus:bg-red-50 focus:text-red-600"
+                    className='text-red-600 focus:bg-red-50 focus:text-red-600'
                   >
                     Delete
                   </DropdownMenuItem>
@@ -216,17 +206,17 @@ export default function CommentItem({
 
           {/* Comment content */}
           {isEditing ? (
-            <div className="space-y-2">
+            <div className='space-y-2'>
               <textarea
                 ref={textareaRef}
                 value={editText}
                 onChange={(e) => setEditText(e.target.value)}
-                className="min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm"
+                className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm'
               />
-              <div className="flex justify-end gap-2">
+              <div className='flex justify-end gap-2'>
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant='ghost'
+                  size='sm'
                   onClick={() => {
                     setIsEditing(false);
                     setEditText(comment.message);
@@ -234,23 +224,23 @@ export default function CommentItem({
                 >
                   Cancel
                 </Button>
-                <Button size="sm" onClick={handleEdit}>
+                <Button size='sm' onClick={handleEdit}>
                   Save
                 </Button>
               </div>
             </div>
           ) : (
-            <p className="text-sm text-gray-800">{comment.message}</p>
+            <p className='text-sm text-gray-800'>{comment.message}</p>
           )}
 
           {/* Comment actions */}
           {!isEditing && (
-            <div className="flex items-center space-x-4 pt-2">
+            <div className='flex items-center space-x-4 pt-2'>
               <Button
-                variant="ghost"
-                size="sm"
+                variant='ghost'
+                size='sm'
                 className={cn(
-                  'h-8 w-8 rounded-full flex gap-1 items-center justify-center',
+                  'flex h-8 w-8 items-center justify-center gap-1 rounded-full',
                   userReaction === 'like'
                     ? 'bg-red-50 text-red-500'
                     : 'bg-gray-100 text-gray-600 hover:text-gray-900',
@@ -260,55 +250,53 @@ export default function CommentItem({
                 disabled={isToggling}
               >
                 <Heart
-                  className="h-5 w-5"
+                  className='h-5 w-5'
                   fill={userReaction === 'like' ? 'currentColor' : 'none'}
                 />
                 {reactions.like > 0 && (
-                  <span className="text-sm font-medium">{reactions.like}</span>
+                  <span className='text-sm font-medium'>{reactions.like}</span>
                 )}
               </Button>
 
               <Button
-                variant="ghost"
-                size="sm"
-                className="h-8 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900 flex items-center gap-1"
+                variant='ghost'
+                size='sm'
+                className='flex h-8 items-center gap-1 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900'
                 onClick={handleReplyClick}
               >
-                <Reply className="h-4 w-4" />
-                <span className="text-xs">Reply</span>
+                <Reply className='h-4 w-4' />
+                <span className='text-xs'>Reply</span>
               </Button>
             </div>
           )}
 
           {/* Inline Reply UI */}
           {isReplying && !isEditing && (
-            <div className="!mt-5 space-y-2">
-              <div className="flex gap-3">
-                <div className="flex-shrink-0">
+            <div className='!mt-5 space-y-2'>
+              <div className='flex gap-3'>
+                <div className='flex-shrink-0'>
                   <UserAvatar
                     user={comment.user_details}
-                    size="sm"
-                    onAvatarClick={() =>
-                      router.push(`/u/${comment.user_details.username}`)
-                    }
+                    size='sm'
+                    onAvatarClick={() => router.push(`/u/${comment.user_details.username}`)}
                   />
                 </div>
-                <div className="flex relative flex-grow">
+                <div className='relative flex flex-grow'>
                   <textarea
                     ref={replyTextareaRef}
                     value={replyText}
                     onChange={(e) => setReplyText(e.target.value)}
                     onKeyDown={handleReplyKeyDown}
                     placeholder={`Reply to @${comment.user_details.username}`}
-                    className="w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                    className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
                     rows={1}
                   />
                   <button
                     className={cn(
-                      'absolute top-0 bottom-0 right-2 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
+                      'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
                       replyText.trim()
                         ? 'text-red-500 hover:text-red-600'
-                        : 'text-gray-300 cursor-default'
+                        : 'cursor-default text-gray-300'
                     )}
                     onClick={handleSubmitReply}
                     disabled={!replyText.trim()}
@@ -317,12 +305,12 @@ export default function CommentItem({
                   </button>
                 </div>
               </div>
-              <div className="flex justify-end">
+              <div className='flex justify-end'>
                 <Button
-                  variant="ghost"
-                  size="sm"
+                  variant='ghost'
+                  size='sm'
                   onClick={() => setActiveReplyId(null)}
-                  className="h-7 px-3 py-1 text-xs"
+                  className='h-7 px-3 py-1 text-xs'
                 >
                   Cancel
                 </Button>
@@ -334,10 +322,10 @@ export default function CommentItem({
 
       {/* Replies */}
       {comment.replies && comment.replies.length > 0 && (
-        <div className="mt-3">
+        <div className='mt-3'>
           {comment.replies.length > 0 && (
             <button
-              className="ml-11 mb-2 text-xs font-medium text-gray-500 hover:text-gray-700"
+              className='mb-2 ml-11 text-xs font-medium text-gray-500 hover:text-gray-700'
               onClick={() => setShowReplies(!showReplies)}
             >
               {showReplies
@@ -351,7 +339,7 @@ export default function CommentItem({
           )}
 
           {showReplies && (
-            <div className="mt-2 space-y-4">
+            <div className='mt-2 space-y-4'>
               {comment.replies.map((reply) => (
                 <CommentItem
                   key={reply.id}

@@ -112,8 +112,7 @@ export function transformEmailBlastForUI(blast: EmailBlast): EmailBlast & {
     ...blast,
     subject,
     recipients:
-      recipientMap[blast.recipient_filter as keyof typeof recipientMap] ||
-      'All Recipients',
+      recipientMap[blast.recipient_filter as keyof typeof recipientMap] || 'All Recipients',
     recipientCount: blast.recipientCount || 0, // Use API value or default
     delivered: blast.delivered || 0, // Use API value or default
     failed: blast.failed || 0, // Use API value or default

@@ -18,17 +18,17 @@ export function EventDateGroup({
   bookmarkedEvents = new Set(),
 }: EventDateGroupProps) {
   // Format the date header (e.g., "Tuesday, September 2nd")
-  const formattedDate = format(parseISO(date), "EEEE, MMMM do");
+  const formattedDate = format(parseISO(date), 'EEEE, MMMM do');
 
   return (
-    <div className="mb-5">
+    <div className='mb-5'>
       {/* Date header */}
-      <div className="mb-2 px-2">
-        <h2 className="font-medium text-gray-900">{formattedDate}</h2>
+      <div className='mb-2 px-2'>
+        <h2 className='font-medium text-gray-900'>{formattedDate}</h2>
       </div>
 
       {/* Events list for this date */}
-      <div className="rounded-lg bg-white p-1 shadow-sm">
+      <div className='rounded-lg bg-white p-1 shadow-sm'>
         {events.map((event) => (
           <EventCompactItem
             key={event.id}

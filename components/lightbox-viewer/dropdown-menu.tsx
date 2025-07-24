@@ -1,21 +1,18 @@
 'use client';
 
-import { useState } from 'react';
-import { MoreHorizontal, Trash2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { ReusableDropdown } from '@/components/reusable-dropdown';
-import { DeleteConfirmation } from './delete-confirmation';
+import { Button } from '@/components/ui/button';
 import { toast } from '@/lib/utils/toast';
+import { MoreHorizontal, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { DeleteConfirmation } from './delete-confirmation';
 
 interface GalleryDropdownMenuProps {
   photoId: string;
   handleDelete: (photoId: string) => Promise<{ success: boolean }>;
 }
 
-export const GalleryDropdownMenu = ({
-  photoId,
-  handleDelete,
-}: GalleryDropdownMenuProps) => {
+export const GalleryDropdownMenu = ({ photoId, handleDelete }: GalleryDropdownMenuProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -39,7 +36,7 @@ export const GalleryDropdownMenu = ({
   const dropdownItems = [
     {
       label: 'Delete photo',
-      icon: <Trash2 className="h-4 w-4" />,
+      icon: <Trash2 className='h-4 w-4' />,
       action: () => setIsDialogOpen(true),
       destructive: true,
     },
@@ -49,13 +46,13 @@ export const GalleryDropdownMenu = ({
     <>
       <ReusableDropdown
         trigger={
-          <Button variant="secondary" size="icon">
-            <MoreHorizontal className="h-4 w-4" />
-            <span className="sr-only">Open menu</span>
+          <Button variant='secondary' size='icon'>
+            <MoreHorizontal className='h-4 w-4' />
+            <span className='sr-only'>Open menu</span>
           </Button>
         }
         items={dropdownItems}
-        align="right"
+        align='right'
       />
 
       <DeleteConfirmation

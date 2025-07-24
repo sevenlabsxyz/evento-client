@@ -642,11 +642,7 @@ export default function ProfilePage() {
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(
-                  'https://andrerfneves.com',
-                  '_blank',
-                  'noopener,noreferrer'
-                );
+                window.open('https://andrerfneves.com', '_blank', 'noopener,noreferrer');
               }}
               className='w-full bg-red-500 text-white hover:bg-red-600'
             >

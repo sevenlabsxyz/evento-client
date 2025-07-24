@@ -1470,7 +1470,7 @@ export default function TimezoneSheet({
       onPresentedChange={(presented) => !presented && onClose()}
       activeDetent={activeDetent}
       onActiveDetentChange={setActiveDetent}
-      forComponent='closest'
+      // forComponent='closest'
     >
       <SheetWithDetent.Portal>
         <SheetWithDetent.View>

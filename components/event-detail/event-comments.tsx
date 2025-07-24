@@ -69,20 +69,18 @@ export default function EventComments({ eventId }: EventCommentsProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+      <div className='flex items-center justify-center py-12'>
+        <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center py-12">
-        <MessageCircle className="mb-4 h-12 w-12 text-gray-300" />
-        <h3 className="mb-2 text-lg font-medium text-gray-900">
-          Couldn't load comments
-        </h3>
-        <p className="text-center text-sm text-gray-500">
+      <div className='flex flex-col items-center justify-center py-12'>
+        <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
+        <h3 className='mb-2 text-lg font-medium text-gray-900'>Couldn't load comments</h3>
+        <p className='text-center text-sm text-gray-500'>
           There was a problem loading comments. Please try again later.
         </p>
       </div>
@@ -90,11 +88,11 @@ export default function EventComments({ eventId }: EventCommentsProps) {
   }
 
   return (
-    <div className="py-4">
+    <div className='py-4'>
       {/* Comment input */}
-      <div className="mb-8">
-        <div className="flex gap-3">
-          <div className="flex-shrink-0">
+      <div className='mb-8'>
+        <div className='flex gap-3'>
+          <div className='flex-shrink-0'>
             <UserAvatar
               user={{
                 name: user?.name,
@@ -102,13 +100,13 @@ export default function EventComments({ eventId }: EventCommentsProps) {
                 image: user?.image,
                 verification_status: user?.verification_status,
               }}
-              size="sm"
+              size='sm'
               onAvatarClick={() => router.push(`/u/${user?.username}`)}
             />
           </div>
-          <div className="flex relative flex-grow">
+          <div className='relative flex flex-grow'>
             <textarea
-              name="comment"
+              name='comment'
               ref={textareaRef}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
@@ -120,10 +118,10 @@ export default function EventComments({ eventId }: EventCommentsProps) {
             />
             <button
               className={cn(
-                'absolute top-0 bottom-0 right-2 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
+                'absolute bottom-0 right-2 top-0 my-auto flex h-8 w-8 items-center justify-center rounded-full text-gray-400 transition-colors',
                 commentText.trim()
                   ? 'text-red-500 hover:text-red-600'
-                  : 'text-gray-300 cursor-default'
+                  : 'cursor-default text-gray-300'
               )}
               onClick={handleAddComment}
               disabled={
@@ -134,16 +132,12 @@ export default function EventComments({ eventId }: EventCommentsProps) {
             </button>
           </div>
         </div>
-        {!user && (
-          <p className="mt-2 text-xs text-gray-500">
-            Please sign in to leave a comment.
-          </p>
-        )}
+        {!user && <p className='mt-2 text-xs text-gray-500'>Please sign in to leave a comment.</p>}
       </div>
 
       {/* Comments list */}
       {comments.length > 0 ? (
-        <div className="mt-6 space-y-4">
+        <div className='mt-6 space-y-4'>
           {comments.map((comment) => (
             <CommentItem
               key={comment.id}
@@ -156,12 +150,10 @@ export default function EventComments({ eventId }: EventCommentsProps) {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-8">
-          <MessageCircle className="mb-4 h-12 w-12 text-gray-300" />
-          <h3 className="mb-2 text-lg font-medium text-gray-900">
-            No Comments Yet
-          </h3>
-          <p className="text-center text-sm text-gray-500">
+        <div className='flex flex-col items-center justify-center py-8'>
+          <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
+          <h3 className='mb-2 text-lg font-medium text-gray-900'>No Comments Yet</h3>
+          <p className='text-center text-sm text-gray-500'>
             Be the first to leave a comment about this event.
           </p>
         </div>

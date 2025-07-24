@@ -1,25 +1,25 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MiniListItem } from '@/components/ui/mini-list-item';
-import { DeleteConfirmation } from './delete-confirmation';
-import { GalleryDropdownMenu } from './dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { useSwipeable } from 'react-swipeable';
-import { useState, useEffect } from 'react';
-import { LikeButton } from './like-button';
 import { Modal } from '@/components/ui/modal';
 import { toast } from '@/lib/utils/toast';
 import {
-  XIcon,
-  Trash2,
-  Loader2,
-  Download,
-  MoreHorizontal,
   ChevronLeftIcon,
   ChevronRightIcon,
+  Download,
+  Loader2,
+  MoreHorizontal,
+  Trash2,
+  XIcon,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSwipeable } from 'react-swipeable';
+import { DeleteConfirmation } from './delete-confirmation';
+import { GalleryDropdownMenu } from './dropdown-menu';
+import { LikeButton } from './like-button';
 
 export interface LightboxViewerProps {
   images: any[];
@@ -63,15 +63,15 @@ const MobileGalleryMenu = ({
 
   return (
     <>
-      <Button variant="secondary" size="icon" onClick={() => setIsOpen(true)}>
-        <MoreHorizontal className="h-4 w-4" />
-        <span className="sr-only">Open menu</span>
+      <Button variant='secondary' size='icon' onClick={() => setIsOpen(true)}>
+        <MoreHorizontal className='h-4 w-4' />
+        <span className='sr-only'>Open menu</span>
       </Button>
       <Modal open={isOpen} setOpen={setIsOpen}>
-        <div className="px-2 pb-6 pt-4">
+        <div className='px-2 pb-6 pt-4'>
           <MiniListItem
-            icon={<Trash2 className="h-5 w-5 text-red-400 mr-2.5" />}
-            text="Delete photo"
+            icon={<Trash2 className='mr-2.5 h-5 w-5 text-red-400' />}
+            text='Delete photo'
             onClick={() => setIsDialogOpen(true)}
           />
         </div>
@@ -125,10 +125,10 @@ export const LightboxViewer = ({
       return extension === 'jpg' || extension === 'jpeg'
         ? 'jpg'
         : extension === 'png'
-        ? 'png'
-        : extension === 'webp'
-        ? 'webp'
-        : 'png';
+          ? 'png'
+          : extension === 'webp'
+            ? 'webp'
+            : 'png';
     }
     return 'png';
   };
@@ -149,8 +149,7 @@ export const LightboxViewer = ({
             if (navigator.share) {
               try {
                 const response = await fetch(imageUrl);
-                if (!response.ok)
-                  throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error('Network response was not ok');
                 const blob = await response.blob();
                 const file = new File([blob], fileName, { type: blob.type });
 
@@ -257,121 +256,111 @@ export const LightboxViewer = ({
   return (
     <Dialog open={selectedImage !== null} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-full max-h-[100dvh] h-[100dvh] p-0 flex flex-col border-none gap-0 border-none border-transparent"
+        className='flex h-[100dvh] max-h-[100dvh] max-w-full flex-col gap-0 border-none border-transparent p-0'
         {...dialogHandlers}
       >
         <div
-          className="relative flex-grow flex items-center justify-center bg-black"
+          className='relative flex flex-grow items-center justify-center bg-black'
           style={{ height: '85dvh' }}
         >
-          <div className="absolute top-4 right-4 flex space-x-2 z-10">
+          <div className='absolute right-4 top-4 z-10 flex space-x-2'>
             <button
               onClick={downloadImage}
-              className="text-white hover:text-gray-300 mr-2"
-              aria-label="Download image"
+              className='mr-2 text-white hover:text-gray-300'
+              aria-label='Download image'
             >
               {isDownloading ? (
-                <Loader2 className="w-6 h-6 animate-spin" />
+                <Loader2 className='h-6 w-6 animate-spin' />
               ) : (
-                <Download className="w-6 h-6" />
+                <Download className='h-6 w-6' />
               )}
             </button>
             <button
               onClick={onClose}
-              className="text-white hover:text-gray-300"
-              aria-label="Close fullscreen view"
+              className='text-white hover:text-gray-300'
+              aria-label='Close fullscreen view'
             >
-              <XIcon className="w-6 h-6" />
+              <XIcon className='h-6 w-6' />
             </button>
           </div>
           {selectedImage !== null && images[selectedImage] && (
             <img
               src={images[selectedImage].image}
               alt={`Fullscreen view of image ${selectedImage + 1}`}
-              className="max-h-full max-w-full object-contain"
+              className='max-h-full max-w-full object-contain'
               onDragStart={preventDragHandler}
             />
           )}
           <button
             onClick={goToPrevious}
-            className="absolute left-4 text-white hover:text-gray-300 z-10"
-            aria-label="Previous image"
+            className='absolute left-4 z-10 text-white hover:text-gray-300'
+            aria-label='Previous image'
           >
-            <ChevronLeftIcon className="w-10 h-10" />
+            <ChevronLeftIcon className='h-10 w-10' />
           </button>
           <button
             onClick={goToNext}
-            className="absolute right-4 text-white hover:text-gray-300 z-10"
-            aria-label="Next image"
+            className='absolute right-4 z-10 text-white hover:text-gray-300'
+            aria-label='Next image'
           >
-            <ChevronRightIcon className="w-10 h-10" />
+            <ChevronRightIcon className='h-10 w-10' />
           </button>
         </div>
         {shouldShowUploaderDetails && images[selectedImage] && (
           <div
-            className="bg-gray-50 p-4 border-t border-gray-200 flex items-center justify-between"
+            className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4'
             style={{ height: '15dvh' }}
           >
             <div
               key={images[selectedImage]?.user_details?.id}
-              className="flex items-center justify-between space-x-4 max-w-[700px] w-full mx-auto"
+              className='mx-auto flex w-full max-w-[700px] items-center justify-between space-x-4'
             >
-              <div className="flex items-start space-x-4">
-                <Avatar className="cursor-pointer border">
+              <div className='flex items-start space-x-4'>
+                <Avatar className='cursor-pointer border'>
                   <AvatarImage
-                    src={
-                      images[selectedImage]?.user_details?.image || '/icon.png'
-                    }
-                    alt={
-                      images[selectedImage]?.user_details?.username ||
-                      'Username'
-                    }
+                    src={images[selectedImage]?.user_details?.image || '/icon.png'}
+                    alt={images[selectedImage]?.user_details?.username || 'Username'}
                   />
                   <AvatarFallback>
                     {images[selectedImage]?.user_details?.username?.slice(0, 1) || 'E'}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <div className="flex flex-row items-center">
-                    <p className="cursor-pointer text-sm font-medium leading-none font-semibold text-gray-500">
+                  <div className='flex flex-row items-center'>
+                    <p className='cursor-pointer text-sm font-medium font-semibold leading-none text-gray-500'>
                       @{images[selectedImage]?.user_details?.username}
                     </p>
                     {images[selectedImage]?.user_details?.verification_status === 'verified' && (
-                      <span className="ml-1 text-sm">✓</span>
+                      <span className='ml-1 text-sm'>✓</span>
                     )}
                   </div>
                   {!images[selectedImage]?.user_details?.name ? null : (
-                    <p className="text-gray-400 cursor-pointer text-sm">
+                    <p className='cursor-pointer text-sm text-gray-400'>
                       {images[selectedImage]?.user_details?.name}
                     </p>
                   )}
                   {images[selectedImage]?.created_at && (
-                    <p className="text-gray-400 cursor-pointer text-[10px] pt-2">
-                      posted on{' '}
-                      {new Date(
-                        images[selectedImage].created_at
-                      ).toLocaleDateString()}
+                    <p className='cursor-pointer pt-2 text-[10px] text-gray-400'>
+                      posted on {new Date(images[selectedImage].created_at).toLocaleDateString()}
                     </p>
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-1.5">
+              <div className='flex items-center gap-1.5'>
                 <LikeButton
-                  itemId={
-                    selectedImage !== null ? images[selectedImage].id : ''
-                  }
+                  itemId={selectedImage !== null ? images[selectedImage].id : ''}
                   userId={userId}
                   eventId={eventId}
                 />
                 {!showDropdownMenu ? null : (
                   <div>
-                    <div className="md:hidden">
+                    <div className='md:hidden'>
                       <MobileGalleryMenu
                         photoId={images[selectedImage].id}
                         handleDelete={handleDeleteImage}
                       />
                     </div>
-                    <div className="hidden md:block">
+                    <div className='hidden md:block'>
                       <GalleryDropdownMenu
                         photoId={images[selectedImage].id}
                         handleDelete={handleDeleteImage}
