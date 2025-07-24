@@ -161,6 +161,7 @@ export default function WeatherDetailSheet({
                         className='h-20 w-20'
                         width={80}
                         height={80}
+                        loading='lazy'
                       />
                     ) : (
                       <div className='flex h-20 w-20 items-center justify-center rounded-full bg-blue-50'>
