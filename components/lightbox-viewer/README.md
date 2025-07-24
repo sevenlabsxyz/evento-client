@@ -9,15 +9,15 @@ import { LightboxViewer } from '@/components/lightbox-viewer';
 
 // In your component
 <LightboxViewer
-  images={formattedImages}
-  selectedImage={selectedImage}
-  onClose={() => setSelectedImage(null)}
-  onImageChange={setSelectedImage}
-  showDropdownMenu={showMenu}
-  handleDelete={handleDelete}
-  userId={userData?.id}
-  eventId={params.id as string}
-/>
+    images={formattedImages}
+    selectedImage={selectedImage}
+    onClose={() => setSelectedImage(null)}
+    onImageChange={setSelectedImage}
+    showDropdownMenu={showMenu}
+    handleDelete={handleDelete}
+    userId={userData?.id}
+    eventId={params.id as string}
+/>;
 ```
 
 ## Props

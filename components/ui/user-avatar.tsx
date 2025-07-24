@@ -74,20 +74,14 @@ export function UserAvatar({
             sizeConfig.border,
             'bg-white border-gray-200 shadow-lg'
           )}
-          style={
-            height && width
-              ? { height: `${height}px`, width: `${width}px` }
-              : undefined
-          }
+          style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
         >
           <AvatarImage
             src={user?.image || '/assets/img/evento-sublogo.svg'}
             alt='Profile'
           />
           <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
-            {user?.name?.charAt(0).toUpperCase() ||
-              user?.username?.charAt(0).toUpperCase() ||
-              'U'}
+            {user?.name?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
           </AvatarFallback>
         </Avatar>
         {/* Verification Badge */}
@@ -103,10 +97,7 @@ export function UserAvatar({
             )}
           >
             <BadgeCheck
-              className={cn(
-                sizeConfig.badge,
-                'rounded-full bg-red-600 text-white shadow-sm'
-              )}
+              className={cn(sizeConfig.badge, 'rounded-full bg-red-600 text-white shadow-sm')}
             />
           </button>
         )}

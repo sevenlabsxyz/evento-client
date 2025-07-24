@@ -219,8 +219,36 @@ export interface EventWithUser extends Event {
   user_details: UserDetails;
 }
 
+// Email Blast
+export interface EmailBlast {
+  id: string;
+  event_id: string;
+  user_id: string;
+  message: string;
+  recipient_filter: EmailBlastRecipientFilter;
+  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+  scheduled_for: string | null;
+  created_at: string;
+  updated_at: string;
+  // Additional fields for UI display
+  subject?: string;
+  recipients?: string;
+  recipientCount?: number;
+  delivered?: number;
+  failed?: number;
+  pending?: number;
+}
+
+// Email Blast creation form
+export interface CreateEmailBlastForm {
+  message: string;
+  recipientFilter: EmailBlastRecipientFilter;
+  scheduledFor?: string | null;
+}
+
 // Utility types
 export type RSVPStatus = 'yes' | 'no' | 'maybe';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
+export type EmailBlastRecipientFilter = 'all' | 'yes_only' | 'yes_and_maybe';

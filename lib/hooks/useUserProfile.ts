@@ -27,10 +27,7 @@ export function useUserProfile() {
       // Don't retry on 401 errors
       if (error && typeof error === 'object' && 'message' in error) {
         const apiError = error as { message: string };
-        if (
-          apiError.message?.includes('401') ||
-          apiError.message?.includes('Unauthorized')
-        ) {
+        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
           return false;
         }
       }
@@ -49,10 +46,7 @@ export function useUserProfile() {
     } else if (error) {
       // Clear auth on 401 errors
       const apiError = error as { message?: string };
-      if (
-        apiError.message?.includes('401') ||
-        apiError.message?.includes('Unauthorized')
-      ) {
+      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
         clearAuth();
       }
     }

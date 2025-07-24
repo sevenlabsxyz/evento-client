@@ -1,7 +1,7 @@
 'use client';
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface DatePickerSheetProps {
   isOpen: boolean;
@@ -221,7 +221,7 @@ export default function DatePickerSheet({
                           : isReferenceDate(day)
                             ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500 ring-offset-2'
                             : isToday(day)
-                              ? 'bg-gray-100 border border-gray-200 text-black'
+                              ? 'border border-gray-200 bg-gray-100 text-black'
                               : 'hover:bg-gray-100'
                       } `}
                     >

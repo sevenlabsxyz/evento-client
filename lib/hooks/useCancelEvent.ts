@@ -11,13 +11,7 @@ export function useCancelEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      eventId,
-      sendEmails,
-    }: {
-      eventId: string;
-      sendEmails: boolean;
-    }) => {
+    mutationFn: async ({ eventId, sendEmails }: { eventId: string; sendEmails: boolean }) => {
       try {
         const response = await apiClient.delete(
           `/v1/events/cancel?id=${eventId}&sendEmails=${sendEmails}`

@@ -12,15 +12,11 @@ export function useEditComment() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      commentId,
-      message,
-    }: EditCommentParams): Promise<EventComment> => {
+    mutationFn: async ({ commentId, message }: EditCommentParams): Promise<EventComment> => {
       // NOTE: This is tentative as this route does not exist on the API yet.
-      const response = await apiClient.patch<EventComment>(
-        `/v1/events/comments/${commentId}`,
-        { message }
-      );
+      const response = await apiClient.patch<EventComment>(`/v1/events/comments/${commentId}`, {
+        message,
+      });
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

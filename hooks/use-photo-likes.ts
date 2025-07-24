@@ -14,7 +14,7 @@ export const useGalleryLikes = (itemId: string): UseGalleryLikesReturn => {
 
   const toggleLike = async () => {
     if (!itemId) return;
-    
+
     setIsLoading(true);
     try {
       // TODO: Implement actual like/unlike API call

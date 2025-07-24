@@ -12,9 +12,7 @@ export function useEventSearch() {
     mutationFn: async (query: string): Promise<Event[]> => {
       if (!query.trim()) return [];
 
-      const response = await apiClient.get(
-        `/v1/event/search?s=${encodeURIComponent(query)}`
-      );
+      const response = await apiClient.get(`/v1/event/search?s=${encodeURIComponent(query)}`);
 
       // Transform API events to display format if needed
       // Cast the response to the appropriate Event type
@@ -33,9 +31,7 @@ export function useUserSearch() {
     mutationFn: async (query: string): Promise<UserSearchResult[]> => {
       if (!query.trim()) return [];
 
-      const response = await apiClient.get(
-        `/v1/user/search?s=${encodeURIComponent(query)}`
-      );
+      const response = await apiClient.get(`/v1/user/search?s=${encodeURIComponent(query)}`);
       return response.data;
     },
     onError: (error) => {

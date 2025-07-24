@@ -123,17 +123,11 @@ export default function TimePickerSheet({
     <DetachedSheet.Root
       presented={isOpen}
       onPresentedChange={(presented) => !presented && onClose()}
-      forComponent='closest'
     >
       <DetachedSheet.Portal>
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
-          <DetachedSheet.Content
-            stackingAnimation={{
-              scale: ({ progress }) => 1 - progress * 0.05,
-              translateY: ({ progress }) => `${-20 * progress}px`,
-            }}
-          >
+          <DetachedSheet.Content>
             <div className='p-6'>
               {/* Handle */}
               <div className='mb-4 flex justify-center'>

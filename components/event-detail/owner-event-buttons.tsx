@@ -37,7 +37,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   };
 
   const handleEmailBlasts = () => {
-    router.push(`/e/${eventId}/manage`);
+    router.push(`/e/${eventId}/manage/email-blast`);
   };
 
   const handleGallerySettings = () => {
