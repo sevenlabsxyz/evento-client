@@ -58,6 +58,9 @@ export async function apiRequest(method: string, path: string, request: Request)
 
     // Make the request to the backend
     const response = await fetch(targetUrl, options);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
 
     // Get the response body
     let data;
@@ -93,10 +96,6 @@ export async function apiRequest(method: string, path: string, request: Request)
     const setCookieHeader = response.headers.get('set-cookie');
     if (setCookieHeader) {
       proxyResponse.headers.set('set-cookie', setCookieHeader);
-    }
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
     }
 
     return proxyResponse;
