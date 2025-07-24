@@ -24,8 +24,6 @@ export function useEventGallery(eventId: string) {
         throw new Error('Invalid response format');
       }
 
-      console.log(response);
-
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
         return response.data || [];
