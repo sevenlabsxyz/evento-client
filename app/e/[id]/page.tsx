@@ -1,7 +1,7 @@
-import { Env } from '@/lib/constants/env';
+import { Env } from "@/lib/constants/env";
 import { createClient } from "@supabase/supabase-js";
-import { ResolvingMetadata } from 'next';
-import EventDetailPageClient from './page-client';
+import { ResolvingMetadata } from "next";
+import EventDetailPageClient from "./page-client";
 
 // Define the types for props and params
 type Props = {
@@ -9,14 +9,16 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
-export async function generateMetadata(  { params }: Props,
-  parent: ResolvingMetadata) {
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata
+) {
   // Initialize Supabase client
   const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = Env.NEXT_PUBLIC_SUPABASE_ROLE_KEY;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Get the event ID from params
+  // Get the event ID from params
   const eventId = params.id;
 
   // fallback to parent SEO metadata image details
@@ -39,7 +41,7 @@ export async function generateMetadata(  { params }: Props,
     const event = data;
 
     const title =
-      event?.title === "Untitled Evento"
+      event?.title === "Untitled Event"
         ? "RSVP on Evento Now"
         : `${event?.title} - Evento`;
     const descText = event?.description
