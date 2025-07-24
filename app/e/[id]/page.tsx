@@ -15,7 +15,7 @@ export async function generateMetadata(
 ) {
   // Initialize Supabase client
   const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = Env.NEXT_PUBLIC_SUPABASE_ROLE_KEY;
+  const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // Get the event ID from params
