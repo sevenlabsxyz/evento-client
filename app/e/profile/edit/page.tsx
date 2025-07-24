@@ -22,13 +22,14 @@ import {
   User,
   Zap
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
+  const pathname = usePathname();
   const updateProfileMutation = useUpdateUserProfile();
 
   // Get user data
@@ -76,7 +77,11 @@ export default function EditProfilePage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    // Apply any existing route configuration first
+    applyRouteConfig(pathname);
+    
+    // Set route-specific configuration
+    setTopBarForRoute(pathname, {
       title: 'Edit Profile',
       subtitle: undefined,
       onBackPress: () => router.push('/e/profile'),
@@ -85,17 +90,11 @@ export default function EditProfilePage() {
       showAvatar: false,
     });
 
-    // Cleanup function to reset topbar state when leaving this page
+    // Cleanup function to clear route config when leaving this page
     return () => {
-      setTopBar({
-        title: '',
-        subtitle: '',
-        onBackPress: null,
-        leftMode: 'menu',
-        showAvatar: true,
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar, router]);
+  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, router]);
 
   // Initialize form data from user profile
   useEffect(() => {

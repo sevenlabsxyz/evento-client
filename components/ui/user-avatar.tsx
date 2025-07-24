@@ -66,7 +66,7 @@ export function UserAvatar({
   const sizeConfig = sizeVariants[size];
   return (
     <div className={cn('relative', className)}>
-      <button onClick={onAvatarClick} className="relative">
+      <button onClick={onAvatarClick} className='relative'>
         <Avatar
           className={cn(
             // Only use size config if no explicit dimensions are provided
@@ -82,7 +82,7 @@ export function UserAvatar({
         >
           <AvatarImage
             src={user?.image || '/assets/img/evento-sublogo.svg'}
-            alt="Profile"
+            alt='Profile'
           />
           <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
             {user?.name?.charAt(0).toUpperCase() ||

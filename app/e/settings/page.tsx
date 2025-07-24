@@ -24,16 +24,22 @@ import {
   UserCircle,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import packageJson from '../../../package.json';
 
 export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
+  const pathname = usePathname();
   const { user, email } = useAuth();
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    // Apply any existing route configuration first
+    applyRouteConfig(pathname);
+    
+    // Set route-specific configuration
+    setTopBarForRoute(pathname, {
       title: 'Settings',
       subtitle: undefined,
       showAvatar: false,
@@ -41,17 +47,11 @@ export default function SettingsPage() {
       centerMode: 'title',
     });
 
-    // Cleanup function to reset topbar state when leaving this page
+    // Cleanup function to clear route config when leaving this page
     return () => {
-      setTopBar({
-        title: '',
-        subtitle: '',
-        showAvatar: true,
-        leftMode: 'menu',
-        centerMode: 'title',
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar]);
+  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   // Sheet states
   const [helpSheetOpen, setHelpSheetOpen] = useState(false);
