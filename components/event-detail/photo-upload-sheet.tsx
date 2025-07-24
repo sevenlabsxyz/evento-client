@@ -24,10 +24,16 @@ const MAX_PHOTOS = 20;
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
 
-export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUploadSheetProps) {
+export default function PhotoUploadSheet({
+  isOpen,
+  onClose,
+  eventId,
+}: PhotoUploadSheetProps) {
   const [photos, setPhotos] = useState<PhotoPreview[]>([]);
   const [uploading, setUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>({});
+  const [uploadProgress, setUploadProgress] = useState<Record<string, number>>(
+    {}
+  );
   const queryClient = useQueryClient();
 
   const handleFileSelect = useCallback(
@@ -142,7 +148,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
             reject(new Error('Network error'));
           };
 
-          xhr.send(photo.file);
+          xhr.send(formData);
         });
       } catch (error) {
         console.error('Upload error:', error);
@@ -162,7 +168,9 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
         toast.info(`${successCount} photos uploaded, ${failCount} failed.`);
       } else {
         toast.success(
-          `${successCount} photo${successCount === 1 ? '' : 's'} uploaded successfully!`
+          `${successCount} photo${
+            successCount === 1 ? '' : 's'
+          } uploaded successfully!`
         );
       }
 
@@ -208,45 +216,48 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
-            <div className='flex h-full flex-col'>
+            <div className="flex h-full flex-col">
               {/* Header section - fixed at top */}
-              <div className='p-6 pb-2'>
-                <div className='mb-4 flex justify-center'></div>
+              <div className="p-6 pb-2">
+                <div className="mb-4 flex justify-center"></div>
 
                 {/* Header with close button */}
-                <div className='mb-4 flex items-center justify-between'>
-                  <h2 className='text-xl font-bold text-gray-900'>Upload Photos</h2>
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    Upload Photos
+                  </h2>
                   <button
                     onClick={handleClose}
                     disabled={uploading}
-                    className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-50'
+                    className="rounded-full p-2 hover:bg-gray-100 disabled:opacity-50"
                   >
-                    <X className='h-5 w-5 text-gray-600' />
+                    <X className="h-5 w-5 text-gray-600" />
                   </button>
                 </div>
               </div>
 
               {/* Scrollable content area */}
-              <div className='relative flex-1 overflow-y-auto px-6'>
+              <div className="relative flex-1 overflow-y-auto px-6">
                 {/* Photo selection area */}
                 {photos.length === 0 ? (
-                  <div className='mb-6'>
-                    <div className='flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center'>
-                      <Camera className='mb-3 h-12 w-12 text-gray-400' />
-                      <p className='mb-4 text-sm text-gray-500'>
-                        Select up to {MAX_PHOTOS} photos to upload to this event's gallery
+                  <div className="mb-6">
+                    <div className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+                      <Camera className="mb-3 h-12 w-12 text-gray-400" />
+                      <p className="mb-4 text-sm text-gray-500">
+                        Select up to {MAX_PHOTOS} photos to upload to this
+                        event's gallery
                       </p>
-                      <label htmlFor='photo-upload' className='cursor-pointer'>
-                        <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600'>
+                      <label htmlFor="photo-upload" className="cursor-pointer">
+                        <div className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600">
                           Select Photos
                         </div>
                         <input
-                          id='photo-upload'
-                          type='file'
-                          accept='image/jpeg, image/png, image/gif, image/webp'
+                          id="photo-upload"
+                          type="file"
+                          accept="image/jpeg, image/png, image/gif, image/webp"
                           multiple
                           onChange={handleFileSelect}
-                          className='hidden'
+                          className="hidden"
                           disabled={uploading}
                         />
                       </label>
@@ -255,53 +266,54 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                 ) : (
                   <>
                     {/* Selected photos preview */}
-                    <div className='mb-4 flex items-center justify-between'>
-                      <h3 className='text-sm font-medium text-gray-700'>
-                        {photos.length} photo{photos.length !== 1 && 's'} selected
+                    <div className="mb-4 flex items-center justify-between">
+                      <h3 className="text-sm font-medium text-gray-700">
+                        {photos.length} photo{photos.length !== 1 && 's'}{' '}
+                        selected
                       </h3>
                       <label
-                        htmlFor='photo-upload-more'
-                        className='cursor-pointer text-sm text-red-600'
+                        htmlFor="photo-upload-more"
+                        className="cursor-pointer text-sm text-red-600"
                       >
                         Add More
                         <input
-                          id='photo-upload-more'
-                          type='file'
-                          accept='image/jpeg, image/png, image/gif, image/webp'
+                          id="photo-upload-more"
+                          type="file"
+                          accept="image/jpeg, image/png, image/gif, image/webp"
                           multiple
                           onChange={handleFileSelect}
-                          className='hidden'
+                          className="hidden"
                           disabled={uploading || photos.length >= MAX_PHOTOS}
                         />
                       </label>
                     </div>
 
                     {/* Photos grid */}
-                    <div className='mb-52 grid h-fit max-h-fit auto-rows-max grid-cols-3 gap-3 p-1'>
+                    <div className="mb-52 grid h-fit max-h-fit auto-rows-max grid-cols-3 gap-3 p-1">
                       {photos.map((photo) => (
-                        <div key={photo.id} className='relative aspect-square'>
-                          <div className='absolute inset-0 overflow-hidden rounded-lg'>
+                        <div key={photo.id} className="relative aspect-square">
+                          <div className="absolute inset-0 overflow-hidden rounded-lg">
                             <Image
                               src={photo.previewUrl}
-                              alt='Photo preview'
+                              alt="Photo preview"
                               fill
-                              className='object-cover'
+                              className="object-cover"
                             />
                           </div>
 
                           {uploading ? (
-                            <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50'>
-                              <div className='h-12 w-12 animate-spin rounded-full border-4 border-white border-t-white border-opacity-25'></div>
-                              <div className='absolute font-bold text-white'>
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                              <div className="h-12 w-12 rounded-full border-4 border-white border-opacity-25 border-t-white animate-spin"></div>
+                              <div className="text-sm absolute text-white font-bold">
                                 {uploadProgress[photo.id] || 0}%
                               </div>
                             </div>
                           ) : (
                             <button
                               onClick={() => handleRemovePhoto(photo.id)}
-                              className='absolute right-1 top-1 rounded-full bg-black bg-opacity-70 p-1.5 text-white hover:bg-opacity-90'
+                              className="absolute right-1 top-1 rounded-full bg-black bg-opacity-70 p-1.5 text-white hover:bg-opacity-90"
                             >
-                              <Trash2 className='h-4 w-4' />
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           )}
                         </div>
@@ -312,16 +324,16 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
               </div>
 
               {/* Action buttons - fixed at bottom */}
-              <div className='fixed bottom-0 left-0 right-0 flex flex-col gap-2 border-t border-gray-100 bg-white p-6'>
+              <div className="fixed bottom-0 left-0 right-0 flex flex-col gap-2 border-t border-gray-100 bg-white p-6">
                 {photos.length > 0 && (
                   <Button
                     onClick={handleUpload}
                     disabled={uploading || photos.length === 0}
-                    className='w-full'
+                    className="w-full"
                   >
                     {uploading ? (
-                      <span className='flex items-center'>
-                        <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white'></span>
+                      <span className="flex items-center">
+                        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white"></span>
                         Uploading...
                       </span>
                     ) : (
@@ -331,10 +343,10 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                 )}
 
                 <Button
-                  variant='outline'
+                  variant="outline"
                   onClick={handleClose}
                   disabled={uploading}
-                  className='w-full'
+                  className="w-full"
                 >
                   {photos.length > 0 ? 'Cancel' : 'Close'}
                 </Button>
