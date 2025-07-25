@@ -1,6 +1,6 @@
 'use client';
 import { SilkToast } from '@/components/ui/silk-toast';
-import { useToastManager } from '@/lib/hooks/use-toast-manager';
+import { useToastManager } from '@/lib/hooks/useToastManager';
 import { SheetStack } from '@silk-hq/components';
 import React from 'react';
 
