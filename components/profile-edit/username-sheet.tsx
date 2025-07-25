@@ -178,10 +178,7 @@ export default function UsernameSheet({
                   </p>
 
                   {/* Save/Cancel Buttons */}
-                  <div className='flex gap-3'>
-                    <Button onClick={handleCancel} variant='outline' className='flex-1'>
-                      Cancel
-                    </Button>
+                  <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
                       disabled={!canSave || isSaving}
@@ -195,6 +192,9 @@ export default function UsernameSheet({
                       ) : (
                         'Save'
                       )}
+                    </Button>
+                    <Button onClick={handleCancel} variant='outline' className='flex-1'>
+                      Cancel
                     </Button>
                   </div>
                 </SheetWithDetentFull.ScrollContent>
