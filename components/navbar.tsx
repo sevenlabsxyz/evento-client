@@ -13,7 +13,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
   const pathname = usePathname();
 
   const navItems = [
-    { id: 'hub', icon: Home, path: '/' },
+    { id: 'hub', icon: Home, path: '/e/hub' },
     { id: 'feed', icon: Calendar1, path: '/e/feed' },
     { id: 'add', icon: Plus, path: '/e/create', isCenter: true },
     { id: 'notifications', icon: Inbox, path: '/e/notifications' },
@@ -55,7 +55,10 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                 isActive ? 'text-red-600' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              <Icon className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`} strokeWidth={2.5} />
+              <Icon
+                className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`}
+                strokeWidth={2.5}
+              />
             </button>
           );
         })}
