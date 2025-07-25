@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/useUserEvents';
 import { useAuth } from '@/lib/stores/auth-store';
 import { EventWithUser } from '@/lib/types/api';
+import debounce from 'lodash.debounce';
 import { Search, SortAsc } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 
 interface EventSearchSheetProps {
@@ -27,14 +28,44 @@ export default function EventSearchSheet({
   isOwnProfile = false,
 }: EventSearchSheetProps) {
   const [searchText, setSearchText] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<EventFilterType>('upcoming');
   const [sortDesc, setSortDesc] = useState(true);
   const { user } = useAuth();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Create debounced search function
+  const debouncedSearch = useCallback(
+    debounce((query: string) => {
+      setSearchQuery(query);
+    }, 300),
+    []
+  );
+
+  // Update search query when searchText changes
+  useEffect(() => {
+    debouncedSearch(searchText);
+    // Cleanup debounce on unmount
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [searchText, debouncedSearch]);
+
+  // Focus search input when sheet opens
+  useEffect(() => {
+    if (isOpen && searchInputRef.current) {
+      // Small timeout to ensure the sheet is fully open
+      const timer = setTimeout(() => {
+        searchInputRef.current?.focus();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   // Fetch user events with filters and search
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useUserEvents({
     username,
-    search: searchText,
+    search: searchQuery,
     filter,
     sortBy: sortDesc ? 'date-desc' : 'date-asc',
     limit: 10,
@@ -96,7 +127,7 @@ export default function EventSearchSheet({
                 />
               </div>
 
-              <div className='scrollbar-hide flex gap-2 overflow-x-auto whitespace-nowrap px-4 py-3'>
+              <div className='scrollbar-hide flex justify-between gap-2 overflow-x-auto whitespace-nowrap py-3'>
                 <button
                   className={`${
                     filter === 'upcoming' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
