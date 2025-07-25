@@ -6,11 +6,7 @@ import { EventWithUser } from '../types/api';
 
 export type EventFilterType = 'upcoming' | 'hosting' | 'attending';
 export type EventTimeframe = 'all' | 'future' | 'past';
-export type EventSortBy =
-  | 'date-asc'
-  | 'date-desc'
-  | 'created-asc'
-  | 'created-desc';
+export type EventSortBy = 'date-asc' | 'date-desc' | 'created-asc' | 'created-desc';
 
 export interface UserEventsParams {
   username?: string;
@@ -48,20 +44,8 @@ export function useUserEvents(params: UserEventsParams) {
     enabled = true,
   } = params;
 
-  return useInfiniteQuery<
-    UserEventsResponse,
-    Error,
-    InfiniteData<UserEventsResponse>
-  >({
-    queryKey: [
-      'user-events',
-      username,
-      search,
-      filter,
-      timeframe,
-      sortBy,
-      limit,
-    ],
+  return useInfiniteQuery<UserEventsResponse, Error, InfiniteData<UserEventsResponse>>({
+    queryKey: ['user-events', username, search, filter, timeframe, sortBy, limit],
     queryFn: async ({ pageParam }) => {
       const page = (pageParam as number) || 1;
       // Only fetch if we have a username
@@ -103,9 +87,7 @@ export function useUserEvents(params: UserEventsParams) {
       queryParams.append('limit', limit.toString());
 
       // Make the API call
-      const response = await apiClient.get(
-        `/v1/events/user-events?${queryParams.toString()}`
-      );
+      const response = await apiClient.get(`/v1/events/user-events?${queryParams.toString()}`);
 
       // Transform and return the response data
       if (response && response.data) {

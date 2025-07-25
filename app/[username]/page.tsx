@@ -1,6 +1,6 @@
+import { Env } from '@/lib/constants/env';
 import { createClient } from '@supabase/supabase-js';
 import UserProfilePageClient from './page-client';
-import { Env } from '@/lib/constants/env';
 
 export async function generateMetadata({ params }: any, parent: any) {
   const { username } = params;
@@ -44,9 +44,7 @@ export async function generateMetadata({ params }: any, parent: any) {
       alternates: {
         canonical: `https://evento.so/${user.username}`,
       },
-      description: `View all events by ${
-        user.name || `@${user.username}`
-      } on Evento.`,
+      description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
       openGraph: {
         url: `https://evento.so/${user.username}`,
         locale: 'en_US',
@@ -69,9 +67,7 @@ export async function generateMetadata({ params }: any, parent: any) {
       twitter: {
         card: 'summary_large_image',
         title,
-        description: `View all events by ${
-          user.name || `@${user.username}`
-        } on Evento.`,
+        description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
         creator: '@evento_so',
         images: [getProperURL(user.image)],
       },

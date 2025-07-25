@@ -32,14 +32,7 @@ export default function EventSearchSheet({
   const { user } = useAuth();
 
   // Fetch user events with filters and search
-  const {
-    data,
-    isLoading,
-    error,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useUserEvents({
+  const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useUserEvents({
     username,
     search: searchText,
     filter,
@@ -84,94 +77,85 @@ export default function EventSearchSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className="flex flex-col w-full md:max-w-sm max-w-full sm:rounded-2xl sm:overflow-hidden sm:mx-auto">
-            <div className="p-4 px-5 bg-white border-b border-gray-200 sticky top-0 z-10">
-              <div className="flex justify-center items-center">
-                <SheetWithDetentFull.Handle className="w-9 h-[5px] rounded-[2.5px] bg-gray-300 mx-auto mb-4" />
+          <SheetWithDetentFull.Content className='flex w-full max-w-full flex-col sm:mx-auto sm:overflow-hidden sm:rounded-2xl md:max-w-sm'>
+            <div className='sticky top-0 z-10 border-b border-gray-200 bg-white p-4 px-5'>
+              <div className='flex items-center justify-center'>
+                <SheetWithDetentFull.Handle className='mx-auto mb-4 h-[5px] w-9 rounded-[2.5px] bg-gray-300' />
               </div>
-              <SheetWithDetentFull.Title className="text-lg font-semibold mb-2">
+              <SheetWithDetentFull.Title className='mb-2 text-lg font-semibold'>
                 Events
               </SheetWithDetentFull.Title>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <div className='relative'>
+                <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
                 <input
-                  className="px-10 py-0 w-full h-10 rounded-full bg-gray-100 border-none outline-none text-sm text-gray-800"
-                  type="text"
-                  placeholder="Search events"
+                  className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none'
+                  type='text'
+                  placeholder='Search events'
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                 />
               </div>
 
-              <div className="flex gap-2 py-3 px-4 overflow-x-auto scrollbar-hide whitespace-nowrap">
+              <div className='scrollbar-hide flex gap-2 overflow-x-auto whitespace-nowrap px-4 py-3'>
                 <button
                   className={`${
-                    filter === 'upcoming'
-                      ? 'bg-black text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  } rounded-2xl py-1.5 px-3 text-sm font-medium cursor-pointer`}
+                    filter === 'upcoming' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
+                  } cursor-pointer rounded-2xl px-3 py-1.5 text-sm font-medium`}
                   onClick={() => handleFilterChange('upcoming')}
                 >
                   Upcoming
                 </button>
                 <button
                   className={`${
-                    filter === 'attending'
-                      ? 'bg-black text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  } rounded-2xl py-1.5 px-3 text-sm font-medium cursor-pointer`}
+                    filter === 'attending' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
+                  } cursor-pointer rounded-2xl px-3 py-1.5 text-sm font-medium`}
                   onClick={() => handleFilterChange('attending')}
                 >
                   Attending
                 </button>
                 <button
                   className={`${
-                    filter === 'hosting'
-                      ? 'bg-black text-white'
-                      : 'bg-gray-100 text-gray-600'
-                  } rounded-2xl py-1.5 px-3 text-sm font-medium cursor-pointer`}
+                    filter === 'hosting' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
+                  } cursor-pointer rounded-2xl px-3 py-1.5 text-sm font-medium`}
                   onClick={() => handleFilterChange('hosting')}
                 >
                   Hosting
                 </button>
                 <button
-                  className="flex items-center gap-1 bg-gray-100 text-gray-600 border-none rounded-2xl py-1.5 px-3 text-sm font-medium whitespace-nowrap cursor-pointer"
+                  className='flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-2xl border-none bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600'
                   onClick={handleSortToggle}
                 >
-                  <SortAsc className="h-3 w-3" />
+                  <SortAsc className='h-3 w-3' />
                   {sortDesc ? 'Newest' : 'Oldest'}
                 </button>
               </div>
             </div>
 
             <SheetWithDetentFull.ScrollRoot asChild>
-              <SheetWithDetentFull.ScrollView className="flex-1 overflow-y-auto pb-safe">
-                <SheetWithDetentFull.ScrollContent className="py-0 px-0 pb-6">
+              <SheetWithDetentFull.ScrollView className='pb-safe flex-1 overflow-y-auto'>
+                <SheetWithDetentFull.ScrollContent className='px-0 py-0 pb-6'>
                   {isLoading ? (
                     // Loading State
                     Array.from({ length: 5 }).map((_, index) => (
-                      <div
-                        key={`loading-${index}`}
-                        className="flex p-4 items-center gap-3"
-                      >
-                        <div className="w-14 h-14 rounded-lg bg-gray-100" />
-                        <div className="flex-1 flex flex-col gap-2">
-                          <div className="h-3 w-4/5 rounded-md bg-gray-100" />
-                          <div className="h-3 w-3/5 rounded-md bg-gray-100" />
+                      <div key={`loading-${index}`} className='flex items-center gap-3 p-4'>
+                        <div className='h-14 w-14 rounded-lg bg-gray-100' />
+                        <div className='flex flex-1 flex-col gap-2'>
+                          <div className='h-3 w-4/5 rounded-md bg-gray-100' />
+                          <div className='h-3 w-3/5 rounded-md bg-gray-100' />
                         </div>
                       </div>
                     ))
                   ) : error ? (
                     // Error State
-                    <div className="flex flex-col items-center justify-center py-12 px-4">
-                      <div className="text-gray-600 text-base text-center mt-4">
+                    <div className='flex flex-col items-center justify-center px-4 py-12'>
+                      <div className='mt-4 text-center text-base text-gray-600'>
                         Failed to load events
                       </div>
                     </div>
                   ) : events.length === 0 ? (
                     // Empty State
-                    <div className="flex flex-col items-center justify-center py-12 px-4">
-                      <div className="text-gray-600 text-base text-center mt-4">
+                    <div className='flex flex-col items-center justify-center px-4 py-12'>
+                      <div className='mt-4 text-center text-base text-gray-600'>
                         {searchText.trim()
                           ? `No events found matching "${searchText}"`
                           : `No ${filter} events found`}
@@ -185,10 +169,7 @@ export default function EventSearchSheet({
                         const canPin = canPinEvent(event);
 
                         return (
-                          <div
-                            key={event.id}
-                            className="border-b border-gray-100 last:border-b-0"
-                          >
+                          <div key={event.id} className='border-b border-gray-100 last:border-b-0'>
                             <EventCompactItem
                               event={event}
                               onBookmark={() => {}}
@@ -201,11 +182,11 @@ export default function EventSearchSheet({
                       })}
 
                       {hasNextPage && (
-                        <div className="flex justify-center p-4">
+                        <div className='flex justify-center p-4'>
                           <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full max-w-[200px]"
+                            variant='outline'
+                            size='sm'
+                            className='w-full max-w-[200px]'
                             onClick={() => fetchNextPage()}
                             disabled={isFetchingNextPage}
                           >

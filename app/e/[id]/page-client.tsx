@@ -179,7 +179,7 @@ export default function EventDetailPageClient() {
   }
 
   const renderDetailsTab = () => (
-    <div className="space-y-6">
+    <div className='space-y-6'>
       <EventHost event={event} />
       <EventGuestList event={event} currentUserId={user?.id || ''} />
       <EventDescription event={event} />
@@ -192,14 +192,10 @@ export default function EventDetailPageClient() {
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Music</h3>
-          {eventData.spotify_url && (
-            <EventSpotifyEmbed link={eventData.spotify_url} />
-          )}
-          {eventData.wavlake_url && (
-            <WavlakeEmbed link={eventData.wavlake_url} />
-          )}
+        <div className='space-y-4'>
+          <h3 className='text-lg font-semibold text-gray-900'>Music</h3>
+          {eventData.spotify_url && <EventSpotifyEmbed link={eventData.spotify_url} />}
+          {eventData.wavlake_url && <WavlakeEmbed link={eventData.wavlake_url} />}
         </div>
       )}
     </div>
