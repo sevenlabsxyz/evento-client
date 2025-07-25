@@ -7,6 +7,7 @@ import EventHost from '@/components/event-detail/event-host';
 import EventInfo from '@/components/event-detail/event-info';
 import EventLocation from '@/components/event-detail/event-location';
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
+import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
@@ -15,6 +16,7 @@ import { useEventDetails } from '@/lib/hooks/useEventDetails';
 import { useEventGallery } from '@/lib/hooks/useEventGallery';
 import { useEventHosts } from '@/lib/hooks/useEventHosts';
 import { useEventWeather } from '@/lib/hooks/useEventWeather';
+import { useSubEvents } from '@/lib/hooks/useSubEvents';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Loader2, MessageCircle, Share } from 'lucide-react';
@@ -102,6 +104,11 @@ export default function EventDetailPageClient() {
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
   const { data: hostsData = [], isLoading: hostsLoading } = useEventHosts(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
+  const {
+    data: subEvents = [],
+    isLoading: subEventsLoading,
+    error: subEventsError,
+  } = useSubEvents(eventId);
 
   // Transform API data to display format
   const event = useMemo(() => {
@@ -153,12 +160,12 @@ export default function EventDetailPageClient() {
     <div className='space-y-6'>
       <EventHost event={event} />
       <EventGuestList event={event} currentUserId={user?.id || ''} />
-
-      <EventDescription
-        event={event}
-        isOwner={!!(user?.id && event.owner?.id && user.id === event.owner.id)}
+      <EventDescription event={event} />
+      <EventSubEvents
+        subEvents={subEvents}
+        subEventsLoading={subEventsLoading}
+        subEventsError={subEventsError}
       />
-
       <EventLocation event={event} weather={weather} />
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
