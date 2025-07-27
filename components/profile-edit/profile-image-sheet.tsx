@@ -123,6 +123,7 @@ export default function ProfileImageSheet({
                           src='/assets/img/evento-sublogo.svg'
                           alt='Evento'
                           className='h-full w-full p-1'
+                          fill
                         />
                       </AvatarFallback>
                     </Avatar>
@@ -152,7 +153,7 @@ export default function ProfileImageSheet({
                   />
 
                   {/* Save/Cancel Buttons */}
-                  <div className='flex gap-3'>
+                  <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'

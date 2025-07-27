@@ -150,7 +150,7 @@ export default function NostrSheet({
                   </div>
 
                   {/* Save/Cancel Buttons */}
-                  <div className='flex gap-3'>
+                  <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
                       disabled={!hasChanges || isSaving}
