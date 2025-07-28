@@ -126,8 +126,7 @@ export function Sidebar() {
           <Sheet.Content
             style={{
               width: 'min(90vw, 325px)',
-              boxShadow:
-                '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
+              boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)',
               backgroundColor: 'hsl(var(--sidebar-background))',
             }}
           >
@@ -135,9 +134,7 @@ export function Sidebar() {
             <VisuallyHidden.Root>
               <Sheet.Title>Navigation Menu</Sheet.Title>
               <Sheet.Description>Main navigation sidebar</Sheet.Description>
-              <Sheet.Trigger action='dismiss'>
-                Close navigation menu
-              </Sheet.Trigger>
+              <Sheet.Trigger action='dismiss'>Close navigation menu</Sheet.Trigger>
             </VisuallyHidden.Root>
 
             <div className='flex h-full flex-col'>
@@ -208,17 +205,12 @@ export function Sidebar() {
                               <li key={item.path}>
                                 <button
                                   onClick={() =>
-                                    handleNavigation(
-                                      item.path,
-                                      (item as any).isExternal
-                                    )
+                                    handleNavigation(item.path, (item as any).isExternal)
                                   }
                                   className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent'
                                 >
                                   <span className='text-[0]'>{item.icon}</span>
-                                  <span className='text-lg font-medium'>
-                                    {item.name}
-                                  </span>
+                                  <span className='text-lg font-medium'>{item.name}</span>
                                 </button>
                               </li>
                             ))}

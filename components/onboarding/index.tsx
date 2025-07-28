@@ -1,24 +1,20 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import {
-  useUserProfile,
-  useUpdateUserProfile,
-  useUploadProfileImage,
-} from '@/lib/hooks/useUserProfile';
+import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/useUserProfile';
+import { validateRedirectUrl } from '@/lib/utils/auth';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
-import { ArrowRight, Loader2 } from 'lucide-react';
-import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
-import { OnboardingName } from './onboarding-name';
-import { OnboardingUsername } from './onboarding-username';
-import { OnboardingAvatar } from './onboarding-avatar';
-import { StepIndicator } from './step-indicator';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { validateRedirectUrl } from '@/lib/utils/auth';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { OnboardingAvatar } from './onboarding-avatar';
+import { OnboardingName } from './onboarding-name';
+import { OnboardingUsername } from './onboarding-username';
+import { StepIndicator } from './step-indicator';
 
 interface UserOnboardingFlowProps {
   onSubmit: Function;
@@ -40,18 +36,14 @@ export const UserOnboardingFlow = ({
 
   const [step, setStep] = useState(1);
   const [name, setName] = useState(defaultName || user?.name || '');
-  const [username, setUsername] = useState(
-    defaultUsername || user?.username || ''
-  );
-  const [uploadedImg, setUploadedImg] = useState(
-    defaultAvatar || user?.image || ''
-  );
+  const [username, setUsername] = useState(defaultUsername || user?.username || '');
+  const [uploadedImg, setUploadedImg] = useState(defaultAvatar || user?.image || '');
   const [updating, setUpdating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
   const handleNameChange = useCallback((e: any) => setName(e.target.value), []);
-  
+
   const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const alphanumericRegex = /^[a-zA-Z0-9]*$/;
     const inputValue = e.target.value.trim();
@@ -81,13 +73,10 @@ export const UserOnboardingFlow = ({
 
     try {
       // Set a timeout to handle cases where the upload might hang
-      const uploadPromise = fetch(
-        `/api/v1/user/details/image-upload?filename=${file.name}`,
-        {
-          method: 'POST',
-          body: file,
-        }
-      );
+      const uploadPromise = fetch(`/api/v1/user/details/image-upload?filename=${file.name}`, {
+        method: 'POST',
+        body: file,
+      });
 
       // Create a timeout promise
       const timeoutPromise = new Promise((_, reject) =>
@@ -103,9 +92,7 @@ export const UserOnboardingFlow = ({
       }
 
       if (!response.ok) {
-        throw new Error(
-          `Server returned ${response.status}: ${response.statusText}`
-        );
+        throw new Error(`Server returned ${response.status}: ${response.statusText}`);
       }
 
       const res = await response.json();
@@ -118,9 +105,7 @@ export const UserOnboardingFlow = ({
       toast.success('Image uploaded successfully');
     } catch (error) {
       console.error('Image upload error:', error);
-      toast.error(
-        'Could not upload image. Please try again or skip this step.'
-      );
+      toast.error('Could not upload image. Please try again or skip this step.');
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +124,7 @@ export const UserOnboardingFlow = ({
   };
 
   const isUpdating = updating || updateUserProfile.isPending;
-  
+
   // Simplified button state logic
   const isSaveButtonDisabled = (() => {
     if (step === 1) return !name || name.length <= 2;
@@ -178,9 +163,7 @@ export const UserOnboardingFlow = ({
         toast.success('Welcome to Evento! Your profile is all set up.');
 
         // Get redirect URL from search params or use default
-        const redirectUrl = validateRedirectUrl(
-          searchParams.get('redirect') || '/'
-        );
+        const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
 
         // Call onSubmit if provided, then redirect
         if (onSubmit) {
@@ -200,8 +183,7 @@ export const UserOnboardingFlow = ({
     }
   };
 
-  const handleEnterPress = () =>
-    updateUserFn({ name, username, image: uploadedImg });
+  const handleEnterPress = () => updateUserFn({ name, username, image: uploadedImg });
 
   useEffect(() => {
     setName(user?.name || '');
@@ -210,20 +192,15 @@ export const UserOnboardingFlow = ({
   }, [user?.name, user?.username, user?.image]);
 
   return (
-    <div className='flex flex-col h-full'>
+    <div className='flex h-full flex-col'>
       <div className='flex-grow overflow-y-auto px-4 pt-4 md:px-0'>
-        <div className='flex flex-col mb-6 md:px-4'>
+        <div className='mb-6 flex flex-col md:px-4'>
           <StepIndicator currentStep={step} totalSteps={3} />
           <Link
             href='/'
-            className='flex flex-col items-center gap-2 font-medium border border-gray-200 rounded-2xl p-1.5 shadow-sm mb-6 max-w-[60px] max-h-[60px] md:mx-auto'
+            className='mb-6 flex max-h-[60px] max-w-[60px] flex-col items-center gap-2 rounded-2xl border border-gray-200 p-1.5 font-medium shadow-sm md:mx-auto'
           >
-            <Image
-              src='/assets/logo/sublogo.svg'
-              alt='Evento'
-              height='50'
-              width='50'
-            />
+            <Image src='/assets/logo/sublogo.svg' alt='Evento' height='50' width='50' />
           </Link>
           <AnimatePresence mode='wait'>
             {step === 1 && (

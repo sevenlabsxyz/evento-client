@@ -3,15 +3,7 @@
 import { Navbar } from '@/components/navbar';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  Camera,
-  Hotel,
-  MapPin,
-  Plane,
-  Utensils,
-} from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, Camera, Hotel, MapPin, Plane, Utensils } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 export default function TravelItinerary() {
@@ -89,20 +81,13 @@ export default function TravelItinerary() {
       <div className='mb-6 px-4'>
         <div className='scrollbar-hide flex gap-6 overflow-x-auto pb-2'>
           {calendarDays.map((day, index) => (
-            <div
-              key={index}
-              className='flex min-w-[50px] flex-col items-center'
-            >
-              <span className='mb-2 text-xs font-medium text-gray-500'>
-                {day.day}
-              </span>
+            <div key={index} className='flex min-w-[50px] flex-col items-center'>
+              <span className='mb-2 text-xs font-medium text-gray-500'>{day.day}</span>
               <div className='relative'>
                 <button
                   onClick={() => scrollToDate(day.date)}
                   className={`flex h-12 w-12 items-center justify-center rounded-full text-2xl font-medium transition-colors ${
-                    day.active
-                      ? 'bg-red-200 text-red-800'
-                      : 'text-black hover:bg-gray-100'
+                    day.active ? 'bg-red-200 text-red-800' : 'text-black hover:bg-gray-100'
                   }`}
                 >
                   {day.date}
@@ -119,10 +104,7 @@ export default function TravelItinerary() {
       </div>
 
       {/* Vertically Scrollable Content */}
-      <div
-        ref={scrollContainerRef}
-        className='flex-1 overflow-y-auto px-4 pb-20'
-      >
+      <div ref={scrollContainerRef} className='flex-1 overflow-y-auto px-4 pb-20'>
         {/* Tuesday, September 2 */}
         <div ref={(el) => (dateRefs.current[2] = el)} className='mb-8'>
           <div className='mb-4 flex items-center justify-between'>
@@ -154,9 +136,7 @@ export default function TravelItinerary() {
                 <span className='font-medium'>LAX</span>
                 <span className='ml-auto text-gray-600'>10:30 AM</span>
               </div>
-              <p className='text-sm text-gray-500'>
-                Los Angeles International Airport
-              </p>
+              <p className='text-sm text-gray-500'>Los Angeles International Airport</p>
             </div>
           </div>
         </div>
@@ -174,9 +154,7 @@ export default function TravelItinerary() {
               <span className='font-medium'>HND</span>
               <span className='ml-auto text-gray-600'>2:00 PM</span>
             </div>
-            <p className='text-sm text-gray-500'>
-              Tokyo Haneda International Airport
-            </p>
+            <p className='text-sm text-gray-500'>Tokyo Haneda International Airport</p>
           </div>
 
           {/* Hotel Check-in */}
@@ -216,9 +194,7 @@ export default function TravelItinerary() {
               <Hotel className='h-6 w-6 text-gray-600' />
             </div>
             <div className='flex-1'>
-              <h3 className='font-medium text-gray-600'>
-                AC Tokyo Hotel Ginza
-              </h3>
+              <h3 className='font-medium text-gray-600'>AC Tokyo Hotel Ginza</h3>
               <p className='text-gray-500'>Staying</p>
             </div>
           </div>

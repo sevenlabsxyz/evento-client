@@ -1,14 +1,13 @@
 'use client';
 
+import { Navbar } from '@/components/navbar';
+import RowCard from '@/components/row-card';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import { useRequireOnboarding } from '@/lib/hooks/useRequireOnboarding';
-import TravelItinerary from '../../../travel-itinerary';
-import RowCard from '@/components/row-card';
-import { Calendar1, MapPin } from 'lucide-react';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { useEffect } from 'react';
 import { useUserProfile } from '@/lib/hooks/useUserProfile';
-import { Navbar } from '@/components/navbar';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { Calendar1, MapPin } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function HubPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -51,8 +50,8 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='flex flex-col px-4 gap-4 bg-gray-50 h-full w-full'>
-        <div className='text-base text-left pt-4 text-gray-500'>
+      <div className='flex h-full w-full flex-col gap-4 bg-gray-50 px-4'>
+        <div className='pt-4 text-left text-base text-gray-500'>
           Welcome back @{user?.username},
         </div>
         <div className='flex flex-col gap-4'>

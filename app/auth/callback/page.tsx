@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
-import { isUserOnboarded, validateRedirectUrl, getOnboardingRedirectUrl } from '@/lib/utils/auth';
+import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -64,11 +64,11 @@ function AuthCallbackContent() {
           if (user) {
             setUser(user);
             setStatus('success');
-            
+
             // Check if user needs onboarding
             const needsOnboarding = !isUserOnboarded(user);
             const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
-            
+
             setTimeout(() => {
               if (needsOnboarding) {
                 router.push(getOnboardingRedirectUrl(redirectUrl));

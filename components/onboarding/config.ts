@@ -1,5 +1,5 @@
-import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon } from 'lucide-react';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 export interface OnboardingStep {
   title: string;
@@ -22,4 +22,4 @@ export interface OnboardingConfig {
   storageKey?: string;
 }
 
-export const DEFAULT_STORAGE_KEY = "evento:onboarding:last_completed_version"; 
+export const DEFAULT_STORAGE_KEY = 'evento:onboarding:last_completed_version';

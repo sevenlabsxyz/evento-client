@@ -3,7 +3,7 @@ import React from 'react';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
-import { UserDetails, ApiResponse } from '../types/api';
+import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
@@ -138,14 +138,14 @@ export function useSearchUsers() {
       const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
         `/v1/user/search?q=${encodeURIComponent(query)}`
       );
-      
+
       // Handle both response formats (array or object with data property)
       if (Array.isArray(response)) {
         return response;
       } else if (response && typeof response === 'object' && 'data' in response) {
         return (response as any).data || [];
       }
-      
+
       return [];
     },
     onError: (error) => {
@@ -286,7 +286,7 @@ export function useUserByUsername(username: string) {
       const response = await apiClient.get<ApiResponse<UserDetails[]>>(
         `/v1/user/details?username=${encodeURIComponent(username)}`
       );
-      
+
       // Extract the users array from the API response
       const users = response?.data || [];
 

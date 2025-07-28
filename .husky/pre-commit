@@ -2,4 +2,4 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # Run format to format and lint staged files
-pnpm format
+pnpm format && git add .

@@ -6,10 +6,7 @@ import { Suspense } from 'react';
 export const dynamic = 'force-dynamic';
 
 const Error = ({ message }: { message: string }) => (
-  <div
-    className='rounded-lg border border-red-200 bg-red-50 p-4 text-red-700'
-    role='alert'
-  >
+  <div className='rounded-lg border border-red-200 bg-red-50 p-4 text-red-700' role='alert'>
     <div className='mb-1 flex items-center gap-2'>
       <AlertTriangle className='h-5 w-5' />
       <p className='font-semibold'>Error</p>
@@ -27,9 +24,7 @@ const Loading = () => (
 async function getBlogPosts() {
   // Check for required environment variables
   if (!Env.GHOST_URL || !Env.GHOST_CONTENT_API_KEY) {
-    console.warn(
-      'Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set'
-    );
+    console.warn('Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set');
     return [];
   }
 
@@ -51,9 +46,7 @@ function PostList({ posts }: { posts: any[] }) {
     return (
       <div className='px-4 py-12 text-center'>
         <div className='rounded-lg bg-gray-100 p-8'>
-          <h3 className='mb-2 text-xl font-semibold text-gray-700'>
-            No posts yet
-          </h3>
+          <h3 className='mb-2 text-xl font-semibold text-gray-700'>No posts yet</h3>
           <p className='text-gray-500'>Check back soon for new content!</p>
         </div>
       </div>

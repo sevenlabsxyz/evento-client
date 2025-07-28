@@ -23,10 +23,7 @@ export const OnboardingName = ({
       exit={{ opacity: 0 }}
       transition={{ duration: 0.2, ease: 'easeInOut' }}
     >
-      <OnboardingHeader
-        title='Enter your name'
-        description='Let everyone know what to call you.'
-      />
+      <OnboardingHeader title='Enter your name' description='Let everyone know what to call you.' />
       <div className='mt-6'>
         <Input
           required
@@ -37,7 +34,7 @@ export const OnboardingName = ({
           disabled={updating}
           onChange={onNameChange}
           className={
-            'placeholder:text-gray-300 bg-gray-100 border mb-2 text-2xl md:text-2xl px-3 py-2 min-h-[60px]'
+            'mb-2 min-h-[60px] border bg-gray-100 px-3 py-2 text-2xl placeholder:text-gray-300 md:text-2xl'
           }
           onKeyDown={(e) => {
             if (e.key === 'Enter') onEnterPress();

@@ -58,7 +58,7 @@ export const authService = {
       verification_status: null,
       verification_date: '',
     };
-    
+
     console.log('Auth: Returning user details from verifyCode:', userDetails);
     return userDetails;
   },
@@ -84,9 +84,9 @@ export const authService = {
 
       // Handle both response formats (array or object with data property)
       console.log('Auth: Raw API response:', response);
-      
+
       let userData: UserDetails[] | null = null;
-      
+
       // Check if response is an object with data property
       if (response && typeof response === 'object' && 'data' in response) {
         console.log('Auth: Response is object with data property');
@@ -95,13 +95,13 @@ export const authService = {
         console.log('Auth: Response is array directly');
         userData = response;
       }
-      
+
       // Handle empty array case explicitly
       if (!userData || !Array.isArray(userData) || userData.length === 0) {
         console.log('Auth: No user data found (empty array), returning null');
         return null;
       }
-      
+
       const firstUser = userData[0];
       console.log('Auth: Returning user:', firstUser);
       return firstUser;

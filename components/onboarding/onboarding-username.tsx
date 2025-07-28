@@ -1,12 +1,12 @@
 import { Input } from '@/components/ui/input';
-import { motion } from 'framer-motion';
-import { OnboardingHeader } from './onboarding-header';
 import { useDebounce } from '@/lib/hooks/useDebounce';
 import { useUserByUsername, useUserProfile } from '@/lib/hooks/useUserProfile';
-import { useState, useEffect } from 'react';
-import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { updateUserProfileSchema } from '@/lib/schemas/user';
+import { motion } from 'framer-motion';
+import { CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
+import { OnboardingHeader } from './onboarding-header';
 
 interface OnboardingUsernameProps {
   username: string;
@@ -32,11 +32,7 @@ export const OnboardingUsername = ({
   const debouncedUsername = useDebounce(username, 500);
 
   // Check if username exists using the public profile API
-  const {
-    data: existingUser,
-    isLoading,
-    refetch,
-  } = useUserByUsername(debouncedUsername);
+  const { data: existingUser, isLoading, refetch } = useUserByUsername(debouncedUsername);
 
   // Validate username on change
   useEffect(() => {
@@ -47,8 +43,7 @@ export const OnboardingUsername = ({
     }
 
     // Use the username schema from user.ts
-    const usernameSchema = updateUserProfileSchema.pick({ username: true })
-      .shape.username;
+    const usernameSchema = updateUserProfileSchema.pick({ username: true }).shape.username;
 
     try {
       usernameSchema.parse(username);
@@ -87,8 +82,7 @@ export const OnboardingUsername = ({
   }, [debouncedUsername, validationError, refetch, currentUser]);
 
   const showValidation = username.length > 0;
-  const canProceed =
-    username.length >= 3 && !validationError && isAvailable === true;
+  const canProceed = username.length >= 3 && !validationError && isAvailable === true;
 
   return (
     <motion.div
@@ -112,11 +106,7 @@ export const OnboardingUsername = ({
             disabled={updating}
             placeholder={'shakespeare123'}
             onChange={onUsernameChange}
-            className={`
-              placeholder:text-gray-300 bg-gray-100 border mb-2 text-2xl md:text-2xl px-3 py-2 min-h-[60px] pr-12
-              ${validationError && showValidation ? 'border-red-500' : ''}
-              ${canProceed ? 'border-green-500' : ''}
-            `}
+            className={`mb-2 min-h-[60px] border bg-gray-100 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 md:text-2xl ${validationError && showValidation ? 'border-red-500' : ''} ${canProceed ? 'border-green-500' : ''} `}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && canProceed) onEnterPress();
             }}
@@ -136,15 +126,13 @@ export const OnboardingUsername = ({
 
         {/* Validation messages */}
         {showValidation && (
-          <div className='text-sm mt-1'>
+          <div className='mt-1 text-sm'>
             {validationError ? (
               <p className='text-red-500'>{validationError}</p>
             ) : isAvailable === false ? (
               <p className='text-red-500'>This username is already taken</p>
             ) : isAvailable === true ? (
-              <p className='text-green-500'>
-                Great! This username is available
-              </p>
+              <p className='text-green-500'>Great! This username is available</p>
             ) : null}
           </div>
         )}
