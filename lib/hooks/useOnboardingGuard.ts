@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from './useAuth';
+import { useEffect } from 'react';
 import { isUserOnboarded, validateRedirectUrl } from '../utils/auth';
+import { useAuth } from './useAuth';
 
 /**
  * Hook to guard the onboarding page
@@ -10,7 +10,7 @@ import { isUserOnboarded, validateRedirectUrl } from '../utils/auth';
 export function useOnboardingGuard() {
   const router = useRouter();
   const { user, isLoading } = useAuth();
-  
+
   useEffect(() => {
     if (!isLoading && user && isUserOnboarded(user)) {
       // User is already onboarded, redirect them away
@@ -19,6 +19,6 @@ export function useOnboardingGuard() {
       router.push(redirectUrl);
     }
   }, [user, isLoading, router]);
-  
+
   return { isLoading, needsOnboarding: user && !isUserOnboarded(user) };
 }

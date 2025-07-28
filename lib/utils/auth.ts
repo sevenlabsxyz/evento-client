@@ -9,17 +9,17 @@ export function isUserOnboarded(user: UserDetails | null): boolean {
     console.log('isUserOnboarded: No user provided');
     return false;
   }
-  
+
   const hasUsername = user.username && user.username.trim() !== '';
   const hasName = user.name && user.name.trim() !== '';
-  
+
   console.log('isUserOnboarded: Checking user:', {
     username: user.username,
     name: user.name,
     hasUsername,
     hasName,
   });
-  
+
   return Boolean(hasUsername && hasName);
 }
 
@@ -30,29 +30,29 @@ export function isUserOnboarded(user: UserDetails | null): boolean {
 export function validateRedirectUrl(url: string): string {
   // Default redirect
   const defaultRedirect = '/';
-  
+
   if (!url) return defaultRedirect;
-  
+
   try {
     // Check if it's a relative URL (starts with /)
     if (url.startsWith('/')) {
       // Remove multiple slashes
       const cleanUrl = url.replace(/\/+/g, '/');
-      
+
       // Prevent protocol-relative URLs
       if (cleanUrl.startsWith('//')) {
         return defaultRedirect;
       }
-      
+
       return cleanUrl;
     }
-    
+
     // Check if it's an absolute URL to the same origin
     const parsedUrl = new URL(url, window.location.origin);
     if (parsedUrl.origin === window.location.origin) {
       return parsedUrl.pathname + parsedUrl.search + parsedUrl.hash;
     }
-    
+
     // Invalid URL, return default
     return defaultRedirect;
   } catch {

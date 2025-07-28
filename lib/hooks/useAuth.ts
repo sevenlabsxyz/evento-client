@@ -5,7 +5,7 @@ import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
-import { isUserOnboarded, validateRedirectUrl, getOnboardingRedirectUrl } from '../utils/auth';
+import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '../utils/auth';
 // import { debugLog } from '../utils/debug';
 
 // Key for user query
@@ -143,7 +143,7 @@ export function useVerifyCode() {
     },
     onSuccess: async (data) => {
       console.log('Verify: Code verification successful, user data:', data);
-      
+
       // Set user data
       setUser(data);
 
@@ -158,16 +158,16 @@ export function useVerifyCode() {
         console.log('Verify: Fetching user data to check onboarding status');
         const userData = await authService.getCurrentUser();
         console.log('Verify: User data received:', userData);
-        
+
         // Check if user has completed onboarding
         const isOnboarded = isUserOnboarded(userData);
         console.log('Verify: User onboarding status:', isOnboarded);
         console.log('Verify: Username:', userData?.username, 'Name:', userData?.name);
-        
+
         // Get and validate redirect URL from search params
         const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
         console.log('Verify: Redirect URL:', redirectUrl);
-        
+
         if (!isOnboarded) {
           // User needs onboarding - redirect to onboarding with original redirect
           const onboardingUrl = getOnboardingRedirectUrl(redirectUrl);

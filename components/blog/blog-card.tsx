@@ -3,14 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import './blog-card.css';
 
-export const BlogCard = ({
-  date,
-  slug,
-  image,
-  title,
-  category,
-  description,
-}: any) => {
+export const BlogCard = ({ date, slug, image, title, category, description }: any) => {
   // Fallback gradient if no image
   const fallbackGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
 

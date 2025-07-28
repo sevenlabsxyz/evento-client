@@ -55,10 +55,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                 isActive ? 'text-red-600' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              <Icon
-                className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`}
-                strokeWidth={2.5}
-              />
+              <Icon className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`} strokeWidth={2.5} />
             </button>
           );
         })}

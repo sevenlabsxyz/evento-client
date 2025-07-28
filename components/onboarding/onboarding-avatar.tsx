@@ -1,8 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Camera, Loader2, UploadCloud } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { OnboardingHeader } from './onboarding-header';
+import { Camera, Loader2, UploadCloud } from 'lucide-react';
 import { RefObject } from 'react';
+import { OnboardingHeader } from './onboarding-header';
 
 interface OnboardingAvatarProps {
   uploadedImg: string;
@@ -41,23 +41,23 @@ export const OnboardingAvatar = ({
         />
         <div
           onClick={() => inputFileRef.current?.click()}
-          className='group relative mb-12 border rounded-full'
+          className='group relative mb-12 rounded-full border'
         >
           {isLoading ? (
-            <div className='bg-black absolute top-0 right-0 left-0 bottom-0 opacity-0 cursor-default opacity-75 rounded-full z-20 flex flex-row items-center justify-center'>
+            <div className='absolute bottom-0 left-0 right-0 top-0 z-20 flex cursor-default flex-row items-center justify-center rounded-full bg-black opacity-0 opacity-75'>
               <Loader2 className='h-12 w-12 animate-spin text-white' />
             </div>
           ) : (
-            <div className='bg-black absolute top-0 right-0 left-0 bottom-0 opacity-0 cursor-pointer md:group-hover:opacity-50 rounded-full z-20 flex flex-row items-center justify-center'>
+            <div className='absolute bottom-0 left-0 right-0 top-0 z-20 flex cursor-pointer flex-row items-center justify-center rounded-full bg-black opacity-0 md:group-hover:opacity-50'>
               <UploadCloud className='h-12 w-12 text-white' />
             </div>
           )}
-          <Avatar className='md:w-64 md:h-64'>
+          <Avatar className='md:h-64 md:w-64'>
             <AvatarImage src={uploadedImg || '/assets/logo/sublogo.svg'} />
             <AvatarFallback className='text-xs'>Loading...</AvatarFallback>
           </Avatar>
           {isLoading ? null : (
-            <div className='absolute -bottom-2 md:bottom-2 right-0 md:right-2 p-2 rounded-full border bg-gray-100 z-30'>
+            <div className='absolute -bottom-2 right-0 z-30 rounded-full border bg-gray-100 p-2 md:bottom-2 md:right-2'>
               <Camera className='h-6 w-6 text-gray-600' />
             </div>
           )}
