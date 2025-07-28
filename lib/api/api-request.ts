@@ -1,12 +1,12 @@
 import { Env } from '@/lib/constants/env';
-import { logger } from '@/lib/utils/logger';
+// import { logger } from '@/lib/utils/logger';
 import { NextResponse } from 'next/server';
 
 // Use the backend target URL directly for server-side requests
 const API_BASE_URL = Env.API_PROXY_TARGET;
 
 export async function apiRequest(method: string, path: string, request: Request) {
-  const requestId = logger.generateRequestId();
+  // const requestId = logger.generateRequestId();
   const startTime = Date.now();
 
   try {
@@ -46,15 +46,15 @@ export async function apiRequest(method: string, path: string, request: Request)
       }
     }
 
-    // Log the API request
-    logger.logApiRequest(targetUrl, {
-      requestId,
-      method,
-      headers: Object.fromEntries(request.headers.entries()),
-      body: requestBody,
-      userAgent,
-      ip,
-    });
+    // // Log the API request
+    // logger.logApiRequest(targetUrl, {
+    //   requestId,
+    //   method,
+    //   headers: Object.fromEntries(request.headers.entries()),
+    //   body: requestBody,
+    //   userAgent,
+    //   ip,
+    // });
 
     // Make the request to the backend
     const response = await fetch(targetUrl, options);
@@ -76,15 +76,15 @@ export async function apiRequest(method: string, path: string, request: Request)
       bodySize = data.length;
     }
 
-    // Log the API response
-    logger.logApiResponse(targetUrl, {
-      requestId,
-      statusCode: response.status,
-      headers: Object.fromEntries(response.headers.entries()),
-      body: data,
-      bodySize,
-      duration,
-    });
+    // // Log the API response
+    // logger.logApiResponse(targetUrl, {
+    //   requestId,
+    //   statusCode: response.status,
+    //   headers: Object.fromEntries(response.headers.entries()),
+    //   body: data,
+    //   bodySize,
+    //   duration,
+    // });
 
     // Create the response with the same status
     const proxyResponse = NextResponse.json(data, {
@@ -103,20 +103,20 @@ export async function apiRequest(method: string, path: string, request: Request)
     const duration = Date.now() - startTime;
     const targetUrl = `${API_BASE_URL}${path}${new URL(request.url).search}`;
 
-    // Log comprehensive error information
-    logger.logApiError(targetUrl, error instanceof Error ? error : new Error(String(error)), {
-      requestId,
-      method,
-      userAgent: request.headers.get('user-agent') || undefined,
-      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
-      additionalContext: {
-        duration,
-        apiBaseUrl: API_BASE_URL,
-        requestPath: path,
-        queryString: new URL(request.url).search,
-        cookiePresent: !!request.headers.get('cookie'),
-      },
-    });
+    // // Log comprehensive error information
+    // logger.logApiError(targetUrl, error instanceof Error ? error : new Error(String(error)), {
+    //   requestId,
+    //   method,
+    //   userAgent: request.headers.get('user-agent') || undefined,
+    //   ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+    //   additionalContext: {
+    //     duration,
+    //     apiBaseUrl: API_BASE_URL,
+    //     requestPath: path,
+    //     queryString: new URL(request.url).search,
+    //     cookiePresent: !!request.headers.get('cookie'),
+    //   },
+    // });
 
     return NextResponse.json(
       {

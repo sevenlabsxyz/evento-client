@@ -30,13 +30,13 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Log the incoming request
-    logger.logApiRequest(fullUrl, {
-      requestId,
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-      userAgent,
-      ip,
-    });
+    // logger.logApiRequest(fullUrl, {
+    //   requestId,
+    //   method: request.method,
+    //   headers: Object.fromEntries(request.headers.entries()),
+    //   userAgent,
+    //   ip,
+    // });
 
     // Prepare headers
     const headers = new Headers();
@@ -132,14 +132,14 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       bodySize = JSON.stringify(responseData).length;
 
       // Log successful response
-      logger.logApiResponse(fullUrl, {
-        requestId,
-        statusCode: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
-        body: responseData,
-        bodySize,
-        duration,
-      });
+      // logger.logApiResponse(fullUrl, {
+      //   requestId,
+      //   statusCode: response.status,
+      //   headers: Object.fromEntries(response.headers.entries()),
+      //   body: responseData,
+      //   bodySize,
+      //   duration,
+      // });
 
       return NextResponse.json(responseData, {
         status: response.status,
@@ -151,13 +151,13 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       bodySize = responseData.length;
 
       // Log successful response
-      logger.logApiResponse(fullUrl, {
-        requestId,
-        statusCode: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
-        bodySize,
-        duration,
-      });
+      // logger.logApiResponse(fullUrl, {
+      //   requestId,
+      //   statusCode: response.status,
+      //   headers: Object.fromEntries(response.headers.entries()),
+      //   bodySize,
+      //   duration,
+      // });
 
       return new NextResponse(responseData, {
         status: response.status,
