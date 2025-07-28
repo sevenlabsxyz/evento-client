@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useRedirectIfAuthenticated, useVerifyCode } from '@/lib/hooks/useAuth';
+import { useVerifyCode } from '@/lib/hooks/useAuth';
 import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowLeft, Loader2, Mail } from 'lucide-react';
@@ -23,7 +23,6 @@ function VerifyContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/';
-  const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { verifyCode, isLoading, error, reset, email } = useVerifyCode();
   const [resendTimer, setResendTimer] = useState(0);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -45,10 +44,10 @@ function VerifyContent() {
 
   // Redirect to login if no email in store
   useEffect(() => {
-    if (!isCheckingAuth && !email) {
+    if (!email) {
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
     }
-  }, [email, isCheckingAuth, redirectUrl, router]);
+  }, [email, redirectUrl, router]);
 
   // Countdown timer for resend
   useEffect(() => {
@@ -85,7 +84,10 @@ function VerifyContent() {
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === 'Backspace' && !codeValue[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
@@ -114,8 +116,8 @@ function VerifyContent() {
     }
   };
 
-  // Show loading while checking auth status
-  if (isCheckingAuth || !email) {
+  // Show loading while no email
+  if (!email) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
         <Loader2 className='h-8 w-8 animate-spin' />
@@ -127,7 +129,9 @@ function VerifyContent() {
     <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
       <Card className='w-full max-w-md'>
         <CardHeader className='space-y-1'>
-          <CardTitle className='text-center text-2xl font-bold'>Check your email</CardTitle>
+          <CardTitle className='text-center text-2xl font-bold'>
+            Check your email
+          </CardTitle>
           <CardDescription className='space-y-2 text-center'>
             <p>We've sent a 6-digit verification code to</p>
             <p className='flex items-center justify-center gap-2 font-medium text-gray-900'>
@@ -172,11 +176,17 @@ function VerifyContent() {
               </div>
               <input type='hidden' {...register('code')} />
               {errors.code && (
-                <p className='text-center text-sm text-red-500'>{errors.code.message}</p>
+                <p className='text-center text-sm text-red-500'>
+                  {errors.code.message}
+                </p>
               )}
             </div>
 
-            <Button type='submit' className='w-full' disabled={isLoading || codeValue.length !== 6}>
+            <Button
+              type='submit'
+              className='w-full'
+              disabled={isLoading || codeValue.length !== 6}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
@@ -209,7 +219,11 @@ function VerifyContent() {
           <Button
             variant='ghost'
             className='w-full'
-            onClick={() => router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`)}
+            onClick={() =>
+              router.push(
+                `/auth/login?redirect=${encodeURIComponent(redirectUrl)}`
+              )
+            }
             disabled={isLoading}
           >
             <ArrowLeft className='mr-2 h-4 w-4' />

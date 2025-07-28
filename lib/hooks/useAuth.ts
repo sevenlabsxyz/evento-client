@@ -5,6 +5,7 @@ import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
+import { isUserOnboarded, validateRedirectUrl, getOnboardingRedirectUrl } from '../utils/auth';
 // import { debugLog } from '../utils/debug';
 
 // Key for user query
@@ -44,7 +45,8 @@ export function useAuth() {
       setUser(userData);
     } else if (authError) {
       // Clear auth on 401 errors
-      const apiError = authError as ApiError;
+      // Cast through `unknown` first to avoid the direct `Error` → `ApiError` assertion warning
+      const apiError = authError as unknown as ApiError;
       if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
         clearAuth();
       }
@@ -130,6 +132,7 @@ export function useVerifyCode() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { email, setUser, clearEmail } = useAuthStore();
+  const searchParams = useSearchParams();
 
   const mutation = useMutation({
     mutationFn: ({ code }: { code: string }) => {
@@ -138,7 +141,9 @@ export function useVerifyCode() {
       }
       return authService.verifyCode(email, code);
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
+      console.log('Verify: Code verification successful, user data:', data);
+      
       // Set user data
       setUser(data);
 
@@ -148,8 +153,38 @@ export function useVerifyCode() {
       // Invalidate user query to ensure fresh data
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
-      // Redirect to home
-      router.push('/');
+      // Get the current user data from the backend to check onboarding status
+      try {
+        console.log('Verify: Fetching user data to check onboarding status');
+        const userData = await authService.getCurrentUser();
+        console.log('Verify: User data received:', userData);
+        
+        // Check if user has completed onboarding
+        const isOnboarded = isUserOnboarded(userData);
+        console.log('Verify: User onboarding status:', isOnboarded);
+        console.log('Verify: Username:', userData?.username, 'Name:', userData?.name);
+        
+        // Get and validate redirect URL from search params
+        const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+        console.log('Verify: Redirect URL:', redirectUrl);
+        
+        if (!isOnboarded) {
+          // User needs onboarding - redirect to onboarding with original redirect
+          const onboardingUrl = getOnboardingRedirectUrl(redirectUrl);
+          console.log('Verify: User not onboarded, redirecting to:', onboardingUrl);
+          router.push(onboardingUrl);
+        } else {
+          // User is onboarded - redirect to intended destination
+          console.log('Verify: User is onboarded, redirecting to:', redirectUrl);
+          router.push(redirectUrl);
+        }
+      } catch (error) {
+        console.error('Verify: Failed to check onboarding status:', error);
+        // On error, proceed to default redirect
+        const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+        console.log('Verify: Error occurred, redirecting to default:', redirectUrl);
+        router.push(redirectUrl);
+      }
     },
   });
 
