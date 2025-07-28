@@ -78,13 +78,13 @@ export const OnboardingUsername = ({
     // Only check if validation passes
     if (debouncedUsername.length >= 3) {
       setIsCheckingAvailability(true);
-      refetch().then(() => {
+      refetch().then(({ data: freshData }) => {
         setIsCheckingAvailability(false);
         // If no user found, username is available
-        setIsAvailable(!existingUser);
+        setIsAvailable(!freshData);
       });
     }
-  }, [debouncedUsername, validationError, existingUser, refetch, currentUser]);
+  }, [debouncedUsername, validationError, refetch, currentUser]);
 
   const showValidation = username.length > 0;
   const canProceed =

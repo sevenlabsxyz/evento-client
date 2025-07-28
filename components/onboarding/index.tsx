@@ -8,7 +8,7 @@ import {
 } from '@/lib/hooks/useUserProfile';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { ArrowRight, Loader2 } from 'lucide-react';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
 import { OnboardingName } from './onboarding-name';
@@ -50,8 +50,9 @@ export const UserOnboardingFlow = ({
   const [isLoading, setIsLoading] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
 
-  const handleNameChange = (e: any) => setName(e.target.value);
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleNameChange = useCallback((e: any) => setName(e.target.value), []);
+  
+  const handleUsernameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const alphanumericRegex = /^[a-zA-Z0-9]*$/;
     const inputValue = e.target.value.trim();
 
@@ -64,7 +65,7 @@ export const UserOnboardingFlow = ({
         toast.warning('Username must be 20 characters or less.');
       }
     }
-  };
+  }, []);
 
   const handleUploadImage = async (event: any) => {
     setIsLoading(true);
@@ -138,17 +139,13 @@ export const UserOnboardingFlow = ({
   };
 
   const isUpdating = updating || updateUserProfile.isPending;
-  const nameExistsAndPassesValidation = name && String(name).length > 2;
-  const usernameExistsAndPassesValidation =
-    username && String(username).length > 2;
-  let isSaveButtonDisabled = true;
-  if (step === 1) {
-    isSaveButtonDisabled = !nameExistsAndPassesValidation;
-  } else if (step === 2) {
-    isSaveButtonDisabled = !usernameExistsAndPassesValidation;
-  } else {
-    isSaveButtonDisabled = false;
-  }
+  
+  // Simplified button state logic
+  const isSaveButtonDisabled = (() => {
+    if (step === 1) return !name || name.length <= 2;
+    if (step === 2) return !username || username.length <= 2;
+    return false; // Step 3 - always enabled
+  })();
 
   const updateUserFn = async ({
     name,
