@@ -14,9 +14,10 @@ import {
 } from '@/lib/hooks/useNotifications';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { NotificationFilterParams, UINotification } from '@/lib/types/notifications';
+import { isValidRelativePath } from '@/lib/utils/link';
 import { MailOpen, RefreshCw } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export default function InboxPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -34,21 +35,56 @@ export default function InboxPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [hasMorePages, setHasMorePages] = useState(true);
 
+  // Refs for debouncing and previous values
+  const filterTimeoutRef = useRef<NodeJS.Timeout>();
+  const prevFiltersRef = useRef<NotificationFilterParams>(filters);
+  const prevTabRef = useRef(currentTab);
+
   // Hooks for notification actions
   const markAsRead = useMarkAsRead();
   const archiveNotification = useArchiveNotification();
   const bulkMarkAsRead = useBulkMarkAsRead();
   const markAllAsRead = useMarkAllAsRead();
 
-  // Update filters when tab changes
-  useEffect(() => {
-    const newFilters: NotificationFilterParams = {
+  // Memoized filter object to prevent unnecessary re-renders
+  const activeFilters = useMemo<NotificationFilterParams>(
+    () => ({
       ...filters,
       archived: currentTab === 'archived' ? true : undefined,
       status: currentTab === 'unread' ? 'unread' : undefined,
+    }),
+    [filters, currentTab]
+  );
+
+  // Debounced filter updates
+  useEffect(() => {
+    // Skip if filters haven't changed
+    if (
+      JSON.stringify(prevFiltersRef.current) === JSON.stringify(activeFilters) &&
+      prevTabRef.current === currentTab
+    ) {
+      return;
+    }
+
+    // Clear any pending updates
+    if (filterTimeoutRef.current) {
+      clearTimeout(filterTimeoutRef.current);
+    }
+
+    // Set a new timeout
+    filterTimeoutRef.current = setTimeout(() => {
+      setFilters(activeFilters);
+      prevFiltersRef.current = activeFilters;
+      prevTabRef.current = currentTab;
+    }, 300); // 300ms debounce time
+
+    // Cleanup function
+    return () => {
+      if (filterTimeoutRef.current) {
+        clearTimeout(filterTimeoutRef.current);
+      }
     };
-    setFilters(newFilters);
-  }, [currentTab]);
+  }, [activeFilters, currentTab]);
 
   // Fetch notifications
   const {
@@ -60,16 +96,19 @@ export default function InboxPage() {
     refetch,
   } = useNotificationsFeed(filters);
 
-  // Extract and flatten notifications from all pages
-  const notifications: UINotification[] = notificationsData
-    ? notificationsData.pages.flatMap((page) => page.entries)
-    : [];
+  // Memoize the extracted notifications to prevent recalculation on every render
+  const notifications = useMemo(
+    () => (notificationsData ? notificationsData.pages.flatMap((page) => page.entries) : []),
+    [notificationsData]
+  );
 
-  // Use dummy data if no notifications are available and we're not in an error state
-  const displayNotifications =
-    notifications.length > 0 || isLoading || isError
-      ? notifications
-      : generateDummyNotifications(10);
+  // Memoize the display notifications
+  const displayNotifications = useMemo(() => {
+    if (notifications.length > 0 || isLoading || isError) {
+      return notifications;
+    }
+    return generateDummyNotifications(10);
+  }, [notifications, isLoading, isError]);
 
   // Check if there are more pages to load
   useEffect(() => {
@@ -174,8 +213,17 @@ export default function InboxPage() {
     (notification: UINotification) => {
       // Extract link from notification data if available
       const link = notification.data?.link;
-      if (link) {
-        router.push(link);
+
+      // Only proceed if we have a valid relative path
+      if (link && isValidRelativePath(link)) {
+        try {
+          router.push(link);
+        } catch (error) {
+          console.error('Navigation error:', error);
+          // Optionally show error to user
+        }
+      } else if (link) {
+        console.warn('Attempted to navigate to invalid URL:', link);
       }
     },
     [router]
