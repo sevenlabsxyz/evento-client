@@ -1,6 +1,7 @@
 'use client';
 
 import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useRequireOnboarding } from '@/lib/hooks/useRequireOnboarding';
 import TravelItinerary from '../../../travel-itinerary';
 import RowCard from '@/components/row-card';
 import { Calendar1, MapPin } from 'lucide-react';
@@ -11,6 +12,7 @@ import { Navbar } from '@/components/navbar';
 
 export default function HubPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
+  const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
@@ -37,7 +39,7 @@ export default function HubPage() {
     };
   }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
 
-  if (isCheckingAuth) {
+  if (isCheckingAuth || isCheckingOnboarding) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>

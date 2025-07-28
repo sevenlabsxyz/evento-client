@@ -1,6 +1,11 @@
 import { Env } from '@/lib/constants/env';
 import { logger } from '@/lib/utils/logger';
-import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {
+  AxiosError,
+  AxiosRequestConfig,
+  AxiosResponse,
+  InternalAxiosRequestConfig,
+} from 'axios';
 
 // Create the main API client for session-based authentication
 export const apiClient = axios.create({
@@ -14,7 +19,7 @@ export const apiClient = axios.create({
 
 // Add request interceptor for logging
 apiClient.interceptors.request.use(
-  (config: AxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     const requestId = logger.generateRequestId();
 
     // Store request ID and start time in config for correlation
@@ -24,13 +29,13 @@ apiClient.interceptors.request.use(
     };
 
     // Log the outgoing request
-    logger.logApiRequest(config.url || 'unknown', {
-      requestId,
-      method: config.method?.toUpperCase(),
-      headers: config.headers as Record<string, string>,
-      body: config.data,
-      userAgent: navigator?.userAgent,
-    });
+    // logger.logApiRequest(config.url || 'unknown', {
+    //   requestId,
+    //   method: config.method?.toUpperCase(),
+    //   headers: config.headers as Record<string, string>,
+    //   body: config.data,
+    //   userAgent: navigator?.userAgent,
+    // });
 
     return config;
   },
@@ -43,22 +48,22 @@ apiClient.interceptors.request.use(
 // Response interceptor for handling errors and data extraction
 apiClient.interceptors.response.use(
   (response: AxiosResponse) => {
-    const config = response.config as AxiosRequestConfig & {
-      metadata?: { requestId: string; startTime: number };
-    };
-    const requestId = config.metadata?.requestId;
-    const startTime = config.metadata?.startTime || Date.now();
-    const duration = Date.now() - startTime;
+    // const config = response.config as AxiosRequestConfig & {
+    //   metadata?: { requestId: string; startTime: number };
+    // };
+    // const requestId = config.metadata?.requestId;
+    // const startTime = config.metadata?.startTime || Date.now();
+    // const duration = Date.now() - startTime;
 
     // Log successful response
-    logger.logApiResponse(config.url || 'unknown', {
-      requestId,
-      statusCode: response.status,
-      headers: response.headers as Record<string, string>,
-      body: response.data,
-      bodySize: JSON.stringify(response.data).length,
-      duration,
-    });
+    // logger.logApiResponse(config.url || 'unknown', {
+    //   requestId,
+    //   statusCode: response.status,
+    //   headers: response.headers as Record<string, string>,
+    //   body: response.data,
+    //   bodySize: JSON.stringify(response.data).length,
+    //   duration,
+    // });
 
     // For successful responses, return the data directly
     return response.data;
@@ -103,6 +108,13 @@ apiClient.interceptors.response.use(
 // Extend AxiosRequestConfig to include metadata for request correlation
 declare module 'axios' {
   interface AxiosRequestConfig {
+    metadata?: {
+      requestId: string;
+      startTime: number;
+    };
+  }
+
+  interface InternalAxiosRequestConfig {
     metadata?: {
       requestId: string;
       startTime: number;

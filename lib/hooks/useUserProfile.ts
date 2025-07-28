@@ -3,7 +3,7 @@ import React from 'react';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
-import { UserDetails } from '../types/api';
+import { UserDetails, ApiResponse } from '../types/api';
 
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
@@ -135,10 +135,18 @@ export function useUploadProfileImage() {
 export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.get<UserDetails[]>(
+      const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
         `/v1/user/search?q=${encodeURIComponent(query)}`
       );
-      return response.data || [];
+      
+      // Handle both response formats (array or object with data property)
+      if (Array.isArray(response)) {
+        return response;
+      } else if (response && typeof response === 'object' && 'data' in response) {
+        return (response as any).data || [];
+      }
+      
+      return [];
     },
     onError: (error) => {
       console.error('User search failed:', error);
@@ -275,10 +283,19 @@ export function useUserByUsername(username: string) {
   return useQuery({
     queryKey: ['user', 'profile', 'username', username],
     queryFn: async () => {
-      const response = await apiClient.get<UserDetails>(
+      const response = await apiClient.get<ApiResponse<UserDetails[]>>(
         `/v1/user/details?username=${encodeURIComponent(username)}`
       );
-      return response.data || null;
+      
+      // Extract the users array from the API response
+      const users = response?.data || [];
+
+      if (!Array.isArray(users) || users.length === 0) {
+        return null;
+      }
+
+      // Return the first user
+      return users[0] || null;
     },
     enabled: !!username,
     staleTime: 5 * 60 * 1000, // 5 minutes
