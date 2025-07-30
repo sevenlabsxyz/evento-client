@@ -40,9 +40,9 @@ export default function HubPage() {
 
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+      <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+        <div className="flex flex-1 items-center justify-center pb-20">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
         </div>
       </div>
     );
@@ -50,15 +50,15 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='flex h-full w-full flex-col gap-4 bg-gray-50 px-4'>
-        <div className='pt-4 text-left text-base text-gray-500'>
+      <div className="flex h-full w-full flex-col gap-4 bg-gray-50 px-4">
+        <div className="pt-4 text-left text-base text-gray-500">
           Welcome back @{user?.username},
         </div>
-        <div className='flex flex-col gap-4'>
-          <RowCard title='Travel Itinerary' icon={<MapPin />} isClickable />
+        <div className="flex flex-col gap-4">
+          <RowCard title="Travel Itinerary" icon={<MapPin />} isClickable />
           <RowCard
-            title='Event Invites'
-            subtitle='View your current invites'
+            title="Event Invites"
+            subtitle="View your current invites"
             icon={<Calendar1 />}
             isClickable
           />

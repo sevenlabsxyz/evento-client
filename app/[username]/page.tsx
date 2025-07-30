@@ -1,11 +1,12 @@
+import { Env } from '@/lib/constants/env';
 import { createClient } from '@supabase/supabase-js';
 import UserProfilePageClient from './page-client';
 
 export async function generateMetadata({ params }: any, parent: any) {
   const { username } = params;
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL!;
+  const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY!;
   const supabase = createClient(supabaseUrl, supabaseKey);
 
   // fallback to parent SEO metadata image details

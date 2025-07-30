@@ -1,12 +1,28 @@
 'use client';
 
+import { EventCompactItem } from '@/components/event-compact-item';
+import EventSearchSheet from '@/components/event-search-sheet/EventSearchSheet';
 import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import SocialLinks from '@/components/profile/social-links';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/usePinnedEvent';
+import {
+  EventFilterType,
+  EventSortBy,
+  useUserEvents,
+  type EventTimeframe,
+} from '@/lib/hooks/useUserEvents';
 import {
   useFollowAction,
   useFollowStatus,
@@ -15,20 +31,38 @@ import {
   useUserFollowers,
   useUserFollowing,
 } from '@/lib/hooks/useUserProfile';
+import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { EventWithUser } from '@/lib/types/api';
+import { EventHost } from '@/lib/types/event';
 import { toast } from '@/lib/utils/toast';
-import { BadgeCheck, MessageCircle, Share, UserMinus, UserPlus, Zap } from 'lucide-react';
+import {
+  BadgeCheck,
+  Calendar,
+  Loader2,
+  MessageCircle,
+  Search,
+  Share,
+  SortAsc,
+  SortDesc,
+  UserMinus,
+  UserPlus,
+  Zap,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
-  const { isLoading: isCheckingAuth } = useAuth();
+  const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
-  const [eventsFilter, setEventsFilter] = useState('attending');
+  const [eventsFilter, setEventsFilter] = useState<EventFilterType>('upcoming');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('all');
+  const [sortBy, setSortBy] = useState<EventSortBy>('created-desc');
+  const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
@@ -50,6 +84,7 @@ export default function UserProfilePageClient() {
   );
   // Consolidated follow/unfollow mutation
   const followActionMutation = useFollowAction();
+
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
   const { data: followers = [] } = useUserFollowers(userData?.id || '');
   const { data: following = [] } = useUserFollowing(userData?.id || '');
@@ -102,8 +137,8 @@ export default function UserProfilePageClient() {
   // Share functionality
   const handleShare = async () => {
     const shareData = {
-      title: `${userProfile?.name} on Evento`,
-      text: `Check out ${userProfile?.name}'s profile on Evento`,
+      title: `${userProfile?.name || 'User'} on Evento`,
+      text: `Check out ${userProfile?.name || 'User'}'s profile on Evento`,
       url: window.location.href,
     };
 
@@ -132,7 +167,7 @@ export default function UserProfilePageClient() {
       setTopBar({
         leftMode: 'menu',
         title: userProfile.name,
-        subtitle: userProfile.username,
+        subtitle: `@${userProfile.username}`,
         buttons: [
           {
             id: 'share',
@@ -154,7 +189,31 @@ export default function UserProfilePageClient() {
         isOverlaid: false,
       });
     };
-  }, [userData, userProfile?.name, userProfile?.username, setTopBar]);
+  }, [userProfile?.name, userProfile?.username, setTopBar]);
+
+  // Fetch pinned event
+  const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
+  const {
+    mutate: updatePinnedEvent,
+    isPending: isUpdatingPinnedEvent,
+    variables: updatePinnedEventVariables,
+  } = useUpdatePinnedEvent();
+
+  // Fetch user events
+  const {
+    data: userEventsData,
+    isLoading: isLoadingEvents,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useUserEvents({
+    username: userData?.username || '',
+    filter: eventsFilter,
+    timeframe: timeframe,
+    sortBy: sortBy,
+    limit: 10,
+    enabled: !!userData?.username && activeTab === 'events',
+  });
 
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
@@ -166,7 +225,7 @@ export default function UserProfilePageClient() {
   }
 
   // Handle user not found
-  if (userError || !userData || !userProfile) {
+  if (userError || !userProfile) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm'>
         <div className='text-center'>
@@ -184,44 +243,6 @@ export default function UserProfilePageClient() {
       </div>
     );
   }
-
-  const attendingEvents = [
-    {
-      id: 1,
-      title: 'Tokyo Skytree Sunset',
-      date: 'Sep 15, 2025',
-      time: '6:30 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 2,
-      title: 'Shibuya Food Tour',
-      date: 'Sep 20, 2025',
-      time: '7:00 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 3,
-      title: 'Kyoto Temple Walk',
-      date: 'Sep 25, 2025',
-      time: '9:00 AM',
-      location: 'Kyoto, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-  ];
-
-  const hostingEvents = [
-    {
-      id: 4,
-      title: 'Photography Meetup',
-      date: 'Sep 18, 2025',
-      time: '2:00 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-  ];
 
   const profilePhotos = [
     '/placeholder.svg?height=120&width=120',
@@ -269,10 +290,13 @@ export default function UserProfilePageClient() {
     toast.success('Lightning payment coming soon!');
   };
 
+  // Handle profile photo click for lightbox
   const handleProfilePhotoClick = (index: number) => {
+    toast.info(`Viewing photo ${index + 1}`);
     setSelectedImageIndex(index);
   };
 
+  // Handle avatar click for lightbox
   const handleAvatarClick = () => {
     setSelectedAvatarIndex(0);
   };
@@ -280,13 +304,13 @@ export default function UserProfilePageClient() {
   // Format avatar data for LightboxViewer
   const avatarImages = [
     {
-      id: 'avatar-1',
-      image: userProfile.avatar,
+      id: 'avatar',
+      image: userProfile?.avatar || '/placeholder.svg?height=80&width=80',
       user_details: {
         id: userData?.id,
-        username: userData?.username,
-        name: userData?.name,
-        image: userProfile.avatar,
+        username: userProfile?.username,
+        name: userProfile?.name,
+        image: userProfile?.avatar,
         verification_status: userData?.verification_status,
       },
       created_at: new Date().toISOString(),
@@ -305,130 +329,222 @@ export default function UserProfilePageClient() {
     image: photoUrl,
     user_details: {
       id: userData?.id,
-      username: userData?.username,
-      name: userData?.name,
+      username: userProfile?.username,
+      name: userProfile?.name,
       image: userProfile.avatar,
       verification_status: userData?.verification_status,
     },
     created_at: new Date().toISOString(),
   }));
 
-  const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce(
-      (acc, event) => {
-        const date = event.date;
-        if (!acc[date]) {
-          acc[date] = [];
-        }
-        acc[date].push(event);
-        return acc;
-      },
-      {} as Record<string, typeof events>
-    );
-
-    return Object.entries(grouped).map(([date, events]) => ({
-      date,
-      events,
-      formattedDate: formatDateHeader(date),
-    }));
-  };
-
-  const formatDateHeader = (dateStr: string) => {
-    const date = new Date(dateStr + ', 2025');
-    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    const monthNames = [
-      'JANUARY',
-      'FEBRUARY',
-      'MARCH',
-      'APRIL',
-      'MAY',
-      'JUNE',
-      'JULY',
-      'AUGUST',
-      'SEPTEMBER',
-      'OCTOBER',
-      'NOVEMBER',
-      'DECEMBER',
-    ];
-
-    const dayName = dayNames[date.getDay()];
-    const monthName = monthNames[date.getMonth()];
-    const day = date.getDate();
-
-    return `${dayName}, ${monthName} ${day}`;
-  };
-
   const renderEventsTab = () => {
-    const currentEvents = eventsFilter === 'attending' ? attendingEvents : hostingEvents;
-    const groupedEvents = groupEventsByDate(currentEvents);
+    // Group events by date
+    const groupedEvents =
+      userEventsData?.pages
+        .flatMap((page) => page.events)
+        .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
+          const date = event.computed_start_date;
+          const group = groups.find((g) => g.date === date);
+
+          if (group) {
+            group.events.push(event);
+          } else {
+            groups.push({ date, events: [event] });
+          }
+
+          return groups;
+        }, [])
+        .sort(
+          (
+            a: { date: string; events: EventWithUser[] },
+            b: { date: string; events: EventWithUser[] }
+          ) => {
+            if (sortBy === 'date-desc') {
+              return new Date(b.date).getTime() - new Date(a.date).getTime();
+            } else {
+              return new Date(a.date).getTime() - new Date(b.date).getTime();
+            }
+          }
+        ) || [];
+
+    const canPinEvent = (event: EventWithUser) => {
+      if (!user) return false;
+
+      // User can pin if they are the event creator
+      if (event.user_details.id === user.id) return true;
+
+      // User can pin if they are a co-host
+      const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
+      return isCoHost;
+    };
+
+    const handlePinEvent = (eventId: string, isPinned: boolean) => {
+      if (isUpdatingPinnedEvent) return;
+
+      updatePinnedEvent(eventId, {
+        onSuccess: () => {
+          toast.success(
+            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
+          );
+        },
+        onError: () => {
+          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
+        },
+      });
+    };
+
+    const formatDateHeader = (date: string) => {
+      const today = new Date().toISOString().slice(0, 10);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+
+      if (date === today) return 'Today';
+      if (date === tomorrowStr) return 'Tomorrow';
+
+      return new Date(date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    };
 
     return (
       <div className='space-y-4'>
-        {/* Filter Badges */}
-        <div className='flex gap-2'>
-          <button
-            onClick={() => setEventsFilter('attending')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              eventsFilter === 'attending'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+        {/* Filter Tabs */}
+        <Tabs
+          value={eventsFilter}
+          onValueChange={(value) => setEventsFilter(value as EventFilterType)}
+          className='w-full'
+        >
+          <TabsList className='grid w-full grid-cols-3'>
+            <TabsTrigger value='upcoming'>All</TabsTrigger>
+            <TabsTrigger value='attending'>Attending</TabsTrigger>
+            <TabsTrigger value='hosting'>Hosting</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {/* Controls */}
+        <div className='mt-4 flex w-full items-center gap-2'>
+          <Select
+            value={timeframe}
+            onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
           >
-            Attending
-          </button>
-          <button
-            onClick={() => setEventsFilter('hosting')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              eventsFilter === 'hosting'
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
+            <SelectTrigger className='w-[120px] text-sm'>
+              <Calendar className='mr-2 h-4 w-4' />
+              <SelectValue placeholder='Timeframe' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='all'>All</SelectItem>
+              <SelectItem value='future'>Future</SelectItem>
+              <SelectItem value='past'>Past</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
+            <SelectTrigger className='w-[120px] text-sm'>
+              {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
+                <SortAsc className='mr-2 h-4 w-4' />
+              ) : (
+                <SortDesc className='mr-2 h-4 w-4' />
+              )}
+              <SelectValue placeholder='Sort by' />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value='created-desc'>Created Desc</SelectItem>
+              <SelectItem value='created-asc'>Created Asc</SelectItem>
+              <SelectItem value='date-desc'>Date Desc</SelectItem>
+              <SelectItem value='date-asc'>Date Asc</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button
+            size='icon'
+            variant='outline'
+            className='ml-auto'
+            onClick={() => setShowEventSearchSheet(true)}
+            aria-label='Search events'
           >
-            Hosting
-          </button>
+            <Search className='h-5 w-5' />
+            <span className='sr-only'>Search events</span>
+          </Button>
         </div>
 
-        {/* Events List with Date Dividers */}
-        <div className='space-y-6'>
-          {groupedEvents.map((group, groupIndex) => (
-            <div key={group.date}>
-              <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-sm font-medium text-gray-500'>{group.formattedDate}</h2>
-              </div>
-
-              <div className='space-y-4'>
-                {group.events.map((event) => (
-                  <div
-                    key={event.id}
-                    className='-m-2 flex cursor-pointer items-start gap-4 rounded-xl p-2 transition-colors hover:bg-gray-50'
-                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-                  >
-                    <img
-                      src={event.image || '/placeholder.svg'}
-                      alt={event.title}
-                      className='h-12 w-12 flex-shrink-0 rounded-xl object-cover'
-                    />
-                    <div className='flex-1'>
-                      <h3 className='text-lg font-semibold transition-colors hover:text-red-600'>
-                        {event.title}
-                      </h3>
-                      <p className='text-gray-500'>{event.location}</p>
-                    </div>
-                    <div className='text-right'>
-                      <span className='text-sm text-gray-600'>{event.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        {/* Events List */}
+        <div className='space-y-8'>
+          {isLoadingEvents ? (
+            <div className='flex h-40 items-center justify-center'>
+              <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
             </div>
-          ))}
+          ) : groupedEvents.length === 0 ? (
+            <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
+              <div className='rounded-full bg-gray-100 p-3'>
+                <MessageCircle className='h-6 w-6 text-gray-400' />
+              </div>
+              <p className='text-sm text-gray-500'>No events found</p>
+            </div>
+          ) : (
+            groupedEvents.map((group) => (
+              <div key={group.date} className='space-y-3'>
+                <h3 className='text-sm font-medium text-gray-500'>
+                  {formatDateHeader(group.date)}
+                </h3>
+                <div className='divide-y divide-gray-100'>
+                  {group.events.map((event) => {
+                    const isPinned = pinnedEvent?.id === event.id.toString();
+                    const canPin = canPinEvent(event);
+
+                    return (
+                      <div key={event.id} className='py-2'>
+                        <EventCompactItem
+                          key={event.id}
+                          event={event}
+                          isPinning={
+                            isUpdatingPinnedEvent &&
+                            updatePinnedEventVariables === event.id.toString()
+                          }
+                          isPinned={isPinned}
+                          canPin={canPin}
+                          onPin={handlePinEvent}
+                          onBookmark={() => {}} // Placeholder for bookmark functionality
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+
+          {/* Load More Button */}
+          {hasNextPage && (
+            <div className='flex justify-center pt-4'>
+              <Button
+                variant='outline'
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className='w-full'
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Loading...
+                  </>
+                ) : (
+                  'Load more'
+                )}
+              </Button>
+            </div>
+          )}
         </div>
 
-        {currentEvents.length === 0 && (
-          <div className='py-8 text-center'>
-            <p className='text-gray-500'>No {eventsFilter} events yet</p>
-          </div>
-        )}
+        {/* Event Search Sheet */}
+        <EventSearchSheet
+          isOpen={showEventSearchSheet}
+          onClose={() => setShowEventSearchSheet(false)}
+          username={user?.username}
+          onPin={handlePinEvent}
+          pinnedEventId={pinnedEvent?.id}
+          isOwnProfile={true}
+        />
       </div>
     );
   };
@@ -437,18 +553,15 @@ export default function UserProfilePageClient() {
     <div className='space-y-6'>
       {/* Bio/Description */}
       <div>
-        <p className='text-gray-700'>{userProfile.bio}</p>
+        <p className='text-gray-700'>{userProfile?.bio || 'No bio yet.'}</p>
       </div>
 
       {/* Interest Tags */}
       <div>
         <h4 className='mb-3 font-semibold text-gray-900'>Interests</h4>
         <div className='flex flex-wrap gap-2'>
-          {interestTags.map((tag, index) => (
-            <span
-              key={index}
-              className='inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'
-            >
+          {interestTags.map((tag: string) => (
+            <span key={tag} className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'>
               {tag}
             </span>
           ))}
@@ -459,7 +572,7 @@ export default function UserProfilePageClient() {
       <div>
         <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
         <div className='space-y-3'>
-          {profileQuestions.map((item, index) => (
+          {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
             <div key={index} className='rounded-xl bg-gray-50 p-3'>
               <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
               <p className='text-sm text-gray-900'>{item.answer}</p>
@@ -468,20 +581,20 @@ export default function UserProfilePageClient() {
         </div>
       </div>
 
-      {/* Photo Album */}
+      {/* Photo Grid */}
       <div>
         <div className='mb-3 flex items-center justify-between'>
           <h4 className='font-semibold text-gray-900'>Photos</h4>
         </div>
         <div className='grid grid-cols-3 gap-2'>
-          {profilePhotos.map((photo, index) => (
+          {profilePhotos.map((photo: string, index: number) => (
             <button
               key={index}
               onClick={() => handleProfilePhotoClick(index)}
               className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
             >
               <img
-                src={photo || '/placeholder.svg'}
+                src={photo}
                 alt={`Profile photo ${index + 1}`}
                 className='h-full w-full object-cover'
               />
@@ -495,11 +608,11 @@ export default function UserProfilePageClient() {
   const renderStatsTab = () => (
     <div className='grid grid-cols-2 gap-4'>
       <div className='rounded-xl bg-blue-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-blue-600'>{userProfile.stats.countries}</div>
+        <div className='text-3xl font-bold text-blue-600'>0</div>
         <div className='text-sm text-gray-600'>Countries</div>
       </div>
       <div className='rounded-xl bg-green-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-green-600'>{userProfile.stats.mutuals}</div>
+        <div className='text-3xl font-bold text-green-600'>0</div>
         <div className='text-sm text-gray-600'>Mutuals</div>
       </div>
     </div>
@@ -516,7 +629,7 @@ export default function UserProfilePageClient() {
 
           {/* Profile Picture - Centered & Clickable */}
           <UserAvatar
-            user={userData}
+            user={userProfile}
             size='lg'
             onAvatarClick={handleAvatarClick}
             onVerificationClick={() => setShowVerificationModal(true)}
@@ -528,23 +641,25 @@ export default function UserProfilePageClient() {
         <div className='mb-4 bg-white px-6 pb-2 pt-20'>
           {/* User Info - Centered */}
           <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>{userProfile.name}</h2>
-            <p className='text-gray-600'>{userProfile.username}</p>
+            <h2 className='text-2xl font-bold text-gray-900'>
+              {userProfile?.name || 'Unknown User'}
+            </h2>
+            <p className='text-gray-600'>{userProfile?.username || ''}</p>
           </div>
 
           {/* Stats - Centered */}
           <div className='mb-6 flex justify-center'>
             <div className='grid grid-cols-3 gap-8'>
               <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{userProfile.stats.events}</div>
+                <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
                 <div className='text-sm text-gray-500'>Events</div>
               </div>
               <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userProfile.stats.following}</div>
+                <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
                 <div className='text-sm text-gray-500'>Following</div>
               </button>
               <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userProfile.stats.followers}</div>
+                <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
                 <div className='text-sm text-gray-500'>Followers</div>
               </button>
             </div>
@@ -605,36 +720,35 @@ export default function UserProfilePageClient() {
           )}
         </div>
 
-        {/* Tabbed Section */}
-        <div className='mb-4 bg-white'>
+        <div className='mb-4 w-full bg-white'>
           {/* Tab Headers */}
-          <div className='flex gap-2 px-4 py-3'>
+          <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
             <button
               onClick={() => setActiveTab('about')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+              className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                 activeTab === 'about'
                   ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
+                  : 'bg-white text-gray-500 hover:bg-gray-50'
               }`}
             >
               About
             </button>
             <button
               onClick={() => setActiveTab('events')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+              className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                 activeTab === 'events'
                   ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
+                  : 'bg-white text-gray-500 hover:bg-gray-50'
               }`}
             >
               Events
             </button>
             <button
               onClick={() => setActiveTab('stats')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
+              className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                 activeTab === 'stats'
                   ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
+                  : 'bg-white text-gray-500 hover:bg-gray-50'
               }`}
             >
               Stats
@@ -644,7 +758,7 @@ export default function UserProfilePageClient() {
           {/* Tab Content */}
           <div className='p-4'>
             {activeTab === 'about' && renderAboutTab()}
-            {activeTab === 'events' && renderEventsTab()}
+            {activeTab === 'events' && <div className='events-tab'>{renderEventsTab()}</div>}
             {activeTab === 'stats' && renderStatsTab()}
           </div>
         </div>
@@ -678,7 +792,7 @@ export default function UserProfilePageClient() {
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(userProfile.website, '_blank', 'noopener,noreferrer');
+                window.open(userData?.bio_link || '#', '_blank', 'noopener,noreferrer');
               }}
               className='w-full bg-red-500 text-white hover:bg-red-600'
             >

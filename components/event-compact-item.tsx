@@ -4,7 +4,7 @@ import { EventWithUser } from '@/lib/types/api';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Calendar, MapPin, MoreHorizontal } from 'lucide-react';
+import { Bookmark, Calendar, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { ReusableDropdown } from './reusable-dropdown';
 import { Button } from './ui/button';
@@ -13,12 +13,20 @@ interface EventCompactItemProps {
   event: EventWithUser;
   onBookmark?: (eventId: string) => void;
   isBookmarked?: boolean;
+  isPinning?: boolean;
+  isPinned?: boolean;
+  canPin?: boolean;
+  onPin?: (eventId: string, isPinned: boolean) => void;
 }
 
 export function EventCompactItem({
   event,
   onBookmark,
   isBookmarked = false,
+  isPinning = false,
+  isPinned = false,
+  canPin = false,
+  onPin,
 }: EventCompactItemProps) {
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
@@ -85,6 +93,25 @@ export function EventCompactItem({
         <div className='flex items-center justify-between'>
           <h4 className='line-clamp-1 font-medium text-gray-900'>{event.title}</h4>
           <div className='flex items-center'>
+            {canPin && (
+              <Button
+                variant='ghost'
+                size='icon'
+                className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onPin?.(event.id, isPinned);
+                }}
+              >
+                {isPinning ? (
+                  <Loader className='h-4 w-4 animate-spin text-gray-900' />
+                ) : isPinned ? (
+                  <PinOff className='h-4 w-4 text-gray-900' />
+                ) : (
+                  <Pin className='h-4 w-4' />
+                )}
+              </Button>
+            )}
             <Button
               variant='ghost'
               size='icon'
@@ -107,20 +134,20 @@ export function EventCompactItem({
                   <MoreHorizontal className='h-4 w-4' />
                 </Button>
               }
-              items={getDropdownItems(event.id, event.user_details.username)}
+              items={getDropdownItems(event.id, event.user_details?.username)}
               align='right'
               width='w-48'
             />
           </div>
         </div>
 
-        <div className='mt-1 flex items-center text-xs text-gray-500'>
-          <div className='mr-2 flex items-center'>
+        <div className='mt-1 flex items-center gap-2 text-xs text-gray-500'>
+          <div className='flex w-fit items-center'>
             <Calendar className='mr-1 h-3 w-3' />
             <span>{date}</span>
           </div>
           {event.location && (
-            <div className='flex items-center'>
+            <div className='flex flex-1 items-center'>
               <MapPin className='mr-1 h-3 w-3' />
               <span className='line-clamp-1'>{event.location}</span>
             </div>
@@ -128,18 +155,20 @@ export function EventCompactItem({
         </div>
 
         {/* User details */}
-        <div className='mt-1 flex items-center'>
-          <img
-            src={
-              event.user_details.image
-                ? getOptimizedAvatarUrl(event.user_details.image)
-                : '/assets/img/evento-sublogo.svg'
-            }
-            alt={event.user_details.name || event.user_details.username}
-            className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
-          />
-          <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
-        </div>
+        {event.user_details && (
+          <div className='mt-1 flex items-center'>
+            <img
+              src={
+                event.user_details.image
+                  ? getOptimizedAvatarUrl(event.user_details.image)
+                  : '/assets/img/evento-sublogo.svg'
+              }
+              alt={event.user_details.name || event.user_details.username}
+              className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
+            />
+            <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
+          </div>
+        )}
       </div>
     </div>
   );

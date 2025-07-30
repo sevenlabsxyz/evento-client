@@ -97,5 +97,4 @@ export interface EventSummary {
   time: string;
   location: string;
   image: string;
-  type?: string;
 }
