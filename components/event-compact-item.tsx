@@ -171,7 +171,7 @@ export function EventCompactItem({
             <span className='line-clamp-1'>{timeWithTz?.split(' ')[0] || '--:--'}</span>
           </div>
           <div className='flex items-center'>
-            <MapPin className='mr-1 h-3' />
+            <MapPin className='mr-1 h-3 w-3' />
             <span className='line-clamp-1'>{event.location}</span>
           </div>
         </div>

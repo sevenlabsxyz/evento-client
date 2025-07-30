@@ -425,12 +425,12 @@ export default function UserProfilePageClient() {
         </Tabs>
 
         {/* Controls */}
-        <div className='mt-4 flex w-full items-center gap-2'>
+        <div className='mt-4 grid w-full grid-cols-3 items-center gap-2'>
           <Select
             value={timeframe}
             onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
           >
-            <SelectTrigger className='w-[120px] text-sm'>
+            <SelectTrigger className='text-sm'>
               <Calendar className='mr-2 h-4 w-4' />
               <SelectValue placeholder='Timeframe' />
             </SelectTrigger>
@@ -441,7 +441,7 @@ export default function UserProfilePageClient() {
             </SelectContent>
           </Select>
           <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
-            <SelectTrigger className='w-[120px] text-sm'>
+            <SelectTrigger className='text-sm'>
               {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
                 <SortAsc className='mr-2 h-4 w-4' />
               ) : (
@@ -457,14 +457,12 @@ export default function UserProfilePageClient() {
             </SelectContent>
           </Select>
           <Button
-            size='icon'
             variant='outline'
-            className='ml-auto'
             onClick={() => setShowEventSearchSheet(true)}
             aria-label='Search events'
           >
             <Search className='h-5 w-5' />
-            <span className='sr-only'>Search events</span>
+            <span>Search</span>
           </Button>
         </div>
 
