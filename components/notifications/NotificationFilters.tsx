@@ -136,7 +136,10 @@ export function NotificationFilters({
                   checked={currentFilters.source === 'event_invite'}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      onFilterChange({ ...currentFilters, source: 'event_invite' });
+                      onFilterChange({
+                        ...currentFilters,
+                        source: 'event_invite',
+                      });
                     } else {
                       const { source, ...rest } = currentFilters;
                       onFilterChange(rest);
@@ -149,7 +152,10 @@ export function NotificationFilters({
                   checked={currentFilters.source === 'event_comment'}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      onFilterChange({ ...currentFilters, source: 'event_comment' });
+                      onFilterChange({
+                        ...currentFilters,
+                        source: 'event_comment',
+                      });
                     } else {
                       const { source, ...rest } = currentFilters;
                       onFilterChange(rest);
@@ -162,7 +168,10 @@ export function NotificationFilters({
                   checked={currentFilters.source === 'event_rsvp'}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      onFilterChange({ ...currentFilters, source: 'event_rsvp' });
+                      onFilterChange({
+                        ...currentFilters,
+                        source: 'event_rsvp',
+                      });
                     } else {
                       const { source, ...rest } = currentFilters;
                       onFilterChange(rest);
@@ -175,7 +184,10 @@ export function NotificationFilters({
                   checked={currentFilters.source === 'user_follow'}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      onFilterChange({ ...currentFilters, source: 'user_follow' });
+                      onFilterChange({
+                        ...currentFilters,
+                        source: 'user_follow',
+                      });
                     } else {
                       const { source, ...rest } = currentFilters;
                       onFilterChange(rest);
@@ -188,7 +200,10 @@ export function NotificationFilters({
                   checked={currentFilters.source === 'system_update'}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      onFilterChange({ ...currentFilters, source: 'system_update' });
+                      onFilterChange({
+                        ...currentFilters,
+                        source: 'system_update',
+                      });
                     } else {
                       const { source, ...rest } = currentFilters;
                       onFilterChange(rest);

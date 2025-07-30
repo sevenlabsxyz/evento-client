@@ -5,7 +5,6 @@ import { NotificationFilters } from '@/components/notifications/NotificationFilt
 import { NotificationList } from '@/components/notifications/NotificationList';
 import { useRequireAuth } from '@/lib/hooks/useAuth';
 import {
-  generateDummyNotifications,
   useArchiveNotification,
   useBulkMarkAsRead,
   useMarkAllAsRead,
@@ -101,14 +100,6 @@ export default function InboxPage() {
     () => (notificationsData ? notificationsData.pages.flatMap((page) => page.entries) : []),
     [notificationsData]
   );
-
-  // Memoize the display notifications
-  const displayNotifications = useMemo(() => {
-    if (notifications.length > 0 || isLoading || isError) {
-      return notifications;
-    }
-    return generateDummyNotifications(10);
-  }, [notifications, isLoading, isError]);
 
   // Check if there are more pages to load
   useEffect(() => {
@@ -235,7 +226,7 @@ export default function InboxPage() {
     }
   }, [isFetchingNextPage, hasMorePages, fetchNextPage]);
 
-  if (isCheckingAuth) {
+  if (isCheckingAuth || isLoading) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>
@@ -264,7 +255,7 @@ export default function InboxPage() {
       {/* Notification list */}
       <div className='flex-1 overflow-hidden pb-20'>
         <NotificationList
-          notifications={displayNotifications}
+          notifications={notifications}
           isLoading={isLoading || isFetchingNextPage}
           isError={isError}
           hasMore={hasMorePages}
