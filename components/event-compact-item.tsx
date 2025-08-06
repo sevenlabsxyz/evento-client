@@ -5,7 +5,6 @@ import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
-  Bookmark,
   Calendar,
   Clock,
   Loader,
@@ -123,7 +122,7 @@ export function EventCompactItem({
                 )}
               </Button>
             )}
-            <Button
+            {/* <Button
               variant='ghost'
               size='icon'
               className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
@@ -133,7 +132,7 @@ export function EventCompactItem({
               }}
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
-            </Button>
+            </Button> */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
