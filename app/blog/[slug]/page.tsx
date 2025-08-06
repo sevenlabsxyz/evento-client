@@ -25,10 +25,10 @@ const Loading = () => (
 
 // Only initialize the API if environment variables are present
 const api =
-  Env.GHOST_URL && Env.GHOST_CONTENT_API_KEY
+  Env.NEXT_PUBLIC_GHOST_URL && Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY
     ? new GhostContentAPI({
-        url: Env.GHOST_URL,
-        key: Env.GHOST_CONTENT_API_KEY,
+        url: Env.NEXT_PUBLIC_GHOST_URL,
+        key: Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY,
         version: 'v5.0',
         makeRequest: async ({ url, method, params, headers }: any) => {
           const apiUrl = new URL(url);

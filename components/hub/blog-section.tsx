@@ -24,14 +24,14 @@ export function BlogSection() {
     const fetchBlogPosts = async () => {
       try {
         // Check for required environment variables
-        if (!Env.GHOST_URL || !Env.GHOST_CONTENT_API_KEY) {
+        if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
           console.warn('Ghost API configuration missing');
           setError('Blog feature is currently unavailable');
           return;
         }
 
         const res = await fetch(
-          `${Env.GHOST_URL}/ghost/api/content/posts/?key=${Env.GHOST_CONTENT_API_KEY}&include=tags,authors`,
+          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors&limit=6`,
           { next: { revalidate: 60 } }
         );
 
