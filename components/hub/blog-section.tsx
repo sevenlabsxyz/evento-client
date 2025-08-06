@@ -1,0 +1,97 @@
+'use client';
+
+import { BlogCard } from '@/components/blog/blog-card';
+import { Env } from '@/lib/constants/env';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
+
+interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  feature_image: string;
+  published_at: string;
+  tags: Array<{ name: string }>;
+}
+
+export function BlogSection() {
+  const [posts, setPosts] = useState<BlogPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchBlogPosts = async () => {
+      try {
+        // Check for required environment variables
+        if (!Env.GHOST_URL || !Env.GHOST_CONTENT_API_KEY) {
+          console.warn('Ghost API configuration missing');
+          setError('Blog feature is currently unavailable');
+          return;
+        }
+
+        const res = await fetch(
+          `${Env.GHOST_URL}/ghost/api/content/posts/?key=${Env.GHOST_CONTENT_API_KEY}&include=tags,authors`,
+          { next: { revalidate: 60 } }
+        );
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch blog posts');
+        }
+
+        const data = await res.json();
+        setPosts(data.posts || []);
+      } catch (err) {
+        console.error('Error fetching blog posts:', err);
+        setError('Failed to load blog posts. Please try again later.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchBlogPosts();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className='flex flex-col gap-4'>
+        <div className='flex items-center justify-between'>
+          <h2 className='text-lg font-semibold'>From our blog</h2>
+        </div>
+        <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className='h-64 animate-pulse rounded-lg bg-gray-100'></div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error || posts.length === 0) {
+    return null; // Don't show anything if there's an error or no posts
+  }
+
+  return (
+    <div className='flex flex-col gap-4'>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-lg font-semibold'>From our blog</h2>
+        <Link href='/blog' className='text-sm text-red-500 hover:underline'>
+          View all
+        </Link>
+      </div>
+      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+        {posts.map((post) => (
+          <BlogCard
+            key={post.id}
+            slug={post.slug}
+            title={post.title}
+            description={post.excerpt}
+            image={post.feature_image}
+            date={post.published_at}
+            category={post.tags?.length > 0 ? [post.tags[0]] : []}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

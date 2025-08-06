@@ -1,5 +1,6 @@
 'use client';
 
+import { BlogSection } from '@/components/hub/blog-section';
 import { Navbar } from '@/components/navbar';
 import RowCard from '@/components/row-card';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -62,6 +63,7 @@ export default function HubPage() {
             icon={<Calendar1 />}
             isClickable
           />
+          <BlogSection />
         </div>
       </div>
       <Navbar />
