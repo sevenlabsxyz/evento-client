@@ -10,7 +10,6 @@ import {
   MessageCircle,
   MoreHorizontal,
   Settings,
-  UserCheck,
   UserPlus,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -127,11 +126,11 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
             icon: <Copy className='h-4 w-4' />,
             action: handleCopyEventLink,
           },
-          {
-            label: 'Check-in Guests',
-            icon: <UserCheck className='h-4 w-4' />,
-            action: handleCheckInGuests,
-          },
+          // {
+          //   label: 'Check-in Guests',
+          //   icon: <UserCheck className='h-4 w-4' />,
+          //   action: handleCheckInGuests,
+          // },
         ]}
         align='right'
         width='w-56'
