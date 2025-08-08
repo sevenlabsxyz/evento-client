@@ -1,7 +1,7 @@
 'use client';
 import { Sheet } from '@silk-hq/components';
 import React from 'react';
-import './Page.css';
+import './page.css';
 
 // ================================================================================================
 // Root

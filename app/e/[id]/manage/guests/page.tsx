@@ -1,6 +1,6 @@
 'use client';
 
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { GuestStatus } from '@/lib/types/event';
 import { ArrowLeft, MoreHorizontal, Search, Users } from 'lucide-react';
 import Image from 'next/image';

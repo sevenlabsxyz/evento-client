@@ -1,34 +1,31 @@
-"use client";
+'use client';
 
-import { EventCompactItem } from "@/components/event-compact-item";
-import EventSearchSheet from "@/components/event-search-sheet/EventSearchSheet";
-import { TagSection } from "@/components/fancy-tag/section";
-import FollowersSheet from "@/components/followers-sheet/FollowersSheet";
-import FollowingSheet from "@/components/followers-sheet/FollowingSheet";
-import { LightboxViewer } from "@/components/lightbox-viewer";
-import { Navbar } from "@/components/navbar";
-import RowCard from "@/components/row-card";
-import SocialLinks from "@/components/profile/social-links";
-import { Button } from "@/components/ui/button";
+import { EventCompactItem } from '@/components/event-compact-item';
+import EventSearchSheet from '@/components/event-search-sheet';
+import FollowersSheet from '@/components/followers-sheet/followers-sheet';
+import FollowingSheet from '@/components/followers-sheet/following-sheet';
+import { LightboxViewer } from '@/components/lightbox-viewer';
+import SocialLinks from '@/components/profile/social-links';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserAvatar } from "@/components/ui/user-avatar";
+} from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import {
   usePinnedEvent,
   useUpdatePinnedEvent,
-} from "@/lib/hooks/usePinnedEvent";
+} from '@/lib/hooks/use-pinned-event';
 import {
   EventFilterType,
   EventSortBy,
   useUserEvents,
   type EventTimeframe,
-} from "@/lib/hooks/useUserEvents";
+} from '@/lib/hooks/use-user-events';
 import {
   useFollowAction,
   useFollowStatus,
@@ -36,12 +33,12 @@ import {
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
-} from "@/lib/hooks/useUserProfile";
-import { useAuth } from "@/lib/stores/auth-store";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { EventWithUser } from "@/lib/types/api";
-import { EventHost } from "@/lib/types/event";
-import { toast } from "@/lib/utils/toast";
+} from '@/lib/hooks/use-user-profile';
+import { useAuth } from '@/lib/stores/auth-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { EventWithUser } from '@/lib/types/api';
+import { EventHost } from '@/lib/types/event';
+import { toast } from '@/lib/utils/toast';
 import {
   BadgeCheck,
   Calendar,
@@ -56,9 +53,9 @@ import {
   UserMinus,
   UserPlus,
   Zap,
-} from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
@@ -66,10 +63,10 @@ export default function UserProfilePageClient() {
   const router = useRouter();
   const params = useParams();
   const { setTopBar } = useTopBar();
-  const [activeTab, setActiveTab] = useState("about");
-  const [eventsFilter, setEventsFilter] = useState<EventFilterType>("upcoming");
-  const [timeframe, setTimeframe] = useState<EventTimeframe>("all");
-  const [sortBy, setSortBy] = useState<EventSortBy>("created-desc");
+  const [activeTab, setActiveTab] = useState('about');
+  const [eventsFilter, setEventsFilter] = useState<EventFilterType>('upcoming');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('all');
+  const [sortBy, setSortBy] = useState<EventSortBy>('created-desc');
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
@@ -77,10 +74,10 @@ export default function UserProfilePageClient() {
   const [countdown, setCountdown] = useState(3);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null,
+    null
   );
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
-    null,
+    null
   );
 
   // Fetch user data from API
@@ -93,26 +90,26 @@ export default function UserProfilePageClient() {
 
   // Get follow status for this user
   const { data: followStatus, isLoading: isFollowStatusLoading } =
-    useFollowStatus(userData?.id || "");
+    useFollowStatus(userData?.id || '');
 
   // Consolidated follow/unfollow mutation
   const followActionMutation = useFollowAction();
 
-  const { data: eventCount = 0 } = useUserEventCount(userData?.id || "");
-  const { data: followers = [] } = useUserFollowers(userData?.id || "");
-  const { data: following = [] } = useUserFollowing(userData?.id || "");
+  const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
+  const { data: followers = [] } = useUserFollowers(userData?.id || '');
+  const { data: following = [] } = useUserFollowing(userData?.id || '');
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
     ? {
-        name: userData.name || "Unknown User",
+        name: userData.name || 'Unknown User',
         username: `@${userData.username}`,
-        image: userData.image || "/placeholder.svg?height=80&width=80",
+        image: userData.image || '/placeholder.svg?height=80&width=80',
         verification_status: userData.verification_status,
-        status: userData.bio || "",
-        bio: userData.bio || "",
-        website: userData.bio_link || "",
-        isVerified: userData.verification_status === "verified",
+        status: userData.bio || '',
+        bio: userData.bio || '',
+        website: userData.bio_link || '',
+        isVerified: userData.verification_status === 'verified',
         stats: {
           events: eventCount,
           following: following.length,
@@ -125,34 +122,34 @@ export default function UserProfilePageClient() {
 
   const handleFollowToggle = () => {
     if (!userData?.id) {
-      toast.error("Unable to identify user");
+      toast.error('Unable to identify user');
       return;
     }
 
-    const action = followStatus?.isFollowing ? "unfollow" : "follow";
+    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
 
     followActionMutation.mutate(
       { userId: userData.id, action },
       {
         onSuccess: () => {
-          if (action === "follow") {
-            toast.success(`You followed ${userData.name || "this user"}!`);
+          if (action === 'follow') {
+            toast.success(`You followed ${userData.name || 'this user'}!`);
           } else {
-            toast.success(`You unfollowed ${userData.name || "this user"}`);
+            toast.success(`You unfollowed ${userData.name || 'this user'}`);
           }
         },
         onError: () => {
           toast.error(`Failed to ${action}. Please try again.`);
         },
-      },
+      }
     );
   };
 
   // Share functionality
   const handleShare = async () => {
     const shareData = {
-      title: `${userProfile?.name || "User"} on Evento`,
-      text: `Check out ${userProfile?.name || "User"}'s profile on Evento`,
+      title: `${userProfile?.name || 'User'} on Evento`,
+      text: `Check out ${userProfile?.name || 'User'}'s profile on Evento`,
       url: window.location.href,
     };
 
@@ -165,15 +162,15 @@ export default function UserProfilePageClient() {
         await navigator.share(shareData);
       } catch (error) {
         // User cancelled or share failed
-        console.log("Share cancelled or failed");
+        console.log('Share cancelled or failed');
       }
     } else {
       // Fallback: Copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success("Profile link copied to clipboard!");
+        toast.success('Profile link copied to clipboard!');
       } catch (error) {
-        toast.error("Failed to share profile");
+        toast.error('Failed to share profile');
       }
     }
   };
@@ -183,15 +180,15 @@ export default function UserProfilePageClient() {
     // Only set TopBar if userData is loaded and available
     if (userData && userProfile) {
       setTopBar({
-        leftMode: "menu",
+        leftMode: 'menu',
         title: userProfile.name,
         subtitle: `@${userProfile.username}`,
         buttons: [
           {
-            id: "share",
+            id: 'share',
             icon: Share,
             onClick: handleShare,
-            label: "Share Profile",
+            label: 'Share Profile',
           },
         ],
         showAvatar: false,
@@ -201,7 +198,7 @@ export default function UserProfilePageClient() {
 
     return () => {
       setTopBar({
-        leftMode: "menu",
+        leftMode: 'menu',
         buttons: [],
         showAvatar: true,
         isOverlaid: false,
@@ -210,7 +207,7 @@ export default function UserProfilePageClient() {
   }, [userProfile?.name, userProfile?.username, setTopBar]);
 
   // Fetch pinned event
-  const { data: pinnedEvent } = usePinnedEvent(user?.username || "");
+  const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
   const {
     mutate: updatePinnedEvent,
     isPending: isUpdatingPinnedEvent,
@@ -225,12 +222,12 @@ export default function UserProfilePageClient() {
     isFetchingNextPage,
     hasNextPage,
   } = useUserEvents({
-    username: userData?.username || "",
+    username: userData?.username || '',
     filter: eventsFilter,
     timeframe: timeframe,
     sortBy: sortBy,
     limit: 10,
-    enabled: !!userData?.username && activeTab === "events",
+    enabled: !!userData?.username && activeTab === 'events',
   });
 
   // Handle loading state
@@ -265,49 +262,49 @@ export default function UserProfilePageClient() {
   }
 
   const profilePhotos = [
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
   ];
 
   const profileQuestions = [
     {
-      question: "My travel style",
-      answer: "Slow travel with deep cultural immersion",
+      question: 'My travel style',
+      answer: 'Slow travel with deep cultural immersion',
     },
     {
-      question: "Dream destination",
-      answer: "Patagonia - for the untouched wilderness",
+      question: 'Dream destination',
+      answer: 'Patagonia - for the untouched wilderness',
     },
     {
       question: "Can't travel without",
-      answer: "My Fujifilm camera and matcha powder",
+      answer: 'My Fujifilm camera and matcha powder',
     },
     {
-      question: "Best travel memory",
-      answer: "Sunrise hot air balloon ride over Cappadocia",
+      question: 'Best travel memory',
+      answer: 'Sunrise hot air balloon ride over Cappadocia',
     },
   ];
 
   const interestTags = [
-    "Photography",
-    "Food",
-    "Culture",
-    "Architecture",
-    "Street Art",
-    "Coffee",
-    "Hiking",
+    'Photography',
+    'Food',
+    'Culture',
+    'Architecture',
+    'Street Art',
+    'Coffee',
+    'Hiking',
   ];
 
   const handleMessage = () => {
-    toast.success("Message feature coming soon!");
+    toast.success('Message feature coming soon!');
   };
 
   const handleTip = () => {
-    toast.success("Lightning payment coming soon!");
+    toast.success('Lightning payment coming soon!');
   };
 
   // Handle profile photo click for lightbox
@@ -324,8 +321,8 @@ export default function UserProfilePageClient() {
   // Format avatar data for LightboxViewer
   const avatarImages = [
     {
-      id: "avatar",
-      image: userProfile?.image || "/placeholder.svg?height=80&width=80",
+      id: 'avatar',
+      image: userProfile?.image || '/placeholder.svg?height=80&width=80',
       user_details: {
         id: userData?.id,
         username: userProfile?.username,
@@ -365,7 +362,7 @@ export default function UserProfilePageClient() {
         .reduce(
           (
             groups: { date: string; events: EventWithUser[] }[],
-            event: EventWithUser,
+            event: EventWithUser
           ) => {
             const date = event.computed_start_date;
             const group = groups.find((g) => g.date === date);
@@ -378,19 +375,19 @@ export default function UserProfilePageClient() {
 
             return groups;
           },
-          [],
+          []
         )
         .sort(
           (
             a: { date: string; events: EventWithUser[] },
-            b: { date: string; events: EventWithUser[] },
+            b: { date: string; events: EventWithUser[] }
           ) => {
-            if (sortBy === "date-desc") {
+            if (sortBy === 'date-desc') {
               return new Date(b.date).getTime() - new Date(a.date).getTime();
             } else {
               return new Date(a.date).getTime() - new Date(b.date).getTime();
             }
-          },
+          }
         ) || [];
 
     const canPinEvent = (event: EventWithUser) => {
@@ -401,7 +398,7 @@ export default function UserProfilePageClient() {
 
       // User can pin if they are a co-host
       const isCoHost = event.hosts?.some(
-        (host: EventHost) => host.id === user.id,
+        (host: EventHost) => host.id === user.id
       );
       return isCoHost;
     };
@@ -413,12 +410,12 @@ export default function UserProfilePageClient() {
         onSuccess: () => {
           toast.success(
             isPinned
-              ? "Event unpinned from your profile"
-              : "Event pinned to your profile",
+              ? 'Event unpinned from your profile'
+              : 'Event pinned to your profile'
           );
         },
         onError: () => {
-          toast.error(`Failed to ${isPinned ? "unpin" : "pin"} event`);
+          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
         },
       });
     };
@@ -429,13 +426,13 @@ export default function UserProfilePageClient() {
       tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowStr = tomorrow.toISOString().slice(0, 10);
 
-      if (date === today) return "Today";
-      if (date === tomorrowStr) return "Tomorrow";
+      if (date === today) return 'Today';
+      if (date === tomorrowStr) return 'Tomorrow';
 
-      return new Date(date).toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
+      return new Date(date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
       });
     };
 
@@ -477,7 +474,7 @@ export default function UserProfilePageClient() {
             onValueChange={(value: string) => setSortBy(value as EventSortBy)}
           >
             <SelectTrigger className="text-sm">
-              {sortBy === "date-desc" || sortBy === "created-desc" ? (
+              {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
                 <SortAsc className="mr-2 h-4 w-4" />
               ) : (
                 <SortDesc className="mr-2 h-4 w-4" />
@@ -562,7 +559,7 @@ export default function UserProfilePageClient() {
                     Loading...
                   </>
                 ) : (
-                  "Load more"
+                  'Load more'
                 )}
               </Button>
             </div>
@@ -602,7 +599,7 @@ export default function UserProfilePageClient() {
         {!userProfile?.bio ? null : (
           <div>
             <RowCard
-              title={"Bio"}
+              title={'Bio'}
               subtitle={userProfile?.bio}
               icon={<User className="h-4 w-4" />}
             />
@@ -633,7 +630,7 @@ export default function UserProfilePageClient() {
                   </p>
                   <p className="text-sm text-gray-900">{item.answer}</p>
                 </div>
-              ),
+              )
             )}
           </div>
         </div>
@@ -655,7 +652,7 @@ export default function UserProfilePageClient() {
                 className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
               >
                 <img
-                  src={photo || "/assets/img/evento-sublogo.svg"}
+                  src={photo || '/assets/img/evento-sublogo.svg'}
                   alt={`Profile photo ${index + 1}`}
                   className="h-full w-full object-cover"
                 />
@@ -691,9 +688,9 @@ export default function UserProfilePageClient() {
           {/* User Info - Centered */}
           <div className="mb-6 text-center">
             <h2 className="text-2xl font-bold text-gray-900">
-              {userProfile?.name || "Unknown User"}
+              {userProfile?.name || 'Unknown User'}
             </h2>
-            <p className="text-gray-600">{userProfile?.username || ""}</p>
+            <p className="text-gray-600">{userProfile?.username || ''}</p>
           </div>
 
           {/* Stats - Centered */}
@@ -733,21 +730,21 @@ export default function UserProfilePageClient() {
               disabled={isFollowStatusLoading || followActionMutation.isPending}
               className={`flex-1 rounded-xl px-2.5 ${
                 followStatus?.isFollowing
-                  ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-red-500 text-white hover:bg-red-600"
+                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-red-500 text-white hover:bg-red-600'
               }`}
             >
               {followStatus?.isFollowing ? (
                 <>
                   <UserMinus className="mr-2 h-4 w-4" />
                   {followActionMutation.isPending
-                    ? "Unfollowing..."
-                    : "Following"}
+                    ? 'Unfollowing...'
+                    : 'Following'}
                 </>
               ) : (
                 <>
                   <UserPlus className="mr-2 h-4 w-4" />
-                  {followActionMutation.isPending ? "Following..." : "Follow"}
+                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
                 </>
               )}
             </Button>
@@ -774,21 +771,21 @@ export default function UserProfilePageClient() {
             {/* Tab Headers */}
             <div className="mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3">
               <button
-                onClick={() => setActiveTab("about")}
+                onClick={() => setActiveTab('about')}
                 className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === "about"
-                    ? "bg-gray-100 text-black"
-                    : "bg-white text-gray-500 hover:bg-gray-50"
+                  activeTab === 'about'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 About
               </button>
               <button
-                onClick={() => setActiveTab("events")}
+                onClick={() => setActiveTab('events')}
                 className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === "events"
-                    ? "bg-gray-100 text-black"
-                    : "bg-white text-gray-500 hover:bg-gray-50"
+                  activeTab === 'events'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 Events
@@ -797,8 +794,8 @@ export default function UserProfilePageClient() {
 
             {/* Tab Content */}
             <div>
-              {activeTab === "about" && renderAboutTab()}
-              {activeTab === "events" && renderEventsTab()}
+              {activeTab === 'about' && renderAboutTab()}
+              {activeTab === 'events' && renderEventsTab()}
             </div>
           </div>
         </div>
@@ -811,16 +808,16 @@ export default function UserProfilePageClient() {
       <FollowersSheet
         isOpen={showFollowersSheet}
         onClose={() => setShowFollowersSheet(false)}
-        userId={userData?.id || ""}
-        username={userData?.username || "user"}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
       />
 
       {/* Following Sheet */}
       <FollowingSheet
         isOpen={showFollowingSheet}
         onClose={() => setShowFollowingSheet(false)}
-        userId={userData?.id || ""}
-        username={userData?.username || "user"}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
       />
 
       {/* Website Redirect Modal */}
@@ -838,9 +835,9 @@ export default function UserProfilePageClient() {
               onClick={() => {
                 setShowWebsiteModal(false);
                 window.open(
-                  userData?.bio_link || "#",
-                  "_blank",
-                  "noopener,noreferrer",
+                  userData?.bio_link || '#',
+                  '_blank',
+                  'noopener,noreferrer'
                 );
               }}
               className="w-full bg-red-500 text-white hover:bg-red-600"
@@ -871,7 +868,7 @@ export default function UserProfilePageClient() {
                 onClick={() => {
                   setShowVerificationModal(false);
                   router.push(
-                    "/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.",
+                    '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
                   );
                 }}
                 className="w-full bg-red-500 text-white hover:bg-red-600"

@@ -2,7 +2,7 @@
 
 import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { toast } from '@/lib/utils/toast';
 import {
   ArrowLeft,

@@ -1,7 +1,7 @@
 'use client';
 
 import CancelEventModal from '@/components/manage-event/cancel-event-modal';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   DollarSign,

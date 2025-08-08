@@ -1,10 +1,10 @@
 'use client';
 
 import { EventCompactItem } from '@/components/event-compact-item';
-import EventSearchSheet from '@/components/event-search-sheet/EventSearchSheet';
+import EventSearchSheet from '@/components/event-search-sheet';
 import { TagSection } from '@/components/fancy-tag/section';
-import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
-import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
+import FollowersSheet from '@/components/followers-sheet/followers-sheet';
+import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
@@ -19,20 +19,20 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/usePinnedEvent';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
   EventFilterType,
   EventSortBy,
   EventTimeframe,
   useUserEvents,
-} from '@/lib/hooks/useUserEvents';
+} from '@/lib/hooks/use-user-events';
 import {
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
   useUserProfile,
-} from '@/lib/hooks/useUserProfile';
+} from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { EventHost } from '@/lib/types/event';

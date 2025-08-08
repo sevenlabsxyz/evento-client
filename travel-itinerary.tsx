@@ -1,8 +1,8 @@
 'use client';
 
 import { Navbar } from '@/components/navbar';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { ArrowDownLeft, ArrowUpRight, Camera, Hotel, MapPin, Plane, Utensils } from 'lucide-react';
 import { useRef, useState } from 'react';
 

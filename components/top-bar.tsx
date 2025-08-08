@@ -1,7 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { ArrowLeft } from 'lucide-react';

@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useVerifyCode } from '@/lib/hooks/useAuth';
+import { useVerifyCode } from '@/lib/hooks/use-auth';
 import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, ArrowLeft, Loader2, Mail } from 'lucide-react';

@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { Hash, Loader2, X } from 'lucide-react';

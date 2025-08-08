@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { useEventDetails } from "@/lib/hooks/useEventDetails";
-import { ArrowLeft, Mail, Plus } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { ArrowLeft, Mail, Plus } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function HostsManagementPage() {
   const params = useParams();
@@ -47,11 +47,11 @@ export default function HostsManagementPage() {
 
   // Mock data for current user (event creator)
   const currentUser = {
-    id: "current-user-id",
-    name: "Andre Neves",
-    email: "andrerfneves@protonmail.com",
-    avatar: "/api/placeholder/40/40",
-    role: "Creator",
+    id: 'current-user-id',
+    name: 'Andre Neves',
+    email: 'andrerfneves@protonmail.com',
+    avatar: '/api/placeholder/40/40',
+    role: 'Creator',
   };
 
   // Mock co-hosts data (empty for now)
@@ -59,13 +59,13 @@ export default function HostsManagementPage() {
 
   const handleAddCoHost = () => {
     // TODO: Implement add co-host functionality
-    console.log("Add co-host clicked");
+    console.log('Add co-host clicked');
     // This would typically open a modal or navigate to an invite screen
   };
 
   const handleInviteCoHost = (email: string) => {
     // TODO: Implement invite co-host functionality
-    console.log("Inviting co-host:", email);
+    console.log('Inviting co-host:', email);
   };
 
   return (
@@ -96,9 +96,9 @@ export default function HostsManagementPage() {
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500">
             <span className="text-lg font-semibold text-white">
               {currentUser.name
-                .split(" ")
+                .split(' ')
                 .map((n) => n[0])
-                .join("")}
+                .join('')}
             </span>
           </div>
           <div className="flex-1">
@@ -129,9 +129,9 @@ export default function HostsManagementPage() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
                   <span className="text-lg font-semibold text-gray-600">
                     {coHost.name
-                      .split(" ")
+                      .split(' ')
                       .map((n: string) => n[0])
-                      .join("")}
+                      .join('')}
                   </span>
                 </div>
                 <div className="flex-1">

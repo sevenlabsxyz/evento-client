@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api/client';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { EventComment } from '@/lib/hooks/useEventComments';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { EventComment } from '@/lib/hooks/use-event-comments';
 import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -35,7 +35,9 @@ export function useAddComment() {
     },
     onMutate: async (newComment) => {
       // Cancel any outgoing refetches to avoid overwriting our optimistic update
-      await queryClient.cancelQueries({ queryKey: ['event', 'comments', newComment.event_id] });
+      await queryClient.cancelQueries({
+        queryKey: ['event', 'comments', newComment.event_id],
+      });
 
       // Snapshot the previous value
       const previousComments = queryClient.getQueryData<EventComment[]>([
@@ -136,7 +138,9 @@ export function useAddComment() {
     onSuccess: (_, variables) => {
       // Invalidate the comments query to refetch comments
       // This replaces our optimistic comment with the real one from the server
-      queryClient.invalidateQueries({ queryKey: ['event', 'comments', variables.event_id] });
+      queryClient.invalidateQueries({
+        queryKey: ['event', 'comments', variables.event_id],
+      });
     },
   });
 }

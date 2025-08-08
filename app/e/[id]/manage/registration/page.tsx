@@ -1,6 +1,6 @@
 'use client';
 
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { ArrowLeft, GripVertical, Plus, Settings, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';

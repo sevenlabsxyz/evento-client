@@ -1,50 +1,35 @@
-/* Base component styles */
-.FollowersSheet-content {
-  /* SELF-LAYOUT */
-  box-sizing: border-box;
-  height: calc(100% - max(env(safe-area-inset-top), 6px));
-  max-width: 800px;
-  width: 100%;
+/* Based on ExampleSheetWithDetent pattern */
 
+.FollowersSheet-content {
+  /* INNER-LAYOUT */
+  display: grid;
+  grid-template-rows: min-content 1fr min-content;
+}
+
+.FollowersSheet-header {
   /* APPEARANCE */
-  border-radius: 24px 24px 0 0;
-  overflow: hidden;
-  background-color: white;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(229, 231, 235);
 
   /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
+  border-bottom-width: 1px;
+  padding: 0 1.25rem 0.75rem;
+  display: grid;
+  grid-template-rows: min-content 1fr;
+  gap: 0.75rem;
+
+  /* TEXT */
+  font-size: 0; /* Fix Webkit bug causing space added when typing */
 }
 
-@media (min-width: 800px) {
-  .FollowersSheet-content {
-    /* SELF-LAYOUT */
-    height: calc(100% - max(env(safe-area-inset-top), 5vh));
-
-    /* APPEARANCE */
-    box-shadow:
-      0 10px 15px -3px rgb(0 0 0 / 0.1),
-      0 4px 6px -4px rgb(0 0 0 / 0.1);
-    border-radius: 24px;
-  }
-}
-
-/* Handle */
 .FollowersSheet-handle {
   /* SELF-LAYOUT */
-  width: 50px;
-  height: 6px;
-
-  /* APPEARANCE */
-  border: 0;
-  border-radius: 9999px;
-  background-color: rgb(209, 213, 219);
-
-  /* INTERACTIVITY */
-  cursor: pointer;
+  grid-area: 1 / -1;
+  margin-top: 0.5rem;
+  justify-self: center;
+  align-self: start;
 }
 
-/* Title */
 .FollowersSheet-title {
   /* ACCESSIBILITY */
   position: absolute;
@@ -58,95 +43,25 @@
   border: 0;
 }
 
-/* Header */
-.FollowersSheet-header {
-  /* SELF-LAYOUT */
-  flex-shrink: 0;
-  width: 100%;
-  box-sizing: border-box;
-
-  /* INNER-LAYOUT */
-  padding: 1rem 1.5rem 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-
-  /* APPEARANCE */
-  background-color: white;
-  border-bottom: 1px solid rgb(243, 244, 246);
-}
-
-.FollowersSheet-titleContainer {
-  /* SELF-LAYOUT */
-  width: 100%;
-
-  /* TEXT */
-  text-align: center;
-}
-
-.FollowersSheet-titleText {
-  /* TEXT */
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: rgb(17, 24, 39);
-  margin: 0;
-}
-
-.FollowersSheet-subtitle {
-  /* TEXT */
-  font-size: 0.875rem;
-  color: rgb(107, 114, 128);
-  margin: 0.25rem 0 0;
-}
-
-/* Search */
-.FollowersSheet-searchContainer {
-  /* SELF-LAYOUT */
-  position: relative;
-  width: 100%;
-  margin-bottom: 1rem;
-}
-
-.FollowersSheet-searchIcon {
-  /* SELF-LAYOUT */
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 1.25rem;
-  height: 1.25rem;
-  z-index: 1;
-
-  /* APPEARANCE */
-  color: rgb(107, 114, 128);
-  pointer-events: none;
-}
-
 .FollowersSheet-input {
   /* SELF-LAYOUT */
   width: 100%;
-  height: 3rem;
+  height: 2.75rem;
+  box-sizing: border-box;
 
   /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
-  border: 1px solid rgb(229, 231, 235);
-  border-radius: 12px;
   outline: none;
+  border: none;
+  border-radius: 12px;
+  background-color: rgb(229, 231, 235);
 
   /* INNER-LAYOUT */
-  padding-left: 3rem;
-  padding-right: 1rem;
+  padding: 0 0.75rem;
 
   /* TEXT */
-  font-size: 1rem;
-  color: rgb(17, 24, 39);
-}
-
-.FollowersSheet-input:focus {
-  /* APPEARANCE */
-  border-color: rgb(59, 130, 246);
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
+  appearance: none;
+  font-size: 1.125rem;
+  color: rgb(31, 41, 55);
 }
 
 .FollowersSheet-input::placeholder {
@@ -154,61 +69,40 @@
   color: rgb(107, 114, 128);
 }
 
-/* Scroll View */
 .FollowersSheet-scrollView {
   /* SELF-LAYOUT */
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  width: 100%;
-  box-sizing: border-box;
+  min-height: 0;
 }
 
 .FollowersSheet-scrollContent {
   /* INNER-LAYOUT */
-  padding: 1rem 1.5rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 0;
+  padding: 1.25rem;
+  display: grid;
+  gap: 1.25rem;
 }
 
-/* User Item */
-.FollowersSheet-userItem {
+/* User Container - similar to contact container */
+.FollowersSheet-userContainer {
   /* INNER-LAYOUT */
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid rgb(243, 244, 246);
-  width: 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}
-
-.FollowersSheet-userItem:last-child {
-  /* APPEARANCE */
-  border-bottom: none;
 }
 
 .FollowersSheet-userButton {
-  /* SELF-LAYOUT */
-  flex: 1;
-
   /* APPEARANCE */
   background: none;
   border: none;
   cursor: pointer;
 
   /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 0.875rem;
   text-align: left;
+  width: 100%;
 }
 
 .FollowersSheet-userButton:hover {
@@ -216,34 +110,20 @@
   opacity: 0.8;
 }
 
-.FollowersSheet-avatar {
+.FollowersSheet-userAvatar {
   /* SELF-LAYOUT */
-  width: 3rem;
-  height: 3rem;
-  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
 
   /* APPEARANCE */
-  border: 1px solid rgb(229, 231, 235);
-}
-
-.FollowersSheet-avatarFallback {
-  /* APPEARANCE */
-  background-color: rgb(243, 244, 246);
-
-  /* TEXT */
-  font-weight: 600;
-  color: rgb(107, 114, 128);
+  border-radius: 9999px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .FollowersSheet-userDetails {
-  /* SELF-LAYOUT */
-  flex: 1;
-  min-width: 0;
-
   /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+  display: grid;
+  gap: 0.125rem;
 }
 
 .FollowersSheet-userInfo {
@@ -254,10 +134,13 @@
 }
 
 .FollowersSheet-username {
+  /* SELF-LAYOUT */
+  align-self: end;
+
   /* TEXT */
-  font-size: 0.875rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  color: rgb(17, 24, 39);
+  color: rgb(31, 41, 55);
 }
 
 .FollowersSheet-verified {
@@ -283,11 +166,8 @@
 
 .FollowersSheet-name {
   /* TEXT */
-  font-size: 0.875rem;
+  font-size: 1rem;
   color: rgb(107, 114, 128);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 .FollowersSheet-actions {
@@ -321,46 +201,35 @@
 }
 
 /* Loading States */
-.FollowersSheet-loading {
+.FollowersSheet-loadingContainer {
   /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.FollowersSheet-loadingItem {
-  /* INNER-LAYOUT */
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+  gap: 0.875rem;
 }
 
 .FollowersSheet-loadingAvatar {
   /* SELF-LAYOUT */
-  width: 3rem;
-  height: 3rem;
-  flex-shrink: 0;
+  width: 3.5rem;
+  height: 3.5rem;
 
   /* APPEARANCE */
+  border-radius: 9999px;
   background-color: rgb(243, 244, 246);
-  border-radius: 50%;
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.FollowersSheet-loadingText {
-  /* SELF-LAYOUT */
-  flex: 1;
-
+.FollowersSheet-loadingDetails {
   /* INNER-LAYOUT */
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: grid;
+  gap: 0.125rem;
 }
 
 .FollowersSheet-loadingLine {
   /* SELF-LAYOUT */
   height: 1rem;
-  width: 100%;
+  width: 8rem;
 
   /* APPEARANCE */
   background-color: rgb(243, 244, 246);
@@ -370,11 +239,11 @@
 
 .FollowersSheet-loadingLine--short {
   /* SELF-LAYOUT */
-  width: 60%;
+  width: 5rem;
 }
 
 /* Error State */
-.FollowersSheet-error {
+.FollowersSheet-errorContainer {
   /* INNER-LAYOUT */
   display: flex;
   align-items: center;
@@ -385,12 +254,12 @@
 .FollowersSheet-errorText {
   /* TEXT */
   color: rgb(239, 68, 68);
-  font-size: 0.875rem;
+  font-size: 1rem;
   text-align: center;
 }
 
 /* Empty State */
-.FollowersSheet-empty {
+.FollowersSheet-emptyContainer {
   /* INNER-LAYOUT */
   display: flex;
   align-items: center;
@@ -401,7 +270,7 @@
 .FollowersSheet-emptyText {
   /* TEXT */
   color: rgb(107, 114, 128);
-  font-size: 0.875rem;
+  font-size: 1rem;
   text-align: center;
 }
 

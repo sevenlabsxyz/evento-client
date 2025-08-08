@@ -3,9 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { useCheckUsername } from '@/lib/hooks/useCheckUsername';
-import { useDebounce } from '@/lib/hooks/useDebounce';
-import { useUpdateUserProfile } from '@/lib/hooks/useUserProfile';
+import { useCheckUsername } from '@/lib/hooks/use-check-username';
+import { useDebounce } from '@/lib/hooks/use-debounce';
+import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { toast } from '@/lib/utils/toast';
 import { AtSign, CheckCircle, Loader2, X, XCircle } from 'lucide-react';

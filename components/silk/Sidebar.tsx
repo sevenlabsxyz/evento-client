@@ -1,8 +1,8 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import {

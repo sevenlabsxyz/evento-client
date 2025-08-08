@@ -2,40 +2,39 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
-import { useUserFollowers } from '@/lib/hooks/useUserProfile';
+import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import './FollowersSheet.css';
+import './followers-sheet.css';
 
-interface FollowersSheetProps {
+interface FollowingSheetProps {
   isOpen: boolean;
   onClose: () => void;
   userId: string;
   username: string;
 }
 
-export default function FollowersSheet({ isOpen, onClose, userId, username }: FollowersSheetProps) {
+export default function FollowingSheet({ isOpen, onClose, userId, username }: FollowingSheetProps) {
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
   const router = useRouter();
 
-  const { data: followers, isLoading, error } = useUserFollowers(userId);
+  const { data: following, isLoading, error } = useUserFollowing(userId);
 
-  // Filter followers based on search query
-  const filteredFollowers = useMemo(() => {
-    if (!followers) return [];
-    if (!searchText.trim()) return followers;
+  // Filter following based on search query
+  const filteredFollowing = useMemo(() => {
+    if (!following) return [];
+    if (!searchText.trim()) return following;
 
     const query = searchText.toLowerCase();
-    return followers.filter(
-      (follower) =>
-        follower.username?.toLowerCase().includes(query) ||
-        follower.name?.toLowerCase().includes(query)
+    return following.filter(
+      (user) =>
+        user.username?.toLowerCase().includes(query) || user.name?.toLowerCase().includes(query)
     );
-  }, [followers, searchText]);
+  }, [following, searchText]);
 
   const handleUserClick = (username: string) => {
     router.push(`/${username}`);
@@ -62,13 +61,13 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
               <SheetWithDetent.Handle className='FollowersSheet-handle' />
               <VisuallyHidden.Root asChild>
                 <SheetWithDetent.Title className='FollowersSheet-title'>
-                  Followers
+                  Following
                 </SheetWithDetent.Title>
               </VisuallyHidden.Root>
               <input
                 className='FollowersSheet-input'
                 type='text'
-                placeholder='Search followers'
+                placeholder='Search following'
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
                 onFocus={() => setActiveDetent(2)}
@@ -91,52 +90,47 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                   ) : error ? (
                     // Error State
                     <div className='FollowersSheet-errorContainer'>
-                      <div className='FollowersSheet-errorText'>Failed to load followers</div>
+                      <div className='FollowersSheet-errorText'>Failed to load following</div>
                     </div>
-                  ) : filteredFollowers.length === 0 ? (
+                  ) : filteredFollowing.length === 0 ? (
                     // Empty State
                     <div className='FollowersSheet-emptyContainer'>
                       <div className='FollowersSheet-emptyText'>
                         {searchText.trim()
-                          ? `No followers found matching "${searchText}"`
-                          : `@${username} has no followers yet`}
+                          ? `No following found matching "${searchText}"`
+                          : `@${username} is not following anyone yet`}
                       </div>
                     </div>
                   ) : (
-                    // Followers List
-                    filteredFollowers.map((follower, index) => (
+                    // Following List
+                    filteredFollowing.map((user, index) => (
                       <div
-                        key={follower.id || `follower-${index}`}
+                        key={user.id || `following-${index}`}
                         className='FollowersSheet-userContainer'
                       >
                         <button
-                          onClick={() => handleUserClick(follower.username)}
+                          onClick={() => handleUserClick(user.username)}
                           className='FollowersSheet-userButton'
                         >
                           <Avatar className='FollowersSheet-userAvatar'>
-                            <AvatarImage
-                              src={follower.image || ''}
-                              alt={follower.name || follower.username}
-                            />
+                            <AvatarImage src={user.image || ''} alt={user.name || user.username} />
                             <AvatarFallback>
                               <Image
-                                width={32}
-                                height={32}
                                 src='/assets/img/evento-sublogo.svg'
                                 alt='Evento'
+                                width={32}
+                                height={32}
                               />
                             </AvatarFallback>
                           </Avatar>
                           <div className='FollowersSheet-userDetails'>
                             <div className='FollowersSheet-userInfo'>
-                              <div className='FollowersSheet-username'>@{follower.username}</div>
-                              {follower.verification_status === 'verified' && (
+                              <div className='FollowersSheet-username'>@{user.username}</div>
+                              {user.verification_status === 'verified' && (
                                 <div className='FollowersSheet-verified'>✓</div>
                               )}
                             </div>
-                            <div className='FollowersSheet-name'>
-                              {follower.name || follower.username}
-                            </div>
+                            <div className='FollowersSheet-name'>{user.name || user.username}</div>
                           </div>
                         </button>
                         <div className='FollowersSheet-actions'>
@@ -144,7 +138,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                             variant='ghost'
                             size='icon'
                             className='FollowersSheet-actionButton'
-                            onClick={() => handleMessageClick(follower.id)}
+                            onClick={() => handleMessageClick(user.id)}
                           >
                             <MessageCircle className='FollowersSheet-actionIcon' />
                           </Button>
@@ -152,7 +146,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                             variant='ghost'
                             size='icon'
                             className='FollowersSheet-actionButton'
-                            onClick={() => handleUserClick(follower.username)}
+                            onClick={() => handleUserClick(user.username)}
                           >
                             <ArrowRight className='FollowersSheet-actionIcon' />
                           </Button>

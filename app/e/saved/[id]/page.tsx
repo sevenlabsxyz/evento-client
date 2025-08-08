@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { toast } from '@/lib/utils/toast';
 import { ArrowLeft, Bookmark, Calendar, Clock, MapPin, MoreHorizontal } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';

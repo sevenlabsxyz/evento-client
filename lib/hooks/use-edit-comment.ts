@@ -1,5 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import { EventComment } from '@/lib/hooks/useEventComments';
+import { EventComment } from '@/lib/hooks/use-event-comments';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface EditCommentParams {

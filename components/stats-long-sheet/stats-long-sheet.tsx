@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Share, X } from 'lucide-react';
 import React from 'react';
-import { LongSheet } from './LongSheet';
+import { LongSheet } from './long-sheet';
 import './StatsLongSheet.css';
 
 const CircularProgress = ({ percentage, size = 80 }: { percentage: number; size?: number }) => {

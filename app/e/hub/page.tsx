@@ -2,9 +2,9 @@
 
 import { Navbar } from '@/components/navbar';
 import RowCard from '@/components/row-card';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { useRequireOnboarding } from '@/lib/hooks/useRequireOnboarding';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Calendar1, MapPin } from 'lucide-react';
 import { useEffect } from 'react';

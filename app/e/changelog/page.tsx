@@ -1,6 +1,6 @@
 'use client';
 
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Bug, Calendar, Shield, Sparkles, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';

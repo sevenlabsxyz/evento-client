@@ -6,9 +6,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useDeleteGalleryItem } from '@/lib/hooks/useDeleteGalleryItem';
-import { GalleryItem as GalleryItemType } from '@/lib/hooks/useEventGallery';
-import { useGalleryItemLikes } from '@/lib/hooks/useGalleryItemLikes';
+import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
+import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
+import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
 import { isGif } from '@/lib/utils/image';
 import { Heart, MoreHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
