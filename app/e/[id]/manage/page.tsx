@@ -12,7 +12,6 @@ import {
   MessageCircle,
   Music,
   Share2,
-  UserCheck,
   Users,
   X,
 } from 'lucide-react';
@@ -63,7 +62,8 @@ export default function ManageEventPage() {
     {
       id: 'guest-list',
       title: 'Guest List',
-      description: 'View, manage, and check in guests',
+      // description: 'View, manage, and check in guests',
+      description: 'View and manage guests',
       icon: <Users className='h-6 w-6' />,
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
@@ -120,11 +120,6 @@ export default function ManageEventPage() {
     router.push(route);
   };
 
-  const handleCheckInGuests = () => {
-    // TODO: Navigate to check-in functionality
-    console.log('Check in guests');
-  };
-
   const handleOpenEventChat = () => {
     // TODO: Open event chat functionality
     console.log('Open event chat');
@@ -161,15 +156,15 @@ export default function ManageEventPage() {
       {/* Content */}
       <div className='p-4'>
         {/* Square Action Buttons */}
-        <div className='mb-6 grid grid-cols-2 gap-2'>
+        <div className='mb-6 flex gap-2 [&>*]:flex-1'>
           {/* Check In Guests Button */}
-          <button
+          {/* <button
             onClick={handleCheckInGuests}
             className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
           >
             <UserCheck className='mb-1 h-5 w-5' />
             <span className='text-xs font-medium'>Check In Guests</span>
-          </button>
+          </button> */}
 
           {/* Open Event Chat Button */}
           <button
