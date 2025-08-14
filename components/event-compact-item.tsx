@@ -4,10 +4,25 @@ import { EventWithUser } from '@/lib/types/api';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Calendar, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Loader,
+  MapPin,
+  MoreHorizontal,
+  Pin,
+  PinOff,
+  Share2,
+  User,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { ReusableDropdown } from './reusable-dropdown';
 import { Button } from './ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from './ui/dropdown-menu';
 
 interface EventCompactItemProps {
   event: EventWithUser;
@@ -38,7 +53,7 @@ export function EventCompactItem({
   const getDropdownItems = (eventId: string, userUsername: string) => [
     {
       label: 'Share Event',
-      icon: <span className='h-4 w-4'>🔗</span>,
+      icon: <Share2 className='h-3 w-3' />,
       action: async () => {
         const eventUrl = `${window.location.origin}/e/${eventId}`;
         if (navigator.share) {
@@ -62,7 +77,7 @@ export function EventCompactItem({
     },
     {
       label: 'View Profile',
-      icon: <span className='h-4 w-4'>👤</span>,
+      icon: <User className='h-3 w-3' />,
       action: () => {
         router.push(`/${userUsername}`);
       },
@@ -74,11 +89,6 @@ export function EventCompactItem({
       className='flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50'
       onClick={handleEventClick}
     >
-      {/* Time column */}
-      <div className='flex w-16 min-w-[64px] flex-col items-center justify-center'>
-        <div className='text-xs text-gray-500'>{timeWithTz?.split(' ')[0] || '--:--'}</div>
-      </div>
-
       {/* Event thumbnail */}
       <div className='h-14 w-14 overflow-hidden rounded-md'>
         <img
@@ -112,7 +122,7 @@ export function EventCompactItem({
                 )}
               </Button>
             )}
-            <Button
+            {/* <Button
               variant='ghost'
               size='icon'
               className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
@@ -122,9 +132,9 @@ export function EventCompactItem({
               }}
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
-            </Button>
-            <ReusableDropdown
-              trigger={
+            </Button> */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
                 <Button
                   variant='ghost'
                   size='icon'
@@ -133,42 +143,51 @@ export function EventCompactItem({
                 >
                   <MoreHorizontal className='h-4 w-4' />
                 </Button>
-              }
-              items={getDropdownItems(event.id, event.user_details?.username)}
-              align='right'
-              width='w-48'
-            />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align='end'>
+                {getDropdownItems(event.id, event.user_details.username).map((item) => (
+                  <DropdownMenuItem
+                    key={item.label}
+                    onClick={item.action}
+                    className='flex cursor-pointer items-center gap-2'
+                  >
+                    {item.label}
+                    {item.icon}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
 
-        <div className='mt-1 flex items-center gap-2 text-xs text-gray-500'>
-          <div className='flex w-fit items-center'>
+        <div className='mt-1 flex items-center text-xs text-gray-500'>
+          <div className='mr-2 flex w-fit items-center'>
             <Calendar className='mr-1 h-3 w-3' />
-            <span>{date}</span>
+            <span className='w-max'>{date}</span>
           </div>
-          {event.location && (
-            <div className='flex flex-1 items-center'>
-              <MapPin className='mr-1 h-3 w-3' />
-              <span className='line-clamp-1'>{event.location}</span>
-            </div>
-          )}
+          <div className='mr-2 flex items-center'>
+            <Clock className='mr-1 h-3 w-3' />
+            <span className='line-clamp-1'>{timeWithTz?.split(' ')[0] || '--:--'}</span>
+          </div>
+          <div className='flex items-center'>
+            <MapPin className='mr-1 h-3 w-3' />
+            <span className='line-clamp-1'>{event.location}</span>
+          </div>
         </div>
 
         {/* User details */}
-        {event.user_details && (
-          <div className='mt-1 flex items-center'>
-            <img
-              src={
-                event.user_details.image
-                  ? getOptimizedAvatarUrl(event.user_details.image)
-                  : '/assets/img/evento-sublogo.svg'
-              }
-              alt={event.user_details.name || event.user_details.username}
-              className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
-            />
-            <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
-          </div>
-        )}
+        <div className='mt-1 flex items-center'>
+          <img
+            src={
+              event.user_details.image
+                ? getOptimizedAvatarUrl(event.user_details.image)
+                : '/assets/img/evento-sublogo.svg'
+            }
+            alt={event.user_details.name || event.user_details.username}
+            className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
+          />
+          <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
+        </div>
       </div>
     </div>
   );
