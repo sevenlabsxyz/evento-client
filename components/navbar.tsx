@@ -16,7 +16,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
     { id: 'hub', icon: Home, path: '/e/hub' },
     { id: 'feed', icon: Calendar1, path: '/e/feed' },
     { id: 'add', icon: Plus, path: '/e/create', isCenter: true },
-    { id: 'notifications', icon: Inbox, path: '/e/notifications' },
+    { id: 'inbox', icon: Inbox, path: '/e/inbox' },
     { id: 'messages', icon: MessageCircle, path: '/e/messages' },
   ];
 

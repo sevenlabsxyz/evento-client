@@ -57,7 +57,7 @@ export function Sidebar() {
         },
         {
           name: 'Inbox',
-          path: '/e/notifications',
+          path: '/e/inbox',
           icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
         },
         {
