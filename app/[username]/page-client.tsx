@@ -2,9 +2,12 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet/EventSearchSheet';
+import { TagSection } from '@/components/fancy-tag/section';
 import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
 import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { Navbar } from '@/components/navbar';
+import RowCard from '@/components/row-card';
 import SocialLinks from '@/components/profile/social-links';
 import { Button } from '@/components/ui/button';
 import {
@@ -39,12 +42,14 @@ import { toast } from '@/lib/utils/toast';
 import {
   BadgeCheck,
   Calendar,
+  Camera,
   Loader2,
   MessageCircle,
   Search,
   Share,
   SortAsc,
   SortDesc,
+  User,
   UserMinus,
   UserPlus,
   Zap,
@@ -547,79 +552,89 @@ export default function UserProfilePageClient() {
     );
   };
 
-  const renderAboutTab = () => (
-    <div className='space-y-6'>
-      {/* Bio/Description */}
-      <div>
-        <p className='text-gray-700'>{userProfile?.bio || 'No bio yet.'}</p>
-      </div>
+  const renderAboutTab = () => {
+    return (
+      <div className='space-y-4'>
+        {/* Social Links */}
+        {userData && (
+          <SocialLinks
+            user={{
+              bio_link: userData.bio_link,
+              instagram_handle: userData.instagram_handle,
+              x_handle: userData.x_handle,
+              ln_address: userData.ln_address,
+              nip05: userData.nip05,
+            }}
+          />
+        )}
 
-      {/* Interest Tags */}
-      <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>Interests</h4>
-        <div className='flex flex-wrap gap-2'>
-          {interestTags.map((tag: string) => (
-            <span key={tag} className='rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'>
-              {tag}
-            </span>
-          ))}
+        {/* Bio/Description */}
+        {!userProfile?.bio ? null : (
+          <div>
+            <RowCard title={'Bio'} subtitle={userProfile?.bio} icon={<User className='h-4 w-4' />} />
+          </div>
+        )}
+
+        {/* Interest Tags */}
+        <div>
+          <div className='flex flex-wrap gap-2'>
+            <TagSection
+              title='Interests'
+              items={interestTags}
+              selectedItems={[]}
+              onToggleItem={() => {}}
+            />
+          </div>
+        </div>
+
+        {/* Profile Questions */}
+        <div>
+          <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
+          <div className='space-y-3'>
+            {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
+              <div key={index} className='rounded-xl bg-gray-50 p-3'>
+                <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
+                <p className='text-sm text-gray-900'>{item.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Photo Album */}
+        <div>
+          <div className='mb-3 flex items-center justify-between'>
+            <h4 className='font-semibold text-gray-900'>Photos</h4>
+            <Button variant='ghost' size='sm' className='text-red-600'>
+              <Camera className='mr-1 h-4 w-4' />
+              Add
+            </Button>
+          </div>
+          <div className='grid grid-cols-3 gap-2'>
+            {profilePhotos.map((photo: string, index: number) => (
+              <button
+                key={index}
+                onClick={() => handleProfilePhotoClick(index)}
+                className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
+              >
+                <img
+                  src={photo || '/assets/img/evento-sublogo.svg'}
+                  alt={`Profile photo ${index + 1}`}
+                  className='h-full w-full object-cover'
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+    );
+  };
 
-      {/* Profile Questions */}
-      <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
-        <div className='space-y-3'>
-          {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
-            <div key={index} className='rounded-xl bg-gray-50 p-3'>
-              <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
-              <p className='text-sm text-gray-900'>{item.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
 
-      {/* Photo Grid */}
-      <div>
-        <div className='mb-3 flex items-center justify-between'>
-          <h4 className='font-semibold text-gray-900'>Photos</h4>
-        </div>
-        <div className='grid grid-cols-3 gap-2'>
-          {profilePhotos.map((photo: string, index: number) => (
-            <button
-              key={index}
-              onClick={() => handleProfilePhotoClick(index)}
-              className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
-            >
-              <img
-                src={photo}
-                alt={`Profile photo ${index + 1}`}
-                className='h-full w-full object-cover'
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderStatsTab = () => (
-    <div className='grid grid-cols-2 gap-4'>
-      <div className='rounded-xl bg-blue-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-blue-600'>0</div>
-        <div className='text-sm text-gray-600'>Countries</div>
-      </div>
-      <div className='rounded-xl bg-green-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-green-600'>0</div>
-        <div className='text-sm text-gray-600'>Mutuals</div>
-      </div>
-    </div>
-  );
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Content */}
-      <div className='flex-1 overflow-y-auto'>
+      <div className='flex-1 overflow-y-auto pb-20'>
         {/* Cover Image Section */}
         <div className='relative'>
           {/* Banner */}
@@ -646,7 +661,7 @@ export default function UserProfilePageClient() {
           </div>
 
           {/* Stats - Centered */}
-          <div className='mb-6 flex justify-center'>
+          <div className='mb-4 flex justify-center'>
             <div className='grid grid-cols-3 gap-8'>
               <div className='text-center'>
                 <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
@@ -704,21 +719,8 @@ export default function UserProfilePageClient() {
             </Button>
           </div>
 
-          {/* Social Links */}
-          {userData && (
-            <SocialLinks
-              user={{
-                bio_link: userData.bio_link,
-                instagram_handle: userData.instagram_handle,
-                x_handle: userData.x_handle,
-                ln_address: userData.ln_address,
-                nip05: userData.nip05,
-              }}
-            />
-          )}
-        </div>
-
-        <div className='mb-4 w-full bg-white'>
+          {/* Tabbed Section */}
+          <div className='mb-4 w-full bg-white'>
           {/* Tab Headers */}
           <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
             <button
@@ -741,26 +743,19 @@ export default function UserProfilePageClient() {
             >
               Events
             </button>
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                activeTab === 'stats'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-gray-500 hover:bg-gray-50'
-              }`}
-            >
-              Stats
-            </button>
           </div>
 
           {/* Tab Content */}
-          <div className='p-4'>
+          <div>
             {activeTab === 'about' && renderAboutTab()}
-            {activeTab === 'events' && <div className='events-tab'>{renderEventsTab()}</div>}
-            {activeTab === 'stats' && renderStatsTab()}
+            {activeTab === 'events' && renderEventsTab()}
           </div>
         </div>
+        </div>
       </div>
+
+      {/* Bottom Navbar */}
+      <Navbar />
 
       {/* Followers Sheet */}
       <FollowersSheet
