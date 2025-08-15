@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { Share, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { toast } from '@/lib/utils/toast';

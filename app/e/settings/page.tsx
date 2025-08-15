@@ -1,9 +1,9 @@
 'use client';
 
-import { APISheet } from '@/components/settings/APISheet';
-import { ChangelogSheet } from '@/components/settings/ChangelogSheet';
-import { ContactSheet } from '@/components/settings/ContactSheet';
-import { useAuth, useRequireAuth } from '@/lib/hooks/useAuth';
+import { APISheet } from '@/components/settings/api-sheet';
+import { ChangelogSheet } from '@/components/settings/changelog-sheet';
+import { ContactSheet } from '@/components/settings/contact-sheet';
+import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {

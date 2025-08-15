@@ -3,8 +3,8 @@
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { Button } from '@/components/ui/button';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { toast } from '@/lib/utils/toast';
 import { ArrowLeft, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';

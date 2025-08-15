@@ -1,7 +1,7 @@
 'use client';
 
 import { Navbar } from '@/components/navbar';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { MessageCircle } from 'lucide-react';
 import { usePathname } from 'next/navigation';

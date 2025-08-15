@@ -7,8 +7,8 @@ import NostrSheet from '@/components/profile-edit/nostr-sheet';
 import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
 import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {

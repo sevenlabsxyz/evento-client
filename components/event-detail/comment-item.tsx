@@ -3,11 +3,11 @@
 import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useAddComment } from '@/lib/hooks/useAddComment';
-import { useCommentReactions } from '@/lib/hooks/useCommentReactions';
-import { useDeleteComment } from '@/lib/hooks/useDeleteComment';
-import { useEditComment } from '@/lib/hooks/useEditComment';
-import { EventComment } from '@/lib/hooks/useEventComments';
+import { useAddComment } from '@/lib/hooks/use-add-comment';
+import { useCommentReactions } from '@/lib/hooks/use-comment-reactions';
+import { useDeleteComment } from '@/lib/hooks/use-delete-comment';
+import { useEditComment } from '@/lib/hooks/use-edit-comment';
+import { EventComment } from '@/lib/hooks/use-event-comments';
 import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';

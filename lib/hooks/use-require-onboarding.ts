@@ -1,7 +1,7 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { getOnboardingRedirectUrl, isUserOnboarded } from '../utils/auth';
-import { useAuth } from './useAuth';
+import { useAuth } from './use-auth';
 
 /**
  * Hook to ensure user has completed onboarding before accessing certain pages

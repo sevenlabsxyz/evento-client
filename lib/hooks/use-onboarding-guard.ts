@@ -1,7 +1,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { isUserOnboarded, validateRedirectUrl } from '../utils/auth';
-import { useAuth } from './useAuth';
+import { useAuth } from './use-auth';
 
 /**
  * Hook to guard the onboarding page

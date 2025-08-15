@@ -2,13 +2,13 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import { Button } from '@/components/ui/button';
-import { EventFilterType, useUserEvents } from '@/lib/hooks/useUserEvents';
+import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useAuth } from '@/lib/stores/auth-store';
 import { EventWithUser } from '@/lib/types/api';
 import debounce from 'lodash.debounce';
 import { Search, SortAsc } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
+import { SheetWithDetentFull } from './ui/sheet-with-detent-full';
 
 interface EventSearchSheetProps {
   isOpen: boolean;

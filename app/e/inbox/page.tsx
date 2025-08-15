@@ -1,16 +1,16 @@
 'use client';
 
 import { Navbar } from '@/components/navbar';
-import { NotificationFilters } from '@/components/notifications/NotificationFilters';
-import { NotificationList } from '@/components/notifications/NotificationList';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { NotificationFilters } from '@/components/notifications/notification-filters';
+import { NotificationList } from '@/components/notifications/notification-list';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import {
   useArchiveNotification,
   useBulkMarkAsRead,
   useMarkAllAsRead,
   useMarkAsRead,
   useNotificationsFeed,
-} from '@/lib/hooks/useNotifications';
+} from '@/lib/hooks/use-notifications';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { NotificationFilterParams, UINotification } from '@/lib/types/notifications';
 import { isValidRelativePath } from '@/lib/utils/link';

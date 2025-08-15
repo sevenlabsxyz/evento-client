@@ -1,8 +1,8 @@
 'use client';
 
 import { Switch } from '@/components/ui/switch';
-import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/useEmailBlasts';
-import { getRecipientCount, useRSVPStats } from '@/lib/hooks/useRSVPStats';
+import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/use-email-blasts';
+import { getRecipientCount, useRSVPStats } from '@/lib/hooks/use-rsvp-stats';
 import { CreateEmailBlastForm, EmailBlastRecipientFilter } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import Bold from '@tiptap/extension-bold';

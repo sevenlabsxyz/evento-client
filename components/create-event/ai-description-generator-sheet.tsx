@@ -5,7 +5,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import {
   GenerateDescriptionParams,
   useGenerateDescription,
-} from '@/lib/hooks/useGenerateDescription';
+} from '@/lib/hooks/use-generate-description';
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
 import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from 'lucide-react';

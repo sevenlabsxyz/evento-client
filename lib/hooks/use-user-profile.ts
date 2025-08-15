@@ -1,12 +1,12 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import React from "react";
-import { apiClient } from "../api/client";
-import { authService } from "../services/auth";
-import { useAuthStore } from "../stores/auth-store";
-import { ApiResponse, UserDetails } from "../types/api";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import React from 'react';
+import { apiClient } from '../api/client';
+import { authService } from '../services/auth';
+import { useAuthStore } from '../stores/auth-store';
+import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
-const USER_PROFILE_QUERY_KEY = ["user", "profile"] as const;
+const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
 
 /**
  * Hook to fetch and manage user profile data
@@ -25,12 +25,9 @@ export function useUserProfile() {
     queryFn: authService.getCurrentUser,
     retry: (failureCount, error) => {
       // Don't retry on 401 errors
-      if (error && typeof error === "object" && "message" in error) {
+      if (error && typeof error === 'object' && 'message' in error) {
         const apiError = error as { message: string };
-        if (
-          apiError.message?.includes("401") ||
-          apiError.message?.includes("Unauthorized")
-        ) {
+        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
           return false;
         }
       }
@@ -49,10 +46,7 @@ export function useUserProfile() {
     } else if (error) {
       // Clear auth on 401 errors
       const apiError = error as { message?: string };
-      if (
-        apiError.message?.includes("401") ||
-        apiError.message?.includes("Unauthorized")
-      ) {
+      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
         clearAuth();
       }
     }
@@ -78,15 +72,10 @@ export function useUpdateUserProfile() {
     mutationFn: async (updates: Partial<UserDetails>) => {
       // Only send the fields that are being updated
       const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(
-          ([_, value]) => value !== undefined || value !== null,
-        ),
+        Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
       );
 
-      const response = await apiClient.patch<UserDetails[]>(
-        "/v1/user",
-        filteredUpdates,
-      );
+      const response = await apiClient.patch<UserDetails[]>('/v1/user', filteredUpdates);
       return response.data?.[0] || null;
     },
     onSuccess: (updatedUser) => {
@@ -98,7 +87,7 @@ export function useUpdateUserProfile() {
       }
     },
     onError: (error) => {
-      console.error("Profile update failed:", error);
+      console.error('Profile update failed:', error);
     },
   });
 }
@@ -113,16 +102,16 @@ export function useUploadProfileImage() {
   return useMutation({
     mutationFn: async (file: File) => {
       const formData = new FormData();
-      formData.append("image", file);
+      formData.append('image', file);
 
       const response = await apiClient.post<UserDetails[]>(
-        "/v1/user/details/image-upload",
+        '/v1/user/details/image-upload',
         formData,
         {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
-        },
+        }
       );
       return response.data?.[0] || null;
     },
@@ -135,7 +124,7 @@ export function useUploadProfileImage() {
       }
     },
     onError: (error) => {
-      console.error("Profile image upload failed:", error);
+      console.error('Profile image upload failed:', error);
     },
   });
 }
@@ -146,25 +135,21 @@ export function useUploadProfileImage() {
 export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.get<
-        UserDetails[] | { data: UserDetails[] }
-      >(`/v1/user/search?q=${encodeURIComponent(query)}`);
+      const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
+        `/v1/user/search?q=${encodeURIComponent(query)}`
+      );
 
       // Handle both response formats (array or object with data property)
       if (Array.isArray(response)) {
         return response;
-      } else if (
-        response &&
-        typeof response === "object" &&
-        "data" in response
-      ) {
+      } else if (response && typeof response === 'object' && 'data' in response) {
         return (response as any).data || [];
       }
 
       return [];
     },
     onError: (error) => {
-      console.error("User search failed:", error);
+      console.error('User search failed:', error);
     },
   });
 }
@@ -174,12 +159,12 @@ export function useSearchUsers() {
  */
 export function useFollowStatus(userId: string) {
   return useQuery({
-    queryKey: ["user", "follow", "status", userId],
+    queryKey: ['user', 'follow', 'status', userId],
     queryFn: async () => {
       if (!userId) return { isFollowing: false };
 
       const response = await apiClient.get<{ isFollowing: boolean }>(
-        `/v1/user/follow?id=${userId}`,
+        `/v1/user/follow?id=${userId}`
       );
       return response.data || { isFollowing: false };
     },
@@ -195,20 +180,14 @@ export function useFollowAction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      userId,
-      action,
-    }: {
-      userId: string;
-      action: "follow" | "unfollow";
-    }) => {
+    mutationFn: async ({ userId, action }: { userId: string; action: 'follow' | 'unfollow' }) => {
       let response;
-      if (action === "follow") {
-        response = await apiClient.post("/v1/user/follow", {
+      if (action === 'follow') {
+        response = await apiClient.post('/v1/user/follow', {
           followId: userId,
         });
       } else {
-        response = await apiClient.delete("/v1/user/follow", {
+        response = await apiClient.delete('/v1/user/follow', {
           data: {
             followId: userId,
           },
@@ -218,23 +197,20 @@ export function useFollowAction() {
     },
     onSuccess: (_result, variables) => {
       const { action, userId } = variables;
-      const isFollowing = action === "follow";
+      const isFollowing = action === 'follow';
 
       // Update follow status in cache
-      queryClient.setQueryData(["user", "follow", "status", userId], {
+      queryClient.setQueryData(['user', 'follow', 'status', userId], {
         isFollowing,
       });
 
       // Invalidate related queries
-      queryClient.invalidateQueries({ queryKey: ["user", "followers"] });
-      queryClient.invalidateQueries({ queryKey: ["user", "following"] });
+      queryClient.invalidateQueries({ queryKey: ['user', 'followers'] });
+      queryClient.invalidateQueries({ queryKey: ['user', 'following'] });
     },
     onError: (error, variables) => {
       const { action } = variables;
-      console.error(
-        `${action === "follow" ? "Follow" : "Unfollow"} failed:`,
-        error,
-      );
+      console.error(`${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`, error);
     },
   });
 }
@@ -244,18 +220,16 @@ export function useFollowAction() {
  */
 export function useUserFollowers(userId: string) {
   return useQuery({
-    queryKey: ["user", "followers", userId],
+    queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(
-        `/v1/user/followers/list?id=${userId}`,
-      );
+      const response = await apiClient.get<any[]>(`/v1/user/followers/list?id=${userId}`);
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.follower_id,
-        username: item.user_details?.username || "",
-        name: item.user_details?.name || "",
-        image: item.user_details?.image || "",
-        verification_status: item.user_details?.verification_status || "",
+        username: item.user_details?.username || '',
+        name: item.user_details?.name || '',
+        image: item.user_details?.image || '',
+        verification_status: item.user_details?.verification_status || '',
       }));
       return transformedData;
     },
@@ -269,18 +243,16 @@ export function useUserFollowers(userId: string) {
  */
 export function useUserFollowing(userId: string) {
   return useQuery({
-    queryKey: ["user", "following", userId],
+    queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(
-        `/v1/user/follows/list?id=${userId}`,
-      );
+      const response = await apiClient.get<any[]>(`/v1/user/follows/list?id=${userId}`);
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.followed_id,
-        username: item.user_details?.username || "",
-        name: item.user_details?.name || "",
-        image: item.user_details?.image || "",
-        verification_status: item.user_details?.verification_status || "",
+        username: item.user_details?.username || '',
+        name: item.user_details?.name || '',
+        image: item.user_details?.image || '',
+        verification_status: item.user_details?.verification_status || '',
       }));
       return transformedData;
     },
@@ -294,11 +266,9 @@ export function useUserFollowing(userId: string) {
  */
 export function useUserEventCount(userId: string) {
   return useQuery({
-    queryKey: ["user", "events", "count", userId],
+    queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
-      const response = await apiClient.get<{ count: number }>(
-        `/v1/user/events/count?id=${userId}`,
-      );
+      const response = await apiClient.get<{ count: number }>(`/v1/user/events/count?id=${userId}`);
       return response.data?.count || 0;
     },
     enabled: !!userId,
@@ -311,10 +281,10 @@ export function useUserEventCount(userId: string) {
  */
 export function useUserByUsername(username: string) {
   return useQuery({
-    queryKey: ["user", "profile", "username", username],
+    queryKey: ['user', 'profile', 'username', username],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<UserDetails[]>>(
-        `/v1/user/details?username=${encodeURIComponent(username)}`,
+        `/v1/user/details?username=${encodeURIComponent(username)}`
       );
 
       // Extract the users array from the API response
@@ -331,7 +301,7 @@ export function useUserByUsername(username: string) {
     staleTime: 1 * 60 * 1000, // 5 minutes
     retry: (failureCount, error) => {
       // Don't retry on 404 errors (user not found)
-      if (error && typeof error === "object" && "status" in error) {
+      if (error && typeof error === 'object' && 'status' in error) {
         const apiError = error as { status?: number };
         if (apiError.status === 404) return false;
       }

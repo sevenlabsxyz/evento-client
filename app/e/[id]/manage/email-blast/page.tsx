@@ -3,7 +3,7 @@
 import EmailBlastCard from '@/components/manage-event/email-blast-card';
 import EmailBlastDetailModal from '@/components/manage-event/email-blast-detail-modal';
 import EmailBlastSheet from '@/components/manage-event/email-blast-sheet';
-import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/useEmailBlasts';
+import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/use-email-blasts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Loader2, Mail, Plus } from 'lucide-react';
 import { useParams } from 'next/navigation';

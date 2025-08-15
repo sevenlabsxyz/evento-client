@@ -2,9 +2,9 @@
 
 import CommentItem from '@/components/event-detail/comment-item';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useAddComment } from '@/lib/hooks/useAddComment';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useEventComments } from '@/lib/hooks/useEventComments';
+import { useAddComment } from '@/lib/hooks/use-add-comment';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useEventComments } from '@/lib/hooks/use-event-comments';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, MessageCircle, SendHorizontal } from 'lucide-react';

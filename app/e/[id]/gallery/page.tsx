@@ -1,9 +1,9 @@
 'use client';
 
 import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useEventGallery } from '@/lib/hooks/useEventGallery';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { ArrowLeft, Loader2, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useRef } from 'react';

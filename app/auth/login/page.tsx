@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/useAuth';
+import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/use-auth';
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Chrome, Loader2, Mail } from 'lucide-react';

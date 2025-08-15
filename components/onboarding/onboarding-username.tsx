@@ -1,6 +1,6 @@
 import { Input } from '@/components/ui/input';
-import { useDebounce } from '@/lib/hooks/useDebounce';
-import { useUserByUsername, useUserProfile } from '@/lib/hooks/useUserProfile';
+import { useDebounce } from '@/lib/hooks/use-debounce';
+import { useUserByUsername, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { updateUserProfileSchema } from '@/lib/schemas/user';
 import { motion } from 'framer-motion';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';

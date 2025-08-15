@@ -3,7 +3,7 @@ import { isGif } from '@/lib/utils/image';
 import { Scroll, VisuallyHidden } from '@silk-hq/components';
 import Image from 'next/image';
 import React, { useEffect, useImperativeHandle, useRef } from 'react';
-import { Lightbox } from './Lightbox';
+import { Lightbox } from './lightbox';
 
 interface SilkLightboxProps {
   images: string[];

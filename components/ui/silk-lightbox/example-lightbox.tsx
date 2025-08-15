@@ -1,7 +1,7 @@
 import { Scroll, VisuallyHidden } from '@silk-hq/components';
 import { useEffect } from 'react';
-import './ExampleLightbox.css';
-import { Lightbox } from './Lightbox';
+import './example-lightbox.css';
+import { Lightbox } from './lightbox';
 
 // ================================================================================================
 // Data
