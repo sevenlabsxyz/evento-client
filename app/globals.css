@@ -123,3 +123,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.prose hr {
+  @apply border-gray-100;
+  @apply my-6;
+}
