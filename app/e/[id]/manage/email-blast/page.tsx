@@ -25,7 +25,6 @@ export default function EmailBlastPage() {
   useEffect(() => {
     setTopBar({
       title: 'Email Blast',
-      subtitle: 'Send updates to your guests',
       buttons: [
         {
           icon: Plus,
@@ -35,6 +34,7 @@ export default function EmailBlastPage() {
         },
       ],
       leftMode: 'back',
+      showAvatar: false,
     });
 
     return () => {
