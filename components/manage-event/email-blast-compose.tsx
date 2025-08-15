@@ -16,6 +16,7 @@ import { CalendarClock, Clock, Loader2, Mail, Send, Users } from 'lucide-react';
 import { useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';
+import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface EmailBlastComposeProps {
@@ -394,19 +395,12 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
       </div>
 
       {/* Actions */}
-      <div className='EmailBlastCompose-actions'>
-        <button
-          onClick={onCancel}
-          className='EmailBlastCompose-button EmailBlastCompose-button--cancel'
-          type='button'
-        >
-          Cancel
-        </button>
-        <button
+      <div className='flex flex-col gap-3'>
+        <Button
           onClick={handleSend}
           disabled={!isValid || isLoading}
-          className='EmailBlastCompose-button EmailBlastCompose-button--send'
-          type='button'
+          type='submit'
+          className='w-full bg-red-600 text-white hover:bg-red-700'
         >
           {isLoading ? (
             <>
@@ -419,7 +413,10 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
               {scheduled ? 'Schedule Email Blast' : 'Send Email Blast'}
             </>
           )}
-        </button>
+        </Button>
+        <Button variant='outline' onClick={onCancel} type='button' className='w-full'>
+          Cancel
+        </Button>
       </div>
 
       {/* Date Picker Modal */}
