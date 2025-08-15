@@ -9,33 +9,26 @@ import LocationModal from '@/components/create-event/location-modal';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
-import { Button } from '@/components/ui/button';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { apiEventSchema } from '@/lib/schemas/event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
-import {
-  ArrowLeft,
-  Calendar,
-  ChevronRight,
-  Edit3,
-  Globe,
-  Loader2,
-  Lock,
-  MapPin,
-} from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { Calendar, Check, ChevronRight, Edit3, Globe, Loader2, Lock, MapPin } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditEventDetailsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
   const updateEventMutation = useUpdateEvent();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
 
   // Fetch real event data
   const { data: eventData, isLoading, error } = useEventDetails(eventId);
@@ -80,6 +73,40 @@ export default function EditEventDetailsPage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
+
+  // Check if all required fields are filled and there are changes
+  const isFormValid = isValid() && hasChanges();
+
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Event Details',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'save-details',
+          icon: Check,
+          onClick: () => void handleSaveChanges(),
+          label: 'Save',
+          disabled: !isFormValid || updateEventMutation.isPending,
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [
+    setTopBarForRoute,
+    pathname,
+    applyRouteConfig,
+    clearRoute,
+    isFormValid,
+    updateEventMutation.isPending,
+  ]);
 
   // Populate form when event data is loaded
   useEffect(() => {
@@ -176,28 +203,8 @@ export default function EditEventDetailsPage() {
     }
   };
 
-  // Check if all required fields are filled and there are changes
-  const isFormValid = isValid() && hasChanges();
-
   return (
     <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Event Details</h1>
-        </div>
-        <Button
-          onClick={handleSaveChanges}
-          className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-          disabled={!isFormValid || updateEventMutation.isPending}
-        >
-          {updateEventMutation.isPending ? 'Saving...' : 'Save'}
-        </Button>
-      </div>
-
       {/* Cover Image Selector */}
       <div className='mb-4 px-4'>
         <CoverImageSelector
