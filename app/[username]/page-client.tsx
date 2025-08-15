@@ -107,7 +107,8 @@ export default function UserProfilePageClient() {
     ? {
         name: userData.name || "Unknown User",
         username: `@${userData.username}`,
-        avatar: userData.image || "/placeholder.svg?height=80&width=80",
+        image: userData.image || "/placeholder.svg?height=80&width=80",
+        verification_status: userData.verification_status,
         status: userData.bio || "",
         bio: userData.bio || "",
         website: userData.bio_link || "",
@@ -324,12 +325,12 @@ export default function UserProfilePageClient() {
   const avatarImages = [
     {
       id: "avatar",
-      image: userProfile?.avatar || "/placeholder.svg?height=80&width=80",
+      image: userProfile?.image || "/placeholder.svg?height=80&width=80",
       user_details: {
         id: userData?.id,
         username: userProfile?.username,
         name: userProfile?.name,
-        image: userProfile?.avatar,
+        image: userProfile?.image,
         verification_status: userData?.verification_status,
       },
       created_at: new Date().toISOString(),
@@ -350,7 +351,7 @@ export default function UserProfilePageClient() {
       id: userData?.id,
       username: userProfile?.username,
       name: userProfile?.name,
-      image: userProfile.avatar,
+      image: userProfile.image,
       verification_status: userData?.verification_status,
     },
     created_at: new Date().toISOString(),
