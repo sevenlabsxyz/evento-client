@@ -2,8 +2,9 @@
 
 import { Navbar } from '@/components/navbar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useStreamChat } from '@/lib/hooks/use-stream-chat';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import type { ChannelFilters, ChannelOptions, ChannelSort, User } from 'stream-chat';
+import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 import {
   Channel,
   ChannelHeader,
@@ -13,7 +14,6 @@ import {
   MessageList,
   Thread,
   Window,
-  useCreateChatClient,
 } from 'stream-chat-react';
 import { EmojiPicker } from 'stream-chat-react/emojis';
 
@@ -25,27 +25,6 @@ import { useEffect, useState } from 'react';
 import './chat-layout.css';
 import './stream-chat.d.ts';
 
-// Stream Chat configuration using the provided credentials from the tutorial
-const apiKey = 'dz5f4d5kzrue';
-const userId = 'tight-surf-4';
-const userName = 'tight';
-const userToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoidGlnaHQtc3VyZi00IiwiZXhwIjoxNzU1MjkwNjA3fQ.KRTlf-IFLkEmdvu-g9m4JPzZqb8Ja86s8ncv83QCnFQ';
-
-const user: User = {
-  id: userId,
-  name: userName,
-  image: `https://getstream.io/random_png/?name=${userName}`,
-};
-
-const sort: ChannelSort = { last_message_at: -1 };
-const filters: ChannelFilters = {
-  type: 'messaging',
-  members: { $in: [userId] },
-};
-const options: ChannelOptions = {
-  limit: 10,
-};
-
 // Initialize emoji-mart
 init({ data });
 
@@ -54,6 +33,9 @@ export default function ChatPage() {
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('messages');
+
+  // Use the new Stream Chat hook with backend integration
+  const { client, isLoading: isLoadingStream, error: streamError, isAuthenticated } = useStreamChat();
 
   // Set TopBar content
   useEffect(() => {
@@ -75,62 +57,46 @@ export default function ChatPage() {
     };
   }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig]);
 
-  const client = useCreateChatClient({
-    apiKey,
-    tokenOrProvider: userToken,
-    userData: user,
-  });
+  // Channel configuration - now uses authenticated user's ID
+  const sort: ChannelSort = { last_message_at: -1 };
+  const filters: ChannelFilters = {
+    type: 'messaging',
+    members: { $in: [client?.user?.id || ''] },
+  };
+  const options: ChannelOptions = {
+    limit: 10,
+  };
 
-  // Set up a demo channel and message when client is ready
-  useEffect(() => {
-    if (!client) return;
-
-    const initDemoChannel = async () => {
-      try {
-        // Create or get a demo channel
-        const channel = client.channel('messaging', 'demo_channel', {
-          image: 'https://getstream.io/random_png/?name=evento',
-          name: 'Evento Chat Demo',
-          members: [userId],
-        });
-
-        // Watch the channel to make it active
-        await channel.watch();
-
-        // Send a welcome message if it's a new channel
-        const state = channel.state;
-        if (state.messages.length === 0) {
-          await channel.sendMessage({
-            text: '👋 Welcome to Evento Chat! This is powered by Stream Chat SDK. Try sending a message!',
-          });
-        }
-      } catch (error) {
-        console.error('Failed to initialize demo channel:', error);
-      }
-    };
-
-    initDemoChannel();
-  }, [client]);
-
-  if (isCheckingAuth) {
-    return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!client) {
+  // Show loading state during authentication or Stream Chat setup
+  if (isCheckingAuth || isLoadingStream) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='text-center'>
             <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500 mx-auto mb-4'></div>
-            <p>Setting up chat connection...</p>
+            <p>{isCheckingAuth ? 'Authenticating...' : 'Setting up chat connection...'}</p>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  // Show error state if Stream Chat fails to connect
+  if (streamError || !client) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='text-center'>
+            <div className='mb-4 text-red-500'>
+              <svg className='mx-auto h-12 w-12' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z' />
+              </svg>
+            </div>
+            <p className='text-red-600 font-medium'>Failed to connect to chat</p>
+            <p className='text-sm text-gray-500 mt-1'>{streamError || 'Please try refreshing the page'}</p>
+          </div>
+        </div>
+        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
   }
