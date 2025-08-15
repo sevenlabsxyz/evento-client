@@ -225,7 +225,7 @@ export default function EventDetailPageClient() {
             <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
               <button
                 onClick={() => handleTabChange('details')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'details'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
@@ -235,7 +235,7 @@ export default function EventDetailPageClient() {
               </button>
               <button
                 onClick={() => handleTabChange('comments')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'comments'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
@@ -245,7 +245,7 @@ export default function EventDetailPageClient() {
               </button>
               <button
                 onClick={() => handleTabChange('gallery')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'gallery'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'

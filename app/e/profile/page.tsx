@@ -550,7 +550,7 @@ export default function ProfilePage() {
             <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
               <button
                 onClick={() => setActiveTab('about')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'about'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
@@ -560,7 +560,7 @@ export default function ProfilePage() {
               </button>
               <button
                 onClick={() => setActiveTab('events')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'events'
                     ? 'bg-gray-100 text-black'
                     : 'bg-white text-gray-500 hover:bg-gray-50'
