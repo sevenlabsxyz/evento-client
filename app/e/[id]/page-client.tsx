@@ -220,44 +220,39 @@ export default function EventDetailPageClient() {
           </div>
 
           {/* Tabbed Section */}
-          <div className='bg-white'>
-            {/* Tab Headers with top border */}
-            <div className='border-t border-gray-100'>
-              <div className='flex gap-2 px-4 py-3'>
-                <button
-                  onClick={() => handleTabChange('details')}
-                  className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                    activeTab === 'details'
-                      ? 'bg-gray-100 text-black'
-                      : 'bg-white text-black hover:bg-gray-50'
-                  }`}
-                >
-                  Details
-                </button>
-                <button
-                  onClick={() => handleTabChange('comments')}
-                  className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                    activeTab === 'comments'
-                      ? 'bg-gray-100 text-black'
-                      : 'bg-white text-black hover:bg-gray-50'
-                  }`}
-                >
-                  Comments
-                </button>
-                <button
-                  onClick={() => handleTabChange('gallery')}
-                  className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                    activeTab === 'gallery'
-                      ? 'bg-gray-100 text-black'
-                      : 'bg-white text-black hover:bg-gray-50'
-                  }`}
-                >
-                  Gallery
-                  {event.galleryImages && event.galleryImages.length > 0
-                    ? ` (${event.galleryImages.length})`
-                    : ''}
-                </button>
-              </div>
+          <div className='mb-4 w-full bg-white'>
+            {/* Tab Headers */}
+            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
+              <button
+                onClick={() => handleTabChange('details')}
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                  activeTab === 'details'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                Details
+              </button>
+              <button
+                onClick={() => handleTabChange('comments')}
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                  activeTab === 'comments'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                Comments
+              </button>
+              <button
+                onClick={() => handleTabChange('gallery')}
+                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
+                  activeTab === 'gallery'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
+                }`}
+              >
+                Gallery
+              </button>
             </div>
 
             {/* Tab Content */}
