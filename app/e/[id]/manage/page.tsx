@@ -115,15 +115,15 @@ export default function ManageEventPage() {
       iconColor: 'text-green-600',
       route: `/e/${eventId}/manage/contributions`,
     },
-    {
-      id: 'registration-questions',
-      title: 'Registration Questions',
-      description: 'Collect information from guests',
-      icon: <HelpCircle className='h-6 w-6' />,
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-600',
-      route: `/e/${eventId}/manage/registration`,
-    },
+    // {
+    //   id: 'registration-questions',
+    //   title: 'Registration Questions',
+    //   description: 'Collect information from guests',
+    //   icon: <HelpCircle className='h-6 w-6' />,
+    //   iconBg: 'bg-purple-100',
+    //   iconColor: 'text-purple-600',
+    //   route: `/e/${eventId}/manage/registration`,
+    // },
   ];
 
   const handleOptionClick = (route: string) => {
