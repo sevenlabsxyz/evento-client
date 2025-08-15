@@ -1,5 +1,6 @@
 'use client';
 
+import { BlogSection } from '@/components/hub/blog-section';
 import { Navbar } from '@/components/navbar';
 import RowCard from '@/components/row-card';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -50,7 +51,7 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='flex h-full w-full flex-col gap-4 bg-gray-50 px-4'>
+      <div className='flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16'>
         <div className='pt-4 text-left text-base text-gray-500'>
           Welcome back @{user?.username},
         </div>
@@ -62,6 +63,7 @@ export default function HubPage() {
             icon={<Calendar1 />}
             isClickable
           />
+          <BlogSection />
         </div>
       </div>
       <Navbar />
