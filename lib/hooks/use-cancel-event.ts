@@ -1,6 +1,5 @@
 import { apiClient } from '@/lib/api/client';
 import { debugError } from '@/lib/utils/debug';
-import { toast } from '@/lib/utils/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -33,17 +32,9 @@ export function useCancelEvent() {
       queryClient.removeQueries({
         queryKey: ['event', 'details', variables.eventId],
       });
-
-      // Show success toast
-      toast.success(
-        variables.sendEmails
-          ? 'Event cancelled. Notification emails have been sent to attendees.'
-          : 'Event cancelled successfully.'
-      );
     },
 
     onError: (error) => {
-      toast.error('Failed to cancel event. Please try again.');
       console.error('Event cancellation error:', error);
     },
   });

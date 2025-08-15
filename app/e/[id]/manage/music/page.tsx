@@ -206,9 +206,15 @@ export default function MusicManagementPage() {
         status: existingEvent.status,
       };
 
-      await updateEventMutation.mutateAsync(updateData);
-      toast.success('Music settings updated successfully!');
-      router.back();
+      await updateEventMutation.mutateAsync(updateData, {
+        onSuccess: () => {
+          toast.success('Music settings updated successfully!');
+          router.push(`/e/${eventId}/manage`);
+        },
+        onError: () => {
+          toast.error('Failed to update music settings');
+        },
+      });
     } catch (error) {
       console.error('Failed to save music settings:', error);
       toast.error('Failed to update music settings');

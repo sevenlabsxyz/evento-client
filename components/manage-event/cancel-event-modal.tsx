@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { useCancelEvent } from '@/lib/hooks/use-cancel-event';
+import { toast } from '@/lib/utils/toast';
 import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -29,9 +30,18 @@ export default function CancelEventModal({
       { eventId, sendEmails: sendEmail },
       {
         onSuccess: () => {
+          toast.success(
+            sendEmail
+              ? 'Event cancelled. Notification emails have been sent to attendees.'
+              : 'Event cancelled successfully.'
+          );
+
           onClose();
           // Redirect to feed page after successful cancellation
           router.push('/e/feed');
+        },
+        onError: () => {
+          toast.error('Failed to cancel event. Please try again.');
         },
       }
     );

@@ -14,6 +14,7 @@ import {
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { NotificationFilterParams, UINotification } from '@/lib/types/notifications';
 import { isValidRelativePath } from '@/lib/utils/link';
+import { toast } from '@/lib/utils/toast';
 import { MailOpen, RefreshCw } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -116,7 +117,17 @@ export default function InboxPage() {
 
   // Handle mark all as read
   const handleMarkAllAsRead = useCallback(() => {
-    markAllAsRead.mutate({});
+    markAllAsRead.mutate(
+      {},
+      {
+        onSuccess: () => {
+          toast.success('All notifications marked as read');
+        },
+        onError: () => {
+          toast.error('Failed to mark all notifications as read. Please try again');
+        },
+      }
+    );
   }, []);
 
   // Set TopBar content
@@ -173,7 +184,14 @@ export default function InboxPage() {
 
   const handleArchive = useCallback(
     (id: string) => {
-      archiveNotification.mutate(id);
+      archiveNotification.mutate(id, {
+        onSuccess: () => {
+          toast.success('Notification archived');
+        },
+        onError: () => {
+          toast.error('Failed to archive notification. Please try again');
+        },
+      });
     },
     [archiveNotification]
   );
@@ -185,6 +203,10 @@ export default function InboxPage() {
         {
           onSuccess: () => {
             setSelectedIds([]);
+            toast.success('Notifications marked as read');
+          },
+          onError: () => {
+            toast.error('Failed to mark notifications as read. Please try again');
           },
         }
       );
@@ -192,11 +214,21 @@ export default function InboxPage() {
   }, [selectedIds, bulkMarkAsRead]);
 
   const handleArchiveSelected = useCallback(() => {
+    let isError = false;
     // Archive each selected notification one by one
     // Ideally would use a bulk endpoint, but using what's available
     selectedIds.forEach((id) => {
-      archiveNotification.mutate(id);
+      archiveNotification.mutate(id, {
+        onError: () => {
+          isError = true;
+        },
+      });
     });
+    if (!isError) {
+      toast.success('Notifications archived');
+    } else {
+      toast.error('Failed to archive 1 or more notifications. Please try again');
+    }
     setSelectedIds([]);
   }, [selectedIds, archiveNotification]);
 

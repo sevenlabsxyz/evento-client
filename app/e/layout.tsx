@@ -1,8 +1,8 @@
 'use client';
 
 import { TopBar } from '@/components/top-bar';
-import { useTopBar } from '@/lib/stores/topbar-store';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 

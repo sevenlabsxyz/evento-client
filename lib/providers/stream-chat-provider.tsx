@@ -1,10 +1,10 @@
 'use client';
 
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
-import { StreamChat } from 'stream-chat';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { streamChatService, getStreamChatApiKey } from '@/lib/services/stream-chat';
+import { getStreamChatApiKey, streamChatService } from '@/lib/services/stream-chat';
 import { useQuery } from '@tanstack/react-query';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { StreamChat } from 'stream-chat';
 
 interface StreamChatContextValue {
   client: StreamChat | null;
@@ -44,10 +44,7 @@ export function StreamChatProvider({ children }: { children: React.ReactNode }) 
   });
 
   // Query to sync user with Stream Chat
-  const {
-    data: streamUser,
-    isLoading: isSyncingUser,
-  } = useQuery({
+  const { data: streamUser, isLoading: isSyncingUser } = useQuery({
     queryKey: ['stream-chat', 'user-sync', authUser?.id],
     queryFn: () => streamChatService.syncUser(),
     enabled: isAuthenticated && !!authUser && !!tokenData,
@@ -74,14 +71,14 @@ export function StreamChatProvider({ children }: { children: React.ReactNode }) 
         // Check if we already have a global client connected
         if (globalClient) {
           const currentUser = globalClient.user;
-          
+
           // If same user is already connected, reuse the client
           if (currentUser && currentUser.id === authUser.id) {
             setClient(globalClient);
             setIsConnecting(false);
             return;
           }
-          
+
           // Different user, disconnect the old one
           await globalClient.disconnectUser();
           globalClient = null;

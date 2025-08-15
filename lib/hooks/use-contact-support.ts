@@ -1,5 +1,4 @@
 import apiClient from '@/lib/api/client';
-import { toast } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 import { ApiResponse } from '../types/api';
 
@@ -26,12 +25,6 @@ export function useContactSupport() {
         throw { message: data?.data?.message || 'Failed to send message' };
       }
       return data?.data;
-    },
-    onSuccess: (data) => {
-      toast.success(data.message || "Message sent successfully! We'll get back to you soon.");
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || 'Failed to send message. Please try again.');
     },
   });
 }
