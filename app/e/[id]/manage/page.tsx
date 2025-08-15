@@ -6,7 +6,6 @@ import { useTopBar } from "@/lib/stores/topbar-store";
 import {
   DollarSign,
   FileText,
-  HelpCircle,
   Layers,
   Loader2,
   Mail,

@@ -6,12 +6,13 @@ import EmailBlastSheet from '@/components/manage-event/email-blast-sheet';
 import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/use-email-blasts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Loader2, Mail, Plus } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EmailBlastPage() {
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const eventId = params.id as string;
   const [showEmailBlastSheet, setShowEmailBlastSheet] = useState(false);
   const [selectedBlast, setSelectedBlast] = useState<any | null>(null);
@@ -23,7 +24,8 @@ export default function EmailBlastPage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
       title: 'Email Blast',
       buttons: [
         {
@@ -38,9 +40,9 @@ export default function EmailBlastPage() {
     });
 
     return () => {
-      setTopBar({ leftMode: 'menu', buttons: [] });
+      clearRoute(pathname);
     };
-  }, [setTopBar]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
 
   const handleCreateBlast = () => {
     setShowEmailBlastSheet(true);

@@ -1,17 +1,58 @@
 'use client';
 
 import { useEventDetails } from '@/lib/hooks/use-event-details';
-import { ArrowLeft, Mail, Plus } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { Mail, Plus } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function HostsManagementPage() {
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const eventId = params.id as string;
 
   // Get existing event data from API
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
+
+  // Mock co-hosts data (empty for now)
+  const [coHosts, setCoHosts] = useState<any[]>([]);
+
+  const handleAddCoHost = () => {
+    // TODO: Implement add co-host functionality
+    console.log('Add co-host clicked');
+    // This would typically open a modal or navigate to an invite screen
+  };
+
+  const handleInviteCoHost = (email: string) => {
+    // TODO: Implement invite co-host functionality
+    console.log('Inviting co-host:', email);
+  };
+
+  // Configure TopBar for this page
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Hosts',
+      leftMode: 'back',
+      showAvatar: false,
+      subtitle: '',
+      centerMode: 'title',
+      buttons: [
+        {
+          id: 'add-cohost',
+          icon: Plus,
+          onClick: handleAddCoHost,
+          label: 'Add Co-host',
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
 
   if (isLoading) {
     return (
@@ -50,35 +91,8 @@ export default function HostsManagementPage() {
     role: 'Creator',
   };
 
-  // Mock co-hosts data (empty for now)
-  const [coHosts, setCoHosts] = useState<any[]>([]);
-
-  const handleAddCoHost = () => {
-    // TODO: Implement add co-host functionality
-    console.log('Add co-host clicked');
-    // This would typically open a modal or navigate to an invite screen
-  };
-
-  const handleInviteCoHost = (email: string) => {
-    // TODO: Implement invite co-host functionality
-    console.log('Inviting co-host:', email);
-  };
-
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Hosts</h1>
-        </div>
-        <button onClick={handleAddCoHost} className='rounded-full p-2 hover:bg-gray-100'>
-          <Plus className='h-6 w-6' />
-        </button>
-      </div>
-
       {/* Content */}
       <div className='space-y-4 p-4'>
         {/* Event Creator */}
