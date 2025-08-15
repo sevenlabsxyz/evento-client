@@ -1,11 +1,13 @@
 'use client';
 
 import { useEventDetails } from '@/lib/hooks/use-event-details';
-import { ArrowLeft, Mail, Plus } from 'lucide-react';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { Mail, Plus } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function HostsManagementPage() {
+  const { setTopBar } = useTopBar();
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
@@ -64,21 +66,37 @@ export default function HostsManagementPage() {
     console.log('Inviting co-host:', email);
   };
 
+  // Configure TopBar for this page
+  useEffect(() => {
+    setTopBar({
+      title: 'Hosts',
+      leftMode: 'back',
+      showAvatar: false,
+      subtitle: '',
+      centerMode: 'title',
+      buttons: [
+        {
+          id: 'add-cohost',
+          icon: Plus,
+          onClick: handleAddCoHost,
+          label: 'Add Co-host',
+        },
+      ],
+    });
+
+    return () => {
+      setTopBar({
+        leftMode: 'menu',
+        buttons: [],
+        title: '',
+        subtitle: '',
+        showAvatar: true,
+      });
+    };
+  }, [setTopBar]);
+
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Hosts</h1>
-        </div>
-        <button onClick={handleAddCoHost} className='rounded-full p-2 hover:bg-gray-100'>
-          <Plus className='h-6 w-6' />
-        </button>
-      </div>
-
       {/* Content */}
       <div className='space-y-4 p-4'>
         {/* Event Creator */}
