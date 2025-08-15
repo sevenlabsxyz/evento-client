@@ -1,5 +1,4 @@
 import { apiClient } from '@/lib/api/client';
-import { toast } from '@/lib/utils/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 export function useDeleteGalleryItem() {
@@ -26,10 +25,6 @@ export function useDeleteGalleryItem() {
       queryClient.invalidateQueries({
         queryKey: ['event', 'gallery', eventId],
       });
-      toast.success('Photo deleted successfully');
-    },
-    onError: (error: Error) => {
-      toast.error(error.message || 'Failed to delete photo');
     },
   });
 }

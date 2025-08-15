@@ -209,8 +209,7 @@
   color: white;
 }
 
-.str-chat__message-simple:not(.str-chat__message-simple--me)
-  .str-chat__message-simple__content {
+.str-chat__message-simple:not(.str-chat__message-simple--me) .str-chat__message-simple__content {
   background-color: #f3f4f6;
   color: #374151;
 }

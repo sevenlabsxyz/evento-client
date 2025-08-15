@@ -10,6 +10,7 @@ import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
 import { isGif } from '@/lib/utils/image';
+import { toast } from '@/lib/utils/toast';
 import { Heart, MoreHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -38,7 +39,17 @@ export default function GalleryItem({
     if (
       window.confirm('Are you sure you want to delete this photo? This action cannot be undone.')
     ) {
-      deleteGalleryItem.mutate({ galleryItemId: item.id, eventId });
+      deleteGalleryItem.mutate(
+        { galleryItemId: item.id, eventId },
+        {
+          onSuccess: () => {
+            toast.success('Photo deleted successfully');
+          },
+          onError: (error: Error) => {
+            toast.error(error.message || 'Failed to delete photo');
+          },
+        }
+      );
     }
   };
 
