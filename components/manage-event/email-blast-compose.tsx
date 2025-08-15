@@ -13,7 +13,7 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { CalendarClock, Clock, Loader2, Mail, Send, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';
 import { Button } from '../ui/button';
@@ -87,7 +87,17 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
 
   // API hooks
   const createEmailBlastMutation = useCreateEmailBlastWithCallbacks(eventId);
-  const { data: rsvpStats, isLoading: isLoadingStats } = useRSVPStats(eventId);
+  const {
+    data: rsvpStats,
+    isLoading: isLoadingStats,
+    error: rsvpStatsError,
+  } = useRSVPStats(eventId);
+
+  useEffect(() => {
+    if (rsvpStatsError) {
+      toast.error('Failed to fetch RSVP stats');
+    }
+  }, [rsvpStatsError]);
 
   // Dynamic recipient options based on RSVP stats
   const recipientOptions = [

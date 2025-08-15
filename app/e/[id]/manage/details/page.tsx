@@ -18,6 +18,7 @@ import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
+import { toast } from '@/lib/utils/toast';
 import { Calendar, Check, ChevronRight, Edit3, Globe, Loader2, Lock, MapPin } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -190,13 +191,22 @@ export default function EditEventDetailsPage() {
   const handleSaveChanges = async () => {
     try {
       const formData = getFormData();
-      await updateEventMutation.mutateAsync({
-        ...formData,
-        id: eventId,
-      });
-
-      // Navigate back to the manage page on success
-      router.push(`/e/${eventId}/manage`);
+      await updateEventMutation.mutateAsync(
+        {
+          ...formData,
+          id: eventId,
+        },
+        {
+          onSuccess: () => {
+            toast.success('Event updated successfully!');
+            // Navigate back to the manage page on success
+            router.push(`/e/${eventId}/manage`);
+          },
+          onError: () => {
+            toast.error('Failed to update event');
+          },
+        }
+      );
     } catch (error) {
       // Error handling is done in the mutation hook
       console.error('Failed to update event:', error);

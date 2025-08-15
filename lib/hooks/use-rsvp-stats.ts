@@ -2,7 +2,6 @@
 
 import { apiClient } from '@/lib/api/client';
 import { ApiResponse, EmailBlastRecipientFilter, EventRSVP } from '@/lib/types/api';
-import { toast } from '@/lib/utils/toast';
 import { useQuery } from '@tanstack/react-query';
 
 export interface RSVPStats {
@@ -18,25 +17,20 @@ export function useRSVPStats(eventId: string) {
   return useQuery({
     queryKey: ['rsvpStats', eventId],
     queryFn: async (): Promise<RSVPStats> => {
-      try {
-        // Fetch RSVPs using the correct API endpoint with query parameter
-        const response = await apiClient.get<ApiResponse<EventRSVP[]>>(
-          `/v1/events/rsvps?event_id=${eventId}`
-        );
+      // Fetch RSVPs using the correct API endpoint with query parameter
+      const response = await apiClient.get<ApiResponse<EventRSVP[]>>(
+        `/v1/events/rsvps?event_id=${eventId}`
+      );
 
-        if (response && response.data && Array.isArray(response.data)) {
-          const rsvps = response.data;
-          const stats: RSVPStats = {
-            all: rsvps.length,
-            yes_only: rsvps.filter((rsvp) => rsvp.status === 'yes').length,
-            yes_and_maybe: rsvps.filter((rsvp) => rsvp.status === 'maybe').length,
-          };
+      if (response && response.data && Array.isArray(response.data)) {
+        const rsvps = response.data;
+        const stats: RSVPStats = {
+          all: rsvps.length,
+          yes_only: rsvps.filter((rsvp) => rsvp.status === 'yes').length,
+          yes_and_maybe: rsvps.filter((rsvp) => rsvp.status === 'maybe').length,
+        };
 
-          return stats;
-        }
-      } catch (error) {
-        console.log('RSVP endpoint error:', error);
-        toast.error('Failed to fetch RSVP stats');
+        return stats;
       }
 
       // Fallback: return default stats when no RSVPs or API error

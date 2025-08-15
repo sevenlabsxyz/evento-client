@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { StreamChat, User } from 'stream-chat';
 import { useEffect, useMemo, useState } from 'react';
-import { streamChatService, getStreamChatApiKey } from '../services/stream-chat';
+import { StreamChat, User } from 'stream-chat';
+import { getStreamChatApiKey, streamChatService } from '../services/stream-chat';
 import { useAuth } from './use-auth';
 
 export interface UseStreamChatOptions {
@@ -37,10 +37,7 @@ export function useStreamChat(options: UseStreamChatOptions = {}) {
   });
 
   // Query to sync user with Stream Chat
-  const {
-    data: streamUser,
-    isLoading: isSyncingUser,
-  } = useQuery({
+  const { data: streamUser, isLoading: isSyncingUser } = useQuery({
     queryKey: ['stream-chat', 'user-sync', authUser?.id],
     queryFn: () => streamChatService.syncUser(),
     enabled: isAuthenticated && !!authUser && !!tokenData,
@@ -50,7 +47,7 @@ export function useStreamChat(options: UseStreamChatOptions = {}) {
   // Create Stream Chat client instance
   const streamChatClient = useMemo(() => {
     if (!isAuthenticated || !authUser) return null;
-    
+
     try {
       const apiKey = getStreamChatApiKey();
       return StreamChat.getInstance(apiKey);
@@ -82,7 +79,7 @@ export function useStreamChat(options: UseStreamChatOptions = {}) {
 
         // Connect to Stream Chat
         await streamChatClient.connectUser(streamUserData, tokenData.token);
-        
+
         if (!isCancelled) {
           setClient(streamChatClient);
           setConnectionError(null);

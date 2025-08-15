@@ -51,18 +51,26 @@ export default function ContactPage() {
     }
 
     try {
-      await contactMutation.mutateAsync({
-        subject: formData.title.trim(),
-        message: formData.message.trim(),
-      });
-      setFormData({
-        title: '',
-        message: '',
-      });
-      router.back();
-    } catch (_) {
-      // Error toast is already handled in the hook
-    }
+      await contactMutation.mutateAsync(
+        {
+          subject: formData.title.trim(),
+          message: formData.message.trim(),
+        },
+        {
+          onSuccess: () => {
+            toast.success("Message sent successfully! We'll get back to you soon.");
+            setFormData({
+              title: '',
+              message: '',
+            });
+            router.back();
+          },
+          onError: () => {
+            toast.error('Failed to send message. Please try again.');
+          },
+        }
+      );
+    } catch (_) {}
   };
 
   if (isCheckingAuth) {

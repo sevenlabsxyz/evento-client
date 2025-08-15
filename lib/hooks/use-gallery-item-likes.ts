@@ -94,7 +94,6 @@ export function useGalleryItemLikes(itemId?: string) {
       if (context?.previousData) {
         queryClient.setQueryData(['gallery', 'likes', itemId], context.previousData);
       }
-      toast.error('Failed to update like. Please try again.');
     },
     onSettled: () => {
       // Always refetch after error or success to make sure our local data is correct
@@ -108,7 +107,11 @@ export function useGalleryItemLikes(itemId?: string) {
       toast.error('Unable to like this image');
       return;
     }
-    likeMutation.mutate();
+    likeMutation.mutate(undefined, {
+      onError: () => {
+        toast.error('Failed to update like. Please try again.');
+      },
+    });
   };
 
   return {

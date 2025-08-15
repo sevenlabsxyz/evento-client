@@ -8,7 +8,6 @@ import {
   NotificationMessage,
   UINotification,
 } from '@/lib/types/notifications';
-import { toast } from '@/lib/utils/toast';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNowStrict } from 'date-fns';
 
@@ -235,14 +234,10 @@ export function useArchiveNotification() {
       throw new Error('Failed to archive notification');
     },
     onSuccess: (_, messageId) => {
-      toast.success('Notification archived');
       queryClient.invalidateQueries({ queryKey: ['notifications', 'feed'] });
       queryClient.invalidateQueries({
         queryKey: ['notifications', 'message', messageId],
       });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to archive notification');
     },
   });
 }
@@ -266,11 +261,7 @@ export function useBulkMarkAsSeen() {
       throw new Error('Failed to mark notifications as seen');
     },
     onSuccess: () => {
-      toast.success('Notifications marked as seen');
       queryClient.invalidateQueries({ queryKey: ['notifications', 'feed'] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to mark notifications as seen');
     },
   });
 }
@@ -294,11 +285,7 @@ export function useBulkMarkAsRead() {
       throw new Error('Failed to mark notifications as read');
     },
     onSuccess: () => {
-      toast.success('Notifications marked as read');
       queryClient.invalidateQueries({ queryKey: ['notifications', 'feed'] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to mark notifications as read');
     },
   });
 }
@@ -322,11 +309,7 @@ export function useMarkAllAsSeen() {
       throw new Error('Failed to mark all notifications as seen');
     },
     onSuccess: () => {
-      toast.success('All notifications marked as seen');
       queryClient.invalidateQueries({ queryKey: ['notifications', 'feed'] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to mark all notifications as seen');
     },
   });
 }
@@ -350,11 +333,7 @@ export function useMarkAllAsRead() {
       throw new Error('Failed to mark all notifications as read');
     },
     onSuccess: () => {
-      toast.success('All notifications marked as read');
       queryClient.invalidateQueries({ queryKey: ['notifications', 'feed'] });
-    },
-    onError: (error: any) => {
-      toast.error(error.message || 'Failed to mark all notifications as read');
     },
   });
 }

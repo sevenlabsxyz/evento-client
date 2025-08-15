@@ -240,9 +240,16 @@ export default function ContributionsManagementPage() {
         status: existingEvent.status,
       };
 
-      await updateEventMutation.mutateAsync(updateData);
-      toast.success('Contribution settings updated successfully!');
-      router.back();
+      await updateEventMutation.mutateAsync(updateData, {
+        onSuccess: () => {
+          toast.success('Contribution settings updated successfully!');
+          // Navigate back to the manage page on success
+          router.push(`/e/${eventId}/manage`);
+        },
+        onError: () => {
+          toast.error('Failed to update contribution settings');
+        },
+      });
     } catch (error) {
       console.error('Failed to save contribution settings:', error);
       toast.error('Failed to update contribution settings');

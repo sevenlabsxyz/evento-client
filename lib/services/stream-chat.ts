@@ -1,6 +1,6 @@
 import { apiClient } from '../api/client';
-import { ApiResponse } from '../types/api';
 import { Env } from '../constants/env';
+import { ApiResponse } from '../types/api';
 
 export interface StreamChatTokenResponse {
   token: string;
@@ -67,7 +67,7 @@ export const streamChatService = {
     const response = await apiClient.get<ApiResponse<StreamChatChannel[]>>(
       '/v1/stream-chat/channels',
       {
-        params: { limit, offset }
+        params: { limit, offset },
       }
     );
     return response.data;
@@ -77,7 +77,9 @@ export const streamChatService = {
    * Create or get a direct message channel
    * POST /api/v1/stream-chat/channels/direct-message
    */
-  createDirectMessageChannel: async (recipientId: string): Promise<DirectMessageChannelResponse> => {
+  createDirectMessageChannel: async (
+    recipientId: string
+  ): Promise<DirectMessageChannelResponse> => {
     const response = await apiClient.post<ApiResponse<DirectMessageChannelResponse>>(
       '/v1/stream-chat/channels/direct-message',
       { recipient_id: recipientId }
@@ -103,7 +105,7 @@ export const streamChatService = {
         channel_id: channelId,
         name,
         members,
-        image
+        image,
       }
     );
     return response.data;
@@ -128,7 +130,7 @@ export const streamChatService = {
       {
         channel_type: channelType,
         channel_id: channelId,
-        ...updates
+        ...updates,
       }
     );
     return response.data;
@@ -142,10 +144,10 @@ export const streamChatService = {
     await apiClient.delete('/v1/stream-chat/channels', {
       params: {
         channel_type: channelType,
-        channel_id: channelId
-      }
+        channel_id: channelId,
+      },
     });
-  }
+  },
 };
 
 // Helper function to get Stream Chat API key from environment

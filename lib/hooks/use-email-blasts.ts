@@ -1,6 +1,5 @@
 import apiClient from '@/lib/api/client';
 import { ApiResponse, CreateEmailBlastForm, EmailBlast } from '@/lib/types/api';
-import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -42,14 +41,12 @@ export function useCreateEmailBlast(eventId: string) {
       }
       throw new Error('Failed to create email blast');
     },
-    onSuccess: (data) => {
-      toast.success('Email blast created successfully!');
+    onSuccess: () => {
       // Invalidate and refetch email blasts
       queryClient.invalidateQueries({ queryKey: ['emailBlasts', eventId] });
     },
     onError: (error: any) => {
       console.error('Create email blast error:', error);
-      toast.error(error.message || 'Failed to create email blast');
     },
   });
 }

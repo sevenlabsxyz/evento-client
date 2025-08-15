@@ -1,7 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { UpdateEventData, updateEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
-import { toast } from '@/lib/utils/toast';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateEventResponse {
@@ -32,8 +31,6 @@ export function useUpdateEvent() {
       throw new Error('Failed to update event');
     },
     onSuccess: (data) => {
-      toast.success('Event updated successfully!');
-
       // Invalidate related queries to refetch updated data
       queryClient.invalidateQueries({
         queryKey: ['event', 'details', data.id],
@@ -42,7 +39,6 @@ export function useUpdateEvent() {
     },
     onError: (error: any) => {
       console.error('Update event error:', error);
-      toast.error(error.message || 'Failed to update event');
     },
   });
 }

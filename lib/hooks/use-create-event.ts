@@ -1,7 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { CreateEventData, createEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
-import { toast } from '@/lib/utils/toast';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
@@ -34,13 +33,11 @@ export function useCreateEvent() {
       throw new Error('Failed to create event');
     },
     onSuccess: (data) => {
-      toast.success('Event created successfully!');
       // Navigate to the created event
       router.push(`/e/${data.id}`);
     },
     onError: (error: any) => {
       console.error('Create event error:', error);
-      toast.error(error.message || 'Failed to create event');
     },
   });
 }
