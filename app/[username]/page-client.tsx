@@ -16,10 +16,7 @@ import {
 } from '@/components/ui/select';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import {
-  usePinnedEvent,
-  useUpdatePinnedEvent,
-} from '@/lib/hooks/use-pinned-event';
+import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
   EventFilterType,
   EventSortBy,
@@ -73,12 +70,8 @@ export default function UserProfilePageClient() {
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null
-  );
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
-    null
-  );
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -89,8 +82,9 @@ export default function UserProfilePageClient() {
   } = useUserByUsername(username);
 
   // Get follow status for this user
-  const { data: followStatus, isLoading: isFollowStatusLoading } =
-    useFollowStatus(userData?.id || '');
+  const { data: followStatus, isLoading: isFollowStatusLoading } = useFollowStatus(
+    userData?.id || ''
+  );
 
   // Consolidated follow/unfollow mutation
   const followActionMutation = useFollowAction();
@@ -153,11 +147,7 @@ export default function UserProfilePageClient() {
       url: window.location.href,
     };
 
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare(shareData)
-    ) {
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       try {
         await navigator.share(shareData);
       } catch (error) {
@@ -233,8 +223,8 @@ export default function UserProfilePageClient() {
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
+      <div className='mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm'>
+        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
       </div>
     );
   }
@@ -242,18 +232,16 @@ export default function UserProfilePageClient() {
   // Handle user not found
   if (userError || !userProfile) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-            <UserMinus className="h-8 w-8 text-gray-400" />
+      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm'>
+        <div className='text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+            <UserMinus className='h-8 w-8 text-gray-400' />
           </div>
-          <h2 className="mb-2 text-xl font-bold text-gray-900">
-            User not found
-          </h2>
-          <p className="mb-4 text-gray-500">
+          <h2 className='mb-2 text-xl font-bold text-gray-900'>User not found</h2>
+          <p className='mb-4 text-gray-500'>
             The user @{username} doesn't exist or may have been deleted.
           </p>
-          <Button onClick={() => router.back()} variant="outline">
+          <Button onClick={() => router.back()} variant='outline'>
             Go Back
           </Button>
         </div>
@@ -359,24 +347,18 @@ export default function UserProfilePageClient() {
     const groupedEvents =
       userEventsData?.pages
         .flatMap((page) => page.events)
-        .reduce(
-          (
-            groups: { date: string; events: EventWithUser[] }[],
-            event: EventWithUser
-          ) => {
-            const date = event.computed_start_date;
-            const group = groups.find((g) => g.date === date);
+        .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
+          const date = event.computed_start_date;
+          const group = groups.find((g) => g.date === date);
 
-            if (group) {
-              group.events.push(event);
-            } else {
-              groups.push({ date, events: [event] });
-            }
+          if (group) {
+            group.events.push(event);
+          } else {
+            groups.push({ date, events: [event] });
+          }
 
-            return groups;
-          },
-          []
-        )
+          return groups;
+        }, [])
         .sort(
           (
             a: { date: string; events: EventWithUser[] },
@@ -397,9 +379,7 @@ export default function UserProfilePageClient() {
       if (event.user_details.id === user.id) return true;
 
       // User can pin if they are a co-host
-      const isCoHost = event.hosts?.some(
-        (host: EventHost) => host.id === user.id
-      );
+      const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
       return isCoHost;
     };
 
@@ -409,9 +389,7 @@ export default function UserProfilePageClient() {
       updatePinnedEvent(eventId, {
         onSuccess: () => {
           toast.success(
-            isPinned
-              ? 'Event unpinned from your profile'
-              : 'Event pinned to your profile'
+            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
           );
         },
         onError: () => {
@@ -437,93 +415,88 @@ export default function UserProfilePageClient() {
     };
 
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {/* Filter Tabs */}
         <Tabs
           value={eventsFilter}
           onValueChange={(value) => setEventsFilter(value as EventFilterType)}
-          className="w-full"
+          className='w-full'
         >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="upcoming">All</TabsTrigger>
-            <TabsTrigger value="attending">Attending</TabsTrigger>
-            <TabsTrigger value="hosting">Hosting</TabsTrigger>
+          <TabsList className='grid w-full grid-cols-3'>
+            <TabsTrigger value='upcoming'>All</TabsTrigger>
+            <TabsTrigger value='attending'>Attending</TabsTrigger>
+            <TabsTrigger value='hosting'>Hosting</TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* Controls */}
-        <div className="mt-4 grid w-full grid-cols-3 items-center gap-2">
+        <div className='mt-4 grid w-full grid-cols-3 items-center gap-2'>
           <Select
             value={timeframe}
-            onValueChange={(value: string) =>
-              setTimeframe(value as EventTimeframe)
-            }
+            onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
           >
-            <SelectTrigger className="text-sm">
-              <Calendar className="mr-2 h-4 w-4" />
-              <SelectValue placeholder="Timeframe" />
+            <SelectTrigger className='text-sm'>
+              <Calendar className='mr-2 h-4 w-4' />
+              <SelectValue placeholder='Timeframe' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="future">Future</SelectItem>
-              <SelectItem value="past">Past</SelectItem>
+              <SelectItem value='all'>All</SelectItem>
+              <SelectItem value='future'>Future</SelectItem>
+              <SelectItem value='past'>Past</SelectItem>
             </SelectContent>
           </Select>
-          <Select
-            value={sortBy}
-            onValueChange={(value: string) => setSortBy(value as EventSortBy)}
-          >
-            <SelectTrigger className="text-sm">
+          <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
+            <SelectTrigger className='text-sm'>
               {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
-                <SortAsc className="mr-2 h-4 w-4" />
+                <SortAsc className='mr-2 h-4 w-4' />
               ) : (
-                <SortDesc className="mr-2 h-4 w-4" />
+                <SortDesc className='mr-2 h-4 w-4' />
               )}
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="created-desc">Created Desc</SelectItem>
-              <SelectItem value="created-asc">Created Asc</SelectItem>
-              <SelectItem value="date-desc">Date Desc</SelectItem>
-              <SelectItem value="date-asc">Date Asc</SelectItem>
+              <SelectItem value='created-desc'>Created Desc</SelectItem>
+              <SelectItem value='created-asc'>Created Asc</SelectItem>
+              <SelectItem value='date-desc'>Date Desc</SelectItem>
+              <SelectItem value='date-asc'>Date Asc</SelectItem>
             </SelectContent>
           </Select>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => setShowEventSearchSheet(true)}
-            aria-label="Search events"
+            aria-label='Search events'
           >
-            <Search className="h-5 w-5" />
+            <Search className='h-5 w-5' />
             <span>Search</span>
           </Button>
         </div>
 
         {/* Events List */}
-        <div className="space-y-8">
+        <div className='space-y-8'>
           {isLoadingEvents ? (
-            <div className="flex h-40 items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <div className='flex h-40 items-center justify-center'>
+              <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
             </div>
           ) : groupedEvents.length === 0 ? (
-            <div className="flex h-40 flex-col items-center justify-center space-y-2 text-center">
-              <div className="rounded-full bg-gray-100 p-3">
-                <MessageCircle className="h-6 w-6 text-gray-400" />
+            <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
+              <div className='rounded-full bg-gray-100 p-3'>
+                <MessageCircle className='h-6 w-6 text-gray-400' />
               </div>
-              <p className="text-sm text-gray-500">No events found</p>
+              <p className='text-sm text-gray-500'>No events found</p>
             </div>
           ) : (
             groupedEvents.map((group) => (
-              <div key={group.date} className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">
+              <div key={group.date} className='space-y-3'>
+                <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
                 </h3>
-                <div className="divide-y divide-gray-100">
+                <div className='divide-y divide-gray-100'>
                   {group.events.map((event) => {
                     const isPinned = pinnedEvent?.id === event.id.toString();
                     const canPin = canPinEvent(event);
 
                     return (
-                      <div key={event.id} className="py-2">
+                      <div key={event.id} className='py-2'>
                         <EventCompactItem
                           key={event.id}
                           event={event}
@@ -546,16 +519,16 @@ export default function UserProfilePageClient() {
 
           {/* Load More Button */}
           {hasNextPage && (
-            <div className="flex justify-center pt-4">
+            <div className='flex justify-center pt-4'>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="w-full"
+                className='w-full'
               >
                 {isFetchingNextPage ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Loading...
                   </>
                 ) : (
@@ -581,7 +554,7 @@ export default function UserProfilePageClient() {
 
   const renderAboutTab = () => {
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {/* Social Links */}
         {userData && (
           <SocialLinks
@@ -601,16 +574,16 @@ export default function UserProfilePageClient() {
             <RowCard
               title={'Bio'}
               subtitle={userProfile?.bio}
-              icon={<User className="h-4 w-4" />}
+              icon={<User className='h-4 w-4' />}
             />
           </div>
         )}
 
         {/* Interest Tags */}
         <div>
-          <div className="flex flex-wrap gap-2">
+          <div className='flex flex-wrap gap-2'>
             <TagSection
-              title="Interests"
+              title='Interests'
               items={interestTags}
               selectedItems={[]}
               onToggleItem={() => {}}
@@ -620,41 +593,37 @@ export default function UserProfilePageClient() {
 
         {/* Profile Questions */}
         <div>
-          <h4 className="mb-3 font-semibold text-gray-900">About Me</h4>
-          <div className="space-y-3">
-            {profileQuestions.map(
-              (item: { question: string; answer: string }, index: number) => (
-                <div key={index} className="rounded-xl bg-gray-50 p-3">
-                  <p className="mb-1 text-sm font-medium text-gray-700">
-                    {item.question}
-                  </p>
-                  <p className="text-sm text-gray-900">{item.answer}</p>
-                </div>
-              )
-            )}
+          <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
+          <div className='space-y-3'>
+            {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
+              <div key={index} className='rounded-xl bg-gray-50 p-3'>
+                <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
+                <p className='text-sm text-gray-900'>{item.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Photo Album */}
         <div>
-          <div className="mb-3 flex items-center justify-between">
-            <h4 className="font-semibold text-gray-900">Photos</h4>
-            <Button variant="ghost" size="sm" className="text-red-600">
-              <Camera className="mr-1 h-4 w-4" />
+          <div className='mb-3 flex items-center justify-between'>
+            <h4 className='font-semibold text-gray-900'>Photos</h4>
+            <Button variant='ghost' size='sm' className='text-red-600'>
+              <Camera className='mr-1 h-4 w-4' />
               Add
             </Button>
           </div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className='grid grid-cols-3 gap-2'>
             {profilePhotos.map((photo: string, index: number) => (
               <button
                 key={index}
                 onClick={() => handleProfilePhotoClick(index)}
-                className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
+                className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
               >
                 <img
                   src={photo || '/assets/img/evento-sublogo.svg'}
                   alt={`Profile photo ${index + 1}`}
-                  className="h-full w-full object-cover"
+                  className='h-full w-full object-cover'
                 />
               </button>
             ))}
@@ -665,66 +634,54 @@ export default function UserProfilePageClient() {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className='flex-1 overflow-y-auto pb-20'>
         {/* Cover Image Section */}
-        <div className="relative">
+        <div className='relative'>
           {/* Banner */}
-          <div className="h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44" />
+          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
 
           {/* Profile Picture - Centered & Clickable */}
           <UserAvatar
             user={userProfile}
-            size="lg"
+            size='lg'
             onAvatarClick={handleAvatarClick}
             onVerificationClick={() => setShowVerificationModal(true)}
-            className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform"
+            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
           />
         </div>
 
         {/* Profile Section */}
-        <div className="mb-4 bg-white px-6 pb-2 pt-20">
+        <div className='mb-4 bg-white px-6 pb-2 pt-20'>
           {/* User Info - Centered */}
-          <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">
+          <div className='mb-6 text-center'>
+            <h2 className='text-2xl font-bold text-gray-900'>
               {userProfile?.name || 'Unknown User'}
             </h2>
-            <p className="text-gray-600">{userProfile?.username || ''}</p>
+            <p className='text-gray-600'>{userProfile?.username || ''}</p>
           </div>
 
           {/* Stats - Centered */}
-          <div className="mb-4 flex justify-center">
-            <div className="grid grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="text-xl font-bold text-gray-900">
-                  {eventCount}
-                </div>
-                <div className="text-sm text-gray-500">Events</div>
+          <div className='mb-4 flex justify-center'>
+            <div className='grid grid-cols-3 gap-8'>
+              <div className='text-center'>
+                <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
+                <div className='text-sm text-gray-500'>Events</div>
               </div>
-              <button
-                className="text-center"
-                onClick={() => setShowFollowingSheet(true)}
-              >
-                <div className="text-xl font-bold text-gray-900">
-                  {following?.length || 0}
-                </div>
-                <div className="text-sm text-gray-500">Following</div>
+              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                <div className='text-sm text-gray-500'>Following</div>
               </button>
-              <button
-                className="text-center"
-                onClick={() => setShowFollowersSheet(true)}
-              >
-                <div className="text-xl font-bold text-gray-900">
-                  {followers?.length || 0}
-                </div>
-                <div className="text-sm text-gray-500">Followers</div>
+              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                <div className='text-sm text-gray-500'>Followers</div>
               </button>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="-mx-2.5 mb-6 flex gap-2 px-2.5">
+          <div className='-mx-2.5 mb-6 flex gap-2 px-2.5'>
             <Button
               onClick={handleFollowToggle}
               disabled={isFollowStatusLoading || followActionMutation.isPending}
@@ -736,40 +693,38 @@ export default function UserProfilePageClient() {
             >
               {followStatus?.isFollowing ? (
                 <>
-                  <UserMinus className="mr-2 h-4 w-4" />
-                  {followActionMutation.isPending
-                    ? 'Unfollowing...'
-                    : 'Following'}
+                  <UserMinus className='mr-2 h-4 w-4' />
+                  {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
                 </>
               ) : (
                 <>
-                  <UserPlus className="mr-2 h-4 w-4" />
+                  <UserPlus className='mr-2 h-4 w-4' />
                   {followActionMutation.isPending ? 'Following...' : 'Follow'}
                 </>
               )}
             </Button>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={handleMessage}
-              className="rounded-xl bg-transparent px-3"
+              className='rounded-xl bg-transparent px-3'
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className='h-4 w-4' />
               Message
             </Button>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={handleTip}
-              className="group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700"
+              className='group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700'
             >
-              <Zap className="h-4 w-4 text-black transition-colors group-hover:text-orange-700" />
+              <Zap className='h-4 w-4 text-black transition-colors group-hover:text-orange-700' />
               Tip
             </Button>
           </div>
 
           {/* Tabbed Section */}
-          <div className="mb-4 w-full bg-white">
+          <div className='mb-4 w-full bg-white'>
             {/* Tab Headers */}
-            <div className="mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3">
+            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
               <button
                 onClick={() => setActiveTab('about')}
                 className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
@@ -822,25 +777,19 @@ export default function UserProfilePageClient() {
 
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
-            <h3 className="mb-4 text-xl font-bold">Leaving Evento</h3>
-            <p className="mb-6 text-gray-600">
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+            <h3 className='mb-4 text-xl font-bold'>Leaving Evento</h3>
+            <p className='mb-6 text-gray-600'>
               Are you about to leave Evento and be redirected to sarahchen.com?
             </p>
-            <div className="mb-6 text-6xl font-bold text-red-500">
-              {countdown}
-            </div>
+            <div className='mb-6 text-6xl font-bold text-red-500'>{countdown}</div>
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(
-                  userData?.bio_link || '#',
-                  '_blank',
-                  'noopener,noreferrer'
-                );
+                window.open(userData?.bio_link || '#', '_blank', 'noopener,noreferrer');
               }}
-              className="w-full bg-red-500 text-white hover:bg-red-600"
+              className='w-full bg-red-500 text-white hover:bg-red-600'
             >
               Take me to sarahchen.com
             </Button>
@@ -850,20 +799,17 @@ export default function UserProfilePageClient() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-              <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
+              <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
-            <h3 className="mb-4 text-xl font-bold text-gray-900">
-              This user is verified
-            </h3>
-            <p className="mb-6 text-gray-600">
-              This user is a premium member with a verified account. Verified
-              users have enhanced credibility and access to exclusive features
-              on our platform.
+            <h3 className='mb-4 text-xl font-bold text-gray-900'>This user is verified</h3>
+            <p className='mb-6 text-gray-600'>
+              This user is a premium member with a verified account. Verified users have enhanced
+              credibility and access to exclusive features on our platform.
             </p>
-            <div className="flex flex-col gap-3">
+            <div className='flex flex-col gap-3'>
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
@@ -871,14 +817,14 @@ export default function UserProfilePageClient() {
                     '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
                   );
                 }}
-                className="w-full bg-red-500 text-white hover:bg-red-600"
+                className='w-full bg-red-500 text-white hover:bg-red-600'
               >
                 Get in touch about verification
               </Button>
               <Button
-                variant="ghost"
+                variant='ghost'
                 onClick={() => setShowVerificationModal(false)}
-                className="w-full"
+                className='w-full'
               >
                 Close
               </Button>
@@ -895,8 +841,8 @@ export default function UserProfilePageClient() {
         onImageChange={setSelectedAvatarIndex}
         showDropdownMenu={false}
         handleDelete={handleAvatarDelete}
-        userId=""
-        eventId=""
+        userId=''
+        eventId=''
       />
 
       {/* Profile Photos Lightbox */}
@@ -907,8 +853,8 @@ export default function UserProfilePageClient() {
         onImageChange={setSelectedImageIndex}
         showDropdownMenu={false}
         handleDelete={async (photoId: string) => ({ success: false })}
-        userId=""
-        eventId=""
+        userId=''
+        eventId=''
       />
     </div>
   );

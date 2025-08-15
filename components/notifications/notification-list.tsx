@@ -4,7 +4,7 @@ import { UINotification } from '@/lib/types/notifications';
 import { Inbox } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
-import { NotificationItem } from './NotificationItem';
+import { NotificationItem } from './notification-item';
 
 interface NotificationListProps {
   notifications: UINotification[];
