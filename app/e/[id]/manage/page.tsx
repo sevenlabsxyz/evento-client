@@ -7,6 +7,7 @@ import {
   DollarSign,
   FileText,
   HelpCircle,
+  Layers,
   Loader2,
   Mail,
   MessageCircle,
@@ -86,6 +87,15 @@ export default function ManageEventPage() {
       iconBg: 'bg-orange-100',
       iconColor: 'text-orange-600',
       route: `/e/${eventId}/manage/hosts`,
+    },
+    {
+      id: 'sub-events',
+      title: 'Sub Events',
+      description: 'Create and manage sub events',
+      icon: <Layers className='h-6 w-6' />,
+      iconBg: 'bg-teal-100',
+      iconColor: 'text-teal-600',
+      route: `/e/${eventId}/manage/sub-events`,
     },
     {
       id: 'music',
