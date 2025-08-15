@@ -1,16 +1,11 @@
-@layer base, theme;
-@import 'stream-chat-react/dist/css/v2/index.css' layer(base);
-
-@layer theme {
-  .str-chat__theme-custom {
-    --str-chat__primary-color: #ef4444;
-    --str-chat__active-primary-color: #dc2626;
-    --str-chat__surface-color: #f5f5f5;
-    --str-chat__secondary-surface-color: #fafafa;
-    --str-chat__primary-surface-color: #fee2e2;
-    --str-chat__primary-surface-color-low-emphasis: #fef2f2;
-    --str-chat__border-radius-circle: 6px;
-  }
+.str-chat__theme-custom {
+  --str-chat__primary-color: #ef4444;
+  --str-chat__active-primary-color: #dc2626;
+  --str-chat__surface-color: #f5f5f5;
+  --str-chat__secondary-surface-color: #fafafa;
+  --str-chat__primary-surface-color: #fee2e2;
+  --str-chat__primary-surface-color-low-emphasis: #fef2f2;
+  --str-chat__border-radius-circle: 6px;
 }
 
 /* Mobile-first responsive layout */
@@ -20,15 +15,25 @@
   flex-direction: column;
 }
 
+/* Full height channel list for messages page */
+.str-chat__channel-list-container {
+  height: calc(100vh - 80px); /* Account for bottom navbar */
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  width: 100%;
+}
+
 .str-chat__channel-list {
   width: 100%;
-  height: 50%;
-  border-bottom: 1px solid #e5e7eb;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 .str-chat__channel {
   width: 100%;
-  height: 50%;
+  height: 100%;
   display: flex;
   flex-direction: column;
 }
@@ -44,30 +49,28 @@
   display: none; /* Hide threads on mobile by default */
 }
 
-/* Desktop layout - side by side */
+/* Desktop layout - keep full height for both views */
 @media screen and (min-width: 768px) {
-  .str-chat__container {
-    flex-direction: row;
+  .str-chat__container,
+  .str-chat__channel-list-container {
     height: calc(100vh - 80px);
   }
-  
+
   .str-chat__channel-list {
-    width: 30%;
+    width: 100%;
     height: 100%;
-    border-bottom: none;
-    border-right: 1px solid #e5e7eb;
   }
-  
+
   .str-chat__channel {
-    width: 70%;
+    width: 100%;
     height: 100%;
   }
-  
+
   .str-chat__thread {
     display: block;
     width: 45%;
   }
-  
+
   .str-chat__main-panel--thread-open {
     width: 55%;
   }
@@ -78,6 +81,8 @@
   border-radius: 12px;
   margin: 4px 8px;
   transition: background-color 0.2s ease;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .str-chat__channel-preview:hover {
@@ -87,6 +92,108 @@
 .str-chat__channel-preview--active {
   background-color: #fef2f2;
   border: 1px solid #fecaca;
+}
+
+/* Prevent channel preview content from overflowing */
+.str-chat__channel-preview__content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.str-chat__channel-preview__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.str-chat__channel-preview__message {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Custom channel preview styles */
+.str-chat__channel-preview-messenger {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.str-chat__channel-preview-messenger:hover {
+  background-color: #f9fafb;
+}
+
+.str-chat__channel-preview-messenger--left {
+  margin-right: 12px;
+}
+
+.str-chat__avatar--circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.str-chat__avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.str-chat__avatar-fallback {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.str-chat__channel-preview-messenger--main {
+  flex: 1;
+  min-width: 0;
+}
+
+.str-chat__channel-preview-messenger--name {
+  font-weight: 600;
+  font-size: 15px;
+  color: #111827;
+  margin-bottom: 2px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.str-chat__channel-preview-unread-badge {
+  background-color: #ef4444;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 18px;
+  text-align: center;
+}
+
+.str-chat__channel-preview-messenger--last-message {
+  font-size: 14px;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.str-chat__channel-preview-messenger--right {
+  margin-left: 12px;
+}
+
+.str-chat__channel-preview-messenger--time {
+  font-size: 12px;
+  color: #9ca3af;
+  white-space: nowrap;
 }
 
 .str-chat__message-simple {
@@ -102,7 +209,8 @@
   color: white;
 }
 
-.str-chat__message-simple:not(.str-chat__message-simple--me) .str-chat__message-simple__content {
+.str-chat__message-simple:not(.str-chat__message-simple--me)
+  .str-chat__message-simple__content {
   background-color: #f3f4f6;
   color: #374151;
 }
@@ -134,20 +242,104 @@
   background-color: #dc2626;
 }
 
-/* Hide elements that might interfere with mobile layout */
+/* Individual chat view layout */
+.str-chat__main-panel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
 .str-chat__channel-header {
   border-bottom: 1px solid #e5e7eb;
   padding: 12px 16px;
   background-color: white;
+  flex-shrink: 0;
 }
 
-/* Ensure proper spacing for mobile navbar */
+/* Message list should be scrollable and take available space */
 .str-chat__message-list {
+  flex: 1;
+  overflow-y: auto;
   padding-bottom: 20px;
 }
 
+/* Fix input to bottom */
 .str-chat__message-input {
+  position: sticky;
+  bottom: 0;
   padding: 12px 16px;
   background-color: white;
   border-top: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* Make sure the Window component fills the height */
+.str-chat__main-panel .str-chat {
+  height: 100%;
+}
+
+.messaging.str-chat .str-chat__container {
+  height: 100%;
+}
+
+.messaging.str-chat .str-chat__channel {
+  height: 100%;
+}
+
+.messaging.str-chat .str-chat__channel-state--messages {
+  height: 100%;
+}
+
+/* Force proper message bubble styling */
+.str-chat__message-simple__text {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+  border-radius: 18px !important;
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  max-width: 70% !important;
+  word-wrap: break-word !important;
+  display: inline-block !important;
+}
+
+.str-chat__message-simple--me .str-chat__message-simple__text {
+  background: #ef4444 !important;
+  color: white !important;
+}
+
+/* Fix message container */
+.str-chat__message-simple__content {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 4px 0 !important;
+}
+
+/* Ensure proper message alignment */
+.str-chat__message-simple {
+  display: flex !important;
+  margin-bottom: 8px !important;
+  align-items: flex-start !important;
+}
+
+.str-chat__message-simple--me {
+  flex-direction: row-reverse !important;
+}
+
+.str-chat__message-simple--me .str-chat__message-simple__content {
+  align-items: flex-end !important;
+}
+
+/* Fix any gradient backgrounds that might be interfering */
+.str-chat__message-simple *,
+.str-chat__message-simple__content *,
+.str-chat__message-simple__text * {
+  background-image: none !important;
+  background-gradient: none !important;
+}
+
+/* Ensure text is visible */
+.str-chat__message-text {
+  color: inherit !important;
+  background: transparent !important;
 }

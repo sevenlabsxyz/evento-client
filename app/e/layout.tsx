@@ -2,6 +2,7 @@
 
 import { TopBar } from '@/components/top-bar';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -15,9 +16,9 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   }, [pathname, applyRouteConfig]);
 
   return (
-    <>
+    <StreamChatProvider>
       <TopBar />
       <div className={isOverlaid ? '' : 'pt-16'}>{children}</div>
-    </>
+    </StreamChatProvider>
   );
 }

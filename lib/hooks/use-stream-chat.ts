@@ -114,14 +114,8 @@ export function useStreamChat(options: UseStreamChatOptions = {}) {
     }
   }, [isAuthenticated, client]);
 
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      if (client) {
-        client.disconnectUser();
-      }
-    };
-  }, [client]);
+  // Don't disconnect on unmount - let the provider handle connection lifecycle
+  // This prevents disconnection during navigation
 
   const isLoading = isLoadingToken || isSyncingUser || isConnecting;
   const error = tokenError || connectionError;

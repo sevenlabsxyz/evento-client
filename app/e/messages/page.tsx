@@ -2,40 +2,30 @@
 
 import { Navbar } from '@/components/navbar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useStreamChat } from '@/lib/hooks/use-stream-chat';
+import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 import {
-  Channel,
-  ChannelHeader,
   ChannelList,
   Chat,
-  MessageInput,
-  MessageList,
-  Thread,
-  Window,
 } from 'stream-chat-react';
-import { EmojiPicker } from 'stream-chat-react/emojis';
 
-import { init, SearchIndex } from 'emoji-mart';
-import data from '@emoji-mart/data';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CustomChannelPreview } from './CustomChannelPreview';
 
 import './chat-layout.css';
 import './stream-chat.d.ts';
-
-// Initialize emoji-mart
-init({ data });
 
 export default function ChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('messages');
 
-  // Use the new Stream Chat hook with backend integration
-  const { client, isLoading: isLoadingStream, error: streamError, isAuthenticated } = useStreamChat();
+  // Use Stream Chat from the provider
+  const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
 
   // Set TopBar content
   useEffect(() => {
@@ -102,18 +92,24 @@ export default function ChatPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm overflow-hidden'>
       <Chat client={client} theme='str-chat__theme-custom'>
-        <div className='str-chat__container'>
-          <ChannelList filters={filters} sort={sort} options={options} />
-          <Channel EmojiPicker={EmojiPicker} emojiSearchIndex={SearchIndex}>
-            <Window>
-              <ChannelHeader />
-              <MessageList />
-              <MessageInput />
-            </Window>
-            <Thread />
-          </Channel>
+        <div className='str-chat__channel-list-container'>
+          <ChannelList 
+            filters={filters} 
+            sort={sort} 
+            options={options}
+            Preview={CustomChannelPreview}
+            showChannelSearch
+            additionalChannelSearchProps={{
+              searchForChannels: true,
+              searchQueryParams: {
+                channelFilters: {
+                  filters: { members: { $in: [client.user?.id || ''] } },
+                },
+              },
+            }}
+          />
         </div>
       </Chat>
 

@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useStreamChat } from '@/lib/hooks/use-stream-chat';
+import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import type { Channel as StreamChannel } from 'stream-chat';
 import {
   Channel,
@@ -34,8 +34,8 @@ export default function SingleChatPage() {
   const [channel, setChannel] = useState<StreamChannel>();
   const [channelError, setChannelError] = useState<string | null>(null);
 
-  // Use the new Stream Chat hook with backend integration
-  const { client, isLoading: isLoadingStream, error: streamError } = useStreamChat();
+  // Use Stream Chat from the provider
+  const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
 
   // Set up the specific channel based on the ID parameter
   useEffect(() => {
@@ -45,24 +45,33 @@ export default function SingleChatPage() {
       try {
         setChannelError(null);
         
-        // Create or get the specific channel based on the ID
-        const channelId = `chat_${params.id}`;
-        const targetChannel = client.channel('messaging', channelId, {
-          image: 'https://getstream.io/random_png/?name=chat',
-          name: `Chat ${params.id}`,
-          members: [client.user?.id],
-        });
-
-        // Watch the channel to make it active
-        await targetChannel.watch();
-        setChannel(targetChannel);
-
-        // Send a welcome message if it's a new channel
-        const state = targetChannel.state;
-        if (state.messages.length === 0) {
-          await targetChannel.sendMessage({
-            text: `Welcome to Chat ${params.id}! 👋`,
-          });
+        // Get the channel by ID - this should be an existing channel ID from the channel list
+        const channelId = params.id;
+        
+        // Query for the existing channel
+        const channelFilter = { 
+          type: 'messaging', 
+          id: channelId,
+          members: { $in: [client.user?.id || ''] }
+        };
+        
+        const channels = await client.queryChannels(channelFilter, {}, { limit: 1 });
+        
+        if (channels.length > 0) {
+          const targetChannel = channels[0];
+          await targetChannel.watch();
+          setChannel(targetChannel);
+          
+          // Scroll to bottom after a short delay to ensure messages are loaded
+          setTimeout(() => {
+            const messageList = document.querySelector('.str-chat__message-list-scroll');
+            if (messageList) {
+              messageList.scrollTop = messageList.scrollHeight;
+            }
+          }, 100);
+        } else {
+          // If channel doesn't exist or user is not a member
+          setChannelError('Channel not found or you are not a member');
         }
       } catch (error) {
         console.error('Failed to initialize specific channel:', error);
@@ -142,29 +151,33 @@ export default function SingleChatPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex h-screen max-w-full flex-col bg-white md:max-w-sm overflow-hidden'>
       {/* Custom Header with Back Button */}
-      <div className='fixed left-1/2 top-0 z-40 w-full max-w-full -translate-x-1/2 transform border-b border-gray-100 bg-white md:max-w-sm'>
+      <div className='flex-shrink-0 border-b border-gray-100 bg-white'>
         <div className='px-4 pb-0 pt-6'>
           <div className='mb-2 flex items-center gap-3'>
             <Button 
               variant='ghost' 
               size='icon' 
               className='h-8 w-8' 
-              onClick={() => router.back()}
+              onClick={() => router.push('/e/messages')}
             >
               <ArrowLeft className='h-5 w-5' />
             </Button>
             <div className='flex-1'>
-              <h3 className='text-lg font-bold text-black'>Chat {params.id}</h3>
-              <p className='text-sm text-gray-500'>Stream Chat Demo</p>
+              <h3 className='text-lg font-bold text-black'>
+                {channel?.data?.name || 'Chat'}
+              </h3>
+              <p className='text-sm text-gray-500'>
+                {channel?.data?.member_count ? `${channel.data.member_count} members` : 'Direct Message'}
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Chat Content */}
-      <div className='pt-[100px] flex-1'>
+      <div className='flex-1 overflow-hidden'>
         <Chat client={client} theme='str-chat__theme-custom'>
           <Channel 
             channel={channel} 
@@ -172,7 +185,11 @@ export default function SingleChatPage() {
             emojiSearchIndex={SearchIndex}
           >
             <Window>
-              <MessageList />
+              <MessageList 
+                scrollToLatestMessageOnFocus
+                disableDateSeparator={false}
+                messageLimit={25}
+              />
               <MessageInput />
             </Window>
             <Thread />
