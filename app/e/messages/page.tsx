@@ -2,15 +2,30 @@
 
 import { Navbar } from '@/components/navbar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { MessageCircle } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
+import {
+  ChannelList,
+  Chat,
+} from 'stream-chat-react';
+
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { CustomChannelPreview } from './CustomChannelPreview';
+
+import './chat-layout.css';
+import './stream-chat.d.ts';
 
 export default function ChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('messages');
+
+  // Use Stream Chat from the provider
+  const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
 
   // Set TopBar content
   useEffect(() => {
@@ -32,32 +47,71 @@ export default function ChatPage() {
     };
   }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig]);
 
-  const [activeTab, setActiveTab] = useState('messages');
+  // Channel configuration - now uses authenticated user's ID
+  const sort: ChannelSort = { last_message_at: -1 };
+  const filters: ChannelFilters = {
+    type: 'messaging',
+    members: { $in: [client?.user?.id || ''] },
+  };
+  const options: ChannelOptions = {
+    limit: 10,
+  };
 
-  if (isCheckingAuth) {
+  // Show loading state during authentication or Stream Chat setup
+  if (isCheckingAuth || isLoadingStream) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+          <div className='text-center'>
+            <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500 mx-auto mb-4'></div>
+            <p>{isCheckingAuth ? 'Authenticating...' : 'Setting up chat connection...'}</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Coming Soon Content */}
-      <div className='flex flex-1 flex-col items-center justify-center px-4 pb-20'>
-        <div className='flex flex-col items-center text-center'>
-          <div className='mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100'>
-            <MessageCircle className='h-10 w-10 text-gray-400' />
+  // Show error state if Stream Chat fails to connect
+  if (streamError || !client) {
+    return (
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex flex-1 items-center justify-center pb-20'>
+          <div className='text-center'>
+            <div className='mb-4 text-red-500'>
+              <svg className='mx-auto h-12 w-12' fill='none' viewBox='0 0 24 24' stroke='currentColor'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z' />
+              </svg>
+            </div>
+            <p className='text-red-600 font-medium'>Failed to connect to chat</p>
+            <p className='text-sm text-gray-500 mt-1'>{streamError || 'Please try refreshing the page'}</p>
           </div>
-          <h2 className='mb-3 text-xl font-semibold text-gray-900'>Coming Soon</h2>
-          <p className='max-w-sm text-gray-600'>
-            Chat functionality is coming soon. Stay tuned for real-time messaging with other users!
-          </p>
         </div>
+        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
+    );
+  }
+
+  return (
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm overflow-hidden'>
+      <Chat client={client} theme='str-chat__theme-custom'>
+        <div className='str-chat__channel-list-container'>
+          <ChannelList 
+            filters={filters} 
+            sort={sort} 
+            options={options}
+            Preview={CustomChannelPreview}
+            showChannelSearch
+            additionalChannelSearchProps={{
+              searchForChannels: true,
+              searchQueryParams: {
+                channelFilters: {
+                  filters: { members: { $in: [client.user?.id || ''] } },
+                },
+              },
+            }}
+          />
+        </div>
+      </Chat>
 
       {/* Bottom Navbar */}
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />

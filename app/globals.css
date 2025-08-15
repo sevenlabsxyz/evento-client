@@ -1,5 +1,6 @@
-@import '@silk-hq/components/unlayered-styles';
-@import '../components/ui/silk-toast.css';
+@import "@silk-hq/components/unlayered-styles";
+@import "../components/ui/silk-toast.css";
+@import "stream-chat-react/dist/css/v2/index.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

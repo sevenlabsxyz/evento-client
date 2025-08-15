@@ -11,6 +11,8 @@
     "format-check": "prettier --config .prettierc.json --check ."
   },
   "dependencies": {
+    "@emoji-mart/data": "^1.2.1",
+    "@emoji-mart/react": "^1.1.1",
     "@giphy/js-fetch-api": "^5.7.0",
     "@giphy/js-types": "^5.1.0",
     "@giphy/react-components": "^10.1.0",
@@ -51,6 +53,7 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "emoji-mart": "^5.6.0",
     "framer-motion": "^12.23.6",
     "frimousse": "^0.3.0",
     "lodash.debounce": "^4.0.8",
@@ -61,6 +64,8 @@
     "react-hook-form": "^7.60.0",
     "react-spotify-embed": "^2.0.4",
     "react-swipeable": "^7.0.2",
+    "stream-chat": "^9.16.0",
+    "stream-chat-react": "^13.3.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss": "^3.3.0",
     "tailwindcss-animate": "^1.0.7",
