@@ -1,13 +1,13 @@
 'use client';
 
 import { EventCompactItem } from '@/components/event-compact-item';
-import { useDeleteSubEvent } from '@/lib/hooks/use-delete-sub-event';
+import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function SubEventsManagementPage() {
   const { setTopBar } = useTopBar();
@@ -17,7 +17,10 @@ export default function SubEventsManagementPage() {
 
   const { data: subEvents = [], isLoading, error } = useSubEvents(eventId);
 
-  const deleteSubEvent = useDeleteSubEvent();
+  // const deleteSubEvent = useDeleteSubEvent();
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<EventWithUser | null>(null);
 
   useEffect(() => {
     setTopBar({
@@ -29,7 +32,7 @@ export default function SubEventsManagementPage() {
         {
           id: 'add-sub-event',
           icon: Plus,
-          onClick: () => router.push(`/e/${eventId}/manage/sub-events/new`),
+          onClick: () => router.push(`/e/create?parent_event_id=${eventId}`),
           label: 'Add Sub Event',
         },
       ],
@@ -47,10 +50,10 @@ export default function SubEventsManagementPage() {
   }, [setTopBar]);
 
   const handleDelete = async (subEvent: EventWithUser) => {
-    await deleteSubEvent.mutateAsync({
-      parentEventId: eventId,
-      subEventId: subEvent.id,
-    });
+    // await deleteSubEvent.mutateAsync({
+    //   parentEventId: eventId,
+    //   subEventId: subEvent.id,
+    // });
   };
 
   return (
@@ -76,7 +79,8 @@ export default function SubEventsManagementPage() {
                   className='mr-2 rounded-full p-2 text-red-600 hover:bg-red-50'
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDelete(se);
+                    setPendingDelete(se);
+                    setConfirmOpen(true);
                   }}
                   aria-label={`Delete ${se.title}`}
                 >
@@ -97,7 +101,7 @@ export default function SubEventsManagementPage() {
             <h3 className='mb-2 text-lg font-medium text-gray-900'>No Sub Events</h3>
             <p className='mb-6 text-sm text-gray-500'>Add sub events to your event</p>
             <button
-              onClick={() => router.push(`/e/${eventId}/manage/sub-events/new`)}
+              onClick={() => router.push(`/e/create?parent_event_id=${eventId}`)}
               className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600'
             >
               Add Sub Event
@@ -105,6 +109,23 @@ export default function SubEventsManagementPage() {
           </div>
         )}
       </div>
+
+      {/* Delete confirmation sheet */}
+      <DeleteConfirmationSheet
+        isOpen={confirmOpen}
+        onClose={() => {
+          setConfirmOpen(false);
+          setPendingDelete(null);
+        }}
+        onConfirm={async () => {
+          if (!pendingDelete) return;
+          await handleDelete(pendingDelete);
+          setConfirmOpen(false);
+          setPendingDelete(null);
+        }}
+        itemType='sub event'
+        // isLoading={deleteSubEvent.isPending}
+      />
     </div>
   );
 }
