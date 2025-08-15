@@ -4,12 +4,12 @@ import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
-import { Button } from '@/components/ui/button';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { ArrowLeft, DollarSign } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { Check, DollarSign } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface PaymentMethod {
@@ -32,7 +32,9 @@ interface EventContributions {
 }
 
 export default function ContributionsManagementPage() {
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
 
@@ -92,6 +94,30 @@ export default function ContributionsManagementPage() {
       });
     }
   }, [existingEvent]);
+
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Contributions',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'save-contributions',
+          icon: Check,
+          onClick: () => void handleSave(),
+          label: 'Save',
+          disabled: isSubmitting,
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig]);
 
   // Conditional returns MUST come after all hooks
   if (isLoading) {
@@ -270,23 +296,7 @@ export default function ContributionsManagementPage() {
 
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Contributions</h1>
-        </div>
-        <Button
-          onClick={handleSave}
-          disabled={isSubmitting}
-          className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-        >
-          {isSubmitting ? 'Saving...' : 'Save'}
-        </Button>
-      </div>
-
+      {/* TopBar handles header */}
       {/* Content */}
       <div className='space-y-6 p-4'>
         <div className='text-sm text-gray-500'>
