@@ -161,11 +161,13 @@ export default function EventDetailPageClient() {
       <EventHost event={event} />
       <EventGuestList event={event} currentUserId={user?.id || ''} />
       <EventDescription event={event} />
-      <EventSubEvents
-        subEvents={subEvents}
-        subEventsLoading={subEventsLoading}
-        subEventsError={subEventsError}
-      />
+      {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
+        <EventSubEvents
+          subEvents={subEvents}
+          subEventsLoading={subEventsLoading}
+          subEventsError={subEventsError}
+        />
+      )}
       <EventLocation event={event} weather={weather} />
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
