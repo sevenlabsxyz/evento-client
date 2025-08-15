@@ -10,7 +10,7 @@ import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EmailBlastPage() {
-  const { setTopBarForRoute, clearRoute } = useTopBar();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
   const pathname = usePathname();
   const eventId = params.id as string;
@@ -24,6 +24,7 @@ export default function EmailBlastPage() {
 
   // Set TopBar content
   useEffect(() => {
+    applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Email Blast',
       buttons: [
@@ -41,7 +42,7 @@ export default function EmailBlastPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, pathname]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
 
   const handleCreateBlast = () => {
     setShowEmailBlastSheet(true);

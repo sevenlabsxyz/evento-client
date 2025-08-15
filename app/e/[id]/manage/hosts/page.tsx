@@ -7,7 +7,7 @@ import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function HostsManagementPage() {
-  const { setTopBarForRoute, clearRoute } = useTopBar();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -32,6 +32,7 @@ export default function HostsManagementPage() {
 
   // Configure TopBar for this page
   useEffect(() => {
+    applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Hosts',
       leftMode: 'back',
@@ -51,7 +52,7 @@ export default function HostsManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, pathname]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
 
   if (isLoading) {
     return (
