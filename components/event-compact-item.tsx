@@ -3,26 +3,9 @@
 import { EventWithUser } from '@/lib/types/api';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
-import { toast } from '@/lib/utils/toast';
-import {
-  Calendar,
-  Clock,
-  Loader,
-  MapPin,
-  MoreHorizontal,
-  Pin,
-  PinOff,
-  Share2,
-  User,
-} from 'lucide-react';
+import { Calendar, Clock, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from './ui/dropdown-menu';
 
 interface EventCompactItemProps {
   event: EventWithUser;
@@ -49,40 +32,6 @@ export function EventCompactItem({
   const handleEventClick = () => {
     router.push(`/e/${event.id}`);
   };
-
-  const getDropdownItems = (eventId: string, userUsername: string) => [
-    {
-      label: 'Share Event',
-      icon: <Share2 className='h-3 w-3' />,
-      action: async () => {
-        const eventUrl = `${window.location.origin}/e/${eventId}`;
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: event.title,
-              text: `Check out this event: ${event.title}`,
-              url: eventUrl,
-            });
-          } catch (error: any) {
-            if (error.name !== 'AbortError') {
-              navigator.clipboard.writeText(eventUrl);
-              toast.success('Link copied to clipboard!');
-            }
-          }
-        } else {
-          navigator.clipboard.writeText(eventUrl);
-          toast.success('Link copied to clipboard!');
-        }
-      },
-    },
-    {
-      label: 'View Profile',
-      icon: <User className='h-3 w-3' />,
-      action: () => {
-        router.push(`/${userUsername}`);
-      },
-    },
-  ];
 
   return (
     <div
@@ -133,30 +82,6 @@ export function EventCompactItem({
             >
               <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
             </Button> */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <MoreHorizontal className='h-4 w-4' />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end'>
-                {getDropdownItems(event.id, event.user_details.username).map((item) => (
-                  <DropdownMenuItem
-                    key={item.label}
-                    onClick={item.action}
-                    className='flex cursor-pointer items-center gap-2'
-                  >
-                    {item.label}
-                    {item.icon}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
           </div>
         </div>
 
@@ -188,6 +113,10 @@ export function EventCompactItem({
           />
           <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
         </div>
+      </div>
+
+      <div>
+        <MoreHorizontal className='h-4 w-4' />
       </div>
     </div>
   );
