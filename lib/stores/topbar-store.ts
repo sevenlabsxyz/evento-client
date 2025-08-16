@@ -103,10 +103,11 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
     const routeConfigs = new Map(get().routeConfigs);
     routeConfigs.delete(route);
 
-    // If clearing current route, reset to initial state
+    // Only reset state if clearing the current route
     if (get().currentRoute === route) {
       set({ ...initialState, currentRoute: null, routeConfigs });
     } else {
+      // Just update routeConfigs without resetting everything
       set((state) => ({ ...state, routeConfigs }));
     }
   },

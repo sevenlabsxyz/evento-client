@@ -128,7 +128,7 @@ export default function EventDetailPageClient() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, clearRoute, event]);
+  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, event?.title]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
