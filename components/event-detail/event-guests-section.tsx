@@ -25,7 +25,7 @@ export default function EventGuestsSection({
 }: GuestsSectionProps) {
   const router = useRouter();
   const { data: stats } = useRSVPStats(eventId);
-  const { data: rsvps = [] } = useEventRSVPs(eventId);
+  const { data: rsvps = [], isLoading, error, refetch } = useEventRSVPs(eventId);
   const [sheetOpen, setSheetOpen] = useState(false);
 
   const isHostOrCoHost = useMemo(() => {
@@ -40,6 +40,47 @@ export default function EventGuestsSection({
   // Avatars to display (up to 4)
   const display = goingRSVPs.slice(0, 4);
   const remaining = Math.max(0, goingCount - display.length);
+
+  // Loading state: show lightweight skeleton row
+  if (isLoading) {
+    return (
+      <div className='border-t border-gray-100 py-6'>
+        <div className='mb-3 flex items-start justify-between'>
+          <div>
+            <div className='h-5 w-28 animate-pulse rounded bg-gray-200' />
+            <div className='mt-2 h-4 w-20 animate-pulse rounded bg-gray-200' />
+          </div>
+          <div className='h-8 w-24 animate-pulse rounded-md bg-gray-200' />
+        </div>
+        <div className='flex items-center'>
+          {Array.from({ length: 4 }).map((_, idx) => (
+            <div
+              key={idx}
+              className='relative h-10 w-10 animate-pulse rounded-full border-2 border-white bg-gray-200'
+              style={{ marginLeft: idx > 0 ? -8 : 0, zIndex: 4 - idx }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Error state: show retry affordance
+  if (error) {
+    return (
+      <div className='border-t border-gray-100 py-6'>
+        <div className='mb-3 flex items-start justify-between'>
+          <div>
+            <h3 className='text-lg font-semibold text-gray-900'>Guest List</h3>
+            <p className='text-sm text-red-500'>Failed to load guests.</p>
+          </div>
+          <Button variant='outline' size='sm' onClick={() => refetch()}>
+            Retry
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (goingCount === 0 && display.length === 0) return null;
 
