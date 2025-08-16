@@ -2,34 +2,30 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { CalendarPlus, Copy, ExternalLink } from 'lucide-react';
+import { toast } from '@/lib/utils/toast';
+import { CalendarPlus, Copy } from 'lucide-react';
 
 interface MoreOptionsSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCalendar: () => void;
-  onOpenInSafari: () => void;
 }
 
 export default function MoreOptionsSheet({
   isOpen,
   onClose,
   onAddToCalendar,
-  onOpenInSafari,
 }: MoreOptionsSheetProps) {
   const handleAddToCalendar = () => {
     onAddToCalendar();
     onClose();
   };
 
-  const handleOpenInSafari = () => {
-    onOpenInSafari();
-    onClose();
-  };
-
   const handleCopyEventUrl = () => {
-    // TODO: Implement copy event URL functionality
     onClose();
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      toast.success('Event URL copied to clipboard');
+    });
   };
 
   const options = [
@@ -38,13 +34,6 @@ export default function MoreOptionsSheet({
       icon: CalendarPlus,
       label: 'Add to Calendar',
       onClick: handleAddToCalendar,
-      variant: 'secondary' as const,
-    },
-    {
-      id: 'open-in-safari',
-      icon: ExternalLink,
-      label: 'Open in Safari',
-      onClick: handleOpenInSafari,
       variant: 'secondary' as const,
     },
     {
