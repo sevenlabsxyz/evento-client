@@ -1,5 +1,6 @@
 'use client';
 
+import EventComments from '@/components/event-detail/event-comments';
 import EventDescription from '@/components/event-detail/event-description';
 import EventGallery from '@/components/event-detail/event-gallery';
 import EventGuestList from '@/components/event-detail/event-guest-list';
@@ -19,7 +20,7 @@ import { useEventWeather } from '@/lib/hooks/use-event-weather';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
-import { Loader2, MessageCircle, Share } from 'lucide-react';
+import { Loader2, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -181,15 +182,7 @@ export default function EventDetailPageClient() {
     </div>
   );
 
-  const renderCommentsTab = () => (
-    <div className='flex flex-col items-center justify-center py-12'>
-      <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
-      <h3 className='mb-2 text-lg font-medium text-gray-900'>No Comments Yet</h3>
-      <p className='text-center text-sm text-gray-500'>
-        Be the first to leave a comment about this event.
-      </p>
-    </div>
-  );
+  const renderCommentsTab = () => <EventComments eventId={event.id} />;
 
   const renderGalleryTab = () => {
     return (
