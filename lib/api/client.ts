@@ -5,17 +5,30 @@ import axios, {
   AxiosRequestConfig,
   AxiosResponse,
   InternalAxiosRequestConfig,
+  type AxiosInstance,
 } from 'axios';
 
+// Our interceptor returns response.data, so expose method signatures that resolve to T directly
+type ApiClient = Omit<AxiosInstance, 'get' | 'post' | 'put' | 'patch' | 'delete' | 'request'> & {
+  request<T = any, D = any>(config: AxiosRequestConfig<D>): Promise<T>;
+  get<T = any, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<T>;
+  delete<T = any, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<T>;
+  head<T = any, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<T>;
+  options<T = any, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<T>;
+  post<T = any, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>;
+  put<T = any, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>;
+  patch<T = any, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>;
+};
+
 // Create the main API client for session-based authentication
-export const apiClient = axios.create({
+export const apiClient: ApiClient = axios.create({
   baseURL: Env.NEXT_PUBLIC_API_URL,
   withCredentials: true, // Important: includes session cookies
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 10000, // 10 second timeout
-});
+}) as unknown as ApiClient;
 
 // Add request interceptor for logging
 apiClient.interceptors.request.use(

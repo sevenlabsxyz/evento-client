@@ -30,7 +30,7 @@ export default function EventDetailPageClient() {
   const pathname = usePathname();
   const eventId = params.id as string;
   const { user } = useAuth();
-  const { setTopBarForRoute, clearRoute } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const lightboxRef = useRef<SilkLightboxRef>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const searchParams = useSearchParams();
@@ -64,43 +64,6 @@ export default function EventDetailPageClient() {
     }
   }, [searchParams]);
 
-  // Configure TopBar for event pages
-  useEffect(() => {
-    const handleShare = async () => {
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: document.title,
-            url: window.location.href,
-          });
-        } catch (error) {
-          console.log('Error sharing:', error);
-        }
-      } else {
-        navigator.clipboard.writeText(window.location.href);
-      }
-    };
-
-    setTopBarForRoute(pathname, {
-      leftMode: 'back',
-      centerMode: 'empty',
-      showAvatar: false,
-      buttons: [
-        {
-          id: 'share',
-          icon: Share,
-          onClick: handleShare,
-          label: 'Share',
-        },
-      ],
-      isOverlaid: false,
-    });
-
-    return () => {
-      clearRoute(pathname);
-    };
-  }, [pathname, setTopBarForRoute, clearRoute]);
-
   // Fetch event data from API
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
   const { data: hostsData = [], isLoading: hostsLoading } = useEventHosts(eventId);
@@ -126,6 +89,46 @@ export default function EventDetailPageClient() {
     eventDate: event?.computedStartDate || '',
     enabled: !!event?.location.city && !!event?.location.country && !!event?.computedStartDate,
   });
+
+  // Configure TopBar for event pages
+  useEffect(() => {
+    const handleShare = async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: document.title,
+            url: window.location.href,
+          });
+        } catch (error) {
+          console.log('Error sharing:', error);
+        }
+      } else {
+        navigator.clipboard.writeText(window.location.href);
+      }
+    };
+
+    applyRouteConfig(pathname);
+
+    setTopBarForRoute(pathname, {
+      leftMode: 'back',
+      centerMode: 'title',
+      title: event?.title || '',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'share',
+          icon: Share,
+          onClick: handleShare,
+          label: 'Share',
+        },
+      ],
+      isOverlaid: false,
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [pathname, setTopBarForRoute, clearRoute, event]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
