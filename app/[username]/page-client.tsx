@@ -59,6 +59,7 @@ import {
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import RowCard from "@/components/row-card";
+import TipSheet from "@/components/profile/sheets/tip-sheet";
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
@@ -82,6 +83,7 @@ export default function UserProfilePageClient() {
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
     null,
   );
+  const [showTipSheet, setShowTipSheet] = useState(false);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -307,7 +309,11 @@ export default function UserProfilePageClient() {
   };
 
   const handleTip = () => {
-    toast.success("Lightning payment coming soon!");
+    if (!userData?.ln_address) {
+      toast.error("This user hasn't set up Lightning payments yet");
+      return;
+    }
+    setShowTipSheet(true);
   };
 
   // Handle profile photo click for lightbox
@@ -759,14 +765,16 @@ export default function UserProfilePageClient() {
               <MessageCircle className="h-4 w-4" />
               Message
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleTip}
-              className="group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700"
-            >
-              <Zap className="h-4 w-4 text-black transition-colors group-hover:text-orange-700" />
-              Tip
-            </Button>
+            {userData?.ln_address && (
+              <Button
+                variant="outline"
+                onClick={handleTip}
+                className="group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700"
+              >
+                <Zap className="h-4 w-4 text-black transition-colors group-hover:text-orange-700" />
+                Tip
+              </Button>
+            )}
           </div>
 
           {/* Tabbed Section */}
@@ -913,6 +921,19 @@ export default function UserProfilePageClient() {
         userId=""
         eventId=""
       />
+
+      {/* Tip Sheet */}
+      {userData?.ln_address && (
+        <TipSheet
+          isOpen={showTipSheet}
+          onClose={() => setShowTipSheet(false)}
+          lightningAddress={userData.ln_address}
+          recipientName={userData.name || 'Unknown User'}
+          recipientUsername={userData.username}
+          recipientImage={userData.image}
+          recipientVerified={userData.verification_status === 'verified'}
+        />
+      )}
     </div>
   );
 }
