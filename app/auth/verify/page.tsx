@@ -30,7 +30,13 @@ function VerifyContent() {
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect") || "/";
   const { verifyCode, isLoading, error, reset, email } = useVerifyCode();
-  const { resendCode, isLoading: isResending, error: resendError, isSuccess: resendSuccess, reset: resetResend } = useResendCode();
+  const {
+    resendCode,
+    isLoading: isResending,
+    error: resendError,
+    isSuccess: resendSuccess,
+    reset: resetResend,
+  } = useResendCode();
   const [resendTimer, setResendTimer] = useState(0);
 
   const {
@@ -102,7 +108,7 @@ function VerifyContent() {
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="-mt-12 mb-2 opacity-50 hover:opacity-100 w-full flex">
+      <div className="-mt-12 mb-2 opacity-50 hover:opacity-100 w-full flex max-w-sm mx-auto">
         <Button
           variant="link"
           className=""
@@ -148,7 +154,8 @@ function VerifyContent() {
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
-                {resendError.message || "Failed to resend code. Please try again."}
+                {resendError.message ||
+                  "Failed to resend code. Please try again."}
               </AlertDescription>
             </Alert>
           )}

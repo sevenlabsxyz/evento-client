@@ -58,6 +58,7 @@ import {
 } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import RowCard from "@/components/row-card";
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view

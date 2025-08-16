@@ -1,28 +1,32 @@
-'use client';
+"use client";
 
-import { Navbar } from '@/components/navbar';
-import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
-import { ChannelList, Chat } from 'stream-chat-react';
+import { Navbar } from "@/components/navbar";
+import { useRequireAuth } from "@/lib/hooks/use-auth";
+import { useStreamChatClient } from "@/lib/providers/stream-chat-provider";
+import { useTopBar } from "@/lib/stores/topbar-store";
+import type { ChannelFilters, ChannelOptions, ChannelSort } from "stream-chat";
+import { ChannelList, Chat } from "stream-chat-react";
 
-import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { CustomChannelPreview } from './CustomChannelPreview';
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { CustomChannelPreview } from "./custom-channel-preview";
 
-import './chat-layout.css';
-import './stream-chat.d.ts';
+import "./chat-layout.css";
+import "./stream-chat.d.ts";
 
 export default function ChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState('messages');
+  const [activeTab, setActiveTab] = useState("messages");
 
   // Use Stream Chat from the provider
-  const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
+  const {
+    client,
+    isLoading: isLoadingStream,
+    error: streamError,
+  } = useStreamChatClient();
 
   // Set TopBar content
   useEffect(() => {
@@ -31,11 +35,11 @@ export default function ChatPage() {
 
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
-      title: 'Chat',
-      subtitle: '',
+      title: "Chat",
+      subtitle: "",
       showAvatar: true,
-      leftMode: 'menu',
-      centerMode: 'title',
+      leftMode: "menu",
+      centerMode: "title",
     });
 
     // Cleanup on unmount
@@ -47,8 +51,8 @@ export default function ChatPage() {
   // Channel configuration - now uses authenticated user's ID
   const sort: ChannelSort = { last_message_at: -1 };
   const filters: ChannelFilters = {
-    type: 'messaging',
-    members: { $in: [client?.user?.id || ''] },
+    type: "messaging",
+    members: { $in: [client?.user?.id || ""] },
   };
   const options: ChannelOptions = {
     limit: 10,
@@ -57,11 +61,15 @@ export default function ChatPage() {
   // Show loading state during authentication or Stream Chat setup
   if (isCheckingAuth || isLoadingStream) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='text-center'>
-            <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-            <p>{isCheckingAuth ? 'Authenticating...' : 'Setting up chat connection...'}</p>
+      <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+        <div className="flex flex-1 items-center justify-center pb-20">
+          <div className="text-center">
+            <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
+            <p>
+              {isCheckingAuth
+                ? "Authenticating..."
+                : "Setting up chat connection..."}
+            </p>
           </div>
         </div>
       </div>
@@ -71,27 +79,29 @@ export default function ChatPage() {
   // Show error state if Stream Chat fails to connect
   if (streamError || !client) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='text-center'>
-            <div className='mb-4 text-red-500'>
+      <div className="mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+        <div className="flex flex-1 items-center justify-center pb-20">
+          <div className="text-center">
+            <div className="mb-4 text-red-500">
               <svg
-                className='mx-auto h-12 w-12'
-                fill='none'
-                viewBox='0 0 24 24'
-                stroke='currentColor'
+                className="mx-auto h-12 w-12"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
                 <path
-                  strokeLinecap='round'
-                  strokeLinejoin='round'
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                   strokeWidth={2}
-                  d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z'
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
                 />
               </svg>
             </div>
-            <p className='font-medium text-red-600'>Failed to connect to chat</p>
-            <p className='mt-1 text-sm text-gray-500'>
-              {streamError || 'Please try refreshing the page'}
+            <p className="font-medium text-red-600">
+              Failed to connect to chat
+            </p>
+            <p className="mt-1 text-sm text-gray-500">
+              {streamError || "Please try refreshing the page"}
             </p>
           </div>
         </div>
@@ -101,9 +111,9 @@ export default function ChatPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
-      <Chat client={client} theme='str-chat__theme-custom'>
-        <div className='str-chat__channel-list-container'>
+    <div className="mx-auto flex min-h-screen max-w-full flex-col overflow-hidden bg-white md:max-w-sm">
+      <Chat client={client} theme="str-chat__theme-custom">
+        <div className="str-chat__channel-list-container">
           <ChannelList
             filters={filters}
             sort={sort}
@@ -114,7 +124,7 @@ export default function ChatPage() {
               searchForChannels: true,
               searchQueryParams: {
                 channelFilters: {
-                  filters: { members: { $in: [client.user?.id || ''] } },
+                  filters: { members: { $in: [client.user?.id || ""] } },
                 },
               },
             }}
