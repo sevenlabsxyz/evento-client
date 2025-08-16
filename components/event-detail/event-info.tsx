@@ -1,9 +1,11 @@
 'use client';
 
+import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { Event } from '@/lib/types/event';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import ContactHostSheet from './contact-host-sheet';
+import RsvpSheet from './event-rsvp-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
 
@@ -15,11 +17,36 @@ interface EventInfoProps {
 export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [showMoreSheet, setShowMoreSheet] = useState(false);
+  const [showRsvpSheet, setShowRsvpSheet] = useState(false);
 
-  const handleRegister = () => {
-    if (event.registrationUrl) {
-      window.open(event.registrationUrl, '_blank');
-    }
+  // Current user's RSVP status for this event
+  const { data: userRsvp } = useUserRSVP(event.id);
+  const currentStatus = userRsvp?.status ?? null;
+
+  const rsvpButton = useMemo(() => {
+    if (currentStatus === 'yes')
+      return {
+        label: "You're going",
+        className: 'bg-green-600 hover:bg-green-700 text-white',
+      };
+    if (currentStatus === 'maybe')
+      return {
+        label: 'Maybe',
+        className: 'bg-black hover:bg-gray-900 text-white',
+      };
+    if (currentStatus === 'no')
+      return {
+        label: 'Not going',
+        className: 'bg-gray-400 hover:bg-gray-400 text-white',
+      };
+    return {
+      label: 'RSVP',
+      className: 'bg-red-500 hover:bg-red-600 text-white',
+    };
+  }, [currentStatus]);
+
+  const handleRSVP = () => {
+    setShowRsvpSheet(true);
   };
 
   const handleContact = () => {
@@ -138,11 +165,11 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         ) : (
           <div className='grid grid-cols-4 gap-2'>
             <button
-              onClick={handleRegister}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
+              onClick={handleRSVP}
+              className={`flex h-16 flex-col items-center justify-center rounded-xl transition-colors ${rsvpButton.className}`}
             >
               <Star className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>Register</span>
+              <span className='text-xs font-medium'>{rsvpButton.label}</span>
             </button>
 
             <button
@@ -184,6 +211,13 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         isOpen={showMoreSheet}
         onClose={() => setShowMoreSheet(false)}
         onAddToCalendar={handleAddToCalendar}
+      />
+
+      {/* RSVP Sheet */}
+      <RsvpSheet
+        eventId={event.id}
+        isOpen={showRsvpSheet}
+        onClose={() => setShowRsvpSheet(false)}
       />
     </>
   );
