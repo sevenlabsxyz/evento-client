@@ -128,7 +128,10 @@ export default function GuestListPage() {
   };
 
   const handleExportCSV = async () => {
-    if (!existingEvent) return;
+    if (!existingEvent || !guests.length) {
+      toast.error('No guest data available to export');
+      return;
+    }
 
     toast.info('Exporting guest list...');
 

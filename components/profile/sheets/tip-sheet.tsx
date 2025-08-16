@@ -277,9 +277,7 @@ export default function TipSheet({
                           name: recipientName,
                           username: recipientUsername,
                           image: recipientImage,
-                          verification_status: recipientVerified
-                            ? 'verified'
-                            : null,
+                          verification_status: recipientVerified ? 'verified' : null,
                         }}
                         size='md'
                         className='mb-3'
