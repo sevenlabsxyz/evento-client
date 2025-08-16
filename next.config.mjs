@@ -20,6 +20,20 @@ const nextConfig = {
       'media4.giphy.com',
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        destination: '/auth/login',
+        permanent: true,
+      },
+      {
+        source: '/signup',
+        destination: '/auth/login',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

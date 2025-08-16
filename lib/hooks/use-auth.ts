@@ -126,6 +126,30 @@ export function useLogin() {
 }
 
 /**
+ * Hook for resending verification code
+ */
+export function useResendCode() {
+  const { email } = useAuthStore();
+
+  const mutation = useMutation({
+    mutationFn: () => {
+      if (!email) {
+        throw new Error('Email is required to resend code');
+      }
+      return authService.sendLoginCode(email);
+    },
+  });
+
+  return {
+    resendCode: mutation.mutate,
+    isLoading: mutation.isPending,
+    error: mutation.error as ApiError | null,
+    isSuccess: mutation.isSuccess,
+    reset: mutation.reset,
+  };
+}
+
+/**
  * Hook for verifying TOTP code
  */
 export function useVerifyCode() {
