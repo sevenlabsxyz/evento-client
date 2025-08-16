@@ -1,33 +1,32 @@
-"use client";
+'use client';
 
-import { EventCompactItem } from "@/components/event-compact-item";
-import EventSearchSheet from "@/components/event-search-sheet";
-import FollowersSheet from "@/components/followers-sheet/followers-sheet";
-import FollowingSheet from "@/components/followers-sheet/following-sheet";
-import { LightboxViewer } from "@/components/lightbox-viewer";
-import SocialLinks from "@/components/profile/social-links";
-import { Button } from "@/components/ui/button";
-import { TagSection } from "@/components/fancy-tag/section";
+import { EventCompactItem } from '@/components/event-compact-item';
+import EventSearchSheet from '@/components/event-search-sheet';
+import { TagSection } from '@/components/fancy-tag/section';
+import FollowersSheet from '@/components/followers-sheet/followers-sheet';
+import FollowingSheet from '@/components/followers-sheet/following-sheet';
+import { LightboxViewer } from '@/components/lightbox-viewer';
+import { Navbar } from '@/components/navbar';
+import TipSheet from '@/components/profile/sheets/tip-sheet';
+import SocialLinks from '@/components/profile/social-links';
+import RowCard from '@/components/row-card';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Navbar } from "@/components/navbar";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { UserAvatar } from "@/components/ui/user-avatar";
-import {
-  usePinnedEvent,
-  useUpdatePinnedEvent,
-} from "@/lib/hooks/use-pinned-event";
+} from '@/components/ui/select';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { UserAvatar } from '@/components/ui/user-avatar';
+import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
   EventFilterType,
   EventSortBy,
   useUserEvents,
   type EventTimeframe,
-} from "@/lib/hooks/use-user-events";
+} from '@/lib/hooks/use-user-events';
 import {
   useFollowAction,
   useFollowStatus,
@@ -35,31 +34,27 @@ import {
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
-} from "@/lib/hooks/use-user-profile";
-import { useAuth } from "@/lib/stores/auth-store";
-import { useTopBar } from "@/lib/stores/topbar-store";
-import { EventWithUser } from "@/lib/types/api";
-import { EventHost } from "@/lib/types/event";
-import { toast } from "@/lib/utils/toast";
+} from '@/lib/hooks/use-user-profile';
+import { useAuth } from '@/lib/stores/auth-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { EventWithUser } from '@/lib/types/api';
+import { EventHost } from '@/lib/types/event';
+import { toast } from '@/lib/utils/toast';
 import {
   BadgeCheck,
   Calendar,
-  Camera,
   Loader2,
   MessageCircle,
   Search,
   Share,
   SortAsc,
   SortDesc,
-  User,
   UserMinus,
   UserPlus,
   Zap,
-} from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import RowCard from "@/components/row-card";
-import TipSheet from "@/components/profile/sheets/tip-sheet";
+} from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
@@ -67,22 +62,18 @@ export default function UserProfilePageClient() {
   const router = useRouter();
   const params = useParams();
   const { setTopBar } = useTopBar();
-  const [activeTab, setActiveTab] = useState("about");
-  const [eventsFilter, setEventsFilter] = useState<EventFilterType>("upcoming");
-  const [timeframe, setTimeframe] = useState<EventTimeframe>("all");
-  const [sortBy, setSortBy] = useState<EventSortBy>("created-desc");
+  const [activeTab, setActiveTab] = useState('about');
+  const [eventsFilter, setEventsFilter] = useState<EventFilterType>('upcoming');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('all');
+  const [sortBy, setSortBy] = useState<EventSortBy>('created-desc');
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [countdown, setCountdown] = useState(3);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
-    null,
-  );
-  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(
-    null,
-  );
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showTipSheet, setShowTipSheet] = useState(false);
 
   // Fetch user data from API
@@ -94,27 +85,28 @@ export default function UserProfilePageClient() {
   } = useUserByUsername(username);
 
   // Get follow status for this user
-  const { data: followStatus, isLoading: isFollowStatusLoading } =
-    useFollowStatus(userData?.id || "");
+  const { data: followStatus, isLoading: isFollowStatusLoading } = useFollowStatus(
+    userData?.id || ''
+  );
 
   // Consolidated follow/unfollow mutation
   const followActionMutation = useFollowAction();
 
-  const { data: eventCount = 0 } = useUserEventCount(userData?.id || "");
-  const { data: followers = [] } = useUserFollowers(userData?.id || "");
-  const { data: following = [] } = useUserFollowing(userData?.id || "");
+  const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
+  const { data: followers = [] } = useUserFollowers(userData?.id || '');
+  const { data: following = [] } = useUserFollowing(userData?.id || '');
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
     ? {
-        name: userData.name || "Unknown User",
+        name: userData.name || 'Unknown User',
         username: `@${userData.username}`,
-        image: userData.image || "/placeholder.svg?height=80&width=80",
+        image: userData.image || '/placeholder.svg?height=80&width=80',
         verification_status: userData.verification_status,
-        status: userData.bio || "",
-        bio: userData.bio || "",
-        website: userData.bio_link || "",
-        isVerified: userData.verification_status === "verified",
+        status: userData.bio || '',
+        bio: userData.bio || '',
+        website: userData.bio_link || '',
+        isVerified: userData.verification_status === 'verified',
         stats: {
           events: eventCount,
           following: following.length,
@@ -127,55 +119,51 @@ export default function UserProfilePageClient() {
 
   const handleFollowToggle = () => {
     if (!userData?.id) {
-      toast.error("Unable to identify user");
+      toast.error('Unable to identify user');
       return;
     }
 
-    const action = followStatus?.isFollowing ? "unfollow" : "follow";
+    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
 
     followActionMutation.mutate(
       { userId: userData.id, action },
       {
         onSuccess: () => {
-          if (action === "follow") {
-            toast.success(`You followed ${userData.name || "this user"}!`);
+          if (action === 'follow') {
+            toast.success(`You followed ${userData.name || 'this user'}!`);
           } else {
-            toast.success(`You unfollowed ${userData.name || "this user"}`);
+            toast.success(`You unfollowed ${userData.name || 'this user'}`);
           }
         },
         onError: () => {
           toast.error(`Failed to ${action}. Please try again.`);
         },
-      },
+      }
     );
   };
 
   // Share functionality
   const handleShare = async () => {
     const shareData = {
-      title: `${userProfile?.name || "User"} on Evento`,
-      text: `Check out ${userProfile?.name || "User"}'s profile on Evento`,
+      title: `${userProfile?.name || 'User'} on Evento`,
+      text: `Check out ${userProfile?.name || 'User'}'s profile on Evento`,
       url: window.location.href,
     };
 
-    if (
-      navigator.share &&
-      navigator.canShare &&
-      navigator.canShare(shareData)
-    ) {
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       try {
         await navigator.share(shareData);
       } catch (error) {
         // User cancelled or share failed
-        console.log("Share cancelled or failed");
+        console.log('Share cancelled or failed');
       }
     } else {
       // Fallback: Copy to clipboard
       try {
         await navigator.clipboard.writeText(window.location.href);
-        toast.success("Profile link copied to clipboard!");
+        toast.success('Profile link copied to clipboard!');
       } catch (error) {
-        toast.error("Failed to share profile");
+        toast.error('Failed to share profile');
       }
     }
   };
@@ -185,15 +173,15 @@ export default function UserProfilePageClient() {
     // Only set TopBar if userData is loaded and available
     if (userData && userProfile) {
       setTopBar({
-        leftMode: "menu",
+        leftMode: 'menu',
         title: userProfile.name,
         subtitle: `@${userProfile.username}`,
         buttons: [
           {
-            id: "share",
+            id: 'share',
             icon: Share,
             onClick: handleShare,
-            label: "Share Profile",
+            label: 'Share Profile',
           },
         ],
         showAvatar: false,
@@ -203,7 +191,7 @@ export default function UserProfilePageClient() {
 
     return () => {
       setTopBar({
-        leftMode: "menu",
+        leftMode: 'menu',
         buttons: [],
         showAvatar: true,
         isOverlaid: false,
@@ -212,7 +200,7 @@ export default function UserProfilePageClient() {
   }, [userProfile?.name, userProfile?.username, setTopBar]);
 
   // Fetch pinned event
-  const { data: pinnedEvent } = usePinnedEvent(user?.username || "");
+  const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
   const {
     mutate: updatePinnedEvent,
     isPending: isUpdatingPinnedEvent,
@@ -227,19 +215,19 @@ export default function UserProfilePageClient() {
     isFetchingNextPage,
     hasNextPage,
   } = useUserEvents({
-    username: userData?.username || "",
+    username: userData?.username || '',
     filter: eventsFilter,
     timeframe: timeframe,
     sortBy: sortBy,
     limit: 10,
-    enabled: !!userData?.username && activeTab === "events",
+    enabled: !!userData?.username && activeTab === 'events',
   });
 
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm">
-        <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-red-500"></div>
+      <div className='mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm'>
+        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
       </div>
     );
   }
@@ -247,18 +235,16 @@ export default function UserProfilePageClient() {
   // Handle user not found
   if (userError || !userProfile) {
     return (
-      <div className="mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm">
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
-            <UserMinus className="h-8 w-8 text-gray-400" />
+      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm'>
+        <div className='text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+            <UserMinus className='h-8 w-8 text-gray-400' />
           </div>
-          <h2 className="mb-2 text-xl font-bold text-gray-900">
-            User not found
-          </h2>
-          <p className="mb-4 text-gray-500">
+          <h2 className='mb-2 text-xl font-bold text-gray-900'>User not found</h2>
+          <p className='mb-4 text-gray-500'>
             The user @{username} doesn't exist or may have been deleted.
           </p>
-          <Button onClick={() => router.back()} variant="outline">
+          <Button onClick={() => router.back()} variant='outline'>
             Go Back
           </Button>
         </div>
@@ -267,45 +253,45 @@ export default function UserProfilePageClient() {
   }
 
   const profilePhotos = [
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
-    "/placeholder.svg?height=120&width=120",
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
   ];
 
   const profileQuestions = [
     {
-      question: "My travel style",
-      answer: "Slow travel with deep cultural immersion",
+      question: 'My travel style',
+      answer: 'Slow travel with deep cultural immersion',
     },
     {
-      question: "Dream destination",
-      answer: "Patagonia - for the untouched wilderness",
+      question: 'Dream destination',
+      answer: 'Patagonia - for the untouched wilderness',
     },
     {
       question: "Can't travel without",
-      answer: "My Fujifilm camera and matcha powder",
+      answer: 'My Fujifilm camera and matcha powder',
     },
     {
-      question: "Best travel memory",
-      answer: "Sunrise hot air balloon ride over Cappadocia",
+      question: 'Best travel memory',
+      answer: 'Sunrise hot air balloon ride over Cappadocia',
     },
   ];
 
   const interestTags = [
-    "Photography",
-    "Food",
-    "Culture",
-    "Architecture",
-    "Street Art",
-    "Coffee",
-    "Hiking",
+    'Photography',
+    'Food',
+    'Culture',
+    'Architecture',
+    'Street Art',
+    'Coffee',
+    'Hiking',
   ];
 
   const handleMessage = () => {
-    toast.success("Message feature coming soon!");
+    toast.success('Message feature coming soon!');
   };
 
   const handleTip = () => {
@@ -330,8 +316,8 @@ export default function UserProfilePageClient() {
   // Format avatar data for LightboxViewer
   const avatarImages = [
     {
-      id: "avatar",
-      image: userProfile?.image || "/placeholder.svg?height=80&width=80",
+      id: 'avatar',
+      image: userProfile?.image || '/placeholder.svg?height=80&width=80',
       user_details: {
         id: userData?.id,
         username: userProfile?.username,
@@ -368,35 +354,29 @@ export default function UserProfilePageClient() {
     const groupedEvents =
       userEventsData?.pages
         .flatMap((page) => page.events)
-        .reduce(
-          (
-            groups: { date: string; events: EventWithUser[] }[],
-            event: EventWithUser,
-          ) => {
-            const date = event.computed_start_date;
-            const group = groups.find((g) => g.date === date);
+        .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
+          const date = event.computed_start_date;
+          const group = groups.find((g) => g.date === date);
 
-            if (group) {
-              group.events.push(event);
-            } else {
-              groups.push({ date, events: [event] });
-            }
+          if (group) {
+            group.events.push(event);
+          } else {
+            groups.push({ date, events: [event] });
+          }
 
-            return groups;
-          },
-          [],
-        )
+          return groups;
+        }, [])
         .sort(
           (
             a: { date: string; events: EventWithUser[] },
-            b: { date: string; events: EventWithUser[] },
+            b: { date: string; events: EventWithUser[] }
           ) => {
-            if (sortBy === "date-desc") {
+            if (sortBy === 'date-desc') {
               return new Date(b.date).getTime() - new Date(a.date).getTime();
             } else {
               return new Date(a.date).getTime() - new Date(b.date).getTime();
             }
-          },
+          }
         ) || [];
 
     const canPinEvent = (event: EventWithUser) => {
@@ -406,9 +386,7 @@ export default function UserProfilePageClient() {
       if (event.user_details.id === user.id) return true;
 
       // User can pin if they are a co-host
-      const isCoHost = event.hosts?.some(
-        (host: EventHost) => host.id === user.id,
-      );
+      const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
       return isCoHost;
     };
 
@@ -418,13 +396,11 @@ export default function UserProfilePageClient() {
       updatePinnedEvent(eventId, {
         onSuccess: () => {
           toast.success(
-            isPinned
-              ? "Event unpinned from your profile"
-              : "Event pinned to your profile",
+            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
           );
         },
         onError: () => {
-          toast.error(`Failed to ${isPinned ? "unpin" : "pin"} event`);
+          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
         },
       });
     };
@@ -435,104 +411,99 @@ export default function UserProfilePageClient() {
       tomorrow.setDate(tomorrow.getDate() + 1);
       const tomorrowStr = tomorrow.toISOString().slice(0, 10);
 
-      if (date === today) return "Today";
-      if (date === tomorrowStr) return "Tomorrow";
+      if (date === today) return 'Today';
+      if (date === tomorrowStr) return 'Tomorrow';
 
-      return new Date(date).toLocaleDateString("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
+      return new Date(date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
       });
     };
 
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {/* Filter Tabs */}
         <Tabs
           value={eventsFilter}
           onValueChange={(value) => setEventsFilter(value as EventFilterType)}
-          className="w-full"
+          className='w-full'
         >
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="upcoming">All</TabsTrigger>
-            <TabsTrigger value="attending">Attending</TabsTrigger>
-            <TabsTrigger value="hosting">Hosting</TabsTrigger>
+          <TabsList className='grid w-full grid-cols-3'>
+            <TabsTrigger value='upcoming'>All</TabsTrigger>
+            <TabsTrigger value='attending'>Attending</TabsTrigger>
+            <TabsTrigger value='hosting'>Hosting</TabsTrigger>
           </TabsList>
         </Tabs>
 
         {/* Controls */}
-        <div className="mt-4 grid w-full grid-cols-3 items-center gap-2">
+        <div className='mt-4 grid w-full grid-cols-3 items-center gap-2'>
           <Select
             value={timeframe}
-            onValueChange={(value: string) =>
-              setTimeframe(value as EventTimeframe)
-            }
+            onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
           >
-            <SelectTrigger className="text-sm">
-              <Calendar className="mr-2 h-4 w-4" />
-              <SelectValue placeholder="Timeframe" />
+            <SelectTrigger className='text-sm'>
+              <Calendar className='mr-2 h-4 w-4' />
+              <SelectValue placeholder='Timeframe' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All</SelectItem>
-              <SelectItem value="future">Future</SelectItem>
-              <SelectItem value="past">Past</SelectItem>
+              <SelectItem value='all'>All</SelectItem>
+              <SelectItem value='future'>Future</SelectItem>
+              <SelectItem value='past'>Past</SelectItem>
             </SelectContent>
           </Select>
-          <Select
-            value={sortBy}
-            onValueChange={(value: string) => setSortBy(value as EventSortBy)}
-          >
-            <SelectTrigger className="text-sm">
-              {sortBy === "date-desc" || sortBy === "created-desc" ? (
-                <SortAsc className="mr-2 h-4 w-4" />
+          <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
+            <SelectTrigger className='text-sm'>
+              {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
+                <SortAsc className='mr-2 h-4 w-4' />
               ) : (
-                <SortDesc className="mr-2 h-4 w-4" />
+                <SortDesc className='mr-2 h-4 w-4' />
               )}
-              <SelectValue placeholder="Sort by" />
+              <SelectValue placeholder='Sort by' />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="created-desc">Created Desc</SelectItem>
-              <SelectItem value="created-asc">Created Asc</SelectItem>
-              <SelectItem value="date-desc">Date Desc</SelectItem>
-              <SelectItem value="date-asc">Date Asc</SelectItem>
+              <SelectItem value='created-desc'>Created Desc</SelectItem>
+              <SelectItem value='created-asc'>Created Asc</SelectItem>
+              <SelectItem value='date-desc'>Date Desc</SelectItem>
+              <SelectItem value='date-asc'>Date Asc</SelectItem>
             </SelectContent>
           </Select>
           <Button
-            variant="outline"
+            variant='outline'
             onClick={() => setShowEventSearchSheet(true)}
-            aria-label="Search events"
+            aria-label='Search events'
           >
-            <Search className="h-5 w-5" />
+            <Search className='h-5 w-5' />
             <span>Search</span>
           </Button>
         </div>
 
         {/* Events List */}
-        <div className="space-y-8">
+        <div className='space-y-8'>
           {isLoadingEvents ? (
-            <div className="flex h-40 items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+            <div className='flex h-40 items-center justify-center'>
+              <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
             </div>
           ) : groupedEvents.length === 0 ? (
-            <div className="flex h-40 flex-col items-center justify-center space-y-2 text-center">
-              <div className="rounded-full bg-gray-100 p-3">
-                <MessageCircle className="h-6 w-6 text-gray-400" />
+            <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
+              <div className='rounded-full bg-gray-100 p-3'>
+                <MessageCircle className='h-6 w-6 text-gray-400' />
               </div>
-              <p className="text-sm text-gray-500">No events found</p>
+              <p className='text-sm text-gray-500'>No events found</p>
             </div>
           ) : (
             groupedEvents.map((group) => (
-              <div key={group.date} className="space-y-3">
-                <h3 className="text-sm font-medium text-gray-500">
+              <div key={group.date} className='space-y-3'>
+                <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
                 </h3>
-                <div className="divide-y divide-gray-100">
+                <div className='divide-y divide-gray-100'>
                   {group.events.map((event) => {
                     const isPinned = pinnedEvent?.id === event.id.toString();
                     const canPin = canPinEvent(event);
 
                     return (
-                      <div key={event.id} className="py-2">
+                      <div key={event.id} className='py-2'>
                         <EventCompactItem
                           key={event.id}
                           event={event}
@@ -555,20 +526,20 @@ export default function UserProfilePageClient() {
 
           {/* Load More Button */}
           {hasNextPage && (
-            <div className="flex justify-center pt-4">
+            <div className='flex justify-center pt-4'>
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={() => fetchNextPage()}
                 disabled={isFetchingNextPage}
-                className="w-full"
+                className='w-full'
               >
                 {isFetchingNextPage ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                     Loading...
                   </>
                 ) : (
-                  "Load more"
+                  'Load more'
                 )}
               </Button>
             </div>
@@ -590,7 +561,7 @@ export default function UserProfilePageClient() {
 
   const renderAboutTab = () => {
     return (
-      <div className="space-y-4">
+      <div className='space-y-4'>
         {/* Social Links */}
         {userData && (
           <SocialLinks
@@ -607,15 +578,15 @@ export default function UserProfilePageClient() {
         {/* Bio/Description */}
         {!userProfile?.bio ? null : (
           <div>
-            <RowCard title={"Bio"} subtitle={userProfile?.bio} />
+            <RowCard title={'Bio'} subtitle={userProfile?.bio} />
           </div>
         )}
 
         {/* Interest Tags */}
         <div>
-          <div className="flex flex-wrap gap-2">
+          <div className='flex flex-wrap gap-2'>
             <TagSection
-              title="Interests"
+              title='Interests'
               items={interestTags}
               selectedItems={[]}
               onToggleItem={() => {}}
@@ -625,18 +596,14 @@ export default function UserProfilePageClient() {
 
         {/* Profile Questions */}
         <div>
-          <h4 className="mb-3 font-semibold text-gray-900">About Me</h4>
-          <div className="space-y-3">
-            {profileQuestions.map(
-              (item: { question: string; answer: string }, index: number) => (
-                <div key={index} className="rounded-xl bg-gray-50 p-3">
-                  <p className="mb-1 text-sm font-medium text-gray-700">
-                    {item.question}
-                  </p>
-                  <p className="text-sm text-gray-900">{item.answer}</p>
-                </div>
-              ),
-            )}
+          <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
+          <div className='space-y-3'>
+            {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
+              <div key={index} className='rounded-xl bg-gray-50 p-3'>
+                <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
+                <p className='text-sm text-gray-900'>{item.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -644,129 +611,115 @@ export default function UserProfilePageClient() {
   };
 
   return (
-    <div className="relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm">
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-20">
+      <div className='flex-1 overflow-y-auto pb-20'>
         {/* Cover Image Section */}
-        <div className="relative">
+        <div className='relative'>
           {/* Banner */}
-          <div className="h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44" />
+          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
 
           {/* Profile Picture - Centered & Clickable */}
           <UserAvatar
             user={userProfile}
-            size="lg"
+            size='lg'
             onAvatarClick={handleAvatarClick}
             onVerificationClick={() => setShowVerificationModal(true)}
-            className="absolute -bottom-16 left-1/2 -translate-x-1/2 transform"
+            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
           />
         </div>
 
         {/* Profile Section */}
-        <div className="mb-4 bg-white px-6 pb-2 pt-20">
+        <div className='mb-4 bg-white px-6 pb-2 pt-20'>
           {/* User Info - Centered */}
-          <div className="mb-6 text-center">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {userProfile?.name || "Unknown User"}
+          <div className='mb-6 text-center'>
+            <h2 className='text-2xl font-bold text-gray-900'>
+              {userProfile?.name || 'Unknown User'}
             </h2>
-            <p className="text-gray-600">{userProfile?.username || ""}</p>
+            <p className='text-gray-600'>{userProfile?.username || ''}</p>
           </div>
 
           {/* Stats - Centered */}
-          <div className="mb-4 flex justify-center">
-            <div className="grid grid-cols-3 gap-8">
-              <div className="text-center">
-                <div className="text-xl font-bold text-gray-900">
-                  {eventCount}
-                </div>
-                <div className="text-sm text-gray-500">Events</div>
+          <div className='mb-4 flex justify-center'>
+            <div className='grid grid-cols-3 gap-8'>
+              <div className='text-center'>
+                <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
+                <div className='text-sm text-gray-500'>Events</div>
               </div>
-              <button
-                className="text-center"
-                onClick={() => setShowFollowingSheet(true)}
-              >
-                <div className="text-xl font-bold text-gray-900">
-                  {following?.length || 0}
-                </div>
-                <div className="text-sm text-gray-500">Following</div>
+              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                <div className='text-sm text-gray-500'>Following</div>
               </button>
-              <button
-                className="text-center"
-                onClick={() => setShowFollowersSheet(true)}
-              >
-                <div className="text-xl font-bold text-gray-900">
-                  {followers?.length || 0}
-                </div>
-                <div className="text-sm text-gray-500">Followers</div>
+              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
+                <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                <div className='text-sm text-gray-500'>Followers</div>
               </button>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="-mx-2.5 mb-6 flex gap-2 px-2.5">
+          <div className='-mx-2.5 mb-6 flex gap-2 px-2.5'>
             <Button
               onClick={handleFollowToggle}
               disabled={isFollowStatusLoading || followActionMutation.isPending}
               className={`flex-1 rounded-xl px-2.5 ${
                 followStatus?.isFollowing
-                  ? "bg-gray-100 text-gray-900 hover:bg-gray-200"
-                  : "bg-red-500 text-white hover:bg-red-600"
+                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+                  : 'bg-red-500 text-white hover:bg-red-600'
               }`}
             >
               {followStatus?.isFollowing ? (
                 <>
-                  <UserMinus className="mr-2 h-4 w-4" />
-                  {followActionMutation.isPending
-                    ? "Unfollowing..."
-                    : "Following"}
+                  <UserMinus className='mr-2 h-4 w-4' />
+                  {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
                 </>
               ) : (
                 <>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  {followActionMutation.isPending ? "Following..." : "Follow"}
+                  <UserPlus className='mr-2 h-4 w-4' />
+                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
                 </>
               )}
             </Button>
             <Button
-              variant="outline"
+              variant='outline'
               onClick={handleMessage}
-              className="rounded-xl bg-transparent px-3"
+              className='rounded-xl bg-transparent px-3'
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className='h-4 w-4' />
               Message
             </Button>
             {userData?.ln_address && (
               <Button
-                variant="outline"
+                variant='outline'
                 onClick={handleTip}
-                className="group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700"
+                className='group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700'
               >
-                <Zap className="h-4 w-4 text-black transition-colors group-hover:text-orange-700" />
+                <Zap className='h-4 w-4 text-black transition-colors group-hover:text-orange-700' />
                 Tip
               </Button>
             )}
           </div>
 
           {/* Tabbed Section */}
-          <div className="mb-4 w-full bg-white">
+          <div className='mb-4 w-full bg-white'>
             {/* Tab Headers */}
-            <div className="mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3">
+            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
               <button
-                onClick={() => setActiveTab("about")}
+                onClick={() => setActiveTab('about')}
                 className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === "about"
-                    ? "bg-gray-100 text-black"
-                    : "bg-white text-gray-500 hover:bg-gray-50"
+                  activeTab === 'about'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 About
               </button>
               <button
-                onClick={() => setActiveTab("events")}
+                onClick={() => setActiveTab('events')}
                 className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === "events"
-                    ? "bg-gray-100 text-black"
-                    : "bg-white text-gray-500 hover:bg-gray-50"
+                  activeTab === 'events'
+                    ? 'bg-gray-100 text-black'
+                    : 'bg-white text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 Events
@@ -775,8 +728,8 @@ export default function UserProfilePageClient() {
 
             {/* Tab Content */}
             <div>
-              {activeTab === "about" && renderAboutTab()}
-              {activeTab === "events" && renderEventsTab()}
+              {activeTab === 'about' && renderAboutTab()}
+              {activeTab === 'events' && renderEventsTab()}
             </div>
           </div>
         </div>
@@ -789,39 +742,33 @@ export default function UserProfilePageClient() {
       <FollowersSheet
         isOpen={showFollowersSheet}
         onClose={() => setShowFollowersSheet(false)}
-        userId={userData?.id || ""}
-        username={userData?.username || "user"}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
       />
 
       {/* Following Sheet */}
       <FollowingSheet
         isOpen={showFollowingSheet}
         onClose={() => setShowFollowingSheet(false)}
-        userId={userData?.id || ""}
-        username={userData?.username || "user"}
+        userId={userData?.id || ''}
+        username={userData?.username || 'user'}
       />
 
       {/* Website Redirect Modal */}
       {showWebsiteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
-            <h3 className="mb-4 text-xl font-bold">Leaving Evento</h3>
-            <p className="mb-6 text-gray-600">
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+            <h3 className='mb-4 text-xl font-bold'>Leaving Evento</h3>
+            <p className='mb-6 text-gray-600'>
               Are you about to leave Evento and be redirected to sarahchen.com?
             </p>
-            <div className="mb-6 text-6xl font-bold text-red-500">
-              {countdown}
-            </div>
+            <div className='mb-6 text-6xl font-bold text-red-500'>{countdown}</div>
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(
-                  userData?.bio_link || "#",
-                  "_blank",
-                  "noopener,noreferrer",
-                );
+                window.open(userData?.bio_link || '#', '_blank', 'noopener,noreferrer');
               }}
-              className="w-full bg-red-500 text-white hover:bg-red-600"
+              className='w-full bg-red-500 text-white hover:bg-red-600'
             >
               Take me to sarahchen.com
             </Button>
@@ -831,35 +778,32 @@ export default function UserProfilePageClient() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-          <div className="w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50">
-              <BadgeCheck className="h-8 w-8 rounded-full bg-red-600 text-white shadow-sm" />
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
+              <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
-            <h3 className="mb-4 text-xl font-bold text-gray-900">
-              This user is verified
-            </h3>
-            <p className="mb-6 text-gray-600">
-              This user is a premium member with a verified account. Verified
-              users have enhanced credibility and access to exclusive features
-              on our platform.
+            <h3 className='mb-4 text-xl font-bold text-gray-900'>This user is verified</h3>
+            <p className='mb-6 text-gray-600'>
+              This user is a premium member with a verified account. Verified users have enhanced
+              credibility and access to exclusive features on our platform.
             </p>
-            <div className="flex flex-col gap-3">
+            <div className='flex flex-col gap-3'>
               <Button
                 onClick={() => {
                   setShowVerificationModal(false);
                   router.push(
-                    "/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.",
+                    '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
                   );
                 }}
-                className="w-full bg-red-500 text-white hover:bg-red-600"
+                className='w-full bg-red-500 text-white hover:bg-red-600'
               >
                 Get in touch about verification
               </Button>
               <Button
-                variant="ghost"
+                variant='ghost'
                 onClick={() => setShowVerificationModal(false)}
-                className="w-full"
+                className='w-full'
               >
                 Close
               </Button>
@@ -876,8 +820,8 @@ export default function UserProfilePageClient() {
         onImageChange={setSelectedAvatarIndex}
         showDropdownMenu={false}
         handleDelete={handleAvatarDelete}
-        userId=""
-        eventId=""
+        userId=''
+        eventId=''
       />
 
       {/* Profile Photos Lightbox */}
@@ -888,8 +832,8 @@ export default function UserProfilePageClient() {
         onImageChange={setSelectedImageIndex}
         showDropdownMenu={false}
         handleDelete={async (photoId: string) => ({ success: false })}
-        userId=""
-        eventId=""
+        userId=''
+        eventId=''
       />
 
       {/* Tip Sheet */}
@@ -898,10 +842,10 @@ export default function UserProfilePageClient() {
           isOpen={showTipSheet}
           onClose={() => setShowTipSheet(false)}
           lightningAddress={userData.ln_address}
-          recipientName={userData.name || "Unknown User"}
+          recipientName={userData.name || 'Unknown User'}
           recipientUsername={userData.username}
           recipientImage={userData.image}
-          recipientVerified={userData.verification_status === "verified"}
+          recipientVerified={userData.verification_status === 'verified'}
         />
       )}
     </div>
