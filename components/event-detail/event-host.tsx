@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { Event } from '@/lib/types/event';
 import { MessageCircle } from 'lucide-react';
 import Image from 'next/image';
@@ -21,7 +22,6 @@ export default function EventHost({ event }: EventHostProps) {
         <h2 className='text-lg font-semibold text-gray-900'>
           {event.hosts.length === 1 ? 'Host' : 'Hosts'}
         </h2>
-        <span className='text-sm text-gray-500'>Contact</span>
       </div>
 
       <div className='space-y-4'>
@@ -39,12 +39,15 @@ export default function EventHost({ event }: EventHostProps) {
             </div>
 
             {event.contactEnabled && (
-              <button
+              <Button
+                variant='outline'
+                size='sm'
                 onClick={() => handleContactHost(host.id)}
-                className='rounded-full p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500'
+                className='gap-2'
               >
-                <MessageCircle className='h-5 w-5' />
-              </button>
+                <MessageCircle className='h-4 w-4' />
+                <span>Contact</span>
+              </Button>
             )}
           </div>
         ))}
