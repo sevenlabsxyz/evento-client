@@ -1,58 +1,46 @@
-"use client";
+'use client';
 
-import { DetachedSheet } from "@/components/ui/detached-sheet";
-import { CalendarPlus, ExternalLink, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from '@/components/ui/button';
+import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { toast } from '@/lib/utils/toast';
+import { CalendarPlus, Copy } from 'lucide-react';
 
 interface MoreOptionsSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCalendar: () => void;
-  onOpenInSafari: () => void;
 }
 
 export default function MoreOptionsSheet({
   isOpen,
   onClose,
   onAddToCalendar,
-  onOpenInSafari,
 }: MoreOptionsSheetProps) {
   const handleAddToCalendar = () => {
     onAddToCalendar();
     onClose();
   };
 
-  const handleOpenInSafari = () => {
-    onOpenInSafari();
-    onClose();
-  };
-
   const handleCopyEventUrl = () => {
-    // TODO: Implement copy event URL functionality
+    navigator.clipboard.writeText(window.location.href);
     onClose();
+    toast.success('Event URL copied to clipboard');
   };
 
   const options = [
     {
-      id: "add-to-calendar",
+      id: 'add-to-calendar',
       icon: CalendarPlus,
-      label: "Add to Calendar",
+      label: 'Add to Calendar',
       onClick: handleAddToCalendar,
-      variant: "secondary" as const,
+      variant: 'secondary' as const,
     },
     {
-      id: "open-in-safari",
-      icon: ExternalLink,
-      label: "Open in Safari",
-      onClick: handleOpenInSafari,
-      variant: "secondary" as const,
-    },
-    {
-      id: "copy-event-url",
+      id: 'copy-event-url',
       icon: Copy,
-      label: "Copy Event URL",
+      label: 'Copy Event URL',
       onClick: handleCopyEventUrl,
-      variant: "secondary" as const,
+      variant: 'secondary' as const,
     },
   ];
 
@@ -65,14 +53,14 @@ export default function MoreOptionsSheet({
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
           <DetachedSheet.Content>
-            <div className="p-6 pb-24">
+            <div className='p-6 pb-24'>
               {/* Handle */}
-              <div className="mb-4 flex justify-center">
+              <div className='mb-4 flex justify-center'>
                 <DetachedSheet.Handle />
               </div>
 
               {/* Options */}
-              <div className="space-y-3">
+              <div className='space-y-3'>
                 {options.map((option) => {
                   const IconComponent = option.icon;
                   return (
@@ -80,12 +68,10 @@ export default function MoreOptionsSheet({
                       key={option.id}
                       onClick={option.onClick}
                       variant={option.variant}
-                      className="flex w-full items-center gap-4 rounded-xl border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50"
+                      className='flex w-full items-center gap-4 rounded-xl border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50'
                     >
-                      <IconComponent className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-900">
-                        {option.label}
-                      </span>
+                      <IconComponent className='h-5 w-5 text-gray-600' />
+                      <span className='font-medium text-gray-900'>{option.label}</span>
                     </Button>
                   );
                 })}

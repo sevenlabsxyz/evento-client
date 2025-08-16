@@ -6,35 +6,26 @@ export async function POST(request: NextRequest) {
     const { lightningAddress, amountSats } = body;
 
     if (!lightningAddress) {
-      return NextResponse.json(
-        { error: 'Lightning address is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Lightning address is required' }, { status: 400 });
     }
 
     if (!amountSats || amountSats <= 0) {
-      return NextResponse.json(
-        { error: 'Valid amount in sats is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Valid amount in sats is required' }, { status: 400 });
     }
 
     // Convert lightning address to LNURL format
     // Lightning addresses are in the format username@domain.com
     const [username, domain] = lightningAddress.split('@');
-    
+
     if (!username || !domain) {
-      return NextResponse.json(
-        { error: 'Invalid lightning address format' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid lightning address format' }, { status: 400 });
     }
 
     // Step 1: Fetch LNURL-pay endpoint from well-known URL
     const wellKnownUrl = `https://${domain}/.well-known/lnurlp/${username}`;
-    
+
     const lnurlResponse = await fetch(wellKnownUrl);
-    
+
     if (!lnurlResponse.ok) {
       console.error('Failed to fetch LNURL endpoint:', lnurlResponse.status);
       return NextResponse.json(
@@ -59,10 +50,10 @@ export async function POST(request: NextRequest) {
 
     if (amountSats < minSendable || amountSats > maxSendable) {
       return NextResponse.json(
-        { 
+        {
           error: `Amount must be between ${minSendable} and ${maxSendable} sats`,
           minSendable,
-          maxSendable
+          maxSendable,
         },
         { status: 400 }
       );
@@ -73,13 +64,10 @@ export async function POST(request: NextRequest) {
     callbackUrl.searchParams.set('amount', (amountSats * 1000).toString()); // Convert to millisats
 
     const invoiceResponse = await fetch(callbackUrl.toString());
-    
+
     if (!invoiceResponse.ok) {
       console.error('Failed to fetch invoice:', invoiceResponse.status);
-      return NextResponse.json(
-        { error: 'Failed to generate invoice' },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: 'Failed to generate invoice' }, { status: 500 });
     }
 
     const invoiceData = await invoiceResponse.json();
@@ -106,7 +94,6 @@ export async function POST(request: NextRequest) {
       description: lnurlData.metadata ? parseMetadata(lnurlData.metadata) : null,
       successAction: invoiceData.successAction || null,
     });
-
   } catch (error) {
     console.error('Lightning invoice error:', error);
     return NextResponse.json(
@@ -120,7 +107,7 @@ export async function POST(request: NextRequest) {
 function parseMetadata(metadata: string | any[][]): string | null {
   try {
     let metadataArray = metadata;
-    
+
     // If metadata is a string, parse it as JSON
     if (typeof metadata === 'string') {
       metadataArray = JSON.parse(metadata);
@@ -128,7 +115,7 @@ function parseMetadata(metadata: string | any[][]): string | null {
 
     // Find the plain text description in the metadata
     if (Array.isArray(metadataArray)) {
-      const textEntry = metadataArray.find(entry => entry[0] === 'text/plain');
+      const textEntry = metadataArray.find((entry) => entry[0] === 'text/plain');
       if (textEntry && textEntry[1]) {
         return textEntry[1];
       }
