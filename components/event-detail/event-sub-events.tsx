@@ -1,8 +1,9 @@
 'use client';
 
 import { EventWithUser } from '@/lib/types/api';
-import { Loader2 } from 'lucide-react';
+import { Loader2, PlusIcon } from 'lucide-react';
 import { EventCompactItem } from '../event-compact-item';
+import { Button } from '../ui/button';
 
 interface EventSubEventsProps {
   subEvents: EventWithUser[];
@@ -17,7 +18,12 @@ export default function EventSubEvents({
 }: EventSubEventsProps) {
   return (
     <div className='space-y-4 border-t border-gray-100 pt-6'>
-      <h3 className='text-lg font-semibold text-gray-900'>Sub Events</h3>
+      <div className='mb-4 flex items-center justify-between gap-2'>
+        <h3 className='text-lg font-semibold text-gray-900'>Sub Events</h3>
+        <Button variant='secondary' size='icon'>
+          <PlusIcon className='h-4 w-4' />
+        </Button>
+      </div>
       <div className='space-y-4'>
         {subEventsLoading ? (
           <div className='flex items-center justify-center py-4'>
