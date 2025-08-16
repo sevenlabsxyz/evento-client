@@ -11,8 +11,8 @@ export function useUserRSVP(eventId: string) {
       const res = await apiClient.get<ApiResponse<EventRSVP[]>>(
         `/v1/events/rsvps/current-user?event_id=${eventId}`
       );
-      const list = (res && (res as any).data) || [];
-      const rsvp = Array.isArray(list) && list.length > 0 ? (list[0] as EventRSVP) : null;
+      const rsvp =
+        Array.isArray(res.data) && res.data.length > 0 ? (res.data[0] as EventRSVP) : null;
       return { status: (rsvp?.status as RSVPStatus) ?? null, rsvp };
     },
     enabled: !!eventId,
