@@ -469,11 +469,7 @@ export default function ProfilePage() {
         {/* Bio/Description */}
         {!user?.bio ? null : (
           <div>
-            <RowCard
-              title={"Bio"}
-              subtitle={user?.bio}
-              icon={<User className="h-4 w-4" />}
-            />
+            <RowCard title={"Bio"} subtitle={user?.bio} />
           </div>
         )}
 

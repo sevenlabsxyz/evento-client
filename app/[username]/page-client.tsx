@@ -607,11 +607,7 @@ export default function UserProfilePageClient() {
         {/* Bio/Description */}
         {!userProfile?.bio ? null : (
           <div>
-            <RowCard
-              title={"Bio"}
-              subtitle={userProfile?.bio}
-              icon={<User className="h-4 w-4" />}
-            />
+            <RowCard title={"Bio"} subtitle={userProfile?.bio} />
           </div>
         )}
 
@@ -641,32 +637,6 @@ export default function UserProfilePageClient() {
                 </div>
               ),
             )}
-          </div>
-        </div>
-
-        {/* Photo Album */}
-        <div>
-          <div className="mb-3 flex items-center justify-between">
-            <h4 className="font-semibold text-gray-900">Photos</h4>
-            <Button variant="ghost" size="sm" className="text-red-600">
-              <Camera className="mr-1 h-4 w-4" />
-              Add
-            </Button>
-          </div>
-          <div className="grid grid-cols-3 gap-2">
-            {profilePhotos.map((photo: string, index: number) => (
-              <button
-                key={index}
-                onClick={() => handleProfilePhotoClick(index)}
-                className="aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90"
-              >
-                <img
-                  src={photo || "/assets/img/evento-sublogo.svg"}
-                  alt={`Profile photo ${index + 1}`}
-                  className="h-full w-full object-cover"
-                />
-              </button>
-            ))}
           </div>
         </div>
       </div>
@@ -928,10 +898,10 @@ export default function UserProfilePageClient() {
           isOpen={showTipSheet}
           onClose={() => setShowTipSheet(false)}
           lightningAddress={userData.ln_address}
-          recipientName={userData.name || 'Unknown User'}
+          recipientName={userData.name || "Unknown User"}
           recipientUsername={userData.username}
           recipientImage={userData.image}
-          recipientVerified={userData.verification_status === 'verified'}
+          recipientVerified={userData.verification_status === "verified"}
         />
       )}
     </div>
