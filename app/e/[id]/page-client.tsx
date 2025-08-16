@@ -3,7 +3,7 @@
 import EventComments from '@/components/event-detail/event-comments';
 import EventDescription from '@/components/event-detail/event-description';
 import EventGallery from '@/components/event-detail/event-gallery';
-import EventGuestList from '@/components/event-detail/event-guest-list';
+import EventGuestsSection from '@/components/event-detail/event-guests-section';
 import EventHost from '@/components/event-detail/event-host';
 import EventInfo from '@/components/event-detail/event-info';
 import EventLocation from '@/components/event-detail/event-location';
@@ -160,7 +160,12 @@ export default function EventDetailPageClient() {
   const renderDetailsTab = () => (
     <div className='space-y-6'>
       <EventHost event={event} />
-      <EventGuestList event={event} currentUserId={user?.id || ''} />
+      <EventGuestsSection
+        eventId={eventId}
+        eventCreatorUserId={eventData?.creator_user_id || ''}
+        hosts={hostsData}
+        currentUserId={user?.id || ''}
+      />
       <EventDescription event={event} />
       {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
         <EventSubEvents
