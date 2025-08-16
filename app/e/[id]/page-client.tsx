@@ -11,7 +11,7 @@ import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed
 import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
@@ -22,7 +22,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Loader2, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function EventDetailPageClient() {
   const params = useParams();
@@ -31,8 +31,8 @@ export default function EventDetailPageClient() {
   const eventId = params.id as string;
   const { user } = useAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
-  const lightboxRef = useRef<SilkLightboxRef>(null);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
 
@@ -198,7 +198,7 @@ export default function EventDetailPageClient() {
         event={event}
         onImageClick={(index) => {
           setLightboxImages(event.galleryImages || []);
-          lightboxRef.current?.open(index);
+          setSelectedImageIndex(index);
         }}
       />
     );
@@ -212,7 +212,7 @@ export default function EventDetailPageClient() {
           event={event}
           onImageClick={(index) => {
             setLightboxImages(event.coverImages);
-            lightboxRef.current?.open(index);
+            setSelectedImageIndex(index);
           }}
         />
         <div className='pb-20'>
@@ -267,10 +267,17 @@ export default function EventDetailPageClient() {
       </div>
 
       {/* Image Lightbox */}
-      <SilkLightbox
-        ref={lightboxRef}
-        images={lightboxImages.length > 0 ? lightboxImages : event.coverImages}
-        eventTitle={event.title}
+      <LightboxViewer
+        images={lightboxImages}
+        selectedImage={selectedImageIndex}
+        onClose={() => setSelectedImageIndex(null)}
+        onImageChange={setSelectedImageIndex}
+        showDropdownMenu={false}
+        handleDelete={async (photoId: string) => {
+          return { success: false };
+        }}
+        userId={user?.id || ''}
+        eventId={event.id}
       />
     </div>
   );
