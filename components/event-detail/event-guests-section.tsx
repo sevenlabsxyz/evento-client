@@ -34,7 +34,10 @@ export default function EventGuestsSection({
     return hosts?.some((h) => h.user_details?.id === currentUserId);
   }, [currentUserId, eventCreatorUserId, hosts]);
 
-  const goingRSVPs = useMemo(() => rsvps.filter((r) => r.status === 'yes'), [rsvps]);
+  const goingRSVPs = useMemo(() => {
+    if (stats?.yes_only !== undefined) return rsvps.filter((r) => r.status === 'yes').slice(0, 4);
+    return rsvps.filter((r) => r.status === 'yes');
+  }, [rsvps, stats?.yes_only]);
   const goingCount = stats?.yes_only ?? goingRSVPs.length;
 
   // Avatars to display (up to 4)
