@@ -20,13 +20,13 @@ export interface UserDetails {
   email?: string; // Optional email field
   bio: string;
   image: string;
-  bio_link: string;
-  x_handle: string;
-  instagram_handle: string;
-  ln_address: string; // Lightning address
-  nip05: string; // Nostr identifier
+  bio_link?: string;
+  x_handle?: string;
+  instagram_handle?: string;
+  ln_address?: string; // Lightning address
+  nip05?: string; // Nostr identifier
   verification_status: 'verified' | 'pending' | null;
-  verification_date: string;
+  verification_date?: string;
 }
 
 // User search results
