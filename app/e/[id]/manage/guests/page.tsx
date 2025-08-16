@@ -1,19 +1,76 @@
 'use client';
 
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
-import { GuestStatus } from '@/lib/types/event';
-import { ArrowLeft, MoreHorizontal, Search, Users } from 'lucide-react';
-import Image from 'next/image';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { RSVPStatus } from '@/lib/types/api';
+import { sanitizeFileName } from '@/lib/utils/file';
+import { MoreHorizontal, Search, Users } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function GuestListPage() {
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const eventId = params.id as string;
 
   // Get existing event data from API
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
+  const { data: rsvps } = useEventRSVPs(eventId);
+  const guests = rsvps && rsvps.length ? rsvps : [];
+  const [activeTab, setActiveTab] = useState<RSVPStatus>('yes');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [hideGuestList, setHideGuestList] = useState(!existingEvent?.guestListSettings?.isPublic);
+
+  // Filter guests based on active tab and search query
+  const filteredGuests = useMemo(
+    () =>
+      guests.filter((guest) => {
+        const matchesTab = guest.status === activeTab;
+        const q = searchQuery.trim().toLowerCase();
+        if (!q) return matchesTab;
+        const name = (guest.user_details?.name || '').toLowerCase();
+        const email = (guest.user_details?.email || '').toLowerCase();
+        const username = (guest.user_details?.username || '').toLowerCase();
+        return matchesTab && (name.includes(q) || email.includes(q) || username.includes(q));
+      }),
+    [guests, activeTab, searchQuery]
+  );
+
+  // Configure TopBar for this route
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Guest List',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'more',
+          icon: MoreHorizontal,
+          onClick: () => setShowMoreMenu((v) => !v),
+          label: 'More',
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [applyRouteConfig, clearRoute, pathname, setTopBarForRoute]);
 
   if (isLoading) {
     return (
@@ -43,47 +100,21 @@ export default function GuestListPage() {
     );
   }
 
-  // Get guests from event data
-  const guests = existingEvent.guests || [];
-  const [activeTab, setActiveTab] = useState<GuestStatus>('going');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [hideGuestList, setHideGuestList] = useState(!existingEvent.guestListSettings?.isPublic);
-
   // Calculate counts for each status
-  const getGuestCount = (status: GuestStatus) =>
+  const getGuestCount = (status: RSVPStatus) =>
     guests.filter((guest) => guest.status === status).length;
 
   const tabs = [
-    { key: 'going' as const, label: 'Going', count: getGuestCount('going') },
+    { key: 'yes' as const, label: 'Going', count: getGuestCount('yes') },
     {
-      key: 'invited' as const,
-      label: 'Invited',
-      count: getGuestCount('invited'),
-    },
-    {
-      key: 'not-going' as const,
+      key: 'no' as const,
       label: 'Not Going',
-      count: getGuestCount('not-going'),
+      count: getGuestCount('no'),
     },
     { key: 'maybe' as const, label: 'Maybe', count: getGuestCount('maybe') },
-    {
-      key: 'checked-in' as const,
-      label: 'Checked In',
-      count: getGuestCount('checked-in'),
-    },
   ];
 
-  // Filter guests based on active tab and search query
-  const filteredGuests = guests.filter((guest) => {
-    const matchesTab = guest.status === activeTab;
-    const matchesSearch =
-      guest.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      guest.email.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesTab && matchesSearch;
-  });
-
-  const handleTabChange = (tab: GuestStatus) => {
+  const handleTabChange = (tab: RSVPStatus) => {
     setActiveTab(tab);
   };
 
@@ -95,59 +126,66 @@ export default function GuestListPage() {
     setHideGuestList(!hideGuestList);
   };
 
-  const handleCloseMoreMenu = () => {
-    setShowMoreMenu(false);
+  const handleExportCSV = () => {
+    // Export ALL guests, not only filtered, to capture the full list
+    const rows = guests.map((g) => {
+      const username = g.user_details?.username || '';
+      const profileUrl = username ? `https://evento.so/${username}` : '';
+      const rsvpTs = g.created_at || '';
+      return [
+        g.user_details?.name || '',
+        username,
+        g.user_details?.email || '',
+        g.status || '',
+        rsvpTs,
+        profileUrl,
+      ];
+    });
+    const headers = [
+      'Name',
+      'Username',
+      'Email',
+      'RSVP Status',
+      'RSVP Timestamp',
+      'Evento Profile',
+    ];
+    const csv = [headers, ...rows]
+      .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
+      .join('\n');
+    const date = new Date().toISOString().split('T')[0];
+    const filename = `guest-list-${sanitizeFileName(existingEvent.title)}-${date}.csv`;
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Guest List</h1>
+      <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
+        {/* Hidden, fixed-position trigger to anchor the menu near the TopBar ellipsis */}
+        <div className='fixed right-3 top-5 z-50'>
+          <DropdownMenuTrigger asChild>
+            <button aria-label='More' className='m-0 h-0 w-0 p-0 opacity-0' />
+          </DropdownMenuTrigger>
         </div>
-        <div className='relative'>
-          <button
-            onClick={() => setShowMoreMenu(!showMoreMenu)}
-            className='rounded-full p-2 hover:bg-gray-100'
+        <DropdownMenuContent side='bottom' align='end' sideOffset={8} className='min-w-56'>
+          <DropdownMenuItem onClick={handleExportCSV} className='font-medium'>
+            Export CSV
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuCheckboxItem
+            checked={hideGuestList}
+            onCheckedChange={() => handleToggleHideGuestList()}
           >
-            <MoreHorizontal className='h-5 w-5' />
-          </button>
-
-          {/* More Menu Dropdown */}
-          {showMoreMenu && (
-            <>
-              {/* Backdrop */}
-              <div className='fixed inset-0 z-40' onClick={handleCloseMoreMenu} />
-
-              {/* Dropdown Menu */}
-              <div className='absolute right-0 top-12 z-50 min-w-48 rounded-xl border border-gray-200 bg-white p-2 shadow-lg'>
-                <div className='flex items-center justify-between rounded-lg p-3 hover:bg-gray-50'>
-                  <div>
-                    <span className='font-medium text-gray-900'>Hide guest list</span>
-                    <p className='mt-1 text-xs text-gray-500'>Make guest list private</p>
-                  </div>
-                  <button
-                    onClick={handleToggleHideGuestList}
-                    className={`h-6 w-10 rounded-full transition-colors ${
-                      hideGuestList ? 'bg-red-500' : 'bg-gray-300'
-                    }`}
-                  >
-                    <div
-                      className={`h-4 w-4 rounded-full bg-white transition-transform ${
-                        hideGuestList ? 'translate-x-5' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </div>
+            Hide guest list
+          </DropdownMenuCheckboxItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
       {/* Search Bar */}
       <div className='p-4'>
@@ -172,7 +210,7 @@ export default function GuestListPage() {
               onClick={() => handleTabChange(tab.key)}
               className={`flex-shrink-0 rounded-lg px-4 py-2 font-medium transition-colors ${
                 activeTab === tab.key
-                  ? 'bg-black text-white'
+                  ? 'bg-red-500 text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -189,33 +227,24 @@ export default function GuestListPage() {
           <div className='space-y-3'>
             {filteredGuests.map((guest) => (
               <div key={guest.id} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-gray-300'>
-                  <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={32} height={32} />
-                </div>
+                <UserAvatar
+                  user={{
+                    name: guest.user_details?.name,
+                    username: guest.user_details?.username,
+                    image: guest.user_details?.image,
+                    verification_status: guest.user_details?.verification_status,
+                  }}
+                  onAvatarClick={() => {
+                    if (guest.user_details?.username) {
+                      router.push(`/${guest.user_details?.username}`);
+                    }
+                  }}
+                  height={48}
+                  width={48}
+                />
                 <div className='flex-1'>
-                  <h3 className='font-semibold text-gray-900'>{guest.name}</h3>
-                  <p className='text-sm text-gray-500'>{guest.email}</p>
-                  {guest.checkedInAt && (
-                    <p className='text-xs text-green-600'>
-                      Checked in at {guest.checkedInAt.toLocaleTimeString()}
-                    </p>
-                  )}
-                </div>
-                <div className='flex items-center gap-2'>
-                  {/* Status indicator */}
-                  <div
-                    className={`h-3 w-3 rounded-full ${
-                      guest.status === 'going'
-                        ? 'bg-green-500'
-                        : guest.status === 'invited'
-                          ? 'bg-blue-500'
-                          : guest.status === 'not-going'
-                            ? 'bg-red-500'
-                            : guest.status === 'maybe'
-                              ? 'bg-yellow-500'
-                              : 'bg-purple-500'
-                    }`}
-                  />
+                  <h3 className='font-semibold text-gray-900'>{guest.user_details?.name}</h3>
+                  <p className='text-sm text-gray-500'>{guest.user_details?.username}</p>
                 </div>
               </div>
             ))}
@@ -227,11 +256,9 @@ export default function GuestListPage() {
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900'>No Guests</h3>
             <p className='text-sm text-gray-500'>
-              {activeTab === 'going' && "No guests have confirmed they're going yet."}
-              {activeTab === 'invited' && 'No guests have been invited yet.'}
-              {activeTab === 'not-going' && 'No guests have declined yet.'}
+              {activeTab === 'yes' && "No guests have confirmed they're going yet."}
+              {activeTab === 'no' && 'No guests have declined yet.'}
               {activeTab === 'maybe' && 'No guests have responded with maybe yet.'}
-              {activeTab === 'checked-in' && 'No guests have checked in yet.'}
             </p>
           </div>
         )}

@@ -7,7 +7,7 @@ export interface EventHost {
   company?: string;
 }
 
-export type GuestStatus = 'going' | 'invited' | 'not-going' | 'maybe' | 'checked-in';
+export type GuestStatus = 'going' | 'not-going' | 'maybe';
 
 export interface Guest {
   id: string;
