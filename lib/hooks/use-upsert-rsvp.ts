@@ -1,14 +1,19 @@
 'use client';
 
 import { apiClient } from '@/lib/api/client';
-import { ApiResponse, EventRSVP, RSVPStatus } from '@/lib/types/api';
+import { EventRSVP, RSVPStatus } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import type { AxiosResponse } from 'axios';
 
 interface UpsertRSVPArgs {
   eventId: string;
   status: RSVPStatus;
   hasExisting: boolean;
+}
+
+interface UpsertRSVPResponse {
+  success: boolean;
+  message: string;
+  data: EventRSVP[];
 }
 
 export function useUpsertRSVP() {
@@ -17,18 +22,20 @@ export function useUpsertRSVP() {
   return useMutation<EventRSVP | null, Error, UpsertRSVPArgs>({
     mutationFn: async ({ eventId, status, hasExisting }) => {
       const body = { event_id: eventId, status };
-      let res: AxiosResponse<ApiResponse<EventRSVP[]>>;
+      let res: UpsertRSVPResponse;
       if (hasExisting) {
-        res = await apiClient.patch<ApiResponse<EventRSVP[]>>('/v1/events/rsvps', body);
+        res = await apiClient.patch<UpsertRSVPResponse>('/v1/events/rsvps', body);
       } else {
-        res = await apiClient.post<ApiResponse<EventRSVP[]>>('/v1/events/rsvps', body);
+        res = await apiClient.post<UpsertRSVPResponse>('/v1/events/rsvps', body);
       }
-      const payload = res.data;
-      if (!payload?.success) {
-        // Surface backend message (e.g., capacity reached)
-        throw new Error(payload?.message || 'Failed to update RSVP');
+      if (!res?.success) {
+        throw new Error(
+          res?.message === 'This event has reached its capacity.'
+            ? res?.message
+            : 'Failed to update RSVP'
+        );
       }
-      const arr = payload?.data ?? [];
+      const arr = res?.data ?? [];
       return Array.isArray(arr) && arr.length > 0 ? (arr[0] as EventRSVP) : null;
     },
     onSuccess: (_data, variables) => {

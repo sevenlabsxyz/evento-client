@@ -15,15 +15,15 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
   const requestId = logger.generateRequestId();
   const startTime = Date.now();
 
+  // Reconstruct the path
+  const path = params.path?.join('/') || '';
+  const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
+
+  // Get query parameters
+  const queryString = request.nextUrl.search;
+  const fullUrl = `${targetUrl}${queryString}`;
+
   try {
-    // Reconstruct the path
-    const path = params.path?.join('/') || '';
-    const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
-
-    // Get query parameters
-    const queryString = request.nextUrl.search;
-    const fullUrl = `${targetUrl}${queryString}`;
-
     // Extract request context for logging
     const userAgent = request.headers.get('user-agent') || undefined;
     const ip =
@@ -95,7 +95,10 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
 
       // Log request body (will be sanitized by logger)
       if (requestBody) {
-        logger.debug(`Request body for ${fullUrl}`, { requestId, body: requestBody });
+        logger.debug(`Request body for ${fullUrl}`, {
+          requestId,
+          body: requestBody,
+        });
       }
     }
 
