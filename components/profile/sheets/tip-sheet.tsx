@@ -6,7 +6,7 @@ import { DetachedSheet } from "@/components/ui/detached-sheet";
 import { UserAvatar } from "@/components/ui/user-avatar";
 import { toast } from "@/lib/utils/toast";
 import { AnimatePresence, motion } from "framer-motion";
-import { ArrowLeft, Loader2, Zap } from "lucide-react";
+import { ArrowLeft, Copy, Loader2, Zap } from "lucide-react";
 import { useState } from "react";
 
 interface TipSheetProps {
@@ -93,18 +93,9 @@ export default function TipSheet({
 
       setInvoice(data.invoice);
 
-      // Open lightning wallet with invoice
+      // Use location.href for better iOS Safari compatibility
       const lightningUrl = `lightning:${data.invoice}`;
-      window.open(lightningUrl, "_blank");
-
-      // Close sheet after opening wallet
-      setTimeout(() => {
-        onClose();
-        // Reset state
-        setAmount("");
-        setView("amount");
-        setInvoice(null);
-      }, 1000);
+      window.location.href = lightningUrl;
 
       toast.success("Opening your Lightning wallet...");
     } catch (error) {
@@ -112,6 +103,18 @@ export default function TipSheet({
       toast.error("Failed to create payment. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleCopyInvoice = async () => {
+    if (!invoice) return;
+    
+    try {
+      await navigator.clipboard.writeText(invoice);
+      toast.success("Invoice copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy invoice:", error);
+      toast.error("Failed to copy invoice");
     }
   };
 
@@ -310,28 +313,50 @@ export default function TipSheet({
 
                     {/* Action Buttons */}
                     <div className="flex flex-col gap-3">
-                      <Button
-                        onClick={handlePay}
-                        disabled={isLoading}
-                        className="w-full bg-red-600 py-6 text-base text-white hover:bg-red-700"
-                      >
-                        {isLoading ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Creating Invoice...
-                          </>
-                        ) : (
-                          <>Pay with Lightning</>
-                        )}
-                      </Button>
+                      {!invoice ? (
+                        <Button
+                          onClick={handlePay}
+                          disabled={isLoading}
+                          className="w-full bg-red-600 py-6 text-base text-white hover:bg-red-700"
+                        >
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                              Creating Invoice...
+                            </>
+                          ) : (
+                            <>Pay with Lightning</>
+                          )}
+                        </Button>
+                      ) : (
+                        <>
+                          <Button
+                            onClick={handleCopyInvoice}
+                            variant="outline"
+                            className="w-full py-6 text-base"
+                          >
+                            <Copy className="mr-2 h-4 w-4" />
+                            Copy Invoice
+                          </Button>
+                          <p className="text-center text-sm text-gray-500">
+                            Wallet didn't open? Copy the invoice and paste it in your Lightning wallet.
+                          </p>
+                        </>
+                      )}
                       <Button
                         variant="secondary"
-                        onClick={handleBack}
+                        onClick={invoice ? handleClose : handleBack}
                         disabled={isLoading}
                         className="w-full border border-gray-200 mb-6"
                       >
-                        <ArrowLeft className="h-4 w-4" />
-                        Back
+                        {invoice ? (
+                          "Close"
+                        ) : (
+                          <>
+                            <ArrowLeft className="h-4 w-4" />
+                            Back
+                          </>
+                        )}
                       </Button>
                     </div>
                   </motion.div>
