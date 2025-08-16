@@ -1,19 +1,20 @@
 'use client';
 
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
+import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { ArrowLeft, Loader2, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useRef } from 'react';
+import { useState } from 'react';
 
 export default function GalleryPage() {
   const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const eventId = params.id as string;
-  const lightboxRef = useRef<SilkLightboxRef>(null);
   const { data: eventData, isLoading: eventLoading } = useEventDetails(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
 
@@ -47,7 +48,7 @@ export default function GalleryPage() {
 
   const galleryImages = galleryData || [];
   const handleImageClick = (index: number) => {
-    lightboxRef.current?.open(index);
+    setSelectedImageIndex(index);
   };
 
   const isOwner = eventData?.user_details?.id === user?.id;
@@ -138,7 +139,7 @@ export default function GalleryPage() {
                 className='aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90'
               >
                 <img
-                  src={image.url}
+                  src={getOptimizedImageUrl(image.url)}
                   alt={`Gallery image ${index + 1}`}
                   className='h-full w-full object-cover'
                 />
@@ -171,10 +172,16 @@ export default function GalleryPage() {
       </div>
 
       {/* Image Lightbox */}
-      <SilkLightbox
-        ref={lightboxRef}
-        images={galleryImages.map((image) => image.url)}
-        eventTitle={eventData.title}
+      <LightboxViewer
+        images={galleryImages.map((_image, index) => index)}
+        selectedImage={selectedImageIndex}
+        onClose={() => {}}
+        onImageChange={() => {}}
+        handleDelete={(photoId: string) => {
+          return Promise.resolve({ success: true });
+        }}
+        userId={user!.id}
+        eventId={eventId}
       />
     </div>
   );

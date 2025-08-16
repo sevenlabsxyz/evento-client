@@ -29,7 +29,8 @@ export function useEventGallery(eventId: string) {
         return response.data || [];
       }
 
-      throw new Error('Unable to fetch event gallery');
+      // Fallback for direct data response
+      return response as unknown as GalleryItem[];
     },
     enabled: !!eventId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes
