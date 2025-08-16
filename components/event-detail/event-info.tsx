@@ -65,10 +65,11 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         .replace(/;/g, '\\;');
     };
 
-    const location =
-      `${event.location.name}, ${event.location.address || ''}, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
-        .replace(/,\s*,/g, ',')
-        .trim();
+    const location = `${event.location.name}, ${
+      event.location.address || ''
+    }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
+      .replace(/,\s*,/g, ',')
+      .trim();
 
     const icsContent = [
       'BEGIN:VCALENDAR',
@@ -101,12 +102,6 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
-  };
-
-  const handleOpenInSafari = () => {
-    if (event.registrationUrl) {
-      window.open(event.registrationUrl, '_blank');
-    }
   };
 
   // Check if current user is the event owner
@@ -189,7 +184,6 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         isOpen={showMoreSheet}
         onClose={() => setShowMoreSheet(false)}
         onAddToCalendar={handleAddToCalendar}
-        onOpenInSafari={handleOpenInSafari}
       />
     </>
   );

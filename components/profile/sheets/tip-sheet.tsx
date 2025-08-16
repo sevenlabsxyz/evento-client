@@ -108,7 +108,7 @@ export default function TipSheet({
 
   const handleCopyInvoice = async () => {
     if (!invoice) return;
-    
+
     try {
       await navigator.clipboard.writeText(invoice);
       toast.success("Invoice copied to clipboard!");
@@ -229,7 +229,7 @@ export default function TipSheet({
                         variant="outline"
                         size="lg"
                         onClick={handleBackspace}
-                        className="h-14 text-lg border-none text-muted-foreground"
+                        className="h-14 border-none text-lg text-muted-foreground"
                       >
                         ⌫
                       </Button>
@@ -240,7 +240,7 @@ export default function TipSheet({
                       <Button
                         onClick={handleNext}
                         disabled={!amount || amount === "0"}
-                        className="flex-1 py-4 text-base bg-red-600 text-white hover:bg-red-700"
+                        className="flex-1 bg-red-600 py-4 text-base text-white hover:bg-red-700"
                       >
                         Next
                       </Button>
@@ -283,7 +283,7 @@ export default function TipSheet({
                     </div>
 
                     {/* Amount Summary */}
-                    <div className="mb-6 rounded-xl bg-red-50 border border-red-200 p-4">
+                    <div className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4">
                       <div className="text-center">
                         <p className="mb-1 text-base text-gray-600">
                           You're sending
@@ -298,9 +298,9 @@ export default function TipSheet({
                     </div>
 
                     {/* Payment Details */}
-                    <div className="mb-6 space-y-2 rounded-lg bg-gray-50 p-3 border border-gray-200">
+                    <div className="mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="text-gray-600 text-xs">
+                        <span className="text-xs text-gray-600">
                           Lightning Address:
                         </span>
                         <span className="font-semibold text-gray-700">
@@ -339,7 +339,8 @@ export default function TipSheet({
                             Copy Invoice
                           </Button>
                           <p className="text-center text-sm text-gray-500">
-                            Wallet didn't open? Copy the invoice and paste it in your Lightning wallet.
+                            Wallet didn't open? Copy the invoice and paste it in
+                            your Lightning wallet.
                           </p>
                         </>
                       )}
@@ -347,7 +348,7 @@ export default function TipSheet({
                         variant="secondary"
                         onClick={invoice ? handleClose : handleBack}
                         disabled={isLoading}
-                        className="w-full border border-gray-200 mb-6"
+                        className="mb-6 w-full border border-gray-200"
                       >
                         {invoice ? (
                           "Close"
