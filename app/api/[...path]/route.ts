@@ -88,7 +88,7 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
           options.body = textBody;
         }
       } else if (
-        contentType?.includes('image/') || 
+        contentType?.includes('image/') ||
         contentType?.includes('application/octet-stream') ||
         contentType?.includes('multipart/form-data')
       ) {
