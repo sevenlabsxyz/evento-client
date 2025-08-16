@@ -22,9 +22,10 @@ export default function MoreOptionsSheet({
   };
 
   const handleCopyEventUrl = () => {
-    navigator.clipboard.writeText(window.location.href);
     onClose();
-    toast.success('Event URL copied to clipboard');
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      toast.success('Event URL copied to clipboard');
+    });
   };
 
   const options = [
