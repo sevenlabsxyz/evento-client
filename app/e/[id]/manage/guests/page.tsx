@@ -1,5 +1,6 @@
 'use client';
 
+import { exportGuestsCsvAction } from '@/app/actions/export-guests';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -13,7 +14,7 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { RSVPStatus } from '@/lib/types/api';
-import { sanitizeFileName } from '@/lib/utils/file';
+import { toast } from '@/lib/utils/toast';
 import { MoreHorizontal, Search, Users } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -126,42 +127,29 @@ export default function GuestListPage() {
     setHideGuestList(!hideGuestList);
   };
 
-  const handleExportCSV = () => {
-    // Export ALL guests, not only filtered, to capture the full list
-    const rows = guests.map((g) => {
-      const username = g.user_details?.username || '';
-      const profileUrl = username ? `https://evento.so/${username}` : '';
-      const rsvpTs = g.created_at || '';
-      return [
-        g.user_details?.name || '',
-        username,
-        g.user_details?.email || '',
-        g.status || '',
-        rsvpTs,
-        profileUrl,
-      ];
-    });
-    const headers = [
-      'Name',
-      'Username',
-      'Email',
-      'RSVP Status',
-      'RSVP Timestamp',
-      'Evento Profile',
-    ];
-    const csv = [headers, ...rows]
-      .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(','))
-      .join('\n');
-    const date = new Date().toISOString().split('T')[0];
-    const filename = `guest-list-${sanitizeFileName(existingEvent.title)}-${date}.csv`;
+  const handleExportCSV = async () => {
+    if (!existingEvent) return;
 
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
+    toast.info('Exporting guest list...');
+
+    try {
+      const { filename, csv } = await exportGuestsCsvAction({
+        guests,
+        eventTitle: existingEvent.title,
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success('Guest list exported successfully');
+    } catch {
+      toast.error('Failed to export guest list. Please try again');
+    }
   };
 
   return (
