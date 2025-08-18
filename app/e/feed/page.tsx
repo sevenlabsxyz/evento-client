@@ -4,6 +4,7 @@ import { EventCard } from '@/components/event-card';
 import { EventDateGroup } from '@/components/event-date-group';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
+import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useEventsFeed } from '@/lib/hooks/use-events-feed';
@@ -11,7 +12,7 @@ import { useUserSearch } from '@/lib/hooks/use-search';
 import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useViewModeStore } from '@/lib/stores/view-mode-store';
-import { EventWithUser, UserSearchResult } from '@/lib/types/api';
+import { EventWithUser, UserDetails, UserSearchResult } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import {
@@ -45,6 +46,7 @@ export default function FeedPage() {
   const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>('date-desc');
   const router = useRouter();
   const pathname = usePathname();
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(null);
 
   // View mode state from Zustand store
   const { feedViewMode, setFeedViewMode } = useViewModeStore();
@@ -490,7 +492,7 @@ export default function FeedPage() {
                                   onClick={() => {
                                     // Add to recent searches when user is clicked
                                     addRecentSearch(user);
-                                    router.push(`/${user.username}`);
+                                    setSelectedUser(user);
                                     setShowSearchSheet(false);
                                   }}
                                 >
@@ -546,7 +548,7 @@ export default function FeedPage() {
                                   key={user.id}
                                   className='flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50'
                                   onClick={() => {
-                                    router.push(`/${user.username}`);
+                                    setSelectedUser(user);
                                     setShowSearchSheet(false);
                                   }}
                                 >
@@ -627,6 +629,14 @@ export default function FeedPage() {
           </SheetWithDetent.View>
         </SheetWithDetent.Portal>
       </SheetWithDetent.Root>
+
+      {selectedUser && (
+        <QuickProfileSheet
+          isOpen={!!selectedUser}
+          onClose={() => setSelectedUser(null)}
+          user={{ ...selectedUser, bio: '' } as UserDetails}
+        />
+      )}
     </div>
   );
 }
