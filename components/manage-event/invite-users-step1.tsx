@@ -30,13 +30,19 @@ export default function Step1SearchUsers({
   const router = useRouter();
 
   // Search
-  const { mutate: searchUsers, data: searchResults, isPending: isSearching } = useUserSearch();
+  const searchMutation = useUserSearch();
+  const { mutate: searchUsers, data: searchResults, isPending: isSearching } = searchMutation;
   const debouncedSearch = useDebounce(searchText, 400);
 
   useEffect(() => {
     const q = debouncedSearch.trim();
-    if (q.length >= 2) searchUsers(q);
-  }, [debouncedSearch, searchUsers]);
+    if (q.length >= 2) {
+      searchUsers(q);
+    } else if (q.length === 0) {
+      // Clear search results immediately when query is empty
+      searchMutation.reset();
+    }
+  }, [debouncedSearch, searchUsers, searchMutation]);
 
   // Check if search query is an email
   const isEmailQuery = (query: string) => {
