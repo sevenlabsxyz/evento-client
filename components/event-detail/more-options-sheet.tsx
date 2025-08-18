@@ -54,14 +54,14 @@ export default function MoreOptionsSheet({
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
           <DetachedSheet.Content>
-            <div className="p-6 pb-24">
+            <div className='p-6 pb-24'>
               {/* Handle */}
-              <div className="mb-4 flex justify-center">
+              <div className='mb-4 flex justify-center'>
                 <DetachedSheet.Handle />
               </div>
 
               {/* Options */}
-              <div className="space-y-3">
+              <div className='space-y-3'>
                 {options.map((option) => {
                   const IconComponent = option.icon;
                   return (
@@ -69,12 +69,10 @@ export default function MoreOptionsSheet({
                       key={option.id}
                       onClick={option.onClick}
                       variant={option.variant}
-                      className="flex w-full items-center gap-4 rounded-xl border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50"
+                      className='flex w-full items-center gap-4 rounded-xl border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50'
                     >
-                      <IconComponent className="h-5 w-5 text-gray-600" />
-                      <span className="font-medium text-gray-900">
-                        {option.label}
-                      </span>
+                      <IconComponent className='h-5 w-5 text-gray-600' />
+                      <span className='font-medium text-gray-900'>{option.label}</span>
                     </Button>
                   );
                 })}
