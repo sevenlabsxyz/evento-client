@@ -129,7 +129,7 @@ export default function Step1SearchUsers({
       </div>
 
       {/* Content */}
-      <div className='flex-1 overflow-y-auto px-4'>
+      <div className='mt-4 flex-1 overflow-y-auto px-4'>
         {isSearching ? (
           <div className='px-4 py-8 text-center text-sm text-gray-500'>
             <Loader2 className='mx-auto mb-2 h-5 w-5 animate-spin' /> Searching users...
