@@ -11,9 +11,26 @@ export type SendInvitesRequest = {
 
 export type SendInvitesResponse = {
   success: boolean;
-  invitedCount?: number;
-  failed?: string[];
-  message?: string;
+  data: {
+    emails: {
+      data: {
+        data: Array<{ id: string }>;
+      };
+      error: null | string;
+    };
+    phones: string;
+    users: string;
+    invites: Array<{
+      id: string;
+      event_id: string;
+      inviter_id: string;
+      invitee_id?: string;
+      invitee_email: string;
+      message: string;
+      status: string;
+    }>;
+  };
+  message: string;
 };
 
 /**
@@ -29,11 +46,10 @@ export function useSendEventInvites() {
 
       const res = await apiClient.post<SendInvitesResponse>('/v1/events/invites', payload);
 
-      // apiClient returns response.data directly; normalize a bit
-      return res as any as SendInvitesResponse;
+      return res.data;
     },
     onSuccess: (data) => {
-      const count = data?.invitedCount ?? 0;
+      const count = data?.invites?.length ?? 0;
       toast.success(count ? `Sent ${count} invite${count === 1 ? '' : 's'}` : 'Invites sent');
     },
     onError: (err: any) => {

@@ -143,6 +143,7 @@ export default function Step2SendInvites({
         <div className='space-y-3'>
           <button
             onClick={onBack}
+            disabled={sendInvitesMutation.isPending}
             className='flex w-full items-center justify-center gap-2 rounded-xl border px-6 py-3 text-sm font-medium hover:bg-gray-50'
           >
             <ArrowLeft className='h-4 w-4' /> BACK
