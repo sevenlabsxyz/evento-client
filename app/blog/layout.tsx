@@ -40,7 +40,7 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       setTopBar({
         leftMode: 'back',
         onBackPress: handleBack,
-        centerMode: 'empty',
+        centerMode: 'logo',
         title: '',
         subtitle: '',
         showAvatar: false,

@@ -139,6 +139,14 @@ export function TopBar() {
       );
     }
 
+    if (centerMode === 'logo' && !isOverlaid) {
+      return (
+        <div className='flex flex-1 flex-col gap-1'>
+          <Image priority src='/assets/img/evento-logo.svg' alt='Evento' width={100} height={100} />
+        </div>
+      );
+    }
+
     return null;
   };
 

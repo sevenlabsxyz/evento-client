@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { VerificationStatus } from '../types/api';
 
 export type LeftMode = 'menu' | 'back';
-export type CenterMode = 'title' | 'empty' | 'chat-partner';
+export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
 
 export interface TopBarButton {
   id: string;
@@ -145,7 +145,8 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
   setChatPartner: (chatPartner) => set({ chatPartner }),
 
-  reset: () => set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
+  reset: () =>
+    set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
 
   resetForRoute: (route) => {
     const currentRoute = get().currentRoute;
