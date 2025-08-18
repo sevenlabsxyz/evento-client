@@ -116,6 +116,36 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   </div>
                 </div>
               </div>
+
+              {emails.length > 0 && (
+                <div className='my-6'>
+                  <div className='mb-3 flex items-center justify-between'>
+                    <h3 className='font-medium'>
+                      Found {emails.length} email
+                      {emails.length !== 1 ? 's' : ''}
+                    </h3>
+                    <button
+                      onClick={() => setEmails([])}
+                      className='text-sm text-red-600 hover:text-red-800'
+                    >
+                      Clear
+                    </button>
+                  </div>
+                  <div className='max-h-40 overflow-y-auto rounded-lg border'>
+                    {emails.slice(0, 10).map((email, i) => (
+                      <div key={i} className='border-b p-3 text-sm last:border-b-0'>
+                        {email}
+                      </div>
+                    ))}
+                    {emails.length > 10 && (
+                      <div className='bg-gray-50 p-3 text-center text-xs text-gray-500'>
+                        + {emails.length - 10} more emails
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
               <div
                 onDragOver={(e) => {
                   e.preventDefault();
@@ -150,35 +180,6 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 <div className='mt-4 text-center'>
                   <div className='inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500' />
                   <p className='mt-2 text-sm text-gray-500'>Processing file...</p>
-                </div>
-              )}
-
-              {emails.length > 0 && (
-                <div className='mt-6'>
-                  <div className='mb-3 flex items-center justify-between'>
-                    <h3 className='font-medium'>
-                      Found {emails.length} email
-                      {emails.length !== 1 ? 's' : ''}
-                    </h3>
-                    <button
-                      onClick={() => setEmails([])}
-                      className='text-sm text-red-600 hover:text-red-800'
-                    >
-                      Clear
-                    </button>
-                  </div>
-                  <div className='max-h-40 overflow-y-auto rounded-lg border'>
-                    {emails.slice(0, 10).map((email, i) => (
-                      <div key={i} className='border-b p-3 text-sm last:border-b-0'>
-                        {email}
-                      </div>
-                    ))}
-                    {emails.length > 10 && (
-                      <div className='bg-gray-50 p-3 text-center text-xs text-gray-500'>
-                        + {emails.length - 10} more emails
-                      </div>
-                    )}
-                  </div>
                 </div>
               )}
             </div>
