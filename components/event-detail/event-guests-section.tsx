@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
-import { useRSVPStats } from '@/lib/hooks/use-rsvp-stats';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -24,7 +23,6 @@ export default function EventGuestsSection({
   currentUserId,
 }: GuestsSectionProps) {
   const router = useRouter();
-  const { data: stats } = useRSVPStats(eventId);
   const { data: rsvps = [], isLoading, error, refetch } = useEventRSVPs(eventId);
   const [sheetOpen, setSheetOpen] = useState(false);
 
@@ -35,10 +33,9 @@ export default function EventGuestsSection({
   }, [currentUserId, eventCreatorUserId, hosts]);
 
   const goingRSVPs = useMemo(() => {
-    if (stats?.yes_only !== undefined) return rsvps.filter((r) => r.status === 'yes').slice(0, 4);
-    return rsvps.filter((r) => r.status === 'yes');
-  }, [rsvps, stats?.yes_only]);
-  const goingCount = stats?.yes_only ?? goingRSVPs.length;
+    return rsvps.filter((r) => r.status === 'yes').slice(0, 4);
+  }, [rsvps]);
+  const goingCount = goingRSVPs.length;
 
   // Avatars to display (up to 4)
   const display = goingRSVPs.slice(0, 4);
