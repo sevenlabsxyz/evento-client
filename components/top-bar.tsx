@@ -11,8 +11,17 @@ import { useEffect, useState } from 'react';
 
 export function TopBar() {
   const { openSidebar } = useSidebar();
-  const { leftMode, onBackPress, centerMode, title, subtitle, buttons, showAvatar, isOverlaid } =
-    useTopBar();
+  const {
+    leftMode,
+    onBackPress,
+    centerMode,
+    title,
+    subtitle,
+    buttons,
+    showAvatar,
+    isOverlaid,
+    chatPartner,
+  } = useTopBar();
   const { user } = useUserProfile();
   const pathname = usePathname();
   const router = useRouter();
@@ -100,6 +109,25 @@ export function TopBar() {
   const renderCenterContent = () => {
     if (centerMode === 'empty') {
       return null;
+    }
+
+    if (centerMode === 'chat-partner' && chatPartner) {
+      return (
+        <div className='flex flex-1 items-center gap-3'>
+          <Avatar className='h-8 w-8'>
+            <AvatarImage src={chatPartner.image} alt={chatPartner.name} />
+            <AvatarFallback className='bg-gray-100 text-sm'>
+              {chatPartner.name.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className='flex flex-1 flex-col'>
+            <h1 className='text-base font-semibold text-gray-900'>{chatPartner.name}</h1>
+            {chatPartner.username && (
+              <p className='text-sm text-gray-500'>@{chatPartner.username}</p>
+            )}
+          </div>
+        </div>
+      );
     }
 
     if (centerMode === 'title' && !isOverlaid) {

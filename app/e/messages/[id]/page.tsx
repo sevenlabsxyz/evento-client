@@ -10,9 +10,10 @@ import { EmojiPicker } from 'stream-chat-react/emojis';
 import data from '@emoji-mart/data';
 import { init, SearchIndex } from 'emoji-mart';
 import { ArrowLeft } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+import { useTopBar } from '@/lib/stores/topbar-store';
 import '../chat-layout.css';
 import '../stream-chat.d.ts';
 
@@ -22,9 +23,11 @@ init({ data });
 export default function SingleChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
+  const pathname = usePathname();
   const params = useParams();
   const [channel, setChannel] = useState<StreamChannel>();
   const [channelError, setChannelError] = useState<string | null>(null);
+  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   // Use Stream Chat from the provider
   const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
@@ -73,6 +76,34 @@ export default function SingleChatPage() {
 
     initSpecificChannel();
   }, [client, params.id]);
+
+  useEffect(() => {
+    if (channel) {
+      // Extract chat partner information
+      const currentUserId = client?.user?.id;
+      const members = Object.values(channel.state.members || {});
+      const chatPartner = members.find((member) => member.user?.id !== currentUserId)?.user;
+
+      applyRouteConfig(pathname);
+      setTopBarForRoute(pathname, {
+        leftMode: 'back',
+        showAvatar: false,
+        centerMode: 'chat-partner',
+        buttons: [],
+        chatPartner: chatPartner
+          ? {
+              name: chatPartner.name || chatPartner.id || 'Unknown User',
+              image: chatPartner.image,
+              username: chatPartner.username,
+            }
+          : undefined,
+      });
+    }
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [pathname, applyRouteConfig, channel, client?.user?.id]);
 
   // Show loading state during authentication or Stream Chat setup
   if (isCheckingAuth || isLoadingStream) {
@@ -157,31 +188,7 @@ export default function SingleChatPage() {
   }
 
   return (
-    <div className='mx-auto flex h-screen max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
-      {/* Custom Header with Back Button */}
-      <div className='flex-shrink-0 border-b border-gray-100 bg-white'>
-        <div className='px-4 pb-0 pt-6'>
-          <div className='mb-2 flex items-center gap-3'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8'
-              onClick={() => router.push('/e/messages')}
-            >
-              <ArrowLeft className='h-5 w-5' />
-            </Button>
-            <div className='flex-1'>
-              <h3 className='text-lg font-bold text-black'>{channel?.data?.name || 'Chat'}</h3>
-              <p className='text-sm text-gray-500'>
-                {channel?.data?.member_count
-                  ? `${channel.data.member_count} members`
-                  : 'Direct Message'}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
       {/* Chat Content */}
       <div className='flex-1 overflow-hidden'>
         <Chat client={client} theme='str-chat__theme-custom'>
