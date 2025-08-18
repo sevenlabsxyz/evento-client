@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import InviteUsersSheet from '../manage-event/invite-users-sheet';
 
 interface OwnerEventButtonsProps {
   eventId: string;
@@ -22,9 +23,10 @@ interface OwnerEventButtonsProps {
 export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   const router = useRouter();
   const [hideGuestList, setHideGuestList] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   const handleInvite = () => {
-    router.push(`/e/${eventId}/invite`);
+    setIsInviteOpen(true);
   };
 
   const handleChat = () => {
@@ -135,6 +137,15 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         align='right'
         width='w-56'
       />
+
+      {/* Invite Users Sheet */}
+      {isInviteOpen && (
+        <InviteUsersSheet
+          eventId={eventId}
+          isOpen={isInviteOpen}
+          onClose={() => setIsInviteOpen(false)}
+        />
+      )}
     </div>
   );
 }

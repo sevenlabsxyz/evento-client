@@ -29,6 +29,39 @@ export interface UserDetails {
   verification_date?: string;
 }
 
+// Invite system types
+export type InviteTarget =
+  | {
+      email: string;
+      type: 'email';
+    }
+  | {
+      id: string;
+      username: string;
+      name: string;
+      verification_status: string;
+      image: string | null;
+    };
+
+export type InviteItem =
+  | UserDetails
+  | {
+      id: string;
+      username: string;
+      name: string;
+      email: string;
+      isEmailInvite: true;
+      bio: string;
+      image: string;
+      verification_status: 'verified' | 'pending' | null;
+      bio_link?: string;
+      x_handle?: string;
+      instagram_handle?: string;
+      ln_address?: string;
+      nip05?: string;
+      verification_date?: string;
+    };
+
 // User search results
 export interface UserSearchResult {
   id: string;
