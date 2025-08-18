@@ -134,7 +134,9 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                       together. Start planning your next memorable gathering today.
                     </p>
                     <Button
-                      onClick={() => window.open('https://cal.com/evento/all', '_blank')}
+                      onClick={() =>
+                        window.open('https://cal.com/evento/all', '_blank', 'noopener noreferrer')
+                      }
                       className='bg-white text-red-600 hover:bg-gray-100'
                     >
                       <ExternalLink className='mr-2 h-4 w-4' />
