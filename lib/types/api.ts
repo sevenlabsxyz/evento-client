@@ -85,6 +85,21 @@ export interface Event {
   user_details?: UserDetails;
 }
 
+// Event Invite
+export interface EventInvite {
+  id: string;
+  event_id: string;
+  inviter_id: string;
+  invitee_id: string;
+  invitee_email: string;
+  message: string;
+  status: 'pending' | 'responded';
+  response: 'going' | 'not_going' | 'maybe' | null;
+  created_at: string;
+  updated_at: string;
+  events: EventWithUser;
+}
+
 // Event RSVP
 export interface EventRSVP {
   id: string;
