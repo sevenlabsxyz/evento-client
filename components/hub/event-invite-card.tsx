@@ -31,10 +31,10 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
       )}
     >
       {/* Event Image */}
-      {(invite.events as any).cover_image && (
+      {invite.events.cover && (
         <div className='relative h-32 w-full'>
           <Image
-            src={(invite.events as any).cover_image}
+            src={invite.events.cover}
             alt={invite.events.title}
             fill
             className='object-cover'

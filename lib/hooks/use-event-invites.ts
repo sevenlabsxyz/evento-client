@@ -9,7 +9,7 @@ interface EventInvitesResponse {
 }
 
 // Hook to fetch event invites
-export function useEventInvites(status?: 'pending' | 'responded') {
+export function useEventInvites(status?: 'pending' | 'responded', enabled: boolean = true) {
   return useQuery({
     queryKey: ['event-invites', status],
     queryFn: async () => {
@@ -17,6 +17,7 @@ export function useEventInvites(status?: 'pending' | 'responded') {
       const response = await apiClient.get<EventInvitesResponse>(`/v1/events/invites${params}`);
       return response.data || [];
     },
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }

@@ -3,7 +3,7 @@ import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Calendar, Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 import { EventInviteCard } from './event-invite-card';
 
@@ -19,9 +19,31 @@ export function EventInvitesSheet({
   handleRSVP,
 }: EventInvitesSheetProps) {
   const [activeTab, setActiveTab] = useState<'pending' | 'responded'>('pending');
-  const { data: pendingInvites = [], isLoading: isLoadingPending } = useEventInvites('pending');
-  const { data: respondedInvites = [], isLoading: isLoadingResponded } =
-    useEventInvites('responded');
+  const [loadedTabs, setLoadedTabs] = useState<Set<'pending' | 'responded'>>(new Set(['pending']));
+
+  // Only load data for tabs that have been opened
+  const { data: pendingInvites = [], isLoading: isLoadingPending } = useEventInvites(
+    'pending',
+    loadedTabs.has('pending')
+  );
+  const { data: respondedInvites = [], isLoading: isLoadingResponded } = useEventInvites(
+    'responded',
+    loadedTabs.has('responded')
+  );
+
+  // Track when tabs are opened for lazy loading
+  useEffect(() => {
+    if (showInvitesSheet && !loadedTabs.has(activeTab)) {
+      setLoadedTabs((prev) => new Set([...prev, activeTab]));
+    }
+  }, [activeTab, showInvitesSheet, loadedTabs]);
+
+  // Reset loaded tabs when sheet closes
+  useEffect(() => {
+    if (!showInvitesSheet) {
+      setLoadedTabs(new Set(['pending'])); // Always keep pending loaded for the main section
+    }
+  }, [showInvitesSheet]);
 
   return (
     <SheetWithDetentFull.Root
