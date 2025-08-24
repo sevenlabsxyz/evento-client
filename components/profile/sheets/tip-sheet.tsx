@@ -7,7 +7,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface TipSheetProps {
   isOpen: boolean;
@@ -32,6 +32,16 @@ export default function TipSheet({
   const [view, setView] = useState<'amount' | 'confirm'>('amount');
   const [isLoading, setIsLoading] = useState(false);
   const [invoice, setInvoice] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleNumberPress = (num: string) => {
     if (amount.length >= 7) return; // Max 9,999,999 sats
@@ -98,7 +108,7 @@ export default function TipSheet({
       window.open(lightningUrl, '_blank');
 
       // Close sheet after opening wallet
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         onClose();
         // Reset state
         setAmount('');

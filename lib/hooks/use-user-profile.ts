@@ -130,6 +130,33 @@ export function useUploadProfileImage() {
 }
 
 /**
+
+ * Hook to search for users
+ */
+export function useSearchUsers() {
+  return useMutation({
+    mutationFn: async (query: string) => {
+      const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
+        `/v1/user/search?s=${encodeURIComponent(query)}`
+      );
+
+      // Handle both response formats (array or object with data property)
+      if (Array.isArray(response)) {
+        return response;
+      } else if (response && typeof response === 'object' && 'data' in response) {
+        return (response as any).data || [];
+      }
+
+      return [];
+    },
+    onError: (error) => {
+      console.error('User search failed:', error);
+    },
+  });
+}
+
+/**
+
  * Hook to check if the current user follows another user
  */
 export function useFollowStatus(userId: string) {

@@ -7,10 +7,12 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 import { ChannelList, Chat } from 'stream-chat-react';
 
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { CustomChannelPreview } from './custom-channel-preview';
 
+import NewChatSheet from '@/components/messages/new-chat-sheet';
+import { Plus } from 'lucide-react';
 import './chat-layout.css';
 import './stream-chat.d.ts';
 
@@ -18,8 +20,8 @@ export default function ChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState('messages');
+  const [isNewChatOpen, setIsNewChatOpen] = useState(false);
 
   // Use Stream Chat from the provider
   const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
@@ -91,7 +93,7 @@ export default function ChatPage() {
             </div>
             <p className='font-medium text-red-600'>Failed to connect to chat</p>
             <p className='mt-1 text-sm text-gray-500'>
-              {streamError || 'Please try refreshing the page'}
+              {typeof streamError === 'string' ? streamError : 'Please try refreshing the page'}
             </p>
           </div>
         </div>
@@ -101,7 +103,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
+    <div className='mx-auto flex max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
       <Chat client={client} theme='str-chat__theme-custom'>
         <div className='str-chat__channel-list-container'>
           <ChannelList
@@ -121,6 +123,18 @@ export default function ChatPage() {
           />
         </div>
       </Chat>
+
+      {/* Floating Action Button: New Chat */}
+      <button
+        type='button'
+        onClick={() => setIsNewChatOpen(true)}
+        aria-label='Start new chat'
+        className='fixed bottom-24 right-4 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 md:right-[calc(50%-20rem)]'
+      >
+        <Plus className='h-6 w-6' />
+      </button>
+
+      <NewChatSheet isOpen={isNewChatOpen} onClose={() => setIsNewChatOpen(false)} />
 
       {/* Bottom Navbar */}
       <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
