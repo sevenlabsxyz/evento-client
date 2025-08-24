@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api/client';
+import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { EventInvite } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
@@ -13,11 +14,16 @@ export function useEventInvites(status?: 'pending' | 'responded', enabled: boole
   return useQuery({
     queryKey: ['event-invites', status],
     queryFn: async () => {
-      const params = status ? `?status=${status}` : '';
-      const response = await apiClient.get<EventInvitesResponse>(`/v1/events/invites${params}`);
-      return response.data || [];
+      try {
+        const params = status ? `?status=${status}` : '';
+        const response = await apiClient.get<EventInvitesResponse>(`/v1/events/invites${params}`);
+        return response.data || [];
+      } catch (error) {
+        console.error('Failed to fetch event invites:', error);
+        throw error;
+      }
     },
     enabled,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: EVENT_INVITES_CONFIG.CACHE_STALE_TIME,
   });
 }

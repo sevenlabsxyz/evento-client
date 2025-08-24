@@ -2,6 +2,7 @@
 
 import EventRSVPSheet from '@/components/event-detail/event-rsvp-sheet';
 import { Button } from '@/components/ui/button';
+import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { useState } from 'react';
@@ -68,11 +69,11 @@ export function EventInvitesSection() {
         </div>
 
         <div className='scrollbar-hide flex gap-4 overflow-x-auto'>
-          {pendingInvites.slice(0, 5).map((invite) => (
+          {pendingInvites.slice(0, EVENT_INVITES_CONFIG.MAX_DISPLAYED_INVITES).map((invite) => (
             <EventInviteCard
               key={invite.id}
               invite={invite}
-              className='w-80'
+              className='w-80 sm:w-72 md:w-80 lg:w-80'
               onRSVP={() => handleRSVP(invite.event_id)}
             />
           ))}

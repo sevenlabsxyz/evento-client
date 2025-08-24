@@ -43,7 +43,7 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  cover: string;
+  cover?: string;
   location: string;
   timezone: string;
   status: 'draft' | 'published' | 'cancelled' | 'archived';

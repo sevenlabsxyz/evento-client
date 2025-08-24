@@ -1,5 +1,6 @@
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
+import { formatEventDate } from '@/lib/utils/date';
 import { Check, Clock, Eye, MapPin, Users, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -14,10 +15,7 @@ interface EventInviteCardProps {
 
 export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardProps) {
   const router = useRouter();
-  const eventDate = new Date(invite.events.computed_start_date).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
+  const { shortDate: eventDate, time: eventTime } = formatEventDate(invite.events.computed_start_date);
 
   const handleViewEvent = () => {
     router.push(`/e/${invite.event_id}`);
@@ -60,10 +58,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
             <div className='text-sm font-medium text-gray-900'>{eventDate}</div>
             <div className='text-xs text-gray-500'>
               <Clock className='mr-1 inline h-3 w-3' />
-              {new Date(invite.events.computed_start_date).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
+              {eventTime}
             </div>
           </div>
         </div>
