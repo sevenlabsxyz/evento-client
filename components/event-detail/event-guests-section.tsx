@@ -22,6 +22,7 @@ export default function EventGuestsSection({
   hosts,
   currentUserId,
 }: GuestsSectionProps) {
+  const router = useRouter();
   const { data: rsvps = [], isLoading, error, refetch } = useEventRSVPs(eventId);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);

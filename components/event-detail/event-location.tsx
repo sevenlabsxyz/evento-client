@@ -16,6 +16,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   const [showMapOptions, setShowMapOptions] = useState(false);
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
+  const isTBDLocation = event.location.name === 'TBD';
   const fullAddress = `${event.location.address}, ${event.location.city}, ${
     event.location.state || ''
   } ${event.location.zipCode || ''}`.trim();
@@ -52,11 +53,18 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
 
         {/* Location Info */}
         <div className='mb-4 flex items-start justify-between'>
-          <div className='flex-1' onClick={() => setShowMapOptions(true)}>
-            <h3 className='mb-1 font-semibold text-gray-900'>{event.location.name}</h3>
-            <p className='text-sm text-gray-600'>
-              {event.location.city}, {event.location.country}
-            </p>
+          <div className='flex-1' onClick={() => !isTBDLocation && setShowMapOptions(true)}>
+            <h3
+              className={`mb-1 font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900'}`}
+            >
+              {event.location.name}
+            </h3>
+            {!isTBDLocation && (event.location.city || event.location.country) && (
+              <p className={`text-sm text-gray-600`}>
+                {event.location.city}
+                {event.location.city && event.location.country && `, ${event.location.country}`}
+              </p>
+            )}
           </div>
 
           {/* Weather */}
@@ -73,45 +81,47 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
           )}
         </div>
 
-        {/* Google Maps Embed */}
-        <div className='relative h-48 overflow-hidden rounded-xl border border-gray-200'>
-          <iframe
-            width='100%'
-            height='100%'
-            className='border-0'
-            loading='lazy'
-            allowFullScreen
-            referrerPolicy='no-referrer-when-downgrade'
-            src={mapUrl}
-            title={`Map of ${event.location.name}`}
-            aria-label={`Map showing ${event.location.name}`}
-            style={{ pointerEvents: 'auto' }}
-          ></iframe>
+        {/* Google Maps Embed - Only show if not TBD */}
+        {!isTBDLocation && (
+          <div className='relative h-48 overflow-hidden rounded-xl border border-gray-200'>
+            <iframe
+              width='100%'
+              height='100%'
+              className='border-0'
+              loading='lazy'
+              allowFullScreen
+              referrerPolicy='no-referrer-when-downgrade'
+              src={mapUrl}
+              title={`Map of ${event.location.name}`}
+              aria-label={`Map showing ${event.location.name}`}
+              style={{ pointerEvents: 'auto' }}
+            ></iframe>
 
-          {/* Map Pin */}
-          <div className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
-            <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2'>
-              <MapPin className='h-4 w-4 text-white' />
+            {/* Map Pin */}
+            <div className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
+              <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2'>
+                <MapPin className='h-4 w-4 text-white' />
+              </div>
             </div>
-          </div>
 
-          {/* Address overlay */}
-          <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 pt-8 text-white'>
-            <p className='text-sm font-medium'>{fullAddress}</p>
-          </div>
+            {/* Address overlay */}
+            <div className='absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 pt-8 text-white'>
+              <p className='text-sm font-medium'>{fullAddress}</p>
+            </div>
 
-          {/* Expand button */}
-          <button
-            onClick={() => setShowMapOptions(true)}
-            className='absolute right-2 top-2 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100'
-          >
-            <ExternalLink className='h-4 w-4 text-gray-700' />
-          </button>
-        </div>
+            {/* Expand button */}
+            <button
+              onClick={() => setShowMapOptions(true)}
+              className='absolute right-2 top-2 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100'
+            >
+              <ExternalLink className='h-4 w-4 text-gray-700' />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Map Options Modal */}
-      {showMapOptions && (
+      {/* Map Options Modal - Only show if not TBD */}
+      {showMapOptions && !isTBDLocation && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
           <div className='w-full max-w-sm rounded-2xl bg-white p-6'>
             <h3 className='mb-4 text-center text-lg font-semibold'>Open in Maps</h3>
