@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/client';
 import { useQuery } from '@tanstack/react-query';
+import { UserDetails } from '../types/api';
 
 export interface EventComment {
   id: string;
@@ -8,11 +9,7 @@ export interface EventComment {
   user_id: string;
   event_id: string;
   parent_comment_id: string | null;
-  user_details: {
-    username: string;
-    image: string | null;
-    verification_status: 'verified' | 'pending' | null | undefined;
-  };
+  user_details: UserDetails;
   replies: EventComment[];
   optimistic?: boolean; // Flag for optimistic UI updates
 }

@@ -136,7 +136,7 @@ export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
       const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
-        `/v1/user/search?q=${encodeURIComponent(query)}`
+        `/v1/user/search?s=${encodeURIComponent(query)}`
       );
 
       // Handle both response formats (array or object with data property)
@@ -231,7 +231,7 @@ export function useUserFollowers(userId: string) {
         image: item.user_details?.image || '',
         verification_status: item.user_details?.verification_status || '',
       }));
-      return transformedData;
+      return transformedData as UserDetails[];
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -254,7 +254,7 @@ export function useUserFollowing(userId: string) {
         image: item.user_details?.image || '',
         verification_status: item.user_details?.verification_status || '',
       }));
-      return transformedData;
+      return transformedData as UserDetails[];
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
