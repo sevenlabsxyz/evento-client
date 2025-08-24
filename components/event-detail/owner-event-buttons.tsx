@@ -1,6 +1,7 @@
 'use client';
 
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
+import { toast } from '@/lib/utils/toast';
 import {
   Copy,
   EyeOff,
@@ -51,17 +52,28 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
   const handleEventLink = () => {
     const eventUrl = `${window.location.origin}/e/${eventId}`;
-    alert(`Event link: ${eventUrl}`);
+    toast.info(`Event link: ${eventUrl}`);
   };
 
-  const handleCopyEventLink = () => {
+  const handleCopyEventLink = async () => {
     const eventUrl = `${window.location.origin}/e/${eventId}`;
-    navigator.clipboard.writeText(eventUrl);
-    alert('Event link copied to clipboard!');
+    try {
+      await navigator.clipboard.writeText(eventUrl);
+      toast.success('Event link copied to clipboard!');
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = eventUrl;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Event link copied to clipboard!');
+    }
   };
 
   const handleCheckInGuests = () => {
-    console.log('Check-in guests functionality');
+    // TODO: Implement check-in guests functionality
   };
 
   return (

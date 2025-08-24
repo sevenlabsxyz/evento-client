@@ -20,11 +20,21 @@ export default function MoreOptionsSheet({
     onClose();
   };
 
-  const handleCopyEventUrl = () => {
+  const handleCopyEventUrl = async () => {
     onClose();
-    navigator.clipboard.writeText(window.location.href).then(() => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
       toast.success('Event URL copied to clipboard');
-    });
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = window.location.href;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Event URL copied to clipboard');
+    }
   };
 
   const options: MenuOption[] = [
