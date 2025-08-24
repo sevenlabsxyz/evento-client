@@ -1,16 +1,33 @@
 'use client';
 
+import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
+import { Env } from '@/lib/constants/env';
+import { toast } from '@/lib/utils/toast';
 import { Scroll } from '@silk-hq/components';
-import { Share } from 'lucide-react';
+import { ExternalLink, Share } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import './blog-post.css';
 import EnhancedBlogContent from './enhanced-blog-content';
+
+interface BlogPost {
+  id: string;
+  slug: string;
+  title: string;
+  excerpt: string;
+  feature_image: string;
+  published_at: string;
+  tags: Array<{ name: string }>;
+}
 
 interface BlogPostClientProps {
   post: any;
 }
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
+  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
+  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+
   if (!post) return null;
 
   const authorName = post.authors && post.authors.length > 0 ? post.authors[0].name : 'Evento Team';
@@ -20,6 +37,65 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
     month: 'long',
     day: 'numeric',
   });
+
+  // Fetch related blog posts
+  useEffect(() => {
+    const fetchRelatedPosts = async () => {
+      try {
+        setIsLoadingRelated(true);
+
+        if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
+          return;
+        }
+
+        const res = await fetch(
+          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors&limit=4`,
+          { next: { revalidate: 60 } }
+        );
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch related posts');
+        }
+
+        const data = await res.json();
+        // Filter out the current post and take only 3
+        const filtered = (data.posts || [])
+          .filter((p: BlogPost) => p.slug !== post.slug)
+          .slice(0, 3);
+        setRelatedPosts(filtered);
+      } catch (err) {
+        console.error('Error fetching related posts:', err);
+      } finally {
+        setIsLoadingRelated(false);
+      }
+    };
+
+    fetchRelatedPosts();
+  }, [post.slug]);
+
+  const handleShare = async () => {
+    const shareData = {
+      title: post.title,
+      text: post.excerpt || `Check out this blog post: ${post.title}`,
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (error) {
+        console.log('Share cancelled or failed');
+      }
+    } else {
+      // Fallback: Copy to clipboard
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        toast.success('Blog post link copied to clipboard!');
+      } catch (error) {
+        toast.error('Failed to share blog post');
+      }
+    }
+  };
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -47,15 +123,71 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                 </div>
                 <EnhancedBlogContent html={post.html || ''} className='BlogPost-articleBody' />
               </div>
-              <div className='w-full border-t border-gray-200 px-6 py-12'>
+
+              {/* CTA Section */}
+              <div className='w-full px-6 py-8'>
+                <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-8 text-white'>
+                  <div className='relative z-10 text-center'>
+                    <h3 className='mb-3 text-2xl font-bold'>Ready to create your first event?</h3>
+                    <p className='mb-6 text-red-100'>
+                      Join thousands of event creators who trust Evento to bring their communities
+                      together. Start planning your next memorable gathering today.
+                    </p>
+                    <Button
+                      onClick={() =>
+                        window.open('https://cal.com/evento/all', '_blank', 'noopener noreferrer')
+                      }
+                      className='bg-white text-red-600 hover:bg-gray-100'
+                    >
+                      <ExternalLink className='mr-2 h-4 w-4' />
+                      Get in touch
+                    </Button>
+                  </div>
+                  {/* Decorative background elements */}
+                  <div className='absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10' />
+                  <div className='absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-white/5' />
+                </div>
+              </div>
+
+              {/* Share Button */}
+              <div className='w-full border-t border-gray-200 px-6 py-6'>
                 <Button
+                  onClick={handleShare}
                   variant='secondary'
                   className='w-full border border-gray-200 py-6 text-base'
                 >
-                  <Share className='mr-1' />
+                  <Share className='mr-2 h-4 w-4' />
                   Share Post
                 </Button>
               </div>
+
+              {/* Read More Section */}
+              {relatedPosts.length > 0 && (
+                <div className='w-full border-t border-gray-200 px-6 py-8'>
+                  <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
+                  {isLoadingRelated ? (
+                    <div className='grid grid-cols-1 gap-6'>
+                      {[...Array(3)].map((_, i) => (
+                        <div key={i} className='h-64 animate-pulse rounded-2xl bg-gray-100'></div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className='grid grid-cols-1 gap-6'>
+                      {relatedPosts.map((relatedPost) => (
+                        <BlogCard
+                          key={relatedPost.id}
+                          slug={relatedPost.slug}
+                          title={relatedPost.title}
+                          description={relatedPost.excerpt}
+                          image={relatedPost.feature_image}
+                          date={relatedPost.published_at}
+                          category={relatedPost.tags?.length > 0 ? [relatedPost.tags[0]] : []}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </article>
           </Scroll.Content>
         </Scroll.View>
