@@ -9,11 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { RSVPStatus } from '@/lib/types/api';
+import { RSVPStatus, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { MoreHorizontal, Search, Users } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -30,6 +31,7 @@ export default function GuestListPage() {
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
   const { data: rsvps } = useEventRSVPs(eventId);
   const guests = rsvps && rsvps.length ? rsvps : [];
+  const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
   const [activeTab, setActiveTab] = useState<RSVPStatus>('yes');
   const [searchQuery, setSearchQuery] = useState('');
   const [showMoreMenu, setShowMoreMenu] = useState(false);
@@ -156,115 +158,121 @@ export default function GuestListPage() {
   };
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
-        {/* Hidden, fixed-position trigger to anchor the menu near the TopBar ellipsis */}
-        <div className='fixed right-3 top-5 z-50'>
-          <DropdownMenuTrigger asChild>
-            <button aria-label='More' className='m-0 h-0 w-0 p-0 opacity-0' />
-          </DropdownMenuTrigger>
-        </div>
-        <DropdownMenuContent side='bottom' align='end' sideOffset={8} className='min-w-56'>
-          <DropdownMenuItem onClick={handleExportCSV} className='font-medium'>
-            Export CSV
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuCheckboxItem
-            checked={hideGuestList}
-            onCheckedChange={() => handleToggleHideGuestList()}
-          >
-            Hide guest list
-          </DropdownMenuCheckboxItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Search Bar */}
-      <div className='p-4'>
-        <div className='relative'>
-          <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
-          <input
-            type='text'
-            placeholder='Search event guests...'
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none'
-          />
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className='px-4'>
-        <div className='flex space-x-1 overflow-x-auto pb-2'>
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => handleTabChange(tab.key)}
-              className={`flex-shrink-0 rounded-lg px-4 py-2 font-medium transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+    <>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
+          {/* Hidden, fixed-position trigger to anchor the menu near the TopBar ellipsis */}
+          <div className='fixed right-3 top-5 z-50'>
+            <DropdownMenuTrigger asChild>
+              <button aria-label='More' className='m-0 h-0 w-0 p-0 opacity-0' />
+            </DropdownMenuTrigger>
+          </div>
+          <DropdownMenuContent side='bottom' align='end' sideOffset={8} className='min-w-56'>
+            <DropdownMenuItem onClick={handleExportCSV} className='font-medium'>
+              Export CSV
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuCheckboxItem
+              checked={hideGuestList}
+              onCheckedChange={() => handleToggleHideGuestList()}
             >
-              {tab.label}
-              {tab.count > 0 && <span className='ml-1 text-xs'>({tab.count})</span>}
-            </button>
-          ))}
-        </div>
-      </div>
+              Hide guest list
+            </DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
-      {/* Content */}
-      <div className='flex-1 p-4'>
-        {filteredGuests.length > 0 ? (
-          <div className='space-y-3'>
-            {filteredGuests.map((guest) => (
-              <div key={guest.id} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
-                <UserAvatar
-                  user={{
-                    name: guest.user_details?.name,
-                    username: guest.user_details?.username,
-                    image: guest.user_details?.image,
-                    verification_status: guest.user_details?.verification_status,
-                  }}
-                  onAvatarClick={() => {
-                    if (guest.user_details?.username) {
-                      router.push(`/${guest.user_details?.username}`);
-                    }
-                  }}
-                  height={48}
-                  width={48}
-                />
-                <div className='flex-1'>
-                  <h3 className='font-semibold text-gray-900'>{guest.user_details?.name}</h3>
-                  <p className='text-sm text-gray-500'>{guest.user_details?.username}</p>
-                </div>
-              </div>
+        {/* Search Bar */}
+        <div className='p-4'>
+          <div className='relative'>
+            <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+            <input
+              type='text'
+              placeholder='Search event guests...'
+              value={searchQuery}
+              onChange={handleSearchChange}
+              className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none'
+            />
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className='px-4'>
+          <div className='flex space-x-1 overflow-x-auto pb-2'>
+            {tabs.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
+                className={`flex-shrink-0 rounded-lg px-4 py-2 font-medium transition-colors ${
+                  activeTab === tab.key
+                    ? 'bg-red-500 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {tab.label}
+                {tab.count > 0 && <span className='ml-1 text-xs'>({tab.count})</span>}
+              </button>
             ))}
           </div>
-        ) : (
-          <div className='py-16 text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-              <Users className='h-8 w-8 text-gray-400' />
-            </div>
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No Guests</h3>
-            <p className='text-sm text-gray-500'>
-              {activeTab === 'yes' && "No guests have confirmed they're going yet."}
-              {activeTab === 'no' && 'No guests have declined yet.'}
-              {activeTab === 'maybe' && 'No guests have responded with maybe yet.'}
-            </p>
-          </div>
-        )}
-      </div>
+        </div>
 
-      {/* Summary Footer */}
-      <div className='border-t border-gray-100 bg-gray-50 p-4'>
-        <div className='flex items-center justify-between text-sm text-gray-600'>
-          <span>Total Guests: {guests.length}</span>
-          <span>
-            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}:{' '}
-            {filteredGuests.length}
-          </span>
+        {/* Content */}
+        <div className='flex-1 p-4'>
+          {filteredGuests.length > 0 ? (
+            <div className='space-y-3'>
+              {filteredGuests.map((guest) => (
+                <div key={guest.id} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+                  <UserAvatar
+                    user={{
+                      name: guest.user_details?.name,
+                      username: guest.user_details?.username,
+                      image: guest.user_details?.image,
+                      verification_status: guest.user_details?.verification_status,
+                    }}
+                    onAvatarClick={() => setSelectedUser(guest?.user_details || null)}
+                    height={48}
+                    width={48}
+                  />
+                  <div className='flex-1'>
+                    <h3 className='font-semibold text-gray-900'>{guest.user_details?.name}</h3>
+                    <p className='text-sm text-gray-500'>{guest.user_details?.username}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className='py-16 text-center'>
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+                <Users className='h-8 w-8 text-gray-400' />
+              </div>
+              <h3 className='mb-2 text-lg font-medium text-gray-900'>No Guests</h3>
+              <p className='text-sm text-gray-500'>
+                {activeTab === 'yes' && "No guests have confirmed they're going yet."}
+                {activeTab === 'no' && 'No guests have declined yet.'}
+                {activeTab === 'maybe' && 'No guests have responded with maybe yet.'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Summary Footer */}
+        <div className='border-t border-gray-100 bg-gray-50 p-4'>
+          <div className='flex items-center justify-between text-sm text-gray-600'>
+            <span>Total Guests: {guests.length}</span>
+            <span>
+              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}:{' '}
+              {filteredGuests.length}
+            </span>
+          </div>
         </div>
       </div>
-    </div>
+
+      {selectedUser && (
+        <QuickProfileSheet
+          isOpen={!!selectedUser}
+          onClose={() => setSelectedUser(null)}
+          user={selectedUser}
+        />
+      )}
+    </>
   );
 }
