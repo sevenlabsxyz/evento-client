@@ -33,7 +33,7 @@ export default function EventGuestsSection({
   }, [currentUserId, eventCreatorUserId, hosts]);
 
   const goingRSVPs = useMemo(() => {
-    return rsvps.filter((r) => r.status === 'yes').slice(0, 4);
+    return rsvps.filter((r) => r.status === 'yes');
   }, [rsvps]);
   const goingCount = goingRSVPs.length;
 
