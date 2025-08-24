@@ -14,7 +14,7 @@ import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
 import { Heart, MoreHorizontal, Reply, SendHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +22,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
+import { ReplyAvatar } from '../ui/reply-avatar';
 
 interface CommentItemProps {
   comment: EventComment;
@@ -54,6 +55,13 @@ export default function CommentItem({
   const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(comment.id);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
+
+  // Cleanup selectedUser when component unmounts to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      setSelectedUser(null);
+    };
+  }, []);
 
   const createdDate = new Date(comment.created_at);
   const timeAgo = formatDistance(createdDate, new Date(), { addSuffix: true });
@@ -168,7 +176,7 @@ export default function CommentItem({
             <UserAvatar
               user={comment.user_details}
               size='sm'
-              onAvatarClick={() => setSelectedUser(comment.user_details)}
+              onAvatarClick={useCallback(() => setSelectedUser(comment.user_details), [comment.user_details])}
             />
           </div>
 
@@ -273,10 +281,9 @@ export default function CommentItem({
               <div className='!mt-5 space-y-2'>
                 <div className='flex gap-3'>
                   <div className='flex-shrink-0'>
-                    <UserAvatar
-                      user={comment.user_details}
-                      size='sm'
-                      onAvatarClick={() => setSelectedUser(comment.user_details)}
+                    <ReplyAvatar
+                      currentUser={currentUser}
+                      onAvatarClick={setSelectedUser}
                     />
                   </div>
                   <div className='relative flex flex-grow'>

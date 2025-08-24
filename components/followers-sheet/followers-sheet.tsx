@@ -8,7 +8,7 @@ import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import './followers-sheet.css';
 
@@ -40,15 +40,19 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
     );
   }, [followers, searchText]);
 
-  const handleUserClick = (username: string) => {
-    setSelectedUser(filteredFollowers.find((follower) => follower.username === username) || null);
-    onClose();
-  };
+  const handleUserClick = useCallback((username: string) => {
+    const user = filteredFollowers.find((follower) => follower.username === username);
+    if (user) {
+      setSelectedUser(user);
+      // Don't close the parent sheet immediately to avoid race conditions
+      // Let the QuickProfileSheet handle the UX flow
+    }
+  }, [filteredFollowers]);
 
-  const handleMessageClick = (userId: string) => {
+  const handleMessageClick = useCallback((userId: string) => {
     router.push(`/e/messages?user=${userId}`);
     onClose();
-  };
+  }, [router, onClose]);
 
   return (
     <>
@@ -175,7 +179,11 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
       {selectedUser && (
         <QuickProfileSheet
           isOpen={!!selectedUser}
-          onClose={() => setSelectedUser(null)}
+          onClose={() => {
+            setSelectedUser(null);
+            // Close parent sheet after QuickProfile closes for better UX
+            onClose();
+          }}
           user={selectedUser}
         />
       )}
