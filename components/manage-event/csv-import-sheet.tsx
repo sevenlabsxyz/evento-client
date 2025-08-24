@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { sampleEmails } from '@/lib/data/sample-emails';
+import { isValidEmail } from '@/lib/utils/email-validation';
 import { AtSignIcon, Download, EyeIcon, FileIcon, Upload } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
@@ -27,7 +28,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
           const allEmails = text
             .split(/[\r\n,]+/)
             .map((e) => e.trim())
-            .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
+            .filter(isValidEmail);
           if (allEmails.length === 0) reject('No valid email addresses found');
           else resolve([...new Set(allEmails)]);
         } catch (err) {

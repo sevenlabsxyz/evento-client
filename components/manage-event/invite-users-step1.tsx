@@ -3,9 +3,11 @@
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { InviteItem, UserDetails } from '@/lib/types/api';
+import { MIN_SEARCH_LENGTH } from '@/lib/constants/invite';
+import { isValidEmail } from '@/lib/utils/email-validation';
 import { ChevronRight, Loader2, MailIcon, Search, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface Step1SearchUsersProps {
@@ -31,19 +33,26 @@ export default function Step1SearchUsers({
 
   // Search
   const searchMutation = useUserSearch();
-  const resetSearch = () => searchMutation.reset();
+  const resetSearch = useCallback(() => searchMutation.reset(), [searchMutation]);
   const { mutate: searchUsers, data: searchResults, isPending: isSearching } = searchMutation;
   const debouncedSearch = useDebounce(searchText, 400);
 
+  const searchUsersCallback = useCallback((query: string) => {
+    searchUsers(query);
+  }, [searchUsers]);
+
   useEffect(() => {
     const q = debouncedSearch.trim();
-    if (q.length >= 2) searchUsers(q);
-    else resetSearch();
-  }, [debouncedSearch, searchUsers]);
+    if (q.length >= MIN_SEARCH_LENGTH) {
+      searchUsersCallback(q);
+    } else {
+      resetSearch();
+    }
+  }, [debouncedSearch, searchUsersCallback, resetSearch]);
 
   // Check if search query is an email
   const isEmailQuery = (query: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(query.trim());
+    return isValidEmail(query);
   };
 
   const selectedCount = selectedEmails.size + selectedUsers.length;
@@ -52,7 +61,7 @@ export default function Step1SearchUsers({
     const q = debouncedSearch.trim();
 
     // If no search, show selected users and emails
-    if (q.length < 2) {
+    if (q.length < MIN_SEARCH_LENGTH) {
       const selectedItems: InviteItem[] = [
         ...Array.from(selectedEmails).map((email) => ({
           id: `email-${email}`,

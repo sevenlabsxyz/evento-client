@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
 
