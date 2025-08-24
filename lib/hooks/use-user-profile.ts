@@ -136,7 +136,7 @@ export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
       const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
-        `/v1/user/search?q=${encodeURIComponent(query)}`
+        `/v1/user/search?s=${encodeURIComponent(query)}`
       );
 
       // Handle both response formats (array or object with data property)

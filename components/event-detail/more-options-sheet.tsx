@@ -1,7 +1,6 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { DetachedSheet } from '@/components/ui/detached-sheet';
+import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
 import { CalendarPlus, Copy } from 'lucide-react';
 
@@ -21,66 +20,39 @@ export default function MoreOptionsSheet({
     onClose();
   };
 
-  const handleCopyEventUrl = () => {
+  const handleCopyEventUrl = async () => {
     onClose();
-    navigator.clipboard.writeText(window.location.href).then(() => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
       toast.success('Event URL copied to clipboard');
-    });
+    } catch (error) {
+      // Fallback for browsers that don't support clipboard API
+      const textArea = document.createElement('textarea');
+      textArea.value = window.location.href;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Event URL copied to clipboard');
+    }
   };
 
-  const options = [
+  const options: MenuOption[] = [
     {
       id: 'add-to-calendar',
       icon: CalendarPlus,
       label: 'Add to Calendar',
       onClick: handleAddToCalendar,
-      variant: 'secondary' as const,
+      variant: 'secondary',
     },
     {
       id: 'copy-event-url',
       icon: Copy,
       label: 'Copy Event URL',
       onClick: handleCopyEventUrl,
-      variant: 'secondary' as const,
+      variant: 'secondary',
     },
   ];
-
-  return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-    >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6 pb-24'>
-              {/* Handle */}
-              <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
-              </div>
-
-              {/* Options */}
-              <div className='space-y-3'>
-                {options.map((option) => {
-                  const IconComponent = option.icon;
-                  return (
-                    <Button
-                      key={option.id}
-                      onClick={option.onClick}
-                      variant={option.variant}
-                      className='flex w-full items-center gap-4 rounded-xl border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50'
-                    >
-                      <IconComponent className='h-5 w-5 text-gray-600' />
-                      <span className='font-medium text-gray-900'>{option.label}</span>
-                    </Button>
-                  );
-                })}
-              </div>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
-  );
+  
+  return <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />;
 }

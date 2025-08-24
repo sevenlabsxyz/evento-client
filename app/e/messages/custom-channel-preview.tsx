@@ -57,9 +57,10 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
 
   return (
     <div
-      className='str-chat__channel-preview-messenger str-chat__channel-preview cursor-pointer'
+      className='str-chat__channel-preview-messenger str-chat__channel-preview w-auto cursor-pointer'
       onClick={handleClick}
       role='button'
+      aria-label='Open chat'
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
