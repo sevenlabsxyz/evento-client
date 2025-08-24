@@ -1,13 +1,14 @@
 'use client';
 
 import { BlogSection } from '@/components/hub/blog-section';
+import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { Navbar } from '@/components/navbar';
 import RowCard from '@/components/row-card';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { Calendar1, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function HubPage() {
@@ -57,12 +58,7 @@ export default function HubPage() {
         </div>
         <div className='flex flex-col gap-4'>
           <RowCard title='Travel Itinerary' icon={<MapPin />} isClickable />
-          <RowCard
-            title='Event Invites'
-            subtitle='View your current invites'
-            icon={<Calendar1 />}
-            isClickable
-          />
+          <EventInvitesSection />
           <BlogSection />
         </div>
       </div>

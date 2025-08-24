@@ -74,7 +74,7 @@ export function BlogSection() {
   }
 
   return (
-    <div className='flex flex-col gap-4 pb-8 pt-8'>
+    <div className='flex flex-col gap-4 pb-8'>
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold'>From our blog</h2>
         <Button asChild variant='outline' size='sm'>

@@ -1,0 +1,29 @@
+import { apiClient } from '@/lib/api/client';
+import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
+import { EventInvite } from '@/lib/types/api';
+import { useQuery } from '@tanstack/react-query';
+
+interface EventInvitesResponse {
+  success: boolean;
+  message: string;
+  data: EventInvite[];
+}
+
+// Hook to fetch event invites
+export function useEventInvites(status?: 'pending' | 'responded', enabled: boolean = true) {
+  return useQuery({
+    queryKey: ['event-invites', status],
+    queryFn: async () => {
+      try {
+        const params = status ? `?status=${status}` : '';
+        const response = await apiClient.get<EventInvitesResponse>(`/v1/events/invites${params}`);
+        return response.data || [];
+      } catch (error) {
+        console.error('Failed to fetch event invites:', error);
+        throw error;
+      }
+    },
+    enabled,
+    staleTime: EVENT_INVITES_CONFIG.CACHE_STALE_TIME,
+  });
+}
