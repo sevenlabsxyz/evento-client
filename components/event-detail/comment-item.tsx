@@ -176,7 +176,10 @@ export default function CommentItem({
             <UserAvatar
               user={comment.user_details}
               size='sm'
-              onAvatarClick={useCallback(() => setSelectedUser(comment.user_details), [comment.user_details])}
+              onAvatarClick={useCallback(
+                () => setSelectedUser(comment.user_details),
+                [comment.user_details]
+              )}
             />
           </div>
 
@@ -281,10 +284,7 @@ export default function CommentItem({
               <div className='!mt-5 space-y-2'>
                 <div className='flex gap-3'>
                   <div className='flex-shrink-0'>
-                    <ReplyAvatar
-                      currentUser={currentUser}
-                      onAvatarClick={setSelectedUser}
-                    />
+                    <ReplyAvatar currentUser={currentUser} onAvatarClick={setSelectedUser} />
                   </div>
                   <div className='relative flex flex-grow'>
                     <textarea

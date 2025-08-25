@@ -1,7 +1,7 @@
 'use client';
 
-import { Component, ErrorInfo, ReactNode } from 'react';
 import { toast } from '@/lib/utils/toast';
+import { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children: ReactNode;
@@ -26,12 +26,12 @@ export class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('ErrorBoundary caught an error:', error, errorInfo);
-    
+
     // Call custom error handler if provided
     if (this.props.onError) {
       this.props.onError(error, errorInfo);
     }
-    
+
     // Show user-friendly error message
     toast.error('Something went wrong. Please try again.');
   }
@@ -43,15 +43,13 @@ export class ErrorBoundary extends Component<Props, State> {
       }
 
       return (
-        <div className="flex flex-col items-center justify-center p-6 text-center">
-          <div className="text-lg font-semibold text-gray-900 mb-2">
-            Something went wrong
-          </div>
-          <div className="text-sm text-gray-600 mb-4">
+        <div className='flex flex-col items-center justify-center p-6 text-center'>
+          <div className='mb-2 text-lg font-semibold text-gray-900'>Something went wrong</div>
+          <div className='mb-4 text-sm text-gray-600'>
             We're sorry, but there was an error loading this content.
           </div>
           <button
-            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+            className='rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600'
             onClick={() => this.setState({ hasError: false, error: undefined })}
           >
             Try again

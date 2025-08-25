@@ -1,4 +1,4 @@
-import { Event as ApiEvent } from '@/lib/types/api';
+import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
 import { Event as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
@@ -8,7 +8,7 @@ import { getOptimizedCoverUrl } from '@/lib/utils/image';
  */
 export function transformApiEventToDisplay(
   apiEvent: ApiEvent,
-  hosts: { user_details: any }[] = [],
+  hosts: { user_details: UserDetails }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
   const { date, time, timeWithTz } = formatEventDate(

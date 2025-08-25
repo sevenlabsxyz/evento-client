@@ -177,7 +177,9 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     className='hidden'
                   />
                 </label>
-                <p className='mt-2 text-xs text-gray-500'>CSV file with email addresses (max 10MB)</p>
+                <p className='mt-2 text-xs text-gray-500'>
+                  CSV file with email addresses (max 10MB)
+                </p>
               </div>
 
               {error && (

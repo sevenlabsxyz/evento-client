@@ -73,21 +73,21 @@ export function sanitizeHtmlContent(html: string): string {
   if (typeof window !== 'undefined') {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
-    
+
     // Remove all script tags and event handlers
     const scripts = tempDiv.querySelectorAll('script, link, meta, object, embed, iframe');
-    scripts.forEach(script => script.remove());
-    
+    scripts.forEach((script) => script.remove());
+
     // Remove all on* event attributes
     const allElements = tempDiv.querySelectorAll('*');
-    allElements.forEach(element => {
-      Array.from(element.attributes).forEach(attr => {
+    allElements.forEach((element) => {
+      Array.from(element.attributes).forEach((attr) => {
         if (attr.name.startsWith('on') || attr.value.includes('javascript:')) {
           element.removeAttribute(attr.name);
         }
       });
     });
-    
+
     return tempDiv.textContent || tempDiv.innerText || '';
   }
 
@@ -117,16 +117,15 @@ export function sanitizeHtmlContent(html: string): string {
  */
 export function sanitizeUserBio(bio: string): string {
   if (!bio || typeof bio !== 'string') return '';
-  
+
   // First sanitize HTML to prevent XSS
   const sanitized = sanitizeHtmlContent(bio);
-  
+
   // Additional bio-specific validations
   const maxLength = 500; // Reasonable limit for bio length
-  const truncated = sanitized.length > maxLength 
-    ? sanitized.substring(0, maxLength).trim() + '...' 
-    : sanitized;
-    
+  const truncated =
+    sanitized.length > maxLength ? sanitized.substring(0, maxLength).trim() + '...' : sanitized;
+
   return truncated;
 }
 

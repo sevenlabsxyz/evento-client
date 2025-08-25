@@ -1,9 +1,8 @@
 'use client';
 
 import SocialLinks from '@/components/profile/social-links';
-import { designTokens } from '@/lib/design-tokens/colors';
-import { sanitizeUserBio } from '@/lib/utils/content';
 import { UserDetails } from '@/lib/types/api';
+import { sanitizeUserBio } from '@/lib/utils/content';
 
 interface ProfileInfoProps {
   user: UserDetails;
@@ -16,9 +15,7 @@ export function ProfileInfo({ user }: ProfileInfoProps) {
     <>
       {/* User Info - Centered */}
       <div className='mb-3 text-center'>
-        <h2 className='text-2xl font-bold text-gray-900'>
-          {user.name || 'Unknown User'}
-        </h2>
+        <h2 className='text-2xl font-bold text-gray-900'>{user.name || 'Unknown User'}</h2>
         <p className='text-gray-600'>@{user.username}</p>
       </div>
 

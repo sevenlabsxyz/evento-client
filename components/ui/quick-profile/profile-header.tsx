@@ -12,7 +12,9 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
   return (
     <>
       {/* Banner */}
-      <div className={`absolute left-0 right-0 top-0 h-32 w-full ${designTokens.colors.gradients.primaryBanner}`} />
+      <div
+        className={`absolute left-0 right-0 top-0 h-32 w-full ${designTokens.colors.gradients.primaryBanner}`}
+      />
 
       <div className='relative h-28'>
         {/* Profile Picture - Centered & Overlapping */}

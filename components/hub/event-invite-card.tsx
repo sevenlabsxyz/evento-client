@@ -1,6 +1,7 @@
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDate } from '@/lib/utils/date';
+import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Check, Clock, Eye, MapPin, Users, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -15,7 +16,11 @@ interface EventInviteCardProps {
 
 export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardProps) {
   const router = useRouter();
-  const { shortDate: eventDate, time: eventTime } = formatEventDate(invite.events.computed_start_date);
+  const { shortDate: eventDate, time: eventTime } = formatEventDate(
+    invite.events.computed_start_date
+  );
+
+  const event = transformApiEventToDisplay(invite.events, [], []);
 
   const handleViewEvent = () => {
     router.push(`/e/${invite.event_id}`);
@@ -29,14 +34,9 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
       )}
     >
       {/* Event Image */}
-      {invite.events.cover && (
+      {event.coverImages.length > 0 && (
         <div className='relative h-32 w-full'>
-          <Image
-            src={invite.events.cover}
-            alt={invite.events.title}
-            fill
-            className='object-cover'
-          />
+          <Image src={event.coverImages[0]} alt={event.title} fill className='object-cover' />
         </div>
       )}
 
@@ -44,14 +44,14 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
         <div className='mb-3 flex items-center gap-3'>
           <UserAvatar
             user={{
-              name: invite.events.user_details.name,
-              username: invite.events.user_details.username,
-              image: invite.events.user_details.image,
+              name: event.hosts[0].name,
+              username: event.hosts[0].username,
+              image: event.hosts[0].avatar,
             }}
             size='sm'
           />
           <div className='min-w-0 flex-1'>
-            <p className='text-sm font-medium text-gray-900'>{invite.events.user_details.name}</p>
+            <p className='text-sm font-medium text-gray-900'>{event.hosts[0].name}</p>
             <p className='text-xs text-gray-500'>invited you</p>
           </div>
           <div className='text-right'>
@@ -64,7 +64,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
         </div>
 
         <div className='mb-3'>
-          <h3 className='mb-1 line-clamp-2 font-semibold text-gray-900'>{invite.events.title}</h3>
+          <h3 className='mb-1 line-clamp-2 font-semibold text-gray-900'>{event.title}</h3>
           <div
             className={cn(
               'mb-2 flex items-center text-sm text-gray-500',

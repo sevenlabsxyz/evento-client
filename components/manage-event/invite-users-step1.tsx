@@ -1,9 +1,9 @@
 'use client';
 
+import { MIN_SEARCH_LENGTH } from '@/lib/constants/invite';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { InviteItem, UserDetails } from '@/lib/types/api';
-import { MIN_SEARCH_LENGTH } from '@/lib/constants/invite';
 import { isValidEmail } from '@/lib/utils/email-validation';
 import { ChevronRight, Loader2, MailIcon, Search, Upload } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -37,9 +37,12 @@ export default function Step1SearchUsers({
   const { mutate: searchUsers, data: searchResults, isPending: isSearching } = searchMutation;
   const debouncedSearch = useDebounce(searchText, 400);
 
-  const searchUsersCallback = useCallback((query: string) => {
-    searchUsers(query);
-  }, [searchUsers]);
+  const searchUsersCallback = useCallback(
+    (query: string) => {
+      searchUsers(query);
+    },
+    [searchUsers]
+  );
 
   useEffect(() => {
     const q = debouncedSearch.trim();

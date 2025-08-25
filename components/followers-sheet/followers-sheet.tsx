@@ -40,19 +40,25 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
     );
   }, [followers, searchText]);
 
-  const handleUserClick = useCallback((username: string) => {
-    const user = filteredFollowers.find((follower) => follower.username === username);
-    if (user) {
-      setSelectedUser(user);
-      // Don't close the parent sheet immediately to avoid race conditions
-      // Let the QuickProfileSheet handle the UX flow
-    }
-  }, [filteredFollowers]);
+  const handleUserClick = useCallback(
+    (username: string) => {
+      const user = filteredFollowers.find((follower) => follower.username === username);
+      if (user) {
+        setSelectedUser(user);
+        // Don't close the parent sheet immediately to avoid race conditions
+        // Let the QuickProfileSheet handle the UX flow
+      }
+    },
+    [filteredFollowers]
+  );
 
-  const handleMessageClick = useCallback((userId: string) => {
-    router.push(`/e/messages?user=${userId}`);
-    onClose();
-  }, [router, onClose]);
+  const handleMessageClick = useCallback(
+    (userId: string) => {
+      router.push(`/e/messages?user=${userId}`);
+      onClose();
+    },
+    [router, onClose]
+  );
 
   return (
     <>
