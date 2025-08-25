@@ -52,7 +52,7 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16'>
+      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16 md:max-w-sm'>
         <div className='pt-4 text-left text-base text-gray-500'>
           Welcome back @{user?.username},
         </div>
