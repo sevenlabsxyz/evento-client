@@ -84,7 +84,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
   };
 
   return (
-    <div className='mb-6 bg-white'>
+    <div className='bg-white'>
       {/* Post Header */}
       <div className='flex items-center justify-between px-4 py-3'>
         <div className='flex items-center gap-3'>
@@ -125,7 +125,11 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
       {/* Event Image - Square aspect ratio */}
       <div className='relative'>
         <img
-          src={isGif(event.cover) ? event.cover : getOptimizedCoverUrl(event.cover || '', 'feed')} // For GIFs, use a regular img tag to ensure they play automatically
+          src={
+            event.cover && isGif(event.cover)
+              ? event.cover
+              : getOptimizedCoverUrl(event.cover || '', 'feed')
+          }
           alt={event.title}
           className='mx-auto aspect-square w-[calc(94%)] cursor-pointer rounded-2xl object-cover shadow-md'
           onClick={handleEventClick}

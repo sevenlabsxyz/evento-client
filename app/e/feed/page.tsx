@@ -369,14 +369,16 @@ export default function FeedPage() {
           </div>
         ) : (
           // Standard card view
-          events.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              onBookmark={handleBookmark}
-              isBookmarked={bookmarkedEvents.has(event.id)}
-            />
-          ))
+          <div className='grid gap-6 px-4 pt-2'>
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onBookmark={handleBookmark}
+                isBookmarked={bookmarkedEvents.has(event.id)}
+              />
+            ))}
+          </div>
         )}
       </div>
 
