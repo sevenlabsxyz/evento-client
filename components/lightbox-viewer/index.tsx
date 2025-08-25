@@ -35,7 +35,7 @@ import {
   Trash2,
   XIcon,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { DeleteConfirmation } from './delete-confirmation';
 import { GalleryDropdownMenu } from './dropdown-menu';
@@ -52,7 +52,7 @@ export interface LightboxViewerProps {
   eventId: string;
 }
 
-const MobileGalleryMenu = ({
+const MobileGalleryMenu = React.memo(({
   photoId,
   handleDelete,
 }: {
@@ -105,9 +105,9 @@ const MobileGalleryMenu = ({
       />
     </>
   );
-};
+});
 
-export const LightboxViewer = ({
+export const LightboxViewer = React.memo(({
   images,
   selectedImage,
   onClose,
@@ -118,20 +118,27 @@ export const LightboxViewer = ({
   eventId,
 }: LightboxViewerProps) => {
   const [isDownloading, setIsDownloading] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
+  const downloadControllerRef = useRef<AbortController | null>(null);
 
-  const goToNext = () => {
-    if (selectedImage !== null) {
+  const goToNext = useCallback(() => {
+    if (selectedImage !== null && images.length > 1) {
       const nextIndex = (selectedImage + 1) % images.length;
       onImageChange(nextIndex);
+      setImageLoading(true);
+      setImageError(false);
     }
-  };
+  }, [selectedImage, images.length, onImageChange]);
 
-  const goToPrevious = () => {
-    if (selectedImage !== null) {
+  const goToPrevious = useCallback(() => {
+    if (selectedImage !== null && images.length > 1) {
       const prevIndex = (selectedImage - 1 + images.length) % images.length;
       onImageChange(prevIndex);
+      setImageLoading(true);
+      setImageError(false);
     }
-  };
+  }, [selectedImage, images.length, onImageChange]);
 
   const preventDragHandler = (e: React.DragEvent<HTMLImageElement>) => {
     e.preventDefault();
@@ -153,8 +160,16 @@ export const LightboxViewer = ({
     return 'png';
   };
 
-  const downloadImage = async () => {
+  const downloadImage = useCallback(async () => {
     if (selectedImage !== null) {
+      // Cancel any existing download
+      if (downloadControllerRef.current) {
+        downloadControllerRef.current.abort();
+      }
+      
+      const controller = new AbortController();
+      downloadControllerRef.current = controller;
+      
       setIsDownloading(true);
       try {
         const currentImage = images[selectedImage];
@@ -169,7 +184,7 @@ export const LightboxViewer = ({
             // Check if Web Share API is supported
             if (navigator.share) {
               try {
-                const response = await fetch(imageUrl);
+                const response = await fetch(imageUrl, { signal: controller.signal });
                 if (!response.ok) throw new Error('Network response was not ok');
                 const blob = await response.blob();
                 const file = new File([blob], fileName, { type: blob.type });
@@ -194,7 +209,7 @@ export const LightboxViewer = ({
             }
           } else {
             // Non-iOS devices: Use traditional download
-            const response = await fetch(imageUrl);
+            const response = await fetch(imageUrl, { signal: controller.signal });
             if (!response.ok) throw new Error('Network response was not ok');
             const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
@@ -210,13 +225,18 @@ export const LightboxViewer = ({
           }
         }
       } catch (error) {
-        console.error('Error handling image:', error);
-        toast.error('Failed to handle image. Please try again.');
+        if ((error as Error).name !== 'AbortError') {
+          console.error('Error handling image:', error);
+          toast.error('Failed to handle image. Please try again.');
+        }
       } finally {
-        setIsDownloading(false);
+        if (!controller.signal.aborted) {
+          setIsDownloading(false);
+        }
+        downloadControllerRef.current = null;
       }
     }
-  };
+  }, [selectedImage, images]);
 
   const dialogHandlers = useSwipeable({
     onSwipedLeft: () => goToNext(),
@@ -228,12 +248,16 @@ export const LightboxViewer = ({
     touchEventOptions: { passive: false },
   });
 
-  const shouldShowUploaderDetails =
-    selectedImage !== null &&
-    isGalleryImageObject(images[selectedImage]) &&
-    images[selectedImage].user_details?.id;
+  const shouldShowUploaderDetails = useMemo(() => {
+    return (
+      selectedImage !== null &&
+      selectedImage < images.length &&
+      isGalleryImageObject(images[selectedImage]) &&
+      images[selectedImage].user_details?.id
+    );
+  }, [selectedImage, images]);
 
-  const handleDeleteImage = async (photoId: string) => {
+  const handleDeleteImage = useCallback(async (photoId: string) => {
     try {
       const result = await handleDelete(photoId);
       if (result.success) {
@@ -244,10 +268,11 @@ export const LightboxViewer = ({
         }
 
         if (selectedImage !== null) {
-          const newIndex =
-            selectedImage === images.length - 1
-              ? images.length - 2 // Move to previous if deleting last image
-              : selectedImage; // Stay at same index as array will shift
+          // Ensure we don't go out of bounds
+          const maxIndex = Math.max(0, images.length - 2);
+          const newIndex = selectedImage >= images.length - 1
+            ? maxIndex // Move to previous if deleting last image
+            : Math.min(selectedImage, maxIndex); // Stay at same index but ensure it's valid
 
           onImageChange(newIndex);
         }
@@ -257,7 +282,24 @@ export const LightboxViewer = ({
       toast.error('Failed to delete photo. Please try again.');
       return { success: false };
     }
-  };
+  }, [handleDelete, images.length, selectedImage, onClose, onImageChange]);
+
+  // Reset loading states when image changes
+  useEffect(() => {
+    if (selectedImage !== null) {
+      setImageLoading(true);
+      setImageError(false);
+    }
+  }, [selectedImage]);
+
+  // Cleanup download on unmount
+  useEffect(() => {
+    return () => {
+      if (downloadControllerRef.current) {
+        downloadControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -274,7 +316,7 @@ export const LightboxViewer = ({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedImage]);
+  }, [selectedImage, goToNext, goToPrevious, onClose]);
 
   return (
     <Dialog open={selectedImage !== null} onOpenChange={onClose}>
@@ -306,13 +348,43 @@ export const LightboxViewer = ({
               <XIcon className='h-6 w-6' />
             </button>
           </div>
-          {selectedImage !== null && images[selectedImage] && (
-            <img
-              src={getImageUrl(images[selectedImage])}
-              alt={`Fullscreen view of image ${selectedImage + 1}`}
-              className='max-h-full max-w-full object-contain'
-              onDragStart={preventDragHandler}
-            />
+          {selectedImage !== null && selectedImage < images.length && images[selectedImage] && (
+            <div className='relative flex h-full w-full items-center justify-center'>
+              {imageLoading && (
+                <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50'>
+                  <Loader2 className='h-8 w-8 animate-spin text-white' />
+                </div>
+              )}
+              {imageError ? (
+                <div className='flex flex-col items-center text-white'>
+                  <div className='mb-2 text-4xl'>📷</div>
+                  <p>Failed to load image</p>
+                  <button
+                    onClick={() => {
+                      setImageError(false);
+                      setImageLoading(true);
+                    }}
+                    className='mt-2 rounded bg-white bg-opacity-20 px-4 py-2 text-sm hover:bg-opacity-30'
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : (
+                <img
+                  src={getImageUrl(images[selectedImage])}
+                  alt={`Fullscreen view of image ${selectedImage + 1}`}
+                  className={`max-h-full max-w-full object-contain transition-opacity duration-200 ${
+                    imageLoading ? 'opacity-0' : 'opacity-100'
+                  }`}
+                  onLoad={() => setImageLoading(false)}
+                  onError={() => {
+                    setImageLoading(false);
+                    setImageError(true);
+                  }}
+                  onDragStart={preventDragHandler}
+                />
+              )}
+            </div>
           )}
           <button
             onClick={goToPrevious}
@@ -396,4 +468,4 @@ export const LightboxViewer = ({
       </DialogContent>
     </Dialog>
   );
-};
+});

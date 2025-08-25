@@ -180,12 +180,20 @@ export default function GalleryPage() {
           created_at: image.created_at,
         }))}
         selectedImage={selectedImageIndex}
-        onClose={() => {}}
-        onImageChange={() => {}}
-        handleDelete={(photoId: string) => {
-          return Promise.resolve({ success: true });
+        onClose={() => setSelectedImageIndex(null)}
+        onImageChange={(index: number) => setSelectedImageIndex(index)}
+        handleDelete={async (photoId: string) => {
+          try {
+            // TODO: Implement actual delete functionality
+            console.log('Deleting photo:', photoId);
+            // For now, just return success - this will be implemented later
+            return { success: true };
+          } catch (error) {
+            console.error('Error deleting photo:', error);
+            return { success: false };
+          }
         }}
-        userId={user!.id}
+        userId={user?.id || ''}
         eventId={eventId}
       />
     </div>
