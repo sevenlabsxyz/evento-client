@@ -6,7 +6,8 @@ import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export function TopBar() {
@@ -23,7 +24,6 @@ export function TopBar() {
     chatPartner,
   } = useTopBar();
   const { user } = useUserProfile();
-  const pathname = usePathname();
   const router = useRouter();
   const [isSpinning, setIsSpinning] = useState(false);
 
@@ -139,6 +139,27 @@ export function TopBar() {
       );
     }
 
+    if (centerMode === 'logo' && !isOverlaid) {
+      return (
+        <Link
+          href='https://evento.so'
+          className='flex flex-col items-center gap-1'
+          title='Evento logo - Visit evento.so'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          <Image 
+            priority 
+            src='/assets/img/evento-logo.svg' 
+            alt='Evento logo - Visit evento.so' 
+            width={80} 
+            height={24}
+            className="hover:opacity-80 transition-opacity cursor-pointer"
+          />
+        </Link>
+      );
+    }
+
     return null;
   };
 
@@ -176,11 +197,16 @@ export function TopBar() {
     >
       <div className='px-4 pb-4 pt-4'>
         <div
-          className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
+          className={`flex items-center justify-between relative transition-opacity duration-300 ${getContentOpacity()}`}
         >
           <div className='flex items-center gap-3'>
             {renderLeftContent()}
-            {renderCenterContent()}
+            {centerMode !== 'logo' && renderCenterContent()}
+          </div>
+          
+          {/* Absolutely centered logo */}
+          <div className='absolute left-1/2 transform -translate-x-1/2'>
+            {centerMode === 'logo' && renderCenterContent()}
           </div>
           <div className='flex items-center gap-3'>
             {buttons.length > 0 && (

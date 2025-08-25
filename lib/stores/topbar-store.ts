@@ -3,7 +3,7 @@ import { create } from 'zustand';
 import { VerificationStatus } from '../types/api';
 
 export type LeftMode = 'menu' | 'back';
-export type CenterMode = 'title' | 'empty' | 'chat-partner';
+export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
 
 export interface TopBarButton {
   id: string;
