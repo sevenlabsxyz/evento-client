@@ -48,12 +48,13 @@ import {
   SortAsc,
   SortDesc,
 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('about');
@@ -121,6 +122,14 @@ export default function ProfilePage() {
     limit: 10,
     enabled: activeTab === 'events',
   });
+
+  // Handle URL parameters for tab state
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'events' || tab === 'about') {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // Set TopBar content and enable overlay mode
   useEffect(() => {
@@ -521,7 +530,10 @@ export default function ProfilePage() {
             {/* Tab Headers */}
             <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
               <button
-                onClick={() => setActiveTab('about')}
+                onClick={() => {
+                  setActiveTab('about');
+                  router.push('/e/profile?tab=about', { scroll: false });
+                }}
                 className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'about'
                     ? 'bg-gray-100 text-black'
@@ -531,7 +543,10 @@ export default function ProfilePage() {
                 About
               </button>
               <button
-                onClick={() => setActiveTab('events')}
+                onClick={() => {
+                  setActiveTab('events');
+                  router.push('/e/profile?tab=events', { scroll: false });
+                }}
                 className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'events'
                     ? 'bg-gray-100 text-black'

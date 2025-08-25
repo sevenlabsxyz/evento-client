@@ -84,7 +84,7 @@ export function MyEventsSection() {
   };
 
   const handleViewAll = () => {
-    router.push('/e/profile');
+    router.push('/e/profile?tab=events');
   };
 
   return (
