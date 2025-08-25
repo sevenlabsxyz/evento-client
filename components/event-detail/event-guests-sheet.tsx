@@ -3,12 +3,12 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { EventRSVP } from '@/lib/types/api';
+import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle, Search } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import QuickProfileSheet from '../ui/quick-profile-sheet';
 
 interface GuestsSheetProps {
   open: boolean;
@@ -19,7 +19,7 @@ interface GuestsSheetProps {
 export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetProps) {
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
-  const router = useRouter();
+  const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
   // Filter by search text first
   const filteredAll = useMemo(() => {
@@ -40,156 +40,174 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
 
   const listForTab = activeTab === 'yes' ? yesList : activeTab === 'maybe' ? maybeList : noList;
 
-  return (
-    <SheetWithDetentFull.Root
-      presented={open}
-      onPresentedChange={(presented) => onOpenChange(presented)}
-    >
-      <SheetWithDetentFull.Portal>
-        <SheetWithDetentFull.View>
-          <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='bg-white'>
-            {/* Header with search */}
-            <div className='px-4 pt-2'>
-              <div className='mb-4 flex justify-center'>
-                <SheetWithDetentFull.Handle />
-              </div>
+  const handleViewProfile = (user: UserDetails | undefined) => {
+    if (!user) return;
+    setSelectedUser(user);
+  };
 
-              {/* Tabs */}
-              <div className='mt-3 px-4'>
-                <div className='flex items-center gap-2'>
-                  <button
-                    onClick={() => setActiveTab('yes')}
-                    className={cn(
-                      'rounded-xl px-3 py-2 text-sm transition-colors',
-                      activeTab === 'yes' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
-                    )}
-                  >
-                    Yes ({yesList.length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('maybe')}
-                    className={cn(
-                      'rounded-xl px-3 py-2 text-sm transition-colors',
-                      activeTab === 'maybe' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
-                    )}
-                  >
-                    Maybe ({maybeList.length})
-                  </button>
-                  <button
-                    onClick={() => setActiveTab('no')}
-                    className={cn(
-                      'rounded-xl px-3 py-2 text-sm transition-colors',
-                      activeTab === 'no' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
-                    )}
-                  >
-                    No ({noList.length})
-                  </button>
+  return (
+    <>
+      <SheetWithDetentFull.Root
+        presented={open}
+        onPresentedChange={(presented) => onOpenChange(presented)}
+      >
+        <SheetWithDetentFull.Portal>
+          <SheetWithDetentFull.View>
+            <SheetWithDetentFull.Backdrop />
+            <SheetWithDetentFull.Content className='bg-white'>
+              {/* Header with search */}
+              <div className='px-4 pt-2'>
+                <div className='mb-4 flex justify-center'>
+                  <SheetWithDetentFull.Handle />
+                </div>
+
+                {/* Tabs */}
+                <div className='mt-3 px-4'>
+                  <div className='flex items-center gap-2'>
+                    <button
+                      onClick={() => setActiveTab('yes')}
+                      className={cn(
+                        'rounded-xl px-3 py-2 text-sm transition-colors',
+                        activeTab === 'yes' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
+                      )}
+                    >
+                      Yes ({yesList.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('maybe')}
+                      className={cn(
+                        'rounded-xl px-3 py-2 text-sm transition-colors',
+                        activeTab === 'maybe'
+                          ? 'bg-gray-900 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                      )}
+                    >
+                      Maybe ({maybeList.length})
+                    </button>
+                    <button
+                      onClick={() => setActiveTab('no')}
+                      className={cn(
+                        'rounded-xl px-3 py-2 text-sm transition-colors',
+                        activeTab === 'no' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
+                      )}
+                    >
+                      No ({noList.length})
+                    </button>
+                  </div>
+                </div>
+                <VisuallyHidden.Root asChild>
+                  <SheetWithDetentFull.Title>Guest List</SheetWithDetentFull.Title>
+                </VisuallyHidden.Root>
+                <div className='relative mt-3'>
+                  <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+                  <input
+                    className='w-full rounded-xl bg-gray-100 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
+                    placeholder='Search guests'
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
                 </div>
               </div>
-              <VisuallyHidden.Root asChild>
-                <SheetWithDetentFull.Title>Guest List</SheetWithDetentFull.Title>
-              </VisuallyHidden.Root>
-              <div className='relative mt-3'>
-                <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
-                <input
-                  className='w-full rounded-xl bg-gray-100 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
-                  placeholder='Search guests'
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
-              </div>
-            </div>
 
-            {/* Scrollable content */}
-            <SheetWithDetentFull.ScrollRoot asChild>
-              <SheetWithDetentFull.ScrollView className='mt-4 max-h-full overflow-y-auto'>
-                <SheetWithDetentFull.ScrollContent>
-                  {listForTab.length === 0 ? (
-                    <div className='flex flex-col items-center justify-center py-16 text-center'>
-                      <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400'>
-                        <Search className='h-6 w-6' />
+              {/* Scrollable content */}
+              <SheetWithDetentFull.ScrollRoot asChild>
+                <SheetWithDetentFull.ScrollView className='mt-4 max-h-full overflow-y-auto'>
+                  <SheetWithDetentFull.ScrollContent>
+                    {listForTab.length === 0 ? (
+                      <div className='flex flex-col items-center justify-center py-16 text-center'>
+                        <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400'>
+                          <Search className='h-6 w-6' />
+                        </div>
+                        <h3 className='mb-1 text-base font-semibold text-gray-900'>
+                          {searchText.trim()
+                            ? 'No matching guests'
+                            : activeTab === 'yes'
+                              ? 'No guests marked as Going'
+                              : activeTab === 'maybe'
+                                ? 'No guests marked as Maybe'
+                                : 'No guests marked as Not Going'}
+                        </h3>
+                        <p className='mb-4 max-w-xs text-sm text-gray-500'>
+                          {searchText.trim()
+                            ? 'Try a different name or username, or clear your search.'
+                            : 'Once guests respond, they will appear here.'}
+                        </p>
+                        {searchText.trim() && (
+                          <Button variant='outline' size='sm' onClick={() => setSearchText('')}>
+                            Clear search
+                          </Button>
+                        )}
                       </div>
-                      <h3 className='mb-1 text-base font-semibold text-gray-900'>
-                        {searchText.trim()
-                          ? 'No matching guests'
-                          : activeTab === 'yes'
-                            ? 'No guests marked as Going'
-                            : activeTab === 'maybe'
-                              ? 'No guests marked as Maybe'
-                              : 'No guests marked as Not Going'}
-                      </h3>
-                      <p className='mb-4 max-w-xs text-sm text-gray-500'>
-                        {searchText.trim()
-                          ? 'Try a different name or username, or clear your search.'
-                          : 'Once guests respond, they will appear here.'}
-                      </p>
-                      {searchText.trim() && (
-                        <Button variant='outline' size='sm' onClick={() => setSearchText('')}>
-                          Clear search
-                        </Button>
-                      )}
-                    </div>
-                  ) : (
-                    <div className='space-y-3 px-4 pb-6'>
-                      {listForTab.map((rsvp) => (
-                        <div
-                          key={rsvp.id}
-                          className='flex items-center gap-3 rounded-2xl bg-gray-50 p-3'
-                        >
-                          <div className='flex flex-1 items-center gap-3'>
-                            <UserAvatar
-                              user={{
-                                name: rsvp.user_details?.name || undefined,
-                                username: rsvp.user_details?.username || undefined,
-                                image: rsvp.user_details?.image || undefined,
-                                verification_status: rsvp.user_details?.verification_status || null,
-                              }}
-                              size='sm'
-                              onAvatarClick={() => router.push(`/${rsvp.user_details?.username}`)}
-                            />
-                            <div className='min-w-0 flex-1'>
-                              <div className='truncate font-medium text-gray-900'>
-                                @{rsvp.user_details?.username || 'guest'}
-                              </div>
-                              <div className='truncate text-sm text-gray-500'>
-                                {rsvp.user_details?.name || 'Guest'}
+                    ) : (
+                      <div className='space-y-3 px-4 pb-6'>
+                        {listForTab.map((rsvp) => (
+                          <div
+                            key={rsvp.id}
+                            className='flex items-center gap-3 rounded-2xl bg-gray-50 p-3'
+                          >
+                            <div className='flex flex-1 items-center gap-3'>
+                              <UserAvatar
+                                user={{
+                                  name: rsvp.user_details?.name || undefined,
+                                  username: rsvp.user_details?.username || undefined,
+                                  image: rsvp.user_details?.image || undefined,
+                                  verification_status:
+                                    rsvp.user_details?.verification_status || null,
+                                }}
+                                size='sm'
+                                onAvatarClick={() => handleViewProfile(rsvp.user_details)}
+                              />
+                              <div className='min-w-0 flex-1'>
+                                <div className='truncate font-medium text-gray-900'>
+                                  @{rsvp.user_details?.username || 'guest'}
+                                </div>
+                                <div className='truncate text-sm text-gray-500'>
+                                  {rsvp.user_details?.name || 'Guest'}
+                                </div>
                               </div>
                             </div>
+                            <div className='flex items-center gap-2'>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                className='px-2'
+                                onClick={() => {
+                                  // TODO: wire to chat/DM route
+                                  console.log('chat with', rsvp.user_details?.username);
+                                }}
+                                aria-label='Chat'
+                              >
+                                <MessageCircle className='h-4 w-4' />
+                              </Button>
+                              <Button
+                                variant='outline'
+                                size='sm'
+                                className='px-2'
+                                onClick={() => handleViewProfile(rsvp.user_details)}
+                                aria-label='View user profile'
+                              >
+                                <ArrowRight className='h-4 w-4' />
+                              </Button>
+                            </div>
                           </div>
-                          <div className='flex items-center gap-2'>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className='px-2'
-                              onClick={() => {
-                                // TODO: wire to chat/DM route
-                                console.log('chat with', rsvp.user_details?.username);
-                              }}
-                              aria-label='Chat'
-                            >
-                              <MessageCircle className='h-4 w-4' />
-                            </Button>
-                            <Button
-                              variant='outline'
-                              size='sm'
-                              className='px-2'
-                              onClick={() => router.push(`/${rsvp.user_details?.username}`)}
-                              aria-label='Go to profile'
-                            >
-                              <ArrowRight className='h-4 w-4' />
-                            </Button>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </SheetWithDetentFull.ScrollContent>
-              </SheetWithDetentFull.ScrollView>
-            </SheetWithDetentFull.ScrollRoot>
-          </SheetWithDetentFull.Content>
-        </SheetWithDetentFull.View>
-      </SheetWithDetentFull.Portal>
-    </SheetWithDetentFull.Root>
+                        ))}
+                      </div>
+                    )}
+                  </SheetWithDetentFull.ScrollContent>
+                </SheetWithDetentFull.ScrollView>
+              </SheetWithDetentFull.ScrollRoot>
+            </SheetWithDetentFull.Content>
+          </SheetWithDetentFull.View>
+        </SheetWithDetentFull.Portal>
+      </SheetWithDetentFull.Root>
+
+      {selectedUser && (
+        <QuickProfileSheet
+          isOpen={!!selectedUser}
+          onClose={() => setSelectedUser(null)}
+          user={selectedUser}
+        />
+      )}
+    </>
   );
 }

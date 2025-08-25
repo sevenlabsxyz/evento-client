@@ -76,7 +76,7 @@ export interface Event {
   id: string;
   title: string;
   description: string;
-  cover: string;
+  cover?: string;
   location: string;
   timezone: string;
   status: 'draft' | 'published' | 'cancelled' | 'archived';
@@ -116,6 +116,21 @@ export interface Event {
 
   // Relations (populated in some responses)
   user_details?: UserDetails;
+}
+
+// Event Invite
+export interface EventInvite {
+  id: string;
+  event_id: string;
+  inviter_id: string;
+  invitee_id: string;
+  invitee_email: string;
+  message: string;
+  status: 'pending' | 'responded';
+  response: 'going' | 'not_going' | 'maybe' | null;
+  created_at: string;
+  updated_at: string;
+  events: EventWithUser;
 }
 
 // Event RSVP

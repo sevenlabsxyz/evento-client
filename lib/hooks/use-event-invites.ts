@@ -1,7 +1,8 @@
 import apiClient from '@/lib/api/client';
-import { InviteTarget } from '@/lib/types/api';
+import { InviteTarget, EventInvite } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 
 export type SendInvitesRequest = {
   id: string; // event id
@@ -56,5 +57,30 @@ export function useSendEventInvites() {
       const msg = err?.message || 'Failed to send invites';
       toast.error(msg);
     },
+  });
+}
+
+interface EventInvitesResponse {
+  success: boolean;
+  message: string;
+  data: EventInvite[];
+}
+
+// Hook to fetch event invites
+export function useEventInvites(status?: 'pending' | 'responded', enabled: boolean = true) {
+  return useQuery({
+    queryKey: ['event-invites', status],
+    queryFn: async () => {
+      try {
+        const params = status ? `?status=${status}` : '';
+        const response = await apiClient.get<EventInvitesResponse>(`/v1/events/invites${params}`);
+        return response.data || [];
+      } catch (error) {
+        console.error('Failed to fetch event invites:', error);
+        throw error;
+      }
+    },
+    enabled,
+    staleTime: EVENT_INVITES_CONFIG.CACHE_STALE_TIME,
   });
 }
