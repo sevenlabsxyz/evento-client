@@ -173,7 +173,12 @@ export default function GalleryPage() {
 
       {/* Image Lightbox */}
       <LightboxViewer
-        images={galleryImages.map((_image, index) => index)}
+        images={galleryImages.map((image) => ({
+          id: image.id,
+          image: image.url,
+          user_details: image.user_details,
+          created_at: image.created_at,
+        }))}
         selectedImage={selectedImageIndex}
         onClose={() => {}}
         onImageChange={() => {}}

@@ -182,7 +182,7 @@ export default function ProfilePage() {
   const avatarImages = [
     {
       id: 'avatar-1',
-      image: userData.image,
+      image: userData.image || '/assets/img/evento-sublogo.svg',
       user_details: {
         id: user?.id,
         username: user?.username,

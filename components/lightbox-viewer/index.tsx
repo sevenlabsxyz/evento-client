@@ -5,7 +5,27 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MiniListItem } from '@/components/ui/mini-list-item';
 import { Modal } from '@/components/ui/modal';
+import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
+
+interface GalleryImageObject {
+  id: string;
+  image: string;
+  user_details: Partial<UserDetails> & { id?: string };
+  created_at?: string;
+}
+
+type GalleryImage = string | GalleryImageObject;
+
+// Type guard functions
+const isGalleryImageObject = (image: GalleryImage): image is GalleryImageObject => {
+  return typeof image === 'object' && image !== null && 'image' in image;
+};
+
+const getImageUrl = (image: GalleryImage): string => {
+  return isGalleryImageObject(image) ? image.image : image;
+};
+
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -22,7 +42,7 @@ import { GalleryDropdownMenu } from './dropdown-menu';
 import { LikeButton } from './like-button';
 
 export interface LightboxViewerProps {
-  images: any[];
+  images: GalleryImage[];
   selectedImage: number | null;
   onClose: () => void;
   onImageChange: (index: number) => void;
@@ -37,7 +57,7 @@ const MobileGalleryMenu = ({
   handleDelete,
 }: {
   photoId: string;
-  handleDelete: Function;
+  handleDelete: (photoId: string) => Promise<{ success: boolean }>;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -137,7 +157,8 @@ export const LightboxViewer = ({
     if (selectedImage !== null) {
       setIsDownloading(true);
       try {
-        const imageUrl = images[selectedImage].image;
+        const currentImage = images[selectedImage];
+        const imageUrl = getImageUrl(currentImage);
         const extension = getFileExtension(imageUrl);
         const fileName = `gallery-image-${selectedImage + 1}.${extension}`;
 
@@ -208,7 +229,9 @@ export const LightboxViewer = ({
   });
 
   const shouldShowUploaderDetails =
-    selectedImage !== null && images[selectedImage]?.user_details?.id;
+    selectedImage !== null &&
+    isGalleryImageObject(images[selectedImage]) &&
+    images[selectedImage].user_details?.id;
 
   const handleDeleteImage = async (photoId: string) => {
     try {
@@ -285,7 +308,7 @@ export const LightboxViewer = ({
           </div>
           {selectedImage !== null && images[selectedImage] && (
             <img
-              src={images[selectedImage].image}
+              src={getImageUrl(images[selectedImage])}
               alt={`Fullscreen view of image ${selectedImage + 1}`}
               className='max-h-full max-w-full object-contain'
               onDragStart={preventDragHandler}
@@ -306,72 +329,70 @@ export const LightboxViewer = ({
             <ChevronRightIcon className='h-10 w-10' />
           </button>
         </div>
-        {shouldShowUploaderDetails && images[selectedImage] && (
-          <div
-            className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4'
-            style={{ height: '15dvh' }}
-          >
+        {shouldShowUploaderDetails &&
+          selectedImage !== null &&
+          isGalleryImageObject(images[selectedImage]) && (
             <div
-              key={images[selectedImage]?.user_details?.id}
-              className='mx-auto flex w-full max-w-[700px] items-center justify-between space-x-4'
+              className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4'
+              style={{ height: '15dvh' }}
             >
-              <div className='flex items-start space-x-4'>
-                <Avatar className='cursor-pointer border'>
-                  <AvatarImage
-                    src={images[selectedImage]?.user_details?.image || '/icon.png'}
-                    alt={images[selectedImage]?.user_details?.username || 'Username'}
-                  />
-                  <AvatarFallback>
-                    {images[selectedImage]?.user_details?.username?.slice(0, 1) || 'E'}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className='flex flex-row items-center'>
-                    <p className='cursor-pointer text-sm font-medium font-semibold leading-none text-gray-500'>
-                      @{images[selectedImage]?.user_details?.username}
-                    </p>
-                    {images[selectedImage]?.user_details?.verification_status === 'verified' && (
-                      <span className='ml-1 text-sm'>✓</span>
+              <div
+                key={images[selectedImage].user_details?.id}
+                className='mx-auto flex w-full max-w-[700px] items-center justify-between space-x-4'
+              >
+                <div className='flex items-start space-x-4'>
+                  <Avatar className='cursor-pointer border'>
+                    <AvatarImage
+                      src={images[selectedImage].user_details?.image || '/icon.png'}
+                      alt={images[selectedImage].user_details?.username || 'Username'}
+                    />
+                    <AvatarFallback>
+                      {images[selectedImage].user_details?.username?.slice(0, 1) || 'E'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className='flex flex-row items-center'>
+                      <p className='cursor-pointer text-sm font-semibold leading-none text-gray-500'>
+                        @{images[selectedImage].user_details?.username}
+                      </p>
+                      {images[selectedImage].user_details?.verification_status === 'verified' && (
+                        <span className='ml-1 text-sm'>✓</span>
+                      )}
+                    </div>
+                    {!images[selectedImage].user_details?.name ? null : (
+                      <p className='cursor-pointer text-sm text-gray-400'>
+                        {images[selectedImage].user_details?.name}
+                      </p>
+                    )}
+                    {images[selectedImage].created_at && (
+                      <p className='cursor-pointer pt-2 text-[10px] text-gray-400'>
+                        posted on {new Date(images[selectedImage].created_at).toLocaleDateString()}
+                      </p>
                     )}
                   </div>
-                  {!images[selectedImage]?.user_details?.name ? null : (
-                    <p className='cursor-pointer text-sm text-gray-400'>
-                      {images[selectedImage]?.user_details?.name}
-                    </p>
-                  )}
-                  {images[selectedImage]?.created_at && (
-                    <p className='cursor-pointer pt-2 text-[10px] text-gray-400'>
-                      posted on {new Date(images[selectedImage].created_at).toLocaleDateString()}
-                    </p>
+                </div>
+                <div className='flex items-center gap-1.5'>
+                  <LikeButton itemId={images[selectedImage].id} userId={userId} eventId={eventId} />
+                  {!showDropdownMenu ? null : (
+                    <div>
+                      <div className='md:hidden'>
+                        <MobileGalleryMenu
+                          photoId={images[selectedImage].id}
+                          handleDelete={handleDeleteImage}
+                        />
+                      </div>
+                      <div className='hidden md:block'>
+                        <GalleryDropdownMenu
+                          photoId={images[selectedImage].id}
+                          handleDelete={handleDeleteImage}
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               </div>
-              <div className='flex items-center gap-1.5'>
-                <LikeButton
-                  itemId={selectedImage !== null ? images[selectedImage].id : ''}
-                  userId={userId}
-                  eventId={eventId}
-                />
-                {!showDropdownMenu ? null : (
-                  <div>
-                    <div className='md:hidden'>
-                      <MobileGalleryMenu
-                        photoId={images[selectedImage].id}
-                        handleDelete={handleDeleteImage}
-                      />
-                    </div>
-                    <div className='hidden md:block'>
-                      <GalleryDropdownMenu
-                        photoId={images[selectedImage].id}
-                        handleDelete={handleDeleteImage}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
             </div>
-          </div>
-        )}
+          )}
       </DialogContent>
     </Dialog>
   );
