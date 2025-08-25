@@ -18,34 +18,34 @@ export function MyEventsSection() {
   const { user } = useUserProfile();
   const [activeTab, setActiveTab] = useState<EventFilterType>('upcoming');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
-  const [loadedTabs, setLoadedTabs] = useState<Set<EventFilterType>>(new Set(['upcoming']));
+  const [loadedTabs, setLoadedTabs] = useState<EventFilterType[]>(['upcoming']);
 
   // Only load data for tabs that have been opened
   const upcomingQuery = useUserEvents({
     username: user?.username,
     filter: 'upcoming',
     limit: 6,
-    enabled: loadedTabs.has('upcoming'),
+    enabled: loadedTabs.includes('upcoming'),
   });
 
   const hostingQuery = useUserEvents({
     username: user?.username,
     filter: 'hosting',
     limit: 6,
-    enabled: loadedTabs.has('hosting'),
+    enabled: loadedTabs.includes('hosting'),
   });
 
   const attendingQuery = useUserEvents({
     username: user?.username,
     filter: 'attending',
     limit: 6,
-    enabled: loadedTabs.has('attending'),
+    enabled: loadedTabs.includes('attending'),
   });
 
   // Track when tabs are opened for lazy loading
   useEffect(() => {
-    if (!loadedTabs.has(activeTab)) {
-      setLoadedTabs((prev) => new Set([...prev, activeTab]));
+    if (!loadedTabs.includes(activeTab)) {
+      setLoadedTabs((prev) => [...prev, activeTab]);
     }
   }, [activeTab]);
 
@@ -133,19 +133,19 @@ export function MyEventsSection() {
         <TabsList className='mb-4 grid w-full grid-cols-3 bg-gray-100'>
           <TabsTrigger value='upcoming' className='text-sm'>
             Upcoming{' '}
-            {loadedTabs.has('upcoming') &&
+            {loadedTabs.includes('upcoming') &&
               getTabCount('upcoming') > 0 &&
               `(${getTabCount('upcoming')})`}
           </TabsTrigger>
           <TabsTrigger value='hosting' className='text-sm'>
             Hosting{' '}
-            {loadedTabs.has('hosting') &&
+            {loadedTabs.includes('hosting') &&
               getTabCount('hosting') > 0 &&
               `(${getTabCount('hosting')})`}
           </TabsTrigger>
           <TabsTrigger value='attending' className='text-sm'>
             Attending{' '}
-            {loadedTabs.has('attending') &&
+            {loadedTabs.includes('attending') &&
               getTabCount('attending') > 0 &&
               `(${getTabCount('attending')})`}
           </TabsTrigger>
