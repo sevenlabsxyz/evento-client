@@ -15,7 +15,9 @@ interface EventInviteCardProps {
 
 export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardProps) {
   const router = useRouter();
-  const { shortDate: eventDate, time: eventTime } = formatEventDate(invite.events.computed_start_date);
+  const { shortDate: eventDate, time: eventTime } = formatEventDate(
+    invite.events.computed_start_date
+  );
 
   const handleViewEvent = () => {
     router.push(`/e/${invite.event_id}`);

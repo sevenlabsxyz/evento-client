@@ -145,8 +145,7 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
   setChatPartner: (chatPartner) => set({ chatPartner }),
 
-  reset: () =>
-    set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
+  reset: () => set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
 
   resetForRoute: (route) => {
     const currentRoute = get().currentRoute;

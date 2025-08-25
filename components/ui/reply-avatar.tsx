@@ -24,11 +24,5 @@ export function ReplyAvatar({ currentUser, onAvatarClick }: ReplyAvatarProps) {
     return null;
   }
 
-  return (
-    <UserAvatar
-      user={currentUser}
-      size='sm'
-      onAvatarClick={handleClick}
-    />
-  );
+  return <UserAvatar user={currentUser} size='sm' onAvatarClick={handleClick} />;
 }

@@ -6,7 +6,8 @@ import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export function TopBar() {
@@ -23,7 +24,6 @@ export function TopBar() {
     chatPartner,
   } = useTopBar();
   const { user } = useUserProfile();
-  const pathname = usePathname();
   const router = useRouter();
   const [isSpinning, setIsSpinning] = useState(false);
 
@@ -141,9 +141,13 @@ export function TopBar() {
 
     if (centerMode === 'logo' && !isOverlaid) {
       return (
-        <div className='flex flex-1 flex-col gap-1'>
+        <Link
+          href='/'
+          className='flex flex-1 flex-col items-center gap-1'
+          title='Evento logo - Return to homepage'
+        >
           <Image priority src='/assets/img/evento-logo.svg' alt='Evento' width={100} height={100} />
-        </div>
+        </Link>
       );
     }
 
@@ -186,7 +190,7 @@ export function TopBar() {
         <div
           className={`flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div className='flex items-center gap-3'>
+          <div className='flex w-full items-center gap-3'>
             {renderLeftContent()}
             {renderCenterContent()}
           </div>

@@ -1,8 +1,6 @@
 'use client';
 
-import DetachedMenuSheet, {
-  MenuOption,
-} from '@/components/ui/detached-menu-sheet';
+import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
 import { CalendarPlus, Copy } from 'lucide-react';
 
@@ -56,7 +54,5 @@ export default function MoreOptionsSheet({
     },
   ];
 
-  return (
-    <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />
-  );
+  return <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />;
 }
