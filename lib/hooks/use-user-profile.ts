@@ -130,6 +130,7 @@ export function useUploadProfileImage() {
 }
 
 /**
+
  * Hook to search for users
  */
 export function useSearchUsers() {
@@ -155,6 +156,7 @@ export function useSearchUsers() {
 }
 
 /**
+
  * Hook to check if the current user follows another user
  */
 export function useFollowStatus(userId: string) {
