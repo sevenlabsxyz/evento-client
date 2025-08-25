@@ -128,6 +128,11 @@ export default function ProfilePage() {
     const tab = searchParams.get('tab');
     if (tab === 'events' || tab === 'about') {
       setActiveTab(tab);
+
+      // Remove param if on default tab
+      if (tab === 'about') {
+        router.replace('/e/profile', { scroll: false });
+      }
     }
   }, [searchParams]);
 
@@ -532,7 +537,7 @@ export default function ProfilePage() {
               <button
                 onClick={() => {
                   setActiveTab('about');
-                  router.push('/e/profile?tab=about', { scroll: false });
+                  router.push('/e/profile', { scroll: false });
                 }}
                 className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
                   activeTab === 'about'
