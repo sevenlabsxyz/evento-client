@@ -21,6 +21,13 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
 
   const parseCsv = useCallback((file: File): Promise<string[]> => {
     return new Promise((resolve, reject) => {
+      // Check file size (10MB = 10 * 1024 * 1024 bytes)
+      const maxSizeInBytes = 10 * 1024 * 1024;
+      if (file.size > maxSizeInBytes) {
+        reject('File size exceeds 10MB limit. Please use a smaller file.');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
@@ -170,7 +177,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                     className='hidden'
                   />
                 </label>
-                <p className='mt-2 text-xs text-gray-500'>CSV file with email addresses</p>
+                <p className='mt-2 text-xs text-gray-500'>CSV file with email addresses (max 10MB)</p>
               </div>
 
               {error && (
