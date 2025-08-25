@@ -62,7 +62,7 @@ export const designTokens = {
 export const getDesignToken = (path: string) => {
   const keys = path.split('.');
   let current: any = designTokens;
-  
+
   for (const key of keys) {
     if (current && current[key] !== undefined) {
       current = current[key];
@@ -71,7 +71,7 @@ export const getDesignToken = (path: string) => {
       return undefined;
     }
   }
-  
+
   return current;
 };
 

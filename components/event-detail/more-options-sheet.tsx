@@ -53,6 +53,6 @@ export default function MoreOptionsSheet({
       variant: 'secondary',
     },
   ];
-  
+
   return <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />;
 }

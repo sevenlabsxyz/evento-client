@@ -1,8 +1,8 @@
 import apiClient from '@/lib/api/client';
-import { InviteTarget, EventInvite } from '@/lib/types/api';
+import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
+import { EventInvite, InviteTarget } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 
 export type SendInvitesRequest = {
   id: string; // event id

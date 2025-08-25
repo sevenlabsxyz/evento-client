@@ -1,7 +1,6 @@
 'use client';
 
-import { useQuery, UseQueryResult } from '@tanstack/react-query';
-import { 
+import {
   useFollowStatus,
   useUserEventCount,
   useUserFollowers,
@@ -31,10 +30,11 @@ export function useQuickProfileData(userId: string): QuickProfileData {
   const isLoading = followStatusQuery.isLoading;
 
   // Collect any errors from the queries
-  const error = followStatusQuery.error || 
-                eventCountQuery.error || 
-                followersQuery.error || 
-                followingQuery.error;
+  const error =
+    followStatusQuery.error ||
+    eventCountQuery.error ||
+    followersQuery.error ||
+    followingQuery.error;
 
   return {
     followStatus: followStatusQuery.data,

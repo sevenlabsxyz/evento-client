@@ -7,7 +7,7 @@ import { ProfileHeader } from '@/components/ui/quick-profile/profile-header';
 import { ProfileInfo } from '@/components/ui/quick-profile/profile-info';
 import { ProfileStats } from '@/components/ui/quick-profile/profile-stats';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
-import { designTokens, validateUsername } from '@/lib/design-tokens/colors';
+import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
 import { useFollowAction } from '@/lib/hooks/use-user-profile';
@@ -31,7 +31,9 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
   const [showTipSheet, setShowTipSheet] = useState(false);
 
   // Use optimized hook for all profile data
-  const { followStatus, eventCount, followers, following, isLoading } = useQuickProfileData(user.id);
+  const { followStatus, eventCount, followers, following, isLoading } = useQuickProfileData(
+    user.id
+  );
   const followActionMutation = useFollowAction();
 
   const handleFollowToggle = useCallback(() => {
