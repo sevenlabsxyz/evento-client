@@ -10,6 +10,7 @@ import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
 import {
   Select,
   SelectContent,
@@ -519,28 +520,14 @@ export default function ProfilePage() {
           {/* Tabbed Section */}
           <div className='mb-4 w-full bg-white'>
             {/* Tab Headers */}
-            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
-              <button
-                onClick={() => setActiveTab('about')}
-                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'about'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                About
-              </button>
-              <button
-                onClick={() => setActiveTab('events')}
-                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'events'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                Events
-              </button>
-            </div>
+            <SegmentedTabs
+              items={[
+                { value: 'about', label: 'About' },
+                { value: 'events', label: 'Events' },
+              ]}
+              value={activeTab}
+              onValueChange={(v) => setActiveTab(v)}
+            />
 
             {/* Tab Content */}
             <div>

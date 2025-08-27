@@ -12,6 +12,7 @@ import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
@@ -223,38 +224,15 @@ export default function EventDetailPageClient() {
           {/* Tabbed Section */}
           <div className='mb-4 w-full bg-white'>
             {/* Tab Headers */}
-            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
-              <button
-                onClick={() => handleTabChange('details')}
-                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'details'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                Details
-              </button>
-              <button
-                onClick={() => handleTabChange('comments')}
-                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'comments'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                Comments
-              </button>
-              <button
-                onClick={() => handleTabChange('gallery')}
-                className={`rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'gallery'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                Gallery
-              </button>
-            </div>
+            <SegmentedTabs
+              items={[
+                { value: 'details', label: 'Details' },
+                { value: 'comments', label: 'Comments' },
+                { value: 'gallery', label: 'Gallery' },
+              ]}
+              value={activeTab}
+              onValueChange={(v) => handleTabChange(v)}
+            />
 
             {/* Tab Content */}
             <div className='px-4'>
