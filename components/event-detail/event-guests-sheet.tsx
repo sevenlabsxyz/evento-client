@@ -21,6 +21,16 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
+  const tabItems = useMemo(
+    () => [
+      { value: 'yes', label: 'Yes' },
+      { value: 'maybe', label: 'Maybe' },
+      { value: 'no', label: 'No' },
+    ],
+    []
+  );
+  s;
+
   // Filter by search text first
   const filteredAll = useMemo(() => {
     if (!searchText.trim()) return rsvps;
@@ -64,11 +74,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                 {/* Tabs */}
                 <div className='mt-3 px-4'>
                   <SegmentedTabs
-                    items={[
-                      { value: 'yes', label: 'Yes' },
-                      { value: 'maybe', label: 'Maybe' },
-                      { value: 'no', label: 'No' },
-                    ]}
+                    items={tabItems}
                     value={activeTab}
                     onValueChange={(v) => setActiveTab(v as typeof activeTab)}
                   />
