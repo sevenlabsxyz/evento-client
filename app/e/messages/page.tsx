@@ -103,7 +103,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className='mx-auto flex max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
+    <div className='relative mx-auto flex max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
       <Chat client={client} theme='str-chat__theme-custom'>
         <div className='str-chat__channel-list-container'>
           <ChannelList
@@ -129,7 +129,7 @@ export default function ChatPage() {
         type='button'
         onClick={() => setIsNewChatOpen(true)}
         aria-label='Start new chat'
-        className='fixed bottom-24 right-4 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400 md:right-[calc(50%-20rem)]'
+        className='absolute bottom-24 right-4 z-20 inline-flex h-12 w-12 items-center justify-center rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-400'
       >
         <Plus className='h-6 w-6' />
       </button>
