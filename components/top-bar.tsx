@@ -148,13 +148,13 @@ export function TopBar() {
           target='_blank'
           rel='noopener noreferrer'
         >
-          <Image 
-            priority 
-            src='/assets/img/evento-logo.svg' 
-            alt='Evento logo - Visit evento.so' 
-            width={80} 
+          <Image
+            priority
+            src='/assets/img/evento-logo.svg'
+            alt='Evento logo - Visit evento.so'
+            width={80}
             height={24}
-            className="hover:opacity-80 transition-opacity cursor-pointer"
+            className='cursor-pointer transition-opacity hover:opacity-80'
           />
         </Link>
       );
@@ -197,15 +197,15 @@ export function TopBar() {
     >
       <div className='px-4 pb-4 pt-4'>
         <div
-          className={`flex items-center justify-between relative transition-opacity duration-300 ${getContentOpacity()}`}
+          className={`relative flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
           <div className='flex items-center gap-3'>
             {renderLeftContent()}
             {centerMode !== 'logo' && renderCenterContent()}
           </div>
-          
+
           {/* Absolutely centered logo */}
-          <div className='absolute left-1/2 transform -translate-x-1/2'>
+          <div className='absolute left-1/2 -translate-x-1/2 transform'>
             {centerMode === 'logo' && renderCenterContent()}
           </div>
           <div className='flex items-center gap-3'>
