@@ -20,12 +20,12 @@ export const Message = ({ className, from, ...props }: MessageProps) => (
 export type MessageContentProps = HTMLAttributes<HTMLDivElement>;
 
 export const MessageContent = ({ children, className, ...props }: MessageContentProps) => (
-  <div className={cn('flex max-w-[70%] flex-col', className)} {...props}>
+  <div className={cn('flex flex-col', className)} {...props}>
     <div
       className={cn(
-        'break-words rounded-xl px-4 py-3 text-xs',
-        'group-[.flex-row-reverse]:bg-blue-500 group-[.flex-row-reverse]:text-white',
-        'group-[.flex-row]:bg-gray-100 group-[.flex-row]:text-gray-900'
+        'relative break-words rounded-xl px-4 py-3 text-xs',
+        'group-[.flex-row-reverse]:rounded-br-none group-[.flex-row-reverse]:bg-blue-500 group-[.flex-row-reverse]:text-white',
+        'group-[.flex-row]:rounded-bl-none group-[.flex-row]:bg-gray-100 group-[.flex-row]:text-gray-900'
       )}
     >
       {children}

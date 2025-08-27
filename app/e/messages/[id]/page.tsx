@@ -25,16 +25,22 @@ import type {
 } from 'stream-chat';
 import { Channel, Chat } from 'stream-chat-react';
 
-import { ArrowLeft, Paperclip, Plus, Smile } from 'lucide-react';
+import {
+  ArrowLeft,
+  Heart,
+  MessageCircle,
+  MoreHorizontal,
+  Paperclip,
+  Plus,
+  Reply,
+  Smile,
+} from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-import {
-  SilkLightbox,
-  type SilkLightboxRef,
-} from '@/components/ui/silk-lightbox/silk-lightbox';
 import { useTopBar } from '@/lib/stores/topbar-store';
 
+import { LightboxViewer } from '@/components/lightbox-viewer';
 import '../chat-layout.css';
 import '../stream-chat.d.ts';
 
@@ -53,10 +59,16 @@ export default function SingleChatPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
+  const [replyingTo, setReplyingTo] = useState<MessageResponse | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const lightboxRef = useRef<SilkLightboxRef>(null);
+  const [lightboxImages, setLightboxImages] = useState<
+    Array<{ image: string }>
+  >([]);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(
+    null
+  );
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   // Use Stream Chat from the provider
@@ -214,10 +226,16 @@ export default function SingleChatPage() {
         messageData.attachments = uploadedAttachments;
       }
 
+      // Add reply reference if replying to a message - if the message is not a reply
+      if (replyingTo && !replyingTo.parent_id) {
+        messageData.parent_id = replyingTo.id;
+      }
+
       // Send the message with uploaded attachments
       await channel.sendMessage(messageData);
       setInputValue('');
       setAttachments([]);
+      setReplyingTo(null);
       setShowEmojiPicker(false);
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -238,6 +256,25 @@ export default function SingleChatPage() {
       e.preventDefault();
       handleSubmit();
     }
+    if (e.key === 'Escape') {
+      setReplyingTo(null);
+    }
+  };
+
+  // Handle message reactions
+  const handleReaction = async (messageId: string, emoji: string) => {
+    if (!channel) return;
+    try {
+      await channel.sendReaction(messageId, { type: emoji });
+    } catch (error) {
+      console.error('Failed to send reaction:', error);
+    }
+  };
+
+  // Handle reply to message
+  const handleReply = (message: MessageResponse) => {
+    setReplyingTo(message);
+    inputRef.current?.focus();
   };
 
   // Handle file selection
@@ -264,7 +301,10 @@ export default function SingleChatPage() {
 
   // Handle lightbox opening
   const openLightbox = (images: string[], initialIndex: number = 0) => {
-    lightboxRef.current?.open(initialIndex);
+    // Convert string URLs to objects with image property for lightbox compatibility
+    const lightboxImageObjects = images.map((url) => ({ image: url }));
+    setLightboxImages(lightboxImageObjects);
+    setSelectedImageIndex(initialIndex);
   };
 
   // Render multiple images with different layouts
@@ -535,40 +575,108 @@ export default function SingleChatPage() {
                         'User'
                       }
                     />
-                    <MessageContent className="rounded-2xl">
-                      {formattedMsg.text && (
-                        <div className="text-xs">{formattedMsg.text}</div>
-                      )}
-                      {msg.attachments && msg.attachments.length > 0 && (
-                        <div className="mt-1 space-y-1">
-                          {(() => {
-                            const imageAttachments = msg.attachments.filter(
-                              (att: any) => att.type === 'image'
+                    <div
+                      className="group relative"
+                      onDoubleClick={() => handleReply(msg)}
+                    >
+                      <MessageContent className="rounded-2xl">
+                        {/* Reply indicator */}
+                        {msg.parent_id &&
+                          (() => {
+                            const parentMessage = messages.find(
+                              (m) => m.id === msg.parent_id
                             );
-                            const fileAttachments = msg.attachments.filter(
-                              (att: any) => att.type === 'file'
-                            );
-
+                            const replyText =
+                              parentMessage?.text || 'Message with attachments';
                             return (
-                              <>
-                                {imageAttachments.length > 0 && (
-                                  <div>
-                                    {renderImageAttachments(imageAttachments)}
-                                  </div>
-                                )}
-                                {fileAttachments.map(
-                                  (attachment: any, index: number) => (
-                                    <div key={`file-${index}`}>
-                                      {renderAttachment(attachment)}
-                                    </div>
-                                  )
-                                )}
-                              </>
+                              <div className="mb-2 border-l-2 border-gray-300 pl-2 text-xs opacity-60">
+                                <Reply className="mr-1 inline h-3 w-3" />
+                                <span className="truncate">{replyText}</span>
+                              </div>
                             );
                           })()}
-                        </div>
-                      )}
-                    </MessageContent>
+
+                        {formattedMsg.text && (
+                          <div className="text-xs">{formattedMsg.text}</div>
+                        )}
+                        {msg.attachments && msg.attachments.length > 0 && (
+                          <div className="mt-1 space-y-1">
+                            {(() => {
+                              const imageAttachments = msg.attachments.filter(
+                                (att: any) => att.type === 'image'
+                              );
+                              const fileAttachments = msg.attachments.filter(
+                                (att: any) => att.type === 'file'
+                              );
+
+                              return (
+                                <>
+                                  {imageAttachments.length > 0 && (
+                                    <div>
+                                      {renderImageAttachments(imageAttachments)}
+                                    </div>
+                                  )}
+                                  {fileAttachments.map(
+                                    (attachment: any, index: number) => (
+                                      <div key={`file-${index}`}>
+                                        {renderAttachment(attachment)}
+                                      </div>
+                                    )
+                                  )}
+                                </>
+                              );
+                            })()}
+                          </div>
+                        )}
+
+                        {/* Reactions */}
+                        {msg.reaction_counts &&
+                          Object.keys(msg.reaction_counts).length > 0 && (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {Object.entries(msg.reaction_counts).map(
+                                ([emoji, count]) => (
+                                  <button
+                                    key={emoji}
+                                    onClick={() =>
+                                      handleReaction(msg.id, emoji)
+                                    }
+                                    className="flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs transition-colors hover:bg-gray-200"
+                                  >
+                                    <span>{emoji}</span>
+                                    <span>{count as number}</span>
+                                  </button>
+                                )
+                              )}
+                            </div>
+                          )}
+                      </MessageContent>
+
+                      {/* Message actions */}
+                      <div className="absolute right-0 top-0 -mr-2 -mt-2 flex gap-1 rounded-lg border bg-white p-1 opacity-0 shadow-lg transition-opacity group-hover:opacity-100">
+                        <button
+                          onClick={() => handleReaction(msg.id, '❤️')}
+                          className="rounded p-1 transition-colors hover:bg-gray-100"
+                          title="React with heart"
+                        >
+                          <Heart className="h-3 w-3" />
+                        </button>
+                        {!msg.parent_id && (
+                          <button
+                            onClick={() => handleReply(msg)}
+                            className="rounded p-1 transition-colors hover:bg-gray-100"
+                            title="Reply"
+                          >
+                            <MessageCircle className="h-3 w-3" />
+                          </button>
+                        )}
+                        <button
+                          className="rounded p-1 transition-colors hover:bg-gray-100"
+                          title="More options"
+                        >
+                          <MoreHorizontal className="h-3 w-3" />
+                        </button>
+                      </div>
+                    </div>
                   </Message>
                 );
               })}
@@ -593,6 +701,30 @@ export default function SingleChatPage() {
             )}
 
             <ChatInput onSubmit={handleSubmit}>
+              {/* Reply Preview */}
+              {replyingTo && (
+                <div className="border-b bg-gray-50 p-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs text-gray-600">
+                      <Reply className="h-3 w-3" />
+                      <span>
+                        Replying to{' '}
+                        {replyingTo.user?.name || replyingTo.user?.id || 'User'}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setReplyingTo(null)}
+                      className="text-gray-400 transition-colors hover:text-gray-600"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="mt-1 truncate text-xs text-gray-500">
+                    {replyingTo.text || 'Message with attachments'}
+                  </div>
+                </div>
+              )}
+
               {/* Attachment Previews */}
               {attachments.length > 0 && (
                 <div className="max-w-full overflow-x-auto">
@@ -669,6 +801,11 @@ export default function SingleChatPage() {
                   }
                   status={isSubmitting ? 'loading' : undefined}
                 />
+                {replyingTo && (
+                  <div className="ml-2 text-xs text-gray-500">
+                    ESC to cancel
+                  </div>
+                )}
               </ChatInputToolbar>
             </ChatInput>
           </div>
@@ -676,7 +813,21 @@ export default function SingleChatPage() {
       </Chat>
 
       {/* Lightbox for image viewing */}
-      <SilkLightbox ref={lightboxRef} images={[]} eventTitle="Chat Images" />
+      <LightboxViewer
+        selectedImage={selectedImageIndex}
+        onClose={() => setSelectedImageIndex(null)}
+        images={lightboxImages}
+        onImageChange={function (index: number): void {
+          setSelectedImageIndex(index);
+        }}
+        handleDelete={function (
+          photoId: string
+        ): Promise<{ success: boolean }> {
+          return Promise.resolve({ success: true });
+        }}
+        userId={''}
+        eventId={''}
+      />
     </div>
   );
 }
