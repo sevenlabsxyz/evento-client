@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { streamChatService } from '@/lib/services/stream-chat';
+import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { MessageCircle, Search } from 'lucide-react';
@@ -48,7 +49,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
     return following.slice(0, 5);
   }, [following]);
 
-  const listToRender = useMemo(() => {
+  const listToRender: UserDetails[] = useMemo(() => {
     if (debouncedSearch.trim().length >= 2) {
       return Array.isArray(searchResults) ? searchResults : [];
     }
@@ -124,7 +125,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                       </div>
                     </div>
                   ) : (
-                    listToRender.map((u: any, index: number) => (
+                    listToRender.map((u: UserDetails, index: number) => (
                       <div
                         key={u.id || `user-${index}`}
                         className='group flex items-center justify-between px-4 py-2 hover:bg-gray-100'
