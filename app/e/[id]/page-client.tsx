@@ -81,7 +81,8 @@ export default function EventDetailPageClient() {
       isAuthenticated &&
       rsvpParam &&
       eventIdParam === eventId &&
-      ['yes', 'maybe', 'no'].includes(rsvpParam)
+      ['yes', 'maybe', 'no'].includes(rsvpParam) &&
+      !upsertRsvp.isPending
     ) {
       // Process the pending RSVP action
       const hasExisting = !!userRsvpData?.rsvp;
@@ -118,7 +119,7 @@ export default function EventDetailPageClient() {
         }
       );
     }
-  }, [searchParams]);
+  }, [isAuthenticated, searchParams, userRsvpData, upsertRsvp]);
 
   // Fetch event data from API
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
