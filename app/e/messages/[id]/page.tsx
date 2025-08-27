@@ -25,10 +25,14 @@ import type {
 } from 'stream-chat';
 import { Channel, Chat } from 'stream-chat-react';
 
-import { ArrowLeft, Paperclip, Smile } from 'lucide-react';
+import { ArrowLeft, Paperclip, Plus, Smile } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
+import {
+  SilkLightbox,
+  type SilkLightboxRef,
+} from '@/components/ui/silk-lightbox/silk-lightbox';
 import { useTopBar } from '@/lib/stores/topbar-store';
 
 import '../chat-layout.css';
@@ -52,6 +56,7 @@ export default function SingleChatPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const lightboxRef = useRef<SilkLightboxRef>(null);
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   // Use Stream Chat from the provider
@@ -257,32 +262,131 @@ export default function SingleChatPage() {
     );
   };
 
+  // Handle lightbox opening
+  const openLightbox = (images: string[], initialIndex: number = 0) => {
+    lightboxRef.current?.open(initialIndex);
+  };
+
+  // Render multiple images with different layouts
+  const renderImageAttachments = (imageAttachments: any[]) => {
+    const imageUrls = imageAttachments.map(
+      (att) => att.image_url || att.thumb_url
+    );
+
+    if (imageAttachments.length === 1) {
+      const imageUrl = imageUrls[0];
+      return (
+        <img
+          src={imageUrl}
+          alt={imageAttachments[0].fallback || 'Image'}
+          className="max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90"
+          style={{ maxHeight: '200px' }}
+          onClick={() => openLightbox(imageUrls, 0)}
+        />
+      );
+    }
+
+    if (imageAttachments.length === 2) {
+      return (
+        <div className="flex max-w-xs gap-1">
+          {imageAttachments.map((attachment, index) => {
+            const imageUrl = attachment.image_url || attachment.thumb_url;
+            return (
+              <img
+                key={index}
+                src={imageUrl}
+                alt={attachment.fallback || `Image ${index + 1}`}
+                className="w-1/2 cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90"
+                style={{ height: '120px' }}
+                onClick={() => openLightbox(imageUrls, index)}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
+    if (imageAttachments.length === 3) {
+      return (
+        <div className="grid max-w-xs grid-cols-2 gap-1">
+          <img
+            src={imageUrls[0]}
+            alt={imageAttachments[0].fallback || 'Image 1'}
+            className="col-span-2 mx-auto cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90"
+            style={{ height: '120px' }}
+            onClick={() => openLightbox(imageUrls, 0)}
+          />
+          {imageAttachments.slice(1).map((attachment, index) => {
+            const imageUrl = attachment.image_url || attachment.thumb_url;
+            return (
+              <img
+                key={index + 1}
+                src={imageUrl}
+                alt={attachment.fallback || `Image ${index + 2}`}
+                className="cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90"
+                style={{
+                  height: '80px',
+                  width: '80px',
+                }}
+                onClick={() => openLightbox(imageUrls, index + 1)}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
+    // 4 or more images - 2x2 grid with overflow indicator
+    return (
+      <div className="grid max-w-xs grid-cols-2 gap-1">
+        {imageAttachments.slice(0, 3).map((attachment, index) => {
+          const imageUrl = attachment.image_url || attachment.thumb_url;
+          return (
+            <img
+              key={index}
+              src={imageUrl}
+              alt={attachment.fallback || `Image ${index + 1}`}
+              className="cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90"
+              style={{
+                height: '80px',
+                width: '80px',
+              }}
+              onClick={() => openLightbox(imageUrls, index)}
+            />
+          );
+        })}
+        <div
+          className="relative flex cursor-pointer items-center justify-center rounded-lg bg-black/50 transition-opacity hover:opacity-90"
+          style={{ height: '80px', width: '80px' }}
+          onClick={() => openLightbox(imageUrls, 3)}
+        >
+          {imageAttachments.length > 4 ? (
+            <>
+              <img
+                src={imageUrls[3]}
+                alt={imageAttachments[3].fallback || 'Image 4'}
+                className="absolute inset-0 h-full w-full rounded-lg object-cover opacity-50"
+              />
+              <div className="relative z-10 flex items-center gap-1 font-medium text-white">
+                <Plus className="h-4 w-4" />
+                <span className="text-sm">{imageAttachments.length - 3}</span>
+              </div>
+            </>
+          ) : (
+            <img
+              src={imageUrls[3]}
+              alt={imageAttachments[3].fallback || 'Image 4'}
+              className="h-full w-full rounded-lg object-cover"
+            />
+          )}
+        </div>
+      </div>
+    );
+  };
+
   // Render attachment preview
   const renderAttachment = (attachment: any) => {
-    if (attachment.type === 'image') {
-      const imageUrl = attachment.image_url || attachment.thumb_url;
-      if (isGif(imageUrl)) {
-        return (
-          <img
-            src={imageUrl}
-            alt={attachment.fallback || 'GIF'}
-            className="max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90"
-            style={{ maxHeight: '200px' }}
-            onClick={() => window.open(imageUrl, '_blank')}
-          />
-        );
-      } else {
-        return (
-          <img
-            src={imageUrl}
-            alt={attachment.fallback || 'Image'}
-            className="max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90"
-            style={{ maxHeight: '200px' }}
-            onClick={() => window.open(imageUrl, '_blank')}
-          />
-        );
-      }
-    } else if (attachment.type === 'file') {
+    if (attachment.type === 'file') {
       const fileUrl = attachment.asset_url;
       return (
         <div
@@ -437,13 +541,31 @@ export default function SingleChatPage() {
                       )}
                       {msg.attachments && msg.attachments.length > 0 && (
                         <div className="mt-1 space-y-1">
-                          {msg.attachments.map(
-                            (attachment: any, index: number) => (
-                              <div key={index}>
-                                {renderAttachment(attachment)}
-                              </div>
-                            )
-                          )}
+                          {(() => {
+                            const imageAttachments = msg.attachments.filter(
+                              (att: any) => att.type === 'image'
+                            );
+                            const fileAttachments = msg.attachments.filter(
+                              (att: any) => att.type === 'file'
+                            );
+
+                            return (
+                              <>
+                                {imageAttachments.length > 0 && (
+                                  <div>
+                                    {renderImageAttachments(imageAttachments)}
+                                  </div>
+                                )}
+                                {fileAttachments.map(
+                                  (attachment: any, index: number) => (
+                                    <div key={`file-${index}`}>
+                                      {renderAttachment(attachment)}
+                                    </div>
+                                  )
+                                )}
+                              </>
+                            );
+                          })()}
                         </div>
                       )}
                     </MessageContent>
@@ -473,39 +595,43 @@ export default function SingleChatPage() {
             <ChatInput onSubmit={handleSubmit}>
               {/* Attachment Previews */}
               {attachments.length > 0 && (
-                <div className="flex flex-wrap gap-2 border-b p-2">
-                  {attachments.map((file, index) => (
-                    <div key={index} className="relative">
-                      {file.type.startsWith('image/') ? (
-                        <div className="relative">
-                          <img
-                            src={URL.createObjectURL(file)}
-                            alt={file.name}
-                            className="h-16 w-16 rounded object-cover"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => removeAttachment(index)}
-                            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 rounded bg-gray-100 p-2 text-xs">
-                          <Paperclip className="h-3 w-3" />
-                          <span className="max-w-20 truncate">{file.name}</span>
-                          <button
-                            type="button"
-                            onClick={() => removeAttachment(index)}
-                            className="ml-1 text-red-500"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                <div className="max-w-full overflow-x-auto">
+                  <div className="flex w-max gap-2 border-b p-2">
+                    {attachments.map((file, index) => (
+                      <div key={index} className="relative flex-1">
+                        {file.type.startsWith('image/') ? (
+                          <div className="relative">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={file.name}
+                              className="h-16 w-16 rounded object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeAttachment(index)}
+                              className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 rounded bg-gray-100 p-2 text-xs">
+                            <Paperclip className="h-3 w-3" />
+                            <span className="max-w-20 truncate">
+                              {file.name}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeAttachment(index)}
+                              className="ml-1 text-red-500"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -548,6 +674,9 @@ export default function SingleChatPage() {
           </div>
         </Channel>
       </Chat>
+
+      {/* Lightbox for image viewing */}
+      <SilkLightbox ref={lightboxRef} images={[]} eventTitle="Chat Images" />
     </div>
   );
 }
