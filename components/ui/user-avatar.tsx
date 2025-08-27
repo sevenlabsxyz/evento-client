@@ -1,5 +1,6 @@
 'use client';
 
+import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { BadgeCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
@@ -11,7 +12,7 @@ interface UserAvatarProps {
     name?: string;
     username?: string;
     image?: string | null;
-    verification_status?: 'verified' | 'pending' | null | undefined;
+    verification_status?: VerificationStatus;
   };
   onAvatarClick?: () => void;
   onVerificationClick?: () => void;
@@ -64,6 +65,12 @@ export function UserAvatar({
 
   // Get the current size configuration
   const sizeConfig = sizeVariants[size];
+
+  const handleVerificationClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onVerificationClick?.();
+  };
+
   return (
     <button onClick={onAvatarClick} className={cn('relative', className)}>
       <Avatar
@@ -82,17 +89,17 @@ export function UserAvatar({
       </Avatar>
       {/* Verification Badge */}
       {user?.verification_status === 'verified' && (
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onVerificationClick?.();
-          }}
+        <span
+          role='button'
+          tabIndex={0}
+          aria-label='Verification badge'
+          onClick={handleVerificationClick}
           className={cn('absolute transition-transform hover:scale-105', sizeConfig.badgePosition)}
         >
           <BadgeCheck
             className={cn(sizeConfig.badge, 'rounded-full bg-red-600 text-white shadow-sm')}
           />
-        </button>
+        </span>
       )}
     </button>
   );
