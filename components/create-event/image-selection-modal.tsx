@@ -69,7 +69,7 @@ export default function ImageSelectionModal({
       {/* Content Area */}
       <div
         className='flex-1 overflow-y-auto'
-        style={{ height: isGifTab ? '100vh' : 'calc(100vh - 200px)' }} // No need provisioning space for bottom action button if GIF tab is active
+        style={{ height: isGifTab ? '100dvh' : 'calc(100dvh - 200px)' }} // No need provisioning space for bottom action button if GIF tab is active
       >
         <div className='px-4 pb-24'>
           {isGifTab ? (

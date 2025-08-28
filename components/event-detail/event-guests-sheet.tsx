@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
-import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -20,6 +20,15 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
+
+  const tabItems = useMemo(
+    () => [
+      { value: 'yes', label: 'Yes' },
+      { value: 'maybe', label: 'Maybe' },
+      { value: 'no', label: 'No' },
+    ],
+    []
+  );
 
   // Filter by search text first
   const filteredAll = useMemo(() => {
@@ -63,37 +72,11 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
 
                 {/* Tabs */}
                 <div className='mt-3 px-4'>
-                  <div className='flex items-center gap-2'>
-                    <button
-                      onClick={() => setActiveTab('yes')}
-                      className={cn(
-                        'rounded-xl px-3 py-2 text-sm transition-colors',
-                        activeTab === 'yes' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
-                      )}
-                    >
-                      Yes ({yesList.length})
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('maybe')}
-                      className={cn(
-                        'rounded-xl px-3 py-2 text-sm transition-colors',
-                        activeTab === 'maybe'
-                          ? 'bg-gray-900 text-white'
-                          : 'bg-gray-100 text-gray-700'
-                      )}
-                    >
-                      Maybe ({maybeList.length})
-                    </button>
-                    <button
-                      onClick={() => setActiveTab('no')}
-                      className={cn(
-                        'rounded-xl px-3 py-2 text-sm transition-colors',
-                        activeTab === 'no' ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-700'
-                      )}
-                    >
-                      No ({noList.length})
-                    </button>
-                  </div>
+                  <SegmentedTabs
+                    items={tabItems}
+                    value={activeTab}
+                    onValueChange={(v) => setActiveTab(v as typeof activeTab)}
+                  />
                 </div>
                 <VisuallyHidden.Root asChild>
                   <SheetWithDetentFull.Title>Guest List</SheetWithDetentFull.Title>

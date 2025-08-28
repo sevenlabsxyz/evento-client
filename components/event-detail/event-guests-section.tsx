@@ -1,14 +1,15 @@
 'use client';
 
 import GuestsSheet from '@/components/event-detail/event-guests-sheet';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { Share, UserPlus } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
+import { UserAvatar } from '../ui/user-avatar';
 
 interface GuestsSectionProps {
   eventId: string;
@@ -113,12 +114,12 @@ export default function EventGuestsSection({
           </div>
           <Button variant='outline' size='sm' onClick={handlePrimaryClick}>
             {isHostOrCoHost ? (
-              <span className='inline-flex items-center gap-1'>
-                Invite <span aria-hidden>→</span>
+              <span className='inline-flex items-center gap-2'>
+                <UserPlus className='h-4 w-4' /> Invite
               </span>
             ) : (
-              <span className='inline-flex items-center gap-1'>
-                Share Event <span aria-hidden>↗</span>
+              <span className='inline-flex items-center gap-2'>
+                <Share className='h-4 w-4' /> Share Event
               </span>
             )}
           </Button>
@@ -138,15 +139,15 @@ export default function EventGuestsSection({
                 r.user_details?.name || r.user_details?.username || 'guest'
               } details`}
             >
-              <Avatar className='h-10 w-10 border-2 border-white shadow'>
-                <AvatarImage
-                  src={r.user_details?.image || ''}
-                  alt={r.user_details?.name || r.user_details?.username || 'Guest'}
-                />
-                <AvatarFallback>
-                  <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={24} height={24} />
-                </AvatarFallback>
-              </Avatar>
+              <UserAvatar
+                user={{
+                  name: r.user_details?.name || undefined,
+                  username: r.user_details?.username || undefined,
+                  image: r.user_details?.image || undefined,
+                  verification_status: r.user_details?.verification_status || null,
+                }}
+                size='sm'
+              />
             </button>
           ))}
           {remaining > 0 && (

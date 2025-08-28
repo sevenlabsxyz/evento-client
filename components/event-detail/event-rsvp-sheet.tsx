@@ -1,11 +1,13 @@
 'use client';
 
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { RSVPStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Check, Loader2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
 import { DetachedSheet } from '../ui/detached-sheet';
 
@@ -16,6 +18,9 @@ interface RsvpSheetProps {
 }
 
 export default function RsvpSheet({ eventId, isOpen, onClose }: RsvpSheetProps) {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
   const { data, isLoading: isLoadingCurrent } = useUserRSVP(eventId);
   const upsert = useUpsertRSVP();
 
@@ -23,6 +28,15 @@ export default function RsvpSheet({ eventId, isOpen, onClose }: RsvpSheetProps) 
   const hasExisting = !!data?.rsvp;
 
   const handleAction = async (status: RSVPStatus) => {
+    // Check authentication first
+    if (!isAuthenticated) {
+      // Store the intended RSVP action in URL params and redirect to auth
+      const redirectUrl = `${pathname}?rsvp=${status}&eventId=${eventId}`;
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      onClose();
+      return;
+    }
+
     // If the user taps the same status, just close the sheet and do nothing
     if (status === currentStatus) {
       onClose();

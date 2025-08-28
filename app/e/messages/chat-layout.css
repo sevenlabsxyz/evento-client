@@ -10,14 +10,14 @@
 
 /* Mobile-first responsive layout */
 .str-chat__container {
-  height: calc(100vh - 80px); /* Account for bottom navbar */
+  height: calc(100dvh - 80px); /* Account for bottom navbar */
   display: flex;
   flex-direction: column;
 }
 
 /* Full height channel list for messages page */
 .str-chat__channel-list-container {
-  height: calc(100vh - 80px); /* Account for bottom navbar */
+  height: calc(100dvh - 80px); /* Account for bottom navbar */
   display: flex;
   flex-direction: column;
   overflow-x: hidden; /* Prevent horizontal scroll */
@@ -53,7 +53,7 @@
 @media screen and (min-width: 768px) {
   .str-chat__container,
   .str-chat__channel-list-container {
-    height: calc(100vh - 80px);
+    height: calc(100dvh - 80px);
   }
 
   .str-chat__channel-list {
@@ -147,6 +147,8 @@
 }
 
 .str-chat__avatar-fallback {
+  display: grid;
+  place-items: center;
   font-size: 18px;
   font-weight: 600;
   color: #6b7280;

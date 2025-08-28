@@ -188,7 +188,7 @@ export default function SingleChatPage() {
   }
 
   return (
-    <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
+    <div className='mx-auto flex h-[calc(100dvh-4rem)] max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
       {/* Chat Content */}
       <div className='flex-1 overflow-hidden'>
         <Chat client={client} theme='str-chat__theme-custom'>
