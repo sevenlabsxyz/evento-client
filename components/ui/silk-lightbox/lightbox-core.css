@@ -7,7 +7,7 @@
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: 100dvh !important;
   z-index: 9999 !important;
 }
 
@@ -16,7 +16,7 @@
   position: fixed !important;
   inset: 0 !important;
   width: 100vw !important;
-  height: 100vh !important;
+  height: 100dvh !important;
   background-color: rgba(0, 0, 0, 0.9) !important;
   z-index: -1;
 }
@@ -32,7 +32,7 @@
   /* SELF-LAYOUT */
   box-sizing: border-box;
   width: 100vw !important;
-  height: 100vh !important;
+  height: 100dvh !important;
   position: fixed !important;
   inset: 0 !important;
 
