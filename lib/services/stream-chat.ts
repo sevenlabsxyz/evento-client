@@ -1,3 +1,13 @@
+import {
+  ChannelMemberResponse,
+  ChannelResponse,
+  MessageResponse,
+  PendingMessageResponse,
+  PushPreference,
+  ReadResponse,
+  ThreadResponse,
+  UserResponse,
+} from 'stream-chat';
 import { apiClient } from '../api/client';
 import { Env } from '../constants/env';
 import { ApiResponse } from '../types/api';
@@ -29,8 +39,21 @@ export interface StreamChatUser {
 
 export interface DirectMessageChannelResponse {
   channel: StreamChatChannel;
-  channel_id: string;
-  exists: boolean;
+  result: {
+    duration: string;
+    channel: ChannelResponse;
+    members: ChannelMemberResponse[];
+    messages: MessageResponse[];
+    pinned_messages: MessageResponse[];
+    hidden?: boolean;
+    membership?: ChannelMemberResponse | null;
+    pending_messages?: PendingMessageResponse[];
+    push_preferences?: PushPreference;
+    read?: ReadResponse[];
+    threads?: ThreadResponse[];
+    watcher_count?: number;
+    watchers?: UserResponse[];
+  };
 }
 
 export const streamChatService = {
@@ -82,7 +105,7 @@ export const streamChatService = {
   ): Promise<DirectMessageChannelResponse> => {
     const response = await apiClient.post<ApiResponse<DirectMessageChannelResponse>>(
       '/v1/stream-chat/channels/direct-message',
-      { recipient_id: recipientId }
+      { recipientId }
     );
     return response.data;
   },

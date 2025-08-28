@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { streamChatService } from '@/lib/services/stream-chat';
+import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { MessageCircle, Search } from 'lucide-react';
@@ -47,7 +48,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
     return following.slice(0, 5);
   }, [following]);
 
-  const listToRender = useMemo(() => {
+  const listToRender: UserDetails[] = useMemo(() => {
     if (debouncedSearch.trim().length >= 2) {
       return Array.isArray(searchResults) ? searchResults : [];
     }
@@ -59,9 +60,9 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const handleStartChat = async (recipientId: string) => {
     try {
       const res = await streamChatService.createDirectMessageChannel(recipientId);
-      if (res?.channel_id) {
+      if (res?.channel?.id) {
         onClose();
-        router.push(`/e/messages/${res.channel_id}`);
+        router.push(`/e/messages/${res.channel.id}`);
       } else {
         toast.error('No channel id returned.', 'Unable to start chat');
       }
@@ -123,10 +124,10 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                       </div>
                     </div>
                   ) : (
-                    listToRender.map((u: any, index: number) => (
+                    listToRender.map((u: UserDetails, index: number) => (
                       <div
                         key={u.id || `user-${index}`}
-                        className='flex items-center justify-between px-4 py-2'
+                        className='group flex items-center justify-between px-4 py-2 hover:bg-gray-100'
                       >
                         <button
                           onClick={() => handleStartChat(u.id)}
@@ -153,6 +154,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                             variant='secondary'
                             size='icon'
                             onClick={() => handleStartChat(u.id)}
+                            className='group-hover:bg-gray-200'
                           >
                             <MessageCircle className='h-4 w-4' />
                           </Button>
