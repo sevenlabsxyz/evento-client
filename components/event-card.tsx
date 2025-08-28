@@ -3,6 +3,7 @@
 import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
 import { EventWithUser } from '@/lib/types/api';
+import { cn } from '@/lib/utils';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
 import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
@@ -27,9 +28,10 @@ interface EventCardProps {
   event: EventWithUser;
   onBookmark?: (eventId: string) => void;
   isBookmarked?: boolean;
+  className?: string;
 }
 
-export function EventCard({ event, onBookmark, isBookmarked = false }: EventCardProps) {
+export function EventCard({ event, onBookmark, isBookmarked = false, className }: EventCardProps) {
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
   const timeAgo = getRelativeTime(event.created_at);
@@ -85,7 +87,7 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
   };
 
   return (
-    <div className='bg-white'>
+    <div className={cn('bg-white', className)}>
       {/* Post Header */}
       <div className='flex items-center justify-between px-4 py-3'>
         <div className='flex items-center gap-3'>

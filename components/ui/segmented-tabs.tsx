@@ -38,7 +38,7 @@ export function SegmentedTabs({
           key={item.value}
           onClick={() => !item.disabled && onValueChange(item.value)}
           disabled={item.disabled}
-          role="tab"
+          role='tab'
           aria-selected={value === item.value}
           aria-controls={`tabpanel-${item.value}`}
           className={cn(

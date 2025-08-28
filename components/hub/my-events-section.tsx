@@ -1,44 +1,41 @@
 'use client';
 
-import { EventCompactItem } from '@/components/event-compact-item';
+import EventSearchSheet from '@/components/event-search-sheet';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
-import { cn } from '@/lib/utils';
-import { ArrowRight, Calendar, Grid3X3, List, Plus } from 'lucide-react';
+import { ArrowRight, Calendar, Plus, Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { EventCard } from '../event-card';
-
-type ViewMode = 'card' | 'list';
 
 export function MyEventsSection() {
   const router = useRouter();
   const { user } = useUserProfile();
   const [activeTab, setActiveTab] = useState<EventFilterType>('upcoming');
-  const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [loadedTabs, setLoadedTabs] = useState<EventFilterType[]>(['upcoming']);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Only load data for tabs that have been opened
   const upcomingQuery = useUserEvents({
     username: user?.username,
     filter: 'upcoming',
-    limit: 6,
+    limit: 10,
     enabled: loadedTabs.includes('upcoming'),
   });
 
   const hostingQuery = useUserEvents({
     username: user?.username,
     filter: 'hosting',
-    limit: 6,
+    limit: 10,
     enabled: loadedTabs.includes('hosting'),
   });
 
   const attendingQuery = useUserEvents({
     username: user?.username,
     filter: 'attending',
-    limit: 6,
+    limit: 10,
     enabled: loadedTabs.includes('attending'),
   });
 
@@ -66,25 +63,36 @@ export function MyEventsSection() {
   const events = currentQuery.data?.pages?.[0]?.events || [];
   const isLoading = currentQuery.isLoading;
 
+  const ctaLabel = useMemo(() => {
+    if (activeTab === 'upcoming') return 'View All Upcoming Events';
+    if (activeTab === 'hosting') return 'View All Hosting Events';
+    return 'View All Attending Events';
+  }, [activeTab]);
+
   const getTabCount = (tab: EventFilterType) => {
     switch (tab) {
       case 'upcoming':
-        return upcomingQuery.data?.pages?.[0]?.pagination?.totalCount || 0;
+        return upcomingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
       case 'hosting':
-        return hostingQuery.data?.pages?.[0]?.pagination?.totalCount || 0;
+        return hostingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
       case 'attending':
-        return attendingQuery.data?.pages?.[0]?.pagination?.totalCount || 0;
+        return attendingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
       default:
         return 0;
     }
   };
+
+  const totalCount = useMemo(
+    () => getTabCount(activeTab),
+    [activeTab, upcomingQuery.data, hostingQuery.data, attendingQuery.data]
+  );
 
   const handleCreateEvent = () => {
     router.push('/e/create');
   };
 
   const handleViewAll = () => {
-    router.push('/e/profile?tab=events');
+    setIsSheetOpen(true);
   };
 
   return (
@@ -93,34 +101,6 @@ export function MyEventsSection() {
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold'>My Events</h2>
         <div className='flex items-center gap-2'>
-          {/* View Toggle */}
-          <div className='flex rounded-lg border border-gray-200 p-1'>
-            <button
-              onClick={() => setViewMode('card')}
-              className={cn(
-                'rounded-md p-1.5 transition-colors',
-                viewMode === 'card'
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'text-gray-500 hover:text-gray-700'
-              )}
-              aria-label='Card view'
-            >
-              <Grid3X3 className='h-4 w-4' />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={cn(
-                'rounded-md p-1.5 transition-colors',
-                viewMode === 'list'
-                  ? 'bg-gray-100 text-gray-900'
-                  : 'text-gray-500 hover:text-gray-700'
-              )}
-              aria-label='List view'
-            >
-              <List className='h-4 w-4' />
-            </button>
-          </div>
-
           {/* Create Event Button */}
           <Button onClick={handleCreateEvent} size='sm' className='bg-red-500 hover:bg-red-600'>
             <Plus className='h-4 w-4' />
@@ -128,104 +108,152 @@ export function MyEventsSection() {
         </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as EventFilterType)}>
-        <TabsList className='mb-4 grid w-full grid-cols-3 bg-gray-100'>
-          <TabsTrigger value='upcoming' className='text-sm'>
-            Upcoming{' '}
-            {loadedTabs.includes('upcoming') &&
-              getTabCount('upcoming') > 0 &&
-              `(${getTabCount('upcoming')})`}
-          </TabsTrigger>
-          <TabsTrigger value='hosting' className='text-sm'>
-            Hosting{' '}
-            {loadedTabs.includes('hosting') &&
-              getTabCount('hosting') > 0 &&
-              `(${getTabCount('hosting')})`}
-          </TabsTrigger>
-          <TabsTrigger value='attending' className='text-sm'>
-            Attending{' '}
-            {loadedTabs.includes('attending') &&
-              getTabCount('attending') > 0 &&
-              `(${getTabCount('attending')})`}
-          </TabsTrigger>
-        </TabsList>
+      {/* Segmented Tabs */}
+      <SegmentedTabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as EventFilterType)}
+        items={[
+          {
+            value: 'upcoming',
+            label: 'Upcoming',
+          },
+          {
+            value: 'hosting',
+            label: 'Hosting',
+          },
+          {
+            value: 'attending',
+            label: 'Attending',
+          },
+        ]}
+      />
 
-        {/* Content */}
-        <div>
-          {isLoading ? (
-            <div className='space-y-3'>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className='h-20 animate-pulse rounded-lg bg-gray-100' />
-              ))}
-            </div>
-          ) : events.length === 0 ? (
-            <div className='flex flex-col items-center justify-center py-12 text-center'>
-              <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                <Calendar className='h-8 w-8 text-gray-400' />
-              </div>
-              <h3 className='mb-2 text-base font-semibold text-gray-900'>
-                {activeTab === 'upcoming' && 'No upcoming events'}
-                {activeTab === 'hosting' && "No events you're hosting"}
-                {activeTab === 'attending' && "No events you're attending"}
-              </h3>
-              <p className='mb-4 text-sm text-gray-500'>
-                {activeTab === 'upcoming' && 'Create your first event or RSVP to others'}
-                {activeTab === 'hosting' && 'Create an event to get started'}
-                {activeTab === 'attending' && 'RSVP to events to see them here'}
-              </p>
-              {activeTab !== 'attending' && (
-                <Button
-                  onClick={handleCreateEvent}
-                  size='sm'
-                  className='bg-red-500 hover:bg-red-600'
-                >
-                  <Plus className='mr-2 h-4 w-4' />
-                  Create Event
-                </Button>
-              )}
-            </div>
-          ) : (
-            <>
+      {/* Content */}
+      <div>
+        {isLoading ? (
+          // Skeleton loading
+          <div className='scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 py-1'>
+            {Array.from({ length: 4 }).map((_, i) => (
               <div
-                className={cn(
-                  viewMode === 'card' ? 'grid grid-cols-1 gap-3 sm:grid-cols-2' : 'space-y-2'
-                )}
+                key={`ske-${i}`}
+                className='w-[25rem] shrink-0 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm'
               >
-                {events.slice(0, 6).map((event) => {
-                  if (viewMode === 'card') {
-                    return (
-                      <div key={event.id} className='overflow-hidden rounded-2xl'>
-                        <EventCard event={event} />
-                      </div>
-                    );
-                  } else {
-                    return (
-                      <div key={event.id} className='overflow-hidden rounded-lg'>
-                        <EventCompactItem event={event} />
-                      </div>
-                    );
-                  }
-                })}
-              </div>
-
-              {/* View All Button */}
-              {events.length > 0 && (
-                <div className='mt-4 text-center'>
-                  <Button
-                    onClick={handleViewAll}
-                    variant='outline'
-                    size='sm'
-                    className='text-gray-600 hover:text-gray-900'
-                  >
-                    View All Events <ArrowRight className='h-4 w-4' />
-                  </Button>
+                {/* Header skeleton */}
+                <div className='flex items-center justify-between px-4 py-3'>
+                  <div className='flex items-center gap-3'>
+                    <div className='h-8 w-8 rounded-full bg-gray-100' />
+                    <div className='space-y-1'>
+                      <div className='h-3 w-28 rounded bg-gray-100' />
+                      <div className='h-2.5 w-36 rounded bg-gray-100' />
+                    </div>
+                  </div>
+                  <div className='h-8 w-8 rounded-full bg-gray-100' />
                 </div>
+                {/* Image skeleton */}
+                <div className='mx-auto aspect-square w-[calc(94%)] rounded-2xl bg-gray-100' />
+                {/* Body skeleton */}
+                <div className='px-4 py-3'>
+                  <div className='mb-2 h-5 w-3/4 rounded bg-gray-100' />
+                  <div className='mb-3 flex items-center gap-4 text-base text-gray-500'>
+                    <div className='h-3 w-24 rounded bg-gray-100' />
+                    <div className='h-3 w-20 rounded bg-gray-100' />
+                  </div>
+                  <div className='mb-3 h-3 w-40 rounded bg-gray-100' />
+                  <div className='flex items-center gap-4'>
+                    {Array.from({ length: 4 }).map((_, j) => (
+                      <div key={`act-${j}`} className='h-8 w-8 rounded-full bg-gray-100' />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : events.length === 0 ? (
+          <div className='flex flex-col items-center justify-center py-12 text-center'>
+            <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
+              <Calendar className='h-8 w-8 text-gray-400' />
+            </div>
+            <h3 className='mb-2 text-base font-semibold text-gray-900'>
+              {activeTab === 'upcoming' && 'No upcoming events'}
+              {activeTab === 'hosting' && "No events you're hosting"}
+              {activeTab === 'attending' && "No events you're attending"}
+            </h3>
+            <p className='mb-4 text-sm text-gray-500'>
+              {activeTab === 'upcoming' && 'Create your first event or RSVP to others'}
+              {activeTab === 'hosting' && 'Create an event to get started'}
+              {activeTab === 'attending' && 'RSVP to events to see them here'}
+            </p>
+            {activeTab !== 'attending' && (
+              <Button onClick={handleCreateEvent} size='sm' className='bg-red-500 hover:bg-red-600'>
+                <Plus className='mr-2 h-4 w-4' />
+                Create Event
+              </Button>
+            )}
+          </div>
+        ) : (
+          <>
+            <div className='scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 py-1'>
+              {events.slice(0, 10).map((event) => (
+                <div key={event.id} className='w-[25rem] shrink-0 overflow-hidden rounded-2xl'>
+                  <EventCard event={event} className='h-full w-full' />
+                </div>
+              ))}
+
+              {totalCount > events.length && (
+                <button
+                  onClick={handleViewAll}
+                  aria-label={ctaLabel}
+                  className='group relative w-[25rem] shrink-0 overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-white text-left shadow-sm transition hover:border-gray-300 hover:shadow-md'
+                >
+                  {/* Soft background gradient */}
+                  <div className='pointer-events-none absolute inset-0 bg-gradient-to-br from-red-50/70 via-transparent to-amber-50/70 opacity-80' />
+
+                  {/* Content */}
+                  <div className='relative flex h-full flex-col gap-3 p-4'>
+                    {/* Discover pill */}
+                    <div className='inline-flex items-center gap-2'>
+                      <div className='inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-600'>
+                        <Sparkles className='h-3.5 w-3.5 text-amber-500' />
+                        Discover more
+                      </div>
+                    </div>
+
+                    {/* Big count block mimicking EventCard image space */}
+                    <div className='mx-auto aspect-square w-full rounded-2xl border border-gray-200 bg-gray-100/80'>
+                      <div className='flex h-full w-full items-center justify-center'>
+                        <span className='text-5xl font-bold text-gray-700'>
+                          {/* +{Math.max(totalCount - Math.min(events.length, 10), 0)} */}
+                          +3
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Text and CTA below */}
+                    <div className='mt-1'>
+                      <div className='line-clamp-2 text-lg font-semibold leading-snug text-gray-900'>
+                        {ctaLabel}
+                      </div>
+                      <div className='mt-1 text-sm text-gray-600'>
+                        Explore the full list of your events.
+                      </div>
+                    </div>
+
+                    <div className='mt-auto inline-flex w-fit items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white transition group-hover:bg-red-600'>
+                      View all <ArrowRight className='h-4 w-4' />
+                    </div>
+                  </div>
+                </button>
               )}
-            </>
-          )}
-        </div>
-      </Tabs>
+            </div>
+          </>
+        )}
+        <EventSearchSheet
+          isOpen={isSheetOpen}
+          onClose={() => setIsSheetOpen(false)}
+          username={user?.username}
+          initialFilter={activeTab}
+        />
+      </div>
     </div>
   );
 }
