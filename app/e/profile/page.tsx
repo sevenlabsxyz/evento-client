@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -355,8 +356,9 @@ export default function ProfilePage() {
         {/* Events List */}
         <div className='space-y-8'>
           {isLoadingEvents ? (
-            <div className='flex h-40 items-center justify-center'>
-              <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+            <div className='space-y-4'>
+              <Skeleton className='h-5 w-24' />
+              <Skeleton variant='list' className='mt-2' />
             </div>
           ) : groupedEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
@@ -479,9 +481,10 @@ export default function ProfilePage() {
   // Show loading state while fetching user data
   if (isCheckingAuth || isUserLoading || !user) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm'>
-        <Loader2 className='h-8 w-8 animate-spin text-red-500' />
-        <p className='mt-2 text-gray-600'>Loading profile...</p>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex-1 overflow-y-auto bg-gray-50 p-6'>
+          <Skeleton variant='profile' />
+        </div>
       </div>
     );
   }

@@ -3,7 +3,8 @@
 import { APISheet } from '@/components/settings/api-sheet';
 import { ChangelogSheet } from '@/components/settings/changelog-sheet';
 import { ContactSheet } from '@/components/settings/contact-sheet';
-import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
@@ -27,8 +28,6 @@ export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
-  const { user, email } = useAuth();
-  console.log('user', email);
 
   // Set TopBar content
   useEffect(() => {
@@ -96,8 +95,104 @@ export default function SettingsPage() {
   if (isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        <div className='flex-1 overflow-y-auto bg-gray-50 px-0 pt-4'>
+          {/* GENERAL */}
+          <div className='mb-2 px-4'>
+            <Skeleton className='h-3 w-24' />
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+            <div className='border-b border-gray-100 p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-28' />
+                </div>
+                <Skeleton className='h-4 w-16' />
+              </div>
+            </div>
+            <div className='p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-24' />
+                </div>
+                <Skeleton className='h-4 w-20' />
+              </div>
+            </div>
+          </div>
+
+          {/* HELP CENTER */}
+          <div className='mb-2 px-4'>
+            <Skeleton className='h-3 w-28' />
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+            <div className='border-b border-gray-100 p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-32' />
+                </div>
+                <Skeleton className='h-4 w-4 rounded' />
+              </div>
+            </div>
+            <div className='p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-28' />
+                </div>
+                <Skeleton className='h-4 w-4 rounded' />
+              </div>
+            </div>
+          </div>
+
+          {/* ABOUT */}
+          <div className='mb-2 px-4'>
+            <Skeleton className='h-3 w-16' />
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className={`p-4 ${i < 3 ? 'border-b border-gray-100' : ''}`}>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-36' />
+                  </div>
+                  <Skeleton className='h-4 w-4 rounded' />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* DEVELOPER */}
+          <div className='mb-2 px-4'>
+            <Skeleton className='h-3 w-24' />
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+            <div className='border-b border-gray-100 p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-28' />
+                </div>
+                <Skeleton className='h-4 w-4 rounded' />
+              </div>
+            </div>
+            <div className='p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-32' />
+                </div>
+                <Skeleton className='h-4 w-4 rounded' />
+              </div>
+            </div>
+          </div>
+
+          {/* Version */}
+          <div className='px-4 pb-24 pt-6 text-center'>
+            <Skeleton className='mx-auto h-4 w-28' />
+          </div>
         </div>
       </div>
     );

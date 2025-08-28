@@ -1,11 +1,12 @@
 'use client';
 
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { getOptimizedImageUrl } from '@/lib/utils/image';
-import { ArrowLeft, Loader2, Plus, Share } from 'lucide-react';
+import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -20,10 +21,22 @@ export default function GalleryPage() {
 
   if (eventLoading || galleryLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='min-h-screen bg-gray-50'>
+        <div className='mx-auto max-w-full bg-white md:max-w-sm'>
+          <div className='space-y-4 p-6'>
+            {/* Header skeleton */}
+            <div className='flex items-center justify-between'>
+              <Skeleton className='h-8 w-8 rounded-full' />
+              <Skeleton className='h-6 w-32' />
+              <Skeleton className='h-8 w-8 rounded-full' />
+            </div>
+            {/* Gallery grid skeleton */}
+            <div className='grid grid-cols-2 gap-4'>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className='aspect-square w-full rounded-lg' />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );

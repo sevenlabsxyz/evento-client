@@ -6,6 +6,7 @@ import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useEventsFeed } from '@/lib/hooks/use-events-feed';
@@ -261,9 +262,31 @@ export default function FeedPage() {
   if (isLoading || isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        {/* Header skeleton */}
+        <div className='sticky top-0 z-10 flex items-center justify-between bg-white px-4 py-2 shadow-sm'>
+          <Skeleton className='h-8 w-20 rounded-full' />
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-8 w-20 rounded-full' />
+            <Skeleton className='h-8 w-20 rounded-full' />
+          </div>
         </div>
+
+        {/* Feed skeleton */}
+        <div className='flex-1 overflow-y-auto pb-20'>
+          <div className='px-4 pt-2'>
+            {/* Show skeletons matching current view mode */}
+            {useViewModeStore.getState().feedViewMode === 'compact' ? (
+              <Skeleton variant='list' />
+            ) : (
+              <div className='grid gap-6'>
+                <Skeleton variant='event-card' />
+                <Skeleton variant='event-card' />
+                <Skeleton variant='event-card' />
+              </div>
+            )}
+          </div>
+        </div>
+
         <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
@@ -477,8 +500,9 @@ export default function FeedPage() {
                       <div>
                         {isSearching ? (
                           // Loading state
-                          <div className='flex justify-center py-6'>
-                            <div className='h-6 w-6 animate-spin rounded-full border-b-2 border-red-500'></div>
+                          <div className='py-4'>
+                            <Skeleton className='mb-3 h-4 w-40' />
+                            <Skeleton variant='list' />
                           </div>
                         ) : searchResults.length > 0 ? (
                           // Results

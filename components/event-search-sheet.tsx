@@ -2,6 +2,7 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useAuth } from '@/lib/stores/auth-store';
 import { EventWithUser } from '@/lib/types/api';
@@ -168,12 +169,11 @@ export default function EventSearchSheet({
                   {isLoading ? (
                     // Loading State
                     Array.from({ length: 5 }).map((_, index) => (
-                      <div key={`loading-${index}`} className='flex items-center gap-3 p-4'>
-                        <div className='h-14 w-14 rounded-lg bg-gray-100' />
-                        <div className='flex flex-1 flex-col gap-2'>
-                          <div className='h-3 w-4/5 rounded-md bg-gray-100' />
-                          <div className='h-3 w-3/5 rounded-md bg-gray-100' />
-                        </div>
+                      <div
+                        key={`loading-${index}`}
+                        className='border-b border-gray-100 last:border-b-0'
+                      >
+                        <Skeleton variant='event-compact-item' />
                       </div>
                     ))
                   ) : error ? (

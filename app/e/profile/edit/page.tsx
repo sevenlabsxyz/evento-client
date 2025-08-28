@@ -7,21 +7,12 @@ import NostrSheet from '@/components/profile-edit/nostr-sheet';
 import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
 import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import {
-  AtSign,
-  Camera,
-  ChevronRight,
-  Hash,
-  Instagram,
-  Loader2,
-  Type,
-  User,
-  Zap,
-} from 'lucide-react';
+import { AtSign, Camera, ChevronRight, Hash, Instagram, Type, User, Zap } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -100,12 +91,90 @@ export default function EditProfilePage() {
 
   if (isLoading || isCheckingAuth || updateProfileMutation.isPending) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='flex items-center gap-2'>
-          <Loader2 className='h-6 w-6 animate-spin' />
-          <span>
-            {updateProfileMutation.isPending ? 'Saving profile...' : 'Loading profile...'}
-          </span>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4'>
+          {/* Profile Image Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-32' />
+                <Skeleton className='h-3 w-40' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Basic Info Module */}
+          <div className='space-y-4 rounded-2xl bg-white p-4'>
+            {/* Username */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-28' />
+                <Skeleton className='h-3 w-36' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Name */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-20' />
+                <Skeleton className='h-3 w-32' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Social Links Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-28' />
+                <Skeleton className='h-3 w-48' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Biography Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-24' />
+                <Skeleton className='h-3 w-56' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Bitcoin Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-20' />
+                <Skeleton className='h-3 w-40' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Nostr Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-16' />
+                <Skeleton className='h-3 w-36' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
         </div>
       </div>
     );

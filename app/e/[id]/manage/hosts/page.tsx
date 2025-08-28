@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Mail, Plus } from 'lucide-react';
@@ -56,10 +57,39 @@ export default function HostsManagementPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-4 p-4'>
+          {/* Event Creator Skeleton */}
+          <div className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+            <Skeleton className='h-12 w-12 rounded-full' />
+            <div className='flex-1 space-y-2'>
+              <div className='flex items-center gap-2'>
+                <Skeleton className='h-5 w-24' />
+                <Skeleton className='h-5 w-16 rounded-full' />
+              </div>
+              <Skeleton className='h-4 w-32' />
+            </div>
+          </div>
+
+          {/* Co-hosts Section Skeleton */}
+          <div className='space-y-3'>
+            <Skeleton className='h-6 w-20' />
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4'
+              >
+                <Skeleton className='h-12 w-12 rounded-full' />
+                <div className='flex-1 space-y-2'>
+                  <div className='flex items-center gap-2'>
+                    <Skeleton className='h-5 w-28' />
+                    <Skeleton className='h-5 w-16 rounded-full' />
+                  </div>
+                  <Skeleton className='h-4 w-36' />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

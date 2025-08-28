@@ -13,6 +13,7 @@ import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
@@ -25,7 +26,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { RSVPStatus } from '@/lib/types/api';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, Share } from 'lucide-react';
+import { Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -213,10 +214,9 @@ export default function EventDetailPageClient() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='min-h-screen bg-gray-50'>
+        <div className='mx-auto max-w-full bg-white md:max-w-sm'>
+          <Skeleton variant='event-details' />
         </div>
       </div>
     );

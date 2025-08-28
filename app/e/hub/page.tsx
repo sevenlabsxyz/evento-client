@@ -4,11 +4,11 @@ import { BlogSection } from '@/components/hub/blog-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Navbar } from '@/components/navbar';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HubPage() {
@@ -16,7 +16,6 @@ export default function HubPage() {
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
-  const pathname = usePathname();
 
   // Set TopBar content
   useEffect(() => {
@@ -44,9 +43,28 @@ export default function HubPage() {
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        <div className='mx-auto h-full w-full max-w-full bg-gray-50 px-4 pb-16 pt-4 md:max-w-sm'>
+          {/* Welcome text */}
+          <div className='mb-4'>
+            <Skeleton className='h-5 w-48' />
+          </div>
+          {/* Sections */}
+          <div className='flex flex-col gap-4'>
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-3 h-5 w-28' />
+              <Skeleton className='h-16 w-full rounded-lg' />
+            </div>
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-3 h-5 w-36' />
+              <Skeleton className='h-16 w-full rounded-lg' />
+            </div>
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-3 h-5 w-24' />
+              <Skeleton className='h-24 w-full rounded-lg' />
+            </div>
+          </div>
         </div>
+        <Navbar />
       </div>
     );
   }

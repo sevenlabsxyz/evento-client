@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { streamChatService } from '@/lib/services/stream-chat';
@@ -108,10 +109,10 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                   {isLoading ? (
                     Array.from({ length: 3 }).map((_, index) => (
                       <div key={`loading-${index}`} className='flex items-center px-4 py-3'>
-                        <div className='h-10 w-10 animate-pulse rounded-full bg-gray-200' />
+                        <Skeleton className='h-10 w-10 rounded-full' />
                         <div className='ml-3 flex-1'>
-                          <div className='h-3 w-40 animate-pulse rounded bg-gray-200' />
-                          <div className='mt-2 h-3 w-24 animate-pulse rounded bg-gray-200' />
+                          <Skeleton className='h-3 w-40' />
+                          <Skeleton className='mt-2 h-3 w-24' />
                         </div>
                       </div>
                     ))

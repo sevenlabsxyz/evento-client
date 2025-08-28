@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
@@ -79,10 +80,10 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                     // Loading State
                     Array.from({ length: 3 }).map((_, index) => (
                       <div key={`loading-${index}`} className='FollowersSheet-loadingContainer'>
-                        <div className='FollowersSheet-loadingAvatar' />
-                        <div className='FollowersSheet-loadingDetails'>
-                          <div className='FollowersSheet-loadingLine' />
-                          <div className='FollowersSheet-loadingLine FollowersSheet-loadingLine--short' />
+                        <Skeleton className='h-10 w-10 rounded-full' />
+                        <div className='flex-1 space-y-2'>
+                          <Skeleton className='h-4 w-40' />
+                          <Skeleton className='h-3 w-24' />
                         </div>
                       </div>
                     ))
