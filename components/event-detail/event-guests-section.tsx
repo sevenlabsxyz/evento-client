@@ -4,6 +4,8 @@ import GuestsSheet from '@/components/event-detail/event-guests-sheet';
 import { Button } from '@/components/ui/button';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { Share, UserPlus } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -112,12 +114,12 @@ export default function EventGuestsSection({
           </div>
           <Button variant='outline' size='sm' onClick={handlePrimaryClick}>
             {isHostOrCoHost ? (
-              <span className='inline-flex items-center gap-1'>
-                Invite <span aria-hidden>→</span>
+              <span className='inline-flex items-center gap-2'>
+                <UserPlus className='h-4 w-4' /> Invite
               </span>
             ) : (
-              <span className='inline-flex items-center gap-1'>
-                Share Event <span aria-hidden>↗</span>
+              <span className='inline-flex items-center gap-2'>
+                <Share className='h-4 w-4' /> Share Event
               </span>
             )}
           </Button>
