@@ -25,7 +25,7 @@ export interface UserDetails {
   instagram_handle?: string;
   ln_address?: string; // Lightning address
   nip05?: string; // Nostr identifier
-  verification_status: 'verified' | 'pending' | null;
+  verification_status: VerificationStatus;
   verification_date?: string;
 }
 
@@ -53,7 +53,7 @@ export type InviteItem =
       isEmailInvite: true;
       bio: string;
       image: string;
-      verification_status: 'verified' | 'pending' | null;
+      verification_status: VerificationStatus;
       bio_link?: string;
       x_handle?: string;
       instagram_handle?: string;

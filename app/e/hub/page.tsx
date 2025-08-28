@@ -2,13 +2,13 @@
 
 import { BlogSection } from '@/components/hub/blog-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
+import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Navbar } from '@/components/navbar';
-import RowCard from '@/components/row-card';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { MapPin } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HubPage() {
@@ -16,6 +16,7 @@ export default function HubPage() {
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
+  const pathname = usePathname();
 
   // Set TopBar content
   useEffect(() => {
@@ -52,12 +53,12 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16'>
+      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16 md:max-w-sm'>
         <div className='pt-4 text-left text-base text-gray-500'>
           Welcome back @{user?.username},
         </div>
         <div className='flex flex-col gap-4'>
-          <RowCard title='Travel Itinerary' icon={<MapPin />} isClickable />
+          <MyEventsSection />
           <EventInvitesSection />
           <BlogSection />
         </div>

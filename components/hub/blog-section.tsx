@@ -83,7 +83,7 @@ export function BlogSection() {
           </Link>
         </Button>
       </div>
-      <div className='grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-3'>
+      <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3'>
         {posts
           .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
           .slice(0, 3)

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { EventWithUser } from '@/lib/types/api';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
-import { getOptimizedAvatarUrl, getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
   Bookmark,
@@ -21,6 +21,7 @@ import {
   User,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { UserAvatar } from './ui/user-avatar';
 
 interface EventCardProps {
   event: EventWithUser;
@@ -84,18 +85,18 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
   };
 
   return (
-    <div className='mb-6 bg-white'>
+    <div className='bg-white'>
       {/* Post Header */}
       <div className='flex items-center justify-between px-4 py-3'>
         <div className='flex items-center gap-3'>
-          <img
-            src={
-              event.user_details.image
-                ? getOptimizedAvatarUrl(event.user_details.image)
-                : '/assets/img/evento-sublogo.svg'
-            }
-            alt={event.user_details.name || event.user_details.username}
-            className='h-10 w-10 rounded-full border border-gray-200 object-cover'
+          <UserAvatar
+            user={{
+              name: event.user_details.name || undefined,
+              username: event.user_details.username || undefined,
+              image: event.user_details.image || undefined,
+              verification_status: event.user_details.verification_status || null,
+            }}
+            size='sm'
           />
           <div>
             <p className='text-sm font-semibold'>
@@ -125,7 +126,11 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
       {/* Event Image - Square aspect ratio */}
       <div className='relative'>
         <img
-          src={isGif(event.cover) ? event.cover : getOptimizedCoverUrl(event.cover || '', 'feed')} // For GIFs, use a regular img tag to ensure they play automatically
+          src={
+            event.cover && isGif(event.cover)
+              ? event.cover
+              : getOptimizedCoverUrl(event.cover || '', 'feed')
+          }
           alt={event.title}
           className='mx-auto aspect-square w-[calc(94%)] cursor-pointer rounded-2xl object-cover shadow-md'
           onClick={handleEventClick}

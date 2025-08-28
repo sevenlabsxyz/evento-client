@@ -132,9 +132,9 @@ export function TopBar() {
 
     if (centerMode === 'title' && !isOverlaid) {
       return (
-        <div className='flex flex-1 flex-col gap-1'>
-          <h1 className='text-lg font-semibold text-gray-500'>{title}</h1>
-          {subtitle && <p className='text-sm text-gray-500'>{subtitle}</p>}
+        <div className='flex min-w-0 flex-1 flex-col gap-1'>
+          <h1 className='truncate text-lg font-semibold text-gray-500'>{title}</h1>
+          {subtitle && <p className='truncate text-sm text-gray-500'>{subtitle}</p>}
         </div>
       );
     }
@@ -199,7 +199,7 @@ export function TopBar() {
         <div
           className={`relative flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div className='flex items-center gap-3'>
+          <div className='flex min-w-0 items-center gap-3'>
             {renderLeftContent()}
             {centerMode !== 'logo' && renderCenterContent()}
           </div>
@@ -208,7 +208,7 @@ export function TopBar() {
           <div className='absolute left-1/2 -translate-x-1/2 transform'>
             {centerMode === 'logo' && renderCenterContent()}
           </div>
-          <div className='flex items-center gap-3'>
+          <div className='ml-3 flex items-center gap-3'>
             {buttons.length > 0 && (
               <div className='flex gap-3'>
                 {buttons.map((button) => {

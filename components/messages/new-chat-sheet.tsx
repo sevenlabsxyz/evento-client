@@ -1,17 +1,17 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { streamChatService } from '@/lib/services/stream-chat';
+import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { MessageCircle, Search } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
+import { UserAvatar } from '../ui/user-avatar';
 
 interface NewChatSheetProps {
   isOpen: boolean;
@@ -48,7 +48,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
     return following.slice(0, 5);
   }, [following]);
 
-  const listToRender = useMemo(() => {
+  const listToRender: UserDetails[] = useMemo(() => {
     if (debouncedSearch.trim().length >= 2) {
       return Array.isArray(searchResults) ? searchResults : [];
     }
@@ -60,9 +60,9 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const handleStartChat = async (recipientId: string) => {
     try {
       const res = await streamChatService.createDirectMessageChannel(recipientId);
-      if (res?.channel_id) {
+      if (res?.channel?.id) {
         onClose();
-        router.push(`/e/messages/${res.channel_id}`);
+        router.push(`/e/messages/${res.channel.id}`);
       } else {
         toast.error('No channel id returned.', 'Unable to start chat');
       }
@@ -124,35 +124,26 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                       </div>
                     </div>
                   ) : (
-                    listToRender.map((u: any, index: number) => (
+                    listToRender.map((u: UserDetails, index: number) => (
                       <div
                         key={u.id || `user-${index}`}
-                        className='flex items-center justify-between px-4 py-2'
+                        className='group flex items-center justify-between px-4 py-2 hover:bg-gray-100'
                       >
                         <button
                           onClick={() => handleStartChat(u.id)}
                           className='flex min-w-0 flex-1 items-center gap-3 text-left'
                         >
-                          <Avatar className='h-10 w-10'>
-                            <AvatarImage src={u.image || ''} alt={u.name || u.username} />
-                            <AvatarFallback>
-                              <Image
-                                src='/assets/img/evento-sublogo.svg'
-                                alt='Evento'
-                                width={32}
-                                height={32}
-                              />
-                            </AvatarFallback>
-                          </Avatar>
+                          <UserAvatar
+                            user={{
+                              name: u.name || undefined,
+                              username: u.username || undefined,
+                              image: u.image || undefined,
+                              verification_status: u.verification_status || null,
+                            }}
+                            size='sm'
+                          />
                           <div className='min-w-0 flex-1'>
-                            <div className='flex items-center gap-1'>
-                              <div className='truncate text-sm font-medium'>@{u.username}</div>
-                              {u.verification_status === 'verified' && (
-                                <div className='flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-red-500 text-xs font-semibold text-white'>
-                                  ✓
-                                </div>
-                              )}
-                            </div>
+                            <div className='truncate text-sm font-medium'>@{u.username}</div>
                             <div className='truncate text-xs text-gray-500'>
                               {u.name || u.username}
                             </div>
@@ -163,6 +154,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                             variant='secondary'
                             size='icon'
                             onClick={() => handleStartChat(u.id)}
+                            className='group-hover:bg-gray-200'
                           >
                             <MessageCircle className='h-4 w-4' />
                           </Button>

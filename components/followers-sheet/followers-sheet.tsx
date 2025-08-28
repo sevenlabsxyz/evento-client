@@ -1,15 +1,14 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { useUserFollowers } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
+import { UserAvatar } from '../ui/user-avatar';
 import './followers-sheet.css';
 
 interface FollowersSheetProps {
@@ -127,28 +126,20 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                             onClick={() => handleUserClick(follower.username)}
                             className='FollowersSheet-userButton'
                           >
-                            <Avatar className='FollowersSheet-userAvatar'>
-                              <AvatarImage
-                                src={follower.image || ''}
-                                alt={follower.name || follower.username}
-                              />
-                              <AvatarFallback>
-                                <Image
-                                  width={32}
-                                  height={32}
-                                  src='/assets/img/evento-sublogo.svg'
-                                  alt='Evento'
-                                />
-                              </AvatarFallback>
-                            </Avatar>
-                            <div className='FollowersSheet-userDetails'>
-                              <div className='FollowersSheet-userInfo'>
-                                <div className='FollowersSheet-username'>@{follower.username}</div>
-                                {follower.verification_status === 'verified' && (
-                                  <div className='FollowersSheet-verified'>✓</div>
-                                )}
+                            <UserAvatar
+                              user={{
+                                name: follower.name || undefined,
+                                username: follower.username || undefined,
+                                image: follower.image || undefined,
+                                verification_status: follower.verification_status || null,
+                              }}
+                              size='sm'
+                            />
+                            <div className='min-w-0 flex-1'>
+                              <div className='truncate text-sm font-medium'>
+                                @{follower.username}
                               </div>
-                              <div className='FollowersSheet-name'>
+                              <div className='truncate text-xs text-gray-500'>
                                 {follower.name || follower.username}
                               </div>
                             </div>
