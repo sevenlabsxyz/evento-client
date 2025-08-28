@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
@@ -227,8 +228,8 @@ export default function UserProfilePageClient() {
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm'>
-        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <Skeleton variant='profile' />
       </div>
     );
   }
@@ -482,8 +483,10 @@ export default function UserProfilePageClient() {
         {/* Events List */}
         <div className='space-y-8'>
           {isLoadingEvents ? (
-            <div className='flex h-40 items-center justify-center'>
-              <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+            <div className='space-y-3'>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton variant='event-compact-item' key={i} />
+              ))}
             </div>
           ) : groupedEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>

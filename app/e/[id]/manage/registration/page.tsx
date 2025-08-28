@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { ArrowLeft, GripVertical, Plus, Settings, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -39,10 +40,41 @@ export default function RegistrationQuestionsPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Registration Settings Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-32' />
+                <Skeleton className='h-4 w-48' />
+              </div>
+            </div>
+            <div className='space-y-4'>
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className='flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4'
+                >
+                  <div className='space-y-1'>
+                    <Skeleton className='h-4 w-24' />
+                    <Skeleton className='h-3 w-32' />
+                  </div>
+                  <Skeleton className='h-6 w-12 rounded-full' />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-40' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-2/3' />
+          </div>
         </div>
       </div>
     );

@@ -9,6 +9,7 @@ import LocationModal from '@/components/create-event/location-modal';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { apiEventSchema } from '@/lib/schemas/event';
@@ -19,7 +20,7 @@ import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, Check, ChevronRight, Edit3, Globe, Loader2, Lock, MapPin } from 'lucide-react';
+import { Calendar, Check, ChevronRight, Edit3, Globe, Lock, MapPin } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -156,10 +157,56 @@ export default function EditEventDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='flex items-center gap-2'>
-          <Loader2 className='h-6 w-6 animate-spin' />
-          <span>Loading event details...</span>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-4 p-4'>
+          {/* Cover image skeleton */}
+          <Skeleton className='aspect-video w-full rounded-2xl' />
+
+          {/* Form sections skeleton */}
+          <div className='space-y-4 rounded-2xl bg-gray-50 p-4'>
+            {/* Title section */}
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-2 h-4 w-20' />
+              <div className='flex items-center gap-3'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-6 flex-1' />
+              </div>
+            </div>
+
+            {/* Date & time section */}
+            <div className='space-y-4 rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-4 w-16' />
+                <div className='flex flex-1 gap-2'>
+                  <Skeleton className='h-10 flex-1 rounded-lg' />
+                  <Skeleton className='h-10 w-20 rounded-lg' />
+                </div>
+              </div>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-4 w-16' />
+                <div className='flex flex-1 gap-2'>
+                  <Skeleton className='h-10 flex-1 rounded-lg' />
+                  <Skeleton className='h-10 w-20 rounded-lg' />
+                </div>
+              </div>
+            </div>
+
+            {/* Other sections */}
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className='rounded-2xl bg-white p-4'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <div className='flex-1'>
+                    <Skeleton className='mb-2 h-4 w-16' />
+                    <Skeleton className='h-5 w-32' />
+                  </div>
+                  <Skeleton className='h-4 w-4' />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -389,26 +436,24 @@ export default function EditEventDetailsPage() {
         isOpen={showStartTimeModal}
         onClose={() => setShowStartTimeModal(false)}
         onTimeSelect={setStartTime}
-        onTimezoneClick={() => {
-          setShowStartTimeModal(false);
-          setShowTimezoneModal(true);
-        }}
         selectedTime={startTime}
         timezone={timezone}
         title='Start Time'
+        onTimezoneSelect={function (timezone: string): void {
+          setTimezone(timezone);
+        }}
       />
 
       <TimePickerSheet
         isOpen={showEndTimeModal}
         onClose={() => setShowEndTimeModal(false)}
         onTimeSelect={setEndTime}
-        onTimezoneClick={() => {
-          setShowEndTimeModal(false);
-          setShowTimezoneModal(true);
-        }}
         selectedTime={endTime}
         timezone={timezone}
         title='End Time'
+        onTimezoneSelect={function (timezone: string): void {
+          setTimezone(timezone);
+        }}
       />
 
       <TimezoneSheet

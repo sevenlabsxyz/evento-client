@@ -3,6 +3,7 @@
 import type React from 'react';
 
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useContactSupport } from '@/lib/hooks/use-contact-support';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -76,8 +77,29 @@ export default function ContactPage() {
   if (isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        {/* Contact Page Loading Skeleton */}
+        <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6'>
+          {/* Title Field Skeleton */}
+          <div className='space-y-2 rounded-2xl bg-white p-4'>
+            <Skeleton className='h-4 w-24' />
+            <Skeleton className='h-7 w-3/4' />
+          </div>
+
+          {/* Message Field Skeleton */}
+          <div className='space-y-2 rounded-2xl bg-white p-4'>
+            <Skeleton className='h-4 w-24' />
+            <div className='space-y-2'>
+              <Skeleton className='h-4 w-full' />
+              <Skeleton className='h-4 w-11/12' />
+              <Skeleton className='h-4 w-10/12' />
+              <Skeleton className='h-4 w-9/12' />
+            </div>
+          </div>
+
+          {/* Submit Button Skeleton */}
+          <div className='pt-4'>
+            <Skeleton className='h-11 w-full rounded-xl' />
+          </div>
         </div>
       </div>
     );

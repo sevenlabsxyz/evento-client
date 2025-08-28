@@ -2,6 +2,7 @@
 
 import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { toast } from '@/lib/utils/toast';
 import { Scroll } from '@silk-hq/components';
@@ -168,7 +169,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                   {isLoadingRelated ? (
                     <div className='grid grid-cols-1 gap-6'>
                       {[...Array(3)].map((_, i) => (
-                        <div key={i} className='h-64 animate-pulse rounded-2xl bg-gray-100'></div>
+                        <Skeleton key={i} className='h-64 rounded-2xl' />
                       ))}
                     </div>
                   ) : (

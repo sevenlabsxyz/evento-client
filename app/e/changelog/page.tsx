@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Bug, Calendar, Shield, Sparkles, Zap } from 'lucide-react';
@@ -169,8 +170,42 @@ export default function ChangelogPage() {
   if (isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        {/* Changelog Loading Skeleton */}
+        <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6'>
+          {[0, 1, 2].map((i) => (
+            <div key={i} className='overflow-hidden rounded-2xl bg-white shadow-sm'>
+              {/* Version Header */}
+              <div className='border-b border-gray-100 p-4'>
+                <div className='mb-2 flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-6 w-24' />
+                    <Skeleton className='h-5 w-14 rounded-full' />
+                  </div>
+                  {i === 0 && <Skeleton className='h-5 w-14 rounded-full' />}
+                </div>
+                <div className='flex items-center gap-2'>
+                  <Skeleton className='h-4 w-4 rounded' />
+                  <Skeleton className='h-4 w-32' />
+                </div>
+              </div>
+              {/* Changes */}
+              <div className='space-y-4 p-4'>
+                {[0, 1].map((j) => (
+                  <div key={j}>
+                    <div className='mb-3 flex items-center gap-2'>
+                      <Skeleton className='h-4 w-4 rounded' />
+                      <Skeleton className='h-4 w-28' />
+                    </div>
+                    <div className='ml-6 space-y-2'>
+                      <Skeleton className='h-4 w-10/12' />
+                      <Skeleton className='h-4 w-9/12' />
+                      <Skeleton className='h-4 w-8/12' />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );

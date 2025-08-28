@@ -4,6 +4,7 @@ import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -122,10 +123,38 @@ export default function ContributionsManagementPage() {
   // Conditional returns MUST come after all hooks
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Contribution Settings Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-24' />
+                <Skeleton className='h-4 w-40' />
+              </div>
+            </div>
+            <div className='space-y-4'>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-20' />
+                <Skeleton className='h-12 w-full rounded-xl' />
+              </div>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-28' />
+                <Skeleton className='h-24 w-full rounded-xl' />
+              </div>
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-32' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-3/4' />
+          </div>
         </div>
       </div>
     );

@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
@@ -77,10 +78,30 @@ export default function GuestListPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-4 p-4'>
+          {/* Search bar skeleton */}
+          <Skeleton className='h-12 w-full rounded-xl' />
+
+          {/* Tabs skeleton */}
+          <div className='flex space-x-1'>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <Skeleton key={i} className='h-10 w-20 rounded-lg' />
+            ))}
+          </div>
+
+          {/* Guest list skeleton */}
+          <div className='space-y-3'>
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+                <Skeleton className='h-12 w-12 rounded-full' />
+                <div className='flex-1 space-y-2'>
+                  <Skeleton className='h-4 w-32' />
+                  <Skeleton className='h-3 w-24' />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

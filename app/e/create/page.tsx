@@ -17,6 +17,7 @@ import MoreFormattingSheet from '@/components/create-event/more-formatting-sheet
 import TextStylesSheet from '@/components/create-event/text-styles-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
+import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useCreateEventWithCallbacks } from '@/lib/hooks/use-create-event';
@@ -264,8 +265,111 @@ export default function CreatePage() {
   if (isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        {/* Create Page Loading Skeleton */}
+        <div className='flex-1 overflow-y-auto pb-24'>
+          <div className='mb-2 mt-2 px-4'>
+            {/* Cover image selector area */}
+            <Skeleton className='h-40 w-full rounded-2xl' />
+          </div>
+
+          <div className='space-y-4 bg-gray-50 px-4 pt-4'>
+            {/* Title */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='mb-2 h-4 w-24'>
+                <Skeleton className='h-4 w-24' />
+              </div>
+              <div className='flex items-center gap-3'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-6 w-2/3' />
+              </div>
+            </div>
+
+            {/* Date & Time */}
+            <div className='space-y-4 rounded-2xl bg-white p-4'>
+              {[0, 1].map((i) => (
+                <div key={i} className='flex items-center gap-4'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-16' />
+                  <div className='flex flex-1 gap-2'>
+                    <Skeleton className='h-8 w-full rounded-lg' />
+                    <Skeleton className='h-8 w-24 rounded-lg' />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Address */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <div className='flex-1'>
+                  <div className='mb-2 h-4 w-20'>
+                    <Skeleton className='h-4 w-20' />
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <Skeleton className='h-5 w-40' />
+                    <Skeleton className='h-4 w-4 rounded' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Visibility */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <div className='flex-1'>
+                  <div className='mb-2 h-4 w-24'>
+                    <Skeleton className='h-4 w-24' />
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <Skeleton className='h-5 w-20' />
+                    <Skeleton className='h-4 w-4 rounded' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Capacity */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center justify-between gap-4'>
+                <div className='flex flex-1 items-center gap-4'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <div className='flex-1'>
+                    <Skeleton className='mb-1 h-4 w-28' />
+                    <Skeleton className='h-3 w-40' />
+                  </div>
+                </div>
+                <Skeleton className='h-6 w-12 rounded-full' />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-start gap-4'>
+                <Skeleton className='mt-1 h-8 w-8 rounded-lg' />
+                <div className='flex-1'>
+                  <Skeleton className='mb-2 h-4 w-24' />
+                  <Skeleton className='h-5 w-3/4' />
+                </div>
+              </div>
+            </div>
+
+            {/* Attachments */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-5 w-56' />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
+          <div className='mx-auto max-w-full md:max-w-sm'>
+            <Skeleton className='h-10 w-full rounded-xl' />
+          </div>
         </div>
       </div>
     );

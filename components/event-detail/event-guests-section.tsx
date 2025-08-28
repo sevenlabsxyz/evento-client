@@ -2,6 +2,7 @@
 
 import GuestsSheet from '@/components/event-detail/event-guests-sheet';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { Share, UserPlus } from 'lucide-react';
@@ -49,16 +50,16 @@ export default function EventGuestsSection({
       <div className='border-t border-gray-100 py-6'>
         <div className='mb-3 flex items-start justify-between'>
           <div>
-            <div className='h-5 w-28 animate-pulse rounded bg-gray-200' />
-            <div className='mt-2 h-4 w-20 animate-pulse rounded bg-gray-200' />
+            <Skeleton className='h-5 w-28' />
+            <Skeleton className='mt-2 h-4 w-20' />
           </div>
-          <div className='h-8 w-24 animate-pulse rounded-md bg-gray-200' />
+          <Skeleton className='h-8 w-24 rounded-md' />
         </div>
         <div className='flex items-center'>
           {Array.from({ length: 4 }).map((_, idx) => (
-            <div
+            <Skeleton
               key={idx}
-              className='relative h-10 w-10 animate-pulse rounded-full border-2 border-white bg-gray-200'
+              className='relative h-10 w-10 rounded-full border-2 border-white'
               style={{ marginLeft: idx > 0 ? -8 : 0, zIndex: 4 - idx }}
             />
           ))}

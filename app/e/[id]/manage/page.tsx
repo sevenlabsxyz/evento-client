@@ -1,13 +1,13 @@
 'use client';
 
 import CancelEventModal from '@/components/manage-event/cancel-event-modal';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   DollarSign,
   FileText,
   Layers,
-  Loader2,
   Mail,
   MessageCircle,
   Music,
@@ -139,10 +139,32 @@ export default function ManageEventPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          {/* Action buttons skeleton */}
+          <div className='flex gap-2'>
+            <Skeleton className='h-16 flex-1 rounded-xl' />
+          </div>
+          {/* Management options skeleton */}
+          <div className='space-y-1'>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+                <Skeleton className='h-12 w-12 rounded-xl' />
+                <div className='flex-1 space-y-2'>
+                  <Skeleton className='h-4 w-32' />
+                  <Skeleton className='h-3 w-48' />
+                </div>
+                <Skeleton className='h-5 w-5' />
+              </div>
+            ))}
+          </div>
+          {/* Cancel button skeleton */}
+          <div className='pt-6'>
+            <div className='flex items-center gap-3 rounded-xl p-4'>
+              <Skeleton className='h-5 w-5' />
+              <Skeleton className='h-4 w-24' />
+            </div>
+          </div>
         </div>
       </div>
     );

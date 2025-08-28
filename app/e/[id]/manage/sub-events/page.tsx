@@ -2,10 +2,11 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
-import { Loader2, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -61,9 +62,22 @@ export default function SubEventsManagementPage() {
       <div className='p-4'>
         {/* List / states */}
         {isLoading ? (
-          <div className='flex items-center justify-center py-6'>
-            <Loader2 className='h-5 w-5 animate-spin text-gray-500' />
-            <span className='ml-2 text-sm text-gray-500'>Loading sub events...</span>
+          <div className='space-y-2'>
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className='flex items-center justify-between rounded-xl border border-gray-100 p-3'
+              >
+                <div className='flex flex-1 items-center gap-3'>
+                  <Skeleton className='h-12 w-12 rounded-lg' />
+                  <div className='flex-1'>
+                    <Skeleton className='mb-2 h-4 w-2/3' />
+                    <Skeleton className='h-3 w-1/2' />
+                  </div>
+                </div>
+                <Skeleton className='h-9 w-9 rounded-full' />
+              </div>
+            ))}
           </div>
         ) : subEvents.length > 0 ? (
           <div className='space-y-2'>

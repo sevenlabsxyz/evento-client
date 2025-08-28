@@ -3,6 +3,7 @@
 import { Navbar } from '@/components/navbar';
 import { NotificationFilters } from '@/components/notifications/notification-filters';
 import { NotificationList } from '@/components/notifications/notification-list';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import {
   useArchiveNotification,
@@ -261,8 +262,37 @@ export default function InboxPage() {
   if (isCheckingAuth || isLoading) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        {/* Filters skeleton */}
+        <div className='px-4 pt-4'>
+          <div className='mb-3 flex items-center gap-2'>
+            <Skeleton className='h-9 w-24 rounded-lg' />
+            <Skeleton className='h-9 w-24 rounded-lg' />
+            <Skeleton className='h-9 w-24 rounded-lg' />
+          </div>
+          <div className='mb-3 flex items-center justify-between'>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-8 w-20 rounded-md' />
+              <Skeleton className='h-8 w-28 rounded-md' />
+            </div>
+            <div className='flex items-center gap-2'>
+              <Skeleton className='h-8 w-8 rounded-full' />
+              <Skeleton className='h-8 w-8 rounded-full' />
+            </div>
+          </div>
+        </div>
+
+        {/* List skeleton */}
+        <div className='flex-1 overflow-y-auto px-4 pb-24'>
+          <Skeleton variant='list' />
+        </div>
+
+        {/* Bottom Navbar placeholder */}
+        <div className='border-t border-gray-100 bg-white p-2'>
+          <div className='mx-auto flex max-w-sm items-center justify-around'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className='h-8 w-8 rounded-full' />
+            ))}
+          </div>
         </div>
       </div>
     );

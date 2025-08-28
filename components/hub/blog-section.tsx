@@ -2,6 +2,7 @@
 
 import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
@@ -62,7 +63,7 @@ export function BlogSection() {
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
           {[...Array(3)].map((_, i) => (
-            <div key={i} className='h-64 animate-pulse rounded-lg bg-gray-100'></div>
+            <Skeleton key={i} className='h-64 rounded-lg' />
           ))}
         </div>
       </div>

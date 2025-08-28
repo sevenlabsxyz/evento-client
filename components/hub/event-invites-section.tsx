@@ -2,6 +2,7 @@
 
 import EventRSVPSheet from '@/components/event-detail/event-rsvp-sheet';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { ArrowRight, Calendar } from 'lucide-react';
@@ -30,10 +31,7 @@ export function EventInvitesSection() {
         </div>
         <div className='flex gap-4 overflow-x-auto pb-2'>
           {[...Array(2)].map((_, i) => (
-            <div
-              key={i}
-              className='h-40 w-72 flex-shrink-0 animate-pulse rounded-2xl bg-gray-100'
-            />
+            <Skeleton key={i} className='h-40 w-72 flex-shrink-0 rounded-2xl' />
           ))}
         </div>
       </div>
