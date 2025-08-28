@@ -18,23 +18,36 @@ import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventHosts } from '@/lib/hooks/use-event-hosts';
 import { useEventWeather } from '@/lib/hooks/use-event-weather';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
+import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { RSVPStatus } from '@/lib/types/api';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { toast } from '@/lib/utils/toast';
 import { Loader2, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export default function EventDetailPageClient() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
   const eventId = params.id as string;
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
+
+  // RSVP hooks for handling post-auth RSVP processing
+  const {
+    data: userRsvpData,
+    isLoading: isUserRsvpLoading,
+    isFetching: isUserRsvpFetching,
+  } = useUserRSVP(eventId);
+  const upsertRsvp = useUpsertRSVP();
+  const hasProcessedPendingRsvpRef = useRef(false);
 
   // Handle tab changes and update URL
   const handleTabChange = (tab: string) => {
@@ -63,6 +76,71 @@ export default function EventDetailPageClient() {
       setActiveTab('details');
     }
   }, [searchParams]);
+
+  // Handle post-authentication RSVP processing
+  useEffect(() => {
+    const rsvpParam = searchParams.get('rsvp') as RSVPStatus | null;
+    const eventIdParam = searchParams.get('eventId');
+
+    const hasPendingParam = !!rsvpParam && ['yes', 'maybe', 'no'].includes(rsvpParam);
+    if (!isAuthenticated || !hasPendingParam || eventIdParam !== eventId) return;
+
+    // Prevent double-processing on rerenders or search param changes
+    if (hasProcessedPendingRsvpRef.current) return;
+
+    // Avoid overlapping mutations
+    if (upsertRsvp.isPending || upsertRsvp.isSuccess) return;
+
+    // Wait until user RSVP query has settled so we know if an RSVP exists
+    const querySettled = !isUserRsvpLoading && !isUserRsvpFetching;
+    if (!querySettled) return;
+
+    hasProcessedPendingRsvpRef.current = true;
+    const hasExisting = !!userRsvpData?.rsvp;
+
+    upsertRsvp.mutate(
+      { eventId, status: rsvpParam as RSVPStatus, hasExisting },
+      {
+        onSuccess: () => {
+          const msg =
+            rsvpParam === 'yes'
+              ? "You're going"
+              : rsvpParam === 'maybe'
+                ? 'Marked as maybe'
+                : 'You are not going';
+          toast.success(msg);
+
+          // Clean up URL params
+          const newParams = new URLSearchParams(searchParams);
+          newParams.delete('rsvp');
+          newParams.delete('eventId');
+          const newUrl = newParams.toString() ? `${pathname}?${newParams.toString()}` : pathname;
+          router.replace(newUrl, { scroll: false });
+        },
+        onError: () => {
+          toast.error('Failed to update RSVP. Please try again.');
+
+          // Clean up URL params even on error
+          const newParams = new URLSearchParams(searchParams);
+          newParams.delete('rsvp');
+          newParams.delete('eventId');
+          const newUrl = newParams.toString() ? `${pathname}?${newParams.toString()}` : pathname;
+          router.replace(newUrl, { scroll: false });
+        },
+      }
+    );
+  }, [
+    isAuthenticated,
+    searchParams,
+    eventId,
+    pathname,
+    router,
+    upsertRsvp.isPending,
+    upsertRsvp.isSuccess,
+    isUserRsvpLoading,
+    isUserRsvpFetching,
+    userRsvpData,
+  ]);
 
   // Fetch event data from API
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
