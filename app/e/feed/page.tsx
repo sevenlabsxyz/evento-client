@@ -6,18 +6,18 @@ import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useEventsFeed } from '@/lib/hooks/use-events-feed';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useViewModeStore } from '@/lib/stores/view-mode-store';
-import { EventWithUser, UserDetails, UserSearchResult } from '@/lib/types/api';
+import { EventWithUser, UserDetails, UserSearchResult, VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import {
   ArrowDownAZ,
-  BadgeCheck,
   Bookmark,
   Calendar,
   Check,
@@ -484,7 +484,7 @@ export default function FeedPage() {
                             <h3 className='mb-4 text-sm font-semibold text-gray-900'>
                               Results for "{searchText}"
                             </h3>
-                            <div className='space-y-3'>
+                            <div className='space-y-2'>
                               {searchResults.map((user) => (
                                 <div
                                   key={user.id}
@@ -496,22 +496,22 @@ export default function FeedPage() {
                                     setShowSearchSheet(false);
                                   }}
                                 >
-                                  <img
-                                    src={user.image || '/assets/img/evento-sublogo.svg'}
-                                    alt={user.name}
-                                    className='h-12 w-12 rounded-full object-cover'
+                                  <UserAvatar
+                                    user={{
+                                      name: user.name || undefined,
+                                      username: user.username || undefined,
+                                      image: user.image || undefined,
+                                      verification_status:
+                                        (user.verification_status as VerificationStatus) || null,
+                                    }}
+                                    size='sm'
                                   />
                                   <div className='min-w-0 flex-1'>
-                                    <h4 className='truncate font-medium text-gray-900'>
-                                      {user.name}
-                                    </h4>
-                                    <div className='flex items-center gap-1 text-sm text-gray-500'>
-                                      <span className='text-gray-400'>@{user.username}</span>
-                                      {user.verification_status === 'verified' && (
-                                        <span className='ml-1'>
-                                          <BadgeCheck className='h-3 w-3 rounded-full bg-red-600 text-white shadow-sm' />
-                                        </span>
-                                      )}
+                                    <div className='truncate text-sm font-medium'>
+                                      @{user.username}
+                                    </div>
+                                    <div className='truncate text-xs text-gray-500'>
+                                      {user.name || user.username}
                                     </div>
                                   </div>
                                 </div>
@@ -542,32 +542,32 @@ export default function FeedPage() {
                                 </button>
                               )}
                             </div>
-                            <div className='space-y-3'>
+                            <div className='space-y-2'>
                               {recentSearches.map((user) => (
                                 <div
                                   key={user.id}
-                                  className='flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50'
+                                  className='flex cursor-pointer items-center gap-3 rounded-xl p-1 transition-colors hover:bg-gray-50'
                                   onClick={() => {
                                     setSelectedUser(user);
                                     setShowSearchSheet(false);
                                   }}
                                 >
-                                  <img
-                                    src={user.image || '/assets/img/evento-sublogo.svg'}
-                                    alt={user.name}
-                                    className='h-10 w-10 rounded-full object-cover'
+                                  <UserAvatar
+                                    user={{
+                                      name: user.name || undefined,
+                                      username: user.username || undefined,
+                                      image: user.image || undefined,
+                                      verification_status:
+                                        (user.verification_status as VerificationStatus) || null,
+                                    }}
+                                    size='sm'
                                   />
                                   <div className='min-w-0 flex-1'>
-                                    <h4 className='truncate font-medium text-gray-900'>
-                                      {user.name}
-                                    </h4>
-                                    <div className='flex items-center gap-1 text-sm text-gray-500'>
-                                      <span className='text-gray-400'>@{user.username}</span>
-                                      {user.verification_status === 'verified' && (
-                                        <span className='ml-1'>
-                                          <BadgeCheck className='h-3 w-3 rounded-full bg-red-600 text-white shadow-sm' />
-                                        </span>
-                                      )}
+                                    <div className='truncate text-sm font-medium'>
+                                      @{user.username}
+                                    </div>
+                                    <div className='truncate text-xs text-gray-500'>
+                                      {user.name || user.username}
                                     </div>
                                   </div>
                                 </div>

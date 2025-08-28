@@ -845,7 +845,7 @@ export default function UserProfilePageClient() {
           recipientName={userData.name || 'Unknown User'}
           recipientUsername={userData.username}
           recipientImage={userData.image}
-          recipientVerified={userData.verification_status === 'verified'}
+          recipientVerificationStatus={userData.verification_status}
         />
       )}
     </div>

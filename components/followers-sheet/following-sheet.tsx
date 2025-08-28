@@ -1,13 +1,12 @@
 'use client';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import { UserAvatar } from '../ui/user-avatar';
 import './followers-sheet.css';
 
 interface FollowingSheetProps {
@@ -112,25 +111,20 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                           onClick={() => handleUserClick(user.username)}
                           className='FollowersSheet-userButton'
                         >
-                          <Avatar className='FollowersSheet-userAvatar'>
-                            <AvatarImage src={user.image || ''} alt={user.name || user.username} />
-                            <AvatarFallback>
-                              <Image
-                                src='/assets/img/evento-sublogo.svg'
-                                alt='Evento'
-                                width={32}
-                                height={32}
-                              />
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className='FollowersSheet-userDetails'>
-                            <div className='FollowersSheet-userInfo'>
-                              <div className='FollowersSheet-username'>@{user.username}</div>
-                              {user.verification_status === 'verified' && (
-                                <div className='FollowersSheet-verified'>✓</div>
-                              )}
+                          <UserAvatar
+                            user={{
+                              name: user.name || undefined,
+                              username: user.username || undefined,
+                              image: user.image || undefined,
+                              verification_status: user.verification_status || null,
+                            }}
+                            size='sm'
+                          />
+                          <div className='min-w-0 flex-1'>
+                            <div className='truncate text-sm font-medium'>@{user.username}</div>
+                            <div className='truncate text-xs text-gray-500'>
+                              {user.name || user.username}
                             </div>
-                            <div className='FollowersSheet-name'>{user.name || user.username}</div>
                           </div>
                         </button>
                         <div className='FollowersSheet-actions'>
