@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { CustomChannelPreview } from './custom-channel-preview';
 
 import NewChatSheet from '@/components/messages/new-chat-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Plus } from 'lucide-react';
 import './chat-layout.css';
 import './stream-chat.d.ts';
@@ -60,12 +61,24 @@ export default function ChatPage() {
   if (isCheckingAuth || isLoadingStream) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='text-center'>
-            <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-            <p>{isCheckingAuth ? 'Authenticating...' : 'Setting up chat connection...'}</p>
+        <div className='flex-1 overflow-hidden'>
+          <div className='p-4'>
+            {/* Search bar skeleton */}
+            <Skeleton className='mb-4 h-10 w-40' />
+            {/* Channel list item skeletons */}
+            {[0, 1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className='flex items-center gap-3 border-b py-3'>
+                <Skeleton className='h-12 w-12 rounded-full' />
+                <div className='flex-1'>
+                  <Skeleton className='mb-2 h-4 w-2/3' />
+                  <Skeleton className='h-3 w-1/2' />
+                </div>
+                <Skeleton className='h-3 w-10' />
+              </div>
+            ))}
           </div>
         </div>
+        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
   }
