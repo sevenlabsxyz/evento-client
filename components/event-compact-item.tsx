@@ -2,10 +2,11 @@
 
 import { EventWithUser } from '@/lib/types/api';
 import { formatEventDate } from '@/lib/utils/date';
-import { getOptimizedAvatarUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
+import { getOptimizedCoverUrl } from '@/lib/utils/image';
 import { Calendar, Clock, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
+import { UserAvatar } from './ui/user-avatar';
 
 interface EventCompactItemProps {
   event: EventWithUser;
@@ -101,8 +102,17 @@ export function EventCompactItem({
         </div>
 
         {/* User details */}
-        <div className='mt-1 flex items-center'>
-          <img
+        <div className='mt-1 flex items-center gap-1'>
+          <UserAvatar
+            user={{
+              name: event.user_details.name || undefined,
+              username: event.user_details.username || undefined,
+              image: event.user_details.image || undefined,
+              verification_status: event.user_details.verification_status || null,
+            }}
+            size='xs'
+          />
+          {/* <img
             src={
               event.user_details.image
                 ? getOptimizedAvatarUrl(event.user_details.image)
@@ -110,7 +120,7 @@ export function EventCompactItem({
             }
             alt={event.user_details.name || event.user_details.username}
             className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
-          />
+          /> */}
           <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
         </div>
       </div>

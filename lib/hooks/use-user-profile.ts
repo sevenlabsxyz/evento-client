@@ -285,7 +285,7 @@ export function useUserByUsername(username: string) {
   return useQuery({
     queryKey: ['user', 'profile', 'username', username],
     queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<UserDetails[]>>(
+      const response = await apiClient.get<ApiResponse<UserDetails>>(
         `/v1/user/details?username=${encodeURIComponent(username)}`
       );
 

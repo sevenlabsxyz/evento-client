@@ -91,7 +91,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                 </div>
                 <VisuallyHidden.Root asChild>
                   <SheetWithDetent.Title className='sr-only'>
-                    Quick profile for {user.name || user.username} (@{user.username})
+                    Quick profile for {user.name || user.username} (@
+                    {user.username})
                   </SheetWithDetent.Title>
                 </VisuallyHidden.Root>
               </div>
@@ -146,7 +147,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
             recipientName={user.name || 'Unknown User'}
             recipientUsername={user.username}
             recipientImage={user.image}
-            recipientVerified={user.verification_status === 'verified'}
+            recipientVerificationStatus={user.verification_status}
           />
         )}
       </SheetWithDetent.Root>

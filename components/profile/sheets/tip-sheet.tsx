@@ -4,9 +4,10 @@ import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Copy, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface TipSheetProps {
@@ -16,7 +17,7 @@ interface TipSheetProps {
   recipientName: string;
   recipientUsername: string;
   recipientImage?: string;
-  recipientVerified?: boolean;
+  recipientVerificationStatus?: VerificationStatus;
 }
 
 export default function TipSheet({
@@ -26,7 +27,7 @@ export default function TipSheet({
   recipientName,
   recipientUsername,
   recipientImage,
-  recipientVerified,
+  recipientVerificationStatus,
 }: TipSheetProps) {
   const [amount, setAmount] = useState('');
   const [view, setView] = useState<'amount' | 'confirm'>('amount');
@@ -287,7 +288,7 @@ export default function TipSheet({
                           name: recipientName,
                           username: recipientUsername,
                           image: recipientImage,
-                          verification_status: recipientVerified ? 'verified' : null,
+                          verification_status: recipientVerificationStatus,
                         }}
                         size='md'
                         className='mb-3'

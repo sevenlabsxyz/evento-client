@@ -147,6 +147,8 @@
 }
 
 .str-chat__avatar-fallback {
+  display: grid;
+  place-items: center;
   font-size: 18px;
   font-weight: 600;
   color: #6b7280;
