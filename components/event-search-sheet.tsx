@@ -17,6 +17,7 @@ interface EventSearchSheetProps {
   onPin?: (eventId: string, isPinned: boolean) => void;
   pinnedEventId?: string;
   isOwnProfile?: boolean;
+  initialFilter?: EventFilterType;
 }
 
 export default function EventSearchSheet({
@@ -26,13 +27,15 @@ export default function EventSearchSheet({
   onPin,
   pinnedEventId,
   isOwnProfile = false,
+  initialFilter,
 }: EventSearchSheetProps) {
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<EventFilterType>('upcoming');
+  const [filter, setFilter] = useState<EventFilterType>(initialFilter ?? 'upcoming');
   const [sortDesc, setSortDesc] = useState(true);
   const { user } = useAuth();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   // Create debounced search function
   const debouncedSearch = useCallback(
@@ -62,6 +65,13 @@ export default function EventSearchSheet({
     }
   }, [isOpen]);
 
+  // Sync filter from parent when opening or when prop changes
+  useEffect(() => {
+    if (isOpen && initialFilter) {
+      setFilter(initialFilter);
+    }
+  }, [isOpen, initialFilter]);
+
   // Fetch user events with filters and search
   const { data, isLoading, error, fetchNextPage, hasNextPage, isFetchingNextPage } = useUserEvents({
     username,
@@ -78,16 +88,30 @@ export default function EventSearchSheet({
     return data.pages.flatMap((page) => page.events);
   }, [data]);
 
-  // Check if user can pin an event (if they're the creator or co-host)
+  // Auto-load more with IntersectionObserver
+  useEffect(() => {
+    if (!isOpen) return;
+    const el = loadMoreRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { root: null, rootMargin: '200px', threshold: 0 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [isOpen, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Check if user can pin an event (creator only)
   const canPinEvent = (event: EventWithUser) => {
     if (!isOwnProfile || !user?.id) return false;
 
-    // Check if user is the creator
-    if (event.user_details.id === user.id) return true;
-
-    // Check if user is a co-host
-    const isCoHost = event.hosts?.some((host) => host.id === user.id);
-    return !!isCoHost;
+    // Allow pinning if the user is the creator
+    return event.user_details.id === user.id;
   };
 
   // Toggle filter type
@@ -225,6 +249,9 @@ export default function EventSearchSheet({
                           </Button>
                         </div>
                       )}
+
+                      {/* Sentinel for infinite scrolling */}
+                      <div ref={loadMoreRef} className='h-1 w-full' />
                     </>
                   )}
                 </SheetWithDetentFull.ScrollContent>
