@@ -1,7 +1,7 @@
 'use client';
 
-import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
+import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { EventWithUser } from '@/lib/types/api';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
@@ -21,6 +21,7 @@ import {
   User,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { UserAvatar } from './ui/user-avatar';
 
 interface EventCardProps {
@@ -33,49 +34,53 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
   const timeAgo = getRelativeTime(event.created_at);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const getDropdownItems = (eventId: string, userName: string, userUsername: string) => [
+  const getMenuOptions = (eventId: string, userUsername: string) => [
     {
+      id: 'share',
       label: 'Share Event',
-      icon: <Share className='h-4 w-4' />,
-      action: async () => {
+      icon: Share,
+      onClick: async () => {
         const eventUrl = `${window.location.origin}/e/${eventId}`;
-
-        if (navigator.share) {
-          try {
+        try {
+          if (navigator.share) {
             await navigator.share({
               title: event.title,
               text: `Check out this event: ${event.title}`,
               url: eventUrl,
             });
-          } catch (error: any) {
-            // User cancelled the share or an error occurred
-            if (error.name !== 'AbortError') {
-              // Fallback to clipboard copy
-              navigator.clipboard.writeText(eventUrl);
-              toast.success('Link copied to clipboard!');
-            }
+          } else {
+            navigator.clipboard.writeText(eventUrl);
+            toast.success('Link copied to clipboard!');
           }
-        } else {
-          // Fallback for browsers without native share support
-          navigator.clipboard.writeText(eventUrl);
-          toast.success('Link copied to clipboard!');
+        } catch (error: any) {
+          if (error?.name !== 'AbortError') {
+            navigator.clipboard.writeText(eventUrl);
+            toast.success('Link copied to clipboard!');
+          }
+        } finally {
+          setIsMenuOpen(false);
         }
       },
     },
     {
+      id: 'copy',
       label: 'Copy Link',
-      icon: <Copy className='h-4 w-4' />,
-      action: () => {
+      icon: Copy,
+      onClick: () => {
         navigator.clipboard.writeText(`${window.location.origin}/e/${eventId}`);
         toast.success('Link copied to clipboard!');
+        setIsMenuOpen(false);
       },
     },
     {
+      id: 'profile',
       label: 'View Profile',
-      icon: <User className='h-4 w-4' />,
-      action: () => {
+      icon: User,
+      onClick: () => {
         router.push(`/${userUsername}`);
+        setIsMenuOpen(false);
       },
     },
   ];
@@ -107,20 +112,23 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
             </p>
           </div>
         </div>
-        <ReusableDropdown
-          trigger={
-            <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100'>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          }
-          items={getDropdownItems(
-            event.id,
-            event.user_details.name || event.user_details.username,
-            event.user_details.username
+        <div>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 rounded-full bg-gray-100'
+            onClick={() => setIsMenuOpen(true)}
+          >
+            <MoreHorizontal className='h-4 w-4' />
+          </Button>
+          {isMenuOpen && (
+            <DetachedMenuSheet
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              options={getMenuOptions(event.id, event.user_details.username)}
+            />
           )}
-          align='right'
-          width='w-56'
-        />
+        </div>
       </div>
 
       {/* Event Image - Square aspect ratio */}
