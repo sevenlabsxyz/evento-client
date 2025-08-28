@@ -218,23 +218,20 @@ export function MyEventsSection() {
                       </div>
                     </div>
 
-                    {/* Big count block mimicking EventCard image space */}
                     <div className='mx-auto aspect-square w-full rounded-2xl border border-gray-200 bg-gray-100/80'>
                       <div className='flex h-full w-full items-center justify-center'>
                         <span className='text-5xl font-bold text-gray-700'>
-                          {/* +{Math.max(totalCount - Math.min(events.length, 10), 0)} */}
-                          +3
+                          +{Math.max(totalCount - Math.min(events.length, 10), 0)}
                         </span>
                       </div>
                     </div>
 
-                    {/* Text and CTA below */}
                     <div className='mt-1'>
                       <div className='line-clamp-2 text-lg font-semibold leading-snug text-gray-900'>
                         {ctaLabel}
                       </div>
                       <div className='mt-1 text-sm text-gray-600'>
-                        Explore the full list of your events.
+                        Explore the full list of your {activeTab.toLowerCase()} events.
                       </div>
                     </div>
 
