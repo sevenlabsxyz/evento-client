@@ -29,7 +29,6 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
     ],
     []
   );
-  s;
 
   // Filter by search text first
   const filteredAll = useMemo(() => {
