@@ -22,10 +22,12 @@ export interface UserEventsParams {
 export interface UserEventsResponse {
   events: EventWithUser[];
   pagination: {
-    totalEvents: number;
+    totalCount: number;
     totalPages: number;
     currentPage: number;
     limit: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
   };
 }
 
@@ -53,10 +55,12 @@ export function useUserEvents(params: UserEventsParams) {
         return {
           events: [],
           pagination: {
-            totalEvents: 0,
+            totalCount: 0,
             totalPages: 0,
             currentPage: 1,
             limit,
+            hasNextPage: false,
+            hasPreviousPage: false,
           },
         };
       }
@@ -93,12 +97,7 @@ export function useUserEvents(params: UserEventsParams) {
       if (response && response.data) {
         return {
           events: response.data.events || [],
-          pagination: {
-            totalEvents: response.data.totalEvents || 0,
-            totalPages: response.data.totalPages || 0,
-            currentPage: page,
-            limit: limit,
-          },
+          pagination: response.data.pagination,
         };
       }
 

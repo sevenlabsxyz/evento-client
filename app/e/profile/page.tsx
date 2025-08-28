@@ -49,12 +49,13 @@ import {
   SortAsc,
   SortDesc,
 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('about');
@@ -123,6 +124,19 @@ export default function ProfilePage() {
     enabled: activeTab === 'events',
   });
 
+  // Handle URL parameters for tab state
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'events' || tab === 'about') {
+      setActiveTab(tab);
+
+      // Remove param if on default tab
+      if (tab === 'about') {
+        router.replace('/e/profile', { scroll: false });
+      }
+    }
+  }, [searchParams]);
+
   // Set TopBar content and enable overlay mode
   useEffect(() => {
     // Apply any existing route configuration first
@@ -183,7 +197,7 @@ export default function ProfilePage() {
   const avatarImages = [
     {
       id: 'avatar-1',
-      image: userData.image,
+      image: userData.image || '/assets/img/evento-sublogo.svg',
       user_details: {
         id: user?.id,
         username: user?.username,
@@ -528,7 +542,6 @@ export default function ProfilePage() {
               value={activeTab}
               onValueChange={(v) => setActiveTab(v)}
             />
-
             {/* Tab Content */}
             <div>
               {activeTab === 'about' && renderAboutTab()}
