@@ -8,32 +8,29 @@ import {
   ChatInputTextarea,
   ChatInputToolbar,
 } from '@/components/ui/chat-input';
-import { Message, MessageAvatar, MessageContent } from '@/components/ui/message';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { init } from 'emoji-mart';
-import type { ChannelFilters, MessageResponse, Channel as StreamChannel } from 'stream-chat';
-import { Channel, Chat } from 'stream-chat-react';
+import type {
+  ChannelFilters,
+  LocalMessage,
+  MessageResponse,
+  Channel as StreamChannel,
+} from 'stream-chat';
+import { Channel, Chat, Window } from 'stream-chat-react';
 
-import {
-  ArrowLeft,
-  Heart,
-  MessageCircle,
-  MoreHorizontal,
-  Paperclip,
-  Plus,
-  Reply,
-  Smile,
-} from 'lucide-react';
+import { ArrowLeft, Paperclip, Reply, Smile, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { useTopBar } from '@/lib/stores/topbar-store';
 
-import { LightboxViewer } from '@/components/lightbox-viewer';
+import { PinnedMessageBanner } from '@/components/chat/pinned-message-banner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMessageActions } from '@/lib/hooks/use-message-actions';
+import { MessageList } from 'stream-chat-react';
 import '../chat-layout.css';
 import '../stream-chat.d.ts';
 
@@ -47,18 +44,19 @@ export default function SingleChatPage() {
   const params = useParams();
   const [channel, setChannel] = useState<StreamChannel>();
   const [channelError, setChannelError] = useState<string | null>(null);
-  const [messages, setMessages] = useState<MessageResponse[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
   const [replyingTo, setReplyingTo] = useState<MessageResponse | null>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
-  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [pinnedMessages, setPinnedMessages] = useState<MessageResponse[]>([]);
+  const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0);
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
+
+  // Use message actions hook
+  const { handlePin } = useMessageActions(channel);
 
   // Use Stream Chat from the provider
   const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
@@ -92,24 +90,60 @@ export default function SingleChatPage() {
           await targetChannel.watch();
           setChannel(targetChannel);
 
-          // Load initial messages
-          const messageHistory = await targetChannel.query({
-            messages: { limit: 50 },
-          });
-          setMessages(messageHistory.messages || []);
+          // Find all pinned messages from channel state
+          const pinnedMsgs = targetChannel.state.pinnedMessages || [];
+          if (pinnedMsgs.length > 0) {
+            setPinnedMessages(pinnedMsgs as unknown as MessageResponse[]);
+            setCurrentPinnedIndex(0);
+          }
 
-          // Listen for new messages
-          const handleNewMessage = (event: any) => {
+          // Listen for pinned message changes
+          const handleMessageUpdated = (event: any) => {
             if (event.message) {
-              setMessages((prev) => [...prev, event.message]);
+              // Update pinned messages state
+              if (event.message.pinned) {
+                setPinnedMessages((prev) => {
+                  const existing = prev.find((msg) => msg.id === event.message.id);
+                  if (!existing) {
+                    return [...prev, event.message];
+                  }
+                  return prev.map((msg) => (msg.id === event.message.id ? event.message : msg));
+                });
+              } else {
+                setPinnedMessages((prev) => {
+                  const filtered = prev.filter((msg) => msg.id !== event.message.id);
+                  if (filtered.length === 0) {
+                    setCurrentPinnedIndex(0);
+                  } else if (currentPinnedIndex >= filtered.length) {
+                    setCurrentPinnedIndex(filtered.length - 1);
+                  }
+                  return filtered;
+                });
+              }
             }
           };
 
-          targetChannel.on('message.new', handleNewMessage);
+          const handleMessageDeleted = (event: any) => {
+            if (event.message) {
+              setPinnedMessages((prev) => {
+                const filtered = prev.filter((msg) => msg.id !== event.message.id);
+                if (filtered.length === 0) {
+                  setCurrentPinnedIndex(0);
+                } else if (currentPinnedIndex >= filtered.length) {
+                  setCurrentPinnedIndex(filtered.length - 1);
+                }
+                return filtered;
+              });
+            }
+          };
 
-          // Cleanup listener
+          targetChannel.on('message.updated', handleMessageUpdated);
+          targetChannel.on('message.deleted', handleMessageDeleted);
+
+          // Cleanup listeners
           return () => {
-            targetChannel.off('message.new', handleNewMessage);
+            targetChannel.off('message.updated', handleMessageUpdated);
+            targetChannel.off('message.deleted', handleMessageDeleted);
           };
         } else {
           // If channel doesn't exist or user is not a member
@@ -150,12 +184,7 @@ export default function SingleChatPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, applyRouteConfig, channel, client?.user?.id]);
-
-  // Scroll to bottom when messages change
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [pathname, applyRouteConfig, channel, client?.user?.id, pinnedMessages]);
 
   // Handle message submission
   const handleSubmit = async (e?: React.FormEvent) => {
@@ -239,22 +268,6 @@ export default function SingleChatPage() {
     }
   };
 
-  // Handle message reactions
-  const handleReaction = async (messageId: string, emoji: string) => {
-    if (!channel) return;
-    try {
-      await channel.sendReaction(messageId, { type: emoji });
-    } catch (error) {
-      console.error('Failed to send reaction:', error);
-    }
-  };
-
-  // Handle reply to message
-  const handleReply = (message: MessageResponse) => {
-    setReplyingTo(message);
-    inputRef.current?.focus();
-  };
-
   // Handle file selection
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -269,154 +282,25 @@ export default function SingleChatPage() {
     setAttachments((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Handle lightbox opening
-  const openLightbox = (images: string[], initialIndex: number = 0) => {
-    setLightboxImages(images);
-    setSelectedImageIndex(initialIndex);
+  // Handle pinned message actions
+  const handleUnpinMessage = async () => {
+    const currentMessage = pinnedMessages[currentPinnedIndex];
+    if (currentMessage) {
+      await handlePin(currentMessage.id, true); // true means it's currently pinned, so unpin it
+    }
   };
 
-  // Render multiple images with different layouts
-  const renderImageAttachments = (imageAttachments: any[]) => {
-    const imageUrls = imageAttachments.map((att) => att.image_url || att.thumb_url);
-
-    if (imageAttachments.length === 1) {
-      const imageUrl = imageUrls[0];
-      return (
-        <img
-          src={imageUrl}
-          alt={imageAttachments[0].fallback || 'Image'}
-          className='max-w-xs cursor-pointer rounded-lg transition-opacity hover:opacity-90'
-          style={{ maxHeight: '200px' }}
-          onClick={() => openLightbox(imageUrls, 0)}
-        />
-      );
+  // Handle cycling through pinned messages
+  const handleNextPinnedMessage = () => {
+    if (pinnedMessages.length > 1) {
+      setCurrentPinnedIndex((prev) => (prev + 1) % pinnedMessages.length);
     }
-
-    if (imageAttachments.length === 2) {
-      return (
-        <div className='flex max-w-xs gap-1'>
-          {imageAttachments.map((attachment, index) => {
-            const imageUrl = attachment.image_url || attachment.thumb_url;
-            return (
-              <img
-                key={index}
-                src={imageUrl}
-                alt={attachment.fallback || `Image ${index + 1}`}
-                className='w-1/2 cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90'
-                style={{ height: '120px' }}
-                onClick={() => openLightbox(imageUrls, index)}
-              />
-            );
-          })}
-        </div>
-      );
-    }
-
-    if (imageAttachments.length === 3) {
-      return (
-        <div className='grid max-w-xs grid-cols-2 gap-1'>
-          <img
-            src={imageUrls[0]}
-            alt={imageAttachments[0].fallback || 'Image 1'}
-            className='col-span-2 mx-auto cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90'
-            style={{ height: '120px' }}
-            onClick={() => openLightbox(imageUrls, 0)}
-          />
-          {imageAttachments.slice(1).map((attachment, index) => {
-            const imageUrl = attachment.image_url || attachment.thumb_url;
-            return (
-              <img
-                key={index + 1}
-                src={imageUrl}
-                alt={attachment.fallback || `Image ${index + 2}`}
-                className='cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90'
-                style={{
-                  height: '80px',
-                  width: '80px',
-                }}
-                onClick={() => openLightbox(imageUrls, index + 1)}
-              />
-            );
-          })}
-        </div>
-      );
-    }
-
-    // 4 or more images - 2x2 grid with overflow indicator
-    return (
-      <div className='grid max-w-xs grid-cols-2 gap-1'>
-        {imageAttachments.slice(0, 3).map((attachment, index) => {
-          const imageUrl = attachment.image_url || attachment.thumb_url;
-          return (
-            <img
-              key={index}
-              src={imageUrl}
-              alt={attachment.fallback || `Image ${index + 1}`}
-              className='cursor-pointer rounded-lg object-cover transition-opacity hover:opacity-90'
-              style={{
-                height: '80px',
-                width: '80px',
-              }}
-              onClick={() => openLightbox(imageUrls, index)}
-            />
-          );
-        })}
-        <div
-          className='relative flex cursor-pointer items-center justify-center rounded-lg bg-black/50 transition-opacity hover:opacity-90'
-          style={{ height: '80px', width: '80px' }}
-          onClick={() => openLightbox(imageUrls, 3)}
-        >
-          {imageAttachments.length > 4 ? (
-            <>
-              <img
-                src={imageUrls[3]}
-                alt={imageAttachments[3].fallback || 'Image 4'}
-                className='absolute inset-0 h-full w-full rounded-lg object-cover opacity-50'
-              />
-              <div className='relative z-10 flex items-center gap-1 font-medium text-white'>
-                <Plus className='h-4 w-4' />
-                <span className='text-sm'>{imageAttachments.length - 3}</span>
-              </div>
-            </>
-          ) : (
-            <img
-              src={imageUrls[3]}
-              alt={imageAttachments[3].fallback || 'Image 4'}
-              className='h-full w-full rounded-lg object-cover'
-            />
-          )}
-        </div>
-      </div>
-    );
   };
 
-  // Render attachment preview
-  const renderAttachment = (attachment: any) => {
-    if (attachment.type === 'file') {
-      const fileUrl = attachment.asset_url;
-      return (
-        <div
-          className='flex max-w-xs cursor-pointer items-center gap-2 rounded-lg bg-gray-100 p-3 transition-colors hover:bg-gray-200'
-          onClick={() => window.open(fileUrl, '_blank')}
-        >
-          <Paperclip className='h-4 w-4 text-gray-500' />
-          <span className='truncate text-sm'>{attachment.title || attachment.fallback}</span>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  // Format message for display
-  const formatMessage = (msg: MessageResponse) => {
-    const isCurrentUser = msg.user?.id === client?.user?.id;
-    return {
-      id: msg.id,
-      text: msg.text || '',
-      user: msg.user,
-      created_at: msg.created_at,
-      isCurrentUser,
-    };
+  // Handle reply action
+  const handleReply = (message: LocalMessage) => {
+    setReplyingTo(message as unknown as MessageResponse);
+    inputRef.current?.focus();
   };
 
   // Show loading state during authentication or Stream Chat setup
@@ -512,8 +396,9 @@ export default function SingleChatPage() {
                 />
               </svg>
             </div>
-            <p className='font-medium text-red-600'>{channelError}</p>
-            <p className='mt-1 text-sm text-gray-500'>Chat {params.id} could not be loaded</p>
+            <p className='mt-1 text-sm text-gray-500'>
+              Chat could not be loaded. Please try reloading the page.
+            </p>
             <Button variant='outline' className='mt-4' onClick={() => router.back()}>
               <ArrowLeft className='mr-2 h-4 w-4' />
               Go Back
@@ -528,109 +413,29 @@ export default function SingleChatPage() {
     <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col bg-white md:max-w-sm'>
       <Chat client={client}>
         <Channel channel={channel}>
-          {/* Messages Container */}
-          <div className='flex-1 overflow-y-auto px-4 py-2'>
-            <div>
-              {messages.map((msg) => {
-                const formattedMsg = formatMessage(msg);
-                return (
-                  <Message
-                    key={formattedMsg.id}
-                    from={formattedMsg.isCurrentUser ? 'user' : 'other'}
-                  >
-                    <MessageAvatar
-                      src={formattedMsg.user?.image || ''}
-                      name={formattedMsg.user?.name || formattedMsg.user?.id || 'User'}
-                    />
-                    <div className='group relative' onDoubleClick={() => handleReply(msg)}>
-                      <MessageContent className='rounded-2xl'>
-                        {/* Reply indicator */}
-                        {msg.parent_id &&
-                          (() => {
-                            const parentMessage = messages.find((m) => m.id === msg.parent_id);
-                            const replyText = parentMessage?.text || 'Message with attachments';
-                            return (
-                              <div className='mb-2 border-l-2 border-gray-300 pl-2 text-xs opacity-60'>
-                                <Reply className='mr-1 inline h-3 w-3' />
-                                <span className='truncate'>{replyText}</span>
-                              </div>
-                            );
-                          })()}
+          {/* Pinned Message Banner */}
+          {pinnedMessages.length > 0 && (
+            <PinnedMessageBanner
+              pinnedMessage={pinnedMessages[currentPinnedIndex]}
+              pinnedCount={pinnedMessages.length}
+              currentIndex={currentPinnedIndex}
+              onUnpin={handleUnpinMessage}
+              onNext={handleNextPinnedMessage}
+            />
+          )}
 
-                        {formattedMsg.text && <div className='text-xs'>{formattedMsg.text}</div>}
-                        {msg.attachments && msg.attachments.length > 0 && (
-                          <div className='mt-1 space-y-1'>
-                            {(() => {
-                              const imageAttachments = msg.attachments.filter(
-                                (att: any) => att.type === 'image'
-                              );
-                              const fileAttachments = msg.attachments.filter(
-                                (att: any) => att.type === 'file'
-                              );
-
-                              return (
-                                <>
-                                  {imageAttachments.length > 0 && (
-                                    <div>{renderImageAttachments(imageAttachments)}</div>
-                                  )}
-                                  {fileAttachments.map((attachment: any, index: number) => (
-                                    <div key={`file-${index}`}>{renderAttachment(attachment)}</div>
-                                  ))}
-                                </>
-                              );
-                            })()}
-                          </div>
-                        )}
-
-                        {/* Reactions */}
-                        {msg.reaction_counts && Object.keys(msg.reaction_counts).length > 0 && (
-                          <div className='mt-2 flex flex-wrap gap-1'>
-                            {Object.entries(msg.reaction_counts).map(([emoji, count]) => (
-                              <button
-                                key={emoji}
-                                onClick={() => handleReaction(msg.id, emoji)}
-                                className='flex items-center gap-1 rounded-full bg-gray-100 px-2 py-1 text-xs transition-colors hover:bg-gray-200'
-                              >
-                                <span>{emoji}</span>
-                                <span>{count as number}</span>
-                              </button>
-                            ))}
-                          </div>
-                        )}
-                      </MessageContent>
-
-                      {/* Message actions */}
-                      <div className='absolute right-0 top-0 -mr-2 -mt-2 flex gap-1 rounded-lg border bg-white p-1 opacity-0 shadow-lg transition-opacity group-hover:opacity-100'>
-                        <button
-                          onClick={() => handleReaction(msg.id, '❤️')}
-                          className='rounded p-1 transition-colors hover:bg-gray-100'
-                          title='React with heart'
-                        >
-                          <Heart className='h-3 w-3' />
-                        </button>
-                        {!msg.parent_id && (
-                          <button
-                            onClick={() => handleReply(msg)}
-                            className='rounded p-1 transition-colors hover:bg-gray-100'
-                            title='Reply'
-                          >
-                            <MessageCircle className='h-3 w-3' />
-                          </button>
-                        )}
-                        <button
-                          className='rounded p-1 transition-colors hover:bg-gray-100'
-                          title='More options'
-                        >
-                          <MoreHorizontal className='h-3 w-3' />
-                        </button>
-                      </div>
-                    </div>
-                  </Message>
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
-          </div>
+          {/* Stream Chat Built-in MessageList */}
+          <Window>
+            <MessageList
+              onlySenderCanEdit
+              disableQuotedMessages={false}
+              openThread={(message) => console.log(message)}
+              messageActions={['edit', 'delete', 'pin', 'react']}
+              customMessageActions={{ Reply: handleReply }}
+              closeReactionSelectorOnClick
+              returnAllReadData
+            />
+          </Window>
 
           {/* Input Container */}
           <div className='relative border-t bg-white p-4'>
@@ -663,7 +468,7 @@ export default function SingleChatPage() {
                       onClick={() => setReplyingTo(null)}
                       className='text-gray-400 transition-colors hover:text-gray-600'
                     >
-                      ×
+                      <X className='h-3 w-3' />
                     </button>
                   </div>
                   <div className='mt-1 truncate text-xs text-gray-500'>
@@ -747,21 +552,6 @@ export default function SingleChatPage() {
           </div>
         </Channel>
       </Chat>
-
-      {/* Lightbox for image viewing */}
-      <LightboxViewer
-        selectedImage={selectedImageIndex}
-        onClose={() => setSelectedImageIndex(null)}
-        images={lightboxImages}
-        onImageChange={function (index: number): void {
-          setSelectedImageIndex(index);
-        }}
-        handleDelete={function (photoId: string): Promise<{ success: boolean }> {
-          return Promise.resolve({ success: true });
-        }}
-        userId={''}
-        eventId={''}
-      />
     </div>
   );
 }
