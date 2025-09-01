@@ -35,7 +35,7 @@ export function AttachmentPreview({ attachments, onRemove }: AttachmentPreviewPr
                 <Paperclip className='h-3 w-3' />
                 <span className='max-w-20 truncate'>{file.name}</span>
                 <button type='button' onClick={() => onRemove(index)} className='ml-1 text-red-500'>
-                  ×
+                  <X className='h-3 w-3' />
                 </button>
               </div>
             )}

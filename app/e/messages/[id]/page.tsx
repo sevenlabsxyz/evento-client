@@ -29,7 +29,6 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 
 import { AttachmentPreview } from '@/components/chat/attachment-preview';
 import { PinnedMessageBanner } from '@/components/chat/pinned-message-banner';
-import { ReplyPreview } from '@/components/chat/reply-preview';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMessageActions } from '@/lib/hooks/use-message-actions';
 import { MessageList } from 'stream-chat-react';
@@ -50,7 +49,6 @@ export default function SingleChatPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [attachments, setAttachments] = useState<File[]>([]);
-  const [replyingTo, setReplyingTo] = useState<MessageResponse | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pinnedMessages, setPinnedMessages] = useState<MessageResponse[]>([]);
@@ -237,16 +235,10 @@ export default function SingleChatPage() {
         messageData.attachments = uploadedAttachments;
       }
 
-      // Add reply reference if replying to a message - if the message is not a reply
-      if (replyingTo && !replyingTo.parent_id) {
-        messageData.parent_id = replyingTo.id;
-      }
-
       // Send the message with uploaded attachments
       await channel.sendMessage(messageData);
       setInputValue('');
       setAttachments([]);
-      setReplyingTo(null);
       setShowEmojiPicker(false);
     } catch (error) {
       console.error('Failed to send message:', error);
@@ -266,9 +258,6 @@ export default function SingleChatPage() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSubmit();
-    }
-    if (e.key === 'Escape') {
-      setReplyingTo(null);
     }
   };
 
@@ -301,18 +290,10 @@ export default function SingleChatPage() {
     }
   };
 
-  // Handle reply action
-  const handleReply = (message: LocalMessage) => {
-    setReplyingTo(message as unknown as MessageResponse);
-    inputRef.current?.focus();
-  };
-
   // Handle thread opening
   const handleOpenThread = (message: LocalMessage) => {
     setThreadMessage(message as unknown as MessageResponse);
     setShowThread(true);
-
-    console.log(message);
   };
 
   // Handle thread closing
@@ -380,9 +361,7 @@ export default function SingleChatPage() {
               </svg>
             </div>
             <p className='font-medium text-red-600'>Failed to connect to chat</p>
-            <p className='mt-1 text-sm text-gray-500'>
-              {streamError || 'Please try refreshing the page'}
-            </p>
+            <p className='mt-1 text-sm text-gray-500'>Please try refreshing the page</p>
             <Button variant='outline' className='mt-4' onClick={() => router.back()}>
               <ArrowLeft className='mr-2 h-4 w-4' />
               Go Back
@@ -445,11 +424,10 @@ export default function SingleChatPage() {
           {/* Stream Chat Built-in MessageList */}
           <Window>
             <MessageList
-              onlySenderCanEdit
-              disableQuotedMessages={false}
               openThread={handleOpenThread}
               messageActions={['edit', 'delete', 'pin', 'react']}
-              customMessageActions={{ Reply: handleReply }}
+              onlySenderCanEdit
+              disableQuotedMessages
               closeReactionSelectorOnClick
               returnAllReadData
             />
@@ -472,11 +450,6 @@ export default function SingleChatPage() {
               </div>
             )}
             <ChatInput onSubmit={handleSubmit}>
-              {/* Reply Preview */}
-              {replyingTo && (
-                <ReplyPreview replyingTo={replyingTo} onCancel={() => setReplyingTo(null)} />
-              )}
-
               {/* Attachment Previews */}
               <AttachmentPreview attachments={attachments} onRemove={removeAttachment} />
 
@@ -509,7 +482,6 @@ export default function SingleChatPage() {
                   disabled={(!inputValue.trim() && attachments.length === 0) || isSubmitting}
                   status={isSubmitting ? 'loading' : undefined}
                 />
-                {replyingTo && <div className='ml-2 text-xs text-gray-500'>ESC to cancel</div>}
               </ChatInputToolbar>
             </ChatInput>
           </div>
