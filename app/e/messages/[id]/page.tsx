@@ -19,15 +19,17 @@ import type {
   MessageResponse,
   Channel as StreamChannel,
 } from 'stream-chat';
-import { Channel, Chat, Window } from 'stream-chat-react';
+import { Channel, Chat, ThreadList, Window } from 'stream-chat-react';
 
-import { ArrowLeft, Paperclip, Reply, Smile, X } from 'lucide-react';
+import { ArrowLeft, Paperclip, Smile } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 import { useTopBar } from '@/lib/stores/topbar-store';
 
+import { AttachmentPreview } from '@/components/chat/attachment-preview';
 import { PinnedMessageBanner } from '@/components/chat/pinned-message-banner';
+import { ReplyPreview } from '@/components/chat/reply-preview';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMessageActions } from '@/lib/hooks/use-message-actions';
 import { MessageList } from 'stream-chat-react';
@@ -53,6 +55,8 @@ export default function SingleChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pinnedMessages, setPinnedMessages] = useState<MessageResponse[]>([]);
   const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0);
+  const [threadMessage, setThreadMessage] = useState<MessageResponse | null>(null);
+  const [showThread, setShowThread] = useState(false);
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   // Use message actions hook
@@ -303,6 +307,20 @@ export default function SingleChatPage() {
     inputRef.current?.focus();
   };
 
+  // Handle thread opening
+  const handleOpenThread = (message: LocalMessage) => {
+    setThreadMessage(message as unknown as MessageResponse);
+    setShowThread(true);
+
+    console.log(message);
+  };
+
+  // Handle thread closing
+  const handleCloseThread = () => {
+    setShowThread(false);
+    setThreadMessage(null);
+  };
+
   // Show loading state during authentication or Stream Chat setup
   if (isCheckingAuth || isLoadingStream) {
     return (
@@ -429,12 +447,13 @@ export default function SingleChatPage() {
             <MessageList
               onlySenderCanEdit
               disableQuotedMessages={false}
-              openThread={(message) => console.log(message)}
+              openThread={handleOpenThread}
               messageActions={['edit', 'delete', 'pin', 'react']}
               customMessageActions={{ Reply: handleReply }}
               closeReactionSelectorOnClick
               returnAllReadData
             />
+            {showThread && threadMessage && <ThreadList />}
           </Window>
 
           {/* Input Container */}
@@ -452,70 +471,14 @@ export default function SingleChatPage() {
                 />
               </div>
             )}
-
             <ChatInput onSubmit={handleSubmit}>
               {/* Reply Preview */}
               {replyingTo && (
-                <div className='border-b bg-gray-50 p-3'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-2 text-xs text-gray-600'>
-                      <Reply className='h-3 w-3' />
-                      <span>
-                        Replying to {replyingTo.user?.name || replyingTo.user?.id || 'User'}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => setReplyingTo(null)}
-                      className='text-gray-400 transition-colors hover:text-gray-600'
-                    >
-                      <X className='h-3 w-3' />
-                    </button>
-                  </div>
-                  <div className='mt-1 truncate text-xs text-gray-500'>
-                    {replyingTo.text || 'Message with attachments'}
-                  </div>
-                </div>
+                <ReplyPreview replyingTo={replyingTo} onCancel={() => setReplyingTo(null)} />
               )}
 
               {/* Attachment Previews */}
-              {attachments.length > 0 && (
-                <div className='max-w-full overflow-x-auto'>
-                  <div className='flex w-max gap-2 border-b p-2'>
-                    {attachments.map((file, index) => (
-                      <div key={index} className='relative flex-1'>
-                        {file.type.startsWith('image/') ? (
-                          <div className='relative'>
-                            <img
-                              src={URL.createObjectURL(file)}
-                              alt={file.name}
-                              className='h-16 w-16 rounded object-cover'
-                            />
-                            <button
-                              type='button'
-                              onClick={() => removeAttachment(index)}
-                              className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-xs text-white'
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ) : (
-                          <div className='flex items-center gap-2 rounded bg-gray-100 p-2 text-xs'>
-                            <Paperclip className='h-3 w-3' />
-                            <span className='max-w-20 truncate'>{file.name}</span>
-                            <button
-                              type='button'
-                              onClick={() => removeAttachment(index)}
-                              className='ml-1 text-red-500'
-                            >
-                              ×
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <AttachmentPreview attachments={attachments} onRemove={removeAttachment} />
 
               <ChatInputTextarea
                 ref={inputRef}
