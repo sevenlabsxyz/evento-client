@@ -31,6 +31,7 @@ import { AttachmentPreview } from '@/components/chat/attachment-preview';
 import { PinnedMessageBanner } from '@/components/chat/pinned-message-banner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMessageActions } from '@/lib/hooks/use-message-actions';
+import { toast } from '@/lib/utils/toast';
 import { MessageList } from 'stream-chat-react';
 import '../chat-layout.css';
 import '../stream-chat.d.ts';
@@ -114,11 +115,25 @@ export default function SingleChatPage() {
               } else {
                 setPinnedMessages((prev) => {
                   const filtered = prev.filter((msg) => msg.id !== event.message.id);
-                  if (filtered.length === 0) {
-                    setCurrentPinnedIndex(0);
-                  } else if (currentPinnedIndex >= filtered.length) {
-                    setCurrentPinnedIndex(filtered.length - 1);
-                  }
+
+                  // Update current index based on the filtered array
+                  setCurrentPinnedIndex((currentIndex) => {
+                    if (filtered.length === 0) {
+                      return 0;
+                    }
+                    // If we removed a message before the current index, adjust index
+                    const removedIndex = prev.findIndex((msg) => msg.id === event.message.id);
+                    if (removedIndex < currentIndex) {
+                      return Math.max(0, currentIndex - 1);
+                    }
+                    // If we removed the current message, stay at same index or go to last
+                    if (removedIndex === currentIndex) {
+                      return Math.min(currentIndex, filtered.length - 1);
+                    }
+                    // Otherwise keep the same index
+                    return currentIndex;
+                  });
+
                   return filtered;
                 });
               }
@@ -129,11 +144,25 @@ export default function SingleChatPage() {
             if (event.message) {
               setPinnedMessages((prev) => {
                 const filtered = prev.filter((msg) => msg.id !== event.message.id);
-                if (filtered.length === 0) {
-                  setCurrentPinnedIndex(0);
-                } else if (currentPinnedIndex >= filtered.length) {
-                  setCurrentPinnedIndex(filtered.length - 1);
-                }
+
+                // Update current index based on the filtered array
+                setCurrentPinnedIndex((currentIndex) => {
+                  if (filtered.length === 0) {
+                    return 0;
+                  }
+                  // If we removed a message before the current index, adjust index
+                  const removedIndex = prev.findIndex((msg) => msg.id === event.message.id);
+                  if (removedIndex < currentIndex) {
+                    return Math.max(0, currentIndex - 1);
+                  }
+                  // If we removed the current message, stay at same index or go to last
+                  if (removedIndex === currentIndex) {
+                    return Math.min(currentIndex, filtered.length - 1);
+                  }
+                  // Otherwise keep the same index
+                  return currentIndex;
+                });
+
                 return filtered;
               });
             }
@@ -411,7 +440,7 @@ export default function SingleChatPage() {
       <Chat client={client}>
         <Channel channel={channel}>
           {/* Pinned Message Banner */}
-          {pinnedMessages.length > 0 && (
+          {pinnedMessages.length > 0 && pinnedMessages[currentPinnedIndex] && (
             <PinnedMessageBanner
               pinnedMessage={pinnedMessages[currentPinnedIndex]}
               pinnedCount={pinnedMessages.length}
@@ -426,6 +455,14 @@ export default function SingleChatPage() {
             <MessageList
               openThread={handleOpenThread}
               messageActions={['edit', 'delete', 'pin', 'react']}
+              getPinMessageErrorNotification={() => {
+                toast.error('Failed to pin message');
+                return '';
+              }}
+              getDeleteMessageErrorNotification={() => {
+                toast.error('Failed to delete message');
+                return '';
+              }}
               onlySenderCanEdit
               disableQuotedMessages
               closeReactionSelectorOnClick

@@ -36,7 +36,7 @@ export function PinnedMessageBanner({
             )}
           </div>
           <div className='truncate text-sm text-gray-700'>
-            {pinnedMessage.text || 'Message with attachments'}
+            {pinnedMessage?.text || 'Message with attachments'}
           </div>
           {pinnedCount > 1 && (
             <div className='mt-1 text-xs text-blue-500'>Click to see next pinned message</div>
