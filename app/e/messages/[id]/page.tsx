@@ -13,13 +13,8 @@ import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { init } from 'emoji-mart';
-import type {
-  ChannelFilters,
-  LocalMessage,
-  MessageResponse,
-  Channel as StreamChannel,
-} from 'stream-chat';
-import { Channel, Chat, ThreadList, Window } from 'stream-chat-react';
+import type { ChannelFilters, MessageResponse, Channel as StreamChannel } from 'stream-chat';
+import { Channel, Chat, Window } from 'stream-chat-react';
 
 import { ArrowLeft, Paperclip, Smile } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -31,7 +26,6 @@ import { AttachmentPreview } from '@/components/chat/attachment-preview';
 import { PinnedMessageBanner } from '@/components/chat/pinned-message-banner';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMessageActions } from '@/lib/hooks/use-message-actions';
-import { toast } from '@/lib/utils/toast';
 import { MessageList } from 'stream-chat-react';
 import '../chat-layout.css';
 import '../stream-chat.d.ts';
@@ -54,8 +48,6 @@ export default function SingleChatPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [pinnedMessages, setPinnedMessages] = useState<MessageResponse[]>([]);
   const [currentPinnedIndex, setCurrentPinnedIndex] = useState(0);
-  const [threadMessage, setThreadMessage] = useState<MessageResponse | null>(null);
-  const [showThread, setShowThread] = useState(false);
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   // Use message actions hook
@@ -315,20 +307,26 @@ export default function SingleChatPage() {
   // Handle cycling through pinned messages
   const handleNextPinnedMessage = () => {
     if (pinnedMessages.length > 1) {
-      setCurrentPinnedIndex((prev) => (prev + 1) % pinnedMessages.length);
+      setCurrentPinnedIndex((prev) => {
+        const newIndex = (prev + 1) % pinnedMessages.length;
+        const nextMessage = pinnedMessages[newIndex];
+
+        // Scroll to the pinned message
+        if (nextMessage && channel) {
+          setTimeout(() => {
+            const messageElement = document.querySelector(`[data-message-id="${nextMessage.id}"]`);
+            if (messageElement) {
+              messageElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center',
+              });
+            }
+          }, 100);
+        }
+
+        return newIndex;
+      });
     }
-  };
-
-  // Handle thread opening
-  const handleOpenThread = (message: LocalMessage) => {
-    setThreadMessage(message as unknown as MessageResponse);
-    setShowThread(true);
-  };
-
-  // Handle thread closing
-  const handleCloseThread = () => {
-    setShowThread(false);
-    setThreadMessage(null);
   };
 
   // Show loading state during authentication or Stream Chat setup
@@ -453,22 +451,12 @@ export default function SingleChatPage() {
           {/* Stream Chat Built-in MessageList */}
           <Window>
             <MessageList
-              openThread={handleOpenThread}
               messageActions={['edit', 'delete', 'pin', 'react']}
-              getPinMessageErrorNotification={() => {
-                toast.error('Failed to pin message');
-                return '';
-              }}
-              getDeleteMessageErrorNotification={() => {
-                toast.error('Failed to delete message');
-                return '';
-              }}
               onlySenderCanEdit
               disableQuotedMessages
               closeReactionSelectorOnClick
               returnAllReadData
             />
-            {showThread && threadMessage && <ThreadList />}
           </Window>
 
           {/* Input Container */}
