@@ -267,6 +267,35 @@
   justify-content: center;
 }
 
+/* Pinned message highlight animation */
+.pinned-message-highlight {
+  animation: pinned-highlight 2s ease-in-out;
+  background-color: rgba(59, 130, 246, 0.1) !important;
+  transition: all 0.3s ease !important;
+}
+
+.pinned-message-highlight:has(> .str-chat__message--me) {
+  border-left: 4px solid #3b82f6 !important;
+}
+
+.pinned-message-highlight:has(> .str-chat__message--other) {
+  border-right: 4px solid #3b82f6 !important;
+}
+
+@keyframes pinned-highlight {
+  0% {
+    background-color: rgba(59, 130, 246, 0.3);
+    transform: scale(1.02);
+  }
+  50% {
+    background-color: rgba(59, 130, 246, 0.2);
+  }
+  100% {
+    background-color: rgba(59, 130, 246, 0.1);
+    transform: scale(1);
+  }
+}
+
 .str-chat__send-button:hover {
   background-color: #dc2626;
 }

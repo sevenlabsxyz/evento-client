@@ -311,7 +311,7 @@ export default function SingleChatPage() {
         const newIndex = (prev + 1) % pinnedMessages.length;
         const nextMessage = pinnedMessages[newIndex];
 
-        // Scroll to the pinned message
+        // Scroll to the pinned message and highlight it
         if (nextMessage && channel) {
           setTimeout(() => {
             const messageElement = document.querySelector(`[data-message-id="${nextMessage.id}"]`);
@@ -320,6 +320,12 @@ export default function SingleChatPage() {
                 behavior: 'smooth',
                 block: 'center',
               });
+
+              // Add highlight effect
+              messageElement.classList.add('pinned-message-highlight');
+              setTimeout(() => {
+                messageElement.classList.remove('pinned-message-highlight');
+              }, 2000);
             }
           }, 100);
         }
