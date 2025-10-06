@@ -369,7 +369,7 @@ describe('User Profile Hooks', () => {
             username: 'follower1',
             name: 'Follower One',
             image: 'follower1.jpg',
-            verification_status: '',
+            verification_status: null,
           },
         },
       ];
@@ -392,7 +392,7 @@ describe('User Profile Hooks', () => {
           username: 'follower1',
           name: 'Follower One',
           image: 'follower1.jpg',
-          verification_status: null,
+          verification_status: '',
         },
       ]);
     });
@@ -599,6 +599,14 @@ describe('User Profile Hooks', () => {
     });
 
     it('checks username availability - not available', async () => {
+      // Override the mock to return not available for this specific test
+      mockApiClientTyped.get.mockResolvedValueOnce({
+        data: {
+          available: false,
+          message: 'Username already taken',
+        },
+      });
+
       const { result } = renderHook(() => useCheckUsername(), {
         wrapper: createTestWrapper(),
       });
@@ -642,8 +650,7 @@ describe('User Profile Hooks', () => {
 
     it('handles API errors gracefully', async () => {
       // Override the mock to return network error
-      const { default: mockApiClient } = require('@/lib/api/client');
-      mockApiClient.get.mockRejectedValueOnce({
+      mockApiClientTyped.get.mockRejectedValueOnce({
         status: 500,
         message: 'Network error',
       });

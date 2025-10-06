@@ -27,7 +27,10 @@ export function useUserProfile() {
       // Don't retry on 401 errors
       if (error && typeof error === 'object' && 'message' in error) {
         const apiError = error as { message: string };
-        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+        if (
+          apiError.message?.includes('401') ||
+          apiError.message?.includes('Unauthorized')
+        ) {
           return false;
         }
       }
@@ -46,7 +49,10 @@ export function useUserProfile() {
     } else if (error) {
       // Clear auth on 401 errors
       const apiError = error as { message?: string };
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      if (
+        apiError.message?.includes('401') ||
+        apiError.message?.includes('Unauthorized')
+      ) {
         clearAuth();
       }
     }
@@ -66,16 +72,21 @@ export function useUserProfile() {
  */
 export function useUpdateUserProfile() {
   const queryClient = useQueryClient();
-  const { user, setUser } = useAuthStore();
+  const { setUser } = useAuthStore();
 
   return useMutation({
     mutationFn: async (updates: Partial<UserDetails>) => {
       // Only send the fields that are being updated
       const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
+        Object.entries(updates).filter(
+          ([_, value]) => value !== undefined || value !== null
+        )
       );
 
-      const response = await apiClient.patch<UserDetails[]>('/v1/user', filteredUpdates);
+      const response = await apiClient.patch<UserDetails[]>(
+        '/v1/user',
+        filteredUpdates
+      );
       return response.data?.[0] || null;
     },
     onSuccess: (updatedUser) => {
@@ -136,14 +147,18 @@ export function useUploadProfileImage() {
 export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
-        `/v1/user/search?s=${encodeURIComponent(query)}`
-      );
+      const response = await apiClient.get<
+        UserDetails[] | { data: UserDetails[] }
+      >(`/v1/user/search?s=${encodeURIComponent(query)}`);
 
       // Handle both response formats (array or object with data property)
       if (Array.isArray(response)) {
         return response;
-      } else if (response && typeof response === 'object' && 'data' in response) {
+      } else if (
+        response &&
+        typeof response === 'object' &&
+        'data' in response
+      ) {
         return (response as any).data || [];
       }
 
@@ -182,7 +197,13 @@ export function useFollowAction() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, action }: { userId: string; action: 'follow' | 'unfollow' }) => {
+    mutationFn: async ({
+      userId,
+      action,
+    }: {
+      userId: string;
+      action: 'follow' | 'unfollow';
+    }) => {
       let response;
       if (action === 'follow') {
         response = await apiClient.post('/v1/user/follow', {
@@ -212,7 +233,10 @@ export function useFollowAction() {
     },
     onError: (error, variables) => {
       const { action } = variables;
-      console.error(`${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`, error);
+      console.error(
+        `${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`,
+        error
+      );
     },
   });
 }
@@ -224,7 +248,9 @@ export function useUserFollowers(userId: string) {
   return useQuery({
     queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/followers/list?id=${userId}`);
+      const response = await apiClient.get<any[]>(
+        `/v1/user/followers/list?id=${userId}`
+      );
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.follower_id,
@@ -247,7 +273,9 @@ export function useUserFollowing(userId: string) {
   return useQuery({
     queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/follows/list?id=${userId}`);
+      const response = await apiClient.get<any[]>(
+        `/v1/user/follows/list?id=${userId}`
+      );
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.followed_id,
@@ -270,7 +298,9 @@ export function useUserEventCount(userId: string) {
   return useQuery({
     queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
-      const response = await apiClient.get<{ count: number }>(`/v1/user/events/count?id=${userId}`);
+      const response = await apiClient.get<{ count: number }>(
+        `/v1/user/events/count?id=${userId}`
+      );
       return response.data?.count || 0;
     },
     enabled: !!userId,
