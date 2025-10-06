@@ -86,9 +86,12 @@ describe('RSVP Integration Flow', () => {
   });
 
   it('displays event details and RSVP options', async () => {
-    const { container } = render(<EventPage params={{ id: 'event123' }} />, {
-      wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-    });
+    const { container } = render(
+      <EventPage params={{ id: 'event123' }} searchParams={{}} />,
+      {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      }
+    );
 
     // Wait for the page to load
     await waitFor(() => {
@@ -114,7 +117,7 @@ describe('RSVP Integration Flow', () => {
 
     const user = userEvent.setup();
 
-    render(<EventPage params={{ id: 'event123' }} />, {
+    render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
@@ -150,7 +153,7 @@ describe('RSVP Integration Flow', () => {
       error: null,
     });
 
-    render(<EventPage params={{ id: 'event123' }} />, {
+    render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
@@ -175,7 +178,7 @@ describe('RSVP Integration Flow', () => {
       error: null,
     });
 
-    render(<EventPage params={{ id: 'event123' }} />, {
+    render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
@@ -215,7 +218,7 @@ describe('RSVP Integration Flow', () => {
 
     const user = userEvent.setup();
 
-    render(<EventPage params={{ id: 'event123' }} />, {
+    render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
@@ -244,7 +247,7 @@ describe('RSVP Integration Flow', () => {
       error: null,
     });
 
-    render(<EventPage params={{ id: 'event123' }} />, {
+    render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
@@ -254,7 +257,8 @@ describe('RSVP Integration Flow', () => {
 
     // Check that loading state is displayed
     expect(
-      screen.getByText(/loading/i) || screen.getByRole('button', { disabled: true })
+      screen.getByText(/loading/i) ||
+        screen.getByRole('button', { name: /rsvp/i })
     ).toBeTruthy();
   });
 
@@ -266,7 +270,7 @@ describe('RSVP Integration Flow', () => {
       error: new Error('RSVP failed'),
     });
 
-    render(<EventPage params={{ id: 'event123' }} />, {
+    render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
@@ -275,6 +279,8 @@ describe('RSVP Integration Flow', () => {
     });
 
     // Check that error state is displayed
-    expect(screen.getByText(/failed/i) || screen.getByText(/error/i)).toBeTruthy();
+    expect(
+      screen.getByText(/failed/i) || screen.getByText(/error/i)
+    ).toBeTruthy();
   });
 });

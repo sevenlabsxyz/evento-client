@@ -1,3 +1,4 @@
+import { useCheckUsername } from '@/lib/hooks/use-check-username';
 import {
   useFollowAction,
   useFollowStatus,
@@ -21,6 +22,12 @@ jest.mock('@/lib/api/client', () => ({
     post: jest.fn(),
     delete: jest.fn(),
   },
+  default: {
+    get: jest.fn(),
+    patch: jest.fn(),
+    post: jest.fn(),
+    delete: jest.fn(),
+  },
 }));
 
 // Mock the auth service
@@ -39,10 +46,12 @@ jest.mock('@/lib/stores/auth-store', () => ({
   }),
 }));
 
-const mockApiClient = require('@/lib/api/client').apiClient as jest.Mocked<typeof apiClient>;
-const mockAuthService = require('@/lib/services/auth').authService as jest.Mocked<
-  typeof authService
->;
+import { apiClient as mockApiClient } from '@/lib/api/client';
+import { authService as mockAuthService } from '@/lib/services/auth';
+
+// Type the mock API client
+const mockApiClientTyped = mockApiClient as any;
+const mockAuthServiceTyped = mockAuthService as any;
 
 describe('User Profile Hooks', () => {
   let queryClient: QueryClient;
@@ -59,7 +68,9 @@ describe('User Profile Hooks', () => {
 
   describe('useUserProfile', () => {
     it('returns loading state initially', () => {
-      mockAuthService.getCurrentUser.mockImplementation(() => new Promise(() => {}));
+      mockAuthServiceTyped.getCurrentUser.mockImplementation(
+        () => new Promise(() => {})
+      );
 
       const { result } = renderHook(() => useUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -86,7 +97,7 @@ describe('User Profile Hooks', () => {
         verification_date: '',
       };
 
-      mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
+      mockAuthServiceTyped.getCurrentUser.mockResolvedValue(mockUser);
 
       const { result } = renderHook(() => useUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -102,7 +113,7 @@ describe('User Profile Hooks', () => {
 
     it('handles authentication errors gracefully', async () => {
       const authError = { message: 'Unauthorized', status: 401 };
-      mockAuthService.getCurrentUser.mockRejectedValue(authError);
+      mockAuthServiceTyped.getCurrentUser.mockRejectedValue(authError);
 
       const { result } = renderHook(() => useUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -134,7 +145,7 @@ describe('User Profile Hooks', () => {
         verification_date: '2024-01-01',
       };
 
-      mockApiClient.patch.mockResolvedValue({
+      mockApiClientTyped.patch.mockResolvedValue({
         data: [updatedUser],
       });
 
@@ -154,7 +165,7 @@ describe('User Profile Hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/user', {
+      expect(mockApiClientTyped.patch).toHaveBeenCalledWith('/v1/user', {
         username: 'newusername',
         name: 'New Name',
         bio: 'Updated bio',
@@ -163,7 +174,7 @@ describe('User Profile Hooks', () => {
 
     it('handles profile update errors gracefully', async () => {
       const updateError = new Error('Update failed');
-      mockApiClient.patch.mockRejectedValue(updateError);
+      mockApiClientTyped.patch.mockRejectedValue(updateError);
 
       const { result } = renderHook(() => useUpdateUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -214,7 +225,7 @@ describe('User Profile Hooks', () => {
         },
       ];
 
-      mockApiClient.get.mockResolvedValue(mockUsers);
+      mockApiClientTyped.get.mockResolvedValue(mockUsers);
 
       const { result } = renderHook(() => useSearchUsers(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -228,13 +239,15 @@ describe('User Profile Hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/user/search?s=test');
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith(
+        '/v1/user/search?s=test'
+      );
       expect(result.current.data).toEqual(mockUsers);
     });
 
     it('handles search errors gracefully', async () => {
       const searchError = new Error('Search failed');
-      mockApiClient.get.mockRejectedValue(searchError);
+      mockApiClientTyped.get.mockRejectedValue(searchError);
 
       const { result } = renderHook(() => useSearchUsers(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -254,7 +267,7 @@ describe('User Profile Hooks', () => {
 
   describe('useFollowStatus', () => {
     it('returns follow status for a user', async () => {
-      mockApiClient.get.mockResolvedValue({
+      mockApiClientTyped.get.mockResolvedValue({
         data: { isFollowing: true },
       });
 
@@ -267,7 +280,9 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.data).toEqual({ isFollowing: true });
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/user/follow?id=user123');
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith(
+        '/v1/user/follow?id=user123'
+      );
     });
 
     it('is disabled when userId is empty', () => {
@@ -276,13 +291,13 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.isLoading).toBe(false);
-      expect(mockApiClient.get).not.toHaveBeenCalled();
+      expect(mockApiClientTyped.get).not.toHaveBeenCalled();
     });
   });
 
   describe('useFollowAction', () => {
     it('follows a user successfully', async () => {
-      mockApiClient.post.mockResolvedValue({ data: { success: true } });
+      mockApiClientTyped.post.mockResolvedValue({ data: { success: true } });
 
       const { result } = renderHook(() => useFollowAction(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -296,13 +311,13 @@ describe('User Profile Hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/user/follow', {
+      expect(mockApiClientTyped.post).toHaveBeenCalledWith('/v1/user/follow', {
         followId: 'user123',
       });
     });
 
     it('unfollows a user successfully', async () => {
-      mockApiClient.delete.mockResolvedValue({ data: { success: true } });
+      mockApiClientTyped.delete.mockResolvedValue({ data: { success: true } });
 
       const { result } = renderHook(() => useFollowAction(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -316,14 +331,17 @@ describe('User Profile Hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/user/follow', {
-        data: { followId: 'user123' },
-      });
+      expect(mockApiClientTyped.delete).toHaveBeenCalledWith(
+        '/v1/user/follow',
+        {
+          data: { followId: 'user123' },
+        }
+      );
     });
 
     it('handles follow errors gracefully', async () => {
       const followError = new Error('Follow failed');
-      mockApiClient.post.mockRejectedValue(followError);
+      mockApiClientTyped.post.mockRejectedValue(followError);
 
       const { result } = renderHook(() => useFollowAction(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -351,12 +369,12 @@ describe('User Profile Hooks', () => {
             username: 'follower1',
             name: 'Follower One',
             image: 'follower1.jpg',
-            verification_status: null,
+            verification_status: '',
           },
         },
       ];
 
-      mockApiClient.get.mockResolvedValue({
+      mockApiClientTyped.get.mockResolvedValue({
         data: mockApiResponse,
       });
 
@@ -385,7 +403,7 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.isLoading).toBe(false);
-      expect(mockApiClient.get).not.toHaveBeenCalled();
+      expect(mockApiClientTyped.get).not.toHaveBeenCalled();
     });
   });
 
@@ -404,7 +422,7 @@ describe('User Profile Hooks', () => {
         },
       ];
 
-      mockApiClient.get.mockResolvedValue({
+      mockApiClientTyped.get.mockResolvedValue({
         data: mockApiResponse,
       });
 
@@ -430,7 +448,7 @@ describe('User Profile Hooks', () => {
 
   describe('useUserEventCount', () => {
     it('returns user event count', async () => {
-      mockApiClient.get.mockResolvedValue({
+      mockApiClientTyped.get.mockResolvedValue({
         data: { count: 5 },
       });
 
@@ -443,7 +461,9 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.data).toBe(5);
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/user/events/count?id=user123');
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith(
+        '/v1/user/events/count?id=user123'
+      );
     });
   });
 
@@ -464,7 +484,7 @@ describe('User Profile Hooks', () => {
         verification_date: '',
       };
 
-      mockApiClient.get.mockResolvedValue({
+      mockApiClientTyped.get.mockResolvedValue({
         data: mockUser,
       });
 
@@ -479,9 +499,9 @@ describe('User Profile Hooks', () => {
       expect(result.current.data).toEqual(mockUser);
     });
 
-    it('returns null for non-existent user', async () => {
+    it('returns undefined for non-existent user', async () => {
       const notFoundError = { status: 404, message: 'User not found' };
-      mockApiClient.get.mockRejectedValue(notFoundError);
+      mockApiClientTyped.get.mockRejectedValue(notFoundError);
 
       const { result } = renderHook(() => useUserByUsername('nonexistent'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -491,7 +511,7 @@ describe('User Profile Hooks', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.data).toBe(null);
+      expect(result.current.data).toBeUndefined();
     });
 
     it('is disabled when username is empty', () => {
@@ -500,7 +520,166 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.isLoading).toBe(false);
-      expect(mockApiClient.get).not.toHaveBeenCalled();
+      expect(mockApiClientTyped.get).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('useCheckUsername', () => {
+    it('validates username length - too short', async () => {
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('ab');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({
+        available: false,
+        message: 'Username must be at least 3 characters',
+      });
+    });
+
+    it('validates username length - too long', async () => {
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('a'.repeat(21));
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({
+        available: false,
+        message: 'Username must be less than 20 characters',
+      });
+    });
+
+    it('validates username format - invalid characters', async () => {
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('user-name');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({
+        available: false,
+        message: 'Username can only contain letters, numbers, and underscores',
+      });
+    });
+
+    it('checks username availability - available', async () => {
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('validusername');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({ available: true });
+    });
+
+    it('checks username availability - not available', async () => {
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('takenusername');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({
+        available: false,
+        message: 'Username already taken',
+      });
+    });
+
+    it('handles 404 error as available username', async () => {
+      // Override the mock to return 404
+      const { default: mockApiClient } = require('@/lib/api/client');
+      mockApiClient.get.mockRejectedValueOnce({
+        status: 404,
+        message: 'Not found',
+      });
+
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('newusername');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({ available: true });
+    });
+
+    it('handles API errors gracefully', async () => {
+      // Override the mock to return network error
+      const { default: mockApiClient } = require('@/lib/api/client');
+      mockApiClient.get.mockRejectedValueOnce({
+        status: 500,
+        message: 'Network error',
+      });
+
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('testusername');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({
+        available: false,
+        message: 'Unable to check username availability',
+      });
+    });
+
+    it('trims and lowercases username', async () => {
+      const { result } = renderHook(() => useCheckUsername(), {
+        wrapper: createTestWrapper(),
+      });
+
+      await act(async () => {
+        result.current.mutate('  TestUser  ');
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual({ available: true });
     });
   });
 });

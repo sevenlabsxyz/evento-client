@@ -9,6 +9,7 @@ const config = {
   testEnvironmentOptions: {
     customExportConditions: ['node', ''], // Prioritize 'node' condition, then fallback to default
   },
+  setupFiles: ['<rootDir>/__tests__/setup/jest.polyfills.ts'],
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup/jest.setup.ts'],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',

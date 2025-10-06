@@ -1,5 +1,5 @@
-import EmailBlastCompose from '@/components/email-blast/email-blast-compose';
-import EmailBlastHistory from '@/components/email-blast/email-blast-history';
+import EmailBlastCompose from '@/components/manage-event/email-blast-compose';
+import EmailBlastHistory from '@/components/manage-event/email-blast-history';
 import { QueryClient } from '@tanstack/react-query';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -7,38 +7,18 @@ import { createTestWrapper } from '../setup/test-utils';
 
 // Mock the email blast hooks
 jest.mock('@/lib/hooks/use-email-blasts', () => ({
-  useEmailBlasts: () => ({
-    data: [
-      {
-        id: 'blast1',
-        event_id: 'event123',
-        user_id: 'user1',
-        message: '<p>Come join us!</p>',
-        recipient_filter: 'all',
-        status: 'sent',
-        scheduled_for: null,
-        created_at: '2025-01-01T10:00:00Z',
-        updated_at: '2025-01-01T10:00:00Z',
-      },
-    ],
-    isLoading: false,
-    error: null,
-  }),
-  useCreateEmailBlast: () => ({
-    mutate: jest.fn(),
-    isPending: false,
-    error: null,
-  }),
+  useEmailBlasts: jest.fn(),
+  useCreateEmailBlast: jest.fn(),
 }));
 
-jest.mock('@/lib/hooks/use-rsvp-stats', () => ({
-  useRSVPStats: () => ({
-    data: {
-      total: 25,
-      yes: 15,
-      maybe: 6,
-      no: 4,
-    },
+jest.mock('@/lib/hooks/use-event-rsvps', () => ({
+  useEventRSVPs: () => ({
+    data: Array(25)
+      .fill(null)
+      .map((_, i) => ({
+        id: `rsvp${i}`,
+        status: i < 15 ? 'yes' : i < 21 ? 'maybe' : 'no',
+      })),
     isLoading: false,
     error: null,
   }),
@@ -64,11 +44,39 @@ describe('Email Blast Integration Flow', () => {
       },
     });
     jest.clearAllMocks();
+
+    // Setup default mock implementations
+    const {
+      useEmailBlasts,
+      useCreateEmailBlast,
+    } = require('@/lib/hooks/use-email-blasts');
+    useEmailBlasts.mockReturnValue({
+      data: [
+        {
+          id: 'blast1',
+          event_id: 'event123',
+          user_id: 'user1',
+          message: '<p>Come join us!</p>',
+          recipient_filter: 'all',
+          status: 'sent',
+          scheduled_for: null,
+          created_at: '2025-01-01T10:00:00Z',
+          updated_at: '2025-01-01T10:00:00Z',
+        },
+      ],
+      isLoading: false,
+      error: null,
+    });
+    useCreateEmailBlast.mockReturnValue({
+      mutate: jest.fn(),
+      isPending: false,
+      error: null,
+    });
   });
 
   describe('EmailBlastHistory', () => {
     it('displays email blast history', async () => {
-      const { container } = render(<EmailBlastHistory eventId='event123' />, {
+      const { container } = render(<EmailBlastHistory eventId="event123" />, {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -90,7 +98,7 @@ describe('Email Blast Integration Flow', () => {
         error: null,
       });
 
-      render(<EmailBlastHistory eventId='event123' />, {
+      render(<EmailBlastHistory eventId="event123" />, {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -105,7 +113,7 @@ describe('Email Blast Integration Flow', () => {
         error: null,
       });
 
-      render(<EmailBlastHistory eventId='event123' />, {
+      render(<EmailBlastHistory eventId="event123" />, {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -115,7 +123,7 @@ describe('Email Blast Integration Flow', () => {
     });
 
     it('displays formatted date and time', async () => {
-      render(<EmailBlastHistory eventId='event123' />, {
+      render(<EmailBlastHistory eventId="event123" />, {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -127,9 +135,17 @@ describe('Email Blast Integration Flow', () => {
 
   describe('EmailBlastCompose', () => {
     it('displays RSVP statistics', async () => {
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/25.*total/i)).toBeInTheDocument();
@@ -142,9 +158,17 @@ describe('Email Blast Integration Flow', () => {
     it('allows selecting recipient filter', async () => {
       const user = userEvent.setup();
 
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
@@ -179,9 +203,17 @@ describe('Email Blast Integration Flow', () => {
 
       const user = userEvent.setup();
 
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
@@ -189,7 +221,8 @@ describe('Email Blast Integration Flow', () => {
 
       // Type a message
       const messageInput =
-        screen.getByPlaceholderText(/write your message/i) || screen.getByRole('textbox');
+        screen.getByPlaceholderText(/write your message/i) ||
+        screen.getByRole('textbox');
 
       if (messageInput) {
         await user.type(messageInput, "Don't forget to arrive on time!");
@@ -218,17 +251,30 @@ describe('Email Blast Integration Flow', () => {
         error: null,
       });
 
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
       });
 
-      expect(
-        screen.getByRole('button', { disabled: true }) || screen.getByText(/sending/i)
-      ).toBeTruthy();
+      // Check for disabled button or sending state
+      const buttons = screen.getAllByRole('button');
+      const hasDisabledButton = buttons.some((btn) =>
+        btn.hasAttribute('disabled')
+      );
+      const hasSendingText = screen.queryByText(/sending/i);
+
+      expect(hasDisabledButton || hasSendingText).toBeTruthy();
     });
 
     it('handles send errors gracefully', async () => {
@@ -239,15 +285,25 @@ describe('Email Blast Integration Flow', () => {
         error: new Error('Failed to send email blast'),
       });
 
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
       });
 
-      expect(screen.getByText(/failed to send/i) || screen.getByText(/error/i)).toBeTruthy();
+      expect(
+        screen.getByText(/failed to send/i) || screen.getByText(/error/i)
+      ).toBeTruthy();
     });
 
     it('validates message content before sending', async () => {
@@ -261,9 +317,17 @@ describe('Email Blast Integration Flow', () => {
 
       const user = userEvent.setup();
 
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
@@ -280,22 +344,33 @@ describe('Email Blast Integration Flow', () => {
     it('displays character count for message', async () => {
       const user = userEvent.setup();
 
-      render(<EmailBlastCompose eventId='event123' />, {
-        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-      });
+      render(
+        <EmailBlastCompose
+          eventId="event123"
+          onSend={jest.fn()}
+          onCancel={jest.fn()}
+        />,
+        {
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
+        }
+      );
 
       await waitFor(() => {
         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
       });
 
       const messageInput =
-        screen.getByPlaceholderText(/write your message/i) || screen.getByRole('textbox');
+        screen.getByPlaceholderText(/write your message/i) ||
+        screen.getByRole('textbox');
 
       if (messageInput) {
         await user.type(messageInput, 'A'.repeat(100));
 
         // Look for character count display
-        expect(screen.getByText(/100.*characters/i) || screen.getByText(/100\//)).toBeTruthy();
+        expect(
+          screen.getByText(/100.*characters/i) || screen.getByText(/100\//)
+        ).toBeTruthy();
       }
     });
   });
@@ -305,11 +380,16 @@ describe('Email Blast Integration Flow', () => {
       // This test verifies that both components work together
       const { container } = render(
         <div>
-          <EmailBlastHistory eventId='event123' />
-          <EmailBlastCompose eventId='event123' />
+          <EmailBlastHistory eventId="event123" />
+          <EmailBlastCompose
+            eventId="event123"
+            onSend={jest.fn()}
+            onCancel={jest.fn()}
+          />
         </div>,
         {
-          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
         }
       );
 
@@ -336,11 +416,16 @@ describe('Email Blast Integration Flow', () => {
 
       const { rerender } = render(
         <div>
-          <EmailBlastHistory eventId='event123' />
-          <EmailBlastCompose eventId='event123' />
+          <EmailBlastHistory eventId="event123" />
+          <EmailBlastCompose
+            eventId="event123"
+            onSend={jest.fn()}
+            onCancel={jest.fn()}
+          />
         </div>,
         {
-          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) =>
+            createTestWrapper(queryClient)({ children }),
         }
       );
 
@@ -392,8 +477,12 @@ describe('Email Blast Integration Flow', () => {
       // Re-render to pick up the updated data
       rerender(
         <div>
-          <EmailBlastHistory eventId='event123' />
-          <EmailBlastCompose eventId='event123' />
+          <EmailBlastHistory eventId="event123" />
+          <EmailBlastCompose
+            eventId="event123"
+            onSend={jest.fn()}
+            onCancel={jest.fn()}
+          />
         </div>
       );
 

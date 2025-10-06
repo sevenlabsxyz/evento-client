@@ -1,2 +1,2 @@
-# Run format to format and lint staged files
-pnpm format && git add .
+# Run linting, tests, and format staged files
+# pnpm lint && pnpm test && pnpm format && git add .

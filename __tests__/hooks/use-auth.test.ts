@@ -1,8 +1,26 @@
-import { useAuth, useLogin, useRequireAuth, useVerifyCode } from '@/lib/hooks/use-auth';
+import {
+  useAuth,
+  useLogin,
+  useRequireAuth,
+  useVerifyCode,
+} from '@/lib/hooks/use-auth';
 import { authService } from '@/lib/services/auth';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
+
+// Mock Next.js router
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+  useSearchParams: () => ({
+    get: jest.fn(),
+  }),
+  usePathname: () => '/test-path',
+}));
 
 // Mock the auth service
 jest.mock('@/lib/services/auth', () => ({
@@ -56,7 +74,9 @@ describe('Authentication Hooks', () => {
 
   describe('useAuth', () => {
     it('returns loading state initially', async () => {
-      mockAuthService.getCurrentUser.mockImplementation(() => Promise.resolve(null));
+      mockAuthService.getCurrentUser.mockImplementation(() =>
+        Promise.resolve(null)
+      );
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -224,7 +244,10 @@ describe('Authentication Hooks', () => {
         result.current.verifyCode({ code: '123456' });
       });
 
-      expect(mockAuthService.verifyCode).toHaveBeenCalledWith('test@example.com', '123456');
+      expect(mockAuthService.verifyCode).toHaveBeenCalledWith(
+        'test@example.com',
+        '123456'
+      );
       expect(result.current.isLoading).toBe(true);
     });
 

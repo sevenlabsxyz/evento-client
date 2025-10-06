@@ -1,162 +1,79 @@
-import apiClient from '@/lib/api/client';
 import '@testing-library/jest-dom';
-import MockAdapter from 'axios-mock-adapter';
 
-// Ensure axios uses a local API base in tests
-process.env.NEXT_PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost';
+// Mock the API client directly
+jest.mock('@/lib/api/client', () => {
+  const mockApiClient = {
+    get: jest.fn(),
+    post: jest.fn(),
+    put: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    request: jest.fn(),
+    head: jest.fn(),
+    options: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  };
+  return {
+    __esModule: true,
+    default: mockApiClient,
+    apiClient: mockApiClient,
+  };
+});
 
-let axiosMock: MockAdapter;
+// Setup default mock responses
+beforeEach(() => {
+  const { default: mockApiClient } = require('@/lib/api/client');
 
-// Typed bodies for mocked endpoints
-type CreateEventBody = { title?: string };
-type UpsertRsvpBody = { event_id: string; status: string };
-type CreateEmailBlastBody = {
-  message?: string;
-  recipientFilter?: 'all' | 'yes_only' | 'yes_and_maybe';
-  scheduledFor?: string | null;
-};
+  // Reset all mocks
+  Object.values(mockApiClient).forEach((mockFn: any) => {
+    if (typeof mockFn === 'function' && mockFn.mockReset) {
+      mockFn.mockReset();
+    }
+  });
 
-function registerAxiosHandlers(mock: MockAdapter) {
-  // Create Event
-  mock.onPost('/v1/events/create').reply((config) => {
-    const body = JSON.parse(config.data || '{}') as CreateEventBody;
-    return [
-      200,
-      {
+  // Setup default responses
+  mockApiClient.get.mockImplementation((url: string) => {
+    if (url.includes('/v1/user/check-username')) {
+      const urlObj = new URL(url, 'http://localhost');
+      const username = urlObj.searchParams.get('username');
+
+      if (username === 'takenusername') {
+        return Promise.resolve({
+          data: { available: false, message: 'Username already taken' },
+        });
+      }
+
+      return Promise.resolve({
+        data: { available: true },
+      });
+    }
+
+    if (url.includes('/v1/events/feed')) {
+      return Promise.resolve({
         success: true,
         message: 'ok',
         data: [
           {
-            id: 'evt_test123',
-            title: body.title || 'Test Event',
+            id: 'event1',
+            title: 'Event 1',
+            description: 'Description 1',
+            user_details: { username: 'user1', name: 'User 1' },
           },
-        ],
-      },
-    ];
-  });
-
-  // RSVP upsert
-  mock.onPost('/v1/events/rsvps').reply((config) => {
-    const body = JSON.parse(config.data || '{}') as UpsertRsvpBody;
-    return [
-      200,
-      {
-        success: true,
-        message: 'ok',
-        data: [
           {
-            id: 'rsvp_1',
-            event_id: body.event_id,
-            user_id: 'user_1',
-            status: body.status,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            id: 'event2',
+            title: 'Event 2',
+            description: 'Description 2',
+            user_details: { username: 'user2', name: 'User 2' },
           },
         ],
-      },
-    ];
-  });
+      });
+    }
 
-  mock.onPatch('/v1/events/rsvps').reply((config) => {
-    const body = JSON.parse(config.data || '{}') as UpsertRsvpBody;
-    return [
-      200,
-      {
-        success: true,
-        message: 'ok',
-        data: [
-          {
-            id: 'rsvp_1',
-            event_id: body.event_id,
-            user_id: 'user_1',
-            status: body.status,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ],
-      },
-    ];
-  });
-
-  // Email Blasts history
-  mock.onGet(/\/v1\/events\/email-blasts\/[^/]+$/).reply((_config) => {
-    return [
-      200,
-      {
-        success: true,
-        message: 'ok',
-        data: [
-          {
-            id: 'blast_1',
-            event_id: 'evt_1',
-            user_id: 'user_1',
-            message: '<p>Hello!</p>',
-            recipient_filter: 'all',
-            status: 'sent',
-            scheduled_for: null,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ],
-      },
-    ];
-  });
-
-  // Create Email Blast
-  mock.onPost(/\/v1\/events\/email-blasts\/[^/]+$/).reply((config) => {
-    const body = JSON.parse(config.data || '{}') as CreateEmailBlastBody;
-    const eventId = (config.url || '').split('/').pop() || 'evt_1';
-    return [
-      200,
-      {
-        success: true,
-        message: 'ok',
-        data: {
-          id: 'blast_new',
-          event_id: eventId,
-          user_id: 'user_1',
-          message: body.message || '<p>Hello!</p>',
-          recipient_filter: body.recipientFilter || 'all',
-          status: 'sent',
-          scheduled_for: body.scheduledFor ?? null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      },
-    ];
-  });
-
-  // Stream Chat token
-  mock.onGet('/v1/stream-chat/token').reply(() => {
-    return [
-      200,
-      {
-        success: true,
-        data: { token: 'test_token', user_id: 'user_1', expires_in: 3600 },
-      },
-    ];
-  });
-
-  // Cancel Event
-  mock.onDelete(/\/v1\/events\/cancel/).reply(() => {
-    return [
-      200,
-      {
-        success: true,
-        message: 'Event cancelled successfully',
-        data: { id: 'event123', status: 'cancelled' },
-      },
-    ];
-  });
-
-  // User Events
-  mock.onGet('/v1/events/user-events').reply((config) => {
-    const url = new URL(config.url || '', 'http://localhost');
-    const params = Object.fromEntries(url.searchParams.entries());
-
-    return [
-      200,
-      {
+    if (url.includes('/v1/events/user-events')) {
+      return Promise.resolve({
         success: true,
         message: 'ok',
         data: {
@@ -165,109 +82,180 @@ function registerAxiosHandlers(mock: MockAdapter) {
               id: 'event1',
               title: 'User Event 1',
               description: 'Description 1',
-              user_details: { username: params.username, name: 'Test User' },
+              user_details: { username: 'testuser', name: 'Test User' },
             },
           ],
           pagination: {
             totalCount: 1,
             totalPages: 1,
-            currentPage: parseInt(params.page) || 1,
-            limit: parseInt(params.limit) || 10,
+            currentPage: 1,
+            limit: 10,
             hasNextPage: false,
             hasPreviousPage: false,
           },
         },
-      },
-    ];
-  });
+      });
+    }
 
-  // Event RSVPs
-  mock.onGet('/v1/events/rsvps').reply((config) => {
-    const url = new URL(config.url || '', 'http://localhost');
-    const eventId = url.searchParams.get('event_id');
-
-    return [
-      200,
-      {
+    if (url.includes('/v1/events/rsvps') && !url.includes('/current-user')) {
+      return Promise.resolve({
         success: true,
         message: 'ok',
         data: [
           {
             id: 'rsvp1',
-            event_id: eventId,
+            event_id: 'event123',
             user_id: 'user1',
             status: 'yes',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
         ],
-      },
-    ];
-  });
+      });
+    }
 
-  // Current User RSVP
-  mock.onGet('/v1/events/rsvps/current-user').reply((config) => {
-    const url = new URL(config.url || '', 'http://localhost');
-    const eventId = url.searchParams.get('event_id');
-
-    return [
-      200,
-      {
+    if (url.includes('/v1/events/rsvps/current-user')) {
+      return Promise.resolve({
         success: true,
         message: 'ok',
         data: [
           {
             id: 'rsvp1',
-            event_id: eventId,
+            event_id: 'event123',
             user_id: 'current_user',
             status: 'yes',
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
           },
         ],
-      },
-    ];
+      });
+    }
+
+    if (url.includes('/v1/events/sub-events')) {
+      return Promise.resolve([
+        {
+          id: 'subevent1',
+          title: 'Sub Event 1',
+          description: 'Sub Event Description',
+          user_details: { username: 'user1', name: 'User 1' },
+          computed_start_date: new Date().toISOString(),
+          timezone: 'UTC',
+        },
+      ]);
+    }
+
+    if (url.includes('/v1/events/details')) {
+      return Promise.resolve({
+        success: true,
+        message: 'ok',
+        data: {
+          id: 'event123',
+          title: 'Test Event',
+          description: 'Test Description',
+          location: 'Test Location',
+          start_date_day: 1,
+          start_date_month: 1,
+          start_date_year: 2025,
+          start_date_hours: 10,
+          start_date_minutes: 0,
+          end_date_day: 1,
+          end_date_month: 1,
+          end_date_year: 2025,
+          end_date_hours: 12,
+          end_date_minutes: 0,
+          timezone: 'UTC',
+          visibility: 'public',
+          status: 'published',
+          cover: null,
+          host_id: 'user1',
+        },
+      });
+    }
+
+    // Default response
+    return Promise.resolve({ success: true, data: {} });
   });
 
-  // Sub Events
-  mock.onGet('/v1/events/sub-events').reply((config) => {
-    const url = new URL(config.url || '', 'http://localhost');
-    const eventId = url.searchParams.get('event_id');
-
-    return [
-      200,
-      {
+  mockApiClient.post?.mockImplementation((url: string, data: any) => {
+    if (url.includes('/v1/events/create')) {
+      return Promise.resolve({
         success: true,
         message: 'ok',
         data: [
           {
-            id: 'subevent1',
-            title: 'Sub Event 1',
-            description: 'Sub Event Description',
-            user_details: { username: 'user1', name: 'User 1' },
-            computed_start_date: new Date().toISOString(),
-            timezone: 'UTC',
+            id: 'evt_test123',
+            title: data?.title || 'Test Event',
           },
         ],
-      },
-    ];
+      });
+    }
+
+    if (url.includes('/v1/events/rsvps')) {
+      return Promise.resolve({
+        success: true,
+        message: 'ok',
+        data: [
+          {
+            id: 'rsvp_1',
+            event_id: data?.event_id,
+            user_id: 'user_1',
+            status: data?.status,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ],
+      });
+    }
+
+    return Promise.resolve({ success: true, data: {} });
   });
-}
 
-// Establish API mocking before all tests.
-beforeAll(() => {
-  axiosMock = new MockAdapter(apiClient as any, { onNoMatch: 'throwException' as const });
-});
+  mockApiClient.patch?.mockImplementation((url: string, data: any) => {
+    if (url.includes('/v1/events/rsvps')) {
+      return Promise.resolve({
+        success: true,
+        message: 'ok',
+        data: [
+          {
+            id: 'rsvp_1',
+            event_id: data?.event_id,
+            user_id: 'user_1',
+            status: data?.status,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ],
+      });
+    }
 
-// Reset handlers and set up defaults before each test
-beforeEach(() => {
-  axiosMock.reset();
-  registerAxiosHandlers(axiosMock);
-});
+    if (url.includes('/v1/events/details')) {
+      return Promise.resolve({
+        success: true,
+        message: 'ok',
+        data: [
+          {
+            id: data?.id || 'event123',
+            title: data?.title || 'Updated Event',
+            description: data?.description || 'Updated Description',
+          },
+        ],
+      });
+    }
 
-// Clean up after the tests are finished.
-afterAll(() => {
-  axiosMock.restore();
+    return Promise.resolve({ success: true, data: {} });
+  });
+
+  mockApiClient.delete?.mockImplementation((url: string) => {
+    if (url.includes('/v1/events/cancel')) {
+      return Promise.resolve({
+        success: true,
+        message: 'Event cancelled successfully',
+        data: { id: 'event123', status: 'cancelled' },
+      });
+    }
+
+    return Promise.resolve({ success: true, data: {} });
+  });
 });
 
 import React from 'react';
@@ -275,5 +263,9 @@ import React from 'react';
 // Mock react-spotify-embed to avoid ESM issues
 jest.mock('react-spotify-embed', () => ({
   Spotify: () =>
-    React.createElement('div', { 'data-testid': 'spotify-embed' }, 'Spotify Embed Mock'),
+    React.createElement(
+      'div',
+      { 'data-testid': 'spotify-embed' },
+      'Spotify Embed Mock'
+    ),
 }));

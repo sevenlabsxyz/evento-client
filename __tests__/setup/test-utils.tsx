@@ -1,8 +1,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PropsWithChildren } from 'react';
 
-export function createTestWrapper() {
-  const queryClient = new QueryClient({
+export function createTestWrapper(queryClient?: QueryClient) {
+  const client = queryClient || new QueryClient({
     defaultOptions: {
       queries: { retry: false, staleTime: 0 },
       mutations: { retry: false },
@@ -10,7 +10,7 @@ export function createTestWrapper() {
   });
 
   function Wrapper({ children }: PropsWithChildren) {
-    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
   }
 
   return Wrapper;
