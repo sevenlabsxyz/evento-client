@@ -37,7 +37,7 @@ describe('useOnboardingGuard', () => {
       forward: jest.fn(),
       refresh: jest.fn(),
       prefetch: jest.fn(),
-    } as any);
+    } as ReturnType<typeof useRouter>);
 
     mockUser = {
       id: 'user_1',
@@ -68,10 +68,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isLoading: true,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -87,10 +88,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -106,11 +108,12 @@ describe('useOnboardingGuard', () => {
       mockIsUserOnboarded.mockReturnValue(false);
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -128,11 +131,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/');
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -157,11 +161,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/dashboard');
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -186,11 +191,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/'); // Should return default for invalid URL
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -217,11 +223,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/');
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -239,10 +246,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isLoading: true,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result, rerender } = renderHook(() => useOnboardingGuard());
@@ -255,11 +263,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/dashboard');
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       rerender();
@@ -276,10 +285,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isLoading: true,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result, rerender } = renderHook(() => useOnboardingGuard());
@@ -291,11 +301,12 @@ describe('useOnboardingGuard', () => {
       mockIsUserOnboarded.mockReturnValue(false);
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       rerender();
@@ -313,11 +324,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/dashboard');
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result, rerender } = renderHook(() => useOnboardingGuard());
@@ -335,10 +347,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: null,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       rerender();
@@ -363,10 +376,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: userWithoutOnboarding,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -388,10 +402,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: userWithWhitespace,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -413,10 +428,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: userWithPartialOnboarding,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -440,10 +456,11 @@ describe('useOnboardingGuard', () => {
       mockUseAuth.mockReturnValue({
         user: userWithPartialOnboarding,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        isAuthenticated: false,
+        email: null,
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -472,11 +489,12 @@ describe('useOnboardingGuard', () => {
       );
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result } = renderHook(() => useOnboardingGuard());
@@ -494,11 +512,12 @@ describe('useOnboardingGuard', () => {
       mockValidateRedirectUrl.mockReturnValue('/dashboard');
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       const { result, rerender } = renderHook(() => useOnboardingGuard());
@@ -526,11 +545,12 @@ describe('useOnboardingGuard', () => {
 
       mockUseAuth.mockReturnValue({
         user: mockUser,
+        isAuthenticated: true,
         isLoading: false,
-        error: null,
-        signOut: jest.fn(),
-        signIn: jest.fn(),
-        updateProfile: jest.fn(),
+        email: 'test@example.com',
+        checkAuth: jest.fn(),
+        logout: jest.fn(),
+        isLoggingOut: false,
       });
 
       renderHook(() => useOnboardingGuard());

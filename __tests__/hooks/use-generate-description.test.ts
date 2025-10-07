@@ -47,22 +47,22 @@ describe('useGenerateDescription', () => {
   });
 
   // Helper function to mock the API client for generate-description endpoint
-  const mockGenerateDescription = (response: any) => {
+  const mockGenerateDescription = (response: { description: string }) => {
     mockApiClient.post.mockImplementation((url: string) => {
       if (url.includes('/v1/events/generate-description')) {
         return Promise.resolve(response);
       }
-      return Promise.resolve({ success: true, data: {} });
+      return Promise.resolve({ description: 'fallback' });
     });
   };
 
   // Helper function to mock API error for generate-description endpoint
-  const mockGenerateDescriptionError = (error: any) => {
+  const mockGenerateDescriptionError = (error: Error) => {
     mockApiClient.post.mockImplementation((url: string) => {
       if (url.includes('/v1/events/generate-description')) {
         return Promise.reject(error);
       }
-      return Promise.resolve({ success: true, data: {} });
+      return Promise.resolve({ description: 'fallback' });
     });
   };
 
@@ -129,7 +129,12 @@ describe('useGenerateDescription', () => {
     it('handles response without description', async () => {
       const mockParams = createMockParams();
       const mockResponse = { message: 'Success' }; // Missing description
-      mockGenerateDescription(mockResponse);
+      mockApiClient.post.mockImplementation((url: string) => {
+        if (url.includes('/v1/events/generate-description')) {
+          return Promise.resolve(mockResponse);
+        }
+        return Promise.resolve({ description: 'fallback' });
+      });
 
       const { result } = renderHook(() => useGenerateDescription(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -139,7 +144,9 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect(error.message).toBe('Failed to generate description');
+          expect((error as Error).message).toBe(
+            'Failed to generate description'
+          );
         }
       });
 
@@ -150,7 +157,12 @@ describe('useGenerateDescription', () => {
 
     it('handles null response', async () => {
       const mockParams = createMockParams();
-      mockGenerateDescription(null);
+      mockApiClient.post.mockImplementation((url: string) => {
+        if (url.includes('/v1/events/generate-description')) {
+          return Promise.resolve(null);
+        }
+        return Promise.resolve({ description: 'fallback' });
+      });
 
       const { result } = renderHook(() => useGenerateDescription(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -160,7 +172,9 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect(error.message).toContain('Cannot read properties of null');
+          expect((error as Error).message).toContain(
+            'Cannot read properties of null'
+          );
         }
       });
 
@@ -171,7 +185,12 @@ describe('useGenerateDescription', () => {
 
     it('handles undefined response', async () => {
       const mockParams = createMockParams();
-      mockGenerateDescription(undefined);
+      mockApiClient.post.mockImplementation((url: string) => {
+        if (url.includes('/v1/events/generate-description')) {
+          return Promise.resolve(undefined);
+        }
+        return Promise.resolve({ description: 'fallback' });
+      });
 
       const { result } = renderHook(() => useGenerateDescription(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -181,7 +200,7 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect(error.message).toContain(
+          expect((error as Error).message).toContain(
             'Cannot read properties of undefined'
           );
         }
@@ -205,7 +224,9 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect(error.message).toBe('Failed to generate description');
+          expect((error as Error).message).toBe(
+            'Failed to generate description'
+          );
         }
       });
 
@@ -221,15 +242,17 @@ describe('useGenerateDescription', () => {
       const mockResponse = createMockResponse('Generated description');
 
       // Create a promise that we can control
-      let resolvePromise: (value: any) => void;
-      const controlledPromise = new Promise((resolve) => {
-        resolvePromise = resolve;
-      });
+      let resolvePromise: (value: { description: string }) => void;
+      const controlledPromise = new Promise<{ description: string }>(
+        (resolve) => {
+          resolvePromise = resolve;
+        }
+      );
       mockApiClient.post.mockImplementationOnce((url: string) => {
         if (url.includes('/v1/events/generate-description')) {
           return controlledPromise;
         }
-        return Promise.resolve({ success: true, data: {} });
+        return Promise.resolve({ description: 'fallback' });
       });
 
       const { result } = renderHook(() => useGenerateDescription(), {
@@ -717,13 +740,13 @@ describe('useGenerateDescription', () => {
           if (url.includes('/v1/events/generate-description')) {
             return Promise.resolve(mockResponse1);
           }
-          return Promise.resolve({ success: true, data: {} });
+          return Promise.resolve({ description: 'fallback' });
         })
         .mockImplementationOnce((url: string) => {
           if (url.includes('/v1/events/generate-description')) {
             return Promise.resolve(mockResponse2);
           }
-          return Promise.resolve({ success: true, data: {} });
+          return Promise.resolve({ description: 'fallback' });
         });
 
       const { result } = renderHook(() => useGenerateDescription(), {

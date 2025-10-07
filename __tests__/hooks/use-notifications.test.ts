@@ -683,7 +683,7 @@ describe('useNotifications', () => {
       });
 
       await act(async () => {
-        await result.current.mutateAsync();
+        await result.current.mutateAsync({});
       });
 
       await waitFor(() => {
@@ -733,7 +733,7 @@ describe('useNotifications', () => {
       });
 
       await act(async () => {
-        await result.current.mutateAsync();
+        await result.current.mutateAsync({});
       });
 
       await waitFor(() => {
@@ -797,7 +797,9 @@ describe('useNotifications', () => {
     });
 
     it('returns zero counts when meta is missing', async () => {
-      const mockResponse = createMockFeedResponse({ meta: undefined as any });
+      const mockResponse = createMockFeedResponse({
+        meta: undefined as unknown as NotificationFeedResponse['meta'],
+      });
       mockApiClient.get.mockResolvedValue({ data: mockResponse });
 
       const { result } = renderHook(() => useUnreadCount(), {

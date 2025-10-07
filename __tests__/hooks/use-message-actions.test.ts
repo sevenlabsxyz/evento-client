@@ -9,7 +9,11 @@ const mockConsoleError = jest
 
 describe('useMessageActions', () => {
   let mockChannel: Partial<StreamChannel>;
-  let mockClient: any;
+  let mockClient: {
+    flagMessage: jest.Mock;
+    pinMessage: jest.Mock;
+    unpinMessage: jest.Mock;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -23,9 +27,13 @@ describe('useMessageActions', () => {
 
     // Create mock channel
     mockChannel = {
-      getClient: jest.fn(() => mockClient),
-      sendReaction: jest.fn(),
-      markUnread: jest.fn(),
+      getClient: jest.fn(
+        () => mockClient as unknown as ReturnType<StreamChannel['getClient']>
+      ),
+      sendReaction: jest.fn() as jest.MockedFunction<
+        StreamChannel['sendReaction']
+      >,
+      markUnread: jest.fn() as jest.MockedFunction<StreamChannel['markUnread']>,
     };
   });
 
@@ -86,7 +94,7 @@ describe('useMessageActions', () => {
     it('returns early when channel.getClient is undefined', async () => {
       const channelWithoutGetClient = { ...mockChannel, getClient: undefined };
       const { result } = renderHook(() =>
-        useMessageActions(channelWithoutGetClient as StreamChannel)
+        useMessageActions(channelWithoutGetClient as unknown as StreamChannel)
       );
 
       await act(async () => {
@@ -195,7 +203,7 @@ describe('useMessageActions', () => {
     it('returns early when channel.getClient is undefined', async () => {
       const channelWithoutGetClient = { ...mockChannel, getClient: undefined };
       const { result } = renderHook(() =>
-        useMessageActions(channelWithoutGetClient as StreamChannel)
+        useMessageActions(channelWithoutGetClient as unknown as StreamChannel)
       );
 
       await act(async () => {
@@ -211,7 +219,7 @@ describe('useMessageActions', () => {
     it('sends a reaction successfully', async () => {
       const messageId = 'message123';
       const emoji = '👍';
-      mockChannel.sendReaction!.mockResolvedValue(undefined);
+      (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -230,7 +238,7 @@ describe('useMessageActions', () => {
       const messageId = 'message123';
       const emoji = '👍';
       const error = new Error('Reaction failed');
-      mockChannel.sendReaction!.mockRejectedValue(error);
+      (mockChannel.sendReaction as jest.Mock).mockRejectedValue(error);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -265,7 +273,7 @@ describe('useMessageActions', () => {
       const emojis = ['👍', '❤️', '😂', '😢', '😮', '😡'];
 
       for (const emoji of emojis) {
-        mockChannel.sendReaction!.mockResolvedValue(undefined);
+        (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
 
         const { result } = renderHook(() =>
           useMessageActions(mockChannel as StreamChannel)
@@ -285,7 +293,7 @@ describe('useMessageActions', () => {
   describe('handleMarkUnread', () => {
     it('marks message as unread successfully', async () => {
       const messageId = 'message123';
-      mockChannel.markUnread!.mockResolvedValue(undefined);
+      (mockChannel.markUnread as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -303,7 +311,7 @@ describe('useMessageActions', () => {
     it('handles mark unread error', async () => {
       const messageId = 'message123';
       const error = new Error('Mark unread failed');
-      mockChannel.markUnread!.mockRejectedValue(error);
+      (mockChannel.markUnread as jest.Mock).mockRejectedValue(error);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -381,7 +389,7 @@ describe('useMessageActions', () => {
         markUnread: jest.fn(),
       };
 
-      rerender({ channel: newChannel as StreamChannel });
+      rerender({ channel: newChannel as unknown as StreamChannel });
 
       expect(result.current.handleFlag).not.toBe(firstRender.handleFlag);
       expect(result.current.handlePin).not.toBe(firstRender.handlePin);
@@ -412,7 +420,7 @@ describe('useMessageActions', () => {
 
     it('handles special characters in message ID', async () => {
       const messageId = 'message-123_!@#$%^&*()';
-      mockChannel.sendReaction!.mockResolvedValue(undefined);
+      (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -429,7 +437,7 @@ describe('useMessageActions', () => {
 
     it('handles very long message ID', async () => {
       const messageId = 'a'.repeat(1000);
-      mockChannel.markUnread!.mockResolvedValue(undefined);
+      (mockChannel.markUnread as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -445,7 +453,9 @@ describe('useMessageActions', () => {
     });
 
     it('handles null channel', async () => {
-      const { result } = renderHook(() => useMessageActions(null as any));
+      const { result } = renderHook(() =>
+        useMessageActions(null as unknown as StreamChannel)
+      );
 
       await act(async () => {
         await result.current.handleFlag('message123');
@@ -483,8 +493,8 @@ describe('useMessageActions', () => {
     it('handles mixed operations concurrently', async () => {
       mockClient.flagMessage.mockResolvedValue(undefined);
       mockClient.pinMessage.mockResolvedValue(undefined);
-      mockChannel.sendReaction!.mockResolvedValue(undefined);
-      mockChannel.markUnread!.mockResolvedValue(undefined);
+      (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
+      (mockChannel.markUnread as jest.Mock).mockResolvedValue(undefined);
 
       const { result } = renderHook(() =>
         useMessageActions(mockChannel as StreamChannel)
@@ -541,7 +551,7 @@ describe('useMessageActions', () => {
       const messageId = 'message123';
       const emoji = '👍';
       const error = new Error('Synchronous error');
-      mockChannel.sendReaction!.mockImplementation(() => {
+      (mockChannel.sendReaction as jest.Mock).mockImplementation(() => {
         throw error;
       });
 
