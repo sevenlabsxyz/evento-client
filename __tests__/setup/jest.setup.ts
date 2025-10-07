@@ -144,33 +144,7 @@ beforeEach(() => {
       ]);
     }
 
-    if (url.includes('/v1/events/details')) {
-      return Promise.resolve({
-        success: true,
-        message: 'ok',
-        data: {
-          id: 'event123',
-          title: 'Test Event',
-          description: 'Test Description',
-          location: 'Test Location',
-          start_date_day: 1,
-          start_date_month: 1,
-          start_date_year: 2025,
-          start_date_hours: 10,
-          start_date_minutes: 0,
-          end_date_day: 1,
-          end_date_month: 1,
-          end_date_year: 2025,
-          end_date_hours: 12,
-          end_date_minutes: 0,
-          timezone: 'UTC',
-          visibility: 'public',
-          status: 'published',
-          cover: null,
-          host_id: 'user1',
-        },
-      });
-    }
+    // Removed global mock for /v1/events/details to allow test-specific mocking
 
     // Default response
     return Promise.resolve({ success: true, data: {} });

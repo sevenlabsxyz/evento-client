@@ -33,17 +33,35 @@ jest.mock('@/lib/services/auth', () => ({
   },
 }));
 
+// Define the user type
+type MockUser = {
+  id: string;
+  username: string;
+  name: string;
+  bio: string;
+  image: string;
+  bio_link: string;
+  x_handle: string;
+  instagram_handle: string;
+  ln_address: string;
+  nip05: string;
+  verification_status: null;
+  verification_date: string;
+};
+
 // Mock the auth store
+const mockAuthStore = {
+  user: null as MockUser | null,
+  isAuthenticated: false,
+  email: '',
+  setUser: jest.fn(),
+  setEmail: jest.fn(),
+  clearAuth: jest.fn(),
+  clearEmail: jest.fn(),
+};
+
 jest.mock('@/lib/stores/auth-store', () => ({
-  useAuthStore: () => ({
-    user: null,
-    isAuthenticated: false,
-    email: '',
-    setUser: jest.fn(),
-    setEmail: jest.fn(),
-    clearAuth: jest.fn(),
-    clearEmail: jest.fn(),
-  }),
+  useAuthStore: () => mockAuthStore,
 }));
 
 // Mock Supabase client
@@ -59,6 +77,23 @@ jest.mock('@/lib/supabase/client', () => ({
 
 const mockAuthService = authService as jest.Mocked<typeof authService>;
 
+// Helper function to create mock users
+const createMockUser = (overrides: Partial<MockUser> = {}): MockUser => ({
+  id: 'user1',
+  username: 'testuser',
+  name: 'Test User',
+  bio: 'Test bio',
+  image: 'test.jpg',
+  bio_link: '',
+  x_handle: '',
+  instagram_handle: '',
+  ln_address: '',
+  nip05: '',
+  verification_status: null,
+  verification_date: '',
+  ...overrides,
+});
+
 describe('Authentication Hooks', () => {
   let queryClient: QueryClient;
 
@@ -70,6 +105,11 @@ describe('Authentication Hooks', () => {
       },
     });
     jest.clearAllMocks();
+
+    // Reset the mock store state
+    mockAuthStore.user = null;
+    mockAuthStore.isAuthenticated = false;
+    mockAuthStore.email = '';
   });
 
   describe('useAuth', () => {
@@ -88,20 +128,7 @@ describe('Authentication Hooks', () => {
     });
 
     it('returns authenticated user data when available', async () => {
-      const mockUser = {
-        id: 'user1',
-        username: 'testuser',
-        name: 'Test User',
-        bio: 'Test bio',
-        image: 'test.jpg',
-        bio_link: '',
-        x_handle: '',
-        instagram_handle: '',
-        ln_address: '',
-        nip05: '',
-        verification_status: null,
-        verification_date: '',
-      };
+      const mockUser = createMockUser();
 
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
@@ -113,8 +140,22 @@ describe('Authentication Hooks', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.user).toEqual(mockUser);
-      expect(result.current.isAuthenticated).toBe(true);
+      // Wait for the useEffect to update the store
+      await waitFor(() => {
+        expect(mockAuthStore.setUser).toHaveBeenCalledWith(mockUser);
+      });
+
+      // Update the mock store to reflect the state change
+      mockAuthStore.user = mockUser;
+      mockAuthStore.isAuthenticated = true;
+
+      // Re-render to get updated state
+      const { result: updatedResult } = renderHook(() => useAuth(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      expect(updatedResult.current.user).toEqual(mockUser);
+      expect(updatedResult.current.isAuthenticated).toBe(true);
     });
 
     it('handles authentication errors gracefully', async () => {
@@ -134,20 +175,8 @@ describe('Authentication Hooks', () => {
     });
 
     it('calls logout and redirects on logout success', async () => {
-      mockAuthService.getCurrentUser.mockResolvedValue({
-        id: 'user1',
-        username: 'testuser',
-        name: 'Test User',
-        bio: '',
-        image: '',
-        bio_link: '',
-        x_handle: '',
-        instagram_handle: '',
-        ln_address: '',
-        nip05: '',
-        verification_status: null,
-        verification_date: '',
-      });
+      const mockUser = createMockUser({ bio: '', image: '' });
+      mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
 
       mockAuthService.logout.mockResolvedValue(undefined);
 
@@ -181,7 +210,14 @@ describe('Authentication Hooks', () => {
       });
 
       expect(mockAuthService.sendLoginCode).toHaveBeenCalledWith(testEmail);
-      expect(result.current.isLoading).toBe(true);
+
+      // Wait for the mutation to complete
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      // Verify that setEmail was called
+      expect(mockAuthStore.setEmail).toHaveBeenCalledWith(testEmail);
     });
 
     it('handles login errors gracefully', async () => {
@@ -207,31 +243,17 @@ describe('Authentication Hooks', () => {
 
   describe('useVerifyCode', () => {
     beforeEach(() => {
-      // Mock the auth store to return an email
-      jest.doMock('@/lib/stores/auth-store', () => ({
-        useAuthStore: () => ({
-          email: 'test@example.com',
-          setUser: jest.fn(),
-          clearEmail: jest.fn(),
-        }),
-      }));
+      // Set up the mock store with email for these tests
+      mockAuthStore.email = 'test@example.com';
+    });
+
+    afterEach(() => {
+      // Reset the mock store
+      mockAuthStore.email = '';
     });
 
     it('verifies code and redirects authenticated user', async () => {
-      const mockUser = {
-        id: 'user1',
-        username: 'testuser',
-        name: 'Test User',
-        bio: '',
-        image: '',
-        bio_link: '',
-        x_handle: '',
-        instagram_handle: '',
-        ln_address: '',
-        nip05: '',
-        verification_status: null,
-        verification_date: '',
-      };
+      const mockUser = createMockUser({ bio: '', image: '' });
 
       mockAuthService.verifyCode.mockResolvedValue(mockUser);
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
@@ -248,7 +270,11 @@ describe('Authentication Hooks', () => {
         'test@example.com',
         '123456'
       );
-      expect(result.current.isLoading).toBe(true);
+
+      // Wait for the mutation to complete
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
     });
 
     it('handles verification errors gracefully', async () => {
@@ -289,22 +315,13 @@ describe('Authentication Hooks', () => {
     });
 
     it('allows access when authenticated', async () => {
-      const mockUser = {
-        id: 'user1',
-        username: 'testuser',
-        name: 'Test User',
-        bio: '',
-        image: '',
-        bio_link: '',
-        x_handle: '',
-        instagram_handle: '',
-        ln_address: '',
-        nip05: '',
-        verification_status: null,
-        verification_date: '',
-      };
+      const mockUser = createMockUser({ bio: '', image: '' });
 
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);
+
+      // Set up the mock store to return authenticated state
+      mockAuthStore.user = mockUser;
+      mockAuthStore.isAuthenticated = true;
 
       const { result } = renderHook(() => useRequireAuth(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

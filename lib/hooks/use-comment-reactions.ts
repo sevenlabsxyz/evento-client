@@ -83,7 +83,10 @@ export function useCommentReactions(commentId: string) {
           newData.user_reaction = null;
           newData.reactions = {
             ...newData.reactions,
-            [reactionType]: Math.max(0, (newData.reactions[reactionType] || 0) - 1),
+            [reactionType]: Math.max(
+              0,
+              (newData.reactions[reactionType] || 0) - 1
+            ),
           };
         }
         // If user has a different reaction, update it
@@ -91,7 +94,10 @@ export function useCommentReactions(commentId: string) {
           newData.user_reaction = reactionType;
           newData.reactions = {
             ...newData.reactions,
-            [currentReaction]: Math.max(0, (newData.reactions[currentReaction] || 0) - 1),
+            [currentReaction]: Math.max(
+              0,
+              (newData.reactions[currentReaction] || 0) - 1
+            ),
             [reactionType]: (newData.reactions[reactionType] || 0) + 1,
           };
         }
@@ -112,7 +118,10 @@ export function useCommentReactions(commentId: string) {
     onError: (err, { commentId }, context) => {
       // If the mutation fails, use the context returned from onMutate to roll back
       if (context?.previousData) {
-        queryClient.setQueryData(['comment', 'reactions', commentId], context.previousData);
+        queryClient.setQueryData(
+          ['comment', 'reactions', commentId],
+          context.previousData
+        );
       }
     },
     onSettled: (_, __, { commentId }) => {

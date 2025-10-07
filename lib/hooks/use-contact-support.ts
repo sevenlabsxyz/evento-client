@@ -19,7 +19,6 @@ export function useContactSupport() {
         '/v1/contact',
         payload
       );
-      console.log(data);
       // Ensure API indicated success
       if (!data?.data?.success) {
         throw { message: data?.data?.message || 'Failed to send message' };

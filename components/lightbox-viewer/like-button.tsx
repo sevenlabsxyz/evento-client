@@ -1,11 +1,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useGalleryLikes } from '@/hooks/use-photo-likes';
+import { useGalleryLikes } from '@/lib/hooks/use-photo-likes';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { u } from 'next/navigation';
 
 interface LikeButtonProps {
   itemId: string;
@@ -14,7 +14,12 @@ interface LikeButtonProps {
   eventId?: string;
 }
 
-export const LikeButton = ({ itemId, className, userId, eventId }: LikeButtonProps) => {
+export const LikeButton = ({
+  itemId,
+  className,
+  userId,
+  eventId,
+}: LikeButtonProps) => {
   const { likes, has_liked, isLoading, toggleLike } = useGalleryLikes(itemId);
   const router = useRouter();
 
@@ -34,8 +39,8 @@ export const LikeButton = ({ itemId, className, userId, eventId }: LikeButtonPro
   return (
     <div className={cn('flex items-center gap-1.5', className)}>
       <Button
-        variant='secondary'
-        size='icon'
+        variant="secondary"
+        size="icon"
         onClick={handleLikeClick}
         disabled={isLoading || !itemId}
         className={cn('relative', isLoading && 'cursor-not-allowed opacity-50')}
@@ -45,7 +50,10 @@ export const LikeButton = ({ itemId, className, userId, eventId }: LikeButtonPro
           transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           <Heart
-            className={cn('h-4 w-4', has_liked ? 'fill-current text-red-500' : 'text-gray-500')}
+            className={cn(
+              'h-4 w-4',
+              has_liked ? 'fill-current text-red-500' : 'text-gray-500'
+            )}
           />
         </motion.div>
       </Button>
