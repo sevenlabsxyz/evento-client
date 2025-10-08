@@ -10,9 +10,7 @@ import { createTestWrapper } from '../setup/test-utils';
 const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('useGenerateDescription', () => {
   let queryClient: QueryClient;
@@ -120,10 +118,7 @@ describe('useGenerateDescription', () => {
         expect(result.current.isError).toBe(true);
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Generate description error:',
-        apiError
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Generate description error:', apiError);
     });
 
     it('handles response without description', async () => {
@@ -144,9 +139,7 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect((error as Error).message).toBe(
-            'Failed to generate description'
-          );
+          expect((error as Error).message).toBe('Failed to generate description');
         }
       });
 
@@ -172,9 +165,7 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect((error as Error).message).toContain(
-            'Cannot read properties of null'
-          );
+          expect((error as Error).message).toContain('Cannot read properties of null');
         }
       });
 
@@ -200,9 +191,7 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect((error as Error).message).toContain(
-            'Cannot read properties of undefined'
-          );
+          expect((error as Error).message).toContain('Cannot read properties of undefined');
         }
       });
 
@@ -224,9 +213,7 @@ describe('useGenerateDescription', () => {
         try {
           await result.current.mutateAsync(mockParams);
         } catch (error) {
-          expect((error as Error).message).toBe(
-            'Failed to generate description'
-          );
+          expect((error as Error).message).toBe('Failed to generate description');
         }
       });
 
@@ -243,11 +230,9 @@ describe('useGenerateDescription', () => {
 
       // Create a promise that we can control
       let resolvePromise: (value: { description: string }) => void;
-      const controlledPromise = new Promise<{ description: string }>(
-        (resolve) => {
-          resolvePromise = resolve;
-        }
-      );
+      const controlledPromise = new Promise<{ description: string }>((resolve) => {
+        resolvePromise = resolve;
+      });
       mockApiClient.post.mockImplementationOnce((url: string) => {
         if (url.includes('/v1/events/generate-description')) {
           return controlledPromise;
@@ -425,11 +410,7 @@ describe('useGenerateDescription', () => {
     });
 
     it('handles different length options', async () => {
-      const lengths: Array<'short' | 'medium' | 'long'> = [
-        'short',
-        'medium',
-        'long',
-      ];
+      const lengths: Array<'short' | 'medium' | 'long'> = ['short', 'medium', 'long'];
 
       for (const length of lengths) {
         const mockParams = createMockParams({ length });
@@ -437,8 +418,7 @@ describe('useGenerateDescription', () => {
         mockGenerateDescription(mockResponse);
 
         const { result } = renderHook(() => useGenerateDescription(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -465,8 +445,7 @@ describe('useGenerateDescription', () => {
         mockGenerateDescription(mockResponse);
 
         const { result } = renderHook(() => useGenerateDescription(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -591,10 +570,7 @@ describe('useGenerateDescription', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Generate description error:',
-        apiError
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Generate description error:', apiError);
     });
 
     it('handles network timeout', async () => {
@@ -618,10 +594,7 @@ describe('useGenerateDescription', () => {
       await waitFor(() => {
         expect(result.current.isError).toBe(true);
       });
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Generate description error:',
-        timeoutError
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Generate description error:', timeoutError);
     });
 
     it('handles server error', async () => {
@@ -644,10 +617,7 @@ describe('useGenerateDescription', () => {
       await waitFor(() => {
         expect(result.current.isError).toBe(true);
       });
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Generate description error:',
-        serverError
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Generate description error:', serverError);
     });
   });
 

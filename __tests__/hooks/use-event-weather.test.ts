@@ -16,9 +16,7 @@ jest.mock('@/lib/services/weather', () => ({
 const mockWeatherService = weatherService as jest.Mocked<typeof weatherService>;
 
 // Mock console.warn to avoid noise in tests
-const mockConsoleWarn = jest
-  .spyOn(console, 'warn')
-  .mockImplementation(() => {});
+const mockConsoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
 describe('useEventWeather', () => {
   beforeEach(() => {
@@ -30,9 +28,7 @@ describe('useEventWeather', () => {
     mockConsoleWarn.mockRestore();
   });
 
-  const createMockWeatherData = (
-    overrides: Partial<WeatherData> = {}
-  ): WeatherData => ({
+  const createMockWeatherData = (overrides: Partial<WeatherData> = {}): WeatherData => ({
     temperature: 72,
     unit: 'F',
     condition: 'Clear',
@@ -112,9 +108,7 @@ describe('useEventWeather', () => {
         expect(result.current.loading).toBe(false);
       });
 
-      expect(typeof (result.current as WeatherHookResultWithRetry).retry).toBe(
-        'function'
-      );
+      expect(typeof (result.current as WeatherHookResultWithRetry).retry).toBe('function');
     });
   });
 
@@ -169,10 +163,7 @@ describe('useEventWeather', () => {
 
       expect(result.current.error).toBe('api_key_missing');
       expect(result.current.weather).toBeNull();
-      expect(mockConsoleWarn).toHaveBeenCalledWith(
-        'Weather fetch error:',
-        error
-      );
+      expect(mockConsoleWarn).toHaveBeenCalledWith('Weather fetch error:', error);
     });
 
     it('handles location_not_found error', async () => {

@@ -1,7 +1,4 @@
-import {
-  useStreamChat,
-  useStreamChatChannels,
-} from '@/lib/hooks/use-stream-chat';
+import { useStreamChat, useStreamChatChannels } from '@/lib/hooks/use-stream-chat';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -334,12 +331,9 @@ describe('Integration Tests', () => {
     const { result: chatResult } = renderHook(() => useStreamChat(), {
       wrapper,
     });
-    const { result: channelsResult } = renderHook(
-      () => useStreamChatChannels(),
-      {
-        wrapper,
-      }
-    );
+    const { result: channelsResult } = renderHook(() => useStreamChatChannels(), {
+      wrapper,
+    });
 
     // Both hooks should be initialized
     expect(chatResult.current).toBeDefined();

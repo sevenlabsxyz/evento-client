@@ -27,9 +27,7 @@ import { createTestWrapper } from '../setup/test-utils';
 const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 // Mock date-fns
 jest.mock('date-fns', () => ({
@@ -207,9 +205,7 @@ describe('useNotifications', () => {
       });
 
       expect(result.current.data?.pages[0].entries).toHaveLength(1);
-      expect(result.current.data?.pages[0].entries[0].title).toBe(
-        'Event Reminder'
-      );
+      expect(result.current.data?.pages[0].entries[0].title).toBe('Event Reminder');
       expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/feed?');
     });
 
@@ -235,18 +231,10 @@ describe('useNotifications', () => {
       expect(mockApiClient.get).toHaveBeenCalledWith(
         expect.stringContaining('/v1/notifications/feed?')
       );
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('page_size=10')
-      );
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('status=unseen')
-      );
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('archived=false')
-      );
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        expect.stringContaining('tenant=tenant_1')
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith(expect.stringContaining('page_size=10'));
+      expect(mockApiClient.get).toHaveBeenCalledWith(expect.stringContaining('status=unseen'));
+      expect(mockApiClient.get).toHaveBeenCalledWith(expect.stringContaining('archived=false'));
+      expect(mockApiClient.get).toHaveBeenCalledWith(expect.stringContaining('tenant=tenant_1'));
     });
 
     it('handles pagination with after parameter', async () => {
@@ -265,9 +253,7 @@ describe('useNotifications', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/notifications/feed?after=cursor_1'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/feed?after=cursor_1');
     });
 
     it('handles trigger_data filters', async () => {
@@ -313,10 +299,7 @@ describe('useNotifications', () => {
       });
 
       expect(result.current.error).toBe(error);
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Error fetching notifications feed:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Error fetching notifications feed:', error);
     });
 
     it('handles invalid response format', async () => {
@@ -384,9 +367,7 @@ describe('useNotifications', () => {
       });
 
       expect(result.current.data?.title).toBe('Event Reminder');
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/notifications/messages/notif_1'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/messages/notif_1');
     });
 
     it('does not fetch when disabled', () => {
@@ -420,10 +401,7 @@ describe('useNotifications', () => {
       });
 
       expect(result.current.error).toBe(error);
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Error fetching notification notif_1:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Error fetching notification notif_1:', error);
     });
   });
 
@@ -443,9 +421,7 @@ describe('useNotifications', () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith(
-        '/v1/notifications/messages/notif_1/seen'
-      );
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/messages/notif_1/seen');
     });
 
     it('handles API errors', async () => {
@@ -457,9 +433,7 @@ describe('useNotifications', () => {
       });
 
       await act(async () => {
-        await expect(result.current.mutateAsync('notif_1')).rejects.toThrow(
-          error
-        );
+        await expect(result.current.mutateAsync('notif_1')).rejects.toThrow(error);
       });
 
       await waitFor(() => {
@@ -514,9 +488,7 @@ describe('useNotifications', () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith(
-        '/v1/notifications/messages/notif_1/read'
-      );
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/messages/notif_1/read');
     });
 
     it('handles API errors', async () => {
@@ -528,9 +500,7 @@ describe('useNotifications', () => {
       });
 
       await act(async () => {
-        await expect(result.current.mutateAsync('notif_1')).rejects.toThrow(
-          error
-        );
+        await expect(result.current.mutateAsync('notif_1')).rejects.toThrow(error);
       });
 
       await waitFor(() => {
@@ -555,9 +525,7 @@ describe('useNotifications', () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith(
-        '/v1/notifications/messages/notif_1/archived'
-      );
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/messages/notif_1/archived');
     });
 
     it('handles API errors', async () => {
@@ -569,9 +537,7 @@ describe('useNotifications', () => {
       });
 
       await act(async () => {
-        await expect(result.current.mutateAsync('notif_1')).rejects.toThrow(
-          error
-        );
+        await expect(result.current.mutateAsync('notif_1')).rejects.toThrow(error);
       });
 
       await waitFor(() => {
@@ -689,10 +655,7 @@ describe('useNotifications', () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith(
-        '/v1/notifications/mark-all/seen',
-        {}
-      );
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/mark-all/seen', {});
     });
 
     it('marks all notifications with parameters', async () => {
@@ -716,10 +679,7 @@ describe('useNotifications', () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith(
-        '/v1/notifications/mark-all/seen',
-        params
-      );
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/mark-all/seen', params);
     });
   });
 
@@ -739,10 +699,7 @@ describe('useNotifications', () => {
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith(
-        '/v1/notifications/mark-all/read',
-        {}
-      );
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/mark-all/read', {});
     });
   });
 
@@ -769,9 +726,7 @@ describe('useNotifications', () => {
         unread: 5,
         unseen: 3,
       });
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/notifications/feed?page_size=1'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/notifications/feed?page_size=1');
     });
 
     it('returns zero counts on error', async () => {
@@ -790,10 +745,7 @@ describe('useNotifications', () => {
         unread: 0,
         unseen: 0,
       });
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Error fetching notification count:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Error fetching notification count:', error);
     });
 
     it('returns zero counts when meta is missing', async () => {

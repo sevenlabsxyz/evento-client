@@ -20,9 +20,7 @@ const originalCreateObjectURL = URL.createObjectURL;
 const originalRevokeObjectURL = URL.revokeObjectURL;
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 const mockToast = toast as jest.Mocked<typeof toast>;
 
@@ -65,11 +63,7 @@ describe('useMultiFileUpload', () => {
     mockConsoleError.mockRestore();
   });
 
-  const createMockFile = (
-    name: string,
-    size: number,
-    type: string = 'image/jpeg'
-  ): File => {
+  const createMockFile = (name: string, size: number, type: string = 'image/jpeg'): File => {
     const file = new File(['mock content'], name, { type });
     Object.defineProperty(file, 'size', { value: size });
     return file;
@@ -94,14 +88,12 @@ describe('useMultiFileUpload', () => {
     return fileList;
   };
 
-  const createMockChangeEvent = (
-    files: File[]
-  ): React.ChangeEvent<HTMLInputElement> =>
+  const createMockChangeEvent = (files: File[]): React.ChangeEvent<HTMLInputElement> =>
     ({
       target: {
         files: createMockFileList(files),
       },
-    } as React.ChangeEvent<HTMLInputElement>);
+    }) as React.ChangeEvent<HTMLInputElement>;
 
   describe('initial state', () => {
     it('initializes with default values', () => {
@@ -121,9 +113,7 @@ describe('useMultiFileUpload', () => {
       expect(typeof result.current.clearSelection).toBe('function');
       expect(typeof result.current.uploadFiles).toBe('function');
       expect(typeof result.current.triggerFileSelect).toBe('function');
-      expect(result.current.acceptedFileTypes).toBe(
-        'image/jpeg,image/jpg,image/png,image/webp'
-      );
+      expect(result.current.acceptedFileTypes).toBe('image/jpeg,image/jpg,image/png,image/webp');
     });
 
     it('initializes with custom options', () => {
@@ -171,11 +161,7 @@ describe('useMultiFileUpload', () => {
         })
       );
 
-      const largeFile = createMockFile(
-        'large.jpg',
-        2 * 1024 * 1024,
-        'image/jpeg'
-      ); // 2MB
+      const largeFile = createMockFile('large.jpg', 2 * 1024 * 1024, 'image/jpeg'); // 2MB
       const event = createMockChangeEvent([largeFile]);
 
       await act(async () => {
@@ -205,9 +191,7 @@ describe('useMultiFileUpload', () => {
       expect(mockToast.success).toHaveBeenCalledWith('Selected 1 photo');
       expect(result.current.selectedFilesData).toHaveLength(1);
       expect(result.current.selectedFilesData[0].file).toBe(validFile);
-      expect(result.current.selectedFilesData[0].previewUrl).toBe(
-        'blob:mock-url'
-      );
+      expect(result.current.selectedFilesData[0].previewUrl).toBe('blob:mock-url');
     });
   });
 
@@ -239,9 +223,7 @@ describe('useMultiFileUpload', () => {
         result.current.handleFileSelect(event2);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Cannot select more than 2 files'
-      );
+      expect(mockToast.error).toHaveBeenCalledWith('Cannot select more than 2 files');
       expect(result.current.selectedFilesData).toHaveLength(2);
     });
 
@@ -288,9 +270,7 @@ describe('useMultiFileUpload', () => {
         result.current.handleFileSelect(event2);
       });
 
-      expect(mockToast.warning).toHaveBeenCalledWith(
-        'Some files were already selected'
-      );
+      expect(mockToast.warning).toHaveBeenCalledWith('Some files were already selected');
       expect(result.current.selectedFilesData).toHaveLength(1);
     });
 
@@ -393,9 +373,7 @@ describe('useMultiFileUpload', () => {
       expect(mockOnUpload).toHaveBeenCalledWith(file1);
       expect(mockOnUpload).toHaveBeenCalledWith(file2);
       expect(mockOnSuccess).toHaveBeenCalled();
-      expect(mockToast.success).toHaveBeenCalledWith(
-        'Successfully uploaded 2 photos'
-      );
+      expect(mockToast.success).toHaveBeenCalledWith('Successfully uploaded 2 photos');
       expect(result.current.isUploading).toBe(false);
     });
 
@@ -421,9 +399,7 @@ describe('useMultiFileUpload', () => {
 
       expect(mockToast.error).toHaveBeenCalledWith('Failed to upload 1 photo');
       expect(result.current.uploadProgressIndividual[0].status).toBe('failed');
-      expect(result.current.uploadProgressIndividual[0].message).toBe(
-        'Upload failed'
-      );
+      expect(result.current.uploadProgressIndividual[0].message).toBe('Upload failed');
     });
 
     it('handles mixed success and failure', async () => {
@@ -449,9 +425,7 @@ describe('useMultiFileUpload', () => {
         await result.current.uploadFiles();
       });
 
-      expect(mockToast.success).toHaveBeenCalledWith(
-        'Successfully uploaded 1 photo'
-      );
+      expect(mockToast.success).toHaveBeenCalledWith('Successfully uploaded 1 photo');
       expect(mockToast.error).toHaveBeenCalledWith('Failed to upload 1 photo');
     });
 
@@ -480,9 +454,7 @@ describe('useMultiFileUpload', () => {
 
       expect(mockToast.error).toHaveBeenCalledWith('Failed to upload 1 photo');
       expect(result.current.uploadProgressIndividual[0].status).toBe('failed');
-      expect(result.current.uploadProgressIndividual[0].message).toBe(
-        'Server error'
-      );
+      expect(result.current.uploadProgressIndividual[0].message).toBe('Server error');
     });
 
     it('prevents upload when already uploading', async () => {
@@ -526,10 +498,7 @@ describe('useMultiFileUpload', () => {
       mockOnUpload
         .mockResolvedValueOnce({ success: true })
         .mockImplementationOnce(
-          () =>
-            new Promise((resolve) =>
-              setTimeout(() => resolve({ success: true }), 100)
-            )
+          () => new Promise((resolve) => setTimeout(() => resolve({ success: true }), 100))
         );
 
       const { result } = renderHook(() =>
@@ -668,8 +637,7 @@ describe('useMultiFileUpload', () => {
       });
 
       expect(mockToast.error).toHaveBeenCalledWith(
-        expect.stringContaining('Invalid files:\n') &&
-          expect.stringContaining('...')
+        expect.stringContaining('Invalid files:\n') && expect.stringContaining('...')
       );
     });
   });
@@ -690,9 +658,7 @@ describe('useMultiFileUpload', () => {
       });
 
       expect(result.current.selectedFilesData).toHaveLength(1);
-      expect(result.current.selectedFilesData[0].file.name).toBe(
-        'test file (1).jpg'
-      );
+      expect(result.current.selectedFilesData[0].file.name).toBe('test file (1).jpg');
     });
 
     it('handles very large file sizes', async () => {
@@ -703,11 +669,7 @@ describe('useMultiFileUpload', () => {
         })
       );
 
-      const largeFile = createMockFile(
-        'large.jpg',
-        50 * 1024 * 1024,
-        'image/jpeg'
-      ); // 50MB
+      const largeFile = createMockFile('large.jpg', 50 * 1024 * 1024, 'image/jpeg'); // 50MB
       const event = createMockChangeEvent([largeFile]);
 
       await act(async () => {

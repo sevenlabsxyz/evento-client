@@ -27,11 +27,7 @@ export function useAddComment() {
       }
 
       // Check if it's the expected API response structure with data array
-      if (
-        'success' in response &&
-        'data' in response &&
-        Array.isArray(response.data)
-      ) {
+      if ('success' in response && 'data' in response && Array.isArray(response.data)) {
         return response.data[0] || null;
       }
 

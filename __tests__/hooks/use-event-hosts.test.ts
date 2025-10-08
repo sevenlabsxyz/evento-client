@@ -22,9 +22,7 @@ describe('useEventHosts', () => {
     mockApiClient.get.mockReset();
   });
 
-  const createMockUserDetails = (
-    overrides: Partial<UserDetails> = {}
-  ): UserDetails => ({
+  const createMockUserDetails = (overrides: Partial<UserDetails> = {}): UserDetails => ({
     id: 'user123',
     username: 'testuser',
     name: 'Test User',
@@ -41,9 +39,7 @@ describe('useEventHosts', () => {
     ...overrides,
   });
 
-  const createMockEventHost = (
-    overrides: Partial<EventHost> = {}
-  ): EventHost => ({
+  const createMockEventHost = (overrides: Partial<EventHost> = {}): EventHost => ({
     event_id: 'event123',
     created_at: '2024-01-15T10:30:00Z',
     user_details: createMockUserDetails(),
@@ -87,9 +83,7 @@ describe('useEventHosts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/hosts?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/hosts?id=event123');
       expect(result.current.data).toEqual(mockEventHosts);
     });
 
@@ -122,9 +116,7 @@ describe('useEventHosts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/hosts?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/hosts?id=event123');
       expect(result.current.data).toEqual(mockEventHosts);
     });
 
@@ -312,9 +304,7 @@ describe('useEventHosts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/hosts?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/hosts?id=event123');
     });
 
     it('handles special characters in event ID', async () => {
@@ -322,13 +312,9 @@ describe('useEventHosts', () => {
       const mockResponse = createMockApiResponse(mockEventHosts);
       mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(
-        () => useEventHosts('event-with-special-chars-!@#$%'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useEventHosts('event-with-special-chars-!@#$%'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -422,11 +408,7 @@ describe('useEventHosts', () => {
       });
 
       // Check that the query key is correct
-      const queryData = queryClient.getQueryData([
-        'event',
-        'hosts',
-        'event123',
-      ]);
+      const queryData = queryClient.getQueryData(['event', 'hosts', 'event123']);
       expect(queryData).toEqual(mockEventHosts);
     });
 
@@ -583,9 +565,7 @@ describe('useEventHosts', () => {
       const mockResponse1 = createMockApiResponse(mockEventHosts1);
       const mockResponse2 = createMockApiResponse(mockEventHosts2);
 
-      mockApiClient.get
-        .mockResolvedValueOnce(mockResponse1)
-        .mockResolvedValueOnce(mockResponse2);
+      mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
       const { result: result1 } = renderHook(() => useEventHosts('event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

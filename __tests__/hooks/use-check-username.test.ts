@@ -141,8 +141,7 @@ describe('useCheckUsername', () => {
 
         expect(mutationResult).toEqual({
           available: false,
-          message:
-            'Username can only contain letters, numbers, and underscores',
+          message: 'Username can only contain letters, numbers, and underscores',
         });
       }
 
@@ -208,9 +207,7 @@ describe('useCheckUsername', () => {
         });
 
         expect(mockApiClient.get).toHaveBeenCalledWith(
-          `/v1/user/check-username?username=${encodeURIComponent(
-            testCase.expected
-          )}`
+          `/v1/user/check-username?username=${encodeURIComponent(testCase.expected)}`
         );
       }
     });
@@ -249,9 +246,7 @@ describe('useCheckUsername', () => {
         mutationResult = await result.current.mutateAsync('takenuser');
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/user/check-username?username=takenuser'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/user/check-username?username=takenuser');
       expect(mutationResult).toEqual(mockResponse);
     });
 

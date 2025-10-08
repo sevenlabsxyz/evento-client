@@ -68,9 +68,7 @@ describe('User Profile Hooks', () => {
 
   describe('useUserProfile', () => {
     it('returns loading state initially', () => {
-      mockAuthServiceTyped.getCurrentUser.mockImplementation(
-        () => new Promise(() => {})
-      );
+      mockAuthServiceTyped.getCurrentUser.mockImplementation(() => new Promise(() => {}));
 
       const { result } = renderHook(() => useUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -239,9 +237,7 @@ describe('User Profile Hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith(
-        '/v1/user/search?s=test'
-      );
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/search?s=test');
       expect(result.current.data).toEqual(mockUsers);
     });
 
@@ -280,9 +276,7 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.data).toEqual({ isFollowing: true });
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith(
-        '/v1/user/follow?id=user123'
-      );
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/follow?id=user123');
     });
 
     it('is disabled when userId is empty', () => {
@@ -331,12 +325,9 @@ describe('User Profile Hooks', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClientTyped.delete).toHaveBeenCalledWith(
-        '/v1/user/follow',
-        {
-          data: { followId: 'user123' },
-        }
-      );
+      expect(mockApiClientTyped.delete).toHaveBeenCalledWith('/v1/user/follow', {
+        data: { followId: 'user123' },
+      });
     });
 
     it('handles follow errors gracefully', async () => {
@@ -461,9 +452,7 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.data).toBe(5);
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith(
-        '/v1/user/events/count?id=user123'
-      );
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/events/count?id=user123');
     });
   });
 

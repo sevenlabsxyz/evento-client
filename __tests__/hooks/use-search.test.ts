@@ -102,9 +102,7 @@ describe('useEventSearch', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/event/search?s=test%20query'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/event/search?s=test%20query');
     expect(result.current.data).toHaveLength(2);
     expect(result.current.data?.[0]).toMatchObject({
       id: 'event1',
@@ -158,10 +156,7 @@ describe('useEventSearch', () => {
     });
 
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'Event search failed:',
-      expect.any(Error)
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith('Event search failed:', expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -189,9 +184,7 @@ describe('useEventSearch', () => {
 
   it('should transform API events using transformApiEventToDisplay', async () => {
     const mockApiClient = require('@/lib/api/client').default;
-    const {
-      transformApiEventToDisplay,
-    } = require('@/lib/utils/event-transform');
+    const { transformApiEventToDisplay } = require('@/lib/utils/event-transform');
 
     const mockEvent = {
       id: 'event1',
@@ -224,9 +217,7 @@ describe('useEventSearch', () => {
 
   it('should handle case when transformApiEventToDisplay returns null', async () => {
     const mockApiClient = require('@/lib/api/client').default;
-    const {
-      transformApiEventToDisplay,
-    } = require('@/lib/utils/event-transform');
+    const { transformApiEventToDisplay } = require('@/lib/utils/event-transform');
 
     // Mock transformApiEventToDisplay to return null
     transformApiEventToDisplay.mockReturnValueOnce(null);
@@ -321,9 +312,7 @@ describe('useUserSearch', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/user/search?s=test%20query'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/user/search?s=test%20query');
     expect(result.current.data).toEqual(mockUsers);
     expect(result.current.data).toHaveLength(2);
     expect(result.current.data?.[0]).toMatchObject({
@@ -380,10 +369,7 @@ describe('useUserSearch', () => {
     });
 
     expect(result.current.error).toBeInstanceOf(Error);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'User search failed:',
-      expect.any(Error)
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith('User search failed:', expect.any(Error));
 
     consoleErrorSpy.mockRestore();
   });
@@ -468,10 +454,7 @@ describe('useUserSearch', () => {
     });
 
     expect(result.current.error).toBe(timeoutError);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'User search failed:',
-      timeoutError
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith('User search failed:', timeoutError);
 
     consoleErrorSpy.mockRestore();
   });
@@ -495,10 +478,7 @@ describe('useUserSearch', () => {
     });
 
     expect(result.current.error).toBe(notFoundError);
-    expect(consoleErrorSpy).toHaveBeenCalledWith(
-      'User search failed:',
-      notFoundError
-    );
+    expect(consoleErrorSpy).toHaveBeenCalledWith('User search failed:', notFoundError);
 
     consoleErrorSpy.mockRestore();
   });

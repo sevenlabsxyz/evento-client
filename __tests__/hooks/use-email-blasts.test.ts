@@ -49,9 +49,7 @@ describe('useEmailBlasts', () => {
     jest.clearAllMocks();
   });
 
-  const createMockEmailBlast = (
-    overrides: Partial<EmailBlast> = {}
-  ): EmailBlast => ({
+  const createMockEmailBlast = (overrides: Partial<EmailBlast> = {}): EmailBlast => ({
     id: 'blast123',
     event_id: 'event456',
     user_id: 'user789',
@@ -91,9 +89,7 @@ describe('useEmailBlasts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/email-blasts/event123');
       expect(result.current.data).toEqual(mockBlasts);
     });
 
@@ -240,9 +236,7 @@ describe('useCreateEmailBlast', () => {
     ...overrides,
   });
 
-  const createMockEmailBlast = (
-    overrides: Partial<EmailBlast> = {}
-  ): EmailBlast => ({
+  const createMockEmailBlast = (overrides: Partial<EmailBlast> = {}): EmailBlast => ({
     id: 'blast123',
     event_id: 'event456',
     user_id: 'user789',
@@ -277,10 +271,7 @@ describe('useCreateEmailBlast', () => {
         mutationResult = await result.current.mutateAsync(mockForm);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
       expect(mutationResult).toEqual(mockBlast);
     });
 
@@ -301,10 +292,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
     });
 
     it('handles invalid response format', async () => {
@@ -328,10 +316,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
     });
 
     it('handles null response', async () => {
@@ -350,10 +335,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
     });
   });
 
@@ -506,10 +488,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Create email blast error:',
-        apiError
-      );
+      expect(consoleSpy).toHaveBeenCalledWith('Create email blast error:', apiError);
       consoleSpy.mockRestore();
     });
   });
@@ -537,9 +516,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
     ...overrides,
   });
 
-  const createMockEmailBlast = (
-    overrides: Partial<EmailBlast> = {}
-  ): EmailBlast => ({
+  const createMockEmailBlast = (overrides: Partial<EmailBlast> = {}): EmailBlast => ({
     id: 'blast123',
     event_id: 'event456',
     user_id: 'user789',
@@ -565,23 +542,16 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       const mockResponse = createMockApiResponse(mockBlast);
       mockApiClient.post.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(
-        () => useCreateEmailBlastWithCallbacks('event123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCreateEmailBlastWithCallbacks('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       let mutationResult: any;
       await act(async () => {
         mutationResult = await result.current.mutateAsync(mockForm);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
       expect(mutationResult).toEqual(mockBlast);
     });
 
@@ -590,13 +560,9 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       const apiError = new Error('API Error');
       mockApiClient.post.mockRejectedValue(apiError);
 
-      const { result } = renderHook(
-        () => useCreateEmailBlastWithCallbacks('event123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCreateEmailBlastWithCallbacks('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await act(async () => {
         try {
@@ -606,10 +572,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
     });
 
     it('handles invalid response format', async () => {
@@ -621,13 +584,9 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       };
       mockApiClient.post.mockResolvedValue(invalidResponse);
 
-      const { result } = renderHook(
-        () => useCreateEmailBlastWithCallbacks('event123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCreateEmailBlastWithCallbacks('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await act(async () => {
         try {
@@ -637,10 +596,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
-        mockForm
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
     });
   });
 
@@ -653,13 +609,9 @@ describe('useCreateEmailBlastWithCallbacks', () => {
 
       const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
-      const { result } = renderHook(
-        () => useCreateEmailBlastWithCallbacks('event123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCreateEmailBlastWithCallbacks('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await act(async () => {
         await result.current.mutateAsync(mockForm);
@@ -681,13 +633,9 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       const customOnSuccess = jest.fn();
       const customOnError = jest.fn();
 
-      const { result } = renderHook(
-        () => useCreateEmailBlastWithCallbacks('event123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCreateEmailBlastWithCallbacks('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       // Use custom callbacks
       result.current.mutate(mockForm, {
@@ -696,11 +644,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       });
 
       await waitFor(() => {
-        expect(customOnSuccess).toHaveBeenCalledWith(
-          mockBlast,
-          mockForm,
-          undefined
-        );
+        expect(customOnSuccess).toHaveBeenCalledWith(mockBlast, mockForm, undefined);
         expect(customOnError).not.toHaveBeenCalled();
       });
     });
@@ -713,13 +657,9 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       const customOnSuccess = jest.fn();
       const customOnError = jest.fn();
 
-      const { result } = renderHook(
-        () => useCreateEmailBlastWithCallbacks('event123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCreateEmailBlastWithCallbacks('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       // Use custom callbacks
       result.current.mutate(mockForm, {
@@ -728,11 +668,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
       });
 
       await waitFor(() => {
-        expect(customOnError).toHaveBeenCalledWith(
-          apiError,
-          mockForm,
-          undefined
-        );
+        expect(customOnError).toHaveBeenCalledWith(apiError, mockForm, undefined);
         expect(customOnSuccess).not.toHaveBeenCalled();
       });
     });
@@ -740,9 +676,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
 });
 
 describe('transformEmailBlastForUI', () => {
-  const createMockEmailBlast = (
-    overrides: Partial<EmailBlast> = {}
-  ): EmailBlast => ({
+  const createMockEmailBlast = (overrides: Partial<EmailBlast> = {}): EmailBlast => ({
     id: 'blast123',
     event_id: 'event456',
     user_id: 'user789',

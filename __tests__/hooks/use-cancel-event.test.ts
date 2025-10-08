@@ -32,9 +32,7 @@ jest.mock('@/lib/utils/debug', () => ({
 }));
 
 // Mock console.error to avoid noise in test output
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 import { apiClient } from '@/lib/api/client';
 import { debugError } from '@/lib/utils/debug';
@@ -295,10 +293,7 @@ describe('useCancelEvent', () => {
         expect(result.current.isError).toBe(true);
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Event cancellation error:',
-        apiError
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Event cancellation error:', apiError);
     });
 
     it('does not invalidate queries on error', async () => {
@@ -512,10 +507,7 @@ describe('useCancelEvent', () => {
       mockApiClient.delete.mockResolvedValue({ data: mockResponse });
 
       // Pre-populate query cache
-      queryClient.setQueryData(
-        ['events'],
-        [{ id: 'event1', title: 'Test Event' }]
-      );
+      queryClient.setQueryData(['events'], [{ id: 'event1', title: 'Test Event' }]);
       queryClient.setQueryData(['event', 'details', 'event1'], {
         id: 'event1',
         title: 'Test Event',
@@ -535,11 +527,7 @@ describe('useCancelEvent', () => {
       });
 
       // Check that the event details were removed from cache
-      const eventDetails = queryClient.getQueryData([
-        'event',
-        'details',
-        'event1',
-      ]);
+      const eventDetails = queryClient.getQueryData(['event', 'details', 'event1']);
       expect(eventDetails).toBeUndefined();
 
       // Check that events query was invalidated (would trigger refetch)

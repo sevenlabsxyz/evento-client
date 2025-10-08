@@ -1,9 +1,4 @@
-import {
-  useAuth,
-  useLogin,
-  useRequireAuth,
-  useVerifyCode,
-} from '@/lib/hooks/use-auth';
+import { useAuth, useLogin, useRequireAuth, useVerifyCode } from '@/lib/hooks/use-auth';
 import { authService } from '@/lib/services/auth';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -114,9 +109,7 @@ describe('Authentication Hooks', () => {
 
   describe('useAuth', () => {
     it('returns loading state initially', async () => {
-      mockAuthService.getCurrentUser.mockImplementation(() =>
-        Promise.resolve(null)
-      );
+      mockAuthService.getCurrentUser.mockImplementation(() => Promise.resolve(null));
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -266,10 +259,7 @@ describe('Authentication Hooks', () => {
         result.current.verifyCode({ code: '123456' });
       });
 
-      expect(mockAuthService.verifyCode).toHaveBeenCalledWith(
-        'test@example.com',
-        '123456'
-      );
+      expect(mockAuthService.verifyCode).toHaveBeenCalledWith('test@example.com', '123456');
 
       // Wait for the mutation to complete
       await waitFor(() => {

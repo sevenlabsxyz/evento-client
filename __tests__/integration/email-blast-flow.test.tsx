@@ -1,494 +1,324 @@
-// import EmailBlastCompose from '@/components/manage-event/email-blast-compose';
-// import EmailBlastHistory from '@/components/manage-event/email-blast-history';
-// import { QueryClient } from '@tanstack/react-query';
-// import { render, screen, waitFor } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
-// import { createTestWrapper } from '../setup/test-utils';
-
-// // Mock the email blast hooks
-// jest.mock('@/lib/hooks/use-email-blasts', () => ({
-//   useEmailBlasts: jest.fn(),
-//   useCreateEmailBlast: jest.fn(),
-// }));
-
-// jest.mock('@/lib/hooks/use-event-rsvps', () => ({
-//   useEventRSVPs: () => ({
-//     data: Array(25)
-//       .fill(null)
-//       .map((_, i) => ({
-//         id: `rsvp${i}`,
-//         status: i < 15 ? 'yes' : i < 21 ? 'maybe' : 'no',
-//       })),
-//     isLoading: false,
-//     error: null,
-//   }),
-// }));
-
-// // Mock the auth hook
-// jest.mock('@/lib/hooks/use-auth', () => ({
-//   useAuth: () => ({
-//     user: { id: 'user1', name: 'Test User' },
-//     isAuthenticated: true,
-//     isLoading: false,
-//   }),
-// }));
-
-// describe('Email Blast Integration Flow', () => {
-//   let queryClient: QueryClient;
-
-//   beforeEach(() => {
-//     queryClient = new QueryClient({
-//       defaultOptions: {
-//         queries: { retry: false },
-//         mutations: { retry: false },
-//       },
-//     });
-//     jest.clearAllMocks();
-
-//     // Setup default mock implementations
-//     const {
-//       useEmailBlasts,
-//       useCreateEmailBlast,
-//     } = require('@/lib/hooks/use-email-blasts');
-//     useEmailBlasts.mockReturnValue({
-//       data: [
-//         {
-//           id: 'blast1',
-//           event_id: 'event123',
-//           user_id: 'user1',
-//           message: '<p>Come join us!</p>',
-//           recipient_filter: 'all',
-//           status: 'sent',
-//           scheduled_for: null,
-//           created_at: '2025-01-01T10:00:00Z',
-//           updated_at: '2025-01-01T10:00:00Z',
-//         },
-//       ],
-//       isLoading: false,
-//       error: null,
-//     });
-//     useCreateEmailBlast.mockReturnValue({
-//       mutate: jest.fn(),
-//       isPending: false,
-//       error: null,
-//     });
-//   });
-
-//   describe('EmailBlastHistory', () => {
-//     it('displays email blast history', async () => {
-//       const { container } = render(<EmailBlastHistory eventId="event123" />, {
-//         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//       });
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/email blast history/i)).toBeInTheDocument();
-//       });
-
-//       // Check that the blast details are displayed
-//       expect(screen.getByText(/come join us!/i)).toBeInTheDocument();
-//       expect(screen.getByText(/sent/i)).toBeInTheDocument();
-//       expect(screen.getByText(/all recipients/i)).toBeInTheDocument();
-//     });
-
-//     it('shows loading state', async () => {
-//       const { useEmailBlasts } = require('@/lib/hooks/use-email-blasts');
-//       useEmailBlasts.mockReturnValue({
-//         data: null,
-//         isLoading: true,
-//         error: null,
-//       });
-
-//       render(<EmailBlastHistory eventId="event123" />, {
-//         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//       });
-
-//       expect(screen.getByText(/loading/i)).toBeInTheDocument();
-//     });
-
-//     it('handles empty history gracefully', async () => {
-//       const { useEmailBlasts } = require('@/lib/hooks/use-email-blasts');
-//       useEmailBlasts.mockReturnValue({
-//         data: [],
-//         isLoading: false,
-//         error: null,
-//       });
-
-//       render(<EmailBlastHistory eventId="event123" />, {
-//         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//       });
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/no email blasts sent/i)).toBeInTheDocument();
-//       });
-//     });
-
-//     it('displays formatted date and time', async () => {
-//       render(<EmailBlastHistory eventId="event123" />, {
-//         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//       });
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/january 1, 2025/i)).toBeInTheDocument();
-//       });
-//     });
-//   });
-
-//   describe('EmailBlastCompose', () => {
-//     it('displays RSVP statistics', async () => {
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/25.*total/i)).toBeInTheDocument();
-//         expect(screen.getByText(/15.*yes/i)).toBeInTheDocument();
-//         expect(screen.getByText(/6.*maybe/i)).toBeInTheDocument();
-//         expect(screen.getByText(/4.*no/i)).toBeInTheDocument();
-//       });
-//     });
-
-//     it('allows selecting recipient filter', async () => {
-//       const user = userEvent.setup();
-
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       // Find and interact with recipient filter dropdown
-//       const filterSelect =
-//         screen.getByRole('combobox', { name: /recipients/i }) ||
-//         screen.getByText(/all recipients/i);
-
-//       if (filterSelect) {
-//         await user.click(filterSelect);
-
-//         // Look for dropdown options
-//         await waitFor(() => {
-//           expect(screen.getByText(/yes only/i)).toBeInTheDocument();
-//         });
-
-//         await user.click(screen.getByText(/yes only/i));
-//         expect(screen.getByText(/15.*yes only/i)).toBeInTheDocument();
-//       }
-//     });
-
-//     it('allows composing and sending email blast', async () => {
-//       const mockCreateEmailBlast = jest.fn();
-//       const { useCreateEmailBlast } = require('@/lib/hooks/use-email-blasts');
-//       useCreateEmailBlast.mockReturnValue({
-//         mutate: mockCreateEmailBlast,
-//         isPending: false,
-//         error: null,
-//       });
-
-//       const user = userEvent.setup();
-
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       // Type a message
-//       const messageInput =
-//         screen.getByPlaceholderText(/write your message/i) ||
-//         screen.getByRole('textbox');
-
-//       if (messageInput) {
-//         await user.type(messageInput, "Don't forget to arrive on time!");
-//       }
-
-//       // Click send button
-//       const sendButton = screen.getByRole('button', { name: /send blast/i });
-//       expect(sendButton).toBeInTheDocument();
-
-//       await user.click(sendButton);
-
-//       // Verify the mutation was called with correct data
-//       expect(mockCreateEmailBlast).toHaveBeenCalledWith({
-//         eventId: 'event123',
-//         message: expect.stringContaining('arrive on time'),
-//         recipientFilter: 'all',
-//         scheduledFor: null,
-//       });
-//     });
-
-//     it('shows loading state during send operation', async () => {
-//       const { useCreateEmailBlast } = require('@/lib/hooks/use-email-blasts');
-//       useCreateEmailBlast.mockReturnValue({
-//         mutate: jest.fn(),
-//         isPending: true,
-//         error: null,
-//       });
-
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       // Check for disabled button or sending state
-//       const buttons = screen.getAllByRole('button');
-//       const hasDisabledButton = buttons.some((btn) =>
-//         btn.hasAttribute('disabled')
-//       );
-//       const hasSendingText = screen.queryByText(/sending/i);
-
-//       expect(hasDisabledButton || hasSendingText).toBeTruthy();
-//     });
-
-//     it('handles send errors gracefully', async () => {
-//       const { useCreateEmailBlast } = require('@/lib/hooks/use-email-blasts');
-//       useCreateEmailBlast.mockReturnValue({
-//         mutate: jest.fn(),
-//         isPending: false,
-//         error: new Error('Failed to send email blast'),
-//       });
-
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       expect(
-//         screen.getByText(/failed to send/i) || screen.getByText(/error/i)
-//       ).toBeTruthy();
-//     });
-
-//     it('validates message content before sending', async () => {
-//       const mockCreateEmailBlast = jest.fn();
-//       const { useCreateEmailBlast } = require('@/lib/hooks/use-email-blasts');
-//       useCreateEmailBlast.mockReturnValue({
-//         mutate: mockCreateEmailBlast,
-//         isPending: false,
-//         error: null,
-//       });
-
-//       const user = userEvent.setup();
-
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       // Try to send without message
-//       const sendButton = screen.getByRole('button', { name: /send blast/i });
-//       expect(sendButton).toBeInTheDocument();
-
-//       // Button should be disabled or show validation error
-//       expect(sendButton).toBeDisabled();
-//     });
-
-//     it('displays character count for message', async () => {
-//       const user = userEvent.setup();
-
-//       render(
-//         <EmailBlastCompose
-//           eventId="event123"
-//           onSend={jest.fn()}
-//           onCancel={jest.fn()}
-//         />,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       const messageInput =
-//         screen.getByPlaceholderText(/write your message/i) ||
-//         screen.getByRole('textbox');
-
-//       if (messageInput) {
-//         await user.type(messageInput, 'A'.repeat(100));
-
-//         // Look for character count display
-//         expect(
-//           screen.getByText(/100.*characters/i) || screen.getByText(/100\//)
-//         ).toBeTruthy();
-//       }
-//     });
-//   });
-
-//   describe('Email Blast Integration', () => {
-//     it('connects history and compose components', async () => {
-//       // This test verifies that both components work together
-//       const { container } = render(
-//         <div>
-//           <EmailBlastHistory eventId="event123" />
-//           <EmailBlastCompose
-//             eventId="event123"
-//             onSend={jest.fn()}
-//             onCancel={jest.fn()}
-//           />
-//         </div>,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/email blast history/i)).toBeInTheDocument();
-//         expect(screen.getByText(/compose email blast/i)).toBeInTheDocument();
-//       });
-
-//       // Both components should be able to load without errors
-//       expect(screen.getByText(/25.*total/i)).toBeInTheDocument();
-//       expect(screen.getByText(/come join us!/i)).toBeInTheDocument();
-//     });
-
-//     it('updates history after sending new blast', async () => {
-//       const mockCreateEmailBlast = jest.fn();
-//       const { useCreateEmailBlast } = require('@/lib/hooks/use-email-blasts');
-//       useCreateEmailBlast.mockReturnValue({
-//         mutate: mockCreateEmailBlast,
-//         isPending: false,
-//         error: null,
-//       });
-
-//       const user = userEvent.setup();
-
-//       const { rerender } = render(
-//         <div>
-//           <EmailBlastHistory eventId="event123" />
-//           <EmailBlastCompose
-//             eventId="event123"
-//             onSend={jest.fn()}
-//             onCancel={jest.fn()}
-//           />
-//         </div>,
-//         {
-//           wrapper: ({ children }) =>
-//             createTestWrapper(queryClient)({ children }),
-//         }
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/email blast history/i)).toBeInTheDocument();
-//       });
-
-//       // Send a new email blast
-//       const messageInput = screen.getByPlaceholderText(/write your message/i);
-//       const sendButton = screen.getByRole('button', { name: /send blast/i });
-
-//       await user.type(messageInput, 'New announcement!');
-//       await user.click(sendButton);
-
-//       // Mock successful response
-//       mockCreateEmailBlast.mockImplementation(() => {
-//         // Simulate successful creation by updating the history data
-//         const { useEmailBlasts } = require('@/lib/hooks/use-email-blasts');
-//         useEmailBlasts.mockReturnValue({
-//           data: [
-//             {
-//               id: 'blast2',
-//               event_id: 'event123',
-//               user_id: 'user1',
-//               message: '<p>New announcement!</p>',
-//               recipient_filter: 'all',
-//               status: 'sent',
-//               scheduled_for: null,
-//               created_at: new Date().toISOString(),
-//               updated_at: new Date().toISOString(),
-//             },
-//             {
-//               id: 'blast1',
-//               event_id: 'event123',
-//               user_id: 'user1',
-//               message: '<p>Come join us!</p>',
-//               recipient_filter: 'all',
-//               status: 'sent',
-//               scheduled_for: null,
-//               created_at: '2025-01-01T10:00:00Z',
-//               updated_at: '2025-01-01T10:00:00Z',
-//             },
-//           ],
-//           isLoading: false,
-//           error: null,
-//         });
-//       });
-
-//       // Re-render to pick up the updated data
-//       rerender(
-//         <div>
-//           <EmailBlastHistory eventId="event123" />
-//           <EmailBlastCompose
-//             eventId="event123"
-//             onSend={jest.fn()}
-//             onCancel={jest.fn()}
-//           />
-//         </div>
-//       );
-
-//       await waitFor(() => {
-//         expect(screen.getByText(/new announcement!/i)).toBeInTheDocument();
-//       });
-//     });
-//   });
-// });
+import { useCreateEmailBlast, useEmailBlasts } from '@/lib/hooks/use-email-blasts';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act, renderHook } from '@testing-library/react';
+
+// Mock the API client
+jest.mock('@/lib/api/client', () => {
+  const mockApiClient = {
+    post: jest.fn(),
+    get: jest.fn(),
+    put: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    request: jest.fn(),
+    head: jest.fn(),
+    options: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  };
+  return {
+    __esModule: true,
+    default: mockApiClient,
+    apiClient: mockApiClient,
+  };
+});
+
+// Mock Next.js router
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    pathname: '/',
+    query: {},
+    asPath: '/',
+    events: {
+      on: jest.fn(),
+      off: jest.fn(),
+      emit: jest.fn(),
+    },
+    isFallback: false,
+    isLocaleDomain: false,
+    isReady: true,
+    isPreview: false,
+    basePath: '',
+    locale: 'en',
+    locales: ['en'],
+    defaultLocale: 'en',
+    domainLocales: [],
+    isSsr: false,
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({ id: 'event123' }),
+}));
+
+// Mock the auth hook
+jest.mock('@/lib/hooks/use-auth', () => ({
+  useAuth: () => ({
+    user: { id: 'user1', name: 'Test User' },
+    isAuthenticated: true,
+    isLoading: false,
+  }),
+}));
+
+describe('Email Blast Integration Flow', () => {
+  let queryClient: QueryClient;
+  let mockApiClient: any;
+
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
+
+    mockApiClient = require('@/lib/api/client').default;
+    mockApiClient.get.mockClear();
+    mockApiClient.post.mockClear();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const createWrapper = (client: QueryClient) => {
+    return ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
+  };
+
+  it('should fetch email blast history successfully', async () => {
+    const mockEmailBlasts = [
+      {
+        id: 'blast1',
+        event_id: 'event123',
+        user_id: 'user1',
+        message: '<p>Come join us!</p>',
+        recipient_filter: 'all',
+        status: 'sent',
+        scheduled_for: null,
+        created_at: '2025-01-01T10:00:00Z',
+        updated_at: '2025-01-01T10:00:00Z',
+      },
+      {
+        id: 'blast2',
+        event_id: 'event123',
+        user_id: 'user1',
+        message: '<p>Reminder about the event</p>',
+        recipient_filter: 'yes',
+        status: 'sent',
+        scheduled_for: null,
+        created_at: '2025-01-01T11:00:00Z',
+        updated_at: '2025-01-01T11:00:00Z',
+      },
+    ];
+
+    mockApiClient.get.mockResolvedValueOnce({
+      success: true,
+      message: 'ok',
+      data: mockEmailBlasts,
+    });
+
+    const { result } = renderHook(() => useEmailBlasts('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      // Wait for the query to complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/email-blasts/event123');
+    expect(result.current.data).toEqual(mockEmailBlasts);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should create email blast successfully', async () => {
+    const mockEmailBlastData = {
+      message: "<p>Don't forget to arrive on time!</p>",
+      recipientFilter: 'all' as const,
+      scheduledFor: null,
+    };
+
+    const mockResponse = {
+      success: true,
+      message: 'Email blast created successfully',
+      data: {
+        id: 'blast_new',
+        event_id: 'event123',
+        user_id: 'user1',
+        message: "<p>Don't forget to arrive on time!</p>",
+        recipient_filter: 'all',
+        status: 'sent',
+        scheduled_for: null,
+        created_at: '2025-01-01T12:00:00Z',
+        updated_at: '2025-01-01T12:00:00Z',
+      },
+    };
+
+    mockApiClient.post.mockResolvedValueOnce(mockResponse);
+
+    const { result } = renderHook(() => useCreateEmailBlast('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      result.current.mutate(mockEmailBlastData);
+    });
+
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/v1/events/email-blasts/event123',
+      mockEmailBlastData
+    );
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should handle email blast creation errors', async () => {
+    const mockEmailBlastData = {
+      message: '<p>Test message</p>',
+      recipientFilter: 'all' as const,
+      scheduledFor: null,
+    };
+
+    mockApiClient.post.mockRejectedValueOnce(new Error('Failed to create email blast'));
+
+    const { result } = renderHook(() => useCreateEmailBlast('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      result.current.mutate(mockEmailBlastData);
+    });
+
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/v1/events/email-blasts/event123',
+      mockEmailBlastData
+    );
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBeTruthy();
+  });
+
+  it('should fetch RSVP data for recipient filtering', async () => {
+    const mockRSVPs = [
+      { id: 'rsvp1', status: 'yes', user_id: 'user1' },
+      { id: 'rsvp2', status: 'yes', user_id: 'user2' },
+      { id: 'rsvp3', status: 'maybe', user_id: 'user3' },
+      { id: 'rsvp4', status: 'no', user_id: 'user4' },
+    ];
+
+    mockApiClient.get.mockResolvedValueOnce({
+      success: true,
+      message: 'ok',
+      data: mockRSVPs,
+    });
+
+    const { result } = renderHook(() => useEventRSVPs('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      // Wait for the query to complete
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
+
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
+    expect(result.current.data).toEqual(mockRSVPs);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+
+  it('should handle different recipient filters', async () => {
+    const recipientFilters = ['all', 'yes_only', 'yes_and_maybe'];
+
+    for (const filter of recipientFilters) {
+      const mockEmailBlastData = {
+        message: `<p>Message for ${filter} recipients</p>`,
+        recipientFilter: filter as 'all' | 'yes_only' | 'yes_and_maybe',
+        scheduledFor: null,
+      };
+
+      mockApiClient.post.mockResolvedValueOnce({
+        success: true,
+        message: 'Email blast created successfully',
+        data: {
+          id: `blast_${filter}`,
+          event_id: 'event123',
+          user_id: 'user1',
+          message: `<p>Message for ${filter} recipients</p>`,
+          recipient_filter: filter,
+          status: 'sent',
+          scheduled_for: null,
+          created_at: '2025-01-01T12:00:00Z',
+          updated_at: '2025-01-01T12:00:00Z',
+        },
+      });
+
+      const { result } = renderHook(() => useCreateEmailBlast('event123'), {
+        wrapper: createWrapper(queryClient),
+      });
+
+      await act(async () => {
+        result.current.mutate(mockEmailBlastData);
+      });
+
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        '/v1/events/email-blasts/event123',
+        mockEmailBlastData
+      );
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.error).toBeNull();
+    }
+  });
+
+  it('should handle scheduled email blasts', async () => {
+    const scheduledDate = new Date('2025-01-02T10:00:00Z');
+    const mockEmailBlastData = {
+      message: '<p>Scheduled reminder</p>',
+      recipientFilter: 'all' as const,
+      scheduledFor: scheduledDate.toISOString(),
+    };
+
+    const mockResponse = {
+      success: true,
+      message: 'Email blast scheduled successfully',
+      data: {
+        id: 'blast_scheduled',
+        event_id: 'event123',
+        user_id: 'user1',
+        message: '<p>Scheduled reminder</p>',
+        recipient_filter: 'all',
+        status: 'scheduled',
+        scheduled_for: scheduledDate.toISOString(),
+        created_at: '2025-01-01T12:00:00Z',
+        updated_at: '2025-01-01T12:00:00Z',
+      },
+    };
+
+    mockApiClient.post.mockResolvedValueOnce(mockResponse);
+
+    const { result } = renderHook(() => useCreateEmailBlast('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
+
+    await act(async () => {
+      result.current.mutate(mockEmailBlastData);
+    });
+
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/v1/events/email-blasts/event123',
+      mockEmailBlastData
+    );
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
+});

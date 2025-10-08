@@ -69,9 +69,7 @@ describe('useAddComment', () => {
     jest.clearAllMocks();
   });
 
-  const createMockComment = (
-    overrides: Partial<EventComment> = {}
-  ): EventComment => ({
+  const createMockComment = (overrides: Partial<EventComment> = {}): EventComment => ({
     id: 'comment1',
     created_at: '2023-01-01T00:00:00Z',
     message: 'Test comment',
@@ -116,10 +114,7 @@ describe('useAddComment', () => {
         mutationResult = await result.current.mutateAsync(commentParams);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/comments',
-        commentParams
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments', commentParams);
       expect(mutationResult).toEqual(mockComment);
     });
 
@@ -146,10 +141,7 @@ describe('useAddComment', () => {
         mutationResult = await result.current.mutateAsync(replyParams);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/comments',
-        replyParams
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments', replyParams);
       expect(mutationResult).toEqual(mockReply);
     });
 
@@ -238,10 +230,7 @@ describe('useAddComment', () => {
       const existingComments = [createMockComment({ id: 'existing1' })];
 
       // Set up existing comments in query cache
-      queryClient.setQueryData(
-        ['event', 'comments', 'event1'],
-        existingComments
-      );
+      queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
 
       // Mock API response
       const mockComment = createMockComment({
@@ -288,10 +277,7 @@ describe('useAddComment', () => {
       const existingComments = [parentComment];
 
       // Set up existing comments in query cache
-      queryClient.setQueryData(
-        ['event', 'comments', 'event1'],
-        existingComments
-      );
+      queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
 
       // Mock API response
       const mockReply = createMockComment({
@@ -347,10 +333,7 @@ describe('useAddComment', () => {
       const existingComments = [parentComment];
 
       // Set up existing comments in query cache
-      queryClient.setQueryData(
-        ['event', 'comments', 'event1'],
-        existingComments
-      );
+      queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
 
       // Mock API response
       const mockReply = createMockComment({
@@ -399,10 +382,7 @@ describe('useAddComment', () => {
       const existingComments = [createMockComment({ id: 'existing1' })];
 
       // Set up existing comments in query cache
-      queryClient.setQueryData(
-        ['event', 'comments', 'event1'],
-        existingComments
-      );
+      queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
 
       const { result } = renderHook(() => useAddComment(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -438,10 +418,7 @@ describe('useAddComment', () => {
       }));
 
       const existingComments = [createMockComment({ id: 'existing1' })];
-      queryClient.setQueryData(
-        ['event', 'comments', 'event1'],
-        existingComments
-      );
+      queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
 
       const { result } = renderHook(() => useAddComment(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -471,10 +448,7 @@ describe('useAddComment', () => {
       const existingComments = [createMockComment({ id: 'existing1' })];
 
       // Set up existing comments in query cache
-      queryClient.setQueryData(
-        ['event', 'comments', 'event1'],
-        existingComments
-      );
+      queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
 
       const { result } = renderHook(() => useAddComment(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

@@ -1,286 +1,324 @@
-// import EventPage from '@/app/e/[id]/page';
-// import { QueryClient } from '@tanstack/react-query';
-// import { render, screen, waitFor } from '@testing-library/react';
-// import userEvent from '@testing-library/user-event';
-// import { createTestWrapper } from '../setup/test-utils';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { act, renderHook } from '@testing-library/react';
 
-// // Mock the auth hook
-// jest.mock('@/lib/hooks/use-auth', () => ({
-//   useRequireAuth: () => ({ isLoading: false, isAuthenticated: true }),
-// }));
+// Mock the API client
+jest.mock('@/lib/api/client', () => {
+  const mockApiClient = {
+    post: jest.fn(),
+    get: jest.fn(),
+    put: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    request: jest.fn(),
+    head: jest.fn(),
+    options: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  };
+  return {
+    __esModule: true,
+    default: mockApiClient,
+    apiClient: mockApiClient,
+  };
+});
 
-// // Mock the event details hook
-// jest.mock('@/lib/hooks/use-event-details', () => ({
-//   useEventDetails: () => ({
-//     data: {
-//       id: 'event123',
-//       title: 'Test Event',
-//       description: 'Test Description',
-//       location: 'Test Location',
-//       start_date_day: 1,
-//       start_date_month: 1,
-//       start_date_year: 2025,
-//       start_date_hours: 10,
-//       start_date_minutes: 0,
-//       end_date_day: 1,
-//       end_date_month: 1,
-//       end_date_year: 2025,
-//       end_date_hours: 12,
-//       end_date_minutes: 0,
-//       timezone: 'UTC',
-//       visibility: 'public',
-//       status: 'published',
-//       cover: null,
-//       host_id: 'user1',
-//     },
-//     isLoading: false,
-//     error: null,
-//   }),
-// }));
+// Mock Next.js router
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    forward: jest.fn(),
+    refresh: jest.fn(),
+    pathname: '/',
+    query: {},
+    asPath: '/',
+    events: {
+      on: jest.fn(),
+      off: jest.fn(),
+      emit: jest.fn(),
+    },
+    isFallback: false,
+    isLocaleDomain: false,
+    isReady: true,
+    isPreview: false,
+    basePath: '',
+    locale: 'en',
+    locales: ['en'],
+    defaultLocale: 'en',
+    domainLocales: [],
+    isSsr: false,
+  }),
+  usePathname: () => '/',
+  useSearchParams: () => new URLSearchParams(),
+  useParams: () => ({ id: 'event123' }),
+}));
 
-// // Mock the RSVP hooks
-// jest.mock('@/lib/hooks/use-upsert-rsvp', () => ({
-//   useUpsertRSVP: () => ({
-//     mutate: jest.fn(),
-//     isPending: false,
-//     error: null,
-//   }),
-// }));
+// Mock the auth hook
+jest.mock('@/lib/hooks/use-auth', () => ({
+  useRequireAuth: () => ({ isLoading: false, isAuthenticated: true }),
+}));
 
-// jest.mock('@/lib/hooks/use-event-rsvps', () => ({
-//   useEventRSVPs: () => ({
-//     data: [
-//       {
-//         id: 'rsvp1',
-//         user_id: 'user1',
-//         event_id: 'event123',
-//         status: 'yes',
-//         created_at: '2025-01-01T00:00:00Z',
-//         updated_at: '2025-01-01T00:00:00Z',
-//       },
-//     ],
-//     isLoading: false,
-//     error: null,
-//   }),
-// }));
+describe('RSVP Integration Flow', () => {
+  let queryClient: QueryClient;
+  let mockApiClient: any;
 
-// jest.mock('@/lib/hooks/use-user-rsvp', () => ({
-//   useUserRSVP: () => ({
-//     data: null,
-//     isLoading: false,
-//     error: null,
-//   }),
-// }));
+  beforeEach(() => {
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+        mutations: { retry: false },
+      },
+    });
 
-// describe('RSVP Integration Flow', () => {
-//   let queryClient: QueryClient;
+    mockApiClient = require('@/lib/api/client').default;
+    mockApiClient.get.mockClear();
+    mockApiClient.post.mockClear();
+    mockApiClient.patch.mockClear();
+  });
 
-//   beforeEach(() => {
-//     queryClient = new QueryClient({
-//       defaultOptions: {
-//         queries: { retry: false },
-//         mutations: { retry: false },
-//       },
-//     });
-//     jest.clearAllMocks();
-//   });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   it('displays event details and RSVP options', async () => {
-//     const { container } = render(
-//       <EventPage params={{ id: 'event123' }} searchParams={{}} />,
-//       {
-//         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//       }
-//     );
+  const createWrapper = (client: QueryClient) => {
+    return ({ children }: { children: React.ReactNode }) => (
+      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+    );
+  };
 
-//     // Wait for the page to load
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+  it('should fetch event RSVPs successfully', async () => {
+    const mockRSVPs = [
+      {
+        id: 'rsvp1',
+        user_id: 'user1',
+        event_id: 'event123',
+        status: 'yes',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+      },
+      {
+        id: 'rsvp2',
+        user_id: 'user2',
+        event_id: 'event123',
+        status: 'maybe',
+        created_at: '2025-01-01T00:00:00Z',
+        updated_at: '2025-01-01T00:00:00Z',
+      },
+    ];
 
-//     // Check that event details are displayed
-//     expect(screen.getByText('Test Description')).toBeInTheDocument();
-//     expect(screen.getByText('Test Location')).toBeInTheDocument();
+    mockApiClient.get.mockResolvedValueOnce({
+      success: true,
+      message: 'ok',
+      data: mockRSVPs,
+    });
 
-//     // Check that RSVP section exists
-//     expect(screen.getByText(/RSVP/i)).toBeInTheDocument();
-//   });
+    const { result } = renderHook(() => useEventRSVPs('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
 
-//   it('allows user to RSVP to event', async () => {
-//     const mockUpsertRSVP = jest.fn();
-//     const { useUpsertRSVP } = require('@/lib/hooks/use-upsert-rsvp');
-//     useUpsertRSVP.mockReturnValue({
-//       mutate: mockUpsertRSVP,
-//       isPending: false,
-//       error: null,
-//     });
+    await act(async () => {
+      // Wait for the query to complete
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    });
 
-//     const user = userEvent.setup();
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
+    expect(result.current.data).toEqual(mockRSVPs);
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
 
-//     render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
-//       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//     });
+  it('should fetch user RSVP status', async () => {
+    const mockUserRSVP = {
+      id: 'rsvp1',
+      user_id: 'current_user',
+      event_id: 'event123',
+      status: 'yes',
+      created_at: '2025-01-01T00:00:00Z',
+      updated_at: '2025-01-01T00:00:00Z',
+    };
 
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+    mockApiClient.get.mockResolvedValueOnce({
+      success: true,
+      message: 'ok',
+      data: [mockUserRSVP],
+    });
 
-//     // Find and click the RSVP button
-//     const rsvpButton = screen.getByRole('button', { name: /rsvp/i });
-//     expect(rsvpButton).toBeInTheDocument();
+    const { result } = renderHook(() => useUserRSVP('event123'), {
+      wrapper: createWrapper(queryClient),
+    });
 
-//     await user.click(rsvpButton);
+    await act(async () => {
+      // Wait for the query to complete
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    });
 
-//     // Verify the RSVP mutation was called
-//     expect(mockUpsertRSVP).toHaveBeenCalledWith({
-//       event_id: 'event123',
-//       status: expect.any(String),
-//     });
-//   });
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      '/v1/events/rsvps/current-user?event_id=event123'
+    );
+    expect(result.current.data).toEqual({
+      status: 'yes',
+      rsvp: mockUserRSVP,
+    });
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
 
-//   it('displays current RSVP status', async () => {
-//     const { useUserRSVP } = require('@/lib/hooks/use-user-rsvp');
-//     useUserRSVP.mockReturnValue({
-//       data: {
-//         id: 'rsvp1',
-//         user_id: 'current_user',
-//         event_id: 'event123',
-//         status: 'yes',
-//         created_at: '2025-01-01T00:00:00Z',
-//         updated_at: '2025-01-01T00:00:00Z',
-//       },
-//       isLoading: false,
-//       error: null,
-//     });
+  it('should create RSVP successfully', async () => {
+    const mockRSVPData = {
+      eventId: 'event123',
+      status: 'yes' as const,
+      hasExisting: false,
+    };
 
-//     render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
-//       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//     });
+    const mockResponse = {
+      success: true,
+      message: 'RSVP created successfully',
+      data: [
+        {
+          id: 'rsvp_new',
+          user_id: 'current_user',
+          event_id: 'event123',
+          status: 'yes',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T00:00:00Z',
+        },
+      ],
+    };
 
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+    mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
-//     // Check that the user's current RSVP status is displayed
-//     expect(screen.getByText(/you.*yes/i)).toBeInTheDocument();
-//   });
+    const { result } = renderHook(() => useUpsertRSVP(), {
+      wrapper: createWrapper(queryClient),
+    });
 
-//   it('displays RSVP count and breakdown', async () => {
-//     const { useEventRSVPs } = require('@/lib/hooks/use-event-rsvps');
-//     useEventRSVPs.mockReturnValue({
-//       data: [
-//         { id: 'rsvp1', status: 'yes', user_id: 'user1' },
-//         { id: 'rsvp2', status: 'yes', user_id: 'user2' },
-//         { id: 'rsvp3', status: 'maybe', user_id: 'user3' },
-//         { id: 'rsvp4', status: 'no', user_id: 'user4' },
-//       ],
-//       isLoading: false,
-//       error: null,
-//     });
+    await act(async () => {
+      result.current.mutate(mockRSVPData);
+    });
 
-//     render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
-//       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//     });
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+      event_id: 'event123',
+      status: 'yes',
+    });
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
 
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+  it('should update RSVP successfully', async () => {
+    const mockRSVPData = {
+      eventId: 'event123',
+      status: 'maybe' as const,
+      hasExisting: true,
+    };
 
-//     // Check that RSVP counts are displayed
-//     expect(screen.getByText(/2.*yes/i)).toBeInTheDocument();
-//     expect(screen.getByText(/1.*maybe/i)).toBeInTheDocument();
-//     expect(screen.getByText(/1.*no/i)).toBeInTheDocument();
-//     expect(screen.getByText(/4.*total/i)).toBeInTheDocument();
-//   });
+    const mockResponse = {
+      success: true,
+      message: 'RSVP updated successfully',
+      data: [
+        {
+          id: 'rsvp1',
+          user_id: 'current_user',
+          event_id: 'event123',
+          status: 'maybe',
+          created_at: '2025-01-01T00:00:00Z',
+          updated_at: '2025-01-01T00:00:00Z',
+        },
+      ],
+    };
 
-//   it('handles RSVP update from existing status', async () => {
-//     const mockUpsertRSVP = jest.fn();
-//     const { useUpsertRSVP } = require('@/lib/hooks/use-upsert-rsvp');
-//     useUpsertRSVP.mockReturnValue({
-//       mutate: mockUpsertRSVP,
-//       isPending: false,
-//       error: null,
-//     });
+    mockApiClient.patch.mockResolvedValueOnce(mockResponse);
 
-//     const { useUserRSVP } = require('@/lib/hooks/use-user-rsvp');
-//     useUserRSVP.mockReturnValue({
-//       data: {
-//         id: 'rsvp1',
-//         user_id: 'current_user',
-//         event_id: 'event123',
-//         status: 'maybe',
-//         created_at: '2025-01-01T00:00:00Z',
-//         updated_at: '2025-01-01T00:00:00Z',
-//       },
-//       isLoading: false,
-//       error: null,
-//     });
+    const { result } = renderHook(() => useUpsertRSVP(), {
+      wrapper: createWrapper(queryClient),
+    });
 
-//     const user = userEvent.setup();
+    await act(async () => {
+      result.current.mutate(mockRSVPData);
+    });
 
-//     render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
-//       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//     });
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/rsvps', {
+      event_id: 'event123',
+      status: 'maybe',
+    });
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBeNull();
+  });
 
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+  it('should handle RSVP errors gracefully', async () => {
+    const mockRSVPData = {
+      eventId: 'event123',
+      status: 'yes' as const,
+      hasExisting: false,
+    };
 
-//     // Find and click the change RSVP button
-//     const changeRsvpButton = screen.getByRole('button', { name: /change/i });
-//     expect(changeRsvpButton).toBeInTheDocument();
+    mockApiClient.post.mockRejectedValueOnce(new Error('Failed to create RSVP'));
 
-//     await user.click(changeRsvpButton);
+    const { result } = renderHook(() => useUpsertRSVP(), {
+      wrapper: createWrapper(queryClient),
+    });
 
-//     // Verify the RSVP mutation was called with new status
-//     expect(mockUpsertRSVP).toHaveBeenCalledWith({
-//       event_id: 'event123',
-//       status: expect.not.stringMatching('maybe'), // Should be different from current status
-//     });
-//   });
+    await act(async () => {
+      result.current.mutate(mockRSVPData);
+    });
 
-//   it('shows loading state during RSVP operation', async () => {
-//     const { useUpsertRSVP } = require('@/lib/hooks/use-upsert-rsvp');
-//     useUpsertRSVP.mockReturnValue({
-//       mutate: jest.fn(),
-//       isPending: true,
-//       error: null,
-//     });
+    // Wait for the mutation to complete
+    await act(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    });
 
-//     render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
-//       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//     });
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+      event_id: 'event123',
+      status: 'yes',
+    });
+    expect(result.current.isPending).toBe(false);
+    expect(result.current.error).toBeTruthy();
+  });
 
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+  it('should handle different RSVP statuses', async () => {
+    const statuses = ['yes', 'maybe', 'no'];
 
-//     // Check that loading state is displayed
-//     expect(
-//       screen.getByText(/loading/i) ||
-//         screen.getByRole('button', { name: /rsvp/i })
-//     ).toBeTruthy();
-//   });
+    for (const status of statuses) {
+      const mockRSVPData = {
+        eventId: 'event123',
+        status: status as 'yes' | 'maybe' | 'no',
+        hasExisting: false,
+      };
 
-//   it('handles RSVP errors gracefully', async () => {
-//     const { useUpsertRSVP } = require('@/lib/hooks/use-upsert-rsvp');
-//     useUpsertRSVP.mockReturnValue({
-//       mutate: jest.fn(),
-//       isPending: false,
-//       error: new Error('RSVP failed'),
-//     });
+      mockApiClient.post.mockResolvedValueOnce({
+        success: true,
+        message: 'RSVP created successfully',
+        data: [
+          {
+            id: `rsvp_${status}`,
+            user_id: 'current_user',
+            event_id: 'event123',
+            status: status,
+            created_at: '2025-01-01T00:00:00Z',
+            updated_at: '2025-01-01T00:00:00Z',
+          },
+        ],
+      });
 
-//     render(<EventPage params={{ id: 'event123' }} searchParams={{}} />, {
-//       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
-//     });
+      const { result } = renderHook(() => useUpsertRSVP(), {
+        wrapper: createWrapper(queryClient),
+      });
 
-//     await waitFor(() => {
-//       expect(screen.getByText('Test Event')).toBeInTheDocument();
-//     });
+      await act(async () => {
+        result.current.mutate(mockRSVPData);
+      });
 
-//     // Check that error state is displayed
-//     expect(
-//       screen.getByText(/failed/i) || screen.getByText(/error/i)
-//     ).toBeTruthy();
-//   });
-// });
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+        event_id: 'event123',
+        status: status,
+      });
+      expect(result.current.isPending).toBe(false);
+      expect(result.current.error).toBeNull();
+    }
+  });
+});

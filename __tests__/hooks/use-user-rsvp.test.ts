@@ -315,10 +315,10 @@ describe('useUserRSVP', () => {
       .mockResolvedValueOnce({ data: [mockRSVP1] })
       .mockResolvedValueOnce({ data: [mockRSVP2] });
 
-    const { result, rerender } = renderHook(
-      ({ eventId }) => useUserRSVP(eventId),
-      { wrapper, initialProps: { eventId: 'event1' } }
-    );
+    const { result, rerender } = renderHook(({ eventId }) => useUserRSVP(eventId), {
+      wrapper,
+      initialProps: { eventId: 'event1' },
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);

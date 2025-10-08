@@ -4,9 +4,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('useUserEvents', () => {
   let queryClient: QueryClient;
@@ -30,10 +28,7 @@ describe('useUserEvents', () => {
   });
 
   it('should return initial state correctly', () => {
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     expect(result.current).toMatchObject({
       data: undefined,
@@ -54,10 +49,9 @@ describe('useUserEvents', () => {
   });
 
   it('should not fetch when enabled is false', () => {
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser', enabled: false }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser', enabled: false }), {
+      wrapper,
+    });
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.data).toBeUndefined();
@@ -92,10 +86,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -179,10 +170,9 @@ describe('useUserEvents', () => {
 
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(
-        () => useUserEvents({ username: 'testuser', filter }),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useUserEvents({ username: 'testuser', filter }), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -221,10 +211,9 @@ describe('useUserEvents', () => {
 
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(
-        () => useUserEvents({ username: 'testuser', timeframe }),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useUserEvents({ username: 'testuser', timeframe }), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -241,12 +230,7 @@ describe('useUserEvents', () => {
 
   it('should handle all sort types correctly', async () => {
     const mockApiClient = require('@/lib/api/client').default;
-    const sortTypes = [
-      'date-asc',
-      'date-desc',
-      'created-asc',
-      'created-desc',
-    ] as const;
+    const sortTypes = ['date-asc', 'date-desc', 'created-asc', 'created-desc'] as const;
 
     for (const sortBy of sortTypes) {
       const mockResponse = {
@@ -265,10 +249,9 @@ describe('useUserEvents', () => {
 
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(
-        () => useUserEvents({ username: 'testuser', sortBy }),
-        { wrapper }
-      );
+      const { result } = renderHook(() => useUserEvents({ username: 'testuser', sortBy }), {
+        wrapper,
+      });
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
@@ -289,10 +272,7 @@ describe('useUserEvents', () => {
     const apiError = new Error('API Error');
     mockApiClient.get.mockRejectedValue(apiError);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -306,10 +286,7 @@ describe('useUserEvents', () => {
     (unauthorizedError as any).response = { status: 401 };
     mockApiClient.get.mockRejectedValue(unauthorizedError);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -324,10 +301,7 @@ describe('useUserEvents', () => {
     const networkError = new Error('Network Error');
     mockApiClient.get.mockRejectedValue(networkError);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -339,10 +313,7 @@ describe('useUserEvents', () => {
     const mockApiClient = require('@/lib/api/client').default;
     mockApiClient.get.mockResolvedValue(null);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -354,10 +325,7 @@ describe('useUserEvents', () => {
     const mockApiClient = require('@/lib/api/client').default;
     mockApiClient.get.mockResolvedValue({});
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -383,10 +351,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -423,10 +388,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -486,14 +448,9 @@ describe('useUserEvents', () => {
       },
     };
 
-    mockApiClient.get
-      .mockResolvedValueOnce(mockResponse1)
-      .mockResolvedValueOnce(mockResponse2);
+    mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -538,10 +495,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -608,10 +562,9 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser', search: '' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser', search: '' }), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -640,10 +593,9 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser', limit: 20 }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser', limit: 20 }), {
+      wrapper,
+    });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -686,10 +638,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -715,18 +664,13 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
     expect(result.current.data?.pages[0].events).toEqual([]);
-    expect(result.current.data?.pages[0].pagination).toEqual(
-      mockResponse.data.pagination
-    );
+    expect(result.current.data?.pages[0].pagination).toEqual(mockResponse.data.pagination);
   });
 });

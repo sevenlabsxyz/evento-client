@@ -1,7 +1,4 @@
-import {
-  useCreateEvent,
-  useCreateEventWithCallbacks,
-} from '@/lib/hooks/use-create-event';
+import { useCreateEvent, useCreateEventWithCallbacks } from '@/lib/hooks/use-create-event';
 import { CreateEventData } from '@/lib/schemas/event';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -56,9 +53,7 @@ describe('useCreateEvent', () => {
     mockPush.mockClear();
   });
 
-  const createMockEventData = (
-    overrides: Partial<CreateEventData> = {}
-  ): CreateEventData => ({
+  const createMockEventData = (overrides: Partial<CreateEventData> = {}): CreateEventData => ({
     title: 'Test Event',
     description: 'Test event description',
     location: 'Test Location',
@@ -116,10 +111,7 @@ describe('useCreateEvent', () => {
         mutationResult = await result.current.mutateAsync(mockEventData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mutationResult).toEqual(mockEvent);
       expect(mockPush).toHaveBeenCalledWith('/e/event123');
     });
@@ -173,10 +165,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -200,10 +189,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -227,10 +213,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -254,10 +237,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -277,10 +257,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
   });
@@ -505,10 +482,7 @@ describe('useCreateEvent', () => {
         await result.current.mutateAsync(completeEventData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        completeEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', completeEventData);
       expect(mockPush).toHaveBeenCalledWith('/e/event123');
     });
   });
@@ -566,9 +540,7 @@ describe('useCreateEventWithCallbacks', () => {
     jest.clearAllMocks();
   });
 
-  const createMockEventData = (
-    overrides: Partial<CreateEventData> = {}
-  ): CreateEventData => ({
+  const createMockEventData = (overrides: Partial<CreateEventData> = {}): CreateEventData => ({
     title: 'Test Event',
     description: 'Test event description',
     location: 'Test Location',
@@ -626,10 +598,7 @@ describe('useCreateEventWithCallbacks', () => {
         mutationResult = await result.current.mutateAsync(mockEventData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
       expect(mutationResult).toEqual(mockEvent);
       expect(mockPush).not.toHaveBeenCalled();
     });
@@ -682,10 +651,7 @@ describe('useCreateEventWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
     });
 
     it('handles invalid API response format', async () => {
@@ -708,10 +674,7 @@ describe('useCreateEventWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/create',
-        mockEventData
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
     });
   });
 
@@ -820,11 +783,7 @@ describe('useCreateEventWithCallbacks', () => {
       });
 
       await waitFor(() => {
-        expect(customOnSuccess).toHaveBeenCalledWith(
-          mockEvent,
-          mockEventData,
-          undefined
-        );
+        expect(customOnSuccess).toHaveBeenCalledWith(mockEvent, mockEventData, undefined);
         expect(customOnError).not.toHaveBeenCalled();
       });
     });
@@ -848,11 +807,7 @@ describe('useCreateEventWithCallbacks', () => {
       });
 
       await waitFor(() => {
-        expect(customOnError).toHaveBeenCalledWith(
-          apiError,
-          mockEventData,
-          undefined
-        );
+        expect(customOnError).toHaveBeenCalledWith(apiError, mockEventData, undefined);
         expect(customOnSuccess).not.toHaveBeenCalled();
       });
     });

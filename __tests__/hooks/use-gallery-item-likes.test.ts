@@ -92,9 +92,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/gallery/likes?itemId=item123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery/likes?itemId=item123');
       expect(result.current.likes).toBe(10);
       expect(result.current.hasLiked).toBe(true);
     });
@@ -108,9 +106,7 @@ describe('useGalleryItemLikes', () => {
       // Override the global mock completely for this test
       mockApiClient.get.mockReset();
       mockApiClient.post.mockReset();
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const { result } = renderHook(() => useGalleryItemLikes('item456'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -120,9 +116,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/gallery/likes?itemId=item456'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery/likes?itemId=item456');
       expect(result.current.likes).toBe(7);
       expect(result.current.hasLiked).toBe(false);
     });
@@ -281,12 +275,9 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/gallery/likes',
-        {
-          itemId: 'item123',
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+        itemId: 'item123',
+      });
     });
 
     it('toggles like successfully with direct response', async () => {
@@ -321,12 +312,9 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/gallery/likes',
-        {
-          itemId: 'item456',
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+        itemId: 'item456',
+      });
     });
 
     it('handles mutation error', async () => {
@@ -358,9 +346,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Failed to update like. Please try again.'
-      );
+      expect(mockToast.error).toHaveBeenCalledWith('Failed to update like. Please try again.');
     });
 
     it('handles mutation with null response', async () => {
@@ -391,9 +377,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Failed to update like. Please try again.'
-      );
+      expect(mockToast.error).toHaveBeenCalledWith('Failed to update like. Please try again.');
     });
 
     it('handles mutation with undefined response', async () => {
@@ -424,9 +408,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Failed to update like. Please try again.'
-      );
+      expect(mockToast.error).toHaveBeenCalledWith('Failed to update like. Please try again.');
     });
 
     it('handles mutation with non-object response', async () => {
@@ -457,9 +439,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Failed to update like. Please try again.'
-      );
+      expect(mockToast.error).toHaveBeenCalledWith('Failed to update like. Please try again.');
     });
 
     it('handles mutation with response without success and data properties', async () => {
@@ -494,9 +474,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Failed to update like. Please try again.'
-      );
+      expect(mockToast.error).toHaveBeenCalledWith('Failed to update like. Please try again.');
     });
 
     it('shows error toast when itemId is undefined', () => {
@@ -535,9 +513,7 @@ describe('useGalleryItemLikes', () => {
         has_liked: false,
       });
       const mockResponse = createMockApiResponse(mockLikes);
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const { result } = renderHook(() => useGalleryItemLikes('item123'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -569,9 +545,7 @@ describe('useGalleryItemLikes', () => {
         has_liked: true,
       });
       const mockResponse = createMockApiResponse(mockLikes);
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const { result } = renderHook(() => useGalleryItemLikes('item456'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -603,9 +577,7 @@ describe('useGalleryItemLikes', () => {
         has_liked: false,
       });
       const mockResponse = createMockApiResponse(mockLikes);
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const { result } = renderHook(() => useGalleryItemLikes('item789'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -640,10 +612,7 @@ describe('useGalleryItemLikes', () => {
       });
 
       // Create a promise that we can control
-      let resolvePromise: (value: {
-        likes: number;
-        has_liked: boolean;
-      }) => void;
+      let resolvePromise: (value: { likes: number; has_liked: boolean }) => void;
       const controlledPromise = new Promise((resolve) => {
         resolvePromise = resolve;
       });
@@ -683,9 +652,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
 
       // Set up fresh mocks for this test
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const mockLikeAction = createMockLikeActionResponse({
         action: 'liked',
@@ -705,8 +672,7 @@ describe('useGalleryItemLikes', () => {
       mockApiClient.post.mockImplementationOnce(() => controlledPromise);
 
       const { result } = renderHook(() => useGalleryItemLikes('item456'), {
-        wrapper: ({ children }) =>
-          createTestWrapper(freshQueryClient)({ children }),
+        wrapper: ({ children }) => createTestWrapper(freshQueryClient)({ children }),
       });
 
       // Wait for initial data
@@ -741,12 +707,9 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/gallery/likes',
-        {
-          itemId: 'item456',
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+        itemId: 'item456',
+      });
     });
   });
 
@@ -760,9 +723,7 @@ describe('useGalleryItemLikes', () => {
       // Override the global mock completely for this test
       mockApiClient.get.mockReset();
       mockApiClient.post.mockReset();
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const { result } = renderHook(() => useGalleryItemLikes('item123'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -773,11 +734,7 @@ describe('useGalleryItemLikes', () => {
       });
 
       // Check that the query key is correct
-      const queryData = queryClient.getQueryData([
-        'gallery',
-        'likes',
-        'item123',
-      ]);
+      const queryData = queryClient.getQueryData(['gallery', 'likes', 'item123']);
       expect(queryData).toEqual(mockLikes);
     });
 
@@ -790,9 +747,7 @@ describe('useGalleryItemLikes', () => {
       // Override the global mock completely for this test
       mockApiClient.get.mockReset();
       mockApiClient.post.mockReset();
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
       const { result } = renderHook(() => useGalleryItemLikes('item456'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -867,9 +822,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/events/gallery/likes?itemId=${itemId}`
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/gallery/likes?itemId=${itemId}`);
       expect(result.current.likes).toBe(2);
       expect(result.current.hasLiked).toBe(false);
     });

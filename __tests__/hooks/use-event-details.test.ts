@@ -42,10 +42,9 @@ import { transformApiEventResponse } from '@/lib/utils/api-transform';
 import { debugError } from '@/lib/utils/debug';
 
 const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
-const mockTransformApiEventResponse =
-  transformApiEventResponse as jest.MockedFunction<
-    typeof transformApiEventResponse
-  >;
+const mockTransformApiEventResponse = transformApiEventResponse as jest.MockedFunction<
+  typeof transformApiEventResponse
+>;
 const mockDebugError = debugError as jest.MockedFunction<typeof debugError>;
 
 describe('useEventDetails', () => {
@@ -125,9 +124,7 @@ describe('useEventDetails', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/details?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=event123');
       expect(mockTransformApiEventResponse).toHaveBeenCalledWith(mockEvent);
       expect(result.current.data).toEqual(mockEvent);
     });
@@ -145,9 +142,7 @@ describe('useEventDetails', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/details?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=event123');
       expect(mockTransformApiEventResponse).toHaveBeenCalledWith(mockEvent);
       expect(result.current.data).toEqual(mockEvent);
     });
@@ -176,9 +171,7 @@ describe('useEventDetails', () => {
     });
 
     it('handles null response', async () => {
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(null as unknown as ApiEvent)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(null as unknown as ApiEvent));
 
       const { result } = renderHook(() => useEventDetails('event123'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -250,9 +243,7 @@ describe('useEventDetails', () => {
     it('handles transformation failure', async () => {
       const mockEvent = createMockEvent();
       const mockResponse = createMockApiResponse(mockEvent);
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.resolve(mockResponse)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
       mockTransformApiEventResponse.mockImplementationOnce(() => null);
 
       const { result } = renderHook(() => useEventDetails('event123'), {
@@ -284,13 +275,9 @@ describe('useEventDetails', () => {
     });
 
     it('is disabled when eventId is null', () => {
-      const { result } = renderHook(
-        () => useEventDetails(null as unknown as string),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useEventDetails(null as unknown as string), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       expect(result.current.isLoading).toBe(false);
       expect(mockApiClient.get).not.toHaveBeenCalled();
@@ -303,11 +290,7 @@ describe('useEventDetails', () => {
       const mockResponse = createMockApiResponse(mockEvent);
 
       // Create a promise that we can control
-      let resolvePromise: (value: {
-        success: boolean;
-        message: string;
-        data: ApiEvent;
-      }) => void;
+      let resolvePromise: (value: { success: boolean; message: string; data: ApiEvent }) => void;
       const controlledPromise = new Promise((resolve) => {
         resolvePromise = resolve;
       });
@@ -382,21 +365,15 @@ describe('useEventDetails', () => {
       mockApiClient.get.mockResolvedValue(mockResponse);
       mockTransformApiEventResponse.mockReturnValue(mockEvent);
 
-      const { result } = renderHook(
-        () => useEventDetails('special-event-123'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useEventDetails('special-event-123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/details?id=special-event-123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=special-event-123');
     });
 
     it('handles special characters in event ID', async () => {
@@ -405,13 +382,9 @@ describe('useEventDetails', () => {
       mockApiClient.get.mockResolvedValue(mockResponse);
       mockTransformApiEventResponse.mockReturnValue(mockEvent);
 
-      const { result } = renderHook(
-        () => useEventDetails('event-with-special-chars-!@#$%'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useEventDetails('event-with-special-chars-!@#$%'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -480,9 +453,7 @@ describe('useEventDetails', () => {
       });
 
       // Check that the query key is correct by verifying the query was made
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/details?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=event123');
     });
 
     it('has stale time configuration', async () => {
@@ -538,13 +509,9 @@ describe('useEventDetails', () => {
       const mockResponse1 = createMockApiResponse(mockEvent1);
       const mockResponse2 = createMockApiResponse(mockEvent2);
 
-      mockApiClient.get
-        .mockResolvedValueOnce(mockResponse1)
-        .mockResolvedValueOnce(mockResponse2);
+      mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
-      mockTransformApiEventResponse
-        .mockReturnValueOnce(mockEvent1)
-        .mockReturnValueOnce(mockEvent2);
+      mockTransformApiEventResponse.mockReturnValueOnce(mockEvent1).mockReturnValueOnce(mockEvent2);
 
       const { result: result1 } = renderHook(() => useEventDetails('event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

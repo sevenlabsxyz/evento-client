@@ -1,7 +1,4 @@
-import {
-  CommentReactions,
-  useCommentReactions,
-} from '@/lib/hooks/use-comment-reactions';
+import { CommentReactions, useCommentReactions } from '@/lib/hooks/use-comment-reactions';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -46,9 +43,7 @@ describe('useCommentReactions', () => {
     jest.clearAllMocks();
   });
 
-  const createMockReactions = (
-    overrides: Partial<CommentReactions> = {}
-  ): CommentReactions => ({
+  const createMockReactions = (overrides: Partial<CommentReactions> = {}): CommentReactions => ({
     reactions: {
       like: 5,
       ...overrides.reactions,
@@ -80,9 +75,7 @@ describe('useCommentReactions', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/comments/comment1/reactions'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions');
 
       // Wait for the data to be available
       await waitFor(() => {
@@ -154,13 +147,9 @@ describe('useCommentReactions', () => {
     });
 
     it('does not fetch when commentId is undefined', () => {
-      const { result } = renderHook(
-        () => useCommentReactions(undefined as any),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useCommentReactions(undefined as any), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       expect(mockApiClient.get).not.toHaveBeenCalled();
       expect(result.current.isLoading).toBe(false);
@@ -201,12 +190,9 @@ describe('useCommentReactions', () => {
         expect(result.current.isToggling).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/comments/comment1/reactions',
-        {
-          reactionType: 'like',
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
+        reactionType: 'like',
+      });
     });
 
     it('handles mutation errors', async () => {
@@ -238,12 +224,9 @@ describe('useCommentReactions', () => {
         expect(result.current.isToggling).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/comments/comment1/reactions',
-        {
-          reactionType: 'like',
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
+        reactionType: 'like',
+      });
     });
 
     it('handles invalid mutation response format', async () => {
@@ -309,10 +292,9 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith(
-          '/v1/events/comments/comment1/reactions',
-          { reactionType: 'like' }
-        );
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
+          reactionType: 'like',
+        });
       });
     });
 
@@ -348,10 +330,9 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith(
-          '/v1/events/comments/comment1/reactions',
-          { reactionType: 'like' }
-        );
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
+          reactionType: 'like',
+        });
       });
     });
 
@@ -387,10 +368,9 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith(
-          '/v1/events/comments/comment1/reactions',
-          { reactionType: 'like' }
-        );
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
+          reactionType: 'like',
+        });
       });
     });
 
@@ -426,10 +406,9 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith(
-          '/v1/events/comments/comment1/reactions',
-          { reactionType: 'like' }
-        );
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
+          reactionType: 'like',
+        });
       });
     });
 

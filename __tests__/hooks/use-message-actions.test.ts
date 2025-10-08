@@ -3,9 +3,7 @@ import { act, renderHook } from '@testing-library/react';
 import type { Channel as StreamChannel } from 'stream-chat';
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('useMessageActions', () => {
   let mockChannel: Partial<StreamChannel>;
@@ -27,12 +25,8 @@ describe('useMessageActions', () => {
 
     // Create mock channel
     mockChannel = {
-      getClient: jest.fn(
-        () => mockClient as unknown as ReturnType<StreamChannel['getClient']>
-      ),
-      sendReaction: jest.fn() as jest.MockedFunction<
-        StreamChannel['sendReaction']
-      >,
+      getClient: jest.fn(() => mockClient as unknown as ReturnType<StreamChannel['getClient']>),
+      sendReaction: jest.fn() as jest.MockedFunction<StreamChannel['sendReaction']>,
       markUnread: jest.fn() as jest.MockedFunction<StreamChannel['markUnread']>,
     };
   });
@@ -46,9 +40,7 @@ describe('useMessageActions', () => {
       const messageId = 'message123';
       mockClient.flagMessage.mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handleFlag(messageId);
@@ -63,9 +55,7 @@ describe('useMessageActions', () => {
       const error = new Error('Flag failed');
       mockClient.flagMessage.mockRejectedValue(error);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -75,10 +65,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to flag message:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to flag message:', error);
     });
 
     it('returns early when channel is undefined', async () => {
@@ -111,9 +98,7 @@ describe('useMessageActions', () => {
       const isPinned = false;
       mockClient.pinMessage.mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handlePin(messageId, isPinned);
@@ -129,9 +114,7 @@ describe('useMessageActions', () => {
       const isPinned = true;
       mockClient.unpinMessage.mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handlePin(messageId, isPinned);
@@ -148,9 +131,7 @@ describe('useMessageActions', () => {
       const error = new Error('Pin failed');
       mockClient.pinMessage.mockRejectedValue(error);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -160,10 +141,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to pin/unpin message:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to pin/unpin message:', error);
     });
 
     it('handles unpin message error', async () => {
@@ -172,9 +150,7 @@ describe('useMessageActions', () => {
       const error = new Error('Unpin failed');
       mockClient.unpinMessage.mockRejectedValue(error);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -184,10 +160,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to pin/unpin message:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to pin/unpin message:', error);
     });
 
     it('returns early when channel is undefined', async () => {
@@ -221,9 +194,7 @@ describe('useMessageActions', () => {
       const emoji = '👍';
       (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handleReaction(messageId, emoji);
@@ -240,9 +211,7 @@ describe('useMessageActions', () => {
       const error = new Error('Reaction failed');
       (mockChannel.sendReaction as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -252,10 +221,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to send reaction:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to send reaction:', error);
     });
 
     it('returns early when channel is undefined', async () => {
@@ -275,9 +241,7 @@ describe('useMessageActions', () => {
       for (const emoji of emojis) {
         (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
 
-        const { result } = renderHook(() =>
-          useMessageActions(mockChannel as StreamChannel)
-        );
+        const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
         await act(async () => {
           await result.current.handleReaction(messageId, emoji);
@@ -295,9 +259,7 @@ describe('useMessageActions', () => {
       const messageId = 'message123';
       (mockChannel.markUnread as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handleMarkUnread(messageId);
@@ -313,9 +275,7 @@ describe('useMessageActions', () => {
       const error = new Error('Mark unread failed');
       (mockChannel.markUnread as jest.Mock).mockRejectedValue(error);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -325,10 +285,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to mark as unread:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to mark as unread:', error);
     });
 
     it('returns early when channel is undefined', async () => {
@@ -344,9 +301,7 @@ describe('useMessageActions', () => {
 
   describe('hook return values', () => {
     it('returns all action handlers', () => {
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       expect(result.current).toEqual({
         handleFlag: expect.any(Function),
@@ -357,10 +312,9 @@ describe('useMessageActions', () => {
     });
 
     it('maintains function references when channel does not change', () => {
-      const { result, rerender } = renderHook(
-        ({ channel }) => useMessageActions(channel),
-        { initialProps: { channel: mockChannel as StreamChannel } }
-      );
+      const { result, rerender } = renderHook(({ channel }) => useMessageActions(channel), {
+        initialProps: { channel: mockChannel as StreamChannel },
+      });
 
       const firstRender = result.current;
 
@@ -369,16 +323,13 @@ describe('useMessageActions', () => {
       expect(result.current.handleFlag).toBe(firstRender.handleFlag);
       expect(result.current.handlePin).toBe(firstRender.handlePin);
       expect(result.current.handleReaction).toBe(firstRender.handleReaction);
-      expect(result.current.handleMarkUnread).toBe(
-        firstRender.handleMarkUnread
-      );
+      expect(result.current.handleMarkUnread).toBe(firstRender.handleMarkUnread);
     });
 
     it('creates new function references when channel changes', () => {
-      const { result, rerender } = renderHook(
-        ({ channel }) => useMessageActions(channel),
-        { initialProps: { channel: mockChannel as StreamChannel } }
-      );
+      const { result, rerender } = renderHook(({ channel }) => useMessageActions(channel), {
+        initialProps: { channel: mockChannel as StreamChannel },
+      });
 
       const firstRender = result.current;
 
@@ -393,12 +344,8 @@ describe('useMessageActions', () => {
 
       expect(result.current.handleFlag).not.toBe(firstRender.handleFlag);
       expect(result.current.handlePin).not.toBe(firstRender.handlePin);
-      expect(result.current.handleReaction).not.toBe(
-        firstRender.handleReaction
-      );
-      expect(result.current.handleMarkUnread).not.toBe(
-        firstRender.handleMarkUnread
-      );
+      expect(result.current.handleReaction).not.toBe(firstRender.handleReaction);
+      expect(result.current.handleMarkUnread).not.toBe(firstRender.handleMarkUnread);
     });
   });
 
@@ -407,9 +354,7 @@ describe('useMessageActions', () => {
       const messageId = '';
       mockClient.flagMessage.mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handleFlag(messageId);
@@ -422,9 +367,7 @@ describe('useMessageActions', () => {
       const messageId = 'message-123_!@#$%^&*()';
       (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handleReaction(messageId, '👍');
@@ -439,9 +382,7 @@ describe('useMessageActions', () => {
       const messageId = 'a'.repeat(1000);
       (mockChannel.markUnread as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         await result.current.handleMarkUnread(messageId);
@@ -453,9 +394,7 @@ describe('useMessageActions', () => {
     });
 
     it('handles null channel', async () => {
-      const { result } = renderHook(() =>
-        useMessageActions(null as unknown as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(null as unknown as StreamChannel));
 
       await act(async () => {
         await result.current.handleFlag('message123');
@@ -475,9 +414,7 @@ describe('useMessageActions', () => {
       const messageIds = ['message1', 'message2', 'message3'];
       mockClient.flagMessage.mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         const promises = messageIds.map((id) => result.current.handleFlag(id));
@@ -496,9 +433,7 @@ describe('useMessageActions', () => {
       (mockChannel.sendReaction as jest.Mock).mockResolvedValue(undefined);
       (mockChannel.markUnread as jest.Mock).mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         const promises = [
@@ -529,9 +464,7 @@ describe('useMessageActions', () => {
         throw error;
       });
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -541,10 +474,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to flag message:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to flag message:', error);
     });
 
     it('handles channel method throwing synchronous errors', async () => {
@@ -555,9 +485,7 @@ describe('useMessageActions', () => {
         throw error;
       });
 
-      const { result } = renderHook(() =>
-        useMessageActions(mockChannel as StreamChannel)
-      );
+      const { result } = renderHook(() => useMessageActions(mockChannel as StreamChannel));
 
       await act(async () => {
         try {
@@ -567,10 +495,7 @@ describe('useMessageActions', () => {
         }
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith(
-        'Failed to send reaction:',
-        error
-      );
+      expect(mockConsoleError).toHaveBeenCalledWith('Failed to send reaction:', error);
     });
   });
 });

@@ -57,9 +57,7 @@ describe('useEditComment', () => {
     ...overrides,
   });
 
-  const createMockComment = (
-    overrides: Partial<EventComment> = {}
-  ): EventComment => ({
+  const createMockComment = (overrides: Partial<EventComment> = {}): EventComment => ({
     id: 'comment123',
     created_at: '2024-01-01T00:00:00Z',
     message: 'Updated comment message',
@@ -99,10 +97,9 @@ describe('useEditComment', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: 'Updated comment message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'Updated comment message',
+      });
       expect(mutationResult).toEqual(mockComment);
     });
 
@@ -120,10 +117,9 @@ describe('useEditComment', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: 'Updated comment message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'Updated comment message',
+      });
       expect(mutationResult).toEqual(mockComment);
     });
 
@@ -144,10 +140,9 @@ describe('useEditComment', () => {
         }
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: 'Updated comment message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'Updated comment message',
+      });
     });
 
     it('handles null response', async () => {
@@ -166,10 +161,9 @@ describe('useEditComment', () => {
         }
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: 'Updated comment message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'Updated comment message',
+      });
     });
 
     it('handles undefined response', async () => {
@@ -188,10 +182,9 @@ describe('useEditComment', () => {
         }
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: 'Updated comment message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'Updated comment message',
+      });
     });
 
     it('handles non-object response', async () => {
@@ -210,10 +203,9 @@ describe('useEditComment', () => {
         }
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: 'Updated comment message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'Updated comment message',
+      });
     });
   });
 
@@ -424,10 +416,9 @@ describe('useEditComment', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/special-comment-123',
-        { message: 'Updated message' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/special-comment-123', {
+        message: 'Updated message',
+      });
     });
 
     it('handles special characters in comment ID', async () => {
@@ -461,13 +452,11 @@ describe('useEditComment', () => {
     it('sends correct message in request body', async () => {
       const mockParams = createMockEditParams({
         commentId: 'comment123',
-        message:
-          'This is a very long message with special characters! @#$%^&*()',
+        message: 'This is a very long message with special characters! @#$%^&*()',
         eventId: 'event456',
       });
       const mockComment = createMockComment({
-        message:
-          'This is a very long message with special characters! @#$%^&*()',
+        message: 'This is a very long message with special characters! @#$%^&*()',
       });
       const mockResponse = createMockApiResponse(mockComment);
       mockApiClient.patch.mockResolvedValue(mockResponse);
@@ -480,13 +469,9 @@ describe('useEditComment', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        {
-          message:
-            'This is a very long message with special characters! @#$%^&*()',
-        }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: 'This is a very long message with special characters! @#$%^&*()',
+      });
     });
 
     it('handles empty message', async () => {
@@ -507,10 +492,9 @@ describe('useEditComment', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: '' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: '',
+      });
     });
 
     it('handles multiline message', async () => {
@@ -535,10 +519,9 @@ and special characters! @#$%^&*()`;
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment123',
-        { message: multilineMessage }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment123', {
+        message: multilineMessage,
+      });
     });
   });
 
@@ -615,9 +598,7 @@ and special characters! @#$%^&*()`;
       const mockResponse1 = createMockApiResponse(mockComment1);
       const mockResponse2 = createMockApiResponse(mockComment2);
 
-      mockApiClient.patch
-        .mockResolvedValueOnce(mockResponse1)
-        .mockResolvedValueOnce(mockResponse2);
+      mockApiClient.patch.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
       const { result } = renderHook(() => useEditComment(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -628,20 +609,18 @@ and special characters! @#$%^&*()`;
         await result.current.mutateAsync(mockParams1);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment1',
-        { message: 'First edit' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment1', {
+        message: 'First edit',
+      });
 
       // Second edit
       await act(async () => {
         await result.current.mutateAsync(mockParams2);
       });
 
-      expect(mockApiClient.patch).toHaveBeenCalledWith(
-        '/v1/events/comments/comment2',
-        { message: 'Second edit' }
-      );
+      expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment2', {
+        message: 'Second edit',
+      });
       expect(mockApiClient.patch).toHaveBeenCalledTimes(2);
     });
 
@@ -665,9 +644,7 @@ and special characters! @#$%^&*()`;
 
       const mockResponse1 = createMockApiResponse(mockComment1);
 
-      mockApiClient.patch
-        .mockResolvedValueOnce(mockResponse1)
-        .mockRejectedValueOnce(apiError);
+      mockApiClient.patch.mockResolvedValueOnce(mockResponse1).mockRejectedValueOnce(apiError);
 
       const { result } = renderHook(() => useEditComment(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -719,10 +696,7 @@ and special characters! @#$%^&*()`;
         }
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith(
-        'Error editing comment:',
-        apiError
-      );
+      expect(consoleSpy).toHaveBeenCalledWith('Error editing comment:', apiError);
       consoleSpy.mockRestore();
     });
   });

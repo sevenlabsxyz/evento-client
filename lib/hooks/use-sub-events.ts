@@ -36,8 +36,7 @@ export function useSubEvents(eventId?: string) {
           const transformed = transformApiEventResponse({
             ...event,
             // Ensure required fields are present
-            computed_start_date:
-              event.computed_start_date || new Date().toISOString(),
+            computed_start_date: event.computed_start_date || new Date().toISOString(),
             timezone: event.timezone || 'UTC',
             user_details: event.user_details,
           });

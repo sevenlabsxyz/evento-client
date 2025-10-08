@@ -22,9 +22,7 @@ describe('useEventRSVPs', () => {
     mockApiClient.get.mockReset();
   });
 
-  const createMockUserDetails = (
-    overrides: Partial<UserDetails> = {}
-  ): UserDetails => ({
+  const createMockUserDetails = (overrides: Partial<UserDetails> = {}): UserDetails => ({
     id: 'user123',
     username: 'testuser',
     name: 'Test User',
@@ -41,9 +39,7 @@ describe('useEventRSVPs', () => {
     ...overrides,
   });
 
-  const createMockEventRSVP = (
-    overrides: Partial<EventRSVP> = {}
-  ): EventRSVP => ({
+  const createMockEventRSVP = (overrides: Partial<EventRSVP> = {}): EventRSVP => ({
     id: 'rsvp123',
     event_id: 'event123',
     user_id: 'user123',
@@ -54,9 +50,7 @@ describe('useEventRSVPs', () => {
     ...overrides,
   });
 
-  const createMockApiResponse = (
-    data: EventRSVP[]
-  ): ApiResponse<EventRSVP[]> => ({
+  const createMockApiResponse = (data: EventRSVP[]): ApiResponse<EventRSVP[]> => ({
     success: true,
     message: 'Event RSVPs retrieved successfully',
     data,
@@ -80,9 +74,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/rsvps?event_id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
       expect(result.current.data).toEqual(mockRSVPs);
     });
 
@@ -355,9 +347,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/rsvps?event_id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
     });
 
     it('handles special characters in event ID', async () => {
@@ -374,9 +364,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/events/rsvps?event_id=${eventId}`
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/rsvps?event_id=${eventId}`);
       expect(result.current.data![0].event_id).toBe(eventId);
     });
 
@@ -394,9 +382,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/events/rsvps?event_id=${eventId}`
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/rsvps?event_id=${eventId}`);
     });
   });
 
@@ -486,9 +472,7 @@ describe('useEventRSVPs', () => {
       const mockResponse1 = createMockApiResponse(mockRSVPs1);
       const mockResponse2 = createMockApiResponse(mockRSVPs2);
 
-      mockApiClient.get
-        .mockResolvedValueOnce(mockResponse1)
-        .mockResolvedValueOnce(mockResponse2);
+      mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
       const { result: result1 } = renderHook(() => useEventRSVPs('event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

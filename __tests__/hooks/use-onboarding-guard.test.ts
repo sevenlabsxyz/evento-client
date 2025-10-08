@@ -12,9 +12,7 @@ jest.mock('@/lib/utils/auth');
 
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockUseRouter = useRouter as jest.MockedFunction<typeof useRouter>;
-const mockIsUserOnboarded = isUserOnboarded as jest.MockedFunction<
-  typeof isUserOnboarded
->;
+const mockIsUserOnboarded = isUserOnboarded as jest.MockedFunction<typeof isUserOnboarded>;
 const mockValidateRedirectUrl = validateRedirectUrl as jest.MockedFunction<
   typeof validateRedirectUrl
 >;
@@ -203,9 +201,7 @@ describe('useOnboardingGuard', () => {
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.needsOnboarding).toBe(false);
-      expect(mockValidateRedirectUrl).toHaveBeenCalledWith(
-        'https://malicious.com/steal-data'
-      );
+      expect(mockValidateRedirectUrl).toHaveBeenCalledWith('https://malicious.com/steal-data');
       expect(mockPush).toHaveBeenCalledWith('/');
     });
 
@@ -439,9 +435,7 @@ describe('useOnboardingGuard', () => {
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.needsOnboarding).toBe(true);
-      expect(mockIsUserOnboarded).toHaveBeenCalledWith(
-        userWithPartialOnboarding
-      );
+      expect(mockIsUserOnboarded).toHaveBeenCalledWith(userWithPartialOnboarding);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -467,9 +461,7 @@ describe('useOnboardingGuard', () => {
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.needsOnboarding).toBe(true);
-      expect(mockIsUserOnboarded).toHaveBeenCalledWith(
-        userWithPartialOnboarding
-      );
+      expect(mockIsUserOnboarded).toHaveBeenCalledWith(userWithPartialOnboarding);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -484,9 +476,7 @@ describe('useOnboardingGuard', () => {
       });
 
       mockIsUserOnboarded.mockReturnValue(true);
-      mockValidateRedirectUrl.mockReturnValue(
-        '/events/123?tab=details#comments'
-      );
+      mockValidateRedirectUrl.mockReturnValue('/events/123?tab=details#comments');
       mockUseAuth.mockReturnValue({
         user: mockUser,
         isAuthenticated: true,
@@ -501,9 +491,7 @@ describe('useOnboardingGuard', () => {
 
       expect(result.current.isLoading).toBe(false);
       expect(result.current.needsOnboarding).toBe(false);
-      expect(mockValidateRedirectUrl).toHaveBeenCalledWith(
-        '/events/123?tab=details#comments'
-      );
+      expect(mockValidateRedirectUrl).toHaveBeenCalledWith('/events/123?tab=details#comments');
       expect(mockPush).toHaveBeenCalledWith('/events/123?tab=details#comments');
     });
 
@@ -555,10 +543,7 @@ describe('useOnboardingGuard', () => {
 
       renderHook(() => useOnboardingGuard());
 
-      expect(mockConsoleLog).toHaveBeenCalledWith(
-        'isUserOnboarded: Checking user:',
-        mockUser
-      );
+      expect(mockConsoleLog).toHaveBeenCalledWith('isUserOnboarded: Checking user:', mockUser);
     });
   });
 });

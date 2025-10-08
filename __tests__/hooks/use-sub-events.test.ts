@@ -136,9 +136,7 @@ describe('useSubEvents', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/sub-events?event_id=event123'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/sub-events?event_id=event123');
     expect(result.current.data).toEqual(transformedEvents);
     expect(transformApiEventResponse).toHaveBeenCalledTimes(2);
   });
@@ -155,9 +153,7 @@ describe('useSubEvents', () => {
     });
 
     expect(result.current.data).toEqual([]);
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/sub-events?event_id=event123'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/sub-events?event_id=event123');
   });
 
   it('should add default values for missing fields', async () => {

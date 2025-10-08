@@ -31,9 +31,7 @@ describe('useEventsFeed', () => {
     });
   });
 
-  const createMockUserDetails = (
-    overrides: Partial<UserDetails> = {}
-  ): UserDetails => ({
+  const createMockUserDetails = (overrides: Partial<UserDetails> = {}): UserDetails => ({
     id: 'user123',
     username: 'testuser',
     name: 'Test User',
@@ -50,9 +48,7 @@ describe('useEventsFeed', () => {
     ...overrides,
   });
 
-  const createMockEventWithUser = (
-    overrides: Partial<EventWithUser> = {}
-  ): EventWithUser => ({
+  const createMockEventWithUser = (overrides: Partial<EventWithUser> = {}): EventWithUser => ({
     id: 'event123',
     title: 'Test Event',
     description: 'Test event description',
@@ -87,9 +83,7 @@ describe('useEventsFeed', () => {
     ...overrides,
   });
 
-  const createMockApiResponse = (
-    data: EventWithUser[]
-  ): ApiResponse<EventWithUser[]> => ({
+  const createMockApiResponse = (data: EventWithUser[]): ApiResponse<EventWithUser[]> => ({
     success: true,
     message: 'Events feed retrieved successfully',
     data,
@@ -477,9 +471,7 @@ describe('useEventsFeed', () => {
 
     it('handles non-object errors', async () => {
       const stringError = 'String error';
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.reject(stringError)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.reject(stringError));
 
       const { result } = renderHook(() => useEventsFeed(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -674,9 +666,7 @@ describe('useEventsFeed', () => {
     it('handles network timeout', async () => {
       const timeoutError = new Error('Network timeout');
       timeoutError.name = 'TimeoutError';
-      mockApiClient.get.mockImplementationOnce(() =>
-        Promise.reject(timeoutError)
-      );
+      mockApiClient.get.mockImplementationOnce(() => Promise.reject(timeoutError));
 
       const { result } = renderHook(() => useEventsFeed(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

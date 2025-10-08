@@ -22,9 +22,7 @@ describe('useEventGallery', () => {
     mockApiClient.get.mockReset();
   });
 
-  const createMockUserDetails = (
-    overrides: Partial<UserDetails> = {}
-  ): UserDetails => ({
+  const createMockUserDetails = (overrides: Partial<UserDetails> = {}): UserDetails => ({
     id: 'user123',
     username: 'testuser',
     name: 'Test User',
@@ -41,9 +39,7 @@ describe('useEventGallery', () => {
     ...overrides,
   });
 
-  const createMockGalleryItem = (
-    overrides: Partial<GalleryItem> = {}
-  ): GalleryItem => ({
+  const createMockGalleryItem = (overrides: Partial<GalleryItem> = {}): GalleryItem => ({
     id: 'gallery123',
     created_at: '2024-01-15T10:30:00Z',
     url: 'https://example.com/image.jpg',
@@ -84,9 +80,7 @@ describe('useEventGallery', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
       expect(result.current.data).toEqual(mockGalleryItems);
     });
 
@@ -111,9 +105,7 @@ describe('useEventGallery', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
       expect(result.current.data).toEqual(mockGalleryItems);
     });
 
@@ -301,9 +293,7 @@ describe('useEventGallery', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=event123'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
     });
 
     it('handles special characters in event ID', async () => {
@@ -311,13 +301,9 @@ describe('useEventGallery', () => {
       const mockResponse = createMockApiResponse(mockGalleryItems);
       mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(
-        () => useEventGallery('event-with-special-chars-!@#$%'),
-        {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
-        }
-      );
+      const { result } = renderHook(() => useEventGallery('event-with-special-chars-!@#$%'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
@@ -383,11 +369,7 @@ describe('useEventGallery', () => {
       });
 
       // Check that the query key is correct
-      const queryData = queryClient.getQueryData([
-        'event',
-        'gallery',
-        'event123',
-      ]);
+      const queryData = queryClient.getQueryData(['event', 'gallery', 'event123']);
       expect(queryData).toEqual(mockGalleryItems);
     });
 
@@ -497,9 +479,7 @@ describe('useEventGallery', () => {
       const mockResponse1 = createMockApiResponse(mockGalleryItems1);
       const mockResponse2 = createMockApiResponse(mockGalleryItems2);
 
-      mockApiClient.get
-        .mockResolvedValueOnce(mockResponse1)
-        .mockResolvedValueOnce(mockResponse2);
+      mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
       const { result: result1 } = renderHook(() => useEventGallery('event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

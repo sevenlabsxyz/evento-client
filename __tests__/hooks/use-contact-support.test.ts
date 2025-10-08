@@ -1,7 +1,4 @@
-import {
-  ContactSupportPayload,
-  useContactSupport,
-} from '@/lib/hooks/use-contact-support';
+import { ContactSupportPayload, useContactSupport } from '@/lib/hooks/use-contact-support';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -78,10 +75,7 @@ describe('useContactSupport', () => {
         mutationResult = await result.current.mutateAsync(mockPayload);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload);
       expect(mutationResult).toEqual({
         success: true,
         message: 'Message sent successfully',
@@ -135,10 +129,7 @@ describe('useContactSupport', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload);
     });
 
     it('handles API error response with default message', async () => {
@@ -180,10 +171,7 @@ describe('useContactSupport', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload);
     });
 
     it('handles invalid response format', async () => {
@@ -432,8 +420,7 @@ describe('useContactSupport', () => {
     it('handles special characters in subject and message', async () => {
       const mockPayload = createMockPayload({
         subject: 'Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?',
-        message:
-          'Message with "quotes" and \'apostrophes\' and newlines\nand tabs\t',
+        message: 'Message with "quotes" and \'apostrophes\' and newlines\nand tabs\t',
       });
       const mockResponse = createMockApiResponse({
         success: true,
@@ -451,8 +438,7 @@ describe('useContactSupport', () => {
 
       expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', {
         subject: 'Special chars: !@#$%^&*()_+-=[]{}|;:,.<>?',
-        message:
-          'Message with "quotes" and \'apostrophes\' and newlines\nand tabs\t',
+        message: 'Message with "quotes" and \'apostrophes\' and newlines\nand tabs\t',
       });
     });
   });
@@ -476,20 +462,14 @@ describe('useContactSupport', () => {
         await result.current.mutateAsync(mockPayload1);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload1
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload1);
 
       // Second mutation
       await act(async () => {
         await result.current.mutateAsync(mockPayload2);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload2
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload2);
       expect(mockApiClient.post).toHaveBeenCalledTimes(2);
     });
 
@@ -517,14 +497,8 @@ describe('useContactSupport', () => {
         expect(mockApiClient.post).toHaveBeenCalledTimes(2);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload1
-      );
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/contact',
-        mockPayload2
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload1);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/contact', mockPayload2);
     });
   });
 

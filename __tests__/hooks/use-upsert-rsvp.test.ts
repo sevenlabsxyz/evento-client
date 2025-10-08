@@ -4,9 +4,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('useUpsertRSVP', () => {
   let queryClient: QueryClient;
@@ -255,9 +253,7 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(result.current.error).toEqual(
-      new Error('This event has reached its capacity.')
-    );
+    expect(result.current.error).toEqual(new Error('This event has reached its capacity.'));
   });
 
   it('should handle null response', async () => {

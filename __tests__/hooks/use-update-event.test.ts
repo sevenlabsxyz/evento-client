@@ -1,15 +1,10 @@
-import {
-  useUpdateEvent,
-  useUpdateEventWithCallbacks,
-} from '@/lib/hooks/use-update-event';
+import { useUpdateEvent, useUpdateEventWithCallbacks } from '@/lib/hooks/use-update-event';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
 
 // Mock console.error to avoid noise in tests
-const mockConsoleError = jest
-  .spyOn(console, 'error')
-  .mockImplementation(() => {});
+const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
 describe('useUpdateEvent', () => {
   let queryClient: QueryClient;
@@ -91,10 +86,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith(
-      '/v1/events/details',
-      mockUpdateData
-    );
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
     expect(result.current.data).toEqual(mockResponse.data[0]);
   });
 
@@ -130,10 +122,7 @@ describe('useUpdateEvent', () => {
     });
 
     expect(result.current.error).toBe(apiError);
-    expect(mockConsoleError).toHaveBeenCalledWith(
-      'Update event error:',
-      apiError
-    );
+    expect(mockConsoleError).toHaveBeenCalledWith('Update event error:', apiError);
   });
 
   it('should handle validation errors', async () => {
@@ -329,10 +318,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith(
-      '/v1/events/details',
-      mockUpdateData
-    );
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
   });
 
   it('should handle time fields correctly', async () => {
@@ -378,10 +364,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith(
-      '/v1/events/details',
-      mockUpdateData
-    );
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
   });
 
   it('should handle null time fields', async () => {
@@ -427,10 +410,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith(
-      '/v1/events/details',
-      mockUpdateData
-    );
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
   });
 });
 
@@ -511,10 +491,7 @@ describe('useUpdateEventWithCallbacks', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith(
-      '/v1/events/details',
-      mockUpdateData
-    );
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
     expect(result.current.data).toEqual(mockResponse.data[0]);
   });
 
@@ -637,10 +614,7 @@ describe('useUpdateEventWithCallbacks', () => {
 
   it('should work with both hooks simultaneously', () => {
     const { result: result1 } = renderHook(() => useUpdateEvent(), { wrapper });
-    const { result: result2 } = renderHook(
-      () => useUpdateEventWithCallbacks(),
-      { wrapper }
-    );
+    const { result: result2 } = renderHook(() => useUpdateEventWithCallbacks(), { wrapper });
 
     // Both hooks should be initialized
     expect(result1.current).toBeDefined();

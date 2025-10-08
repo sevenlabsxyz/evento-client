@@ -38,9 +38,7 @@ describe('useEventInvites', () => {
     mockApiClient.post.mockReset();
   });
 
-  const createMockUserDetails = (
-    overrides: Partial<UserDetails> = {}
-  ): UserDetails => ({
+  const createMockUserDetails = (overrides: Partial<UserDetails> = {}): UserDetails => ({
     id: 'user123',
     username: 'testuser',
     name: 'Test User',
@@ -57,9 +55,7 @@ describe('useEventInvites', () => {
     ...overrides,
   });
 
-  const createMockEventInvite = (
-    overrides: Partial<EventInvite> = {}
-  ): EventInvite => ({
+  const createMockEventInvite = (overrides: Partial<EventInvite> = {}): EventInvite => ({
     id: 'invite123',
     event_id: 'event123',
     inviter_id: 'user123',
@@ -105,9 +101,7 @@ describe('useEventInvites', () => {
     ...overrides,
   });
 
-  const createMockInviteTarget = (
-    overrides: Partial<InviteTarget> = {}
-  ): InviteTarget => ({
+  const createMockInviteTarget = (overrides: Partial<InviteTarget> = {}): InviteTarget => ({
     email: 'test@example.com',
     type: 'email',
     ...overrides,
@@ -165,8 +159,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -177,10 +170,7 @@ describe('useEventInvites', () => {
           expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(mockApiClient.post).toHaveBeenCalledWith(
-          '/v1/events/invites',
-          mockRequest
-        );
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/invites', mockRequest);
         expect(mockToast.success).toHaveBeenCalledWith('Sent 1 invite');
       });
 
@@ -226,8 +216,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -247,8 +236,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockRejectedValueOnce(apiError);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -266,8 +254,7 @@ describe('useEventInvites', () => {
         const mockRequest = createMockSendInvitesRequest({ id: '' });
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -290,8 +277,7 @@ describe('useEventInvites', () => {
         const mockRequest = createMockSendInvitesRequest({ invites: [] });
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -321,8 +307,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -356,8 +341,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -368,10 +352,7 @@ describe('useEventInvites', () => {
           expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(mockApiClient.post).toHaveBeenCalledWith(
-          '/v1/events/invites',
-          mockRequest
-        );
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/invites', mockRequest);
       });
     });
 
@@ -388,8 +369,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockReturnValue(controlledPromise);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         // Start mutation
@@ -421,8 +401,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -443,8 +422,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockRejectedValueOnce(apiError);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await act(async () => {
@@ -463,8 +441,7 @@ describe('useEventInvites', () => {
         mockApiClient.post.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useSendEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         // Start mutation
@@ -504,8 +481,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -517,46 +493,36 @@ describe('useEventInvites', () => {
       });
 
       it('fetches event invites with status filter', async () => {
-        const mockEventInvites = [
-          createMockEventInvite({ id: 'invite1', status: 'pending' }),
-        ];
+        const mockEventInvites = [createMockEventInvite({ id: 'invite1', status: 'pending' })];
         const mockResponse = createMockEventInvitesResponse(mockEventInvites);
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites('pending'), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
           expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(mockApiClient.get).toHaveBeenCalledWith(
-          '/v1/events/invites?status=pending'
-        );
+        expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/invites?status=pending');
         expect(result.current.data).toEqual(mockEventInvites);
       });
 
       it('fetches event invites with responded status filter', async () => {
-        const mockEventInvites = [
-          createMockEventInvite({ id: 'invite1', status: 'responded' }),
-        ];
+        const mockEventInvites = [createMockEventInvite({ id: 'invite1', status: 'responded' })];
         const mockResponse = createMockEventInvitesResponse(mockEventInvites);
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites('responded'), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
           expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(mockApiClient.get).toHaveBeenCalledWith(
-          '/v1/events/invites?status=responded'
-        );
+        expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/invites?status=responded');
         expect(result.current.data).toEqual(mockEventInvites);
       });
 
@@ -565,8 +531,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -585,8 +550,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -601,8 +565,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockRejectedValueOnce(apiError);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -614,8 +577,7 @@ describe('useEventInvites', () => {
 
       it('is disabled when enabled is false', () => {
         const { result } = renderHook(() => useEventInvites(undefined, false), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         expect(result.current.isLoading).toBe(false);
@@ -637,8 +599,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockReturnValue(controlledPromise);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         // Check loading state
@@ -663,8 +624,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -680,8 +640,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockRejectedValueOnce(apiError);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -698,8 +657,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites('pending'), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -707,10 +665,7 @@ describe('useEventInvites', () => {
         });
 
         // Check that the query key is correct
-        const queryData = queryClient.getQueryData([
-          'event-invites',
-          'pending',
-        ]);
+        const queryData = queryClient.getQueryData(['event-invites', 'pending']);
         expect(queryData).toEqual(mockEventInvites);
       });
 
@@ -720,8 +675,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -753,8 +707,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -794,8 +747,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -812,37 +764,23 @@ describe('useEventInvites', () => {
 
     describe('multiple queries', () => {
       it('can fetch different status filters independently', async () => {
-        const mockPendingInvites = [
-          createMockEventInvite({ id: 'invite1', status: 'pending' }),
-        ];
+        const mockPendingInvites = [createMockEventInvite({ id: 'invite1', status: 'pending' })];
         const mockRespondedInvites = [
           createMockEventInvite({ id: 'invite2', status: 'responded' }),
         ];
 
-        const mockResponse1 =
-          createMockEventInvitesResponse(mockPendingInvites);
-        const mockResponse2 =
-          createMockEventInvitesResponse(mockRespondedInvites);
+        const mockResponse1 = createMockEventInvitesResponse(mockPendingInvites);
+        const mockResponse2 = createMockEventInvitesResponse(mockRespondedInvites);
 
-        mockApiClient.get
-          .mockResolvedValueOnce(mockResponse1)
-          .mockResolvedValueOnce(mockResponse2);
+        mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
-        const { result: result1 } = renderHook(
-          () => useEventInvites('pending'),
-          {
-            wrapper: ({ children }) =>
-              createTestWrapper(queryClient)({ children }),
-          }
-        );
+        const { result: result1 } = renderHook(() => useEventInvites('pending'), {
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+        });
 
-        const { result: result2 } = renderHook(
-          () => useEventInvites('responded'),
-          {
-            wrapper: ({ children }) =>
-              createTestWrapper(queryClient)({ children }),
-          }
-        );
+        const { result: result2 } = renderHook(() => useEventInvites('responded'), {
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+        });
 
         await waitFor(() => {
           expect(result1.current.isSuccess).toBe(true);
@@ -865,8 +803,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -885,8 +822,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {
@@ -907,8 +843,7 @@ describe('useEventInvites', () => {
         mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
         const { result } = renderHook(() => useEventInvites(), {
-          wrapper: ({ children }) =>
-            createTestWrapper(queryClient)({ children }),
+          wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
         });
 
         await waitFor(() => {

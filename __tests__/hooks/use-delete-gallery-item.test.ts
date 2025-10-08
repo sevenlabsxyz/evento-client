@@ -54,10 +54,7 @@ describe('useDeleteGalleryItem', () => {
   const createMockApiResponse = (success: boolean, message?: string) => ({
     success,
     message:
-      message ||
-      (success
-        ? 'Gallery item deleted successfully'
-        : 'Failed to delete gallery item'),
+      message || (success ? 'Gallery item deleted successfully' : 'Failed to delete gallery item'),
     data: null,
   });
 
@@ -76,9 +73,7 @@ describe('useDeleteGalleryItem', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
       expect(mutationResult).toEqual({
         galleryItemId: 'gallery123',
         eventId: 'event456',
@@ -99,9 +94,7 @@ describe('useDeleteGalleryItem', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
       expect(mutationResult).toEqual({
         galleryItemId: 'gallery123',
         eventId: 'event456',
@@ -110,10 +103,7 @@ describe('useDeleteGalleryItem', () => {
 
     it('handles API error response with success: false', async () => {
       const mockParams = createMockDeleteParams();
-      const mockResponse = createMockApiResponse(
-        false,
-        'Gallery item not found'
-      );
+      const mockResponse = createMockApiResponse(false, 'Gallery item not found');
       mockApiClient.delete.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useDeleteGalleryItem(), {
@@ -128,9 +118,7 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
     });
 
     it('handles API error response', async () => {
@@ -150,9 +138,7 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
     });
 
     it('handles null response', async () => {
@@ -171,9 +157,7 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
     });
 
     it('handles undefined response', async () => {
@@ -192,9 +176,7 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
     });
 
     it('handles non-object response', async () => {
@@ -213,9 +195,7 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
     });
   });
 
@@ -542,18 +522,14 @@ describe('useDeleteGalleryItem', () => {
         await result.current.mutateAsync(mockParams1);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery1'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery1');
 
       // Second deletion
       await act(async () => {
         await result.current.mutateAsync(mockParams2);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery2'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery2');
       expect(mockApiClient.delete).toHaveBeenCalledTimes(2);
     });
 
@@ -570,9 +546,7 @@ describe('useDeleteGalleryItem', () => {
       const mockResponse1 = createMockApiResponse(true);
       const apiError = new Error('Gallery item not found');
 
-      mockApiClient.delete
-        .mockResolvedValueOnce(mockResponse1)
-        .mockRejectedValueOnce(apiError);
+      mockApiClient.delete.mockResolvedValueOnce(mockResponse1).mockRejectedValueOnce(apiError);
 
       const { result } = renderHook(() => useDeleteGalleryItem(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -621,9 +595,7 @@ describe('useDeleteGalleryItem', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id='
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=');
     });
 
     it('handles empty string event ID', async () => {
@@ -642,9 +614,7 @@ describe('useDeleteGalleryItem', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery123'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
     });
   });
 });
