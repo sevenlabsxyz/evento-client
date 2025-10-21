@@ -31,6 +31,9 @@ export const Env = {
 
   // Stream Chat
   NEXT_PUBLIC_STREAM_CHAT_API_KEY: process.env.NEXT_PUBLIC_STREAM_CHAT_API_KEY || '',
+
+  // Breez SDK
+  NEXT_PUBLIC_BREEZ_API_KEY: process.env.NEXT_PUBLIC_BREEZ_API_KEY || '',
 } as const;
 
 // Type representing all environment variable keys

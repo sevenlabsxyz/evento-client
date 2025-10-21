@@ -21,6 +21,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { ZapModal } from '@/components/wallet/zap-modal';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
@@ -49,6 +50,7 @@ import {
   Settings,
   SortAsc,
   SortDesc,
+  Zap,
 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -69,6 +71,7 @@ export default function ProfilePage() {
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
+  const [showZapModal, setShowZapModal] = useState(false);
 
   // Mock data for the about tab
   const interestTags = ['Music', 'Tech', 'Food', 'Travel', 'Art', 'Photography'];
@@ -514,6 +517,17 @@ export default function ProfilePage() {
           <div className='mb-6 text-center'>
             <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
             <p className='text-gray-600'>{userData.username}</p>
+
+            {/* Zap Button */}
+            <div className='mt-4 flex justify-center'>
+              <button
+                onClick={() => setShowZapModal(true)}
+                className='flex items-center gap-2 rounded-full bg-orange-500 px-6 py-2 text-white transition-colors hover:bg-orange-600'
+              >
+                <Zap className='h-4 w-4 fill-current' />
+                <span className='font-medium'>Zap</span>
+              </button>
+            </div>
           </div>
 
           {/* Stats - Centered */}
@@ -632,6 +646,21 @@ export default function ProfilePage() {
         userId={user?.id || ''}
         username={user?.username || 'user'}
       />
+
+      {/* Zap Modal */}
+      {showZapModal && user && (
+        <ZapModal
+          recipientId={user.id}
+          recipientUsername={user.username || 'user'}
+          recipientName={user.name || 'User'}
+          recipientImage={user.image}
+          recipientLightningAddress={user.lightning_address}
+          onClose={() => setShowZapModal(false)}
+          onSuccess={() => {
+            // Optionally refresh balance or show success message
+          }}
+        />
+      )}
     </div>
   );
 }

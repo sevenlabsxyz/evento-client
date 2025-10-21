@@ -217,6 +217,7 @@ export function TopBar() {
                     <button
                       key={button.id}
                       onClick={button.onClick}
+                      disabled={button.disabled}
                       className={`flex flex-row items-center gap-2 transition-all duration-300 hover:opacity-80 ${
                         isOverlaid
                           ? 'flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white'

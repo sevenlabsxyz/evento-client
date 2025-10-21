@@ -16,6 +16,7 @@ import {
   Plus,
   Settings,
   Star,
+  Wallet,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -59,6 +60,11 @@ export function Sidebar() {
           name: 'Inbox',
           path: '/e/inbox',
           icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
+        },
+        {
+          name: 'Wallet',
+          path: '/e/wallet',
+          icon: <Wallet className='h-5 w-5' strokeWidth={2.5} />,
         },
         {
           name: 'Settings',

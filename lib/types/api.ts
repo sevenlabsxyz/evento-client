@@ -24,6 +24,7 @@ export interface UserDetails {
   x_handle?: string;
   instagram_handle?: string;
   ln_address?: string; // Lightning address
+  lightning_address?: string; // Lightning address (alternative field name)
   nip05?: string; // Nostr identifier
   verification_status: VerificationStatus;
   verification_date?: string;
@@ -116,6 +117,15 @@ export interface Event {
 
   // Relations (populated in some responses)
   user_details?: UserDetails;
+  hosts?: Array<{
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    image?: string;
+    title?: string;
+    company?: string;
+  }>;
 }
 
 // Event Invite
