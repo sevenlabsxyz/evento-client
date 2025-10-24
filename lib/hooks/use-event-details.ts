@@ -25,10 +25,12 @@ export function useEventDetails(eventId: string) {
         }
 
         // Check if it's the expected API response structure
-        let eventData = response;
+        let eventData: Event;
 
         if ('success' in response && 'data' in response) {
           eventData = response.data;
+        } else {
+          eventData = response;
         }
 
         // Transform the response to ensure correct format

@@ -66,7 +66,7 @@ export function useUserProfile() {
  */
 export function useUpdateUserProfile() {
   const queryClient = useQueryClient();
-  const { user, setUser } = useAuthStore();
+  const { setUser } = useAuthStore();
 
   return useMutation({
     mutationFn: async (updates: Partial<UserDetails>) => {

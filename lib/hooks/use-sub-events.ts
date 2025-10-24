@@ -17,33 +17,22 @@ export function useSubEvents(eventId?: string) {
           `/v1/events/sub-events?event_id=${eventId}`
         );
 
-        // Extract data from the Axios response
-        const responseData = response.data;
+        // The API client interceptor returns response.data directly
+        const responseData = response;
 
-        // Handle the response structure { success, message, data }
-        if (!responseData || typeof responseData !== 'object') {
+        // Check if it's the expected array format
+        if (!responseData || !Array.isArray(responseData)) {
           debugError(
             'useSubEvents',
             'Invalid response format',
-            new Error('Response data is not an object'),
+            new Error('Expected array of events'),
             { responseData, type: typeof responseData }
           );
           throw new Error('Invalid response format');
         }
 
-        // Check if it's the expected API response structure
-        if (!responseData || !Array.isArray(responseData)) {
-          debugError(
-            'useSubEvents',
-            'Invalid response data format',
-            new Error('Expected success:true with data array'),
-            { responseData }
-          );
-          throw new Error('Invalid response data format');
-        }
-
         // Transform each event in the array
-        return responseData.map((event) => {
+        const transformedEvents = responseData.map((event) => {
           const transformed = transformApiEventResponse({
             ...event,
             // Ensure required fields are present
@@ -63,6 +52,8 @@ export function useSubEvents(eventId?: string) {
           }
           return transformed as EventWithUser;
         });
+
+        return transformedEvents;
       } catch (error) {
         debugError('useSubEvents', 'Failed to fetch sub-events', error, {
           eventId,
