@@ -9,7 +9,7 @@ export const BlogCard = ({ date, slug, image, title, category, description }: an
   return (
     <Link
       href={`/blog/${slug}`}
-      className='group mb-8 block w-full cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
+      className='group block w-full cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
     >
       <div className='relative aspect-video w-full overflow-hidden'>
         {image ? (
@@ -18,12 +18,12 @@ export const BlogCard = ({ date, slug, image, title, category, description }: an
             alt={title}
             width={600}
             height={400}
-            className='h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105'
+            className='h-full w-full object-cover'
             sizes='(max-width: 768px) 100vw, 300px'
           />
         ) : (
           <div
-            className='h-full w-full object-cover transition-transform duration-300 ease-in-out group-hover:scale-105'
+            className='h-full w-full object-cover'
             style={{
               background: fallbackGradient,
               width: '100%',
@@ -48,7 +48,7 @@ export const BlogCard = ({ date, slug, image, title, category, description }: an
         <h2 className='m-0 mb-2 line-clamp-3 text-xl font-bold leading-7 text-gray-900 transition-colors duration-200 ease-in-out group-hover:text-red-600'>
           {title}
         </h2>
-        <p className='m-0 line-clamp-2 text-base leading-6 text-gray-600'>{description}</p>
+        <p className='m-0 line-clamp-3 text-sm leading-6 text-gray-600'>{description}</p>
       </div>
     </Link>
   );

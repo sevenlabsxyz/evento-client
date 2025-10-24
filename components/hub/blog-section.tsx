@@ -62,7 +62,7 @@ export function BlogSection() {
           <h2 className='text-lg font-semibold'>From our blog</h2>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-          {[...Array(3)].map((_, i) => (
+          {[...Array(5)].map((_, i) => (
             <Skeleton key={i} className='h-64 rounded-lg' />
           ))}
         </div>
@@ -78,16 +78,11 @@ export function BlogSection() {
     <div className='flex flex-col gap-4 pb-8'>
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold'>From our blog</h2>
-        <Button asChild variant='outline' size='sm'>
-          <Link href='/blog'>
-            View all <ArrowRight className='h-4 w-4' />
-          </Link>
-        </Button>
       </div>
-      <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-3'>
+      <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2.5'>
         {posts
           .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-          .slice(0, 3)
+          .slice(0, 5)
           .map((post) => (
             <BlogCard
               key={post.id}
@@ -99,6 +94,13 @@ export function BlogSection() {
               category={post.tags?.length > 0 ? [post.tags[0]] : []}
             />
           ))}
+      </div>
+      <div className='flex justify-center pb-6 pt-4'>
+        <Button asChild variant='outline' className='w-full md:w-auto'>
+          <Link href='/blog'>
+            View more posts <ArrowRight className='ml-2 h-4 w-4' />
+          </Link>
+        </Button>
       </div>
     </div>
   );
