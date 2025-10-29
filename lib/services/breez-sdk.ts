@@ -1,15 +1,21 @@
 import {
   BreezSdk,
+  CheckLightningAddressRequest,
   Config,
   ConnectRequest,
   EventListener,
+  GetInfoResponse,
+  LightningAddressInfo,
   Network,
   Payment,
   PrepareSendPaymentRequest,
+  PrepareSendPaymentResponse,
   ReceivePaymentMethod,
   ReceivePaymentRequest,
+  RegisterLightningAddressRequest,
   SdkEvent,
   Seed,
+  SendPaymentResponse,
 } from '@breeztech/breez-sdk-spark';
 
 let sdkInstance: BreezSdk | null = null;
@@ -90,6 +96,8 @@ export class BreezSDKService {
       }
 
       config.apiKey = apiKey;
+      // Configure LNURL domain for Lightning addresses
+      config.lnurlDomain = 'evt.cash';
 
       // Storage directory - using browser's IndexedDB
       const storageDir = './.breez-data';
@@ -183,7 +191,10 @@ export class BreezSDKService {
   /**
    * Create a Lightning invoice to receive payment
    */
-  async createInvoice(amountSats: number, description: string): Promise<any> {
+  async createInvoice(
+    amountSats: number,
+    description: string
+  ): Promise<{ paymentRequest: string; feeSats: number }> {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
@@ -209,7 +220,10 @@ export class BreezSDKService {
   /**
    * Prepare a payment (get fee estimate)
    */
-  async preparePayment(paymentRequest: string, amountSats?: number): Promise<any> {
+  async preparePayment(
+    paymentRequest: string,
+    amountSats?: number
+  ): Promise<PrepareSendPaymentResponse> {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
@@ -229,12 +243,14 @@ export class BreezSDKService {
   /**
    * Send a Lightning payment
    */
-  async sendPayment(paymentRequest: string, amountSats?: number): Promise<any> {
+  async sendPayment(paymentRequest: string, amountSats?: number): Promise<SendPaymentResponse> {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
       const preparePaymentResponse = await this.preparePayment(paymentRequest, amountSats);
-      const response = await this.sdk.sendPayment(preparePaymentResponse);
+      const response = await this.sdk.sendPayment({
+        prepareResponse: preparePaymentResponse,
+      });
       return response;
     } catch (error) {
       console.error('Failed to send payment:', error);
@@ -260,7 +276,7 @@ export class BreezSDKService {
   /**
    * Get node info
    */
-  async getNodeInfo(): Promise<any> {
+  async getNodeInfo(): Promise<GetInfoResponse> {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
@@ -268,6 +284,73 @@ export class BreezSDKService {
       return info;
     } catch (error) {
       console.error('Failed to get node info:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if a Lightning address username is available
+   */
+  async checkLightningAddressAvailable(username: string): Promise<boolean> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const request: CheckLightningAddressRequest = { username };
+      const isAvailable = await this.sdk.checkLightningAddressAvailable(request);
+      return isAvailable;
+    } catch (error) {
+      console.error('Failed to check Lightning address availability:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Register a Lightning address
+   */
+  async registerLightningAddress(
+    username: string,
+    description?: string
+  ): Promise<LightningAddressInfo> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const request: RegisterLightningAddressRequest = {
+        username,
+        description: description || `Pay to ${username}@evt.cash`,
+      };
+      const addressInfo = await this.sdk.registerLightningAddress(request);
+      return addressInfo;
+    } catch (error) {
+      console.error('Failed to register Lightning address:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get the current Lightning address information
+   */
+  async getLightningAddress(): Promise<LightningAddressInfo | null> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const addressInfo = await this.sdk.getLightningAddress();
+      return addressInfo || null;
+    } catch (error) {
+      console.error('Failed to get Lightning address:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete the current Lightning address
+   */
+  async deleteLightningAddress(): Promise<void> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      await this.sdk.deleteLightningAddress();
+    } catch (error) {
+      console.error('Failed to delete Lightning address:', error);
       throw error;
     }
   }

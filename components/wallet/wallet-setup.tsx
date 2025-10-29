@@ -3,6 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Eye, EyeOff, Loader2, Wallet } from 'lucide-react';
@@ -21,6 +23,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   const [isCreating, setIsCreating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { createWallet } = useWallet();
+  const { user } = useAuth();
+  const { checkAvailability, registerAddress } = useLightningAddress();
 
   const handleCreateWallet = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,6 +49,34 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       setIsCreating(true);
       setError(null);
       const mnemonic = await createWallet(password);
+
+      // Automatically register Lightning address
+      if (user?.username) {
+        try {
+          const baseUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
+          let username = baseUsername;
+          let isAvailable = false;
+          let attempts = 0;
+
+          // Try base username, then add numbers if taken
+          while (!isAvailable && attempts < 10) {
+            isAvailable = await checkAvailability(username);
+            if (!isAvailable) {
+              attempts++;
+              username = `${baseUsername}${attempts}`;
+            }
+          }
+
+          if (isAvailable) {
+            await registerAddress(username, `Pay to ${user.name || user.username}`);
+            console.log(`Lightning address registered: ${username}@evt.cash`);
+          }
+        } catch (error) {
+          console.error('Failed to register Lightning address:', error);
+          // Don't fail wallet creation if Lightning address registration fails
+        }
+      }
+
       toast.success('Wallet created successfully!');
       onComplete(mnemonic);
     } catch (error: any) {

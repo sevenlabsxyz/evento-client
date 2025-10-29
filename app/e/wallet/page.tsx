@@ -4,28 +4,30 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackupReminder } from '@/components/wallet/backup-reminder';
 import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
-import { ReceiveInvoiceSheet } from '@/components/wallet/receive-invoice-sheet';
-import { ReceiveLightningSheet } from '@/components/wallet/receive-lightning-sheet';
+import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
 import { SeedBackup } from '@/components/wallet/seed-backup';
 import { SendLightningSheet } from '@/components/wallet/send-lightning-sheet';
+import { TransactionDetailsSheet } from '@/components/wallet/transaction-details-sheet';
 import { TransactionHistory } from '@/components/wallet/transaction-history';
+import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
+import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { Copy, History, Settings, X } from 'lucide-react';
+import { Payment } from '@breeztech/breez-sdk-spark/web';
+import { Copy, History, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Drawer } from 'vaul';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'encrypted-backup' | 'main';
-type DrawerContent = 'receive' | 'send' | 'history' | 'create-invoice' | null;
+type DrawerContent = 'receive' | 'send' | 'history' | 'transaction-details' | null;
 
 export default function WalletPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -35,10 +37,12 @@ export default function WalletPage() {
   const router = useRouter();
   const { walletState, isLoading: isWalletLoading, markAsBackedUp } = useWallet();
   const { payments, isLoading: isLoadingPayments } = usePaymentHistory();
+  const { address, checkAvailability, registerAddress } = useLightningAddress();
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
   const [drawerContent, setDrawerContent] = useState<DrawerContent>(null);
+  const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
   const [showBackupReminder, setShowBackupReminder] = useState(false);
 
   const openDrawer = (content: DrawerContent) => {
@@ -47,6 +51,12 @@ export default function WalletPage() {
 
   const closeDrawer = () => {
     setDrawerContent(null);
+    setSelectedTransaction(null);
+  };
+
+  const handleTransactionClick = (payment: Payment) => {
+    setSelectedTransaction(payment);
+    setDrawerContent('transaction-details');
   };
 
   useEffect(() => {
@@ -96,10 +106,44 @@ export default function WalletPage() {
     }
   }, [isWalletLoading, walletState.isInitialized, walletState.isConnected, walletState.hasBackup]);
 
+  // Automatically register Lightning address if wallet is connected but no address exists
+  useEffect(() => {
+    const registerLightningAddressIfNeeded = async () => {
+      if (walletState.isConnected && !address && user?.username) {
+        try {
+          const baseUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
+          let username = baseUsername;
+          let isAvailable = false;
+          let attempts = 0;
+
+          // Try base username, then add numbers if taken
+          while (!isAvailable && attempts < 10) {
+            isAvailable = await checkAvailability(username);
+            if (!isAvailable) {
+              attempts++;
+              username = `${baseUsername}${attempts}`;
+            }
+          }
+
+          if (isAvailable) {
+            await registerAddress(username, `Pay to ${user.name || user.username}`);
+            console.log(`Lightning address registered: ${username}@evt.cash`);
+          }
+        } catch (error) {
+          console.error('Failed to auto-register Lightning address:', error);
+        }
+      }
+    };
+
+    registerLightningAddressIfNeeded();
+  }, [walletState.isConnected, address, user, checkAvailability, registerAddress]);
+
   const handleSetupComplete = (generatedMnemonic?: string) => {
     // Store mnemonic temporarily in case backup is needed later
     if (generatedMnemonic) {
       setMnemonic(generatedMnemonic);
+      // Set initial backup reminder timestamp to prevent immediate reminder
+      WalletStorageService.updateBackupReminderTimestamp();
     }
     // Skip backup step and go directly to main wallet
     setStep('main');
@@ -304,6 +348,7 @@ export default function WalletPage() {
             payments={payments.slice(0, 5)}
             isLoading={isLoadingPayments}
             onRefresh={() => {}}
+            onTransactionClick={handleTransactionClick}
           />
           {!isLoadingPayments && payments.length > 5 && (
             <Button onClick={() => openDrawer('history')} variant='outline' className='w-full'>
@@ -312,96 +357,30 @@ export default function WalletPage() {
           )}
         </div>
 
-        {/* Drawers */}
-        <Drawer.Root open={drawerContent !== null} onOpenChange={(open) => !open && closeDrawer()}>
-          <Drawer.Portal>
-            <Drawer.Overlay className='fixed inset-0 bg-black/40' />
-            <Drawer.Content className='fixed bottom-0 left-0 right-0 flex max-h-[95vh] flex-col rounded-t-[10px] bg-white'>
-              {drawerContent === 'receive' && (
-                <>
-                  {user?.lightning_address ? (
-                    <ReceiveLightningSheet
-                      lightningAddress={user.lightning_address}
-                      onClose={closeDrawer}
-                    />
-                  ) : (
-                    <div className='flex h-full flex-col p-6'>
-                      <div className='mb-6 flex items-center justify-between'>
-                        <h2 className='text-xl font-semibold'>Receive</h2>
-                        <button
-                          onClick={closeDrawer}
-                          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-                        >
-                          <X className='h-5 w-5' />
-                        </button>
-                      </div>
-                      <div className='flex flex-1 items-center justify-center'>
-                        <div className='max-w-sm space-y-4 text-center'>
-                          <div className='mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                            <svg
-                              className='h-8 w-8 text-gray-400'
-                              fill='none'
-                              stroke='currentColor'
-                              viewBox='0 0 24 24'
-                            >
-                              <path
-                                strokeLinecap='round'
-                                strokeLinejoin='round'
-                                strokeWidth={2}
-                                d='M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'
-                              />
-                            </svg>
-                          </div>
-                          <div>
-                            <h3 className='mb-2 text-lg font-semibold'>Create Invoice</h3>
-                            <p className='text-sm text-muted-foreground'>
-                              You can create a Lightning invoice to receive payments. Enter an
-                              amount and optional note to generate a QR code.
-                            </p>
-                          </div>
-                          <Button
-                            onClick={() => {
-                              setDrawerContent('create-invoice');
-                            }}
-                            className='w-full'
-                          >
-                            Create Invoice
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-              {drawerContent === 'create-invoice' && <ReceiveInvoiceSheet onClose={closeDrawer} />}
-              {drawerContent === 'send' && (
-                <SendLightningSheet onClose={closeDrawer} onBackupRequired={handleBackupRequired} />
-              )}
-              {drawerContent === 'history' && (
-                <div className='flex h-full flex-col'>
-                  <div className='flex items-center justify-between border-b p-6'>
-                    <h2 className='text-xl font-semibold'>Transaction History</h2>
-                    <button
-                      onClick={closeDrawer}
-                      className='rounded-full p-2 transition-colors hover:bg-gray-100'
-                    >
-                      <X className='h-5 w-5' />
-                    </button>
-                  </div>
-                  <div className='flex-1 overflow-y-auto p-6'>
-                    <TransactionHistory
-                      payments={payments}
-                      isLoading={isLoadingPayments}
-                      onRefresh={() => {
-                        // Refresh is handled automatically by the hook
-                      }}
-                    />
-                  </div>
-                </div>
-              )}
-            </Drawer.Content>
-          </Drawer.Portal>
-        </Drawer.Root>
+        {/* Sheets */}
+        <ReceiveLightningSheet
+          open={drawerContent === 'receive'}
+          onOpenChange={(open) => !open && closeDrawer()}
+        />
+        <SendLightningSheet
+          open={drawerContent === 'send'}
+          onOpenChange={(open) => !open && closeDrawer()}
+          onBackupRequired={handleBackupRequired}
+        />
+        <TransactionHistorySheet
+          open={drawerContent === 'history'}
+          onOpenChange={(open) => !open && closeDrawer()}
+          payments={payments}
+          isLoading={isLoadingPayments}
+          onTransactionClick={handleTransactionClick}
+        />
+        {selectedTransaction && (
+          <TransactionDetailsSheet
+            open={drawerContent === 'transaction-details'}
+            onOpenChange={(open) => !open && closeDrawer()}
+            payment={selectedTransaction}
+          />
+        )}
       </div>
     </div>
   );

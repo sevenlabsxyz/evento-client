@@ -6,6 +6,7 @@ const STORAGE_KEYS = {
   ENCRYPTED_SEED: 'evento_encrypted_seed',
   BACKUP_INFO: 'evento_backup_info',
   LAST_BACKUP_REMINDER: 'evento_last_backup_reminder',
+  HAS_TRANSACTION: 'evento_has_transaction',
 } as const;
 
 export class WalletStorageService {
@@ -23,8 +24,8 @@ export class WalletStorageService {
     return await crypto.subtle.deriveKey(
       {
         name: 'PBKDF2',
-        salt,
-        iterations: 200000, // Increased from 100k to 200k
+        salt: Buffer.from(salt),
+        iterations: 200000,
         hash: 'SHA-256',
       },
       baseKey,
@@ -171,19 +172,29 @@ export class WalletStorageService {
 
   /**
    * Check if should show backup reminder
+   * Shows after 7 days OR after first transaction
    */
   static shouldShowBackupReminder(): boolean {
     try {
       const lastReminder = localStorage.getItem(STORAGE_KEYS.LAST_BACKUP_REMINDER);
-      if (!lastReminder) return true;
+      const hasTransaction = localStorage.getItem(STORAGE_KEYS.HAS_TRANSACTION) === 'true';
+
+      // If wallet has had a transaction, show reminder immediately
+      if (hasTransaction) {
+        return true;
+      }
+
+      // Otherwise, check if 7 days have passed
+      if (!lastReminder) return false; // Don't show immediately for new wallets
 
       const lastReminderDate = new Date(lastReminder);
       const daysSinceReminder = (Date.now() - lastReminderDate.getTime()) / (1000 * 60 * 60 * 24);
 
-      // Show reminder every 7 days
+      // Show reminder after 7 days
       return daysSinceReminder >= 7;
     } catch (error) {
-      return true;
+      console.error('Failed to check backup reminder:', error);
+      return false;
     }
   }
 
@@ -195,6 +206,28 @@ export class WalletStorageService {
       localStorage.setItem(STORAGE_KEYS.LAST_BACKUP_REMINDER, new Date().toISOString());
     } catch (error) {
       console.error('Failed to update backup reminder timestamp:', error);
+    }
+  }
+
+  /**
+   * Mark that wallet has had a transaction
+   */
+  static markHasTransaction(): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.HAS_TRANSACTION, 'true');
+    } catch (error) {
+      console.error('Failed to mark transaction:', error);
+    }
+  }
+
+  /**
+   * Clear transaction flag (called after backup is completed)
+   */
+  static clearTransactionFlag(): void {
+    try {
+      localStorage.removeItem(STORAGE_KEYS.HAS_TRANSACTION);
+    } catch (error) {
+      console.error('Failed to clear transaction flag:', error);
     }
   }
 

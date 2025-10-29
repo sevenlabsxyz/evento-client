@@ -305,6 +305,9 @@ export function useWallet() {
         const payment = (event as any).details;
         const isIncoming = payment?.paymentType === 'received';
 
+        // Mark that wallet has had a transaction (for backup reminder)
+        WalletStorageService.markHasTransaction();
+
         if (isIncoming) {
           // Show notification for incoming payment
           toast.success(`You received ${payment?.amountSats || 0} sats`);
@@ -345,6 +348,9 @@ export function useWallet() {
 
       // Persist to localStorage
       WalletStorageService.saveWalletState(newState);
+
+      // Clear transaction flag since wallet is now backed up
+      WalletStorageService.clearTransactionFlag();
 
       return newState;
     });

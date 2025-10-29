@@ -48,8 +48,7 @@ export function WalletBalance({ onSend, onReceive }: WalletBalanceProps) {
     return (
       <div className='space-y-4'>
         <Skeleton className='h-32 w-full' />
-        <div className='grid grid-cols-3 gap-3'>
-          <Skeleton className='h-20' />
+        <div className='grid grid-cols-2 gap-3'>
           <Skeleton className='h-20' />
           <Skeleton className='h-20' />
         </div>

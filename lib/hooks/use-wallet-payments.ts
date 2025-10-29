@@ -2,9 +2,11 @@
 
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
+import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { FeeEstimate, InvoiceData } from '@/lib/types/wallet';
-import { Payment } from '@breeztech/breez-sdk-spark/web';
+import { Payment, PrepareSendPaymentResponse } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useState } from 'react';
+import { useWallet } from './use-wallet';
 
 export function useReceivePayment() {
   const [isLoading, setIsLoading] = useState(false);
@@ -55,7 +57,7 @@ export function useSendPayment() {
   const [feeEstimate, setFeeEstimate] = useState<FeeEstimate | null>(null);
 
   const prepareSend = useCallback(
-    async (paymentRequest: string, amountSats?: number): Promise<FeeEstimate> => {
+    async (paymentRequest: string, amountSats?: number): Promise<PrepareSendPaymentResponse> => {
       try {
         setIsLoading(true);
         setError(null);
@@ -79,7 +81,7 @@ export function useSendPayment() {
         }
 
         setFeeEstimate(fees);
-        return fees;
+        return response;
       } catch (err: any) {
         console.error('Failed to prepare payment:', err);
         setError(err.message || 'Failed to prepare payment');
@@ -124,8 +126,9 @@ export function useSendPayment() {
 }
 
 export function usePaymentHistory() {
+  const { walletState } = useWallet();
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Start as true to show skeleton on initial load
   const [error, setError] = useState<string | null>(null);
 
   const fetchPayments = useCallback(async () => {
@@ -135,6 +138,7 @@ export function usePaymentHistory() {
 
       if (!breezSDK.isConnected()) {
         setPayments([]);
+        setIsLoading(false);
         return;
       }
 
@@ -146,6 +150,11 @@ export function usePaymentHistory() {
         return timeB - timeA;
       });
       setPayments(sortedPayments);
+
+      // If wallet has transactions, mark it
+      if (sortedPayments.length > 0) {
+        WalletStorageService.markHasTransaction();
+      }
     } catch (err: any) {
       console.error('Failed to fetch payments:', err);
       setError(err.message || 'Failed to fetch payment history');
@@ -154,16 +163,19 @@ export function usePaymentHistory() {
     }
   }, []);
 
-  // Auto-fetch on mount and when wallet connects
+  // Auto-fetch when wallet connects
   useEffect(() => {
-    if (breezSDK.isConnected()) {
+    if (walletState.isConnected) {
       fetchPayments();
+    } else {
+      // Wallet not connected, stop loading
+      setIsLoading(false);
     }
-  }, [fetchPayments]);
+  }, [walletState.isConnected, fetchPayments]);
 
   // Listen to payment events and auto-refresh
   useEffect(() => {
-    if (!breezSDK.isConnected()) return;
+    if (!walletState.isConnected) return;
 
     const unsubscribe = breezSDK.onEvent((event) => {
       if (event.type === 'paymentSucceeded') {
@@ -173,7 +185,7 @@ export function usePaymentHistory() {
     });
 
     return () => unsubscribe();
-  }, [fetchPayments]);
+  }, [walletState.isConnected, fetchPayments]);
 
   return {
     payments,

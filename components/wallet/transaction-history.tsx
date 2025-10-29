@@ -20,9 +20,15 @@ interface TransactionHistoryProps {
   payments: Payment[];
   isLoading: boolean;
   onRefresh: () => void;
+  onTransactionClick?: (payment: Payment) => void;
 }
 
-export function TransactionHistory({ payments, isLoading, onRefresh }: TransactionHistoryProps) {
+export function TransactionHistory({
+  payments,
+  isLoading,
+  onRefresh,
+  onTransactionClick,
+}: TransactionHistoryProps) {
   const { balanceHidden } = useWalletPreferences();
   const [usdPrices, setUsdPrices] = useState<Record<string, number>>({});
 
@@ -160,9 +166,10 @@ export function TransactionHistory({ payments, isLoading, onRefresh }: Transacti
         const description = getPaymentDescription(payment);
 
         return (
-          <div
+          <button
             key={payment.id}
-            className='rounded-lg border bg-white p-4 transition-colors hover:bg-gray-50'
+            onClick={() => onTransactionClick?.(payment)}
+            className='w-full cursor-pointer rounded-lg border bg-white p-4 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex items-start gap-3'>
               {getPaymentIcon(payment)}
@@ -225,7 +232,7 @@ export function TransactionHistory({ payments, isLoading, onRefresh }: Transacti
                 </div>
               </div>
             </div>
-          </div>
+          </button>
         );
       })}
 
