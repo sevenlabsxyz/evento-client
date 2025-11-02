@@ -193,7 +193,7 @@ export function TopBar() {
 
   return (
     <div
-      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-sm ${getTopBarStyles()}`}
+      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-3xl md:border-b md:border-l md:border-r ${getTopBarStyles()}`}
     >
       <div className='px-4 pb-4 pt-4'>
         <div

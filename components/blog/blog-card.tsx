@@ -1,4 +1,4 @@
-import { formatDistance, subDays } from 'date-fns';
+import { format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 
@@ -9,7 +9,7 @@ export const BlogCard = ({ date, slug, image, title, category, description }: an
   return (
     <Link
       href={`/blog/${slug}`}
-      className='group block w-full cursor-pointer overflow-hidden rounded-2xl bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
+      className='group block w-full cursor-pointer overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
     >
       <div className='relative aspect-video w-full overflow-hidden'>
         {image ? (
@@ -34,15 +34,13 @@ export const BlogCard = ({ date, slug, image, title, category, description }: an
       </div>
       <div className='p-6'>
         <div className='mb-3 flex items-center justify-between gap-4'>
-          {category && category.length > 0 && (
-            <span className='rounded-full bg-red-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-red-600'>
+          {/*{category && category.length > 0 && (
+            <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-red-600">
               {category[0].name}
             </span>
-          )}
+          )}*/}
           <time className='text-sm text-gray-500'>
-            {formatDistance(subDays(new Date(date), 0), new Date(), {
-              addSuffix: true,
-            })}
+            {format(new Date(date), 'EEE, do MMMM yyyy')}
           </time>
         </div>
         <h2 className='m-0 mb-2 line-clamp-3 text-xl font-bold leading-7 text-gray-900 transition-colors duration-200 ease-in-out group-hover:text-red-600'>

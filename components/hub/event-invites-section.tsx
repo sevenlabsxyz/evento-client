@@ -5,15 +5,19 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
+import { EventInvite } from '@/lib/types/api';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { useState } from 'react';
-import { EventInviteCard } from './event-invite-card';
+import { EventInviteDetailSheet } from './event-invite-detail-sheet';
+import { EventInviteStoryThumbnail } from './event-invite-story-thumbnail';
 import { EventInvitesSheet } from './event-invites-sheet';
 
 export function EventInvitesSection() {
   const [showInvitesSheet, setShowInvitesSheet] = useState(false);
   const [showRSVPSheet, setShowRSVPSheet] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string>('');
+  const [selectedInvite, setSelectedInvite] = useState<EventInvite | null>(null);
+  const [showDetailSheet, setShowDetailSheet] = useState(false);
 
   const { data: pendingInvites = [], isLoading: isLoadingPending } = useEventInvites('pending');
 
@@ -22,16 +26,21 @@ export function EventInvitesSection() {
     setShowRSVPSheet(true);
   };
 
+  const handleThumbnailClick = (invite: EventInvite) => {
+    setSelectedInvite(invite);
+    setShowDetailSheet(true);
+  };
+
   // Show loading state
   if (isLoadingPending) {
     return (
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Event Invites</h2>
+          <h2 className='text-lg font-semibold'>Invites</h2>
         </div>
-        <div className='flex gap-4 overflow-x-auto pb-2'>
-          {[...Array(2)].map((_, i) => (
-            <Skeleton key={i} className='h-40 w-72 flex-shrink-0 rounded-2xl' />
+        <div className='no-scrollbar flex gap-3 overflow-x-auto pb-2'>
+          {[...Array(5)].map((_, i) => (
+            <Skeleton key={i} className='h-[100px] w-[100px] flex-shrink-0 rounded-2xl' />
           ))}
         </div>
       </div>
@@ -43,7 +52,7 @@ export function EventInvitesSection() {
     return (
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Event Invites</h2>
+          <h2 className='text-lg font-semibold'>Invites</h2>
         </div>
         <div className='flex flex-col items-center justify-center py-8 text-center'>
           <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
@@ -60,19 +69,23 @@ export function EventInvitesSection() {
     <>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Event Invites</h2>
-          <Button variant='outline' size='sm' onClick={() => setShowInvitesSheet(true)}>
-            View All <ArrowRight className='h-4 w-4' />
+          <h2 className='text-lg font-semibold'>Invites</h2>
+          <Button
+            variant='ghost'
+            className='h-8 w-8 rounded-full bg-white p-0 shadow-sm'
+            size='sm'
+            onClick={() => setShowInvitesSheet(true)}
+          >
+            <ArrowRight className='h-4 w-4' />
           </Button>
         </div>
 
-        <div className='scrollbar-hide flex gap-4 overflow-x-auto'>
+        <div className='no-scrollbar flex gap-3 overflow-x-auto pb-2'>
           {pendingInvites.slice(0, EVENT_INVITES_CONFIG.MAX_DISPLAYED_INVITES).map((invite) => (
-            <EventInviteCard
+            <EventInviteStoryThumbnail
               key={invite.id}
               invite={invite}
-              className='w-80 sm:w-72 md:w-80 lg:w-80'
-              onRSVP={() => handleRSVP(invite.event_id)}
+              onClick={() => handleThumbnailClick(invite)}
             />
           ))}
         </div>
@@ -83,6 +96,17 @@ export function EventInvitesSection() {
         showInvitesSheet={showInvitesSheet}
         setShowInvitesSheet={setShowInvitesSheet}
         handleRSVP={handleRSVP}
+      />
+
+      {/* Detail Sheet */}
+      <EventInviteDetailSheet
+        invite={selectedInvite}
+        isOpen={showDetailSheet}
+        onClose={() => {
+          setShowDetailSheet(false);
+          setSelectedInvite(null);
+        }}
+        onRSVP={() => selectedInvite && handleRSVP(selectedInvite.event_id)}
       />
 
       {/* RSVP Sheet */}

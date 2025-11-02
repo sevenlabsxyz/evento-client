@@ -264,7 +264,7 @@ export default function CreatePage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl'>
         {/* Create Page Loading Skeleton */}
         <div className='flex-1 overflow-y-auto pb-24'>
           <div className='mb-2 mt-2 px-4'>
@@ -376,11 +376,11 @@ export default function CreatePage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
       {/* Header */}
 
       {/* Cover Image Selector */}
-      <div className='mb-2 mt-2 px-4'>
+      <div className='mb-2 mt-2 px-4 md:max-w-sm'>
         <CoverImageSelector
           selectedImage={coverImage}
           onImageClick={() => setShowImageModal(true)}
@@ -584,7 +584,7 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
         <div className='mx-auto max-w-full md:max-w-sm'>
           <SubmitButton
             onClick={handleCreateEvent}

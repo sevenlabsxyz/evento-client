@@ -79,10 +79,10 @@ export function BlogSection() {
       <div className='flex items-center justify-between'>
         <h2 className='text-lg font-semibold'>From our blog</h2>
       </div>
-      <div className='grid grid-cols-[repeat(auto-fill,minmax(250px,1fr))] gap-2.5'>
+      <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
         {posts
           .sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime())
-          .slice(0, 5)
+          .slice(0, 4)
           .map((post) => (
             <BlogCard
               key={post.id}
