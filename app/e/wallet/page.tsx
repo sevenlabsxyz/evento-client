@@ -127,7 +127,7 @@ export default function WalletPage() {
 
           if (isAvailable) {
             await registerAddress(username, `Pay to ${user.name || user.username}`);
-            console.log(`Lightning address registered: ${username}@evt.cash`);
+            console.log(`Lightning address registered: ${username}@evento.cash`);
           }
         } catch (error) {
           console.error('Failed to auto-register Lightning address:', error);

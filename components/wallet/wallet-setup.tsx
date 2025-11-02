@@ -69,7 +69,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
 
           if (isAvailable) {
             await registerAddress(username, `Pay to ${user.name || user.username}`);
-            console.log(`Lightning address registered: ${username}@evt.cash`);
+            console.log(`Lightning address registered: ${username}@evento.cash`);
           }
         } catch (error) {
           console.error('Failed to register Lightning address:', error);

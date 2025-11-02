@@ -234,7 +234,7 @@ export default function WalletSettingsPage() {
                 )}
               </div>
               <div className='flex items-center gap-2 text-sm'>
-                <span>@evt.cash</span>
+                <span>@evento.cash</span>
                 {isAvailable === true && (
                   <span className='flex items-center gap-1 text-green-600'>
                     <Check className='h-3 w-3' />

@@ -97,7 +97,7 @@ export class BreezSDKService {
 
       config.apiKey = apiKey;
       // Configure LNURL domain for Lightning addresses
-      config.lnurlDomain = 'evt.cash';
+      config.lnurlDomain = 'evento.cash';
 
       // Storage directory - using browser's IndexedDB
       const storageDir = './.breez-data';
@@ -316,7 +316,7 @@ export class BreezSDKService {
     try {
       const request: RegisterLightningAddressRequest = {
         username,
-        description: description || `Pay to ${username}@evt.cash`,
+        description: description || `Pay to ${username}@evento.cash`,
       };
       const addressInfo = await this.sdk.registerLightningAddress(request);
       return addressInfo;
