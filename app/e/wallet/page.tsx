@@ -12,6 +12,7 @@ import { TransactionDetailsSheet } from '@/components/wallet/transaction-details
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
+import { WalletEducationalSection } from '@/components/wallet/wallet-educational-section';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
@@ -340,6 +341,9 @@ export default function WalletPage() {
             />
           )}
 
+          {/* Educational Content */}
+          <WalletEducationalSection />
+
           {/* Recent Transactions Preview */}
           <div className='space-y-3'>
             <h3 className='font-semibold'>Recent Transactions</h3>
@@ -350,6 +354,7 @@ export default function WalletPage() {
               onTransactionClick={handleTransactionClick}
               showViewAllButton={!isLoadingPayments && payments.length > 0}
               onViewAll={() => openDrawer('history')}
+              maxTransactions={3}
             />
           </div>
 

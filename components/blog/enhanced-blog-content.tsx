@@ -115,7 +115,11 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
     // For external images
     if (url.startsWith('http')) {
       // Try to generate a tiny version for Evento images on supported domains
-      if (url.includes('evento.so') || url.includes('laughing-sunfish.pikapod.net')) {
+      if (
+        url.includes('evento.so') ||
+        url.includes('laughing-sunfish.pikapod.net') ||
+        url.includes('blogapi.evento.so')
+      ) {
         // Add blur parameters - create a tiny 10px version for blurry placeholder
         if (url.includes('?')) {
           return `${url}&width=10&quality=30`;

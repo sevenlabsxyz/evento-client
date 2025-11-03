@@ -11,6 +11,7 @@ const nextConfig = {
     domains: [
       'evento.so',
       'api.evento.so',
+      'blogapi.evento.so',
       'laughing-sunfish.pikapod.net',
       'media.giphy.com',
       'media0.giphy.com',

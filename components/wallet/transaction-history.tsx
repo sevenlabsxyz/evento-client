@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, Copy, XCircle } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface TransactionHistoryProps {
@@ -15,6 +15,7 @@ interface TransactionHistoryProps {
   onTransactionClick?: (payment: Payment) => void;
   showViewAllButton?: boolean;
   onViewAll?: () => void;
+  maxTransactions?: number;
 }
 
 export function TransactionHistory({
@@ -24,6 +25,7 @@ export function TransactionHistory({
   onTransactionClick,
   showViewAllButton = false,
   onViewAll,
+  maxTransactions,
 }: TransactionHistoryProps) {
   const { balanceHidden } = useWalletPreferences();
   const [usdPrices, setUsdPrices] = useState<Record<string, number>>({});
@@ -155,7 +157,7 @@ export function TransactionHistory({
 
   return (
     <div className='space-y-3'>
-      {payments.map((payment) => {
+      {(maxTransactions ? payments.slice(0, maxTransactions) : payments).map((payment) => {
         const isIncoming = payment.paymentType === 'receive';
         const amountSats = Number(payment.amount);
         const usdAmount = usdPrices[payment.id] || 0;
@@ -202,20 +204,6 @@ export function TransactionHistory({
                     )}
                   </div>
                 </div>
-
-                <div className='mt-2 flex items-center justify-between'>
-                  <div className='flex items-center gap-1'>
-                    {payment.details && (payment.details as any).bolt11 && (
-                      <button
-                        onClick={() => copyToClipboard((payment.details as any).bolt11)}
-                        className='rounded p-1 transition-colors hover:bg-gray-200'
-                        title='Copy invoice'
-                      >
-                        <Copy className='h-3 w-3 text-muted-foreground' />
-                      </button>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           </button>
@@ -223,8 +211,12 @@ export function TransactionHistory({
       })}
 
       {payments.length > 0 && showViewAllButton && onViewAll && (
-        <div className='pt-4 text-center'>
-          <Button onClick={onViewAll} variant='outline' size='sm'>
+        <div className='pt-4'>
+          <Button
+            onClick={onViewAll}
+            variant='outline'
+            className='h-12 w-full rounded-full bg-gray-50'
+          >
             View All Transactions
           </Button>
         </div>
