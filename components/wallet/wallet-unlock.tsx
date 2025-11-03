@@ -2,10 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Eye, EyeOff, Lock } from 'lucide-react';
+import { AlertCircle, Delete, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletUnlockProps {
@@ -13,21 +12,29 @@ interface WalletUnlockProps {
 }
 
 export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [pin, setPin] = useState('');
   const { unlockWallet, isLoading, error } = useWallet();
+
+  const handleNumberClick = (number: string) => {
+    if (pin.length < 6) {
+      setPin(pin + number);
+    }
+  };
+
+  const handleDelete = () => {
+    setPin(pin.slice(0, -1));
+  };
 
   const handleUnlock = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!password) {
-      toast.error('Please enter your password');
+    if (!pin) {
+      toast.error('Please enter your PIN');
       return;
     }
 
     try {
-      await unlockWallet(password);
-      toast.success('Wallet unlocked');
+      await unlockWallet(pin);
       onUnlock?.();
     } catch (error: any) {
       toast.error(error.message || 'Failed to unlock wallet');
@@ -37,36 +44,145 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
   return (
     <div className='space-y-6'>
       <div className='text-center'>
-        <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-          <Lock className='h-8 w-8 text-orange-600' />
+        <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
+          <Lock className='h-8 w-8 text-black' />
         </div>
-        <h2 className='text-2xl font-bold'>Unlock Wallet</h2>
-        <p className='mt-2 text-sm text-muted-foreground'>
-          Enter your password to access your wallet
-        </p>
+        <h2 className='text-2xl font-bold'>Enter Wallet PIN</h2>
       </div>
 
       <form onSubmit={handleUnlock} className='space-y-4'>
-        <div className='space-y-2'>
-          <Label htmlFor='password'>Password</Label>
-          <div className='relative'>
-            <Input
-              id='password'
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Enter your password'
-              disabled={isLoading}
-              className='pr-10'
-            />
-            <button
-              type='button'
-              onClick={() => setShowPassword(!showPassword)}
-              className='absolute right-3 top-3 text-muted-foreground hover:text-foreground'
-            >
-              {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-            </button>
-          </div>
+        <div className='mb-6'>
+          <Input
+            id='pin'
+            type='password'
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            placeholder='••••'
+            disabled={isLoading}
+            className='bg-gray-50 py-6 text-center text-2xl tracking-widest'
+          />
+        </div>
+
+        {/* Number Keypad */}
+        <div className='grid grid-cols-3 gap-3'>
+          {/* Row 1: 7, 8, 9 */}
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('7')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            7
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('8')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            8
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('9')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            9
+          </Button>
+
+          {/* Row 2: 4, 5, 6 */}
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('4')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            4
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('5')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            5
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('6')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            6
+          </Button>
+
+          {/* Row 3: 1, 2, 3 */}
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('1')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            1
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('2')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            2
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('3')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            3
+          </Button>
+
+          {/* Row 4: Empty, 0, Delete */}
+          <div />
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={() => handleNumberClick('0')}
+            disabled={isLoading || pin.length >= 6}
+            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
+          >
+            0
+          </Button>
+          <Button
+            type='button'
+            variant='outline'
+            size='lg'
+            onClick={handleDelete}
+            disabled={isLoading || pin.length === 0}
+            className='h-14 rounded-full hover:bg-gray-50'
+          >
+            <Delete className='h-5 w-5' />
+          </Button>
         </div>
 
         {error && (
@@ -78,23 +194,15 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
           </div>
         )}
 
-        <Button type='submit' className='w-full' size='lg' disabled={isLoading}>
-          {isLoading ? 'Unlocking...' : 'Unlock Wallet'}
+        <Button
+          type='submit'
+          className='font-lg mt-6 w-full rounded-full'
+          size='lg'
+          disabled={isLoading}
+        >
+          {isLoading ? 'Unlocking...' : 'Next'}
         </Button>
       </form>
-
-      <div className='rounded-lg bg-blue-50 p-4'>
-        <div className='flex items-start gap-2'>
-          <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
-          <div className='text-sm text-blue-900'>
-            <p className='font-medium'>Session Timeout</p>
-            <p className='mt-1'>
-              For security, your wallet automatically locks after 30 minutes of inactivity. You'll
-              need to re-enter your password to continue.
-            </p>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,22 +1,31 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
-import { ArrowDownLeft, ArrowUpRight, Eye, EyeOff, RefreshCw, Zap } from 'lucide-react';
+import { toast } from '@/lib/utils/toast';
+import { ChevronRight, Copy, ScanLine, Zap } from 'lucide-react';
+import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 
 interface WalletBalanceProps {
   onSend: () => void;
   onReceive: () => void;
+  onScan: () => void;
+  lightningAddress: string;
 }
 
-export function WalletBalance({ onSend, onReceive }: WalletBalanceProps) {
+export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: WalletBalanceProps) {
   const { walletState, isLoading, refreshBalance } = useWallet();
   const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
   const [balanceUSD, setBalanceUSD] = useState<number>(0);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
+  const [showUSD, setShowUSD] = useState(true);
+  const [showQrModal, setShowQrModal] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 
   useEffect(() => {
     refreshBalance();
@@ -44,89 +53,177 @@ export function WalletBalance({ onSend, onReceive }: WalletBalanceProps) {
     fetchUSD();
   }, [walletState.balance]);
 
+  // Generate QR code when modal opens
+  useEffect(() => {
+    const generateQRCode = async () => {
+      if (showQrModal && !qrCodeUrl) {
+        try {
+          const qrUrl = await QRCode.toDataURL(`lightning:${lightningAddress}`, {
+            width: 300,
+            margin: 2,
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF',
+            },
+          });
+          setQrCodeUrl(qrUrl);
+        } catch (error) {
+          console.error('Failed to generate QR code:', error);
+          toast.error('Failed to generate QR code');
+        }
+      }
+    };
+
+    generateQRCode();
+  }, [showQrModal, lightningAddress, qrCodeUrl]);
+
+  const handleCopyAddress = async () => {
+    try {
+      await navigator.clipboard.writeText(lightningAddress);
+      toast.success('Lightning address copied');
+    } catch (error) {
+      toast.error('Failed to copy');
+    }
+  };
+
+  const toggleCurrency = () => {
+    setShowUSD(!showUSD);
+  };
+
   if (isLoading) {
     return (
       <div className='space-y-4'>
-        <Skeleton className='h-32 w-full' />
-        <div className='grid grid-cols-2 gap-3'>
-          <Skeleton className='h-20' />
-          <Skeleton className='h-20' />
-        </div>
+        <Skeleton className='h-48 w-full' />
       </div>
     );
   }
 
   return (
-    <div className='space-y-6'>
-      {/* Balance Card */}
-      <div className='rounded-2xl bg-gradient-to-br from-orange-500 to-orange-600 p-6 text-white transition-all'>
-        <div className='mb-4 flex items-center justify-between'>
-          <span className='text-sm font-medium opacity-90'>Total Balance</span>
-          <div className='flex items-center gap-2'>
-            <button
-              onClick={toggleBalanceVisibility}
-              className='rounded-full p-1 transition-colors hover:bg-white/20'
-              aria-label={balanceHidden ? 'Show balance' : 'Hide balance'}
-            >
-              {balanceHidden ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-            </button>
-            <button
-              onClick={refreshBalance}
-              className='rounded-full p-1 transition-colors hover:bg-white/20'
-              aria-label='Refresh balance'
-            >
-              <RefreshCw className='h-4 w-4' />
-            </button>
-          </div>
-        </div>
-
-        <div className='space-y-2'>
-          <div className='flex items-baseline gap-2'>
-            <Zap className='h-6 w-6 fill-current' />
-            {balanceHidden ? (
-              <span className='text-4xl font-bold'>••••••</span>
-            ) : (
-              <>
-                <span className='text-4xl font-bold'>{walletState.balance.toLocaleString()}</span>
-                <span className='text-lg opacity-90'>sats</span>
-              </>
-            )}
-          </div>
-
-          {!balanceHidden && (
-            <div className='text-lg opacity-90'>
-              {isLoadingPrice ? (
-                <span className='text-sm'>Loading...</span>
-              ) : (
-                <span>≈ ${balanceUSD.toFixed(2)} USD</span>
-              )}
+    <>
+      <div className='space-y-6'>
+        {/* Balance Card */}
+        <div className='rounded-2xl border border-gray-200 bg-white p-6 shadow-sm'>
+          {/* Lightning Address Row */}
+          <button
+            onClick={() => setShowQrModal(true)}
+            className='mb-4 flex w-full items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+          >
+            <div className='flex min-w-0 flex-1 items-center gap-2'>
+              <Zap className='h-4 w-4 flex-shrink-0 text-black' />
+              <div className='truncate font-mono text-sm font-bold text-gray-900'>
+                {lightningAddress}
+              </div>
             </div>
-          )}
+            <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+          </button>
+
+          {/* Balance Display - Centered & Clickable to toggle */}
+          <button
+            onClick={toggleCurrency}
+            className='mb-6 mt-4 w-full text-center'
+            disabled={balanceHidden}
+          >
+            {balanceHidden ? (
+              <div className='text-5xl font-bold'>$••••</div>
+            ) : (
+              <div className='space-y-1'>
+                {showUSD ? (
+                  <>
+                    <div className='text-5xl font-bold text-gray-900'>${balanceUSD.toFixed(2)}</div>
+                    <div className='text-sm text-gray-600'>
+                      {walletState.balance.toLocaleString()} sats
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className='text-5xl font-bold text-gray-900'>
+                      {walletState.balance.toLocaleString()}
+                    </div>
+                    <div className='text-sm text-gray-600'>≈ ${balanceUSD.toFixed(2)} USD</div>
+                  </>
+                )}
+              </div>
+            )}
+          </button>
+
+          {/* Action Buttons */}
+          <div className='space-y-3'>
+            <div className='grid grid-cols-2 gap-3'>
+              <Button
+                onClick={onReceive}
+                variant='outline'
+                className='font-lg h-12 rounded-full bg-gray-50'
+              >
+                Receive
+              </Button>
+              <Button
+                onClick={onSend}
+                variant='outline'
+                className='font-lg h-12 rounded-full bg-gray-50'
+              >
+                Send
+              </Button>
+            </div>
+            <Button
+              onClick={onScan}
+              variant='outline'
+              className='font-lg h-12 w-full rounded-full bg-gray-50'
+            >
+              Scan
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className='grid grid-cols-2 gap-3'>
-        <button
-          onClick={onReceive}
-          className='flex flex-col items-center gap-2 rounded-xl bg-gray-50 p-4 transition-colors hover:bg-gray-100'
-        >
-          <div className='flex h-12 w-12 items-center justify-center rounded-full bg-green-100'>
-            <ArrowDownLeft className='h-6 w-6 text-green-600' />
-          </div>
-          <span className='text-sm font-medium'>Receive</span>
-        </button>
+      {/* QR Code Modal */}
+      <DetachedSheet.Root presented={showQrModal} onPresentedChange={setShowQrModal}>
+        <DetachedSheet.Portal>
+          <DetachedSheet.View>
+            <DetachedSheet.Backdrop />
+            <DetachedSheet.Content>
+              <div className='p-6'>
+                <div className='mb-4 flex justify-center'>
+                  <DetachedSheet.Handle />
+                </div>
+                <h2 className='mb-6 text-center text-lg font-semibold'>{lightningAddress}</h2>
 
-        <button
-          onClick={onSend}
-          className='flex flex-col items-center gap-2 rounded-xl bg-gray-50 p-4 transition-colors hover:bg-gray-100'
-        >
-          <div className='flex h-12 w-12 items-center justify-center rounded-full bg-blue-100'>
-            <ArrowUpRight className='h-6 w-6 text-blue-600' />
-          </div>
-          <span className='text-sm font-medium'>Send</span>
-        </button>
-      </div>
-    </div>
+                {qrCodeUrl && (
+                  <div className='space-y-4'>
+                    <div className='mx-auto w-fit rounded-2xl bg-white p-6 shadow-lg'>
+                      <img src={qrCodeUrl} alt='Lightning Address QR Code' className='h-64 w-64' />
+                    </div>
+
+                    <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 text-center'>
+                      <p className='mb-1 text-xs text-muted-foreground'>Your Lightning Address</p>
+                      <p className='break-all font-mono text-sm'>{lightningAddress}</p>
+                    </div>
+
+                    <div className='space-y-3'>
+                      <div className='flex gap-3'>
+                        <Button onClick={handleCopyAddress} variant='outline' className='flex-1'>
+                          <Copy className='mr-2 h-4 w-4' />
+                          Copy Address
+                        </Button>
+                        <Button onClick={() => setShowQrModal(false)} className='flex-1'>
+                          Done
+                        </Button>
+                      </div>
+                      <Button
+                        onClick={() => setShowQrModal(false)}
+                        variant='outline'
+                        className='w-full'
+                      >
+                        <ScanLine className='mr-2 h-4 w-4' />
+                        Scan
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </DetachedSheet.Content>
+          </DetachedSheet.View>
+        </DetachedSheet.Portal>
+      </DetachedSheet.Root>
+    </>
   );
 }

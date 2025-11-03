@@ -5,6 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BackupReminder } from '@/components/wallet/backup-reminder';
 import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
+import { ScanQrSheet } from '@/components/wallet/scan-qr-sheet';
 import { SeedBackup } from '@/components/wallet/seed-backup';
 import { SendLightningSheet } from '@/components/wallet/send-lightning-sheet';
 import { TransactionDetailsSheet } from '@/components/wallet/transaction-details-sheet';
@@ -20,14 +21,15 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { Copy, History, Settings } from 'lucide-react';
+import { Eye, EyeOff, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'encrypted-backup' | 'main';
-type DrawerContent = 'receive' | 'send' | 'history' | 'transaction-details' | null;
+type DrawerContent = 'receive' | 'send' | 'scan' | 'history' | 'transaction-details' | null;
 
 export default function WalletPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -38,6 +40,7 @@ export default function WalletPage() {
   const { walletState, isLoading: isWalletLoading, markAsBackedUp } = useWallet();
   const { payments, isLoading: isLoadingPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
+  const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -63,29 +66,37 @@ export default function WalletPage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Wallet',
+      badge: 'Beta',
       centerMode: 'title',
       showAvatar: false,
       buttons: [
         {
-          id: 'history',
-          icon: History,
-          onClick: () => openDrawer('history'),
-          label: 'History',
-          disabled: !walletState.isConnected,
+          id: 'toggle-balance',
+          icon: balanceHidden ? EyeOff : Eye,
+          onClick: toggleBalanceVisibility,
+          label: balanceHidden ? 'Show balance' : 'Hide balance',
         },
         {
           id: 'settings',
           icon: Settings,
           onClick: () => router.push('/e/wallet/settings'),
           label: 'Settings',
-          disabled: !walletState.isConnected,
         },
       ],
     });
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, router, walletState.isConnected]);
+  }, [
+    pathname,
+    setTopBarForRoute,
+    applyRouteConfig,
+    clearRoute,
+    router,
+    walletState.isConnected,
+    balanceHidden,
+    toggleBalanceVisibility,
+  ]);
 
   // Determine initial step based on wallet state
   useEffect(() => {
@@ -172,6 +183,12 @@ export default function WalletPage() {
     } else {
       toast.error('Unable to retrieve seed phrase. Please contact support.');
     }
+  };
+
+  const handleScanSuccess = (decodedText: string) => {
+    console.log('QR Code scanned:', decodedText);
+    toast.success('QR code scanned successfully');
+    closeDrawer();
   };
 
   if (isCheckingAuth || isWalletLoading) {
@@ -299,88 +316,73 @@ export default function WalletPage() {
 
   // Main Wallet Screen
   return (
-    <div className='mx-auto max-w-sm pb-28 pt-4'>
-      <div className='space-y-6'>
-        {/* Backup Reminder */}
-        {showBackupReminder && (
-          <BackupReminder
-            onBackup={() => {
-              setShowBackupReminder(false);
-              setStep('encrypted-backup');
-            }}
-            onDismiss={() => setShowBackupReminder(false)}
-          />
-        )}
+    <div className='pb-28 pt-4'>
+      <div className='mx-auto max-w-sm'>
+        <div className='space-y-6'>
+          {/* Backup Reminder */}
+          {showBackupReminder && (
+            <BackupReminder
+              onBackup={() => {
+                setShowBackupReminder(false);
+                setStep('encrypted-backup');
+              }}
+              onDismiss={() => setShowBackupReminder(false)}
+            />
+          )}
 
-        {/* Lightning Address - Only show if wallet is initialized */}
-        {walletState.isInitialized && user?.lightning_address && (
-          <div className='rounded-xl bg-gray-50 p-4'>
-            <div className='flex items-center justify-between'>
-              <div className='min-w-0 flex-1'>
-                <p className='mb-1 text-xs text-muted-foreground'>Lightning Address</p>
-                <p className='truncate font-mono text-sm'>{user.lightning_address}</p>
-              </div>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={async () => {
-                  try {
-                    await navigator.clipboard.writeText(user.lightning_address!);
-                    toast.success('Address copied');
-                  } catch (error) {
-                    toast.error('Failed to copy');
-                  }
-                }}
-              >
-                <Copy className='h-4 w-4' />
-              </Button>
-            </div>
+          {/* Wallet Balance Card */}
+          {walletState.isInitialized && user?.username && (
+            <WalletBalance
+              onSend={() => openDrawer('send')}
+              onReceive={() => openDrawer('receive')}
+              onScan={() => openDrawer('scan')}
+              lightningAddress={user.lightning_address || `${user.username}@evento.cash`}
+            />
+          )}
+
+          {/* Recent Transactions Preview */}
+          <div className='space-y-3'>
+            <h3 className='font-semibold'>Recent Transactions</h3>
+            <TransactionHistory
+              payments={payments.slice(0, 5)}
+              isLoading={isLoadingPayments}
+              onRefresh={() => {}}
+              onTransactionClick={handleTransactionClick}
+              showViewAllButton={!isLoadingPayments && payments.length > 0}
+              onViewAll={() => openDrawer('history')}
+            />
           </div>
-        )}
 
-        {/* Balance and Actions */}
-        <WalletBalance onSend={() => openDrawer('send')} onReceive={() => openDrawer('receive')} />
-
-        {/* Recent Transactions Preview */}
-        <div className='space-y-3'>
-          <h3 className='font-semibold'>Recent Transactions</h3>
-          <TransactionHistory
-            payments={payments.slice(0, 5)}
+          {/* Sheets */}
+          <ReceiveLightningSheet
+            open={drawerContent === 'receive'}
+            onOpenChange={(open) => !open && closeDrawer()}
+          />
+          <SendLightningSheet
+            open={drawerContent === 'send'}
+            onOpenChange={(open) => !open && closeDrawer()}
+            onBackupRequired={handleBackupRequired}
+          />
+          <ScanQrSheet
+            open={drawerContent === 'scan'}
+            onOpenChange={(open) => !open && closeDrawer()}
+            onScanSuccess={handleScanSuccess}
+          />
+          <TransactionHistorySheet
+            open={drawerContent === 'history'}
+            onOpenChange={(open) => !open && closeDrawer()}
+            payments={payments}
             isLoading={isLoadingPayments}
-            onRefresh={() => {}}
             onTransactionClick={handleTransactionClick}
           />
-          {!isLoadingPayments && payments.length > 5 && (
-            <Button onClick={() => openDrawer('history')} variant='outline' className='w-full'>
-              View All Transactions
-            </Button>
+          {selectedTransaction && (
+            <TransactionDetailsSheet
+              open={drawerContent === 'transaction-details'}
+              onOpenChange={(open) => !open && closeDrawer()}
+              payment={selectedTransaction}
+            />
           )}
         </div>
-
-        {/* Sheets */}
-        <ReceiveLightningSheet
-          open={drawerContent === 'receive'}
-          onOpenChange={(open) => !open && closeDrawer()}
-        />
-        <SendLightningSheet
-          open={drawerContent === 'send'}
-          onOpenChange={(open) => !open && closeDrawer()}
-          onBackupRequired={handleBackupRequired}
-        />
-        <TransactionHistorySheet
-          open={drawerContent === 'history'}
-          onOpenChange={(open) => !open && closeDrawer()}
-          payments={payments}
-          isLoading={isLoadingPayments}
-          onTransactionClick={handleTransactionClick}
-        />
-        {selectedTransaction && (
-          <TransactionDetailsSheet
-            open={drawerContent === 'transaction-details'}
-            onOpenChange={(open) => !open && closeDrawer()}
-            payment={selectedTransaction}
-          />
-        )}
       </div>
     </div>
   );

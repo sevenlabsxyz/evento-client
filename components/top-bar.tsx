@@ -1,6 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -18,6 +19,8 @@ export function TopBar() {
     centerMode,
     title,
     subtitle,
+    badge,
+    badgePath,
     buttons,
     showAvatar,
     isOverlaid,
@@ -133,7 +136,18 @@ export function TopBar() {
     if (centerMode === 'title' && !isOverlaid) {
       return (
         <div className='flex min-w-0 flex-1 flex-col gap-1'>
-          <h1 className='truncate text-lg font-semibold text-gray-500'>{title}</h1>
+          <div className='flex items-center gap-2'>
+            <h1 className='truncate text-lg font-semibold text-gray-500'>{title}</h1>
+            {badge && (
+              <Badge
+                variant='secondary'
+                className={`border border-gray-200 text-xs ${badgePath ? 'cursor-pointer hover:opacity-80' : ''}`}
+                onClick={badgePath ? () => router.push(badgePath) : undefined}
+              >
+                {badge}
+              </Badge>
+            )}
+          </div>
           {subtitle && <p className='truncate text-sm text-gray-500'>{subtitle}</p>}
         </div>
       );

@@ -5,15 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  CheckCircle2,
-  Clock,
-  Copy,
-  ExternalLink,
-  XCircle,
-} from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, Copy, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface TransactionHistoryProps {
@@ -21,6 +13,8 @@ interface TransactionHistoryProps {
   isLoading: boolean;
   onRefresh: () => void;
   onTransactionClick?: (payment: Payment) => void;
+  showViewAllButton?: boolean;
+  onViewAll?: () => void;
 }
 
 export function TransactionHistory({
@@ -28,6 +22,8 @@ export function TransactionHistory({
   isLoading,
   onRefresh,
   onTransactionClick,
+  showViewAllButton = false,
+  onViewAll,
 }: TransactionHistoryProps) {
   const { balanceHidden } = useWalletPreferences();
   const [usdPrices, setUsdPrices] = useState<Record<string, number>>({});
@@ -178,10 +174,14 @@ export function TransactionHistory({
                 <div className='flex items-start justify-between gap-2'>
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-center gap-2'>
-                      <p className='truncate font-medium'>{isIncoming ? 'Received' : 'Sent'}</p>
                       {getStatusIcon(payment.status)}
+                      <div className='flex flex-col'>
+                        <p className='truncate font-medium'>{description}</p>
+                        <p className='text-xs font-normal text-muted-foreground'>
+                          {formatDate(payment.timestamp)}
+                        </p>
+                      </div>
                     </div>
-                    <p className='truncate text-sm text-muted-foreground'>{description}</p>
                   </div>
 
                   <div className='text-right'>
@@ -204,8 +204,6 @@ export function TransactionHistory({
                 </div>
 
                 <div className='mt-2 flex items-center justify-between'>
-                  <p className='text-xs text-muted-foreground'>{formatDate(payment.timestamp)}</p>
-
                   <div className='flex items-center gap-1'>
                     {payment.details && (payment.details as any).bolt11 && (
                       <button
@@ -216,18 +214,6 @@ export function TransactionHistory({
                         <Copy className='h-3 w-3 text-muted-foreground' />
                       </button>
                     )}
-                    {payment.details && (payment.details as any).paymentHash && (
-                      <a
-                        href={`https://mempool.space/lightning/payment/${
-                          (payment.details as any).paymentHash
-                        }`}
-                        target='_blank'
-                        className='rounded p-1 transition-colors hover:bg-gray-200'
-                        title='View on explorer'
-                      >
-                        <ExternalLink className='h-3 w-3 text-muted-foreground' />
-                      </a>
-                    )}
                   </div>
                 </div>
               </div>
@@ -236,10 +222,10 @@ export function TransactionHistory({
         );
       })}
 
-      {payments.length > 0 && (
+      {payments.length > 0 && showViewAllButton && onViewAll && (
         <div className='pt-4 text-center'>
-          <Button onClick={onRefresh} variant='outline' size='sm'>
-            Refresh History
+          <Button onClick={onViewAll} variant='outline' size='sm'>
+            View All Transactions
           </Button>
         </div>
       )}
