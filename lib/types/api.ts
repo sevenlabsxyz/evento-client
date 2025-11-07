@@ -294,6 +294,56 @@ export interface CreateEmailBlastForm {
   scheduledFor?: string | null;
 }
 
+// User List (for saved events)
+export interface UserList {
+  id: string;
+  creator_id: string;
+  name: string;
+  description: string | null;
+  is_default: boolean;
+  is_public: boolean;
+  created_at: string;
+  updated_at: string;
+  event_count: number;
+}
+
+// List Event (event saved in a list)
+export interface ListEvent {
+  list_event_id: string;
+  event_id: string;
+  added_at: string;
+  added_by: string;
+  event: EventWithUser;
+}
+
+// Saved status for an event
+export interface SavedEventStatus {
+  event_id: string;
+  saved_in_lists: Array<{
+    list_id: string;
+    list_name: string;
+    is_default: boolean;
+  }>;
+  is_saved: boolean;
+}
+
+// Create list form
+export interface CreateListForm {
+  name: string;
+  description?: string;
+}
+
+// Update list form
+export interface UpdateListForm {
+  name?: string;
+  description?: string;
+}
+
+// Add event to list form
+export interface AddEventToListForm {
+  event_id: string;
+}
+
 // Utility types
 export type RSVPStatus = 'yes' | 'no' | 'maybe';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
