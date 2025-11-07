@@ -45,22 +45,34 @@ export default function WalletPage() {
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
-  const [drawerContent, setDrawerContent] = useState<DrawerContent>(null);
+  const [openDrawers, setOpenDrawers] = useState<DrawerContent[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
   const [showBackupReminder, setShowBackupReminder] = useState(false);
 
   const openDrawer = (content: DrawerContent) => {
-    setDrawerContent(content);
+    if (content && !openDrawers.includes(content)) {
+      setOpenDrawers([...openDrawers, content]);
+    }
   };
 
-  const closeDrawer = () => {
-    setDrawerContent(null);
-    setSelectedTransaction(null);
+  const closeDrawer = (drawer?: DrawerContent) => {
+    if (drawer) {
+      setOpenDrawers(openDrawers.filter((d) => d !== drawer));
+      if (drawer === 'transaction-details') {
+        // Delay clearing to allow exit animation to complete
+        setTimeout(() => setSelectedTransaction(null), 400);
+      }
+    } else {
+      setOpenDrawers([]);
+      setSelectedTransaction(null);
+    }
   };
 
   const handleTransactionClick = (payment: Payment) => {
     setSelectedTransaction(payment);
-    setDrawerContent('transaction-details');
+    if (!openDrawers.includes('transaction-details')) {
+      setOpenDrawers([...openDrawers, 'transaction-details']);
+    }
   };
 
   useEffect(() => {
@@ -124,22 +136,22 @@ export default function WalletPage() {
       if (walletState.isConnected && !address && user?.username) {
         try {
           const baseUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
-          let username = baseUsername;
           let isAvailable = false;
           let attempts = 0;
 
-          // Try base username, then add numbers if taken
+          // Retry the SAME username (not numbered variations) up to 10 times
           while (!isAvailable && attempts < 10) {
-            isAvailable = await checkAvailability(username);
+            isAvailable = await checkAvailability(baseUsername);
             if (!isAvailable) {
               attempts++;
-              username = `${baseUsername}${attempts}`;
+              // Add exponential backoff delay before retrying (1s, 2s, 3s...)
+              await new Promise((resolve) => setTimeout(resolve, 1000 * attempts));
             }
           }
 
           if (isAvailable) {
-            await registerAddress(username, `Pay to ${user.name || user.username}`);
-            console.log(`Lightning address registered: ${username}@evento.cash`);
+            await registerAddress(baseUsername, `Pay to ${user.name || user.username}`);
+            console.log(`Lightning address registered: ${baseUsername}@evento.cash`);
           }
         } catch (error) {
           console.error('Failed to auto-register Lightning address:', error);
@@ -360,30 +372,33 @@ export default function WalletPage() {
 
           {/* Sheets */}
           <ReceiveLightningSheet
-            open={drawerContent === 'receive'}
-            onOpenChange={(open) => !open && closeDrawer()}
+            open={openDrawers.includes('receive')}
+            onOpenChange={(open) => !open && closeDrawer('receive')}
           />
           <SendLightningSheet
-            open={drawerContent === 'send'}
-            onOpenChange={(open) => !open && closeDrawer()}
+            open={openDrawers.includes('send')}
+            onOpenChange={(open) => !open && closeDrawer('send')}
             onBackupRequired={handleBackupRequired}
           />
           <ScanQrSheet
-            open={drawerContent === 'scan'}
-            onOpenChange={(open) => !open && closeDrawer()}
+            open={openDrawers.includes('scan')}
+            onOpenChange={(open) => !open && closeDrawer('scan')}
             onScanSuccess={handleScanSuccess}
           />
           <TransactionHistorySheet
-            open={drawerContent === 'history'}
-            onOpenChange={(open) => !open && closeDrawer()}
+            open={openDrawers.includes('history')}
+            onOpenChange={(open) => !open && closeDrawer('history')}
             payments={payments}
             isLoading={isLoadingPayments}
             onTransactionClick={handleTransactionClick}
+            selectedTransaction={selectedTransaction}
+            onTransactionDetailsClose={() => closeDrawer('transaction-details')}
+            isDetailsSheetOpen={openDrawers.includes('transaction-details')}
           />
-          {selectedTransaction && (
+          {selectedTransaction && !openDrawers.includes('history') && (
             <TransactionDetailsSheet
-              open={drawerContent === 'transaction-details'}
-              onOpenChange={(open) => !open && closeDrawer()}
+              open={openDrawers.includes('transaction-details')}
+              onOpenChange={(open) => !open && closeDrawer('transaction-details')}
               payment={selectedTransaction}
             />
           )}

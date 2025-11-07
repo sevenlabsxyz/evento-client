@@ -7,7 +7,7 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, Copy, ScanLine, Zap } from 'lucide-react';
+import { ChevronRight, Zap } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 
@@ -199,22 +199,12 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
                     </div>
 
                     <div className='space-y-3'>
-                      <div className='flex gap-3'>
-                        <Button onClick={handleCopyAddress} variant='outline' className='flex-1'>
-                          <Copy className='mr-2 h-4 w-4' />
-                          Copy Address
-                        </Button>
-                        <Button onClick={() => setShowQrModal(false)} className='flex-1'>
-                          Done
-                        </Button>
-                      </div>
                       <Button
-                        onClick={() => setShowQrModal(false)}
+                        onClick={handleCopyAddress}
                         variant='outline'
-                        className='w-full'
+                        className='font-lg h-12 w-full rounded-full bg-gray-50'
                       >
-                        <ScanLine className='mr-2 h-4 w-4' />
-                        Scan
+                        Copy Address
                       </Button>
                     </div>
                   </div>

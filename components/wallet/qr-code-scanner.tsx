@@ -11,6 +11,7 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
   const [isScanning, setIsScanning] = useState(false);
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const hasStarted = useRef(false);
+  const isRunning = useRef(false);
 
   useEffect(() => {
     if (hasStarted.current) return;
@@ -34,25 +35,37 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
           }
         );
 
+        isRunning.current = true;
         setIsScanning(true);
       } catch (err) {
         console.error('Error starting scanner:', err);
+        isRunning.current = false;
       }
     };
 
     startScanner();
 
     return () => {
-      if (scannerRef.current) {
-        scannerRef.current.stop().catch((err) => {
-          console.error('Error stopping scanner:', err);
-        });
-      }
+      const stopScanner = async () => {
+        if (scannerRef.current && isRunning.current) {
+          try {
+            await scannerRef.current.stop();
+            isRunning.current = false;
+          } catch (err) {
+            // Only log if it's not the "not running" error
+            if (err instanceof Error && !err.message.includes('not running')) {
+              console.error('Error stopping scanner:', err);
+            }
+          }
+        }
+      };
+
+      stopScanner();
     };
   }, [onScanSuccess]);
 
   return (
-    <div className='fixed inset-0 z-0 bg-black'>
+    <div className='absolute inset-0 z-10 bg-black'>
       <style jsx>{`
         #qr-reader {
           width: 100%;

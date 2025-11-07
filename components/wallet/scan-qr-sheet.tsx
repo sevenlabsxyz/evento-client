@@ -20,7 +20,7 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
   return (
     <SheetWithDetent.Root presented={open} onPresentedChange={onOpenChange}>
       <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
+        <SheetWithDetent.View detents={undefined}>
           <SheetWithDetent.Backdrop />
           <SheetWithDetent.Content className='min-h-max p-0'>
             <VisuallyHidden.Root asChild>
@@ -28,7 +28,7 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
             </VisuallyHidden.Root>
 
             {/* Fullscreen Camera Scanner */}
-            <div className='relative h-[80vh] w-full overflow-hidden rounded-t-3xl bg-black'>
+            <div className='relative h-screen w-full overflow-hidden rounded-t-3xl bg-black'>
               {open && <CameraScanner onScanSuccess={handleScanSuccess} />}
 
               {/* Close Button Overlay */}

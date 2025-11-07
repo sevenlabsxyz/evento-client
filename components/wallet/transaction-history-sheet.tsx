@@ -4,6 +4,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
 import { X } from 'lucide-react';
+import { TransactionDetailsSheet } from './transaction-details-sheet';
 import { TransactionHistory } from './transaction-history';
 
 interface TransactionHistorySheetProps {
@@ -12,6 +13,9 @@ interface TransactionHistorySheetProps {
   payments: Payment[];
   isLoading: boolean;
   onTransactionClick: (payment: Payment) => void;
+  selectedTransaction?: Payment | null;
+  onTransactionDetailsClose: () => void;
+  isDetailsSheetOpen: boolean;
 }
 
 export function TransactionHistorySheet({
@@ -20,6 +24,9 @@ export function TransactionHistorySheet({
   payments,
   isLoading,
   onTransactionClick,
+  selectedTransaction,
+  onTransactionDetailsClose,
+  isDetailsSheetOpen,
 }: TransactionHistorySheetProps) {
   return (
     <SheetWithDetentFull.Root presented={open} onPresentedChange={onOpenChange}>
@@ -35,17 +42,17 @@ export function TransactionHistorySheet({
             </VisuallyHidden.Root>
             <SheetWithDetentFull.ScrollRoot>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent>
-                  <div className='flex items-center justify-between border-b p-6'>
-                    <h2 className='text-xl font-semibold'>Transaction History</h2>
+                <SheetWithDetentFull.ScrollContent className='min-h-screen bg-gray-100'>
+                  <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3'>
+                    <h2 className='text-xl font-semibold text-gray-900'>Transaction History</h2>
                     <button
                       onClick={() => onOpenChange(false)}
-                      className='rounded-full p-2 transition-colors hover:bg-gray-100'
+                      className='flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-gray-100'
                     >
-                      <X className='h-5 w-5' />
+                      <X className='h-5 w-5 text-gray-600' />
                     </button>
                   </div>
-                  <div className='p-6'>
+                  <div className='min-h-screen px-4 py-6 pb-8'>
                     <TransactionHistory
                       payments={payments}
                       isLoading={isLoading}
@@ -58,6 +65,15 @@ export function TransactionHistorySheet({
                 </SheetWithDetentFull.ScrollContent>
               </SheetWithDetentFull.ScrollView>
             </SheetWithDetentFull.ScrollRoot>
+
+            {/* Nested Transaction Details Sheet */}
+            {selectedTransaction && (
+              <TransactionDetailsSheet
+                open={isDetailsSheetOpen}
+                onOpenChange={(open) => !open && onTransactionDetailsClose()}
+                payment={selectedTransaction}
+              />
+            )}
           </SheetWithDetentFull.Content>
         </SheetWithDetentFull.View>
       </SheetWithDetentFull.Portal>
