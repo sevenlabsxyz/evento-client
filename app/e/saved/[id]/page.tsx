@@ -3,6 +3,7 @@
 import { EventCard } from '@/components/event-card';
 import { EventCompactItem } from '@/components/event-compact-item';
 import { Button } from '@/components/ui/button';
+import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -30,6 +31,7 @@ export default function SavedListDetailPage() {
   const [newListName, setNewListName] = useState('');
   const [removingEventId, setRemovingEventId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('card');
+  const [activeEventMenuId, setActiveEventMenuId] = useState<string | null>(null);
 
   const { data: lists = [] } = useUserLists();
   const { data: listEvents = [], isLoading: eventsLoading } = useListEvents(listId);
@@ -47,6 +49,7 @@ export default function SavedListDetailPage() {
 
   const handleRemoveEvent = async (eventId: string) => {
     setRemovingEventId(eventId);
+    setActiveEventMenuId(null);
     try {
       await removeEventMutation.mutateAsync({ listId, eventId });
       toast.success('Event removed from list');
@@ -215,20 +218,12 @@ export default function SavedListDetailPage() {
             /* Card View */
             <div className='space-y-4 px-4 py-4'>
               {listEvents.map((listEvent) => (
-                <div key={listEvent.list_event_id} className='relative'>
-                  <EventCard event={listEvent.event} />
-                  <button
-                    onClick={() => handleRemoveEvent(listEvent.event_id)}
-                    disabled={removingEventId === listEvent.event_id}
-                    className='absolute right-2 top-2 rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-100 disabled:opacity-50'
-                  >
-                    {removingEventId === listEvent.event_id ? (
-                      <Loader2 className='h-4 w-4 animate-spin text-red-600' />
-                    ) : (
-                      <X className='h-4 w-4 text-red-600' />
-                    )}
-                  </button>
-                </div>
+                <EventCard
+                  key={listEvent.list_event_id}
+                  event={listEvent.event}
+                  onMenuClick={(eventId) => setActiveEventMenuId(eventId)}
+                  customMenuOptions={[]}
+                />
               ))}
             </div>
           ) : (
@@ -236,23 +231,11 @@ export default function SavedListDetailPage() {
             <div className='px-4 py-4'>
               <div className='divide-y divide-gray-100 rounded-2xl bg-white shadow-sm'>
                 {listEvents.map((listEvent) => (
-                  <div key={listEvent.list_event_id} className='relative'>
-                    <EventCompactItem event={listEvent.event} />
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveEvent(listEvent.event_id);
-                      }}
-                      disabled={removingEventId === listEvent.event_id}
-                      className='absolute right-[2rem] top-[0.9rem] -translate-y-1/2 rounded-full bg-white p-2 shadow-md transition-colors hover:bg-gray-100 disabled:opacity-50'
-                    >
-                      {removingEventId === listEvent.event_id ? (
-                        <Loader2 className='h-4 w-4 animate-spin text-red-600' />
-                      ) : (
-                        <X className='h-4 w-4 text-red-600' />
-                      )}
-                    </button>
-                  </div>
+                  <EventCompactItem
+                    key={listEvent.list_event_id}
+                    event={listEvent.event}
+                    onMenuClick={(eventId) => setActiveEventMenuId(eventId)}
+                  />
                 ))}
               </div>
             </div>
@@ -323,6 +306,24 @@ export default function SavedListDetailPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Event Menu Sheet */}
+      {activeEventMenuId && (
+        <DetachedMenuSheet
+          isOpen={!!activeEventMenuId}
+          onClose={() => setActiveEventMenuId(null)}
+          options={[
+            {
+              id: 'remove',
+              label: 'Remove from List',
+              icon: X,
+              onClick: () => handleRemoveEvent(activeEventMenuId),
+              variant: 'destructive',
+              disabled: removingEventId === activeEventMenuId,
+            },
+          ]}
+        />
       )}
 
       {/* Delete Confirmation Modal */}
