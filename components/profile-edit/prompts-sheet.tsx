@@ -16,13 +16,25 @@ import {
   useAllPrompts,
   useAnswerPrompt,
   useDeletePrompt,
+  useReorderPrompts,
   useUpdatePrompt,
   useUserPrompts,
 } from '@/lib/hooks/use-user-prompts';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { Prompt, UserPrompt } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { AlertTriangle, Eye, EyeOff, Loader2, MessageSquare, Plus, Trash2, X } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  EyeOff,
+  Loader2,
+  MessageSquare,
+  Plus,
+  Trash2,
+  X,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface PromptsSheetProps {
@@ -56,6 +68,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
   const answerPromptMutation = useAnswerPrompt();
   const updatePromptMutation = useUpdatePrompt();
   const deletePromptMutation = useDeletePrompt();
+  const reorderPromptsMutation = useReorderPrompts();
 
   // Reset view when sheet opens/closes
   useEffect(() => {
@@ -169,6 +182,46 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
     }
   };
 
+  const handleMoveUp = async (index: number) => {
+    if (!userPrompts || index === 0) return;
+
+    const newOrder = [...userPrompts];
+    [newOrder[index - 1], newOrder[index]] = [newOrder[index], newOrder[index - 1]];
+
+    const reorderData = newOrder.map((prompt, i) => ({
+      user_prompt_id: prompt.id,
+      display_order: i + 1,
+    }));
+
+    try {
+      await reorderPromptsMutation.mutateAsync(reorderData);
+      toast.success('Prompt order updated');
+    } catch (error) {
+      console.error('Failed to reorder prompts:', error);
+      toast.error('Failed to reorder prompts');
+    }
+  };
+
+  const handleMoveDown = async (index: number) => {
+    if (!userPrompts || index === userPrompts.length - 1) return;
+
+    const newOrder = [...userPrompts];
+    [newOrder[index], newOrder[index + 1]] = [newOrder[index + 1], newOrder[index]];
+
+    const reorderData = newOrder.map((prompt, i) => ({
+      user_prompt_id: prompt.id,
+      display_order: i + 1,
+    }));
+
+    try {
+      await reorderPromptsMutation.mutateAsync(reorderData);
+      toast.success('Prompt order updated');
+    } catch (error) {
+      console.error('Failed to reorder prompts:', error);
+      toast.error('Failed to reorder prompts');
+    }
+  };
+
   const handleCancel = () => {
     if (view === 'list') {
       onClose();
@@ -244,16 +297,41 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                 <h3 className='text-sm font-semibold text-gray-700'>
                                   Your Prompts
                                 </h3>
-                                {userPrompts.map((userPrompt) => (
+                                {userPrompts.map((userPrompt, index) => (
                                   <div
                                     key={userPrompt.id}
                                     className='rounded-xl border border-gray-200 bg-white p-4'
                                   >
                                     <div className='mb-2 flex items-start justify-between'>
-                                      <p className='flex-1 font-semibold text-gray-900'>
-                                        {userPrompt.prompt.question}
-                                      </p>
-                                      <div className='flex items-center gap-2'>
+                                      <div className='flex items-start gap-2'>
+                                        <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600'>
+                                          {index + 1}
+                                        </span>
+                                        <p className='flex-1 font-semibold text-gray-900'>
+                                          {userPrompt.prompt.question}
+                                        </p>
+                                      </div>
+                                      <div className='flex items-center gap-1'>
+                                        {userPrompts.length > 1 && (
+                                          <>
+                                            <button
+                                              onClick={() => handleMoveUp(index)}
+                                              disabled={index === 0}
+                                              className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                                              title='Move up'
+                                            >
+                                              <ArrowUp className='h-4 w-4 text-gray-600' />
+                                            </button>
+                                            <button
+                                              onClick={() => handleMoveDown(index)}
+                                              disabled={index === userPrompts.length - 1}
+                                              className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                                              title='Move down'
+                                            >
+                                              <ArrowDown className='h-4 w-4 text-gray-600' />
+                                            </button>
+                                          </>
+                                        )}
                                         <button
                                           onClick={() => handleToggleVisibility(userPrompt)}
                                           className='rounded-lg p-2 hover:bg-gray-100'
