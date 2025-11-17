@@ -32,6 +32,8 @@ export default function SavedListDetailPage() {
   const [removingEventId, setRemovingEventId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [activeEventMenuId, setActiveEventMenuId] = useState<string | null>(null);
+  const [showRemoveConfirmModal, setShowRemoveConfirmModal] = useState(false);
+  const [eventToRemove, setEventToRemove] = useState<string | null>(null);
 
   const { data: lists = [] } = useUserLists();
   const { data: listEvents = [], isLoading: eventsLoading } = useListEvents(listId);
@@ -47,12 +49,21 @@ export default function SavedListDetailPage() {
     }
   }, [currentList]);
 
-  const handleRemoveEvent = async (eventId: string) => {
-    setRemovingEventId(eventId);
+  const handleRemoveEventClick = (eventId: string) => {
+    setEventToRemove(eventId);
     setActiveEventMenuId(null);
+    setShowRemoveConfirmModal(true);
+  };
+
+  const handleConfirmRemoveEvent = async () => {
+    if (!eventToRemove) return;
+
+    setRemovingEventId(eventToRemove);
     try {
-      await removeEventMutation.mutateAsync({ listId, eventId });
+      await removeEventMutation.mutateAsync({ listId, eventId: eventToRemove });
       toast.success('Event removed from list');
+      setShowRemoveConfirmModal(false);
+      setEventToRemove(null);
     } catch (error: any) {
       toast.error(error?.message || 'Failed to remove event');
     } finally {
@@ -318,12 +329,51 @@ export default function SavedListDetailPage() {
               id: 'remove',
               label: 'Remove from List',
               icon: X,
-              onClick: () => handleRemoveEvent(activeEventMenuId),
+              onClick: () => handleRemoveEventClick(activeEventMenuId),
               variant: 'destructive',
-              disabled: removingEventId === activeEventMenuId,
             },
           ]}
         />
+      )}
+
+      {/* Remove Event Confirmation Modal */}
+      {showRemoveConfirmModal && eventToRemove && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
+            <h3 className='mb-2 text-xl font-bold'>Remove Event?</h3>
+            <p className='mb-6 text-sm text-gray-600'>
+              This will remove the event from &quot;{currentList?.name}&quot;. You can always add it
+              back later.
+            </p>
+            <div className='flex gap-3'>
+              <Button
+                variant='outline'
+                onClick={() => {
+                  setShowRemoveConfirmModal(false);
+                  setEventToRemove(null);
+                }}
+                className='flex-1'
+                disabled={removingEventId === eventToRemove}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConfirmRemoveEvent}
+                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                disabled={removingEventId === eventToRemove}
+              >
+                {removingEventId === eventToRemove ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Removing...
+                  </>
+                ) : (
+                  'Remove'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Delete Confirmation Modal */}
