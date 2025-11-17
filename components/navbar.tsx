@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar1, Home, Inbox, MessageCircle, Plus } from 'lucide-react';
+import { Calendar1, MessageCircle, Plus, User, Wallet } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
 interface NavbarProps {
@@ -13,11 +13,15 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
   const pathname = usePathname();
 
   const navItems = [
-    { id: 'hub', icon: Home, path: '/e/hub' },
-    { id: 'feed', icon: Calendar1, path: '/e/feed' },
+    { id: 'hub', icon: Calendar1, path: '/e/hub' },
+    { id: 'wallet', icon: Wallet, path: '/e/wallet' },
+    // Hiding feed until improvements are made
+    // { id: 'feed', icon: Calendar1, path: '/e/feed' },
     { id: 'add', icon: Plus, path: '/e/create', isCenter: true },
-    { id: 'inbox', icon: Inbox, path: '/e/inbox' },
     { id: 'messages', icon: MessageCircle, path: '/e/messages' },
+    // Temporarily hidden until notifications are fully working
+    // { id: 'inbox', icon: Inbox, path: '/e/inbox' },
+    { id: 'profile', icon: User, path: '/e/profile' },
   ];
 
   const handleNavigation = (item: any) => {
@@ -28,7 +32,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
   };
 
   return (
-    <div className='fixed bottom-0 left-1/2 z-10 w-full max-w-full -translate-x-1/2 transform border-t border-gray-200 bg-white pb-4 md:max-w-sm'>
+    <div className='fixed bottom-0 left-1/2 z-10 w-full max-w-full -translate-x-1/2 transform border-t border-gray-200 bg-white pb-4 md:max-w-3xl md:border-l md:border-r'>
       <div className='grid grid-cols-5 items-center px-2 py-3'>
         {navItems.map((item) => {
           const Icon = item.icon;

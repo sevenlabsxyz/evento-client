@@ -8,14 +8,12 @@ import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import {
   BookOpen,
   Calendar1,
-  Home,
-  Inbox,
   LogOut,
   MessageCircle,
   MessageCircleQuestion,
   Plus,
   Settings,
-  Star,
+  User,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -46,19 +44,25 @@ export function Sidebar() {
       title: 'Menu',
       items: [
         {
-          name: 'Home',
+          name: 'Hub',
           path: '/',
-          icon: <Home className='h-5 w-5' strokeWidth={2.5} />,
+          icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
         },
         {
           name: 'Chat',
           path: '/e/messages',
           icon: <MessageCircle className='h-5 w-5' strokeWidth={2.5} />,
         },
+        // Hiding until Notifications are implemented properly
+        // {
+        //   name: 'Inbox',
+        //   path: '/e/inbox',
+        //   icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
+        // },
         {
-          name: 'Inbox',
-          path: '/e/inbox',
-          icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
+          name: 'Profile',
+          path: '/e/profile',
+          icon: <User className='h-5 w-5' strokeWidth={2.5} />,
         },
         {
           name: 'Settings',
@@ -71,15 +75,16 @@ export function Sidebar() {
       title: 'My Events',
       items: [
         {
-          name: 'View All Events',
-          path: '/e/hub#',
+          name: 'My Events',
+          path: '/e/hub',
           icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
         },
-        {
-          name: 'Saved Events',
-          path: '/e/saved',
-          icon: <Star className='h-5 w-5' strokeWidth={2.5} />,
-        },
+        // Hiding until Saved Event lists are implemented properly
+        // {
+        //   name: "Saved Events",
+        //   path: "/e/saved",
+        //   icon: <Star className="h-5 w-5" strokeWidth={2.5} />,
+        // },
         {
           name: 'Create Event',
           path: '/e/create',

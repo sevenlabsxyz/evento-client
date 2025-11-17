@@ -338,7 +338,7 @@ export default function SingleChatPage() {
   // Show loading state during authentication or Stream Chat setup
   if (isCheckingAuth || isLoadingStream) {
     return (
-      <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
         {/* Messages skeleton */}
         <div className='flex-1 overflow-y-auto px-4 py-4'>
           {[0, 1, 2, 3, 4, 5, 6].map((i) => (
@@ -375,7 +375,7 @@ export default function SingleChatPage() {
   // Show error state if Stream Chat fails to connect
   if (streamError || !client) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='text-center'>
             <div className='mb-4 text-red-500'>
@@ -408,7 +408,7 @@ export default function SingleChatPage() {
   // Show channel error if specific channel fails to load
   if (channelError) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='text-center'>
             <div className='mb-4 text-red-500'>
@@ -440,7 +440,7 @@ export default function SingleChatPage() {
   }
 
   return (
-    <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex h-[calc(100vh-4rem)] max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
       <Chat client={client}>
         <Channel channel={channel}>
           {/* Pinned Message Banner */}

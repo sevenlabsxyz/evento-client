@@ -26,7 +26,7 @@ export default function HubPage() {
 
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
-      title: 'Hub',
+      title: 'Evento Hub',
       subtitle: '',
       leftMode: 'menu',
       showAvatar: true,
@@ -71,9 +71,9 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16 pt-4 md:max-w-sm'>
-        <MyEventsSection />
+      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16 pt-4 md:max-w-3xl md:border-l md:border-r'>
         <EventInvitesSection />
+        <MyEventsSection />
         <BlogSection />
       </div>
       <Navbar />

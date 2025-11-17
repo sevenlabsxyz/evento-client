@@ -110,13 +110,13 @@ export function MyEventsSection() {
       <div className='flex flex-col'>
         {/* Header */}
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>My Events</h2>
+          <h2 className='text-lg font-semibold'>Events</h2>
           <div className='flex items-center gap-2'>
             <Button
               onClick={() => setIsMenuOpen(true)}
               size='sm'
               variant='ghost'
-              className='h-8 w-8 rounded-full bg-gray-100 p-0'
+              className='h-8 w-8 rounded-full bg-white p-0 shadow-sm'
               aria-label='More options'
             >
               <MoreHorizontal className='h-4 w-4' />
@@ -126,6 +126,7 @@ export function MyEventsSection() {
 
         {/* Segmented Tabs */}
         <SegmentedTabs
+          align='left'
           value={activeTab}
           onValueChange={(value) => setActiveTab(value as EventFilterType)}
           items={[

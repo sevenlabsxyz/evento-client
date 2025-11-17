@@ -14,6 +14,7 @@ interface SegmentedTabsProps {
   value: string;
   onValueChange: (value: string) => void;
   // Styling controls
+  align?: 'left' | 'center';
   wrapperClassName?: string;
   gapClassName?: string;
   buttonBaseClassName?: string;
@@ -25,12 +26,14 @@ export function SegmentedTabs({
   items,
   value,
   onValueChange,
+  align = 'center',
   wrapperClassName,
-  gapClassName = 'flex flex-row items-center justify-center gap-2',
-  buttonBaseClassName = 'rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all',
-  activeClassName = 'bg-gray-100 text-black',
+  gapClassName,
+  buttonBaseClassName = 'rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all border shadow-sm',
+  activeClassName = 'bg-gray-200 text-black',
   inactiveClassName = 'bg-white text-gray-500 hover:bg-gray-50',
 }: SegmentedTabsProps) {
+  const defaultGapClassName = `flex flex-row items-center ${align === 'center' ? 'justify-center' : 'justify-start'} gap-2`;
   const Buttons = (
     <>
       {items.map((item) => (
@@ -55,7 +58,11 @@ export function SegmentedTabs({
 
   // Always render a single wrapper div. Apply default padding if none provided,
   // and always apply the gapClassName so spacing can be customized independently.
-  return <div className={cn(wrapperClassName ?? 'mb-2 px-4 py-3', gapClassName)}>{Buttons}</div>;
+  return (
+    <div className={cn(wrapperClassName ?? 'mb-2 px-4 py-3', gapClassName ?? defaultGapClassName)}>
+      {Buttons}
+    </div>
+  );
 }
 
 export default SegmentedTabs;
