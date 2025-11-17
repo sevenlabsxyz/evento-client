@@ -213,7 +213,7 @@ export function TransactionHistory({
           <Button
             onClick={onViewAll}
             variant='outline'
-            className='h-11 w-full rounded-xl border-gray-200 bg-white shadow-sm hover:bg-gray-50'
+            className='font-lg h-12 w-full rounded-full bg-gray-50'
           >
             View All Transactions
           </Button>

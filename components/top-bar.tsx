@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { Button } from './ui/button';
 
 export function TopBar() {
   const { openSidebar } = useSidebar();
@@ -228,23 +229,15 @@ export function TopBar() {
                 {buttons.map((button) => {
                   const Icon = button.icon;
                   return (
-                    <button
+                    <Button
                       key={button.id}
+                      size='icon'
+                      variant='outline'
                       onClick={button.onClick}
-                      disabled={button.disabled}
-                      className={`flex flex-row items-center gap-2 transition-all duration-300 hover:opacity-80 ${
-                        isOverlaid
-                          ? 'flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white'
-                          : 'p-0'
-                      }`}
+                      className='rounded-full'
                     >
-                      <Icon
-                        className={`${
-                          isOverlaid ? 'h-5 w-5 text-gray-500' : 'h-6 w-6 text-gray-400'
-                        }`}
-                        strokeWidth={2.5}
-                      />
-                    </button>
+                      <Icon className='!h-[1.25rem] !w-[1.25rem]' />
+                    </Button>
                   );
                 })}
               </div>

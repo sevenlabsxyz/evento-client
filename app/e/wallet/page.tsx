@@ -12,7 +12,7 @@ import { TransactionDetailsSheet } from '@/components/wallet/transaction-details
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
-import { WalletEducationalSection } from '@/components/wallet/wallet-educational-section';
+import { WalletEducationGallery } from '@/components/wallet/wallet-education-section-gallery';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
@@ -353,9 +353,6 @@ export default function WalletPage() {
             />
           )}
 
-          {/* Educational Content */}
-          <WalletEducationalSection />
-
           {/* Recent Transactions Preview */}
           <div className='space-y-3'>
             <h3 className='font-semibold'>Recent Transactions</h3>
@@ -369,6 +366,9 @@ export default function WalletPage() {
               maxTransactions={3}
             />
           </div>
+
+          {/* Educational Content */}
+          <WalletEducationGallery />
 
           {/* Sheets */}
           <ReceiveLightningSheet
