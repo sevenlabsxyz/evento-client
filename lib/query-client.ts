@@ -88,4 +88,11 @@ export const queryKeys = {
   // Notifications
   notifications: ['notifications'] as const,
   userNotifications: () => [...queryKeys.notifications, 'user'] as const,
+
+  // Lists (saved events)
+  lists: ['lists'] as const,
+  userLists: () => [...queryKeys.lists, 'user'] as const,
+  list: (listId: string) => [...queryKeys.lists, listId] as const,
+  listEvents: (listId: string) => [...queryKeys.lists, listId, 'events'] as const,
+  eventSavedStatus: (eventId: string) => [...queryKeys.events, eventId, 'saved'] as const,
 } as const;
