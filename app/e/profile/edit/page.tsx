@@ -318,40 +318,6 @@ export default function EditProfilePage() {
             </button>
           </div>
 
-          {/* Bitcoin Module */}
-          <div className='rounded-2xl bg-white p-4'>
-            <button
-              onClick={() => setShowLightningSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100'>
-                <Zap className='h-6 w-6 text-orange-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Bitcoin</h3>
-                <p className='text-sm text-gray-500'>{ln_address || 'Add Lightning address'}</p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
-          {/* Nostr Module */}
-          <div className='rounded-2xl bg-white p-4'>
-            <button
-              onClick={() => setShowNostrSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
-                <Hash className='h-6 w-6 text-pink-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Nostr</h3>
-                <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
           {/* Interests Module */}
           <div className='rounded-2xl bg-white p-4'>
             <button
@@ -381,6 +347,40 @@ export default function EditProfilePage() {
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Prompts</h3>
                 <p className='text-sm text-gray-500'>Showcase your personality</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
+          {/* Bitcoin Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <button
+              onClick={() => setShowLightningSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100'>
+                <Zap className='h-6 w-6 text-orange-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Bitcoin</h3>
+                <p className='text-sm text-gray-500'>{ln_address || 'Add Lightning address'}</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
+          {/* Nostr Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <button
+              onClick={() => setShowNostrSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
+                <Hash className='h-6 w-6 text-pink-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Nostr</h3>
+                <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
