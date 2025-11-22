@@ -4,6 +4,8 @@
 
 **Create Events. Connect People. Build Communities.**
 
+NOW WITH BITCOIN!
+
 Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
 
 The application features a comprehensive suite of capabilities including:
