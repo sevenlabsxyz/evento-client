@@ -1,7 +1,7 @@
 'use client';
 
 import EventSearchSheet from '@/components/event-search-sheet';
-import { Button } from '@/components/ui/button';
+import { CircleIconButton } from '@/components/ui/circle-icon-button';
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
@@ -112,15 +112,12 @@ export function MyEventsSection() {
         <div className='flex items-center justify-between'>
           <h2 className='text-lg font-semibold'>Events</h2>
           <div className='flex items-center gap-2'>
-            <Button
+            <CircleIconButton
+              icon={MoreHorizontal}
               onClick={() => setIsMenuOpen(true)}
-              size='sm'
-              variant='ghost'
-              className='h-8 w-8 rounded-full bg-white p-0 shadow-sm'
-              aria-label='More options'
-            >
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
+              iconSize='sm'
+              ariaLabel='More options'
+            />
           </div>
         </div>
 

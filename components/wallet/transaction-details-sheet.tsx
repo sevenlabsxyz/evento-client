@@ -189,10 +189,10 @@ export function TransactionDetailsSheet({
                   </div>
 
                   {/* Content */}
-                  <div className='h-[95vh] overflow-y-auto bg-gray-100 px-4 py-6 pb-8'>
+                  <div className='h-[95vh] overflow-y-auto bg-white px-4 py-6 pb-8'>
                     <div className='mx-auto min-h-fit max-w-md space-y-4 pb-8'>
                       {/* Amount Card - Glassmorphic */}
-                      <div className='rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-sm backdrop-blur-xl'>
+                      <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm backdrop-blur-xl'>
                         <div className='mb-4 flex items-center justify-center gap-2'>
                           <div
                             className={`flex h-10 w-10 items-center justify-center rounded-full ${
@@ -231,7 +231,7 @@ export function TransactionDetailsSheet({
                       </div>
 
                       {/* Transaction Info Group */}
-                      <div className='overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm'>
+                      <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
                         {/* Time */}
                         <div className='flex items-center justify-between border-b border-gray-200 px-4 py-3'>
                           <span className='text-sm font-medium text-gray-600'>Time</span>
@@ -260,7 +260,7 @@ export function TransactionDetailsSheet({
 
                       {/* Financial Details Group */}
                       {Number(payment.fees) > 0 && (
-                        <div className='overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm'>
+                        <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
                           <div className='px-4 py-3'>
                             <div className='flex items-center justify-between'>
                               <div className='flex items-center gap-1'>
@@ -291,7 +291,7 @@ export function TransactionDetailsSheet({
 
                       {/* Payment Details Group */}
                       {(description || invoice) && (
-                        <div className='overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm'>
+                        <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
                           {/* Note/Description */}
                           {description && (
                             <div
@@ -337,13 +337,13 @@ export function TransactionDetailsSheet({
                       {(preimage || paymentHash || destinationPubkey) && (
                         <Accordion type='single' collapsible className='w-full'>
                           <AccordionItem value='advanced' className='border-none'>
-                            <AccordionTrigger className='h-11 rounded-xl border border-gray-200 bg-white px-4 shadow-sm hover:bg-gray-50 hover:no-underline'>
+                            <AccordionTrigger className='h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 shadow-sm hover:bg-gray-100 hover:no-underline'>
                               <span className='text-sm font-medium text-gray-900'>
                                 Advanced Details
                               </span>
                             </AccordionTrigger>
                             <AccordionContent className='pt-4'>
-                              <div className='overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm'>
+                              <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
                                 {/* Payment Hash */}
                                 {paymentHash && (
                                   <div

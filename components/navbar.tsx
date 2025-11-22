@@ -1,6 +1,9 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { Calendar1, MessageCircle, Plus, User, Wallet } from 'lucide-react';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
 interface NavbarProps {
@@ -11,6 +14,7 @@ interface NavbarProps {
 export function Navbar({ activeTab, onTabChange }: NavbarProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useUserProfile();
 
   const navItems = [
     { id: 'hub', icon: Calendar1, path: '/e/hub' },
@@ -48,6 +52,32 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                   <Icon className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
                 </div>
               </div>
+            );
+          }
+
+          // Special rendering for profile item - show avatar
+          if (item.id === 'profile') {
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleNavigation(item)}
+                className={`flex justify-center rounded-lg px-1 py-3 transition-opacity hover:opacity-80`}
+              >
+                <Avatar
+                  className={`h-8 w-8 ${isActive ? 'ring-2 ring-red-600 ring-offset-2' : ''}`}
+                >
+                  <AvatarImage src={user?.image} alt={user?.name || 'Profile'} />
+                  <AvatarFallback className='bg-gray-100'>
+                    <Image
+                      src='/assets/img/evento-sublogo.svg'
+                      alt='Evento'
+                      width={32}
+                      height={32}
+                      className='h-full w-full p-1'
+                    />
+                  </AvatarFallback>
+                </Avatar>
+              </button>
             );
           }
 

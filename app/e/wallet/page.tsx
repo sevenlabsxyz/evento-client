@@ -1,13 +1,19 @@
 'use client';
 
+import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackupReminder } from '@/components/wallet/backup-reminder';
 import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
+import { QuickToolsSection } from '@/components/wallet/quick-tools-section';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
 import { ScanQrSheet } from '@/components/wallet/scan-qr-sheet';
 import { SeedBackup } from '@/components/wallet/seed-backup';
 import { SendLightningSheet } from '@/components/wallet/send-lightning-sheet';
+import { BTCConverterSheet } from '@/components/wallet/sheets/btc-converter-sheet';
+import { BuySellBitcoinSheet } from '@/components/wallet/sheets/buy-sell-bitcoin-sheet';
+import { EarnBitcoinSheet } from '@/components/wallet/sheets/earn-bitcoin-sheet';
+import { SpendBitcoinSheet } from '@/components/wallet/sheets/spend-bitcoin-sheet';
 import { TransactionDetailsSheet } from '@/components/wallet/transaction-details-sheet';
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
@@ -30,7 +36,17 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'encrypted-backup' | 'main';
-type DrawerContent = 'receive' | 'send' | 'scan' | 'history' | 'transaction-details' | null;
+type DrawerContent =
+  | 'receive'
+  | 'send'
+  | 'scan'
+  | 'history'
+  | 'transaction-details'
+  | 'converter'
+  | 'buy-sell'
+  | 'spend'
+  | 'earn'
+  | null;
 
 export default function WalletPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -353,6 +369,13 @@ export default function WalletPage() {
             />
           )}
 
+          {/* Quick Tools Section */}
+          <QuickToolsSection
+            onToolClick={(toolId) => {
+              openDrawer(toolId);
+            }}
+          />
+
           {/* Recent Transactions Preview */}
           <div className='space-y-3'>
             <h3 className='font-semibold'>Recent Transactions</h3>
@@ -402,8 +425,29 @@ export default function WalletPage() {
               payment={selectedTransaction}
             />
           )}
+
+          {/* Quick Tools Sheets */}
+          <BTCConverterSheet
+            open={openDrawers.includes('converter')}
+            onOpenChange={(open) => !open && closeDrawer('converter')}
+          />
+          <BuySellBitcoinSheet
+            open={openDrawers.includes('buy-sell')}
+            onOpenChange={(open) => !open && closeDrawer('buy-sell')}
+          />
+          <SpendBitcoinSheet
+            open={openDrawers.includes('spend')}
+            onOpenChange={(open) => !open && closeDrawer('spend')}
+          />
+          <EarnBitcoinSheet
+            open={openDrawers.includes('earn')}
+            onOpenChange={(open) => !open && closeDrawer('earn')}
+          />
         </div>
       </div>
+
+      {/* Bottom Navigation */}
+      <Navbar />
     </div>
   );
 }

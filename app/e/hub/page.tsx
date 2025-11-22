@@ -1,7 +1,7 @@
 'use client';
 
-import { BlogSection } from '@/components/hub/blog-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
+import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -43,7 +43,7 @@ export default function HubPage() {
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='mx-auto h-full w-full max-w-full bg-gray-50 px-4 pb-16 pt-4 md:max-w-sm'>
+        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-24 pt-4 md:max-w-sm'>
           {/* Welcome text */}
           <div className='mb-4'>
             <Skeleton className='h-5 w-48' />
@@ -71,10 +71,10 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16 pt-4 md:max-w-3xl md:border-l md:border-r'>
+      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-white px-4 pb-24 pt-4 md:max-w-3xl md:border-l md:border-r'>
         <EventInvitesSection />
         <MyEventsSection />
-        <BlogSection />
+        <HubBlogGallery />
       </div>
       <Navbar />
     </>

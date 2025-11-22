@@ -42,7 +42,7 @@ export function TransactionHistorySheet({
             </VisuallyHidden.Root>
             <SheetWithDetentFull.ScrollRoot>
               <SheetWithDetentFull.ScrollView>
-                <SheetWithDetentFull.ScrollContent className='min-h-screen bg-gray-100'>
+                <SheetWithDetentFull.ScrollContent className='min-h-screen bg-white'>
                   <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3'>
                     <h2 className='text-xl font-semibold text-gray-900'>Transaction History</h2>
                     <button

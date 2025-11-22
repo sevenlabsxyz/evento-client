@@ -58,14 +58,14 @@ export function TransactionHistory({
 
     if (isIncoming) {
       return (
-        <div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-100'>
+        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100'>
           <ArrowDownLeft className='h-5 w-5 text-green-600' />
         </div>
       );
     }
 
     return (
-      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
+      <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-blue-100'>
         <ArrowUpRight className='h-5 w-5 text-blue-600' />
       </div>
     );
@@ -165,7 +165,7 @@ export function TransactionHistory({
           <button
             key={payment.id}
             onClick={() => onTransactionClick?.(payment)}
-            className='w-full cursor-pointer rounded-xl border border-gray-200 bg-white px-4 py-3 text-left shadow-sm transition-colors hover:bg-gray-50'
+            className='w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex items-start gap-3'>
               {getPaymentIcon(payment)}

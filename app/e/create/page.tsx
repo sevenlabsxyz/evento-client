@@ -388,9 +388,9 @@ export default function CreatePage() {
       </div>
 
       {/* Form Content */}
-      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
+      <div className='flex-1 space-y-4 overflow-y-auto bg-white px-4 pb-32 pt-4'>
         {/* Event Title Module - Moved to top */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='space-y-2'>
             <label className='text-sm font-medium text-gray-500'>Event Title</label>
             <div className='flex items-center gap-3'>
@@ -407,22 +407,22 @@ export default function CreatePage() {
         </div>
 
         {/* Date & Time Module */}
-        <div className='space-y-4 rounded-2xl bg-white p-4'>
+        <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Calendar className='h-4 w-4 text-gray-600' />
             </div>
             <span className='w-12 min-w-10 font-medium text-gray-700'>Starts</span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className='whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -430,20 +430,20 @@ export default function CreatePage() {
           </div>
 
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Calendar className='h-4 w-4 text-gray-600' />
             </div>
             <span className='w-12 min-w-10 font-medium text-gray-700'>Ends</span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className='whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -452,12 +452,12 @@ export default function CreatePage() {
         </div>
 
         {/* Address Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <button
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <MapPin className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -473,12 +473,12 @@ export default function CreatePage() {
         </div>
 
         {/* Event Visibility */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <button
             onClick={() => setShowVisibilitySheet(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               {visibility === 'public' ? (
                 <Globe className='h-4 w-4 text-gray-600' />
               ) : (
@@ -500,9 +500,9 @@ export default function CreatePage() {
         </div>
 
         {/* Capacity Options */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Users className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -541,12 +541,12 @@ export default function CreatePage() {
         </div>
 
         {/* Description Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <button
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
           >
-            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Edit3 className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -566,9 +566,9 @@ export default function CreatePage() {
         </div>
 
         {/* Attachments Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Music className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>

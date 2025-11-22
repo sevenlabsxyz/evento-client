@@ -8,8 +8,8 @@ import { Button } from '@/components/ui/button';
 import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
+import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { Env } from '@/lib/constants/env';
-import { WalletEducationalSheet } from './wallet-educational-sheet';
 
 export interface BlogPost {
   id: string;
@@ -31,15 +31,7 @@ export interface BlogPost {
   }>;
 }
 
-interface GalleryItem {
-  id: string;
-  title: string;
-  summary: string;
-  url: string;
-  image: string;
-}
-
-export function WalletEducationGallery() {
+export function HubBlogGallery() {
   const [posts, setPosts] = useState<BlogPost[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
@@ -53,18 +45,18 @@ export function WalletEducationGallery() {
     const fetchPosts = async () => {
       // Check for required environment variables
       if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-        console.warn('Ghost API configuration missing - cannot fetch educational content');
+        console.warn('Ghost API configuration missing - cannot fetch blog content');
         setIsLoading(false);
         return;
       }
 
       try {
         const res = await fetch(
-          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&filter=tag:wallet&include=tags,authors&limit=10`
+          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&filter=tag:hub&include=tags,authors&limit=10`
         );
 
         if (!res.ok) {
-          console.error('Failed to fetch wallet educational posts:', res.status);
+          console.error('Failed to fetch hub blog posts:', res.status);
           setIsLoading(false);
           return;
         }
@@ -72,7 +64,7 @@ export function WalletEducationGallery() {
         const data = await res.json();
         setPosts(data.posts || []);
       } catch (error) {
-        console.error('Error fetching wallet educational posts:', error);
+        console.error('Error fetching hub blog posts:', error);
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +93,7 @@ export function WalletEducationGallery() {
   if (isLoading) {
     return (
       <div className='space-y-3'>
-        <h3 className='font-semibold'>Learn the basics of bitcoin</h3>
+        <h3 className='font-semibold'>Latest from our Blog</h3>
         <div className='flex gap-3 overflow-x-hidden'>
           {[1, 2, 3].map((i) => (
             <Skeleton
@@ -124,7 +116,7 @@ export function WalletEducationGallery() {
     <>
       <div className='space-y-3 pb-2 pt-4'>
         <div className='flex items-center justify-between'>
-          <h3 className='font-semibold'>Learn the basics of bitcoin</h3>
+          <h3 className='font-semibold'>Latest from our Blog</h3>
           <div className='flex items-center gap-2'>
             <Button
               size='icon'
@@ -202,7 +194,7 @@ export function WalletEducationGallery() {
         </Carousel>
       </div>
 
-      {/* Educational Content Modal */}
+      {/* Blog Content Modal */}
       <WalletEducationalSheet
         article={selectedArticle}
         open={isSheetOpen}

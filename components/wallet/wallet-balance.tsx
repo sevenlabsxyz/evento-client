@@ -136,8 +136,11 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
                   </>
                 ) : (
                   <>
-                    <div className='text-5xl font-bold text-gray-900'>
-                      {walletState.balance.toLocaleString()}
+                    <div className='flex items-baseline justify-center gap-2'>
+                      <span className='text-5xl font-bold text-gray-900'>
+                        {walletState.balance.toLocaleString()}
+                      </span>
+                      <span className='text-2xl font-medium text-gray-600'>sats</span>
                     </div>
                     <div className='text-sm text-gray-600'>≈ ${balanceUSD.toFixed(2)} USD</div>
                   </>

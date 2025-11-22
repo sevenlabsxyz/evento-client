@@ -22,7 +22,7 @@ export function SubmitButton({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      className={`w-full rounded-xl bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${className}`}
+      className={`w-full rounded-full bg-red-500 py-3 font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-500 ${className}`}
     >
       {loading ? 'Loading...' : children}
     </button>

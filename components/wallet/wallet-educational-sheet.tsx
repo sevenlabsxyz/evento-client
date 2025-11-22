@@ -1,9 +1,11 @@
 'use client';
 
 import EnhancedBlogContent from '@/components/blog/enhanced-blog-content';
+import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { VisuallyHidden } from '@silk-hq/components';
 import { X } from 'lucide-react';
+import Image from 'next/image';
 import '../blog/blog-post.css';
 
 interface BlogPost {
@@ -60,7 +62,7 @@ export function WalletEducationalSheet({
               <SheetWithDetentFull.ScrollView>
                 <SheetWithDetentFull.ScrollContent>
                   {/* iOS-style header bar */}
-                  <div className='flex items-start justify-between gap-3 border-b border-gray-200 bg-white px-4 py-3'>
+                  <div className='flex items-start justify-between gap-3 bg-white px-4 py-3'>
                     <h2 className='flex-1 text-xl font-semibold text-gray-900'>{article.title}</h2>
                     <div className='flex flex-shrink-0 items-center gap-2'>
                       <button
@@ -73,22 +75,35 @@ export function WalletEducationalSheet({
                   </div>
 
                   {/* Content - white background, full width */}
-                  <div className='h-[95vh] overflow-y-auto bg-white py-6 pb-8'>
+                  <div className='h-[95vh] overflow-y-auto bg-white pb-8 pt-2'>
                     {/* Feature Image */}
                     {article.feature_image && (
                       <div className='mb-6 px-6'>
-                        <img
+                        <Image
                           src={article.feature_image}
                           alt={article.title}
-                          className='h-auto w-full rounded-3xl'
+                          width={800}
+                          height={450}
+                          className='h-auto w-full rounded-3xl border border-gray-200'
                         />
                       </div>
                     )}
 
                     {/* Article Content */}
                     <div className='px-6 pb-24'>
-                      <div className='prose prose-xl max-w-none'>
+                      <div className='prose prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:leading-relaxed prose-p:text-gray-700 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-gray-900 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-base prose-code:text-gray-900 prose-ol:my-4 prose-ul:my-4 prose-li:text-gray-700 prose-img:rounded-2xl prose-img:border prose-img:border-gray-200'>
                         <EnhancedBlogContent html={article.html} />
+                      </div>
+
+                      {/* Done Button */}
+                      <div className='mt-8'>
+                        <Button
+                          onClick={() => onOpenChange(false)}
+                          variant='outline'
+                          className='font-lg h-12 w-full rounded-full bg-gray-50'
+                        >
+                          Done
+                        </Button>
                       </div>
                     </div>
                   </div>

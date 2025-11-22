@@ -208,7 +208,7 @@ export function TopBar() {
 
   return (
     <div
-      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-3xl md:border-b md:border-l md:border-r ${getTopBarStyles()}`}
+      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-3xl md:border-l md:border-r ${getTopBarStyles()}`}
     >
       <div className='px-4 pb-4 pt-4'>
         <div
@@ -241,25 +241,6 @@ export function TopBar() {
                   );
                 })}
               </div>
-            )}
-            {showAvatar && (
-              <button
-                onClick={() => router.push('/e/profile')}
-                className={`ml-1 rounded-full transition-opacity hover:opacity-80`}
-              >
-                <Avatar className='h-8 w-8'>
-                  <AvatarImage src={user?.image} alt={user?.name || 'Profile'} />
-                  <AvatarFallback className='bg-gray-100'>
-                    <Image
-                      src='/assets/img/evento-sublogo.svg'
-                      alt='Evento'
-                      width={32}
-                      height={32}
-                      className='h-full w-full p-1'
-                    />
-                  </AvatarFallback>
-                </Avatar>
-              </button>
             )}
           </div>
         </div>
