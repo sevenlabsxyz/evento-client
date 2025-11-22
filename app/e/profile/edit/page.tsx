@@ -1,10 +1,12 @@
 'use client';
 
 import BiographySheet from '@/components/profile-edit/biography-sheet';
+import InterestsSheet from '@/components/profile-edit/interests-sheet';
 import LightningAddressSheet from '@/components/profile-edit/lightning-address-sheet';
 import NameSheet from '@/components/profile-edit/name-sheet';
 import NostrSheet from '@/components/profile-edit/nostr-sheet';
 import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
+import PromptsSheet from '@/components/profile-edit/prompts-sheet';
 import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,7 +14,18 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { AtSign, Camera, ChevronRight, Hash, Instagram, Type, User, Zap } from 'lucide-react';
+import {
+  AtSign,
+  Camera,
+  ChevronRight,
+  Hash,
+  Heart,
+  Instagram,
+  MessageSquare,
+  Type,
+  User,
+  Zap,
+} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -60,6 +73,8 @@ export default function EditProfilePage() {
   const [showBiographySheet, setShowBiographySheet] = useState(false);
   const [showLightningSheet, setShowLightningSheet] = useState(false);
   const [showNostrSheet, setShowNostrSheet] = useState(false);
+  const [showInterestsSheet, setShowInterestsSheet] = useState(false);
+  const [showPromptsSheet, setShowPromptsSheet] = useState(false);
 
   // Set TopBar content
   useEffect(() => {
@@ -175,6 +190,30 @@ export default function EditProfilePage() {
               <Skeleton className='h-5 w-5 rounded-md' />
             </div>
           </div>
+
+          {/* Interests Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-20' />
+                <Skeleton className='h-3 w-32' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Prompts Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-16' />
+                <Skeleton className='h-3 w-40' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -279,6 +318,40 @@ export default function EditProfilePage() {
             </button>
           </div>
 
+          {/* Interests Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <button
+              onClick={() => setShowInterestsSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100'>
+                <Heart className='h-6 w-6 text-teal-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Interests</h3>
+                <p className='text-sm text-gray-500'>Share what you love</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
+          {/* Prompts Module */}
+          <div className='rounded-2xl bg-white p-4'>
+            <button
+              onClick={() => setShowPromptsSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100'>
+                <MessageSquare className='h-6 w-6 text-indigo-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Prompts</h3>
+                <p className='text-sm text-gray-500'>Showcase your personality</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
           {/* Bitcoin Module */}
           <div className='rounded-2xl bg-white p-4'>
             <button
@@ -361,6 +434,10 @@ export default function EditProfilePage() {
         onSave={setBio}
         currentBio={bio}
       />
+
+      <InterestsSheet isOpen={showInterestsSheet} onClose={() => setShowInterestsSheet(false)} />
+
+      <PromptsSheet isOpen={showPromptsSheet} onClose={() => setShowPromptsSheet(false)} />
 
       <LightningAddressSheet
         isOpen={showLightningSheet}

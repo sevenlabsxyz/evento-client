@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
+import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { htmlToPlainText } from '@/lib/utils/content';
@@ -30,9 +30,18 @@ interface EventCardProps {
   onBookmark?: (eventId: string) => void;
   isBookmarked?: boolean;
   className?: string;
+  customMenuOptions?: MenuOption[];
+  onMenuClick?: (eventId: string) => void;
 }
 
-export function EventCard({ event, onBookmark, isBookmarked = false, className }: EventCardProps) {
+export function EventCard({
+  event,
+  onBookmark,
+  isBookmarked = false,
+  className,
+  customMenuOptions,
+  onMenuClick,
+}: EventCardProps) {
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
   const timeAgo = getRelativeTime(event.created_at);
@@ -119,11 +128,17 @@ export function EventCard({ event, onBookmark, isBookmarked = false, className }
             variant='ghost'
             size='icon'
             className='h-8 w-8 rounded-full bg-gray-100'
-            onClick={() => setIsMenuOpen(true)}
+            onClick={() => {
+              if (customMenuOptions && onMenuClick) {
+                onMenuClick(event.id);
+              } else {
+                setIsMenuOpen(true);
+              }
+            }}
           >
             <MoreHorizontal className='h-4 w-4' />
           </Button>
-          {isMenuOpen && (
+          {!customMenuOptions && isMenuOpen && (
             <DetachedMenuSheet
               isOpen={isMenuOpen}
               onClose={() => setIsMenuOpen(false)}

@@ -1,5 +1,6 @@
 'use client';
 
+import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { Event } from '@/lib/types/event';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
@@ -8,6 +9,7 @@ import ContactHostSheet from './contact-host-sheet';
 import RsvpSheet from './event-rsvp-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
+import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
   event: Event;
@@ -18,10 +20,16 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
   const [showContactSheet, setShowContactSheet] = useState(false);
   const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
+  const [showSaveSheet, setShowSaveSheet] = useState(false);
 
   // Current user's RSVP status for this event
   const { data: userRsvp } = useUserRSVP(event.id);
   const currentStatus = userRsvp?.status ?? null;
+
+  // Check if event is saved to any list
+  const { data: savedStatus } = useEventSavedStatus(event.id);
+  console.log(savedStatus);
+  const isSaved = savedStatus?.is_saved ?? false;
 
   const rsvpButton = useMemo(() => {
     if (currentStatus === 'yes')
@@ -211,6 +219,15 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         isOpen={showMoreSheet}
         onClose={() => setShowMoreSheet(false)}
         onAddToCalendar={handleAddToCalendar}
+        onSaveEvent={() => setShowSaveSheet(true)}
+        isSaved={isSaved}
+      />
+
+      {/* Save Event Sheet */}
+      <SaveEventSheet
+        isOpen={showSaveSheet}
+        onClose={() => setShowSaveSheet(false)}
+        eventId={event.id}
       />
 
       {/* RSVP Sheet */}

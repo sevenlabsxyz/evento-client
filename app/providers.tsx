@@ -1,6 +1,6 @@
 'use client';
 
-import { Sidebar } from '@/components/silk/Sidebar';
+import { Sidebar } from '@/components/sidebar';
 import { queryClient } from '@/lib/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';

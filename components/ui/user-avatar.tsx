@@ -72,13 +72,13 @@ export function UserAvatar({
   };
 
   return (
-    <button onClick={onAvatarClick} className={cn('relative', className)}>
+    <button onClick={onAvatarClick} className={cn('relative shadow-lg', className)}>
       <Avatar
         className={cn(
           // Only use size config if no explicit dimensions are provided
           !height && !width ? sizeConfig.avatar : '',
           sizeConfig.border,
-          'border-gray-200 bg-white shadow-lg'
+          'border-gray-200 bg-white'
         )}
         style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
       >

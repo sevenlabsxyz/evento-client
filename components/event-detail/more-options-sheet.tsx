@@ -2,21 +2,30 @@
 
 import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
-import { CalendarPlus, Copy } from 'lucide-react';
+import { Bookmark, CalendarPlus, Copy } from 'lucide-react';
 
 interface MoreOptionsSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCalendar: () => void;
+  onSaveEvent: () => void;
+  isSaved?: boolean;
 }
 
 export default function MoreOptionsSheet({
   isOpen,
   onClose,
   onAddToCalendar,
+  onSaveEvent,
+  isSaved = false,
 }: MoreOptionsSheetProps) {
   const handleAddToCalendar = () => {
     onAddToCalendar();
+    onClose();
+  };
+
+  const handleSaveEvent = () => {
+    onSaveEvent();
     onClose();
   };
 
@@ -38,6 +47,13 @@ export default function MoreOptionsSheet({
   };
 
   const options: MenuOption[] = [
+    {
+      id: 'save-event',
+      icon: Bookmark,
+      label: isSaved ? 'Manage Saved Lists' : 'Save Event',
+      onClick: handleSaveEvent,
+      variant: 'secondary',
+    },
     {
       id: 'add-to-calendar',
       icon: CalendarPlus,

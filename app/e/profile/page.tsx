@@ -2,12 +2,13 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet';
-import { TagSection } from '@/components/fancy-tag/section';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
+import { UserInterests } from '@/components/profile/user-interests';
+import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
@@ -30,12 +31,14 @@ import {
   EventTimeframe,
   useUserEvents,
 } from '@/lib/hooks/use-user-events';
+import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
   useUserProfile,
 } from '@/lib/hooks/use-user-profile';
+import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { EventHost } from '@/lib/types/event';
@@ -73,33 +76,12 @@ export default function ProfilePage() {
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showZapModal, setShowZapModal] = useState(false);
 
-  // Mock data for the about tab
-  const interestTags = ['Music', 'Tech', 'Food', 'Travel', 'Art', 'Photography'];
-  const profileQuestions = [
-    {
-      question: 'Favorite quote?',
-      answer: 'Be the change you wish to see in the world.',
-    },
-    {
-      question: 'What are you listening to right now?',
-      answer: 'Lofi beats and indie rock.',
-    },
-    {
-      question: 'Dream destination?',
-      answer: 'Kyoto, Japan during cherry blossom season.',
-    },
-  ];
-  const profilePhotos = [
-    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f',
-    'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4',
-    'https://images.unsplash.com/photo-1551434678-e076c223a692',
-    'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4',
-    'https://images.unsplash.com/photo-1507525428034-b723cf961d3e',
-    'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1',
-  ];
-
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
+
+  // Get user interests and prompts
+  const { data: userInterests = [], isLoading: isLoadingInterests } = useUserInterests();
+  const { data: userPrompts = [], isLoading: isLoadingPrompts } = useUserPrompts();
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
@@ -211,6 +193,15 @@ export default function ProfilePage() {
       },
       created_at: new Date().toISOString(),
     },
+  ];
+
+  const profilePhotos = [
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
+    '/placeholder.svg?height=120&width=120',
   ];
 
   // Format profile photos for LightboxViewer
@@ -453,30 +444,11 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* Interest Tags */}
-        <div>
-          <div className='flex flex-wrap gap-2'>
-            <TagSection
-              title='Interests'
-              items={interestTags}
-              selectedItems={[]}
-              onToggleItem={() => {}}
-            />
-          </div>
-        </div>
+        {/* User Interests */}
+        {!isLoadingInterests && <UserInterests interests={userInterests} />}
 
-        {/* Profile Questions */}
-        <div>
-          <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
-          <div className='space-y-3'>
-            {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
-              <div key={index} className='rounded-xl bg-gray-50 p-3'>
-                <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
-                <p className='text-sm text-gray-900'>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* User Prompts */}
+        {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={true} />}
       </div>
     );
   };

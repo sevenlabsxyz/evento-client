@@ -16,6 +16,7 @@ interface EventCompactItemProps {
   isPinned?: boolean;
   canPin?: boolean;
   onPin?: (eventId: string, isPinned: boolean) => void;
+  onMenuClick?: (eventId: string) => void;
 }
 
 export function EventCompactItem({
@@ -26,6 +27,7 @@ export function EventCompactItem({
   isPinned = false,
   canPin = false,
   onPin,
+  onMenuClick,
 }: EventCompactItemProps) {
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
@@ -125,9 +127,17 @@ export function EventCompactItem({
         </div>
       </div>
 
-      <div>
+      <Button
+        variant='ghost'
+        size='icon'
+        className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
+        onClick={(e) => {
+          e.stopPropagation();
+          onMenuClick?.(event.id);
+        }}
+      >
         <MoreHorizontal className='h-4 w-4' />
-      </div>
+      </Button>
     </div>
   );
 }

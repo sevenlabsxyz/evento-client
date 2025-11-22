@@ -60,7 +60,7 @@ export default function ChatPage() {
   // Show loading state during authentication or Stream Chat setup
   if (isCheckingAuth || isLoadingStream) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
         <div className='flex-1 overflow-hidden'>
           <div className='p-4'>
             {/* Search bar skeleton */}
@@ -86,7 +86,7 @@ export default function ChatPage() {
   // Show error state if Stream Chat fails to connect
   if (streamError || !client) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='text-center'>
             <div className='mb-4 text-red-500'>
@@ -116,7 +116,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className='relative mx-auto flex max-w-full flex-col overflow-hidden bg-white md:max-w-sm'>
+    <div className='relative mx-auto flex max-w-full flex-col overflow-hidden bg-white md:max-w-3xl md:border-l md:border-r'>
       <Chat client={client} theme='str-chat__theme-custom'>
         <div className='str-chat__channel-list-container'>
           <ChannelList

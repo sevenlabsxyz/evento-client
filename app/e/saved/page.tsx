@@ -1,16 +1,28 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useCreateList } from '@/lib/hooks/use-create-list';
+import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, ChevronRight, Plus } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { Bookmark, ChevronRight, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function SavedListsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBar } = useTopBar();
+  const router = useRouter();
+
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newListName, setNewListName] = useState('');
+
+  const { data: lists = [], isLoading: listsLoading } = useUserLists();
+  const createListMutation = useCreateList();
 
   // Set TopBar content
   useEffect(() => {
@@ -27,67 +39,40 @@ export default function SavedListsPage() {
     };
   }, [setTopBar]);
 
-  const router = useRouter();
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newListName, setNewListName] = useState('');
-  const [savedLists, setSavedLists] = useState([
-    {
-      id: 1,
-      name: 'Event toes',
-      eventCount: 5,
-      isDefault: true,
-      lastUpdated: '2 days ago',
-      preview: [
-        '/placeholder.svg?height=40&width=40',
-        '/placeholder.svg?height=40&width=40',
-        '/placeholder.svg?height=40&width=40',
-      ],
-    },
-    {
-      id: 2,
-      name: 'Tokyo Adventures',
-      eventCount: 3,
-      isDefault: false,
-      lastUpdated: '1 week ago',
-      preview: ['/placeholder.svg?height=40&width=40', '/placeholder.svg?height=40&width=40'],
-    },
-    {
-      id: 3,
-      name: 'Food Experiences',
-      eventCount: 7,
-      isDefault: false,
-      lastUpdated: '3 days ago',
-      preview: [
-        '/placeholder.svg?height=40&width=40',
-        '/placeholder.svg?height=40&width=40',
-        '/placeholder.svg?height=40&width=40',
-      ],
-    },
-  ]);
+  const handleCreateList = async () => {
+    const trimmedName = newListName.trim();
 
-  const handleCreateList = () => {
-    if (!newListName.trim()) {
+    if (!trimmedName) {
       toast.error('Please enter a list name');
       return;
     }
 
-    const newList = {
-      id: Date.now(),
-      name: newListName.trim(),
-      eventCount: 0,
-      isDefault: false,
-      lastUpdated: 'Just now',
-      preview: [],
-    };
+    if (trimmedName.length > 50) {
+      toast.error('List name must be less than 50 characters');
+      return;
+    }
 
-    setSavedLists([...savedLists, newList]);
-    setNewListName('');
-    setShowCreateModal(false);
-    toast.success(`"${newList.name}" list created!`);
+    try {
+      await createListMutation.mutateAsync({ name: trimmedName });
+      toast.success(`"${trimmedName}" list created!`);
+      setNewListName('');
+      setShowCreateModal(false);
+    } catch (error: any) {
+      const errorMsg = error?.message || 'Failed to create list';
+      toast.error(errorMsg);
+    }
   };
 
-  const handleListClick = (listId: number) => {
-    router.push(`/saved/${listId}`);
+  const handleListClick = (listId: string) => {
+    router.push(`/e/saved/${listId}`);
+  };
+
+  const formatLastUpdated = (dateString: string) => {
+    try {
+      return formatDistanceToNow(new Date(dateString), { addSuffix: true });
+    } catch {
+      return 'recently';
+    }
   };
 
   if (isCheckingAuth) {
@@ -103,7 +88,7 @@ export default function SavedListsPage() {
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-gray-50'>
+      <div className='flex-1 overflow-y-auto bg-gray-50 pb-20'>
         {/* Add New List Button */}
         <div className='px-4 py-4'>
           <Button
@@ -115,56 +100,15 @@ export default function SavedListsPage() {
           </Button>
         </div>
 
-        {/* Lists */}
-        <div className='space-y-3 px-4 pb-6'>
-          {savedLists.map((list) => (
-            <div
-              key={list.id}
-              onClick={() => handleListClick(list.id)}
-              className='cursor-pointer rounded-2xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md'
-            >
-              <div className='flex items-center justify-between'>
-                <div className='flex-1'>
-                  <div className='mb-1 flex items-center gap-2'>
-                    <h3 className='text-lg font-bold'>{list.name}</h3>
-                    {list.isDefault && (
-                      <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800'>
-                        Default
-                      </span>
-                    )}
-                  </div>
-                  <p className='mb-2 text-sm text-gray-600'>
-                    {list.eventCount} {list.eventCount === 1 ? 'event' : 'events'} • Updated{' '}
-                    {list.lastUpdated}
-                  </p>
-
-                  {/* Preview Images */}
-                  {list.preview.length > 0 && (
-                    <div className='mb-2 flex -space-x-2'>
-                      {list.preview.slice(0, 3).map((image, index) => (
-                        <img
-                          key={index}
-                          src={image || '/placeholder.svg'}
-                          alt=''
-                          className='h-8 w-8 rounded-full border-2 border-white object-cover'
-                        />
-                      ))}
-                      {list.eventCount > 3 && (
-                        <div className='flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-gray-100 text-xs font-medium text-gray-600'>
-                          +{list.eventCount - 3}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-                <ChevronRight className='h-5 w-5 text-gray-400' />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {savedLists.length === 0 && (
+        {/* Loading State */}
+        {listsLoading ? (
+          <div className='space-y-3 px-4 pb-6'>
+            {[1, 2, 3].map((i) => (
+              <Skeleton key={i} className='h-24 w-full rounded-2xl' />
+            ))}
+          </div>
+        ) : lists.length === 0 ? (
+          /* Empty State */
           <div className='flex flex-1 items-center justify-center px-4 py-12'>
             <div className='text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
@@ -182,6 +126,35 @@ export default function SavedListsPage() {
               </Button>
             </div>
           </div>
+        ) : (
+          /* Lists */
+          <div className='space-y-3 px-4 pb-6'>
+            {lists.map((list) => (
+              <div
+                key={list.id}
+                onClick={() => handleListClick(list.id)}
+                className='cursor-pointer rounded-2xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md'
+              >
+                <div className='flex items-center justify-between'>
+                  <div className='flex-1'>
+                    <div className='mb-1 flex items-center gap-2'>
+                      <h3 className='text-lg font-bold'>{list.name}</h3>
+                      {list.is_default && (
+                        <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800'>
+                          Default
+                        </span>
+                      )}
+                    </div>
+                    <p className='text-sm text-gray-600'>
+                      {list.event_count} {list.event_count === 1 ? 'event' : 'events'} • Updated{' '}
+                      {formatLastUpdated(list.updated_at)}
+                    </p>
+                  </div>
+                  <ChevronRight className='h-5 w-5 text-gray-400' />
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
@@ -190,15 +163,17 @@ export default function SavedListsPage() {
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Create New List</h3>
-            <input
+            <Input
               type='text'
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
               placeholder='Enter list name...'
-              className='mb-4 w-full rounded-xl border border-gray-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-500'
+              className='mb-2'
               autoFocus
-              onKeyPress={(e) => e.key === 'Enter' && handleCreateList()}
+              maxLength={50}
+              onKeyDown={(e) => e.key === 'Enter' && handleCreateList()}
             />
+            <p className='mb-4 text-right text-xs text-gray-500'>{newListName.length}/50</p>
             <div className='flex gap-3'>
               <Button
                 variant='outline'
@@ -207,14 +182,23 @@ export default function SavedListsPage() {
                   setNewListName('');
                 }}
                 className='flex-1'
+                disabled={createListMutation.isPending}
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleCreateList}
                 className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                disabled={!newListName.trim() || createListMutation.isPending}
               >
-                Create
+                {createListMutation.isPending ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Creating...
+                  </>
+                ) : (
+                  'Create'
+                )}
               </Button>
             </div>
           </div>
