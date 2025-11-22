@@ -1,7 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useReplaceInterests } from '@/lib/hooks/use-user-interests';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
+import { useAnswerPrompt } from '@/lib/hooks/use-user-prompts';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { toast } from '@/lib/utils/toast';
@@ -12,7 +14,9 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { OnboardingAvatar } from './onboarding-avatar';
+import { OnboardingInterests } from './onboarding-interests';
 import { OnboardingName } from './onboarding-name';
+import { OnboardingPrompts } from './onboarding-prompts';
 import { OnboardingUsername } from './onboarding-username';
 import { StepIndicator } from './step-indicator';
 
@@ -38,9 +42,21 @@ export const UserOnboardingFlow = ({
   const [name, setName] = useState(defaultName || user?.name || '');
   const [username, setUsername] = useState(defaultUsername || user?.username || '');
   const [uploadedImg, setUploadedImg] = useState(defaultAvatar || user?.image || '');
+  const [selectedInterestIds, setSelectedInterestIds] = useState<string[]>([]);
+  const [answeredPrompts, setAnsweredPrompts] = useState<
+    Array<{
+      prompt_id: string;
+      answer: string;
+      is_visible: boolean;
+      display_order: number;
+    }>
+  >([]);
   const [updating, setUpdating] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const inputFileRef = useRef<HTMLInputElement>(null);
+
+  const replaceInterestsMutation = useReplaceInterests();
+  const answerPromptMutation = useAnswerPrompt();
 
   const handleNameChange = useCallback((e: any) => setName(e.target.value), []);
 
@@ -129,7 +145,7 @@ export const UserOnboardingFlow = ({
   const isSaveButtonDisabled = (() => {
     if (step === 1) return !name || name.length <= 2;
     if (step === 2) return !username || username.length <= 2;
-    return false; // Step 3 - always enabled
+    return false; // Steps 3, 4, 5 - always enabled (skippable)
   })();
 
   const updateUserFn = async ({
@@ -145,19 +161,47 @@ export const UserOnboardingFlow = ({
       setStep(2);
     } else if (step === 2) {
       setStep(3);
+    } else if (step === 3) {
+      setStep(4);
+    } else if (step === 4) {
+      // Save interests if any selected
+      if (selectedInterestIds.length > 0) {
+        try {
+          await replaceInterestsMutation.mutateAsync(selectedInterestIds);
+        } catch (error) {
+          console.error('Error saving interests:', error);
+          // Continue anyway - interests are optional
+        }
+      }
+      setStep(5);
     } else {
-      // In step 3, we proceed with whatever image state we have
-      // Even if the user attempted to upload an image but it failed,
-      // we should allow them to complete onboarding
+      // Step 5 - Final step
       setUpdating(true);
 
       try {
+        // Update basic profile info
         await updateUserProfile.mutateAsync({
           name,
           username,
-          // Use whatever image value we have, even if empty
           image: image || '',
         });
+
+        // Save prompts if any answered
+        const validPrompts = answeredPrompts.filter((p) => p.answer.length >= 5);
+        if (validPrompts.length > 0) {
+          try {
+            for (const prompt of validPrompts) {
+              await answerPromptMutation.mutateAsync({
+                prompt_id: prompt.prompt_id,
+                answer: prompt.answer,
+                display_order: prompt.display_order,
+              });
+            }
+          } catch (error) {
+            console.error('Error saving prompts:', error);
+            // Continue anyway - prompts are optional
+          }
+        }
 
         // Show success message
         toast.success('Welcome to Evento! Your profile is all set up.');
@@ -195,7 +239,7 @@ export const UserOnboardingFlow = ({
     <div className='flex h-full flex-col'>
       <div className='flex-grow overflow-y-auto px-4 pt-4 md:px-0'>
         <div className='mb-6 flex flex-col md:px-4'>
-          <StepIndicator currentStep={step} totalSteps={3} />
+          <StepIndicator currentStep={step} totalSteps={5} />
           <Link
             href='/'
             className='mb-6 flex max-h-[60px] max-w-[60px] flex-col items-center gap-2 rounded-2xl border border-gray-200 p-1.5 font-medium shadow-sm md:mx-auto'
@@ -227,6 +271,8 @@ export const UserOnboardingFlow = ({
                 onFileChange={handleFileChange}
               />
             )}
+            {step === 4 && <OnboardingInterests onInterestsSelected={setSelectedInterestIds} />}
+            {step === 5 && <OnboardingPrompts onPromptsAnswered={setAnsweredPrompts} />}
           </AnimatePresence>
         </div>
       </div>
@@ -253,7 +299,7 @@ export const UserOnboardingFlow = ({
               </>
             ) : (
               <>
-                {step === 1 || step === 2 ? 'Next' : 'Submit'}
+                {step < 5 ? (step === 4 ? 'Next (or Skip)' : 'Next') : 'Complete Setup'}
                 <ArrowRight className='ml-2 h-4 w-4' />
               </>
             )}

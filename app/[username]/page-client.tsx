@@ -2,13 +2,14 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet';
-import { TagSection } from '@/components/fancy-tag/section';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Navbar } from '@/components/navbar';
 import TipSheet from '@/components/profile/sheets/tip-sheet';
 import SocialLinks from '@/components/profile/social-links';
+import { UserInterests } from '@/components/profile/user-interests';
+import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
@@ -29,6 +30,7 @@ import {
   useUserEvents,
   type EventTimeframe,
 } from '@/lib/hooks/use-user-events';
+import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useFollowAction,
   useFollowStatus,
@@ -37,6 +39,7 @@ import {
   useUserFollowers,
   useUserFollowing,
 } from '@/lib/hooks/use-user-profile';
+import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
@@ -97,6 +100,12 @@ export default function UserProfilePageClient() {
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
   const { data: followers = [] } = useUserFollowers(userData?.id || '');
   const { data: following = [] } = useUserFollowing(userData?.id || '');
+
+  // Get user interests and prompts (only visible prompts for other users)
+  const { data: userInterests = [], isLoading: isLoadingInterests } = useOtherUserInterests(
+    userData?.id
+  );
+  const { data: userPrompts = [], isLoading: isLoadingPrompts } = useOtherUserPrompts(userData?.id);
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
@@ -244,7 +253,7 @@ export default function UserProfilePageClient() {
           </div>
           <h2 className='mb-2 text-xl font-bold text-gray-900'>User not found</h2>
           <p className='mb-4 text-gray-500'>
-            The user @{username} doesn't exist or may have been deleted.
+            The user @{username} doesn&apos;t exist or may have been deleted.
           </p>
           <Button onClick={() => router.back()} variant='outline'>
             Go Back
@@ -586,30 +595,11 @@ export default function UserProfilePageClient() {
           </div>
         )}
 
-        {/* Interest Tags */}
-        <div>
-          <div className='flex flex-wrap gap-2'>
-            <TagSection
-              title='Interests'
-              items={interestTags}
-              selectedItems={[]}
-              onToggleItem={() => {}}
-            />
-          </div>
-        </div>
+        {/* User Interests */}
+        {!isLoadingInterests && <UserInterests interests={userInterests} />}
 
-        {/* Profile Questions */}
-        <div>
-          <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
-          <div className='space-y-3'>
-            {profileQuestions.map((item: { question: string; answer: string }, index: number) => (
-              <div key={index} className='rounded-xl bg-gray-50 p-3'>
-                <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
-                <p className='text-sm text-gray-900'>{item.answer}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* User Prompts (only visible ones) */}
+        {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={false} />}
       </div>
     );
   };
