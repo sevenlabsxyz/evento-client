@@ -1,6 +1,7 @@
 'use client';
 
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
+import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Navbar } from '@/components/navbar';
@@ -74,6 +75,7 @@ export default function HubPage() {
       <div className='mx-auto flex h-full w-full flex-col gap-4 bg-white px-4 pb-24 pt-4 md:max-w-3xl md:border-l md:border-r'>
         <EventInvitesSection />
         <MyEventsSection />
+        <ForYouSection />
         <HubBlogGallery />
       </div>
       <Navbar />

@@ -179,7 +179,7 @@ export function usePaymentHistory() {
 
     const unsubscribe = breezSDK.onEvent((event) => {
       if (event.type === 'paymentSucceeded') {
-        console.log('Payment event detected, refreshing history...');
+        // Logging is now handled in breez-sdk.ts service layer
         fetchPayments();
       }
     });

@@ -1,7 +1,12 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check } from 'lucide-react';
 import { useState } from 'react';
-import { TagSection } from './tag-section';
+
+// ============================================================================
+// Types
+// ============================================================================
 
 interface InterestCategory {
   title: string;
@@ -10,85 +15,13 @@ interface InterestCategory {
 
 interface InterestsSelectorProps {
   categories: InterestCategory[];
+  initialSelectedInterests?: string[];
+  onChange?: (selectedInterests: string[]) => void;
   mainTitle?: string;
+  hideTitle?: boolean;
+  className?: string;
+  contentClassName?: string;
 }
-
-export function InterestsSelector({
-  categories,
-  mainTitle = 'Select your interests.',
-}: InterestsSelectorProps) {
-  const [selectedItems, setSelectedItems] = useState<string[]>([]);
-
-  const toggleItem = (item: string) => {
-    setSelectedItems((prev) =>
-      prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]
-    );
-  };
-
-  return (
-    <div className='min-h-screen bg-white p-6 pt-20'>
-      <h1 className='mb-16 text-center text-3xl font-semibold text-black'>{mainTitle}</h1>
-      <div className='mx-auto max-w-[570px]'>
-        {categories.map((category) => (
-          <TagSection
-            key={category.title}
-            title={category.title}
-            items={category.items}
-            selectedItems={selectedItems}
-            onToggleItem={toggleItem}
-          />
-        ))}
-      </div>
-    </div>
-  );
-}
-
-('use client');
-
-import { motion } from 'framer-motion';
-import { Tag } from './tag';
-
-interface TagGridProps {
-  items: string[];
-  title?: string;
-}
-
-export function TagGrid({ items, title = 'What are your favorite cuisines?' }: TagGridProps) {
-  const [selected, setSelected] = useState<string[]>([]);
-
-  const toggleItem = (item: string) => {
-    setSelected((prev) => (prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item]));
-  };
-
-  return (
-    <div className='min-h-screen bg-white p-6 pt-40'>
-      <h1 className='mb-12 text-center text-3xl font-semibold text-black'>{title}</h1>
-      <div className='mx-auto max-w-[570px]'>
-        <motion.div
-          className='flex flex-wrap gap-3 overflow-visible'
-          layout
-          transition={{
-            type: 'spring',
-            stiffness: 500,
-            damping: 30,
-            mass: 0.5,
-          }}
-        >
-          {items.map((item) => (
-            <Tag
-              key={item}
-              text={item}
-              isSelected={selected.includes(item)}
-              onToggle={() => toggleItem(item)}
-            />
-          ))}
-        </motion.div>
-      </div>
-    </div>
-  );
-}
-
-('use client');
 
 interface TagSectionProps {
   title: string;
@@ -97,43 +30,15 @@ interface TagSectionProps {
   onToggleItem: (item: string) => void;
 }
 
-export function TagSection({ title, items, selectedItems, onToggleItem }: TagSectionProps) {
-  return (
-    <div className='mb-16'>
-      <h2 className='mb-8 text-left text-2xl font-semibold text-black'>{title}</h2>
-      <motion.div
-        className='flex flex-wrap gap-3 overflow-visible'
-        layout
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 30,
-          mass: 0.5,
-        }}
-      >
-        {items.map((item) => (
-          <Tag
-            key={item}
-            text={item}
-            isSelected={selectedItems.includes(item)}
-            onToggle={() => onToggleItem(item)}
-          />
-        ))}
-      </motion.div>
-    </div>
-  );
-}
-
-('use client');
-
-import { AnimatePresence } from 'framer-motion';
-import { Check } from 'lucide-react';
-
 interface TagProps {
   text: string;
   isSelected: boolean;
   onToggle: () => void;
 }
+
+// ============================================================================
+// Tag Component
+// ============================================================================
 
 export function Tag({ text, isSelected, onToggle }: TagProps) {
   return (
@@ -196,100 +101,77 @@ export function Tag({ text, isSelected, onToggle }: TagProps) {
   );
 }
 
-export const interestCategories = [
-  {
-    title: 'Food',
-    items: [
-      '#mexican',
-      '#italian',
-      '#chinese',
-      '#japanese',
-      '#indian',
-      '#greek',
-      '#french',
-      '#spanish',
-      '#turkish',
-      '#lebanese',
-      '#vietnamese',
-      '#korean',
-      '#thai',
-      '#mediterranean',
-    ],
-  },
-  {
-    title: 'Movies',
-    items: [
-      '#action',
-      '#comedy',
-      '#drama',
-      '#horror',
-      '#romance',
-      '#thriller',
-      '#sci-fi',
-      '#fantasy',
-      '#documentary',
-      '#animation',
-      '#mystery',
-      '#adventure',
-      '#crime',
-      '#biography',
-    ],
-  },
-  {
-    title: 'Social Media',
-    items: [
-      '#instagram',
-      '#twitter',
-      '#tiktok',
-      '#youtube',
-      '#facebook',
-      '#linkedin',
-      '#snapchat',
-      '#pinterest',
-      '#reddit',
-      '#discord',
-      '#twitch',
-      '#clubhouse',
-      '#telegram',
-      '#whatsapp',
-    ],
-  },
-  {
-    title: 'Sports',
-    items: [
-      '#football',
-      '#basketball',
-      '#soccer',
-      '#tennis',
-      '#baseball',
-      '#hockey',
-      '#golf',
-      '#swimming',
-      '#running',
-      '#cycling',
-      '#boxing',
-      '#mma',
-      '#volleyball',
-      '#cricket',
-    ],
-  },
-  {
-    title: 'Music',
-    items: [
-      '#pop',
-      '#rock',
-      '#hip-hop',
-      '#jazz',
-      '#classical',
-      '#electronic',
-      '#country',
-      '#r&b',
-      '#indie',
-      '#folk',
-      '#reggae',
-      '#blues',
-      '#metal',
-      '#punk',
-    ],
-  },
-];
+// ============================================================================
+// TagSection Component
+// ============================================================================
+
+export function TagSection({ title, items, selectedItems, onToggleItem }: TagSectionProps) {
+  return (
+    <div className='mb-16'>
+      <h2 className='mb-8 text-left text-2xl font-semibold text-black'>{title}</h2>
+      <motion.div
+        className='flex flex-wrap gap-3 overflow-visible'
+        layout
+        transition={{
+          type: 'spring',
+          stiffness: 500,
+          damping: 30,
+          mass: 0.5,
+        }}
+      >
+        {items.map((item) => (
+          <Tag
+            key={item}
+            text={item}
+            isSelected={selectedItems.includes(item)}
+            onToggle={() => onToggleItem(item)}
+          />
+        ))}
+      </motion.div>
+    </div>
+  );
+}
+
+// ============================================================================
+// InterestsSelector Component
+// ============================================================================
+
+export function InterestsSelector({
+  categories,
+  initialSelectedInterests = [],
+  onChange,
+  mainTitle = 'Select your interests.',
+  hideTitle = false,
+  className = 'min-h-screen bg-white p-6 pt-20',
+  contentClassName = 'mx-auto max-w-[570px]',
+}: InterestsSelectorProps) {
+  const [selectedItems, setSelectedItems] = useState<string[]>(initialSelectedInterests);
+
+  const toggleItem = (item: string) => {
+    setSelectedItems((prev) => {
+      const newSelection = prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item];
+      // Notify parent of selection change
+      onChange?.(newSelection);
+      return newSelection;
+    });
+  };
+
+  return (
+    <div className={className}>
+      {!hideTitle && (
+        <h1 className='mb-16 text-center text-3xl font-semibold text-black'>{mainTitle}</h1>
+      )}
+      <div className={contentClassName}>
+        {categories.map((category) => (
+          <TagSection
+            key={category.title}
+            title={category.title}
+            items={category.items}
+            selectedItems={selectedItems}
+            onToggleItem={toggleItem}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

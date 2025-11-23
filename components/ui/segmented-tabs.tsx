@@ -29,9 +29,9 @@ export function SegmentedTabs({
   align = 'center',
   wrapperClassName,
   gapClassName,
-  buttonBaseClassName = 'rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all border shadow-sm',
+  buttonBaseClassName = 'rounded-xl px-4 py-2 text-sm font-normal tracking-wide uppercase transition-all border border-gray-200',
   activeClassName = 'bg-gray-200 text-black',
-  inactiveClassName = 'bg-white text-gray-500 hover:bg-gray-50',
+  inactiveClassName = 'bg-gray-50 text-gray-500 hover:bg-gray-100',
 }: SegmentedTabsProps) {
   const defaultGapClassName = `flex flex-row items-center ${align === 'center' ? 'justify-center' : 'justify-start'} gap-2`;
   const Buttons = (

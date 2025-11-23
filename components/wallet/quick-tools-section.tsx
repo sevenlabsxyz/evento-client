@@ -1,4 +1,4 @@
-import { ArrowLeftRight, Coins, Gift, ShoppingBag } from 'lucide-react';
+import { ArrowRightLeft, Bitcoin, ShoppingCart, Star } from 'lucide-react';
 
 type QuickTool = {
   id: 'converter' | 'buy-sell' | 'spend' | 'earn';
@@ -12,28 +12,28 @@ const quickTools: QuickTool[] = [
   {
     id: 'buy-sell',
     label: 'Buy / Sell',
-    icon: ShoppingBag,
+    icon: Bitcoin,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },
   {
     id: 'spend',
     label: 'Spend',
-    icon: Gift,
+    icon: ShoppingCart,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },
   {
     id: 'earn',
     label: 'Earn',
-    icon: Coins,
+    icon: Star,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },
   {
     id: 'converter',
     label: 'Converter',
-    icon: ArrowLeftRight,
+    icon: ArrowRightLeft,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },

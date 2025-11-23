@@ -110,7 +110,7 @@ export function MyEventsSection() {
       <div className='flex flex-col'>
         {/* Header */}
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Events</h2>
+          <h2 className='text-xl font-semibold'>My Events</h2>
           <div className='flex items-center gap-2'>
             <CircleIconButton
               icon={MoreHorizontal}

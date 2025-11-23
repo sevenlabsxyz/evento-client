@@ -5,6 +5,7 @@ import { useGalleryLikes } from '@/lib/hooks/use-photo-likes';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 import { Heart } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface LikeButtonProps {
   itemId: string;

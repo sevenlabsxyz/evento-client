@@ -356,6 +356,63 @@ export class BreezSDKService {
   }
 
   /**
+   * Format and log Breez SDK events with readable context
+   */
+  private logBreezEvent(event: SdkEvent): void {
+    const timestamp = new Date().toLocaleTimeString();
+
+    switch (event.type) {
+      case 'synced':
+        console.log(`🔄 [BREEZ:SYNCED] ${timestamp} - Wallet synchronized with network`);
+        break;
+
+      case 'paymentSucceeded': {
+        const payment = (event as any).payment;
+        const direction = payment?.paymentType === 'received' ? 'Incoming' : 'Outgoing';
+        const amount = payment?.amountSats || 0;
+        console.log(
+          `💰 [BREEZ:PAYMENT_SUCCEEDED] ${timestamp} - ${direction}: ${amount.toLocaleString()} sats`,
+          payment
+        );
+        break;
+      }
+
+      case 'paymentFailed': {
+        const payment = (event as any).payment;
+        const direction = payment?.paymentType === 'received' ? 'Incoming' : 'Outgoing';
+        const amount = payment?.amountSats || 0;
+        console.log(
+          `❌ [BREEZ:PAYMENT_FAILED] ${timestamp} - ${direction} payment failed: ${amount.toLocaleString()} sats`,
+          payment
+        );
+        break;
+      }
+
+      case 'claimDepositsSucceeded': {
+        const deposits = (event as any).claimedDeposits || [];
+        console.log(
+          `📥 [BREEZ:CLAIM_DEPOSITS_SUCCEEDED] ${timestamp} - Claimed ${deposits.length} deposit(s)`,
+          deposits
+        );
+        break;
+      }
+
+      case 'claimDepositsFailed': {
+        const deposits = (event as any).unclaimedDeposits || [];
+        console.log(
+          `⚠️ [BREEZ:CLAIM_DEPOSITS_FAILED] ${timestamp} - Failed to claim ${deposits.length} deposit(s)`,
+          deposits
+        );
+        break;
+      }
+
+      default:
+        console.log(`🔔 [BREEZ:UNKNOWN_EVENT] ${timestamp}`, event);
+        break;
+    }
+  }
+
+  /**
    * Set up event listener for SDK events
    */
   private async setupEventListener(): Promise<void> {
@@ -364,7 +421,8 @@ export class BreezSDKService {
     try {
       const eventListener: EventListener = {
         onEvent: async (event: SdkEvent) => {
-          console.log('Breez SDK Event:', event);
+          // Log all events with formatted output
+          this.logBreezEvent(event);
 
           // Notify all registered callbacks
           this.eventCallbacks.forEach((callback) => {

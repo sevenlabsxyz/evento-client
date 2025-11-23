@@ -13,7 +13,8 @@ import {
   MessageCircleQuestion,
   Plus,
   Settings,
-  User,
+  Star,
+  UserCircle,
   Wallet,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -50,6 +51,11 @@ export function Sidebar() {
           icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
         },
         {
+          name: 'Wallet',
+          path: '/e/wallet',
+          icon: <Wallet className='h-5 w-5' strokeWidth={2.5} />,
+        },
+        {
           name: 'Chat',
           path: '/e/messages',
           icon: <MessageCircle className='h-5 w-5' strokeWidth={2.5} />,
@@ -60,21 +66,6 @@ export function Sidebar() {
         //   path: '/e/inbox',
         //   icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
         // },
-        {
-          name: 'Profile',
-          path: '/e/profile',
-          icon: <User className='h-5 w-5' strokeWidth={2.5} />,
-        },
-        {
-          name: 'Wallet',
-          path: '/e/wallet',
-          icon: <Wallet className='h-5 w-5' strokeWidth={2.5} />,
-        },
-        {
-          name: 'Settings',
-          path: '/e/settings',
-          icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
-        },
       ],
     },
     {
@@ -85,12 +76,11 @@ export function Sidebar() {
           path: '/e/hub',
           icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
         },
-        // Hiding until Saved Event lists are implemented properly
-        // {
-        //   name: "Saved Events",
-        //   path: "/e/saved",
-        //   icon: <Star className="h-5 w-5" strokeWidth={2.5} />,
-        // },
+        {
+          name: 'Saved Events',
+          path: '/e/saved',
+          icon: <Star className='h-5 w-5' strokeWidth={2.5} />,
+        },
         {
           name: 'Create Event',
           path: '/e/create',
@@ -101,6 +91,16 @@ export function Sidebar() {
     {
       title: 'Resources',
       items: [
+        {
+          name: 'Settings',
+          path: '/e/settings',
+          icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
+        },
+        {
+          name: 'Edit Profile',
+          path: '/e/profile/edit',
+          icon: <UserCircle className='h-5 w-5' strokeWidth={2.5} />,
+        },
         {
           name: 'Read Blog',
           path: '/blog',
@@ -151,7 +151,7 @@ export function Sidebar() {
             <div className='flex h-full flex-col'>
               {/* Header with user info */}
               <div
-                className='border-b border-sidebar-border bg-sidebar-accent'
+                className=''
                 style={{
                   padding: '1.5rem',
                   paddingTop: 'calc(env(safe-area-inset-top, 0px) + 1.5rem)',

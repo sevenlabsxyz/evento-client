@@ -7,8 +7,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { BTCPrice, WalletState } from '@/lib/types/wallet';
-import { useCallback, useEffect, useState } from 'react';
-import { toast } from '../utils/toast';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export function useWallet() {
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
@@ -292,13 +291,19 @@ export function useWallet() {
     }
   }, [setWalletState, setError]);
 
+  // Use ref to prevent refreshBalance from causing event listener re-subscriptions
+  const refreshBalanceRef = useRef(refreshBalance);
+  useEffect(() => {
+    refreshBalanceRef.current = refreshBalance;
+  }, [refreshBalance]);
+
   // Set up event listener for Breez SDK events
   useEffect(() => {
     if (!walletState.isConnected) return;
 
     console.log('Setting up Breez SDK event listener...');
     const unsubscribe = breezSDK.onEvent((event) => {
-      console.log('Breez wallet event:', event);
+      // Logging is now handled in breez-sdk.ts service layer
 
       // Handle different event types
       if (event.type === 'paymentSucceeded') {
@@ -309,8 +314,7 @@ export function useWallet() {
         WalletStorageService.markHasTransaction();
 
         if (isIncoming) {
-          // Show notification for incoming payment
-          toast.success(`You received ${payment?.amountSats || 0} sats`);
+          // Show browser notification for incoming payment
           if (typeof window !== 'undefined' && 'Notification' in window) {
             if (Notification.permission === 'granted') {
               new Notification('Payment Received', {
@@ -319,13 +323,11 @@ export function useWallet() {
               });
             }
           }
-        } else {
-          toast.success(`You sent ${payment?.amountSats || 0} sats`);
         }
 
-        refreshBalance();
+        refreshBalanceRef.current();
       } else if (event.type === 'synced') {
-        refreshBalance();
+        refreshBalanceRef.current();
       }
     });
 
@@ -333,7 +335,7 @@ export function useWallet() {
       console.log('Cleaning up Breez SDK event listener');
       unsubscribe();
     };
-  }, [walletState.isConnected, refreshBalance]);
+  }, [walletState.isConnected]);
 
   /**
    * Mark wallet as backed up

@@ -46,7 +46,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
             return (
               <div key={item.id} className='flex justify-center'>
                 <div
-                  className='m-0 flex h-12 w-16 items-center justify-center rounded-xl bg-gray-200 p-0 transition-colors duration-150 hover:bg-gray-300'
+                  className='m-0 flex h-12 w-16 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-0 transition-colors duration-150 hover:bg-gray-200'
                   onClick={() => handleNavigation(item)}
                 >
                   <Icon className='h-6 w-6 text-gray-500' strokeWidth={2.5} />

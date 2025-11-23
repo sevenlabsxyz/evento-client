@@ -177,7 +177,7 @@ const ToastView = React.forwardRef<
           stopOverlayPropagation: false,
         }}
         onTravelStatusChange={setTravelStatus}
-        travelAnimation={{
+        travelanimation={{
           opacity: [0, 1],
           scale: [0.95, 1],
           transformOrigin: largeViewport ? 'top right' : 'top center',

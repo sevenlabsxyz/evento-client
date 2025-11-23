@@ -3,13 +3,15 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Env } from '@/lib/constants/env';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, Zap } from 'lucide-react';
+import { ChevronRight, HelpCircle, Zap } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
+import { WalletEducationalSheet } from './wallet-educational-sheet';
 
 interface WalletBalanceProps {
   onSend: () => void;
@@ -26,6 +28,8 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
   const [showUSD, setShowUSD] = useState(true);
   const [showQrModal, setShowQrModal] = useState(false);
   const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
+  const [showEducationalSheet, setShowEducationalSheet] = useState(false);
+  const [educationalArticle, setEducationalArticle] = useState<any>(null);
 
   useEffect(() => {
     refreshBalance();
@@ -77,6 +81,34 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
     generateQRCode();
   }, [showQrModal, lightningAddress, qrCodeUrl]);
 
+  // Fetch educational blog post
+  useEffect(() => {
+    const fetchEducationalPost = async () => {
+      if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
+        console.warn('Ghost API configuration missing - cannot fetch educational content');
+        return;
+      }
+
+      try {
+        const res = await fetch(
+          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/slug/your-evento-wallet/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors`
+        );
+
+        if (!res.ok) {
+          console.error('Failed to fetch educational post:', res.status);
+          return;
+        }
+
+        const data = await res.json();
+        setEducationalArticle(data.posts?.[0] || null);
+      } catch (error) {
+        console.error('Error fetching educational post:', error);
+      }
+    };
+
+    fetchEducationalPost();
+  }, []);
+
   const handleCopyAddress = async () => {
     try {
       await navigator.clipboard.writeText(lightningAddress);
@@ -104,18 +136,26 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
         {/* Balance Card */}
         <div className='rounded-2xl border border-gray-200 bg-white p-6 shadow-sm'>
           {/* Lightning Address Row */}
-          <button
-            onClick={() => setShowQrModal(true)}
-            className='mb-4 flex w-full items-center justify-between rounded-lg border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
-          >
-            <div className='flex min-w-0 flex-1 items-center gap-2'>
-              <Zap className='h-4 w-4 flex-shrink-0 text-black' />
-              <div className='truncate font-mono text-sm font-bold text-gray-900'>
-                {lightningAddress}
+          <div className='mb-4 flex items-center gap-3'>
+            <button
+              onClick={() => setShowQrModal(true)}
+              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+            >
+              <div className='flex min-w-0 flex-1 items-center gap-2'>
+                <Zap className='h-4 w-4 flex-shrink-0 text-black' />
+                <div className='truncate font-mono text-sm font-bold text-gray-900'>
+                  {lightningAddress}
+                </div>
               </div>
-            </div>
-            <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
-          </button>
+              <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+            </button>
+            <button
+              onClick={() => setShowEducationalSheet(true)}
+              className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100'
+            >
+              <HelpCircle className='h-5 w-5 text-gray-600' />
+            </button>
+          </div>
 
           {/* Balance Display - Centered & Clickable to toggle */}
           <button
@@ -217,6 +257,13 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
           </DetachedSheet.View>
         </DetachedSheet.Portal>
       </DetachedSheet.Root>
+
+      {/* Educational Content Sheet */}
+      <WalletEducationalSheet
+        article={educationalArticle}
+        open={showEducationalSheet}
+        onOpenChange={setShowEducationalSheet}
+      />
     </>
   );
 }

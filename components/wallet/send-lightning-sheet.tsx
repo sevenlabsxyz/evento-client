@@ -1,26 +1,30 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { SlideToConfirm } from '@/components/ui/slide-to-confirm';
 import { Textarea } from '@/components/ui/textarea';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { AlertCircle, ArrowUpDown, Scan, Send, X } from 'lucide-react';
-import { useState } from 'react';
+import { AlertCircle, ArrowLeft, Loader2, Scan, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface SendLightningSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onBackupRequired?: () => void;
+  onOpenScan?: () => void;
+  scannedData?: string;
 }
 
 export function SendLightningSheet({
   open,
   onOpenChange,
   onBackupRequired,
+  onOpenScan,
+  scannedData,
 }: SendLightningSheetProps) {
   const [invoice, setInvoice] = useState('');
   const [amount, setAmount] = useState('');
@@ -32,13 +36,34 @@ export function SendLightningSheet({
   const [isLightningInvoice, setIsLightningInvoice] = useState(false);
   const [invoiceAmount, setInvoiceAmount] = useState<number | null>(null);
   const [invoiceDescription, setInvoiceDescription] = useState<string>('');
+  const [activeDetent, setActiveDetent] = useState(1); // Start at medium height
+  const [isValidating, setIsValidating] = useState(false);
 
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading } = useSendPayment();
   const { satsToUSD, usdToSats } = useAmountConverter();
 
+  // Populate invoice field when scanned data is provided
+  useEffect(() => {
+    if (scannedData && open) {
+      handleInvoiceChange(scannedData);
+    }
+  }, [scannedData, open]);
+
   const handleInvoiceChange = async (value: string) => {
     setInvoice(value);
+
+    // Reset validation state when input changes
+    if (!value.trim()) {
+      setIsValidating(false);
+      setIsLightningInvoice(false);
+      setHasFixedAmount(false);
+      setInvoiceAmount(null);
+      setInvoiceDescription('');
+      setAmount('');
+      setAmountUSD('');
+      return;
+    }
 
     // Check if it's a Lightning invoice (starts with lnbc, lntb, or lnbcrt)
     const trimmedValue = value.trim().toLowerCase();
@@ -51,6 +76,7 @@ export function SendLightningSheet({
 
     if (isInvoice) {
       // Try to decode the invoice to get the amount and description
+      setIsValidating(true);
       try {
         const prepareResponse = await prepareSend(value, undefined);
         // Check if the invoice has a fixed amount
@@ -76,11 +102,13 @@ export function SendLightningSheet({
         } else {
           setInvoiceDescription('');
         }
+        setIsValidating(false);
       } catch (error) {
         // Invalid invoice or can't decode yet
         setHasFixedAmount(false);
         setInvoiceAmount(null);
         setInvoiceDescription('');
+        setIsValidating(false);
       }
     } else {
       // Not an invoice (Lightning address, etc.)
@@ -122,13 +150,6 @@ export function SendLightningSheet({
       return;
     }
 
-    // For Lightning invoices with fixed amounts, amount is already set
-    // For Lightning addresses or invoices without amounts, require amount input
-    if (!isLightningInvoice && !amount) {
-      toast.error('Please enter an amount');
-      return;
-    }
-
     // Check if wallet is backed up before allowing first transaction
     if (!walletState.hasBackup) {
       onBackupRequired?.();
@@ -137,10 +158,30 @@ export function SendLightningSheet({
 
     try {
       // Prepare the payment to get fee estimate
+      // Auto-detection logic has already extracted amount if needed
       await prepareSend(invoice, amount ? Number(amount) : undefined);
+      setActiveDetent(2); // Expand to full screen for confirmation
       setStep('confirm');
     } catch (error: any) {
-      toast.error(error.message || 'Invalid invoice');
+      const errorMessage = error.message || 'Unknown error';
+
+      // Provide helpful error messages
+      if (errorMessage.includes('Unsupported payment method')) {
+        // Check if it looks like a Lightning address
+        if (invoice.includes('@')) {
+          toast.error(
+            "Lightning address format detected. Please ensure you've entered a valid Lightning address or try using a Lightning invoice instead."
+          );
+        } else {
+          toast.error(
+            'This payment method is not supported. Please use a Lightning invoice (lnbc...) or Lightning address (user@domain).'
+          );
+        }
+      } else if (errorMessage.includes('Invalid input')) {
+        toast.error('Invalid invoice or address format. Please check and try again.');
+      } else {
+        toast.error(errorMessage || 'Failed to process payment request');
+      }
     }
   };
 
@@ -155,20 +196,27 @@ export function SendLightningSheet({
   };
 
   const handleScanQR = () => {
-    // TODO: Implement QR scanner
-    toast.info('QR scanner coming soon');
+    if (onOpenScan) {
+      onOpenScan();
+    } else {
+      toast.info('QR scanner not available');
+    }
   };
 
   // Confirmation step content
   const confirmationContent = (
-    <div className='flex h-full flex-col'>
+    <div className='flex flex-col'>
       {/* Header */}
       <div className='flex items-center justify-between border-b p-4'>
         <button
-          onClick={() => setStep('input')}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          onClick={() => {
+            setActiveDetent(1); // Return to medium height
+            setStep('input');
+          }}
+          disabled={isLoading}
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
         >
-          <X className='h-5 w-5' />
+          <ArrowLeft className='h-5 w-5' />
         </button>
         <h2 className='text-xl font-semibold'>Confirm Payment</h2>
         <div className='w-10' /> {/* Spacer */}
@@ -178,7 +226,7 @@ export function SendLightningSheet({
       <div className='flex-1 overflow-y-auto p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
-          <div className='rounded-xl bg-gray-50 p-8 text-center'>
+          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
             <div className='text-4xl font-bold'>
               {inputMode === 'usd' ? `$${amountUSD}` : `${Number(amount).toLocaleString()} sats`}
             </div>
@@ -195,7 +243,7 @@ export function SendLightningSheet({
           <div className='space-y-3'>
             {/* Show invoice description for Lightning invoices, or note for Lightning addresses */}
             {(isLightningInvoice ? invoiceDescription : note) && (
-              <div className='rounded-lg bg-gray-50 p-4'>
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <p className='mb-1 text-xs text-muted-foreground'>
                   {isLightningInvoice ? 'Description' : 'Note'}
                 </p>
@@ -204,7 +252,7 @@ export function SendLightningSheet({
             )}
 
             {feeEstimate && (
-              <div className='rounded-lg bg-gray-50 p-4'>
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <div className='flex justify-between'>
                   <span className='text-sm text-muted-foreground'>Network Fee</span>
                   <span className='text-sm font-medium'>{feeEstimate.lightning} sats</span>
@@ -226,16 +274,12 @@ export function SendLightningSheet({
 
       {/* Footer */}
       <div className='border-t p-4'>
-        <Button onClick={handleSend} disabled={isLoading} size='lg' className='w-full'>
-          {isLoading ? (
-            'Sending...'
-          ) : (
-            <>
-              <Send className='mr-2 h-5 w-5' />
-              Confirm & Send
-            </>
-          )}
-        </Button>
+        <SlideToConfirm
+          onConfirm={handleSend}
+          isLoading={isLoading}
+          text='Slide to Confirm & Send'
+          loadingText='Sending...'
+        />
       </div>
     </div>
   );
@@ -258,118 +302,84 @@ export function SendLightningSheet({
       <div className='flex-1 overflow-y-auto p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Invoice/Address Input */}
-          <div className='space-y-2'>
+          <div className='space-y-3'>
             <Textarea
               value={invoice}
               onChange={(e) => handleInvoiceChange(e.target.value)}
-              placeholder='Lightning invoice or address'
-              className='resize-none font-mono text-sm'
-              rows={3}
+              placeholder='Lightning invoice, Lightning address, or Bitcoin address'
+              className='resize-none bg-gray-50 font-mono text-sm'
+              rows={4}
             />
-            <Button onClick={handleScanQR} variant='outline' size='sm' className='w-full'>
-              <Scan className='mr-2 h-4 w-4' />
-              Scan QR Code
+
+            {/* Validation Feedback */}
+            {isValidating && (
+              <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
+                <Loader2 className='h-4 w-4 animate-spin text-gray-600' />
+                <span className='text-sm text-gray-600'>Validating invoice...</span>
+              </div>
+            )}
+
+            {/* Show detected invoice info */}
+            {!isValidating && isLightningInvoice && invoiceAmount && (
+              <div className='rounded-lg border border-green-200 bg-green-50 p-3'>
+                <div className='space-y-1'>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-xs text-green-700'>Invoice detected</span>
+                    <span className='text-sm font-medium text-green-900'>
+                      {invoiceAmount.toLocaleString()} sats
+                    </span>
+                  </div>
+                  {invoiceDescription && (
+                    <p className='text-xs text-green-700'>{invoiceDescription}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
+            <Button
+              onClick={handleContinue}
+              disabled={!invoice || isValidating}
+              className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
+              variant='outline'
+            >
+              Next
             </Button>
           </div>
 
-          {/* Amount Input - Only show if not a Lightning invoice with fixed amount */}
-          {!isLightningInvoice && (
-            <div className='space-y-3'>
-              <div className='rounded-xl bg-gray-50 p-6 text-center'>
-                <div className='relative'>
-                  <Input
-                    type='number'
-                    value={inputMode === 'usd' ? amountUSD : amount}
-                    onChange={(e) => handleAmountChange(e.target.value, inputMode)}
-                    placeholder='0'
-                    className='border-0 bg-transparent text-center text-4xl font-bold focus-visible:ring-0'
-                    disabled={hasFixedAmount} // Disable if invoice has fixed amount
-                  />
-                  <div className='mt-1 text-lg font-medium text-gray-600'>
-                    {inputMode === 'usd' ? '$' : 'sats'}
-                  </div>
-                </div>
-
-                <button
-                  onClick={toggleInputMode}
-                  className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
-                >
-                  <ArrowUpDown className='h-4 w-4' />
-                  <span>
-                    {inputMode === 'usd' && amount
-                      ? `${Number(amount).toLocaleString()} sats`
-                      : inputMode === 'sats' && amountUSD
-                        ? `$${amountUSD}`
-                        : 'Convert'}
-                  </span>
-                </button>
-              </div>
-
-              {hasFixedAmount && (
-                <div className='text-center text-sm text-muted-foreground'>
-                  Amount is fixed by the invoice
-                </div>
-              )}
+          {/* Separator */}
+          <div className='relative'>
+            <div className='absolute inset-0 flex items-center'>
+              <div className='w-full border-t border-gray-200' />
             </div>
-          )}
+          </div>
 
-          {/* Show invoice amount if it's a Lightning invoice with fixed amount */}
-          {isLightningInvoice && hasFixedAmount && invoiceAmount && (
-            <div className='space-y-3'>
-              <div className='rounded-xl bg-gray-50 p-6 text-center'>
-                <div className='mb-2 text-sm text-muted-foreground'>Invoice Amount</div>
-                <div className='text-4xl font-bold'>
-                  {inputMode === 'usd' ? `$${amountUSD}` : `${invoiceAmount.toLocaleString()} sats`}
-                </div>
-                <div className='mt-2 text-lg text-gray-600'>
-                  {inputMode === 'usd' && amount
-                    ? `${Number(amount).toLocaleString()} sats`
-                    : amountUSD
-                      ? `$${amountUSD}`
-                      : ''}
-                </div>
-                <button
-                  onClick={toggleInputMode}
-                  className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
-                >
-                  <ArrowUpDown className='h-4 w-4' />
-                  <span>Toggle Currency</span>
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Note Input - Only show if not a Lightning invoice */}
-          {!isLightningInvoice && (
-            <div className='space-y-2'>
-              <Textarea
-                value={note}
-                onChange={(e) => setNote(e.target.value)}
-                placeholder='Add a note (optional)'
-                className='resize-none'
-                rows={2}
-              />
-            </div>
-          )}
+          {/* Scan QR Code */}
+          <Button
+            onClick={handleScanQR}
+            variant='outline'
+            className='h-12 w-full rounded-full bg-gray-50'
+          >
+            <Scan className='mr-2 h-5 w-5' />
+            Scan QR Code
+          </Button>
         </div>
-      </div>
-
-      {/* Footer */}
-      <div className='border-t p-4'>
-        <Button
-          onClick={handleContinue}
-          disabled={!invoice || (!isLightningInvoice && !amount)}
-          size='lg'
-          className='w-full'
-        >
-          Continue
-        </Button>
       </div>
     </div>
   );
 
   return (
-    <SheetWithDetent.Root presented={open} onPresentedChange={onOpenChange}>
+    <SheetWithDetent.Root
+      presented={open}
+      onPresentedChange={(presented) => {
+        // Prevent closing while payment is sending
+        if (!presented && isLoading) {
+          return;
+        }
+        onOpenChange(presented);
+      }}
+      activeDetent={activeDetent}
+      onActiveDetentChange={setActiveDetent}
+    >
       <SheetWithDetent.Portal>
         <SheetWithDetent.View>
           <SheetWithDetent.Backdrop />

@@ -64,6 +64,7 @@ export default function WalletPage() {
   const [openDrawers, setOpenDrawers] = useState<DrawerContent[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
   const [showBackupReminder, setShowBackupReminder] = useState(false);
+  const [scannedData, setScannedData] = useState<string>('');
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -216,8 +217,10 @@ export default function WalletPage() {
 
   const handleScanSuccess = (decodedText: string) => {
     console.log('QR Code scanned:', decodedText);
-    toast.success('QR code scanned successfully');
-    closeDrawer();
+    setScannedData(decodedText);
+    // Close scan drawer and open send drawer
+    closeDrawer('scan');
+    openDrawer('send');
   };
 
   if (isCheckingAuth || isWalletLoading) {
@@ -400,8 +403,18 @@ export default function WalletPage() {
           />
           <SendLightningSheet
             open={openDrawers.includes('send')}
-            onOpenChange={(open) => !open && closeDrawer('send')}
+            onOpenChange={(open) => {
+              if (!open) {
+                closeDrawer('send');
+                setScannedData(''); // Clear scanned data when closing
+              }
+            }}
             onBackupRequired={handleBackupRequired}
+            onOpenScan={() => {
+              closeDrawer('send');
+              openDrawer('scan');
+            }}
+            scannedData={scannedData}
           />
           <ScanQrSheet
             open={openDrawers.includes('scan')}
