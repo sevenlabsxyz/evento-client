@@ -1,4 +1,4 @@
-# Evento App ([app.evento.so](https://app.evento.so))
+# Evento App + Bitcoin Wallet ([app.evento.so](https://app.evento.so))
 
 ## Overview
 
