@@ -72,7 +72,7 @@ export function UserAvatar({
   };
 
   return (
-    <button onClick={onAvatarClick} className={cn('relative shadow-lg', className)}>
+    <button onClick={onAvatarClick} className={cn('relative', className)}>
       <Avatar
         className={cn(
           // Only use size config if no explicit dimensions are provided

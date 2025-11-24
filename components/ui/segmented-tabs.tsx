@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 export type SegmentedTabItem = {
@@ -37,7 +38,7 @@ export function SegmentedTabs({
   const Buttons = (
     <>
       {items.map((item) => (
-        <button
+        <motion.button
           key={item.value}
           onClick={() => !item.disabled && onValueChange(item.value)}
           disabled={item.disabled}
@@ -49,9 +50,11 @@ export function SegmentedTabs({
             value === item.value ? activeClassName : inactiveClassName,
             item.disabled && 'pointer-events-none opacity-50'
           )}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           {item.label}
-        </button>
+        </motion.button>
       ))}
     </>
   );

@@ -7,7 +7,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { BTCPrice, WalletState } from '@/lib/types/wallet';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function useWallet() {
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
@@ -209,6 +209,8 @@ export function useWallet() {
   const unlockWallet = useCallback(
     async (password: string): Promise<void> => {
       try {
+        console.log('🔓 [WALLET:UNLOCK] Starting wallet unlock...');
+
         setLoading(true);
         setError(null);
 
@@ -217,17 +219,29 @@ export function useWallet() {
           throw new Error('No wallet found');
         }
 
+        console.log('🔓 [WALLET:UNLOCK] Encrypted seed found, attempting decryption...');
+
         // Decrypt seed
         const mnemonic = await WalletStorageService.decryptSeed(encryptedSeed, password);
 
+        // Create fingerprint for logging (first 3 words)
+        const fingerprint = mnemonic.trim().split(/\s+/).slice(0, 3).join(' ');
+        console.log('✅ [WALLET:UNLOCK] Seed decrypted successfully');
+        console.log('  → Wallet fingerprint:', fingerprint);
+
         // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
+        console.log('✅ [WALLET:UNLOCK] Seed stored in memory');
 
         // Connect to Breez SDK
+        console.log('🔑 [WALLET:UNLOCK] Connecting to Breez SDK...');
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+        console.log('✅ [WALLET:UNLOCK] Breez SDK connected');
 
         // Get balance
+        console.log('💰 [WALLET:UNLOCK] Fetching wallet balance...');
         const balance = await breezSDK.getBalance();
+        console.log('✅ [WALLET:UNLOCK] Balance fetched:', balance, 'sats');
 
         // Get current saved state
         const savedState = WalletStorageService.getWalletState();
@@ -242,9 +256,12 @@ export function useWallet() {
           lightningAddress: savedState?.lightningAddress,
         };
 
+        console.log('✅ [WALLET:UNLOCK] Wallet unlocked successfully');
+        console.log('  → Final state:', newState);
+
         setWalletState(newState);
       } catch (err: any) {
-        console.error('Failed to unlock wallet:', err);
+        console.error('❌ [WALLET:UNLOCK] Failed to unlock wallet:', err);
         setError(err.message || 'Invalid password');
         throw err;
       } finally {
@@ -290,52 +307,6 @@ export function useWallet() {
       setError(err.message || 'Failed to refresh balance');
     }
   }, [setWalletState, setError]);
-
-  // Use ref to prevent refreshBalance from causing event listener re-subscriptions
-  const refreshBalanceRef = useRef(refreshBalance);
-  useEffect(() => {
-    refreshBalanceRef.current = refreshBalance;
-  }, [refreshBalance]);
-
-  // Set up event listener for Breez SDK events
-  useEffect(() => {
-    if (!walletState.isConnected) return;
-
-    console.log('Setting up Breez SDK event listener...');
-    const unsubscribe = breezSDK.onEvent((event) => {
-      // Logging is now handled in breez-sdk.ts service layer
-
-      // Handle different event types
-      if (event.type === 'paymentSucceeded') {
-        const payment = (event as any).details;
-        const isIncoming = payment?.paymentType === 'received';
-
-        // Mark that wallet has had a transaction (for backup reminder)
-        WalletStorageService.markHasTransaction();
-
-        if (isIncoming) {
-          // Show browser notification for incoming payment
-          if (typeof window !== 'undefined' && 'Notification' in window) {
-            if (Notification.permission === 'granted') {
-              new Notification('Payment Received', {
-                body: `You received ${payment?.amountSats || 0} sats`,
-                icon: '/logo.png',
-              });
-            }
-          }
-        }
-
-        refreshBalanceRef.current();
-      } else if (event.type === 'synced') {
-        refreshBalanceRef.current();
-      }
-    });
-
-    return () => {
-      console.log('Cleaning up Breez SDK event listener');
-      unsubscribe();
-    };
-  }, [walletState.isConnected]);
 
   /**
    * Mark wallet as backed up

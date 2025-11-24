@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -165,12 +166,14 @@ export function WalletEducationGallery() {
           <CarouselContent className='hide-scrollbar px-4'>
             {posts.map((post) => (
               <CarouselItem key={post.id} className='max-w-[280px] pl-3 md:max-w-[452px]'>
-                <button
+                <motion.button
                   onClick={() => {
                     setSelectedArticle(post);
                     setIsSheetOpen(true);
                   }}
                   className='group flex w-full flex-col justify-between text-left'
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 >
                   <div>
                     <div className='flex aspect-video overflow-clip rounded-2xl rounded-b-none border'>
@@ -195,7 +198,7 @@ export function WalletEducationGallery() {
                       {post.excerpt}
                     </div>
                   </div>
-                </button>
+                </motion.button>
               </CarouselItem>
             ))}
           </CarouselContent>

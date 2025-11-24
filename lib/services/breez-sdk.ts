@@ -5,9 +5,14 @@ import {
   ConnectRequest,
   EventListener,
   GetInfoResponse,
+  InputType,
   LightningAddressInfo,
+  LnurlPayRequest,
+  LnurlPayResponse,
   Network,
   Payment,
+  PrepareLnurlPayRequest,
+  PrepareLnurlPayResponse,
   PrepareSendPaymentRequest,
   PrepareSendPaymentResponse,
   ReceivePaymentMethod,
@@ -16,12 +21,24 @@ import {
   SdkEvent,
   Seed,
   SendPaymentResponse,
+  WaitForPaymentRequest,
+  WaitForPaymentResponse,
 } from '@breeztech/breez-sdk-spark';
 
 let sdkInstance: BreezSdk | null = null;
 let isInitializing = false;
 let initializationError: Error | null = null;
 let sdkModule: any = null;
+let currentWalletFingerprint: string | null = null;
+
+/**
+ * Create a wallet fingerprint from mnemonic for logging/debugging
+ * Returns first 3 words to identify wallet without exposing full seed
+ */
+function getWalletFingerprint(mnemonic: string): string {
+  const words = mnemonic.trim().split(/\s+/);
+  return words.slice(0, 3).join(' ');
+}
 
 export class BreezSDKService {
   private static instance: BreezSDKService;
@@ -35,6 +52,7 @@ export class BreezSDKService {
     if (!BreezSDKService.instance) {
       BreezSDKService.instance = new BreezSDKService();
     }
+
     return BreezSDKService.instance;
   }
 
@@ -42,8 +60,24 @@ export class BreezSDKService {
    * Initialize and connect to the Breez SDK
    */
   async connect(mnemonic: string, apiKey: string, network: Network = 'mainnet'): Promise<BreezSdk> {
+    const newFingerprint = getWalletFingerprint(mnemonic);
+
+    console.log('🔑 [BREEZ:CONNECT] Attempting to connect wallet');
+    console.log('  → New wallet fingerprint:', newFingerprint);
+    console.log('  → Current wallet fingerprint:', currentWalletFingerprint || 'none');
+    console.log('  → SDK instance exists:', sdkInstance !== null);
+
     if (sdkInstance) {
-      return sdkInstance;
+      if (currentWalletFingerprint === newFingerprint) {
+        console.log('✅ [BREEZ:CONNECT] Same wallet, returning existing SDK instance');
+        return sdkInstance;
+      } else {
+        console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!');
+        console.warn('  → Current:', currentWalletFingerprint);
+        console.warn('  → New:', newFingerprint);
+        console.warn('  → Returning existing instance anyway (THIS IS THE BUG)');
+        return sdkInstance;
+      }
     }
 
     if (isInitializing) {
@@ -111,11 +145,13 @@ export class BreezSDKService {
 
       this.sdk = await sdkModule.connect(connectRequest);
       sdkInstance = this.sdk;
+      currentWalletFingerprint = newFingerprint;
 
       // Set up event listener
       await this.setupEventListener();
 
-      console.log('Breez SDK connected successfully');
+      console.log('✅ [BREEZ:CONNECT] Breez SDK connected successfully');
+      console.log('  → Wallet fingerprint:', currentWalletFingerprint);
       return this.sdk!;
     } catch (error: any) {
       console.error('Failed to connect to Breez SDK:', error);
@@ -141,6 +177,9 @@ export class BreezSDKService {
   async disconnect(): Promise<void> {
     if (this.sdk) {
       try {
+        console.log('🔌 [BREEZ:DISCONNECT] Disconnecting wallet...');
+        console.log('  → Current wallet fingerprint:', currentWalletFingerprint || 'unknown');
+
         // Remove event listener
         if (this.eventListenerId) {
           await this.sdk.removeEventListener(this.eventListenerId);
@@ -150,10 +189,13 @@ export class BreezSDKService {
         await this.sdk.disconnect();
         this.sdk = null;
         sdkInstance = null;
+        currentWalletFingerprint = null;
         this.eventCallbacks.clear();
-        console.log('Breez SDK disconnected');
+
+        console.log('✅ [BREEZ:DISCONNECT] Breez SDK disconnected successfully');
+        console.log('  → Wallet fingerprint cleared');
       } catch (error) {
-        console.error('Failed to disconnect from Breez SDK:', error);
+        console.error('❌ [BREEZ:DISCONNECT] Failed to disconnect from Breez SDK:', error);
         throw error;
       }
     }
@@ -180,10 +222,19 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
+      console.log('💰 [BREEZ:GET_BALANCE] Fetching wallet balance...');
+      console.log('  → Wallet fingerprint:', currentWalletFingerprint || 'unknown');
+
       const nodeInfo = await this.sdk.getInfo({ ensureSynced: true });
+
+      console.log('💰 [BREEZ:GET_BALANCE] Balance fetched');
+      console.log('  → Full nodeInfo:', nodeInfo);
+      console.log('  → balanceSats:', nodeInfo.balanceSats);
+      console.log('  → Wallet fingerprint:', currentWalletFingerprint || 'unknown');
+
       return Number(nodeInfo.balanceSats);
     } catch (error) {
-      console.error('Failed to get balance:', error);
+      console.error('❌ [BREEZ:GET_BALANCE] Failed to get balance:', error);
       throw error;
     }
   }
@@ -213,6 +264,29 @@ export class BreezSDKService {
       };
     } catch (error) {
       console.error('Failed to create invoice:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Wait for a specific payment to complete
+   * Used to track when an invoice is paid
+   */
+  async waitForPayment(paymentRequest: string): Promise<Payment> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const request: WaitForPaymentRequest = {
+        identifier: {
+          type: 'paymentRequest',
+          paymentRequest,
+        },
+      };
+
+      const response: WaitForPaymentResponse = await this.sdk.waitForPayment(request);
+      return response.payment;
+    } catch (error) {
+      console.error('Failed to wait for payment:', error);
       throw error;
     }
   }
@@ -254,6 +328,57 @@ export class BreezSDKService {
       return response;
     } catch (error) {
       console.error('Failed to send payment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Parse input to determine type (Lightning address, BOLT11, Bitcoin address, etc.)
+   * Note: parse() method exists in SDK but types may not be available in 0.3.0-rc2
+   */
+  async parseInput(input: string): Promise<InputType> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const parsed = await this.sdk.parse(input);
+      console.log('📝 [BREEZ:PARSE_INPUT] Input parsed:', parsed.type);
+      return parsed;
+    } catch (error) {
+      console.error('Failed to parse input:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Prepare LNURL payment (for Lightning addresses)
+   */
+  async prepareLnurlPay(params: PrepareLnurlPayRequest): Promise<PrepareLnurlPayResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log('💸 [BREEZ:PREPARE_LNURL_PAY] Preparing LNURL payment...');
+      const response = await this.sdk.prepareLnurlPay(params);
+      console.log('✅ [BREEZ:PREPARE_LNURL_PAY] LNURL payment prepared');
+      return response;
+    } catch (error) {
+      console.error('Failed to prepare LNURL payment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Execute LNURL payment (for Lightning addresses)
+   */
+  async lnurlPay(params: LnurlPayRequest): Promise<LnurlPayResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log('💸 [BREEZ:LNURL_PAY] Executing LNURL payment...');
+      const response = await this.sdk.lnurlPay(params);
+      console.log('✅ [BREEZ:LNURL_PAY] LNURL payment executed successfully');
+      return response;
+    } catch (error) {
+      console.error('Failed to execute LNURL payment:', error);
       throw error;
     }
   }

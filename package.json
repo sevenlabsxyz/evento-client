@@ -16,7 +16,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@breeztech/breez-sdk-spark": "0.3.0-rc2",
+    "@breeztech/breez-sdk-spark": "0.4.2",
     "@emoji-mart/data": "^1.2.1",
     "@emoji-mart/react": "^1.1.1",
     "@giphy/js-fetch-api": "^5.7.0",

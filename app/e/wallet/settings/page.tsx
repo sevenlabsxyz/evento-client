@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
@@ -17,11 +18,14 @@ export default function WalletSettingsPage() {
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const { address } = useLightningAddress();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showBetaSheet, setShowBetaSheet] = useState(false);
 
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Wallet Settings',
+      badge: 'Beta',
+      onBadgeClick: () => setShowBetaSheet(true),
       leftMode: 'back',
       showAvatar: false,
     });
@@ -165,6 +169,9 @@ export default function WalletSettingsPage() {
           )}
         </div>
       </div>
+
+      {/* Beta Information Sheet */}
+      <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
     </div>
   );
 }

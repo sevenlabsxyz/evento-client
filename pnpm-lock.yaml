@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@breeztech/breez-sdk-spark':
-        specifier: 0.3.0-rc2
-        version: 0.3.0-rc2
+        specifier: 0.4.2
+        version: 0.4.2
       '@emoji-mart/data':
         specifier: ^1.2.1
         version: 1.2.1
@@ -502,8 +502,8 @@ packages:
   '@braintree/sanitize-url@6.0.4':
     resolution: {integrity: sha512-s3jaWicZd0pkP0jf5ysyHUI/RE7MHos6qlToFcGWXVp+ykHOy77OUMrfbgJ9it2C5bow7OIQwYYaHjk9XlBQ2A==}
 
-  '@breeztech/breez-sdk-spark@0.3.0-rc2':
-    resolution: {integrity: sha512-XonAI2Pb1CVAIqzrUFSuTE5JbfR1DW7x4pqupo2G35+enympynxaKLxcYl33VAmj2a800++6YazY4nr867tR+Q==}
+  '@breeztech/breez-sdk-spark@0.4.2':
+    resolution: {integrity: sha512-7NHO64tnXbR/ERZh8owPZumgH2YlYZ1HqjNzDMJVpKWpTnMj/PMDN1gbUZNct6GxhvrsPZnZf7yFbANo871COw==}
     engines: {node: '>=22'}
 
   '@bundled-es-modules/cookie@2.0.1':
@@ -5782,7 +5782,7 @@ snapshots:
 
   '@braintree/sanitize-url@6.0.4': {}
 
-  '@breeztech/breez-sdk-spark@0.3.0-rc2':
+  '@breeztech/breez-sdk-spark@0.4.2':
     optionalDependencies:
       better-sqlite3: 12.4.1
 

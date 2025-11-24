@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -22,6 +23,7 @@ export function TopBar() {
     subtitle,
     badge,
     badgePath,
+    onBadgeClick,
     buttons,
     showAvatar,
     isOverlaid,
@@ -93,20 +95,28 @@ export function TopBar() {
             'mt-0.5 flex h-[32px] w-[32px] items-center justify-center border border-transparent'
           }
         >
-          <ArrowLeft className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
+          <motion.div
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+            style={{ display: 'inline-block' }}
+          >
+            <ArrowLeft className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
+          </motion.div>
         </button>
       );
     }
 
     return (
-      <button
+      <motion.button
         onClick={handleMenuClick}
         className={`rounded-full border border-gray-200 bg-gray-50 p-0 transition-all duration-300 hover:opacity-80 ${
           isOverlaid ? 'border-gray-200 bg-white' : 'hover:bg-gray-100'
         } ${isSpinning ? 'animate-spin' : ''}`}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
         <Image priority src='/assets/img/evento-sublogo.svg' alt='Evento' width={32} height={32} />
-      </button>
+      </motion.button>
     );
   };
 
@@ -140,13 +150,19 @@ export function TopBar() {
           <div className='flex items-center gap-2'>
             <h1 className='truncate text-lg font-semibold text-gray-500'>{title}</h1>
             {badge && (
-              <Badge
-                variant='secondary'
-                className={`border border-gray-200 text-xs ${badgePath ? 'cursor-pointer hover:opacity-80' : ''}`}
-                onClick={badgePath ? () => router.push(badgePath) : undefined}
+              <motion.div
+                whileTap={onBadgeClick || badgePath ? { scale: 0.95 } : undefined}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                style={{ display: 'inline-block' }}
               >
-                {badge}
-              </Badge>
+                <Badge
+                  variant='secondary'
+                  className={`border border-gray-200 text-xs ${onBadgeClick || badgePath ? 'cursor-pointer hover:opacity-80' : ''}`}
+                  onClick={onBadgeClick || (badgePath ? () => router.push(badgePath) : undefined)}
+                >
+                  {badge}
+                </Badge>
+              </motion.div>
             )}
           </div>
           {subtitle && <p className='truncate text-sm text-gray-500'>{subtitle}</p>}

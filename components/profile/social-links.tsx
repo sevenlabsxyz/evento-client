@@ -34,12 +34,12 @@ export default function SocialLinks({ user }: SocialLinksProps) {
 
   return (
     <>
-      <div className='flex w-full max-w-md flex-wrap justify-center gap-2 rounded-2xl rounded-xl border border-gray-200 bg-gray-50 bg-white p-2.5 shadow-sm transition-all duration-200'>
+      <div className='flex w-full max-w-md flex-wrap justify-center gap-2 rounded-2xl rounded-xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
         {/* Website */}
         {user.bio_link && (
           <button
             onClick={() => setActiveSheet('website')}
-            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
+            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
           >
             <Globe className='h-5 w-5 text-gray-600' />
             {/* <span className='text-sm font-normal text-gray-900'>
@@ -52,7 +52,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
         {user.instagram_handle && (
           <button
             onClick={() => setActiveSheet('instagram')}
-            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
+            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
           >
             <Instagram className='h-5 w-5 text-pink-500' />
             {/* <span className='text-sm font-normal text-gray-900'>
@@ -65,7 +65,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
         {user.x_handle && (
           <button
             onClick={() => setActiveSheet('x')}
-            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
+            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
           >
             <svg className='h-5 w-5' viewBox='0 0 24 24' fill='currentColor'>
               <path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z' />
@@ -80,7 +80,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
         {user.ln_address && (
           <button
             onClick={() => setActiveSheet('lightning')}
-            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
+            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
           >
             <BitcoinSVGIcon className='h-5 w-5' fill='#f7931a' />
             {/* <span className='text-sm font-normal text-gray-900'>
@@ -95,7 +95,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
         {user.nip05 && (
           <button
             onClick={() => setActiveSheet('nostr')}
-            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-100 px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
+            className='flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 shadow-sm transition-colors hover:bg-gray-50'
           >
             <div className='flex h-5 w-5 items-center justify-center rounded-full bg-purple-500'>
               <span className='text-xs font-bold text-white'>N</span>

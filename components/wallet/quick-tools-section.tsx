@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion';
 import { ArrowRightLeft, Bitcoin, ShoppingCart, Star } from 'lucide-react';
 
 type QuickTool = {
@@ -55,11 +56,13 @@ export function QuickToolsSection({ onToolClick }: QuickToolsSectionProps) {
               onClick={() => onToolClick(tool.id)}
               className='font-lg flex flex-col items-center justify-center'
             >
-              <div
+              <motion.div
                 className={`flex h-14 w-14 items-center justify-center rounded-xl border border-gray-200 ${tool.iconBg} mb-2`}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
                 <Icon className={`h-6 w-6 ${tool.iconColor}`} />
-              </div>
+              </motion.div>
               <span className='text-sm font-semibold text-gray-500'>{tool.label}</span>
             </div>
           );

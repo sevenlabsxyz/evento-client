@@ -23,7 +23,7 @@ export function UserInterests({ interests }: UserInterestsProps) {
   });
 
   return (
-    <div className='rounded-2xl bg-white p-6 shadow-sm'>
+    <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6'>
       <h2 className='mb-4 text-xl font-bold text-gray-900'>Interests</h2>
 
       <div className='space-y-4'>

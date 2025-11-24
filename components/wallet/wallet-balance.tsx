@@ -8,6 +8,7 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
+import { motion } from 'framer-motion';
 import { ChevronRight, HelpCircle, Zap } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
@@ -137,9 +138,11 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
         <div className='rounded-2xl border border-gray-200 bg-white p-6 shadow-sm'>
           {/* Lightning Address Row */}
           <div className='mb-4 flex items-center gap-3'>
-            <button
+            <motion.button
               onClick={() => setShowQrModal(true)}
               className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               <div className='flex min-w-0 flex-1 items-center gap-2'>
                 <Zap className='h-4 w-4 flex-shrink-0 text-black' />
@@ -148,13 +151,15 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
                 </div>
               </div>
               <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
-            </button>
-            <button
+            </motion.button>
+            <motion.button
               onClick={() => setShowEducationalSheet(true)}
               className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100'
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               <HelpCircle className='h-5 w-5 text-gray-600' />
-            </button>
+            </motion.button>
           </div>
 
           {/* Balance Display - Centered & Clickable to toggle */}

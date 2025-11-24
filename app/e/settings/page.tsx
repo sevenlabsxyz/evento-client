@@ -95,12 +95,12 @@ export default function SettingsPage() {
   if (isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex-1 overflow-y-auto bg-gray-50 px-0 pt-4'>
+        <div className='flex-1 overflow-y-auto bg-white px-0 pt-4'>
           {/* GENERAL */}
           <div className='mb-2 px-4'>
             <Skeleton className='h-3 w-24' />
           </div>
-          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
             <div className='border-b border-gray-100 p-4'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-3'>
@@ -125,7 +125,7 @@ export default function SettingsPage() {
           <div className='mb-2 px-4'>
             <Skeleton className='h-3 w-28' />
           </div>
-          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
             <div className='border-b border-gray-100 p-4'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-3'>
@@ -150,7 +150,7 @@ export default function SettingsPage() {
           <div className='mb-2 px-4'>
             <Skeleton className='h-3 w-16' />
           </div>
-          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className={`p-4 ${i < 3 ? 'border-b border-gray-100' : ''}`}>
                 <div className='flex items-center justify-between'>
@@ -168,7 +168,7 @@ export default function SettingsPage() {
           <div className='mb-2 px-4'>
             <Skeleton className='h-3 w-24' />
           </div>
-          <div className='mx-4 mb-4 rounded-2xl bg-white'>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
             <div className='border-b border-gray-100 p-4'>
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-3'>
@@ -201,12 +201,12 @@ export default function SettingsPage() {
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-gray-50 px-0 pt-4'>
+      <div className='flex-1 overflow-y-auto bg-white px-0 pt-4'>
         {/* User Profile Section */}
         <div className='mb-2 px-4'>
           <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>GENERAL</h2>
         </div>
-        <div className='mx-4 mb-4 rounded-2xl bg-white'>
+        <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
           <div className='border-b border-gray-100 p-4'>
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-3'>
@@ -240,7 +240,7 @@ export default function SettingsPage() {
         <div className='mb-2 px-4'>
           <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>HELP CENTER</h2>
         </div>
-        <div className='mx-4 mb-4 rounded-2xl bg-white'>
+        <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
           <div className='border-b border-gray-100 p-4'>
             <button
               className='flex w-full items-center justify-between'
@@ -276,7 +276,7 @@ export default function SettingsPage() {
         <div className='mb-2 px-4'>
           <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ABOUT</h2>
         </div>
-        <div className='mx-4 mb-4 rounded-2xl bg-white'>
+        <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
           <div className='border-b border-gray-100 p-4'>
             <button
               className='flex w-full items-center justify-between'
@@ -339,7 +339,7 @@ export default function SettingsPage() {
         <div className='mb-2 px-4'>
           <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
         </div>
-        <div className='mx-4 mb-4 rounded-2xl bg-white'>
+        <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
           <div className='border-b border-gray-100 p-4'>
             <button
               className='flex w-full items-center justify-between'

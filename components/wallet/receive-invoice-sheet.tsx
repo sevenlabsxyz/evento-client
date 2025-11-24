@@ -6,8 +6,9 @@ import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { toast } from '@/lib/utils/toast';
+import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
-import { Bolt, Copy, X } from 'lucide-react';
+import { Bolt, CheckCircle2, Copy, X } from 'lucide-react';
 import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
@@ -26,6 +27,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   const [amountSheetOpen, setAmountSheetOpen] = useState(false);
   const [activeDetent, setActiveDetent] = useState(2); // Full screen
   const [activeInvoice, setActiveInvoice] = useState<string | null>(null); // Track active bolt11 invoice
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { createInvoice } = useReceivePayment();
   const { address } = useLightningAddress();
@@ -38,44 +40,34 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
     }
   }, [open, address, invoiceAmount]);
 
-  // Listen for payment success when there's an active invoice
+  // Set up event listener to detect when active invoice is paid
   useEffect(() => {
-    if (!open || !activeInvoice) return;
+    // Only set up listener if we have an active invoice
+    if (!activeInvoice) return;
 
-    console.log('Setting up payment listener for invoice:', activeInvoice.slice(0, 20) + '...');
+    console.log('Setting up payment listener for invoice:', activeInvoice);
 
-    const unsubscribe = breezSDK.onEvent((event) => {
+    const handlePaymentEvent = (event: SdkEvent) => {
       if (event.type === 'paymentSucceeded') {
-        const payment = (event as any).details;
+        const payment = (event as any).payment as Payment;
 
-        // Check if this is an incoming payment
-        if (payment?.paymentType === 'received') {
-          // Match the invoice with our active invoice
-          const receivedInvoice = payment?.details?.invoice;
-
-          if (receivedInvoice === activeInvoice) {
-            console.log('Payment received for active invoice!');
-
-            // Show success toast
-            toast.success(`Received ${invoiceAmount?.toLocaleString() || 0} sats!`);
-
-            // Close the receive sheet
-            onOpenChange(false);
-
-            // Reset state
-            setActiveInvoice(null);
-            setInvoiceAmount(null);
-            setInvoiceAmountUSD(null);
-          }
+        // Check if this payment matches our active invoice
+        if (payment.details?.type === 'lightning' && payment.details.invoice === activeInvoice) {
+          console.log('Payment received for active invoice!', payment);
+          setShowSuccess(true);
         }
       }
-    });
+    };
 
+    // Subscribe to Breez SDK events
+    const unsubscribe = breezSDK.onEvent(handlePaymentEvent);
+
+    // Cleanup on unmount or when invoice changes
     return () => {
       console.log('Cleaning up payment listener');
       unsubscribe();
     };
-  }, [open, activeInvoice, invoiceAmount, onOpenChange]);
+  }, [activeInvoice]);
 
   const generateLightningAddressQR = async (lightningAddress: string) => {
     try {
@@ -183,95 +175,143 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
               {/* Content */}
               <div className='overflow-y-auto p-6'>
                 <div className='mx-auto max-w-md space-y-6'>
-                  {/* Lightning Address Section */}
-                  {address?.lightningAddress && (
-                    <div className='rounded-xl bg-gradient-to-br from-purple-50 to-blue-50 p-4'>
-                      <div className='mb-2 flex items-center gap-2'>
-                        <Bolt className='h-4 w-4 text-purple-600' />
-                        <h3 className='text-sm font-semibold text-gray-900'>
-                          Your Lightning Address
-                        </h3>
-                      </div>
-                      <p className='mb-3 text-xs text-gray-600'>
-                        Share this address to receive payments instantly.
-                      </p>
-                      <div className='flex items-center gap-2 rounded-lg bg-white p-3'>
-                        <span className='flex-1 truncate font-mono text-sm font-medium text-gray-900'>
-                          {address.lightningAddress}
-                        </span>
-                        <Button
-                          onClick={async () => {
-                            try {
-                              await navigator.clipboard.writeText(address.lightningAddress);
-                              toast.success('Address copied!');
-                            } catch (error) {
-                              toast.error('Failed to copy');
-                            }
-                          }}
-                          variant='ghost'
-                          size='sm'
-                          className='flex-shrink-0'
-                        >
-                          <Copy className='h-4 w-4' />
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* QR Code */}
-                  {qrCodeUrl && (
-                    <div className='space-y-3'>
-                      <div className='relative mx-auto w-fit rounded-3xl border border-gray-200 bg-white p-4'>
-                        <img src={qrCodeUrl} alt='Payment QR' className='h-64 w-64' />
-                        {/* Loading Overlay */}
-                        {isGenerating && (
-                          <div className='absolute inset-0 flex items-center justify-center rounded-3xl bg-white/80 backdrop-blur-sm'>
-                            <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary' />
-                          </div>
-                        )}
+                  {/* Success Screen */}
+                  {showSuccess ? (
+                    <div className='flex flex-col items-center justify-center space-y-6 py-12'>
+                      {/* Success Icon */}
+                      <div className='rounded-full bg-green-100 p-6'>
+                        <CheckCircle2 className='h-16 w-16 text-green-600' />
                       </div>
 
-                      {/* Amount Display - Only show when invoice has an amount */}
-                      {invoiceAmount && invoiceAmountUSD !== null && (
-                        <div className='text-center'>
-                          <p className='text-lg font-semibold text-gray-900'>
-                            ${invoiceAmountUSD.toFixed(2)} · {invoiceAmount.toLocaleString()} sats
+                      {/* Success Message */}
+                      <div className='text-center'>
+                        <h3 className='mb-2 text-2xl font-bold text-gray-900'>Payment Received!</h3>
+                        <p className='text-gray-600'>
+                          You successfully received {invoiceAmount?.toLocaleString() || 0} sats
+                        </p>
+                      </div>
+
+                      {/* Amount Display */}
+                      {invoiceAmountUSD !== null && (
+                        <div className='rounded-xl bg-gray-50 px-6 py-4'>
+                          <p className='text-center text-3xl font-bold text-gray-900'>
+                            ${invoiceAmountUSD.toFixed(2)}
+                          </p>
+                          <p className='text-center text-sm text-gray-600'>
+                            {invoiceAmount?.toLocaleString()} sats
                           </p>
                         </div>
                       )}
-                    </div>
-                  )}
 
-                  {/* Action Buttons */}
-                  <div className='space-y-3'>
-                    <Button
-                      onClick={() => {
-                        if (invoiceAmount) {
-                          // Reset to lightning address
+                      {/* Done Button */}
+                      <Button
+                        onClick={() => {
+                          // Reset state and close
+                          setShowSuccess(false);
                           setInvoiceAmount(null);
                           setInvoiceAmountUSD(null);
                           setActiveInvoice(null);
-                          if (address?.lightningAddress) {
-                            generateLightningAddressQR(address.lightningAddress);
-                          }
-                        } else {
-                          // Open amount sheet
-                          setAmountSheetOpen(true);
-                        }
-                      }}
-                      variant='outline'
-                      className='h-12 w-full rounded-full bg-gray-50'
-                    >
-                      {invoiceAmount ? 'Receive Any Amount' : 'Add Amount'}
-                    </Button>
-                    <Button
-                      onClick={handleShare}
-                      variant='outline'
-                      className='h-12 w-full rounded-full bg-gray-50'
-                    >
-                      Share
-                    </Button>
-                  </div>
+                          onOpenChange(false);
+                        }}
+                        className='h-12 w-full max-w-xs rounded-full'
+                      >
+                        Done
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      {/* Lightning Address Section */}
+                      {address?.lightningAddress && (
+                        <div className='rounded-xl bg-gradient-to-br from-purple-50 to-blue-50 p-4'>
+                          <div className='mb-2 flex items-center gap-2'>
+                            <Bolt className='h-4 w-4 text-purple-600' />
+                            <h3 className='text-sm font-semibold text-gray-900'>
+                              Your Lightning Address
+                            </h3>
+                          </div>
+                          <p className='mb-3 text-xs text-gray-600'>
+                            Share this address to receive payments instantly.
+                          </p>
+                          <div className='flex items-center gap-2 rounded-lg bg-white p-3'>
+                            <span className='flex-1 truncate font-mono text-sm font-medium text-gray-900'>
+                              {address.lightningAddress}
+                            </span>
+                            <Button
+                              onClick={async () => {
+                                try {
+                                  await navigator.clipboard.writeText(address.lightningAddress);
+                                  toast.success('Address copied!');
+                                } catch (error) {
+                                  toast.error('Failed to copy');
+                                }
+                              }}
+                              variant='ghost'
+                              size='sm'
+                              className='flex-shrink-0'
+                            >
+                              <Copy className='h-4 w-4' />
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* QR Code */}
+                      {qrCodeUrl && (
+                        <div className='space-y-3'>
+                          <div className='relative mx-auto w-fit rounded-3xl border border-gray-200 bg-white p-4'>
+                            <img src={qrCodeUrl} alt='Payment QR' className='h-64 w-64' />
+                            {/* Loading Overlay */}
+                            {isGenerating && (
+                              <div className='absolute inset-0 flex items-center justify-center rounded-3xl bg-white/80 backdrop-blur-sm'>
+                                <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary' />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Amount Display - Only show when invoice has an amount */}
+                          {invoiceAmount && invoiceAmountUSD !== null && (
+                            <div className='text-center'>
+                              <p className='text-lg font-semibold text-gray-900'>
+                                ${invoiceAmountUSD.toFixed(2)} · {invoiceAmount.toLocaleString()}{' '}
+                                sats
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Action Buttons */}
+                      <div className='space-y-3'>
+                        <Button
+                          onClick={() => {
+                            if (invoiceAmount) {
+                              // Reset to lightning address
+                              setInvoiceAmount(null);
+                              setInvoiceAmountUSD(null);
+                              setActiveInvoice(null);
+                              if (address?.lightningAddress) {
+                                generateLightningAddressQR(address.lightningAddress);
+                              }
+                            } else {
+                              // Open amount sheet
+                              setAmountSheetOpen(true);
+                            }
+                          }}
+                          variant='outline'
+                          className='h-12 w-full rounded-full bg-gray-50'
+                        >
+                          {invoiceAmount ? 'Receive Any Amount' : 'Add Amount'}
+                        </Button>
+                        <Button
+                          onClick={handleShare}
+                          variant='outline'
+                          className='h-12 w-full rounded-full bg-gray-50'
+                        >
+                          Share
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>

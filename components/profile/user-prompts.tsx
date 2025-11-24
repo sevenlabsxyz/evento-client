@@ -17,7 +17,7 @@ export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps)
   const sortedPrompts = [...prompts].sort((a, b) => a.display_order - b.display_order);
 
   return (
-    <div className='rounded-2xl bg-white p-6 shadow-sm'>
+    <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6'>
       <h2 className='mb-4 text-xl font-bold text-gray-900'>About Me</h2>
 
       <div className='space-y-4'>

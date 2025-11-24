@@ -6,10 +6,13 @@ import { SlideToConfirm } from '@/components/ui/slide-to-confirm';
 import { Textarea } from '@/components/ui/textarea';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
+import { breezSDK } from '@/lib/services/breez-sdk';
 import { toast } from '@/lib/utils/toast';
+import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AlertCircle, ArrowLeft, Loader2, Scan, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { AmountInputSheet } from './amount-input-sheet';
 
 interface SendLightningSheetProps {
   open: boolean;
@@ -29,15 +32,24 @@ export function SendLightningSheet({
   const [invoice, setInvoice] = useState('');
   const [amount, setAmount] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
-  const [note, setNote] = useState('');
+  const [comment, setComment] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
-  const [step, setStep] = useState<'input' | 'confirm'>('input');
+  const [step, setStep] = useState<'input' | 'amount' | 'comment' | 'confirm'>('input');
   const [hasFixedAmount, setHasFixedAmount] = useState(false);
   const [isLightningInvoice, setIsLightningInvoice] = useState(false);
   const [invoiceAmount, setInvoiceAmount] = useState<number | null>(null);
   const [invoiceDescription, setInvoiceDescription] = useState<string>('');
   const [activeDetent, setActiveDetent] = useState(1); // Start at medium height
   const [isValidating, setIsValidating] = useState(false);
+
+  // LNURL state
+  const [parsedInput, setParsedInput] = useState<InputType | null>(null);
+  const [lnurlPrepareResponse, setLnurlPrepareResponse] = useState<PrepareLnurlPayResponse | null>(
+    null
+  );
+  const [commentAllowed, setCommentAllowed] = useState(0);
+  const [minSendable, setMinSendable] = useState<number>(1);
+  const [maxSendable, setMaxSendable] = useState<number>(1000000000);
 
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading } = useSendPayment();
@@ -50,73 +62,18 @@ export function SendLightningSheet({
     }
   }, [scannedData, open]);
 
-  const handleInvoiceChange = async (value: string) => {
+  const handleInvoiceChange = (value: string) => {
     setInvoice(value);
 
-    // Reset validation state when input changes
+    // Reset state when input changes
     if (!value.trim()) {
-      setIsValidating(false);
       setIsLightningInvoice(false);
       setHasFixedAmount(false);
       setInvoiceAmount(null);
       setInvoiceDescription('');
       setAmount('');
       setAmountUSD('');
-      return;
-    }
-
-    // Check if it's a Lightning invoice (starts with lnbc, lntb, or lnbcrt)
-    const trimmedValue = value.trim().toLowerCase();
-    const isInvoice =
-      trimmedValue.startsWith('lnbc') ||
-      trimmedValue.startsWith('lntb') ||
-      trimmedValue.startsWith('lnbcrt');
-
-    setIsLightningInvoice(isInvoice);
-
-    if (isInvoice) {
-      // Try to decode the invoice to get the amount and description
-      setIsValidating(true);
-      try {
-        const prepareResponse = await prepareSend(value, undefined);
-        // Check if the invoice has a fixed amount
-        // The amount is in paymentMethod.amountSats for bolt11 invoices
-        if (prepareResponse?.amount) {
-          const amountSats = Number(prepareResponse.amount);
-          setInvoiceAmount(amountSats);
-          setAmount(amountSats.toString());
-          setHasFixedAmount(true);
-
-          // Convert to USD
-          const usd = await satsToUSD(amountSats);
-          setAmountUSD(usd.toFixed(2));
-        } else {
-          // Invoice doesn't have a fixed amount (zero-amount invoice)
-          setHasFixedAmount(false);
-          setInvoiceAmount(null);
-        }
-
-        // Extract description from invoice
-        if (prepareResponse?.paymentMethod?.type === 'bolt11Invoice') {
-          setInvoiceDescription(prepareResponse.paymentMethod.invoiceDetails.description || '');
-        } else {
-          setInvoiceDescription('');
-        }
-        setIsValidating(false);
-      } catch (error) {
-        // Invalid invoice or can't decode yet
-        setHasFixedAmount(false);
-        setInvoiceAmount(null);
-        setInvoiceDescription('');
-        setIsValidating(false);
-      }
-    } else {
-      // Not an invoice (Lightning address, etc.)
-      setHasFixedAmount(false);
-      setInvoiceAmount(null);
-      setInvoiceDescription('');
-      setAmount('');
-      setAmountUSD('');
+      setParsedInput(null);
     }
   };
 
@@ -145,7 +102,7 @@ export function SendLightningSheet({
   };
 
   const handleContinue = async () => {
-    if (!invoice) {
+    if (!invoice || !invoice.trim()) {
       toast.error('Please enter a Lightning invoice or address');
       return;
     }
@@ -156,38 +113,149 @@ export function SendLightningSheet({
       return;
     }
 
+    // Parse input using Breez SDK
+    setIsValidating(true);
     try {
-      // Prepare the payment to get fee estimate
-      // Auto-detection logic has already extracted amount if needed
-      await prepareSend(invoice, amount ? Number(amount) : undefined);
-      setActiveDetent(2); // Expand to full screen for confirmation
+      const parsed = await breezSDK.parseInput(invoice.trim());
+      setParsedInput(parsed);
+
+      if (parsed.type === 'bolt11Invoice') {
+        setIsLightningInvoice(true);
+
+        // Try to get amount and description from invoice
+        const prepareResponse = await prepareSend(invoice, undefined);
+        if (prepareResponse?.amount) {
+          const amountSats = Number(prepareResponse.amount);
+          setInvoiceAmount(amountSats);
+          setAmount(amountSats.toString());
+          setHasFixedAmount(true);
+
+          // Convert to USD
+          const usd = await satsToUSD(amountSats);
+          setAmountUSD(usd.toFixed(2));
+
+          // Has amount, go to confirm
+          setActiveDetent(2);
+          setStep('confirm');
+        } else {
+          // Zero-amount invoice, need amount
+          setHasFixedAmount(false);
+          setInvoiceAmount(null);
+          setStep('amount');
+        }
+
+        // Extract description
+        if (prepareResponse?.paymentMethod?.type === 'bolt11Invoice') {
+          setInvoiceDescription(prepareResponse.paymentMethod.invoiceDetails.description || '');
+        }
+      } else if (parsed.type === 'lightningAddress') {
+        setIsLightningInvoice(false);
+
+        // Extract LNURL constraints from Lightning address
+        if ((parsed as any).payRequest) {
+          const payRequest = (parsed as any).payRequest;
+          setCommentAllowed(payRequest.commentAllowed || 0);
+          setMinSendable(Math.floor(Number(payRequest.minSendable) / 1000)); // Convert msat to sat
+          setMaxSendable(Math.floor(Number(payRequest.maxSendable) / 1000));
+        }
+
+        // Lightning address - need amount
+        setStep('amount');
+      } else if (parsed.type === 'lnurlPay') {
+        setIsLightningInvoice(false);
+
+        // Extract LNURL constraints
+        setCommentAllowed((parsed as any).commentAllowed || 0);
+        setMinSendable(Math.floor(Number((parsed as any).minSendable) / 1000));
+        setMaxSendable(Math.floor(Number((parsed as any).maxSendable) / 1000));
+
+        // LNURL - need amount
+        setStep('amount');
+      } else {
+        toast.error('Unsupported payment type');
+      }
+
+      setIsValidating(false);
+    } catch (error: any) {
+      console.error('Failed to parse input:', error);
+      setParsedInput(null);
+      setIsValidating(false);
+      toast.error(error.message || 'Invalid Lightning invoice or address');
+    }
+  };
+
+  const handleAmountConfirm = async (amountSats: number) => {
+    // Validate amount against LNURL constraints
+    if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
+      if (amountSats < minSendable) {
+        toast.error(`Minimum amount is ${minSendable} sats`);
+        return;
+      }
+      if (amountSats > maxSendable) {
+        toast.error(`Maximum amount is ${maxSendable.toLocaleString()} sats`);
+        return;
+      }
+    }
+
+    setAmount(amountSats.toString());
+    const usd = await satsToUSD(amountSats);
+    setAmountUSD(usd.toFixed(2));
+
+    // Check if comment is allowed
+    if (commentAllowed > 0) {
+      setStep('comment');
+    } else {
+      // No comment, go to confirm
+      await handlePreparePayment(amountSats);
+    }
+  };
+
+  const handleCommentConfirm = async () => {
+    await handlePreparePayment(Number(amount));
+  };
+
+  const handlePreparePayment = async (amountSats: number) => {
+    try {
+      if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
+        // Prepare LNURL payment
+        const payRequest =
+          parsedInput.type === 'lightningAddress' ? (parsedInput as any).payRequest : parsedInput;
+
+        const prepareResponse = await breezSDK.prepareLnurlPay({
+          payRequest,
+          amountSats,
+          comment: comment || undefined,
+        });
+
+        setLnurlPrepareResponse(prepareResponse);
+      } else if (parsedInput?.type === 'bolt11Invoice') {
+        // Prepare BOLT11 payment
+        await prepareSend(invoice, amountSats);
+      }
+
+      setActiveDetent(2);
       setStep('confirm');
     } catch (error: any) {
-      const errorMessage = error.message || 'Unknown error';
-
-      // Provide helpful error messages
-      if (errorMessage.includes('Unsupported payment method')) {
-        // Check if it looks like a Lightning address
-        if (invoice.includes('@')) {
-          toast.error(
-            "Lightning address format detected. Please ensure you've entered a valid Lightning address or try using a Lightning invoice instead."
-          );
-        } else {
-          toast.error(
-            'This payment method is not supported. Please use a Lightning invoice (lnbc...) or Lightning address (user@domain).'
-          );
-        }
-      } else if (errorMessage.includes('Invalid input')) {
-        toast.error('Invalid invoice or address format. Please check and try again.');
-      } else {
-        toast.error(errorMessage || 'Failed to process payment request');
-      }
+      toast.error(error.message || 'Failed to prepare payment');
     }
   };
 
   const handleSend = async () => {
     try {
-      await sendPayment(invoice, amount ? Number(amount) : undefined);
+      if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
+        // Send LNURL payment
+        if (!lnurlPrepareResponse) {
+          throw new Error('Payment not prepared');
+        }
+
+        await breezSDK.lnurlPay({
+          prepareResponse: lnurlPrepareResponse,
+        });
+      } else {
+        // Send BOLT11 payment
+        await sendPayment(invoice, amount ? Number(amount) : undefined);
+      }
+
       toast.success('Payment sent!');
       onOpenChange(false);
     } catch (error: any) {
@@ -241,21 +309,34 @@ export function SendLightningSheet({
 
           {/* Details */}
           <div className='space-y-3'>
-            {/* Show invoice description for Lightning invoices, or note for Lightning addresses */}
-            {(isLightningInvoice ? invoiceDescription : note) && (
+            {/* Show destination for Lightning address payments */}
+            {parsedInput?.type === 'lightningAddress' && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
-                <p className='mb-1 text-xs text-muted-foreground'>
-                  {isLightningInvoice ? 'Description' : 'Note'}
-                </p>
-                <p className='text-sm'>{isLightningInvoice ? invoiceDescription : note}</p>
+                <p className='mb-1 text-xs text-muted-foreground'>Sending to</p>
+                <p className='text-sm font-medium'>{invoice}</p>
               </div>
             )}
 
-            {feeEstimate && (
+            {/* Show invoice description for Lightning invoices, or comment for Lightning addresses */}
+            {(isLightningInvoice ? invoiceDescription : comment) && (
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                <p className='mb-1 text-xs text-muted-foreground'>
+                  {isLightningInvoice ? 'Description' : 'Comment'}
+                </p>
+                <p className='text-sm'>{isLightningInvoice ? invoiceDescription : comment}</p>
+              </div>
+            )}
+
+            {/* Show fees for BOLT11 or LNURL */}
+            {(feeEstimate || lnurlPrepareResponse) && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <div className='flex justify-between'>
                   <span className='text-sm text-muted-foreground'>Network Fee</span>
-                  <span className='text-sm font-medium'>{feeEstimate.lightning} sats</span>
+                  <span className='text-sm font-medium'>
+                    {feeEstimate
+                      ? `${feeEstimate.lightning} sats`
+                      : `${lnurlPrepareResponse?.feeSats || 0} sats`}
+                  </span>
                 </div>
               </div>
             )}
@@ -367,33 +448,96 @@ export function SendLightningSheet({
     </div>
   );
 
-  return (
-    <SheetWithDetent.Root
-      presented={open}
-      onPresentedChange={(presented) => {
-        // Prevent closing while payment is sending
-        if (!presented && isLoading) {
-          return;
-        }
-        onOpenChange(presented);
-      }}
-      activeDetent={activeDetent}
-      onActiveDetentChange={setActiveDetent}
-    >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className='min-h-max'>
-            <div className='my-4 flex items-center'>
-              <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+  // Comment step content
+  const commentContent = (
+    <div className='flex flex-col'>
+      {/* Header */}
+      <div className='flex items-center justify-between border-b p-4'>
+        <button
+          onClick={() => setStep('amount')}
+          className='rounded-full p-2 transition-colors hover:bg-gray-100'
+        >
+          <ArrowLeft className='h-5 w-5' />
+        </button>
+        <h2 className='text-xl font-semibold'>Add Comment</h2>
+        <button
+          onClick={() => onOpenChange(false)}
+          className='rounded-full p-2 transition-colors hover:bg-gray-100'
+        >
+          <X className='h-5 w-5' />
+        </button>
+      </div>
+
+      {/* Content */}
+      <div className='flex-1 overflow-y-auto p-6'>
+        <div className='mx-auto max-w-md space-y-6'>
+          <div className='space-y-3'>
+            <Textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              placeholder={`Add a comment (max ${commentAllowed} characters)`}
+              maxLength={commentAllowed}
+              className='resize-none bg-gray-50'
+              rows={4}
+            />
+            <div className='flex justify-between text-xs text-gray-600'>
+              <span>Optional message</span>
+              <span>
+                {comment.length}/{commentAllowed}
+              </span>
             </div>
-            <VisuallyHidden.Root asChild>
-              <SheetWithDetent.Title>Send Payment</SheetWithDetent.Title>
-            </VisuallyHidden.Root>
-            {step === 'confirm' ? confirmationContent : inputContent}
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+          </div>
+
+          <Button onClick={handleCommentConfirm} className='h-12 w-full rounded-full'>
+            Continue
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      <SheetWithDetent.Root
+        presented={open}
+        onPresentedChange={(presented) => {
+          // Prevent closing while payment is sending
+          if (!presented && isLoading) {
+            return;
+          }
+          onOpenChange(presented);
+        }}
+        activeDetent={activeDetent}
+        onActiveDetentChange={setActiveDetent}
+      >
+        <SheetWithDetent.Portal>
+          <SheetWithDetent.View>
+            <SheetWithDetent.Backdrop />
+            <SheetWithDetent.Content className='min-h-max'>
+              <div className='my-4 flex items-center'>
+                <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+              </div>
+              <VisuallyHidden.Root asChild>
+                <SheetWithDetent.Title>Send Payment</SheetWithDetent.Title>
+              </VisuallyHidden.Root>
+              {step === 'input' && inputContent}
+              {step === 'comment' && commentContent}
+              {step === 'confirm' && confirmationContent}
+            </SheetWithDetent.Content>
+          </SheetWithDetent.View>
+        </SheetWithDetent.Portal>
+      </SheetWithDetent.Root>
+
+      {/* Amount Input Sheet - Nested */}
+      <AmountInputSheet
+        open={step === 'amount'}
+        onOpenChange={(open) => {
+          if (!open) {
+            setStep('input');
+          }
+        }}
+        onConfirm={handleAmountConfirm}
+      />
+    </>
   );
 }

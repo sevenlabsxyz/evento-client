@@ -27,7 +27,7 @@ export default function RowCard({
 
   return (
     <Card
-      className={`w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98]' : ''} `}
+      className={`w-full max-w-md rounded-2xl border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98]' : ''} `}
       onClick={handleClick}
     >
       <div className='flex items-center gap-4 px-6 py-6'>

@@ -6,11 +6,9 @@ import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import {
-  BookOpen,
   Calendar1,
   LogOut,
   MessageCircle,
-  MessageCircleQuestion,
   Plus,
   Settings,
   Star,
@@ -46,7 +44,7 @@ export function Sidebar() {
       title: 'Menu',
       items: [
         {
-          name: 'Hub',
+          name: 'Events',
           path: '/',
           icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
         },
@@ -60,16 +58,20 @@ export function Sidebar() {
           path: '/e/messages',
           icon: <MessageCircle className='h-5 w-5' strokeWidth={2.5} />,
         },
-        // Hiding until Notifications are implemented properly
-        // {
-        //   name: 'Inbox',
-        //   path: '/e/inbox',
-        //   icon: <Inbox className='h-5 w-5' strokeWidth={2.5} />,
-        // },
+        {
+          name: 'Settings',
+          path: '/e/settings',
+          icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
+        },
+        {
+          name: 'Profile',
+          path: '/e/profile',
+          icon: <UserCircle className='h-5 w-5' strokeWidth={2.5} />,
+        },
       ],
     },
     {
-      title: 'My Events',
+      title: 'Events Hub',
       items: [
         {
           name: 'My Events',
@@ -85,31 +87,6 @@ export function Sidebar() {
           name: 'Create Event',
           path: '/e/create',
           icon: <Plus className='h-5 w-5' strokeWidth={2.5} />,
-        },
-      ],
-    },
-    {
-      title: 'Resources',
-      items: [
-        {
-          name: 'Settings',
-          path: '/e/settings',
-          icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
-        },
-        {
-          name: 'Edit Profile',
-          path: '/e/profile/edit',
-          icon: <UserCircle className='h-5 w-5' strokeWidth={2.5} />,
-        },
-        {
-          name: 'Read Blog',
-          path: '/blog',
-          icon: <BookOpen className='h-5 w-5' strokeWidth={2.5} />,
-        },
-        {
-          name: 'Contact Support',
-          path: '/e/contact',
-          icon: <MessageCircleQuestion className='h-5 w-5' strokeWidth={2.5} />,
         },
       ],
     },

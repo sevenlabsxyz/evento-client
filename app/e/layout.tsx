@@ -2,6 +2,7 @@
 
 import { TopBar } from '@/components/top-bar';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { usePathname } from 'next/navigation';
@@ -13,6 +14,9 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
 
   // Initialize wallet (singleton - manages Zustand state)
   useWallet();
+
+  // Set up global Breez SDK event listener (runs once per session when connected)
+  useWalletEventListener();
 
   // Simply apply any existing route configuration
   useEffect(() => {

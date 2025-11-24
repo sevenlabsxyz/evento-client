@@ -4,6 +4,7 @@ import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BackupReminder } from '@/components/wallet/backup-reminder';
+import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
 import { QuickToolsSection } from '@/components/wallet/quick-tools-section';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
@@ -64,6 +65,7 @@ export default function WalletPage() {
   const [openDrawers, setOpenDrawers] = useState<DrawerContent[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
   const [showBackupReminder, setShowBackupReminder] = useState(false);
+  const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [scannedData, setScannedData] = useState<string>('');
 
   const openDrawer = (content: DrawerContent) => {
@@ -97,6 +99,7 @@ export default function WalletPage() {
     setTopBarForRoute(pathname, {
       title: 'Wallet',
       badge: 'Beta',
+      onBadgeClick: () => setShowBetaSheet(true),
       centerMode: 'title',
       showAvatar: false,
       buttons: [
@@ -340,9 +343,12 @@ export default function WalletPage() {
     step === 'main'
   ) {
     return (
-      <div className='mx-auto max-w-sm pb-28 pt-4'>
-        <WalletUnlock />
-      </div>
+      <>
+        <div className='mx-auto max-w-sm pb-28 pt-4'>
+          <WalletUnlock />
+        </div>
+        <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
+      </>
     );
   }
 
@@ -456,6 +462,9 @@ export default function WalletPage() {
             open={openDrawers.includes('earn')}
             onOpenChange={(open) => !open && closeDrawer('earn')}
           />
+
+          {/* Beta Information Sheet */}
+          <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
         </div>
       </div>
 

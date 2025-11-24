@@ -2,6 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { motion } from 'framer-motion';
 import { Calendar1, MessageCircle, Plus, User, Wallet } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -45,12 +46,14 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
           if (item.isCenter) {
             return (
               <div key={item.id} className='flex justify-center'>
-                <div
+                <motion.div
                   className='m-0 flex h-12 w-16 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 p-0 transition-colors duration-150 hover:bg-gray-200'
                   onClick={() => handleNavigation(item)}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 >
                   <Icon className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
-                </div>
+                </motion.div>
               </div>
             );
           }
@@ -63,20 +66,26 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                 onClick={() => handleNavigation(item)}
                 className={`flex justify-center rounded-lg px-1 py-3 transition-opacity hover:opacity-80`}
               >
-                <Avatar
-                  className={`h-8 w-8 ${isActive ? 'ring-2 ring-red-600 ring-offset-2' : ''}`}
+                <motion.div
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  style={{ display: 'inline-block' }}
                 >
-                  <AvatarImage src={user?.image} alt={user?.name || 'Profile'} />
-                  <AvatarFallback className='bg-gray-100'>
-                    <Image
-                      src='/assets/img/evento-sublogo.svg'
-                      alt='Evento'
-                      width={32}
-                      height={32}
-                      className='h-full w-full p-1'
-                    />
-                  </AvatarFallback>
-                </Avatar>
+                  <Avatar
+                    className={`h-8 w-8 ${isActive ? 'ring-2 ring-red-600 ring-offset-2' : ''}`}
+                  >
+                    <AvatarImage src={user?.image} alt={user?.name || 'Profile'} />
+                    <AvatarFallback className='bg-gray-100'>
+                      <Image
+                        src='/assets/img/evento-sublogo.svg'
+                        alt='Evento'
+                        width={32}
+                        height={32}
+                        className='h-full w-full p-1'
+                      />
+                    </AvatarFallback>
+                  </Avatar>
+                </motion.div>
               </button>
             );
           }
@@ -89,7 +98,13 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                 isActive ? 'text-red-600' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              <Icon className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`} strokeWidth={2.5} />
+              <motion.div
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                style={{ display: 'inline-block' }}
+              >
+                <Icon className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`} strokeWidth={2.5} />
+              </motion.div>
             </button>
           );
         })}
