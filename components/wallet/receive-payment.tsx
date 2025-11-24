@@ -1,13 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-payments';
 import { toast } from '@/lib/utils/toast';
 import { Check, Copy, QrCode, X } from 'lucide-react';
-import QRCode from 'qrcode';
 import { useState } from 'react';
 
 interface ReceivePaymentProps {
@@ -19,7 +19,6 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
   const [amountUSD, setAmountUSD] = useState('');
   const [description, setDescription] = useState('');
   const [invoice, setInvoice] = useState<string | null>(null);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('sats');
 
@@ -55,14 +54,6 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
     try {
       const invoiceData = await createInvoice(Number(amount), description || 'Payment request');
       setInvoice(invoiceData.paymentRequest);
-
-      // Generate QR code
-      const qrUrl = await QRCode.toDataURL(invoiceData.paymentRequest, {
-        width: 300,
-        margin: 2,
-      });
-      setQrCodeUrl(qrUrl);
-
       toast.success('Invoice created!');
     } catch (error: any) {
       toast.error(error.message || 'Failed to create invoice');
@@ -82,7 +73,7 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
     }
   };
 
-  if (invoice && qrCodeUrl) {
+  if (invoice) {
     return (
       <div className='space-y-6'>
         <div className='flex items-center justify-between'>
@@ -94,9 +85,7 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
 
         <div className='space-y-4'>
           <div className='flex flex-col items-center gap-4'>
-            <div className='rounded-xl bg-white p-4 shadow-sm'>
-              <img src={qrCodeUrl} alt='Payment QR Code' className='h-64 w-64' />
-            </div>
+            <EventoQRCode value={invoice} size={256} />
 
             <div className='text-center'>
               <div className='text-2xl font-bold'>{Number(amount).toLocaleString()} sats</div>

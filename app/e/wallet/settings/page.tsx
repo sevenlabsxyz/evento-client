@@ -7,7 +7,7 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Bolt, Lock, Shield, Trash2 } from 'lucide-react';
+import { AlertCircle, Lock, Shield, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -69,7 +69,7 @@ export default function WalletSettingsPage() {
           {/* Lock Wallet */}
           <button
             onClick={handleLockWallet}
-            className='flex w-full items-center gap-3 rounded-lg border bg-white p-4 text-left transition-colors hover:bg-gray-50'
+            className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
               <Lock className='h-5 w-5 text-blue-600' />
@@ -81,7 +81,7 @@ export default function WalletSettingsPage() {
           </button>
 
           {/* Backup Status */}
-          <div className='flex items-center gap-3 rounded-lg border bg-white p-4'>
+          <div className='flex items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 walletState.hasBackup ? 'bg-green-100' : 'bg-amber-100'
@@ -101,28 +101,11 @@ export default function WalletSettingsPage() {
                 )}
               </div>
             </div>
-            {!walletState.hasBackup && (
-              <Button onClick={() => router.push('/e/wallet')} variant='outline' size='sm'>
-                Backup Now
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Lightning Address Section */}
-      <div className='space-y-4'>
-        <h2 className='text-lg font-semibold'>Lightning Address</h2>
-
-        <div className='flex items-center gap-3 rounded-lg border bg-white p-4'>
-          <div className='flex h-10 w-10 items-center justify-center rounded-full bg-purple-100'>
-            <Bolt className='h-5 w-5 text-purple-600' />
-          </div>
-          <div className='min-w-0 flex-1'>
-            <div className='font-medium'>Your Address</div>
-            <div className='truncate text-sm text-muted-foreground'>
-              {address?.lightningAddress || 'Not set'}
-            </div>
+            {/*{!walletState.hasBackup && (*/}
+            <Button onClick={() => router.push('/e/wallet')} variant='outline' size='sm'>
+              Backup Now
+            </Button>
+            {/*)}*/}
           </div>
         </div>
       </div>

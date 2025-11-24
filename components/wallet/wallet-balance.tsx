@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -10,7 +11,6 @@ import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import { ChevronRight, HelpCircle, Zap } from 'lucide-react';
-import QRCode from 'qrcode';
 import { useEffect, useState } from 'react';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 
@@ -28,7 +28,6 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [showUSD, setShowUSD] = useState(true);
   const [showQrModal, setShowQrModal] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showEducationalSheet, setShowEducationalSheet] = useState(false);
   const [educationalArticle, setEducationalArticle] = useState<any>(null);
 
@@ -57,30 +56,6 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
 
     fetchUSD();
   }, [walletState.balance]);
-
-  // Generate QR code when modal opens
-  useEffect(() => {
-    const generateQRCode = async () => {
-      if (showQrModal && !qrCodeUrl) {
-        try {
-          const qrUrl = await QRCode.toDataURL(`lightning:${lightningAddress}`, {
-            width: 300,
-            margin: 2,
-            color: {
-              dark: '#000000',
-              light: '#FFFFFF',
-            },
-          });
-          setQrCodeUrl(qrUrl);
-        } catch (error) {
-          console.error('Failed to generate QR code:', error);
-          toast.error('Failed to generate QR code');
-        }
-      }
-    };
-
-    generateQRCode();
-  }, [showQrModal, lightningAddress, qrCodeUrl]);
 
   // Fetch educational blog post
   useEffect(() => {
@@ -135,12 +110,12 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
     <>
       <div className='space-y-6'>
         {/* Balance Card */}
-        <div className='rounded-2xl border border-gray-200 bg-white p-6 shadow-sm'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm'>
           {/* Lightning Address Row */}
           <div className='mb-4 flex items-center gap-3'>
             <motion.button
               onClick={() => setShowQrModal(true)}
-              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-white p-3 text-left transition-colors hover:bg-gray-100'
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
@@ -154,7 +129,7 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
             </motion.button>
             <motion.button
               onClick={() => setShowEducationalSheet(true)}
-              className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50 transition-colors hover:bg-gray-100'
+              className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-100'
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
@@ -200,14 +175,14 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
               <Button
                 onClick={onReceive}
                 variant='outline'
-                className='font-lg h-12 rounded-full bg-gray-50'
+                className='font-lg h-12 rounded-full bg-white active:bg-gray-100'
               >
                 Receive
               </Button>
               <Button
                 onClick={onSend}
                 variant='outline'
-                className='font-lg h-12 rounded-full bg-gray-50'
+                className='font-lg h-12 rounded-full bg-white active:bg-gray-100'
               >
                 Send
               </Button>
@@ -215,7 +190,7 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
             <Button
               onClick={onScan}
               variant='outline'
-              className='font-lg h-12 w-full rounded-full bg-gray-50'
+              className='font-lg h-12 w-full rounded-full bg-white active:bg-gray-100'
             >
               Scan
             </Button>
@@ -235,28 +210,26 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
                 </div>
                 <h2 className='mb-6 text-center text-lg font-semibold'>{lightningAddress}</h2>
 
-                {qrCodeUrl && (
-                  <div className='space-y-4'>
-                    <div className='mx-auto w-fit rounded-2xl bg-white p-6 shadow-lg'>
-                      <img src={qrCodeUrl} alt='Lightning Address QR Code' className='h-64 w-64' />
-                    </div>
-
-                    <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 text-center'>
-                      <p className='mb-1 text-xs text-muted-foreground'>Your Lightning Address</p>
-                      <p className='break-all font-mono text-sm'>{lightningAddress}</p>
-                    </div>
-
-                    <div className='space-y-3'>
-                      <Button
-                        onClick={handleCopyAddress}
-                        variant='outline'
-                        className='font-lg h-12 w-full rounded-full bg-gray-50'
-                      >
-                        Copy Address
-                      </Button>
-                    </div>
+                <div className='space-y-4'>
+                  <div className='mx-auto w-fit'>
+                    <EventoQRCode value={`lightning:${lightningAddress}`} size={256} />
                   </div>
-                )}
+
+                  <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 text-center'>
+                    <p className='mb-1 text-xs text-muted-foreground'>Your Lightning Address</p>
+                    <p className='break-all font-mono text-sm'>{lightningAddress}</p>
+                  </div>
+
+                  <div className='space-y-3'>
+                    <Button
+                      onClick={handleCopyAddress}
+                      variant='outline'
+                      className='font-lg h-12 w-full rounded-full bg-gray-50'
+                    >
+                      Copy Address
+                    </Button>
+                  </div>
+                </div>
               </div>
             </DetachedSheet.Content>
           </DetachedSheet.View>

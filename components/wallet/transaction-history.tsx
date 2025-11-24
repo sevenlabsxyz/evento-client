@@ -175,7 +175,7 @@ export function TransactionHistory({
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-center gap-2'>
                       {getStatusIcon(payment.status)}
-                      <div className='flex min-w-0 flex-1 flex-col'>
+                      <div className='flex min-w-0 max-w-[220px] flex-1 flex-col md:max-w-none'>
                         <p className='truncate font-medium text-gray-900'>{description}</p>
                         <p className='text-xs font-normal text-gray-600'>
                           {formatDate(payment.timestamp)}

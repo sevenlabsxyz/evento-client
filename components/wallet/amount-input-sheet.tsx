@@ -4,16 +4,22 @@ import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowUpDown, Delete, X } from 'lucide-react';
+import { ArrowUpDown, Delete, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface AmountInputSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: (amountSats: number) => void;
+  isLoading?: boolean;
 }
 
-export function AmountInputSheet({ open, onOpenChange, onConfirm }: AmountInputSheetProps) {
+export function AmountInputSheet({
+  open,
+  onOpenChange,
+  onConfirm,
+  isLoading,
+}: AmountInputSheetProps) {
   const [amount, setAmount] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
@@ -77,7 +83,7 @@ export function AmountInputSheet({ open, onOpenChange, onConfirm }: AmountInputS
   const handleConfirm = () => {
     if (amount && Number(amount) > 0) {
       onConfirm(Number(amount));
-      onOpenChange(false);
+      // Don't close the sheet here - parent will close it after async operations complete
     }
   };
 
@@ -103,7 +109,7 @@ export function AmountInputSheet({ open, onOpenChange, onConfirm }: AmountInputS
 
             <div className='flex flex-col'>
               {/* Header */}
-              <div className='flex items-center justify-between border-b p-4'>
+              <div className='flex items-center justify-between p-4'>
                 <h2 className='text-xl font-semibold'>Enter Amount</h2>
                 <button
                   onClick={() => onOpenChange(false)}
@@ -161,11 +167,18 @@ export function AmountInputSheet({ open, onOpenChange, onConfirm }: AmountInputS
                   {/* Next Button */}
                   <Button
                     onClick={handleConfirm}
-                    disabled={!amount || Number(amount) <= 0}
+                    disabled={!amount || Number(amount) <= 0 || isLoading}
                     className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
                     variant='outline'
                   >
-                    Next
+                    {isLoading ? (
+                      <>
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                        Preparing...
+                      </>
+                    ) : (
+                      'Next'
+                    )}
                   </Button>
                 </div>
               </div>

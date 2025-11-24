@@ -1,9 +1,12 @@
 import {
   BreezSdk,
   CheckLightningAddressRequest,
+  ClaimDepositRequest,
   Config,
   ConnectRequest,
+  DepositInfo,
   EventListener,
+  Fee,
   GetInfoResponse,
   InputType,
   LightningAddressInfo,
@@ -17,9 +20,12 @@ import {
   PrepareSendPaymentResponse,
   ReceivePaymentMethod,
   ReceivePaymentRequest,
+  ReceivePaymentResponse,
+  RefundDepositRequest,
   RegisterLightningAddressRequest,
   SdkEvent,
   Seed,
+  SendPaymentRequest,
   SendPaymentResponse,
   WaitForPaymentRequest,
   WaitForPaymentResponse,
@@ -132,6 +138,9 @@ export class BreezSDKService {
       config.apiKey = apiKey;
       // Configure LNURL domain for Lightning addresses
       config.lnurlDomain = 'evento.cash';
+      // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
+      // Auto-claims if fee is ≤ 1 sat/vbyte
+      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 1 };
 
       // Storage directory - using browser's IndexedDB
       const storageDir = './.breez-data';
@@ -269,6 +278,47 @@ export class BreezSDKService {
   }
 
   /**
+   * Receive payment via Bitcoin address or Lightning invoice
+   * Used to generate on-chain Bitcoin addresses that auto-convert to Lightning
+   */
+  async receivePayment(request: ReceivePaymentRequest): Promise<ReceivePaymentResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log(
+        '📥 [BREEZ:RECEIVE_PAYMENT] Generating payment method:',
+        request.paymentMethod.type
+      );
+      const response = await this.sdk.receivePayment(request);
+      console.log('✅ [BREEZ:RECEIVE_PAYMENT] Payment method generated successfully');
+      return response;
+    } catch (error) {
+      console.error('Failed to receive payment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Prepare a send payment transaction
+   * Used to get fee estimates before sending Bitcoin on-chain or Lightning payments
+   */
+  async prepareSendPayment(
+    request: PrepareSendPaymentRequest
+  ): Promise<PrepareSendPaymentResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log('⚡ [BREEZ:PREPARE_SEND] Preparing send payment...');
+      const response = await this.sdk.prepareSendPayment(request);
+      console.log('✅ [BREEZ:PREPARE_SEND] Send payment prepared successfully');
+      return response;
+    } catch (error) {
+      console.error('Failed to prepare send payment:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Wait for a specific payment to complete
    * Used to track when an invoice is paid
    */
@@ -328,6 +378,24 @@ export class BreezSDKService {
       return response;
     } catch (error) {
       console.error('Failed to send payment:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Send payment with custom options
+   * Used for Bitcoin on-chain payments with fee selection or Lightning with custom parameters
+   */
+  async sendPaymentWithOptions(request: SendPaymentRequest): Promise<SendPaymentResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log('💸 [BREEZ:SEND_PAYMENT_OPTIONS] Sending payment with options...');
+      const response = await this.sdk.sendPayment(request);
+      console.log('✅ [BREEZ:SEND_PAYMENT_OPTIONS] Payment sent successfully');
+      return response;
+    } catch (error) {
+      console.error('Failed to send payment with options:', error);
       throw error;
     }
   }
@@ -481,6 +549,68 @@ export class BreezSDKService {
   }
 
   /**
+   * List unclaimed on-chain deposits
+   * These are deposits that couldn't be auto-claimed (e.g., fee exceeded maxDepositClaimFee)
+   */
+  async listUnclaimedDeposits(): Promise<DepositInfo[]> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const result = await this.sdk.listUnclaimedDeposits({});
+      return result.deposits;
+    } catch (error) {
+      console.error('Failed to list unclaimed deposits:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Manually claim an on-chain deposit (convert to Lightning)
+   * Used when auto-claiming fails due to high fees
+   */
+  async claimDeposit(txid: string, vout: number, maxFee: Fee): Promise<void> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log(
+        `💰 [BREEZ:CLAIM_DEPOSIT] Claiming deposit ${txid}:${vout} with max fee:`,
+        maxFee
+      );
+      const request: ClaimDepositRequest = { txid, vout, maxFee };
+      await this.sdk.claimDeposit(request);
+      console.log(`✅ [BREEZ:CLAIM_DEPOSIT] Successfully claimed deposit ${txid}:${vout}`);
+    } catch (error) {
+      console.error('Failed to claim deposit:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Refund an on-chain deposit back to a Bitcoin address
+   * Useful if user wants to send to cold storage instead of claiming to Lightning
+   */
+  async refundDeposit(
+    txid: string,
+    vout: number,
+    destinationAddress: string,
+    fee: Fee
+  ): Promise<void> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      console.log(
+        `🔄 [BREEZ:REFUND_DEPOSIT] Refunding deposit ${txid}:${vout} to ${destinationAddress}`
+      );
+      const request: RefundDepositRequest = { txid, vout, destinationAddress, fee };
+      await this.sdk.refundDeposit(request);
+      console.log(`✅ [BREEZ:REFUND_DEPOSIT] Successfully refunded deposit ${txid}:${vout}`);
+    } catch (error) {
+      console.error('Failed to refund deposit:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Format and log Breez SDK events with readable context
    */
   private logBreezEvent(event: SdkEvent): void {
@@ -513,21 +643,25 @@ export class BreezSDKService {
         break;
       }
 
-      case 'claimDepositsSucceeded': {
+      case 'claimedDeposits': {
         const deposits = (event as any).claimedDeposits || [];
+        const totalAmount = deposits.reduce((sum: number, d: any) => sum + (d.amountSats || 0), 0);
         console.log(
-          `📥 [BREEZ:CLAIM_DEPOSITS_SUCCEEDED] ${timestamp} - Claimed ${deposits.length} deposit(s)`,
+          `📥 [BREEZ:CLAIMED_DEPOSITS] ${timestamp} - Auto-claimed ${deposits.length} deposit(s) (${totalAmount.toLocaleString()} sats total)`,
           deposits
         );
         break;
       }
 
-      case 'claimDepositsFailed': {
+      case 'unclaimedDeposits': {
         const deposits = (event as any).unclaimedDeposits || [];
+        const totalAmount = deposits.reduce((sum: number, d: any) => sum + (d.amountSats || 0), 0);
         console.log(
-          `⚠️ [BREEZ:CLAIM_DEPOSITS_FAILED] ${timestamp} - Failed to claim ${deposits.length} deposit(s)`,
+          `⚠️ [BREEZ:UNCLAIMED_DEPOSITS] ${timestamp} - Failed to auto-claim ${deposits.length} deposit(s) (${totalAmount.toLocaleString()} sats total)`,
           deposits
         );
+        console.log('  → Reason: Fee exceeded maxDepositClaimFee threshold');
+        console.log('  → Action required: User must manually claim deposits');
         break;
       }
 
@@ -581,3 +715,6 @@ export class BreezSDKService {
 }
 
 export const breezSDK = BreezSDKService.getInstance();
+
+// Re-export types for use in components
+export type { DepositInfo, Fee } from '@breeztech/breez-sdk-spark';

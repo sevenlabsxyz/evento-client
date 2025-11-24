@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { VisuallyHidden } from '@silk-hq/components';
+import { motion } from 'framer-motion';
 import { Share, X } from 'lucide-react';
 import React from 'react';
 import { LongSheet } from './long-sheet';
@@ -88,30 +89,54 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
 
                   {/* Stats Grid */}
                   <div className='StatsLongSheet-statsGrid'>
-                    <div className='StatsLongSheet-statItem'>
+                    <motion.div
+                      className='StatsLongSheet-statItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-statValue'>{stats.events}</div>
                       <div className='StatsLongSheet-statLabel'>Events</div>
-                    </div>
-                    <div className='StatsLongSheet-statItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-statItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-statValue'>{stats.countries}</div>
                       <div className='StatsLongSheet-statLabel'>Countries</div>
-                    </div>
-                    <div className='StatsLongSheet-statItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-statItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-statValue'>{stats.cities}</div>
                       <div className='StatsLongSheet-statLabel'>Cities</div>
-                    </div>
-                    <div className='StatsLongSheet-statItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-statItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-statValue'>{stats.categories}</div>
                       <div className='StatsLongSheet-statLabel'>Categories</div>
-                    </div>
-                    <div className='StatsLongSheet-statItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-statItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-statValue'>{stats.mutuals}</div>
                       <div className='StatsLongSheet-statLabel'>Mutuals</div>
-                    </div>
-                    <div className='StatsLongSheet-statItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-statItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-statValue'>0</div>
                       <div className='StatsLongSheet-statLabel'>Connections</div>
-                    </div>
+                    </motion.div>
                   </div>
                 </div>
               </div>
@@ -128,22 +153,30 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                   </div>
 
                   <div className='StatsLongSheet-totalStats'>
-                    <div className='StatsLongSheet-totalItem'>
+                    <motion.div
+                      className='StatsLongSheet-totalItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-totalValue StatsLongSheet-totalValue--primary'>
                         {stats.events}
                       </div>
                       <div className='StatsLongSheet-totalLabel StatsLongSheet-totalLabel--primary'>
                         Events
                       </div>
-                    </div>
-                    <div className='StatsLongSheet-totalItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-totalItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-totalValue StatsLongSheet-totalValue--secondary'>
                         {stats.mutuals}
                       </div>
                       <div className='StatsLongSheet-totalLabel StatsLongSheet-totalLabel--secondary'>
                         Mutuals Met
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
 
                   {/* Progress Circles */}
@@ -175,22 +208,30 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                   <div className='StatsLongSheet-countriesContent'>
                     <div className='StatsLongSheet-countriesStats'>
                       <div className='StatsLongSheet-countriesLeft'>
-                        <div className='StatsLongSheet-countryItem'>
+                        <motion.div
+                          className='StatsLongSheet-countryItem cursor-pointer'
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                        >
                           <div className='StatsLongSheet-countryValue StatsLongSheet-countryValue--visited'>
                             {stats.countries}
                           </div>
                           <div className='StatsLongSheet-countryLabel StatsLongSheet-countryLabel--visited'>
                             Visited
                           </div>
-                        </div>
-                        <div className='StatsLongSheet-countryItem'>
+                        </motion.div>
+                        <motion.div
+                          className='StatsLongSheet-countryItem cursor-pointer'
+                          whileTap={{ scale: 0.95 }}
+                          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                        >
                           <div className='StatsLongSheet-countryValue StatsLongSheet-countryValue--total'>
                             249
                           </div>
                           <div className='StatsLongSheet-countryLabel StatsLongSheet-countryLabel--total'>
                             World total
                           </div>
-                        </div>
+                        </motion.div>
                       </div>
                       <div className='StatsLongSheet-countriesRight'>
                         <CircularProgress
@@ -223,22 +264,30 @@ const StatsLongSheet = ({ trigger }: StatsLongSheetProps) => {
                   </div>
 
                   <div className='StatsLongSheet-categoriesStats'>
-                    <div className='StatsLongSheet-categoryItem'>
+                    <motion.div
+                      className='StatsLongSheet-categoryItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-categoryValue StatsLongSheet-categoryValue--primary'>
                         {stats.categories}
                       </div>
                       <div className='StatsLongSheet-categoryLabel StatsLongSheet-categoryLabel--primary'>
                         Categories
                       </div>
-                    </div>
-                    <div className='StatsLongSheet-categoryItem'>
+                    </motion.div>
+                    <motion.div
+                      className='StatsLongSheet-categoryItem cursor-pointer'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
                       <div className='StatsLongSheet-categoryValue StatsLongSheet-categoryValue--secondary'>
                         {stats.mutuals}
                       </div>
                       <div className='StatsLongSheet-categoryLabel StatsLongSheet-categoryLabel--secondary'>
                         Mutuals
                       </div>
-                    </div>
+                    </motion.div>
                   </div>
 
                   <div className='StatsLongSheet-popularCategories'>

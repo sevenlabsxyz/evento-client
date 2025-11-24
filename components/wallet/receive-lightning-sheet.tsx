@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { toast } from '@/lib/utils/toast';
 import { Copy, Edit3, Share2, X } from 'lucide-react';
-import QRCode from 'qrcode';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Drawer } from 'vaul';
 import { ReceiveLightningSheet } from './receive-invoice-sheet';
 
@@ -14,28 +14,7 @@ interface ReceiveLightningSheetProps {
 }
 
 export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLightningSheetProps) {
-  const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
   const [showInvoiceSheet, setShowInvoiceSheet] = useState(false);
-
-  useEffect(() => {
-    generateQRCode();
-  }, [lightningAddress]);
-
-  const generateQRCode = async () => {
-    try {
-      const qrUrl = await QRCode.toDataURL(`lightning:${lightningAddress}`, {
-        width: 300,
-        margin: 2,
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF',
-        },
-      });
-      setQrCodeUrl(qrUrl);
-    } catch (error) {
-      console.error('Failed to generate QR code:', error);
-    }
-  };
 
   const handleCopy = async () => {
     try {
@@ -80,11 +59,7 @@ export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLigh
         {/* Content */}
         <div className='flex flex-1 flex-col items-center justify-center space-y-6 p-6'>
           {/* QR Code */}
-          {qrCodeUrl && (
-            <div className='rounded-2xl bg-white p-6 shadow-lg'>
-              <img src={qrCodeUrl} alt='Lightning Address QR' className='h-64 w-64' />
-            </div>
-          )}
+          <EventoQRCode value={`lightning:${lightningAddress}`} size={256} />
 
           {/* Lightning Address */}
           <div className='w-full max-w-md space-y-3'>

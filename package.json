@@ -78,6 +78,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.60.0",
+    "react-qrcode-logo": "^4.0.0",
     "react-spotify-embed": "^2.0.4",
     "react-swipeable": "^7.0.2",
     "stream-chat": "^9.16.0",

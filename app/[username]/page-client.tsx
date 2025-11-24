@@ -45,6 +45,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { EventHost } from '@/lib/types/event';
 import { toast } from '@/lib/utils/toast';
+import { motion } from 'framer-motion';
 import {
   BadgeCheck,
   Calendar,
@@ -640,14 +641,24 @@ export default function UserProfilePageClient() {
                 <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
                 <div className='text-sm text-gray-500'>Events</div>
               </div>
-              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
+              <motion.button
+                className='text-center'
+                onClick={() => setShowFollowingSheet(true)}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              >
                 <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
                 <div className='text-sm text-gray-500'>Following</div>
-              </button>
-              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
+              </motion.button>
+              <motion.button
+                className='text-center'
+                onClick={() => setShowFollowersSheet(true)}
+                whileTap={{ scale: 0.95 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+              >
                 <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
                 <div className='text-sm text-gray-500'>Followers</div>
-              </button>
+              </motion.button>
             </div>
           </div>
 

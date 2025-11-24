@@ -34,13 +34,16 @@ export function SendLightningSheet({
   const [amountUSD, setAmountUSD] = useState('');
   const [comment, setComment] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
-  const [step, setStep] = useState<'input' | 'amount' | 'comment' | 'confirm'>('input');
+  const [step, setStep] = useState<'input' | 'amount' | 'comment' | 'bitcoin-fee' | 'confirm'>(
+    'input'
+  );
   const [hasFixedAmount, setHasFixedAmount] = useState(false);
   const [isLightningInvoice, setIsLightningInvoice] = useState(false);
   const [invoiceAmount, setInvoiceAmount] = useState<number | null>(null);
   const [invoiceDescription, setInvoiceDescription] = useState<string>('');
   const [activeDetent, setActiveDetent] = useState(1); // Start at medium height
   const [isValidating, setIsValidating] = useState(false);
+  const [isPreparingPayment, setIsPreparingPayment] = useState(false);
 
   // LNURL state
   const [parsedInput, setParsedInput] = useState<InputType | null>(null);
@@ -51,9 +54,40 @@ export function SendLightningSheet({
   const [minSendable, setMinSendable] = useState<number>(1);
   const [maxSendable, setMaxSendable] = useState<number>(1000000000);
 
+  // Bitcoin on-chain payment state
+  const [paymentType, setPaymentType] = useState<'lightning' | 'bitcoin'>('lightning');
+  const [bitcoinFeeSpeed, setBitcoinFeeSpeed] = useState<'fast' | 'medium' | 'slow'>('medium');
+  const [bitcoinPrepareResponse, setBitcoinPrepareResponse] = useState<any>(null);
+
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading } = useSendPayment();
   const { satsToUSD, usdToSats } = useAmountConverter();
+
+  // Reset form to initial state
+  const resetForm = () => {
+    setInvoice('');
+    setAmount('');
+    setAmountUSD('');
+    setComment('');
+    setInputMode('usd');
+    setStep('input');
+    setHasFixedAmount(false);
+    setIsLightningInvoice(false);
+    setInvoiceAmount(null);
+    setInvoiceDescription('');
+    setActiveDetent(1);
+    setIsValidating(false);
+    setIsPreparingPayment(false);
+    setParsedInput(null);
+    setLnurlPrepareResponse(null);
+    setCommentAllowed(0);
+    setMinSendable(1);
+    setMaxSendable(1000000000);
+    // Reset Bitcoin state
+    setPaymentType('lightning');
+    setBitcoinFeeSpeed('medium');
+    setBitcoinPrepareResponse(null);
+  };
 
   // Populate invoice field when scanned data is provided
   useEffect(() => {
@@ -171,6 +205,14 @@ export function SendLightningSheet({
 
         // LNURL - need amount
         setStep('amount');
+      } else if (parsed.type === 'bitcoinAddress') {
+        // Bitcoin on-chain address
+        setPaymentType('bitcoin');
+        setIsLightningInvoice(false);
+        setHasFixedAmount(false);
+
+        // Bitcoin addresses always need amount input
+        setStep('amount');
       } else {
         toast.error('Unsupported payment type');
       }
@@ -201,17 +243,50 @@ export function SendLightningSheet({
     const usd = await satsToUSD(amountSats);
     setAmountUSD(usd.toFixed(2));
 
-    // Check if comment is allowed
+    // Route to Bitcoin prepare if payment type is Bitcoin
+    if (paymentType === 'bitcoin') {
+      setIsPreparingPayment(true);
+      try {
+        await handlePrepareBitcoinPayment(amountSats);
+        // Step change is handled inside handlePrepareBitcoinPayment
+      } catch (error) {
+        // Error already handled in handlePrepareBitcoinPayment
+      } finally {
+        setIsPreparingPayment(false);
+      }
+      return;
+    }
+
+    // Check if comment is allowed (Lightning only)
     if (commentAllowed > 0) {
       setStep('comment');
     } else {
-      // No comment, go to confirm
-      await handlePreparePayment(amountSats);
+      // No comment, prepare payment with loading state
+      setIsPreparingPayment(true);
+      try {
+        await handlePreparePayment(amountSats);
+        // Close amount sheet after successful preparation
+        setStep('confirm');
+      } catch (error) {
+        // Error already handled in handlePreparePayment
+      } finally {
+        setIsPreparingPayment(false);
+      }
     }
   };
 
   const handleCommentConfirm = async () => {
-    await handlePreparePayment(Number(amount));
+    setIsPreparingPayment(true);
+    try {
+      await handlePreparePayment(Number(amount));
+      // Move to confirm step after successful preparation
+      setActiveDetent(2);
+      setStep('confirm');
+    } catch (error) {
+      // Error already handled in handlePreparePayment
+    } finally {
+      setIsPreparingPayment(false);
+    }
   };
 
   const handlePreparePayment = async (amountSats: number) => {
@@ -232,17 +307,44 @@ export function SendLightningSheet({
         // Prepare BOLT11 payment
         await prepareSend(invoice, amountSats);
       }
-
-      setActiveDetent(2);
-      setStep('confirm');
+      // Note: Step change and detent change are handled by the caller
     } catch (error: any) {
       toast.error(error.message || 'Failed to prepare payment');
+      throw error; // Re-throw so caller can handle cleanup
+    }
+  };
+
+  const handlePrepareBitcoinPayment = async (amountSats: number) => {
+    try {
+      // Prepare Bitcoin on-chain payment
+      const prepareResponse = await breezSDK.preparePayment(invoice.trim(), amountSats);
+
+      setBitcoinPrepareResponse(prepareResponse);
+      // Move to fee selection step
+      setStep('bitcoin-fee');
+    } catch (error: any) {
+      console.error('Failed to prepare Bitcoin payment:', error);
+      toast.error(error.message || 'Failed to prepare Bitcoin payment');
+      throw error;
     }
   };
 
   const handleSend = async () => {
     try {
-      if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
+      if (paymentType === 'bitcoin') {
+        // Send Bitcoin on-chain payment
+        if (!bitcoinPrepareResponse) {
+          throw new Error('Bitcoin payment not prepared');
+        }
+
+        await breezSDK.sendPaymentWithOptions({
+          prepareResponse: bitcoinPrepareResponse,
+          options: {
+            type: 'bitcoinAddress',
+            confirmationSpeed: bitcoinFeeSpeed,
+          },
+        });
+      } else if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
         // Send LNURL payment
         if (!lnurlPrepareResponse) {
           throw new Error('Payment not prepared');
@@ -309,6 +411,14 @@ export function SendLightningSheet({
 
           {/* Details */}
           <div className='space-y-3'>
+            {/* Show Bitcoin address for Bitcoin payments */}
+            {paymentType === 'bitcoin' && (
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                <p className='mb-1 text-xs text-muted-foreground'>Sending to Bitcoin Address</p>
+                <p className='break-all font-mono text-sm font-medium'>{invoice}</p>
+              </div>
+            )}
+
             {/* Show destination for Lightning address payments */}
             {parsedInput?.type === 'lightningAddress' && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
@@ -327,8 +437,47 @@ export function SendLightningSheet({
               </div>
             )}
 
+            {/* Show fees for Bitcoin payments */}
+            {paymentType === 'bitcoin' &&
+              bitcoinPrepareResponse?.paymentMethod?.type === 'bitcoinAddress' && (
+                <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                  <div className='space-y-2'>
+                    <div className='flex justify-between'>
+                      <span className='text-sm text-muted-foreground'>Speed</span>
+                      <span className='text-sm font-medium capitalize'>{bitcoinFeeSpeed}</span>
+                    </div>
+                    {(() => {
+                      const feeQuote = bitcoinPrepareResponse.paymentMethod.feeQuote;
+                      const speedKey =
+                        bitcoinFeeSpeed === 'slow'
+                          ? 'speedSlow'
+                          : bitcoinFeeSpeed === 'medium'
+                            ? 'speedMedium'
+                            : 'speedFast';
+                      const feeData = feeQuote[speedKey];
+                      const totalFee = feeData.l1BroadcastFeeSat + feeData.userFeeSat;
+
+                      return (
+                        <>
+                          <div className='flex justify-between'>
+                            <span className='text-sm text-muted-foreground'>Network Fee</span>
+                            <span className='text-sm font-medium'>{totalFee} sats</span>
+                          </div>
+                          <div className='flex justify-between border-t border-gray-300 pt-2'>
+                            <span className='text-sm font-semibold'>Total</span>
+                            <span className='text-sm font-semibold'>
+                              {Number(amount) + totalFee} sats
+                            </span>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              )}
+
             {/* Show fees for BOLT11 or LNURL */}
-            {(feeEstimate || lnurlPrepareResponse) && (
+            {(feeEstimate || lnurlPrepareResponse) && paymentType !== 'bitcoin' && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <div className='flex justify-between'>
                   <span className='text-sm text-muted-foreground'>Network Fee</span>
@@ -448,6 +597,121 @@ export function SendLightningSheet({
     </div>
   );
 
+  // Bitcoin fee selection content
+  const bitcoinFeeContent =
+    bitcoinPrepareResponse?.paymentMethod?.type === 'bitcoinAddress' ? (
+      <div className='flex flex-col'>
+        {/* Header */}
+        <div className='flex items-center justify-between border-b p-4'>
+          <button
+            onClick={() => setStep('amount')}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <ArrowLeft className='h-5 w-5' />
+          </button>
+          <h2 className='text-xl font-semibold'>Select Fee</h2>
+          <button
+            onClick={() => onOpenChange(false)}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className='flex-1 overflow-y-auto p-6'>
+          <div className='mx-auto max-w-md space-y-6'>
+            <p className='text-sm text-gray-600'>
+              Choose the speed of your Bitcoin transaction. Faster speeds have higher fees.
+            </p>
+
+            {/* Fee Options */}
+            <div className='space-y-3'>
+              {(['slow', 'medium', 'fast'] as const).map((speed) => {
+                const feeQuote = bitcoinPrepareResponse.paymentMethod.feeQuote;
+                const speedKey =
+                  speed === 'slow' ? 'speedSlow' : speed === 'medium' ? 'speedMedium' : 'speedFast';
+                const feeData = feeQuote[speedKey];
+                const totalFee = feeData.l1BroadcastFeeSat + feeData.userFeeSat;
+                const isSelected = bitcoinFeeSpeed === speed;
+
+                return (
+                  <button
+                    key={speed}
+                    onClick={() => setBitcoinFeeSpeed(speed)}
+                    className={`w-full rounded-2xl border-2 p-4 text-left transition-all ${
+                      isSelected
+                        ? 'border-red-600 bg-red-50'
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                  >
+                    <div className='flex items-center justify-between'>
+                      <div>
+                        <p className='font-semibold capitalize'>{speed}</p>
+                        <p className='text-xs text-gray-600'>
+                          {speed === 'slow'
+                            ? '~1 hour'
+                            : speed === 'medium'
+                              ? '~30 minutes'
+                              : '~10 minutes'}
+                        </p>
+                      </div>
+                      <div className='text-right'>
+                        <p className='font-semibold'>{totalFee} sats</p>
+                        <p className='text-xs text-gray-600'>fee</p>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Fee Breakdown */}
+            <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm'>
+              <p className='mb-2 font-medium'>Fee Breakdown ({bitcoinFeeSpeed})</p>
+              {(() => {
+                const feeQuote = bitcoinPrepareResponse.paymentMethod.feeQuote;
+                const speedKey =
+                  bitcoinFeeSpeed === 'slow'
+                    ? 'speedSlow'
+                    : bitcoinFeeSpeed === 'medium'
+                      ? 'speedMedium'
+                      : 'speedFast';
+                const feeData = feeQuote[speedKey];
+
+                return (
+                  <div className='space-y-1 text-gray-600'>
+                    <div className='flex justify-between'>
+                      <span>Network fee:</span>
+                      <span>{feeData.l1BroadcastFeeSat} sats</span>
+                    </div>
+                    <div className='flex justify-between'>
+                      <span>Swap service fee:</span>
+                      <span>{feeData.userFeeSat} sats</span>
+                    </div>
+                    <div className='mt-2 flex justify-between border-t border-gray-300 pt-2 font-medium text-gray-900'>
+                      <span>Total fee:</span>
+                      <span>{feeData.l1BroadcastFeeSat + feeData.userFeeSat} sats</span>
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+
+            <Button
+              onClick={() => {
+                setActiveDetent(2);
+                setStep('confirm');
+              }}
+              className='h-12 w-full rounded-full'
+            >
+              Continue
+            </Button>
+          </div>
+        </div>
+      </div>
+    ) : null;
+
   // Comment step content
   const commentContent = (
     <div className='flex flex-col'>
@@ -505,6 +769,12 @@ export function SendLightningSheet({
           if (!presented && isLoading) {
             return;
           }
+
+          // Reset form when sheet closes
+          if (!presented) {
+            resetForm();
+          }
+
           onOpenChange(presented);
         }}
         activeDetent={activeDetent}
@@ -521,6 +791,7 @@ export function SendLightningSheet({
                 <SheetWithDetent.Title>Send Payment</SheetWithDetent.Title>
               </VisuallyHidden.Root>
               {step === 'input' && inputContent}
+              {step === 'bitcoin-fee' && bitcoinFeeContent}
               {step === 'comment' && commentContent}
               {step === 'confirm' && confirmationContent}
             </SheetWithDetent.Content>
@@ -537,6 +808,7 @@ export function SendLightningSheet({
           }
         }}
         onConfirm={handleAmountConfirm}
+        isLoading={isPreparingPayment}
       />
     </>
   );

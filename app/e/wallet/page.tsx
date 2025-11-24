@@ -27,12 +27,13 @@ import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
+import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { Eye, EyeOff, Settings } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -67,6 +68,7 @@ export default function WalletPage() {
   const [showBackupReminder, setShowBackupReminder] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [scannedData, setScannedData] = useState<string>('');
+  const [unclaimedDepositsCount, setUnclaimedDepositsCount] = useState(0);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -181,6 +183,52 @@ export default function WalletPage() {
 
     registerLightningAddressIfNeeded();
   }, [walletState.isConnected, address, user, checkAvailability, registerAddress]);
+
+  // Listen for deposit events and manage unclaimed deposits
+  useEffect(() => {
+    if (!walletState.isConnected) return;
+
+    // Load initial unclaimed deposits count
+    const loadUnclaimedDeposits = async () => {
+      try {
+        const deposits = await breezSDK.listUnclaimedDeposits();
+        setUnclaimedDepositsCount(deposits.length);
+      } catch (error) {
+        console.error('Failed to load unclaimed deposits:', error);
+      }
+    };
+
+    loadUnclaimedDeposits();
+
+    // Listen for deposit events
+    const unsubscribe = breezSDK.onEvent((event) => {
+      if (event.type === 'claimedDeposits') {
+        const deposits = (event as any).claimedDeposits || [];
+        const totalAmount = deposits.reduce((sum: number, d: any) => sum + (d.amountSats || 0), 0);
+        toast.success(
+          `Deposit claimed! ${totalAmount.toLocaleString()} sats added to your balance`
+        );
+        // Refresh unclaimed deposits count
+        void loadUnclaimedDeposits();
+      } else if (event.type === 'unclaimedDeposits') {
+        const deposits = (event as any).unclaimedDeposits || [];
+        setUnclaimedDepositsCount(deposits.length);
+        if (deposits.length > 0) {
+          toast.error(
+            `${deposits.length} deposit${deposits.length > 1 ? 's' : ''} need manual claiming`,
+            {
+              action: {
+                label: 'View',
+                onClick: () => router.push('/e/wallet/deposits'),
+              },
+            }
+          );
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, [walletState.isConnected, router]);
 
   const handleSetupComplete = (generatedMnemonic?: string) => {
     // Store mnemonic temporarily in case backup is needed later
@@ -366,6 +414,34 @@ export default function WalletPage() {
               }}
               onDismiss={() => setShowBackupReminder(false)}
             />
+          )}
+
+          {/* Unclaimed Deposits Alert */}
+          {unclaimedDepositsCount > 0 && (
+            <div className='rounded-2xl border border-orange-200 bg-orange-50 p-4'>
+              <div className='flex items-start gap-3'>
+                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-orange-600' />
+                <div className='flex-1'>
+                  <h3 className='font-semibold text-orange-900'>
+                    {unclaimedDepositsCount} Deposit
+                    {unclaimedDepositsCount > 1 ? 's' : ''} Need Claiming
+                  </h3>
+                  <p className='mt-1 text-sm text-orange-700'>
+                    {unclaimedDepositsCount > 1 ? 'These deposits' : 'This deposit'} couldn't be
+                    auto-claimed due to high fees. You can manually claim{' '}
+                    {unclaimedDepositsCount > 1 ? 'them' : 'it'} now.
+                  </p>
+                  <Button
+                    onClick={() => router.push('/e/wallet/deposits')}
+                    variant='outline'
+                    size='lg'
+                    className='mt-3 w-full rounded-full border-orange-300 bg-white text-orange-900 hover:bg-orange-100'
+                  >
+                    View Deposits
+                  </Button>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Wallet Balance Card */}
