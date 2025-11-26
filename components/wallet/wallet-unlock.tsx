@@ -2,9 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Delete, Lock } from 'lucide-react';
+import { AlertCircle, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletUnlockProps {
@@ -64,126 +65,12 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
         </div>
 
         {/* Number Keypad */}
-        <div className='grid grid-cols-3 gap-3'>
-          {/* Row 1: 7, 8, 9 */}
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('7')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            7
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('8')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            8
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('9')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            9
-          </Button>
-
-          {/* Row 2: 4, 5, 6 */}
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('4')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            4
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('5')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            5
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('6')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            6
-          </Button>
-
-          {/* Row 3: 1, 2, 3 */}
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('1')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            1
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('2')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            2
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('3')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            3
-          </Button>
-
-          {/* Row 4: Empty, 0, Delete */}
-          <div />
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={() => handleNumberClick('0')}
-            disabled={isLoading || pin.length >= 6}
-            className='h-14 rounded-full text-xl font-semibold hover:bg-gray-50'
-          >
-            0
-          </Button>
-          <Button
-            type='button'
-            variant='outline'
-            size='lg'
-            onClick={handleDelete}
-            disabled={isLoading || pin.length === 0}
-            className='h-14 rounded-full hover:bg-gray-50'
-          >
-            <Delete className='h-5 w-5' />
-          </Button>
-        </div>
+        <NumericKeypad
+          onNumberClick={handleNumberClick}
+          onDelete={handleDelete}
+          showDecimal={false}
+          disabled={isLoading || pin.length >= 6}
+        />
 
         {error && (
           <div className='rounded-lg bg-red-50 p-3'>

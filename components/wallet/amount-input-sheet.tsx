@@ -2,9 +2,10 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowUpDown, Delete, Loader2, X } from 'lucide-react';
+import { ArrowUpDown, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface AmountInputSheetProps {
@@ -87,8 +88,6 @@ export function AmountInputSheet({
     }
   };
 
-  const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0'];
-
   return (
     <SheetWithDetent.Root
       presented={open}
@@ -146,23 +145,11 @@ export function AmountInputSheet({
                   </div>
 
                   {/* Number Pad */}
-                  <div className='grid grid-cols-3 gap-3'>
-                    {numbers.map((num) => (
-                      <button
-                        key={num}
-                        onClick={() => handleNumberClick(num)}
-                        className='flex h-16 items-center justify-center rounded-xl border border-gray-200 bg-white text-2xl font-semibold text-gray-900 transition-colors hover:bg-gray-50 active:bg-gray-100'
-                      >
-                        {num}
-                      </button>
-                    ))}
-                    <button
-                      onClick={handleDelete}
-                      className='flex h-16 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-900 transition-colors hover:bg-gray-50 active:bg-gray-100'
-                    >
-                      <Delete className='h-6 w-6' />
-                    </button>
-                  </div>
+                  <NumericKeypad
+                    onNumberClick={handleNumberClick}
+                    onDelete={handleDelete}
+                    showDecimal={true}
+                  />
 
                   {/* Next Button */}
                   <Button

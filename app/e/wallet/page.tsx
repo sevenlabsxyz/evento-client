@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BackupReminder } from '@/components/wallet/backup-reminder';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
+import { IncomingFundsSheet } from '@/components/wallet/incoming-funds-sheet';
 import { QuickToolsSection } from '@/components/wallet/quick-tools-section';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
 import { ScanQrSheet } from '@/components/wallet/scan-qr-sheet';
@@ -20,9 +21,11 @@ import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
 import { WalletEducationGallery } from '@/components/wallet/wallet-education-section-gallery';
+import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
+import { Env } from '@/lib/constants/env';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -33,7 +36,8 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { AlertCircle, Eye, EyeOff, Settings } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Eye, EyeOff, HelpCircle, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -69,6 +73,9 @@ export default function WalletPage() {
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [scannedData, setScannedData] = useState<string>('');
   const [unclaimedDepositsCount, setUnclaimedDepositsCount] = useState(0);
+  const [showIncomingFundsModal, setShowIncomingFundsModal] = useState(false);
+  const [showOnchainEducationalSheet, setShowOnchainEducationalSheet] = useState(false);
+  const [onchainEducationalArticle, setOnchainEducationalArticle] = useState<any>(null);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -229,6 +236,26 @@ export default function WalletPage() {
 
     return () => unsubscribe();
   }, [walletState.isConnected, router]);
+
+  // Fetch educational blog post for onchain deposits
+  useEffect(() => {
+    const fetchOnchainEducationalPost = async () => {
+      if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
+        return;
+      }
+      try {
+        const res = await fetch(
+          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/slug/your-evento-wallet/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors`
+        );
+        if (!res.ok) return;
+        const data = await res.json();
+        setOnchainEducationalArticle(data.posts?.[0] || null);
+      } catch (error) {
+        console.error('Error fetching onchain educational post:', error);
+      }
+    };
+    fetchOnchainEducationalPost();
+  }, []);
 
   const handleSetupComplete = (generatedMnemonic?: string) => {
     // Store mnemonic temporarily in case backup is needed later
@@ -402,7 +429,7 @@ export default function WalletPage() {
 
   // Main Wallet Screen
   return (
-    <div className='pb-28 pt-4'>
+    <div className='px-4 pb-28 pt-4'>
       <div className='mx-auto max-w-sm'>
         <div className='space-y-6'>
           {/* Backup Reminder */}
@@ -416,31 +443,37 @@ export default function WalletPage() {
             />
           )}
 
-          {/* Unclaimed Deposits Alert */}
+          {/* Incoming Onchain Bitcoin Alert */}
           {unclaimedDepositsCount > 0 && (
-            <div className='rounded-2xl border border-orange-200 bg-orange-50 p-4'>
-              <div className='flex items-start gap-3'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-orange-600' />
-                <div className='flex-1'>
-                  <h3 className='font-semibold text-orange-900'>
-                    {unclaimedDepositsCount} Deposit
-                    {unclaimedDepositsCount > 1 ? 's' : ''} Need Claiming
-                  </h3>
-                  <p className='mt-1 text-sm text-orange-700'>
-                    {unclaimedDepositsCount > 1 ? 'These deposits' : 'This deposit'} couldn't be
-                    auto-claimed due to high fees. You can manually claim{' '}
-                    {unclaimedDepositsCount > 1 ? 'them' : 'it'} now.
-                  </p>
-                  <Button
-                    onClick={() => router.push('/e/wallet/deposits')}
-                    variant='outline'
-                    size='lg'
-                    className='mt-3 w-full rounded-full border-orange-300 bg-white text-orange-900 hover:bg-orange-100'
-                  >
-                    View Deposits
-                  </Button>
-                </div>
+            <div className='rounded-2xl border border-orange-200 bg-orange-50 px-6 py-4'>
+              {/* Header Row */}
+              <div className='mb-1 flex items-center justify-between gap-3'>
+                <div className='text-lg font-semibold'>Pending Onchain Funds</div>
+                <motion.button
+                  onClick={() => setShowOnchainEducationalSheet(true)}
+                  className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors'
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                >
+                  <HelpCircle className='h-5 w-5 text-gray-600' />
+                </motion.button>
               </div>
+
+              {/* Description */}
+              <p className='mb-6 pr-16 text-sm text-muted-foreground'>
+                Onchain transactions to your wallet need to be swapped to Lightning. It is automatic
+                unless network fees are high.
+              </p>
+
+              {/* Action Button */}
+              <Button
+                onClick={() => setShowIncomingFundsModal(true)}
+                variant='outline'
+                size='lg'
+                className='h-12 w-full rounded-full border-gray-200 bg-white hover:bg-orange-100'
+              >
+                View Pending Funds
+              </Button>
             </div>
           )}
 
@@ -539,8 +572,29 @@ export default function WalletPage() {
             onOpenChange={(open) => !open && closeDrawer('earn')}
           />
 
+          {/* Incoming Onchain Funds Sheet */}
+          <IncomingFundsSheet
+            open={showIncomingFundsModal}
+            onOpenChange={setShowIncomingFundsModal}
+            onRefresh={async () => {
+              try {
+                const deposits = await breezSDK.listUnclaimedDeposits();
+                setUnclaimedDepositsCount(deposits.length);
+              } catch (error) {
+                console.error('Failed to refresh unclaimed deposits:', error);
+              }
+            }}
+          />
+
           {/* Beta Information Sheet */}
           <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
+
+          {/* Onchain Educational Sheet */}
+          <WalletEducationalSheet
+            article={onchainEducationalArticle}
+            open={showOnchainEducationalSheet}
+            onOpenChange={setShowOnchainEducationalSheet}
+          />
         </div>
       </div>
 
