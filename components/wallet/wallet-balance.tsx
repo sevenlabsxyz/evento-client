@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
+import { NumberTicker } from '@/components/ui/number-ticker';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -149,20 +150,24 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
               <div className='space-y-1'>
                 {showUSD ? (
                   <>
-                    <div className='text-5xl font-bold text-gray-900'>${balanceUSD.toFixed(2)}</div>
+                    <div className='text-5xl font-bold text-gray-900'>
+                      $<NumberTicker value={balanceUSD} decimalPlaces={2} />
+                    </div>
                     <div className='text-sm text-gray-600'>
-                      {walletState.balance.toLocaleString()} sats
+                      <NumberTicker value={walletState.balance} /> sats
                     </div>
                   </>
                 ) : (
                   <>
                     <div className='flex items-baseline justify-center gap-2'>
                       <span className='text-5xl font-bold text-gray-900'>
-                        {walletState.balance.toLocaleString()}
+                        <NumberTicker value={walletState.balance} />
                       </span>
                       <span className='text-2xl font-medium text-gray-600'>sats</span>
                     </div>
-                    <div className='text-sm text-gray-600'>≈ ${balanceUSD.toFixed(2)} USD</div>
+                    <div className='text-sm text-gray-600'>
+                      ≈ $<NumberTicker value={balanceUSD} decimalPlaces={2} /> USD
+                    </div>
                   </>
                 )}
               </div>

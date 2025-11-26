@@ -187,7 +187,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
                 )}
                 <iframe
                   src={bitrefillUrl}
-                  className='h-full w-full border-0'
+                  className='h-[calc(100%-61px)] w-full border-0'
                   sandbox='allow-same-origin allow-popups allow-scripts allow-forms'
                   title='Bitrefill'
                   onLoad={() => setIframeLoaded(true)}

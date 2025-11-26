@@ -37,7 +37,7 @@ import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, HelpCircle, Settings } from 'lucide-react';
+import { ChevronsRight, Eye, EyeOff, HelpCircle, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -443,40 +443,6 @@ export default function WalletPage() {
             />
           )}
 
-          {/* Incoming Onchain Bitcoin Alert */}
-          {unclaimedDepositsCount > 0 && (
-            <div className='rounded-2xl border border-orange-200 bg-orange-50 px-6 py-4'>
-              {/* Header Row */}
-              <div className='mb-1 flex items-center justify-between gap-3'>
-                <div className='text-lg font-semibold'>Pending Onchain Funds</div>
-                <motion.button
-                  onClick={() => setShowOnchainEducationalSheet(true)}
-                  className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors'
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                >
-                  <HelpCircle className='h-5 w-5 text-gray-600' />
-                </motion.button>
-              </div>
-
-              {/* Description */}
-              <p className='mb-6 pr-16 text-sm text-muted-foreground'>
-                Onchain transactions to your wallet need to be swapped to Lightning. It is automatic
-                unless network fees are high.
-              </p>
-
-              {/* Action Button */}
-              <Button
-                onClick={() => setShowIncomingFundsModal(true)}
-                variant='outline'
-                size='lg'
-                className='h-12 w-full rounded-full border-gray-200 bg-white hover:bg-orange-100'
-              >
-                View Pending Funds
-              </Button>
-            </div>
-          )}
-
           {/* Wallet Balance Card */}
           {walletState.isInitialized && user?.username && (
             <WalletBalance
@@ -507,6 +473,44 @@ export default function WalletPage() {
               maxTransactions={3}
             />
           </div>
+
+          {/* Incoming Onchain Bitcoin Alert */}
+          {unclaimedDepositsCount > 0 && (
+            <div className='rounded-2xl border border-red-200 bg-red-50 px-6 py-4'>
+              {/* Header Row */}
+              <div className='mb-1 flex items-center justify-between gap-3'>
+                <div className='flex flex-row items-center gap-1'>
+                  <ChevronsRight className='h-7 w-7' />
+                  <div className='text-lg font-semibold'>Money Incoming</div>
+                </div>
+                <motion.button
+                  onClick={() => setShowOnchainEducationalSheet(true)}
+                  className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white transition-colors'
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                >
+                  <HelpCircle className='h-5 w-5 text-gray-600' />
+                </motion.button>
+              </div>
+
+              {/* Description */}
+              <p className='mb-6 pr-16 text-sm text-muted-foreground'>
+                {
+                  "The network's a bit busy. Tap here to pay a small fee and get your funds instantly."
+                }
+              </p>
+
+              {/* Action Button */}
+              <Button
+                onClick={() => setShowIncomingFundsModal(true)}
+                variant='outline'
+                size='lg'
+                className='h-12 w-full rounded-full border-red-200 bg-white hover:bg-orange-100'
+              >
+                Speed It Up!
+              </Button>
+            </div>
+          )}
 
           {/* Educational Content */}
           <WalletEducationGallery />

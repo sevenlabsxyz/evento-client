@@ -1,3 +1,4 @@
+import { toast } from '@/lib/utils/toast';
 import {
   BreezSdk,
   CheckLightningAddressRequest,
@@ -623,12 +624,18 @@ export class BreezSDKService {
 
       case 'paymentSucceeded': {
         const payment = (event as any).payment;
-        const direction = payment?.paymentType === 'received' ? 'Incoming' : 'Outgoing';
-        const amount = payment?.amountSats || 0;
+        const isIncoming = payment?.paymentType === 'receive';
+        const direction = isIncoming ? 'Incoming' : 'Outgoing';
+        const amount = Number(payment?.amount || 0n);
         console.log(
           `💰 [BREEZ:PAYMENT_SUCCEEDED] ${timestamp} - ${direction}: ${amount.toLocaleString()} sats`,
           payment
         );
+
+        // Show toast for incoming payments
+        if (isIncoming) {
+          toast.success(`+${amount.toLocaleString()} sats received`);
+        }
         break;
       }
 

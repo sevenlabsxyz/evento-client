@@ -5,8 +5,17 @@ import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { breezSDK, type DepositInfo, type Fee } from '@/lib/services/breez-sdk';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { CheckCircle2, ExternalLink, Info, Loader2, X, XCircle } from 'lucide-react';
+import {
+  ArrowRight,
+  CheckCircle2,
+  ChevronsRight,
+  ExternalLink,
+  Loader2,
+  X,
+  XCircle,
+} from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { SpeedUpSheet } from './sheets/speed-up-sheet';
 
 interface IncomingFundsSheetProps {
   open: boolean;
@@ -18,9 +27,8 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
   const [deposits, setDeposits] = useState<DepositInfo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingTxid, setProcessingTxid] = useState<string | null>(null);
-  const [feeType, setFeeType] = useState<'fixed' | 'rate'>('rate');
-  const [feeValue, setFeeValue] = useState('1');
   const [selectedDeposit, setSelectedDeposit] = useState<DepositInfo | null>(null);
+  const [showSpeedUpSheet, setShowSpeedUpSheet] = useState(false);
   const [activeDetent, setActiveDetent] = useState(2);
 
   const loadDeposits = useCallback(async () => {
@@ -60,19 +68,17 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
     return () => unsubscribe();
   }, [open, loadDeposits, onRefresh]);
 
-  const handleClaimDeposit = async (deposit: DepositInfo) => {
+  const handleClaimDeposit = async (deposit: DepositInfo, feeRate: number) => {
     setProcessingTxid(deposit.txid);
     try {
-      const maxFee: Fee =
-        feeType === 'fixed'
-          ? { type: 'fixed', amount: Math.floor(Number(feeValue)) }
-          : { type: 'rate', satPerVbyte: Number(feeValue) };
+      const maxFee: Fee = { type: 'rate', satPerVbyte: feeRate };
 
       await breezSDK.claimDeposit(deposit.txid, deposit.vout, maxFee);
       toast.success('Swap completed successfully!');
       await loadDeposits();
       onRefresh?.();
       setSelectedDeposit(null);
+      setShowSpeedUpSheet(false);
     } catch (error: any) {
       console.error('Failed to swap:', error);
       toast.error(error.message || 'Failed to complete swap');
@@ -105,13 +111,13 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                 <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
               </div>
               <VisuallyHidden.Root asChild>
-                <SheetWithDetent.Title>Incoming Onchain Funds</SheetWithDetent.Title>
+                <SheetWithDetent.Title>Incoming Funds</SheetWithDetent.Title>
               </VisuallyHidden.Root>
 
               <div className='flex flex-col'>
                 {/* Header */}
                 <div className='flex items-center justify-between p-4'>
-                  <h2 className='text-xl font-semibold'>Incoming Onchain Funds</h2>
+                  <h2 className='text-xl font-semibold'>Incoming Funds</h2>
                   <button
                     onClick={() => onOpenChange(false)}
                     className='rounded-full p-2 transition-colors hover:bg-gray-100'
@@ -146,12 +152,13 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                     // Deposits List
                     <div className='space-y-4'>
                       {/* Info Banner */}
-                      <div className='rounded-xl border border-blue-200 bg-blue-50 p-4'>
+                      <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
                         <div className='flex items-start gap-3'>
-                          <Info className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
-                          <p className='text-sm text-blue-900'>
-                            Your Bitcoin is waiting! We'll automatically swap it to Lightning when
-                            fees drop. To complete the swap now, you can increase the fee below.
+                          <ChevronsRight className='mt-0.5 h-7 w-7 flex-shrink-0 text-muted-foreground/80' />
+                          <p className='text-sm text-muted-foreground'>
+                            Your Bitcoin is on its way! It will be added to your balance
+                            automatically when the network clears up. Want it faster? Pay a small
+                            fee to get it now.
                           </p>
                         </div>
                       </div>
@@ -160,10 +167,10 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                       {deposits.map((deposit) => (
                         <div
                           key={`${deposit.txid}:${deposit.vout}`}
-                          className='rounded-xl border border-gray-200 bg-white p-4'
+                          className='rounded-xl border border-gray-200 bg-gray-50 p-4'
                         >
                           {/* Deposit Header */}
-                          <div className='flex items-start justify-between'>
+                          <div className='flex items-center justify-between'>
                             <div className='flex-1'>
                               <div className='flex items-center gap-2'>
                                 <h3 className='font-semibold text-gray-900'>
@@ -175,7 +182,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                     {deposit.confirmations} confirms
                                   </span>
                                 ) : (
-                                  <span className='inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700'>
+                                  <span className='inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-700'>
                                     <Loader2 className='h-3 w-3 animate-spin' />
                                     Pending
                                   </span>
@@ -194,9 +201,12 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                               </div>
                             </div>
 
-                            {/* Swap Now Button */}
+                            {/* Speed It Up Button */}
                             <Button
-                              onClick={() => setSelectedDeposit(deposit)}
+                              onClick={() => {
+                                setSelectedDeposit(deposit);
+                                setShowSpeedUpSheet(true);
+                              }}
                               disabled={processingTxid === deposit.txid}
                               size='sm'
                               className='rounded-full'
@@ -207,7 +217,10 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                   Swapping...
                                 </>
                               ) : (
-                                'Swap Now'
+                                <>
+                                  <span>Get It Now</span>
+                                  <ArrowRight className='h-4 w-4' />
+                                </>
                               )}
                             </Button>
                           </div>
@@ -243,98 +256,17 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
         </SheetWithDetent.Portal>
       </SheetWithDetent.Root>
 
-      {/* Claim Modal */}
-      {selectedDeposit && (
-        <div className='fixed inset-0 z-[60] flex items-center justify-center bg-black/50 p-4'>
-          <div className='w-full max-w-md rounded-2xl bg-white p-6'>
-            <h2 className='text-lg font-semibold text-gray-900'>Complete Swap</h2>
-            <p className='mt-1 text-sm text-gray-600'>
-              Set the maximum network fee you're willing to pay to complete this swap to Lightning.
-            </p>
-
-            {/* Amount */}
-            <div className='mt-4 rounded-lg bg-gray-50 p-4'>
-              <p className='text-sm text-gray-600'>Amount</p>
-              <p className='text-2xl font-bold text-gray-900'>
-                {formatAmount(selectedDeposit.amountSats)} sats
-              </p>
-            </div>
-
-            {/* Fee Input */}
-            <div className='mt-4 space-y-3'>
-              <label className='text-sm font-medium text-gray-900'>Maximum Network Fee</label>
-
-              {/* Fee Type Toggle */}
-              <div className='flex gap-2 rounded-lg bg-gray-100 p-1'>
-                <button
-                  onClick={() => setFeeType('rate')}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    feeType === 'rate'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Rate
-                </button>
-                <button
-                  onClick={() => setFeeType('fixed')}
-                  className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                    feeType === 'fixed'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  Fixed
-                </button>
-              </div>
-
-              {/* Fee Value Input */}
-              <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-white p-3'>
-                <input
-                  type='number'
-                  value={feeValue}
-                  onChange={(e) => setFeeValue(e.target.value)}
-                  className='flex-1 border-none bg-transparent text-sm outline-none'
-                  placeholder='Enter fee'
-                  min='0'
-                  step={feeType === 'rate' ? '0.1' : '1'}
-                />
-                <span className='text-sm text-gray-600'>
-                  {feeType === 'rate' ? 'sat/vbyte' : 'sats'}
-                </span>
-              </div>
-            </div>
-
-            {/* Actions */}
-            <div className='mt-6 flex gap-3'>
-              <Button
-                onClick={() => setSelectedDeposit(null)}
-                variant='outline'
-                className='flex-1 rounded-full'
-                disabled={processingTxid === selectedDeposit.txid}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => handleClaimDeposit(selectedDeposit)}
-                className='flex-1 rounded-full'
-                disabled={
-                  !feeValue || Number(feeValue) <= 0 || processingTxid === selectedDeposit.txid
-                }
-              >
-                {processingTxid === selectedDeposit.txid ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Swapping...
-                  </>
-                ) : (
-                  'Complete Swap'
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Speed Up Sheet */}
+      <SpeedUpSheet
+        open={showSpeedUpSheet}
+        onOpenChange={(open) => {
+          setShowSpeedUpSheet(open);
+          if (!open) setSelectedDeposit(null);
+        }}
+        deposit={selectedDeposit}
+        onConfirm={handleClaimDeposit}
+        isProcessing={processingTxid === selectedDeposit?.txid}
+      />
     </>
   );
 }

@@ -46,7 +46,7 @@ type QuickToolsSectionProps = {
 
 export function QuickToolsSection({ onToolClick }: QuickToolsSectionProps) {
   return (
-    <div className='space-y-3 pb-6 pt-2'>
+    <div className='space-y-3 pb-4 pt-2'>
       <div className='grid grid-cols-4 gap-1'>
         {quickTools.map((tool) => {
           const Icon = tool.icon;
