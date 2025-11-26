@@ -55,7 +55,26 @@ export function TransactionHistory({
 
   const getPaymentIcon = (payment: Payment) => {
     const isIncoming = payment.paymentType === 'receive';
+    const isPending = payment.status === 'pending';
 
+    // Use orange color scheme for pending transactions
+    if (isPending) {
+      if (isIncoming) {
+        return (
+          <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100'>
+            <ArrowDownLeft className='h-5 w-5 text-orange-600' />
+          </div>
+        );
+      }
+
+      return (
+        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100'>
+          <ArrowUpRight className='h-5 w-5 text-orange-600' />
+        </div>
+      );
+    }
+
+    // Normal color scheme for completed/failed transactions
     if (isIncoming) {
       return (
         <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100'>
@@ -174,7 +193,7 @@ export function TransactionHistory({
                 <div className='flex items-start justify-between gap-2'>
                   <div className='min-w-0 flex-1'>
                     <div className='flex items-center gap-2'>
-                      {getStatusIcon(payment.status)}
+                      {payment.status !== 'pending' && getStatusIcon(payment.status)}
                       <div className='flex min-w-0 max-w-[220px] flex-1 flex-col md:max-w-none'>
                         <p className='truncate font-medium text-gray-900'>{description}</p>
                         <p className='text-xs font-normal text-gray-600'>

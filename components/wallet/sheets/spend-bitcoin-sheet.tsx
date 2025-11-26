@@ -64,15 +64,31 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
   // Handle Bitrefill iframe messages
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
-      if (e.origin !== 'https://embed.bitrefill.com') return;
+      // Log ALL messages first (before filtering)
+      console.log('📨 [BITREFILL] Raw message received:', {
+        origin: e.origin,
+        data: e.data,
+        type: typeof e.data,
+      });
+
+      if (e.origin !== 'https://embed.bitrefill.com') {
+        console.log('⚠️ [BITREFILL] Ignoring message from different origin:', e.origin);
+        return;
+      }
 
       const data = e.data;
-      if (!data || typeof data !== 'object') return;
+      if (!data || typeof data !== 'object') {
+        console.log('⚠️ [BITREFILL] Invalid data format:', data);
+        return;
+      }
+
+      console.log('✅ [BITREFILL] Valid event received:', data);
 
       const { event, invoiceId, paymentUri, status, deliveryStatus: msgDeliveryStatus } = data;
 
       switch (event) {
         case 'invoice_created':
+          console.log('🧾 [BITREFILL] Invoice created:', { invoiceId, paymentUri });
           // Store invoice for when user clicks "open in wallet"
           if (invoiceId && paymentUri) {
             setCurrentInvoice({ invoiceId, paymentUri });
@@ -80,6 +96,10 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'payment_intent':
+          console.log('💳 [BITREFILL] Payment intent (user clicked pay):', {
+            invoiceId,
+            paymentUri,
+          });
           // User clicked "open in wallet" - show confirmation sheet
           if (invoiceId && paymentUri) {
             setCurrentInvoice({ invoiceId, paymentUri });
@@ -88,6 +108,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'invoice_update':
+          console.log('🔄 [BITREFILL] Invoice update:', { status, invoiceId });
           // Track status: payment_detected, payment_confirmed, expired, refunded
           if (status === 'payment_confirmed') {
             setPaymentStatus('success');
@@ -98,6 +119,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'invoice_complete':
+          console.log('✅ [BITREFILL] Invoice complete:', { deliveryStatus: msgDeliveryStatus });
           // Final delivery status
           setDeliveryStatus(msgDeliveryStatus || null);
           setPaymentStatus(msgDeliveryStatus === 'all_error' ? 'error' : 'success');
@@ -105,11 +127,18 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           // Refresh balance after successful purchase
           refreshBalance();
           break;
+
+        default:
+          console.log('❓ [BITREFILL] Unknown event type:', event, data);
       }
     };
 
     window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    console.log('🎧 [BITREFILL] Message listener attached');
+    return () => {
+      window.removeEventListener('message', handleMessage);
+      console.log('🔇 [BITREFILL] Message listener removed');
+    };
   }, [refreshBalance]);
 
   // Handle payment confirmation

@@ -10,7 +10,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { toast } from '@/lib/utils/toast';
 import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
-import { Bitcoin, Bolt, CheckCircle2, Copy, X, Zap } from 'lucide-react';
+import { Bitcoin, CheckCircle2, Copy, X, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
 
@@ -115,6 +115,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       setInvoiceAmount(amountSats);
       setInvoiceAmountUSD(usd);
       setActiveInvoice(invoiceData.paymentRequest); // Track the active invoice
+      setAmountSheetOpen(false); // Close the amount sheet
     } catch (error: any) {
       console.error('Failed to create invoice:', error);
       toast.error(error.message || 'Failed to create invoice');
@@ -123,17 +124,22 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
     }
   };
 
+  // Helper to truncate invoice for display
+  const truncateInvoice = (invoice: string) => {
+    if (invoice.length <= 20) return invoice;
+    return `${invoice.slice(0, 10)}...${invoice.slice(-10)}`;
+  };
+
   const handleShare = async () => {
-    if (!qrCodeData) return;
+    // Use raw content without "lightning:" prefix
+    const shareContent = invoiceAmount ? activeInvoice : address?.lightningAddress;
+
+    if (!shareContent) return;
+
     if (navigator.share) {
       try {
-        const shareText = invoiceAmount
-          ? `Pay me ${invoiceAmount.toLocaleString()} sats: ${qrCodeData}`
-          : `Send me Bitcoin: ${qrCodeData}`;
-
         await navigator.share({
-          title: 'Lightning Payment',
-          text: shareText,
+          text: shareContent,
         });
       } catch (error) {
         console.error('Share failed:', error);
@@ -141,7 +147,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
     } else {
       // Fallback to copy
       try {
-        await navigator.clipboard.writeText(qrCodeData);
+        await navigator.clipboard.writeText(shareContent);
         toast.success('Copied to clipboard');
       } catch (error) {
         toast.error('Failed to copy');
@@ -176,7 +182,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       label: (
         <div className='flex items-center justify-center gap-2'>
           <Bitcoin className='h-4 w-4' />
-          Bitcoin
+          Onchain
         </div>
       ),
     },
@@ -187,16 +193,16 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr]'>
+          <SheetWithDetentFull.Content>
             <div className='my-4 flex items-center'>
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
             </div>
             <VisuallyHidden.Root asChild>
-              <SheetWithDetentFull.Title>Receive Payment</SheetWithDetentFull.Title>
+              <SheetWithDetentFull.Title>Receive</SheetWithDetentFull.Title>
             </VisuallyHidden.Root>
             {/* Header */}
             <div className='flex items-center justify-between p-4'>
-              <h2 className='text-xl font-semibold'>Receive Payment</h2>
+              <h2 className='text-xl font-semibold'>Receive</h2>
               <button
                 onClick={() => onOpenChange(false)}
                 className='rounded-full p-2 transition-colors hover:bg-gray-100'
@@ -268,29 +274,31 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         {/* Lightning Tab Content */}
                         {activeTab === 'lightning' && (
                           <>
-                            {/* Lightning Address Section */}
-                            {address?.lightningAddress && (
-                              <div className='rounded-xl bg-gradient-to-br from-purple-50 to-blue-50 p-4'>
-                                <div className='mb-2 flex items-center gap-2'>
-                                  <Bolt className='h-4 w-4 text-purple-600' />
-                                  <h3 className='text-sm font-semibold text-gray-900'>
-                                    Your Lightning Address
-                                  </h3>
-                                </div>
-                                <p className='mb-3 text-xs text-gray-600'>
-                                  Share this address to receive payments instantly.
-                                </p>
-                                <div className='flex items-center gap-2 rounded-lg bg-white p-3'>
-                                  <span className='flex-1 truncate font-mono text-sm font-medium text-gray-900'>
-                                    {address.lightningAddress}
-                                  </span>
+                            {/* Show Lightning Address or Invoice based on state */}
+                            {(address?.lightningAddress || activeInvoice) && (
+                              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                                <div className='flex items-start justify-between gap-2'>
+                                  <div className='flex min-w-0 flex-1 flex-col'>
+                                    <p className='mb-1 text-sm text-muted-foreground'>
+                                      {invoiceAmount ? 'Lightning Invoice' : 'Lightning Address'}
+                                    </p>
+                                    <p className='truncate font-mono text-base leading-relaxed'>
+                                      {invoiceAmount && activeInvoice
+                                        ? truncateInvoice(activeInvoice)
+                                        : address?.lightningAddress}
+                                    </p>
+                                  </div>
                                   <Button
                                     onClick={async () => {
+                                      const copyContent = invoiceAmount
+                                        ? activeInvoice
+                                        : address?.lightningAddress;
+                                      if (!copyContent) return;
                                       try {
-                                        await navigator.clipboard.writeText(
-                                          address.lightningAddress
+                                        await navigator.clipboard.writeText(copyContent);
+                                        toast.success(
+                                          invoiceAmount ? 'Invoice copied!' : 'Address copied!'
                                         );
-                                        toast.success('Address copied!');
                                       } catch (error) {
                                         toast.error('Failed to copy');
                                       }
@@ -304,7 +312,6 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                                 </div>
                               </div>
                             )}
-
                             {/* QR Code */}
                             {qrCodeData && (
                               <div className='space-y-3'>
@@ -370,17 +377,6 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         {/* Bitcoin Tab Content */}
                         {activeTab === 'bitcoin' && (
                           <>
-                            {/* Info Message */}
-                            <div className='rounded-xl bg-gradient-to-br from-orange-50 to-yellow-50 p-4'>
-                              <h3 className='mb-2 text-sm font-semibold text-gray-900'>
-                                Bitcoin Address
-                              </h3>
-                              <p className='text-xs text-gray-600'>
-                                Send Bitcoin to this address. It will be automatically converted to
-                                Lightning in your wallet.
-                              </p>
-                            </div>
-
                             {/* Bitcoin Address QR Code */}
                             {isGeneratingBitcoin ? (
                               <div className='flex flex-col items-center justify-center py-12'>
@@ -391,20 +387,11 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                               </div>
                             ) : bitcoinAddress ? (
                               <>
-                                {/* QR Code */}
-                                <div className='space-y-3'>
-                                  <div className='relative mx-auto w-fit'>
-                                    <EventoQRCode
-                                      value={`bitcoin:${bitcoinAddress}`}
-                                      size={256}
-                                      className='rounded-3xl'
-                                    />
-                                  </div>
-                                </div>
-
                                 {/* Bitcoin Address Display */}
                                 <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
-                                  <p className='mb-1 text-xs text-muted-foreground'>Address</p>
+                                  <p className='mb-1 text-sm text-muted-foreground'>
+                                    Bitcoin Address
+                                  </p>
                                   <div className='flex items-start gap-2'>
                                     <p className='flex-1 break-all font-mono text-base leading-relaxed'>
                                       {formatBitcoinAddress(bitcoinAddress).map((item, index) => (
@@ -436,6 +423,17 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                                   </div>
                                 </div>
 
+                                {/* QR Code */}
+                                <div className='space-y-3'>
+                                  <div className='relative mx-auto w-fit'>
+                                    <EventoQRCode
+                                      value={`bitcoin:${bitcoinAddress}`}
+                                      size={256}
+                                      className='rounded-3xl'
+                                    />
+                                  </div>
+                                </div>
+
                                 {/* Share Button */}
                                 <div className='space-y-3'>
                                   <Button
@@ -443,8 +441,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                                       if (navigator.share) {
                                         try {
                                           await navigator.share({
-                                            title: 'Bitcoin Address',
-                                            text: `Send Bitcoin: ${bitcoinAddress}`,
+                                            text: bitcoinAddress,
                                           });
                                         } catch (error) {
                                           console.error('Share failed:', error);

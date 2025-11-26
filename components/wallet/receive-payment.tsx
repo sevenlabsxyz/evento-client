@@ -77,7 +77,7 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
     return (
       <div className='space-y-6'>
         <div className='flex items-center justify-between'>
-          <h3 className='text-lg font-semibold'>Receive Payment</h3>
+          <h3 className='text-lg font-semibold'>Receive</h3>
           <button onClick={onClose} className='rounded-full p-1 hover:bg-gray-100'>
             <X className='h-5 w-5' />
           </button>
@@ -125,7 +125,7 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
   return (
     <div className='space-y-6'>
       <div className='flex items-center justify-between'>
-        <h3 className='text-lg font-semibold'>Receive Payment</h3>
+        <h3 className='text-lg font-semibold'>Receive</h3>
         <button onClick={onClose} className='rounded-full p-1 hover:bg-gray-100'>
           <X className='h-5 w-5' />
         </button>

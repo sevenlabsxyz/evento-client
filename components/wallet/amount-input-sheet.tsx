@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -24,7 +24,6 @@ export function AmountInputSheet({
   const [amount, setAmount] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
-  const [activeDetent, setActiveDetent] = useState(2); // Full screen
   const { satsToUSD, usdToSats } = useAmountConverter();
 
   // Reset amount when sheet closes
@@ -89,21 +88,16 @@ export function AmountInputSheet({
   };
 
   return (
-    <SheetWithDetent.Root
-      presented={open}
-      onPresentedChange={onOpenChange}
-      activeDetent={activeDetent}
-      onActiveDetentChange={setActiveDetent}
-    >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className='min-h-max'>
+    <SheetWithDetentFull.Root presented={open} onPresentedChange={onOpenChange}>
+      <SheetWithDetentFull.Portal>
+        <SheetWithDetentFull.View>
+          <SheetWithDetentFull.Backdrop />
+          <SheetWithDetentFull.Content>
             <div className='my-4 flex items-center'>
-              <SheetWithDetent.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
             </div>
             <VisuallyHidden.Root asChild>
-              <SheetWithDetent.Title>Enter Amount</SheetWithDetent.Title>
+              <SheetWithDetentFull.Title>Enter Amount</SheetWithDetentFull.Title>
             </VisuallyHidden.Root>
 
             <div className='flex flex-col'>
@@ -170,9 +164,9 @@ export function AmountInputSheet({
                 </div>
               </div>
             </div>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+          </SheetWithDetentFull.Content>
+        </SheetWithDetentFull.View>
+      </SheetWithDetentFull.Portal>
+    </SheetWithDetentFull.Root>
   );
 }
