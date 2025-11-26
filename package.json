@@ -1,6 +1,6 @@
 {
-  "name": "evento",
-  "version": "3.4.6",
+  "name": "evento-client",
+  "version": "4.0.0",
   "private": true,
   "scripts": {
     "build": "next build",
