@@ -1,6 +1,6 @@
 # Evento App + Bitcoin Wallet ([app.evento.so](https://app.evento.so))
 
-## Overview
+## Overview Stuff
 
 **Create Events. Connect People. Build Communities.**
 
