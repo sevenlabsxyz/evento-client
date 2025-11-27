@@ -1,15 +1,10 @@
-import { CreditCard, Gift, ShoppingBag, Smartphone } from 'lucide-react';
-
 export type EarnPartner = {
   id: string;
   name: string;
   description: string;
-  icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
+  logo: string;
   link: string;
   ctaText: string;
-  earnings: string; // e.g., "Up to 8.5% back"
 };
 
 /**
@@ -18,47 +13,27 @@ export type EarnPartner = {
  */
 export const EARN_PARTNERS: EarnPartner[] = [
   {
+    id: 'zbd',
+    name: 'ZBD',
+    description: 'Earn Bitcoin by playing games and completing tasks',
+    logo: '/assets/partners/zbd.webp',
+    link: 'https://zbd.gg',
+    ctaText: 'Start Playing',
+  },
+  {
     id: 'fold',
     name: 'Fold',
     description: 'Earn Bitcoin rewards on everyday purchases with the Fold debit card',
-    icon: CreditCard,
-    iconBg: 'bg-yellow-100',
-    iconColor: 'text-yellow-600',
+    logo: '/assets/partners/fold.webp',
     link: 'https://foldapp.com',
     ctaText: 'Get Fold Card',
-    earnings: 'Up to 5% back',
   },
   {
     id: 'lolli',
     name: 'Lolli',
     description: 'Earn Bitcoin when you shop at 1,000+ top stores online',
-    icon: ShoppingBag,
-    iconBg: 'bg-purple-100',
-    iconColor: 'text-purple-600',
+    logo: '/assets/partners/lolli.webp',
     link: 'https://lolli.com',
     ctaText: 'Shop & Earn',
-    earnings: 'Up to 30% back',
-  },
-  {
-    id: 'satsback',
-    name: 'Satsback',
-    description: 'Get satoshis back when shopping at participating merchants',
-    icon: Gift,
-    iconBg: 'bg-orange-100',
-    iconColor: 'text-orange-600',
-    link: 'https://satsback.com',
-    ctaText: 'Start Earning',
-    earnings: 'Varies by store',
-  },
-  {
-    id: 'stacker-news',
-    name: 'Stacker News',
-    description: 'Earn sats by contributing quality content and discussions',
-    icon: Smartphone,
-    iconBg: 'bg-green-100',
-    iconColor: 'text-green-600',
-    link: 'https://stacker.news',
-    ctaText: 'Join Community',
-    earnings: 'Earn while learning',
   },
 ];

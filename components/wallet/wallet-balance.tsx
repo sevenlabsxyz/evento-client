@@ -1,15 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
-import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import { ChevronRight, HelpCircle, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -28,7 +25,6 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
   const [balanceUSD, setBalanceUSD] = useState<number>(0);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
   const [showUSD, setShowUSD] = useState(true);
-  const [showQrModal, setShowQrModal] = useState(false);
   const [showEducationalSheet, setShowEducationalSheet] = useState(false);
   const [educationalArticle, setEducationalArticle] = useState<any>(null);
 
@@ -86,15 +82,6 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
     fetchEducationalPost();
   }, []);
 
-  const handleCopyAddress = async () => {
-    try {
-      await navigator.clipboard.writeText(lightningAddress);
-      toast.success('Lightning address copied');
-    } catch (error) {
-      toast.error('Failed to copy');
-    }
-  };
-
   const toggleCurrency = () => {
     setShowUSD(!showUSD);
   };
@@ -115,7 +102,7 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
           {/* Lightning Address Row */}
           <div className='mb-4 flex items-center gap-3'>
             <motion.button
-              onClick={() => setShowQrModal(true)}
+              onClick={onReceive}
               className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-white p-3 text-left transition-colors hover:bg-gray-100'
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
@@ -202,44 +189,6 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
           </div>
         </div>
       </div>
-
-      {/* QR Code Modal */}
-      <DetachedSheet.Root presented={showQrModal} onPresentedChange={setShowQrModal}>
-        <DetachedSheet.Portal>
-          <DetachedSheet.View>
-            <DetachedSheet.Backdrop />
-            <DetachedSheet.Content>
-              <div className='p-6'>
-                <div className='mb-4 flex justify-center'>
-                  <DetachedSheet.Handle />
-                </div>
-                <h2 className='mb-6 text-center text-lg font-semibold'>{lightningAddress}</h2>
-
-                <div className='space-y-4'>
-                  <div className='mx-auto w-fit'>
-                    <EventoQRCode value={`lightning:${lightningAddress}`} size={256} />
-                  </div>
-
-                  <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 text-center'>
-                    <p className='mb-1 text-xs text-muted-foreground'>Your Lightning Address</p>
-                    <p className='break-all font-mono text-sm'>{lightningAddress}</p>
-                  </div>
-
-                  <div className='space-y-3'>
-                    <Button
-                      onClick={handleCopyAddress}
-                      variant='outline'
-                      className='font-lg h-12 w-full rounded-full bg-gray-50'
-                    >
-                      Copy Address
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            </DetachedSheet.Content>
-          </DetachedSheet.View>
-        </DetachedSheet.Portal>
-      </DetachedSheet.Root>
 
       {/* Educational Content Sheet */}
       <WalletEducationalSheet

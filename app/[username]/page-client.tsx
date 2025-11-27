@@ -6,7 +6,6 @@ import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Navbar } from '@/components/navbar';
-import TipSheet from '@/components/profile/sheets/tip-sheet';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
@@ -23,6 +22,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { ZapSheet } from '@/components/zap/zap-sheet';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
   EventFilterType,
@@ -57,7 +57,6 @@ import {
   SortDesc,
   UserMinus,
   UserPlus,
-  Zap,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -80,7 +79,6 @@ export default function UserProfilePageClient() {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
-  const [showTipSheet, setShowTipSheet] = useState(false);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -304,14 +302,6 @@ export default function UserProfilePageClient() {
 
   const handleMessage = () => {
     toast.success('Message feature coming soon!');
-  };
-
-  const handleTip = () => {
-    if (!userData?.ln_address) {
-      toast.error("This user hasn't set up Lightning payments yet");
-      return;
-    }
-    setShowTipSheet(true);
   };
 
   // Handle profile photo click for lightbox
@@ -693,17 +683,19 @@ export default function UserProfilePageClient() {
               <MessageCircle className='h-4 w-4' />
               Message
             </Button>
-            {userData?.ln_address && (
-              <Button
-                variant='outline'
-                onClick={handleTip}
-                className='group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700'
-              >
-                <Zap className='h-4 w-4 text-black transition-colors group-hover:text-orange-700' />
-                Tip
-              </Button>
-            )}
           </div>
+
+          {/* Zap Button */}
+          {userData?.ln_address && (
+            <div className='mb-6'>
+              <ZapSheet
+                recipientLightningAddress={userData.ln_address}
+                recipientName={userData.name || 'Unknown User'}
+                recipientUsername={userData.username}
+                recipientAvatar={userData.image}
+              />
+            </div>
+          )}
 
           {/* Tabbed Section */}
           <div className='mb-4 w-full bg-white'>
@@ -826,19 +818,6 @@ export default function UserProfilePageClient() {
         userId=''
         eventId=''
       />
-
-      {/* Tip Sheet */}
-      {userData?.ln_address && (
-        <TipSheet
-          isOpen={showTipSheet}
-          onClose={() => setShowTipSheet(false)}
-          lightningAddress={userData.ln_address}
-          recipientName={userData.name || 'Unknown User'}
-          recipientUsername={userData.username}
-          recipientImage={userData.image}
-          recipientVerificationStatus={userData.verification_status}
-        />
-      )}
     </div>
   );
 }

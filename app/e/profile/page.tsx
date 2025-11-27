@@ -22,6 +22,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
@@ -517,6 +518,18 @@ export default function ProfilePage() {
               </motion.button>
             </div>
           </div>
+
+          {/* Zap Button */}
+          {user?.ln_address && (
+            <div className='mb-6'>
+              <ZapSheet
+                recipientLightningAddress={user.ln_address}
+                recipientName={user.name || 'You'}
+                recipientUsername={user.username}
+                recipientAvatar={user.image}
+              />
+            </div>
+          )}
 
           {/* Tabbed Section */}
           <div className='mb-4 w-full bg-white'>

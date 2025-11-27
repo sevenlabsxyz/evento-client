@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { motion } from 'framer-motion';
-import { Calendar1, MessageCircle, Plus, User, Wallet } from 'lucide-react';
+import { Calendar1, MessageCircle, Plus, User, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -19,7 +19,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
 
   const navItems = [
     { id: 'hub', icon: Calendar1, path: '/e/hub' },
-    { id: 'wallet', icon: Wallet, path: '/e/wallet' },
+    { id: 'wallet', icon: Zap, path: '/e/wallet' },
     // Hiding feed until improvements are made
     // { id: 'feed', icon: Calendar1, path: '/e/feed' },
     { id: 'add', icon: Plus, path: '/e/create', isCenter: true },

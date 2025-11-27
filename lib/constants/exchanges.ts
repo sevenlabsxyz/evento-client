@@ -1,111 +1,84 @@
-import { Bitcoin, Building2, CreditCard, Wallet, Zap } from 'lucide-react';
-
 export type Exchange = {
   id: string;
   name: string;
   description: string;
-  icon: React.ElementType;
-  iconBg: string;
-  iconColor: string;
+  logo: string;
   link: string;
   supportedCountries: string[]; // ISO country codes, empty array = all countries
-  type: 'buy' | 'sell' | 'both';
+  isGlobal: boolean;
 };
 
 /**
- * Curated list of Bitcoin exchanges
- * TODO: Add affiliate/referral links and expand country support
+ * Regional exchanges - shown based on user's location
  */
-export const EXCHANGES: Exchange[] = [
-  {
-    id: 'strike',
-    name: 'Strike',
-    description: 'Buy Bitcoin instantly with no fees',
-    icon: Zap,
-    iconBg: 'bg-purple-100',
-    iconColor: 'text-purple-600',
-    link: 'https://strike.me',
-    supportedCountries: ['US', 'GB', 'AR'],
-    type: 'both',
-  },
+export const REGIONAL_EXCHANGES: Exchange[] = [
   {
     id: 'cash-app',
     name: 'Cash App',
     description: 'Buy and sell Bitcoin easily',
-    icon: Wallet,
-    iconBg: 'bg-green-100',
-    iconColor: 'text-green-600',
+    logo: '/assets/partners/cashapp.webp',
     link: 'https://cash.app',
     supportedCountries: ['US', 'GB'],
-    type: 'both',
+    isGlobal: false,
+  },
+  {
+    id: 'river',
+    name: 'River',
+    description: 'Bitcoin-only financial institution',
+    logo: '/assets/partners/river.webp',
+    link: 'https://river.com',
+    supportedCountries: ['US'],
+    isGlobal: false,
+  },
+  {
+    id: 'strike',
+    name: 'Strike',
+    description: 'Buy Bitcoin instantly with no fees',
+    logo: '/assets/partners/strike.webp',
+    link: 'https://strike.me',
+    supportedCountries: ['US', 'GB', 'AR'],
+    isGlobal: false,
+  },
+];
+
+/**
+ * Global exchanges - always shown for all users
+ */
+export const GLOBAL_EXCHANGES: Exchange[] = [
+  {
+    id: 'kraken',
+    name: 'Kraken',
+    description: 'Advanced trading platform',
+    logo: '/assets/partners/kraken.webp',
+    link: 'https://kraken.com',
+    supportedCountries: [],
+    isGlobal: true,
   },
   {
     id: 'coinbase',
     name: 'Coinbase',
     description: 'Trusted cryptocurrency exchange',
-    icon: Building2,
-    iconBg: 'bg-blue-100',
-    iconColor: 'text-blue-600',
+    logo: '/assets/partners/coinbase.webp',
     link: 'https://coinbase.com',
-    supportedCountries: ['US', 'GB', 'CA', 'AU', 'SG', 'DE', 'FR', 'ES', 'IT', 'NL'],
-    type: 'both',
-  },
-  {
-    id: 'kraken',
-    name: 'Kraken',
-    description: 'Advanced trading platform',
-    icon: Bitcoin,
-    iconBg: 'bg-indigo-100',
-    iconColor: 'text-indigo-600',
-    link: 'https://kraken.com',
-    supportedCountries: ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'ES', 'IT', 'NL', 'JP'],
-    type: 'both',
-  },
-  {
-    id: 'river',
-    name: 'River Financial',
-    description: 'Bitcoin-only financial institution',
-    icon: Bitcoin,
-    iconBg: 'bg-blue-100',
-    iconColor: 'text-blue-600',
-    link: 'https://river.com',
-    supportedCountries: ['US'],
-    type: 'both',
-  },
-  {
-    id: 'swan',
-    name: 'Swan Bitcoin',
-    description: 'Easy Bitcoin savings plan',
-    icon: CreditCard,
-    iconBg: 'bg-orange-100',
-    iconColor: 'text-orange-600',
-    link: 'https://swanbitcoin.com',
-    supportedCountries: ['US'],
-    type: 'buy',
+    supportedCountries: [],
+    isGlobal: true,
   },
 ];
 
 /**
- * Filter exchanges by country and type
+ * Get exchanges for a specific country
  */
-export function getExchangesForCountry(
-  countryCode: string,
-  type?: 'buy' | 'sell' | 'both'
-): { supported: Exchange[]; others: Exchange[] } {
-  const filtered = EXCHANGES.filter((exchange) => {
-    const typeMatches = !type || exchange.type === type || exchange.type === 'both';
-    return typeMatches;
-  });
-
-  const supported = filtered.filter(
+export function getExchangesForCountry(countryCode: string): {
+  regional: Exchange[];
+  global: Exchange[];
+} {
+  const regional = REGIONAL_EXCHANGES.filter(
     (exchange) =>
       exchange.supportedCountries.length === 0 || exchange.supportedCountries.includes(countryCode)
   );
 
-  const others = filtered.filter(
-    (exchange) =>
-      exchange.supportedCountries.length > 0 && !exchange.supportedCountries.includes(countryCode)
-  );
-
-  return { supported, others };
+  return {
+    regional,
+    global: GLOBAL_EXCHANGES,
+  };
 }
