@@ -1,5 +1,6 @@
 'use client';
 
+import { Tag } from '@/components/ui/interest-selector';
 import { InterestWithParent } from '@/lib/types/api';
 
 interface UserInterestsProps {
@@ -23,8 +24,8 @@ export function UserInterests({ interests }: UserInterestsProps) {
   });
 
   return (
-    <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6'>
-      <h2 className='mb-4 text-xl font-bold text-gray-900'>Interests</h2>
+    <div className='rounded-3xl border border-gray-200 bg-gray-50 p-6'>
+      <h2 className='mb-4 text-lg font-bold text-gray-900'>Interests</h2>
 
       <div className='space-y-4'>
         {Object.entries(groupedInterests).map(([parentName, items]) => (
@@ -37,12 +38,13 @@ export function UserInterests({ interests }: UserInterestsProps) {
             {/* Interest tags */}
             <div className='flex flex-wrap gap-2'>
               {items.map((interest) => (
-                <span
+                <Tag
                   key={interest.id}
-                  className='inline-flex items-center rounded-full bg-red-50 px-3 py-1.5 text-sm font-medium text-red-700'
-                >
-                  {interest.name}
-                </span>
+                  text={interest.name}
+                  isSelected={false}
+                  onToggle={() => {}}
+                  displayOnly
+                />
               ))}
             </div>
           </div>

@@ -16,7 +16,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
     return (
       <div className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
         {/* Left: Logo + Content */}
-        <div className='flex items-center gap-3'>
+        <div className='flex items-start gap-3'>
           <div className='relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-2xl'>
             <Image src={partner.logo} alt={partner.name} fill className='object-cover' />
           </div>

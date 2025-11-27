@@ -41,16 +41,16 @@ export function ProfileActions({
       <Button
         onClick={handleFollowClick}
         disabled={isLoading || isPending}
-        className={`flex-1 rounded-xl ${
+        className={`h-12 flex-1 rounded-full border border-gray-200 ${
           isFollowing
-            ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
+            ? 'bg-gray-50 text-gray-900 hover:bg-gray-100'
             : `${designTokens.colors.gradients.primaryButton} text-white`
         }`}
       >
         {isFollowing ? (
           <>
             <UserMinus className='mr-2 h-4 w-4' />
-            {isPending ? 'Unfollowing...' : 'Following'}
+            {isPending ? 'Unfollowing...' : 'Following2222'}
           </>
         ) : (
           <>

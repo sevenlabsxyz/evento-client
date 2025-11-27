@@ -25,7 +25,7 @@ interface ZapSheetProps {
   onError?: (error: Error) => void;
 }
 
-type Step = 'amount' | 'custom' | 'confirm' | 'sending' | 'success';
+type Step = 'amount' | 'custom' | 'confirm' | 'sending' | 'success' | 'no-wallet';
 
 export function ZapSheet({
   recipientLightningAddress,
@@ -48,9 +48,16 @@ export function ZapSheet({
 
   const { satsToUSD, usdToSats } = useAmountConverter();
 
-  // Reset state when sheet closes
+  // Handle open/close state and determine initial step based on wallet
   useEffect(() => {
-    if (!open) {
+    if (open) {
+      // When opening, determine step based on whether recipient has wallet
+      if (!recipientLightningAddress) {
+        setStep('no-wallet');
+      }
+      // If they have an address, step stays at 'amount' (from the reset)
+    } else {
+      // When closing, reset all state
       setStep('amount');
       setSelectedAmount(null);
       setCustomAmount('');
@@ -58,7 +65,7 @@ export function ZapSheet({
       setAmountUSD('');
       setPrepareResponse(null);
     }
-  }, [open]);
+  }, [open, recipientLightningAddress]);
 
   // Convert selected amount to USD when it changes
   useEffect(() => {
@@ -156,7 +163,17 @@ export function ZapSheet({
       }
     } catch (error: any) {
       console.error('Failed to prepare zap:', error);
-      toast.error(error.message || 'Failed to prepare payment');
+
+      // Check for wallet not connected error
+      if (
+        error.message?.toLowerCase().includes('not connected') ||
+        error.message?.toLowerCase().includes('sdk not') ||
+        !breezSDK.isConnected()
+      ) {
+        toast.error('Please unlock your Evento wallet first');
+      } else {
+        toast.error(error.message || 'Failed to prepare payment');
+      }
       onError?.(error);
     }
   };
@@ -175,7 +192,17 @@ export function ZapSheet({
       onSuccess?.(selectedAmount);
     } catch (error: any) {
       console.error('Failed to send zap:', error);
-      toast.error(error.message || 'Failed to send payment');
+
+      // Check for wallet not connected error
+      if (
+        error.message?.toLowerCase().includes('not connected') ||
+        error.message?.toLowerCase().includes('sdk not') ||
+        !breezSDK.isConnected()
+      ) {
+        toast.error('Please unlock your Evento wallet first');
+      } else {
+        toast.error(error.message || 'Failed to send payment');
+      }
       onError?.(error);
       setStep('confirm');
     }
@@ -203,7 +230,7 @@ export function ZapSheet({
     return (
       <motion.button
         onClick={() => setOpen(true)}
-        className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700'
+        className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black text-base font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700'
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
@@ -501,6 +528,25 @@ export function ZapSheet({
     </div>
   );
 
+  // No wallet step
+  const noWalletContent = (
+    <div className='flex flex-col items-center justify-center p-12 text-center'>
+      <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+        <Zap className='h-8 w-8 text-gray-400' />
+      </div>
+      <h3 className='mb-2 text-xl font-semibold text-gray-900'>Wallet Not Set Up</h3>
+      <p className='mb-8 text-gray-600'>
+        This user hasn't set up their Evento wallet yet. We've let them know!
+      </p>
+      <Button
+        onClick={handleClose}
+        className='h-12 w-full max-w-xs rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800'
+      >
+        Done
+      </Button>
+    </div>
+  );
+
   return (
     <>
       {renderTrigger()}
@@ -533,6 +579,7 @@ export function ZapSheet({
                     {step === 'confirm' && confirmContent}
                     {step === 'sending' && sendingContent}
                     {step === 'success' && successContent}
+                    {step === 'no-wallet' && noWalletContent}
                   </SheetWithDetentFull.ScrollContent>
                 </SheetWithDetentFull.ScrollView>
               </SheetWithDetentFull.ScrollRoot>

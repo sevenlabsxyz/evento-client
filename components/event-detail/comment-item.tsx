@@ -12,7 +12,7 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
-import { Heart, MoreHorizontal, Reply, SendHorizontal } from 'lucide-react';
+import { Heart, MoreHorizontal, Reply, SendHorizontal, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -23,6 +23,7 @@ import {
 } from '../ui/dropdown-menu';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { ReplyAvatar } from '../ui/reply-avatar';
+import { ZapSheet } from '../zap/zap-sheet';
 
 interface CommentItemProps {
   comment: EventComment;
@@ -266,6 +267,21 @@ export default function CommentItem({
                     <span className='text-sm font-medium'>{reactions.like}</span>
                   )}
                 </Button>
+
+                <ZapSheet
+                  recipientLightningAddress={comment.user_details.ln_address || ''}
+                  recipientName={comment.user_details.name || comment.user_details.username}
+                  recipientUsername={comment.user_details.username}
+                  recipientAvatar={comment.user_details.image}
+                >
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    className='flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:text-gray-900'
+                  >
+                    <Zap className='h-4 w-4' />
+                  </Button>
+                </ZapSheet>
 
                 <Button
                   variant='ghost'

@@ -1,11 +1,9 @@
 'use client';
 
-import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { Button } from '@/components/ui/button';
 import { Globe, Instagram } from 'lucide-react';
 import { useState } from 'react';
 import InstagramSheet from './sheets/instagram-sheet';
-import LightningSheet from './sheets/lightning-sheet';
 import NostrSheet from './sheets/nostr-sheet';
 import WebsiteSheet from './sheets/website-sheet';
 import XSheet from './sheets/x-sheet';
@@ -14,7 +12,6 @@ interface User {
   bio_link?: string;
   instagram_handle?: string;
   x_handle?: string;
-  ln_address?: string;
   nip05?: string;
 }
 
@@ -26,8 +23,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
   const [activeSheet, setActiveSheet] = useState<string | null>(null);
 
   // Check if user has any social links
-  const hasAnyLinks =
-    user.bio_link || user.instagram_handle || user.x_handle || user.ln_address || user.nip05;
+  const hasAnyLinks = user.bio_link || user.instagram_handle || user.x_handle || user.nip05;
 
   if (!hasAnyLinks) {
     return null;
@@ -35,7 +31,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
 
   return (
     <>
-      <div className='flex w-full max-w-md flex-wrap justify-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
+      <div className='flex w-full max-w-md flex-wrap justify-center gap-2 rounded-3xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
         {/* Website */}
         {user.bio_link && (
           <Button
@@ -74,18 +70,6 @@ export default function SocialLinks({ user }: SocialLinksProps) {
           </Button>
         )}
 
-        {/* Lightning */}
-        {user.ln_address && (
-          <Button
-            size='icon'
-            variant='outline'
-            onClick={() => setActiveSheet('lightning')}
-            className='rounded-full'
-          >
-            <BitcoinSVGIcon className='h-6 w-6' fill='#f7931a' />
-          </Button>
-        )}
-
         {/* Nostr */}
         {user.nip05 && (
           <Button
@@ -118,12 +102,6 @@ export default function SocialLinks({ user }: SocialLinksProps) {
         isOpen={activeSheet === 'x'}
         onClose={() => setActiveSheet(null)}
         handle={user.x_handle || ''}
-      />
-
-      <LightningSheet
-        isOpen={activeSheet === 'lightning'}
-        onClose={() => setActiveSheet(null)}
-        address={user.ln_address || ''}
       />
 
       <NostrSheet

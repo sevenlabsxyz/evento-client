@@ -573,7 +573,6 @@ export default function UserProfilePageClient() {
               bio_link: userData.bio_link,
               instagram_handle: userData.instagram_handle,
               x_handle: userData.x_handle,
-              ln_address: userData.ln_address,
               nip05: userData.nip05,
             }}
           />
@@ -653,36 +652,38 @@ export default function UserProfilePageClient() {
           </div>
 
           {/* Action Buttons */}
-          <div className='-mx-2.5 mb-6 flex gap-2 px-2.5'>
-            <Button
-              onClick={handleFollowToggle}
-              disabled={isFollowStatusLoading || followActionMutation.isPending}
-              className={`flex-1 rounded-xl px-2.5 ${
-                followStatus?.isFollowing
-                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                  : 'bg-red-500 text-white hover:bg-red-600'
-              }`}
-            >
-              {followStatus?.isFollowing ? (
-                <>
-                  <UserMinus className='mr-2 h-4 w-4' />
-                  {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
-                </>
-              ) : (
-                <>
-                  <UserPlus className='mr-2 h-4 w-4' />
-                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
-                </>
-              )}
-            </Button>
-            <Button
-              variant='outline'
-              onClick={handleMessage}
-              className='rounded-xl bg-transparent px-3'
-            >
-              <MessageCircle className='h-4 w-4' />
-              Message
-            </Button>
+          <div className='-mx-2.5 mb-4 flex gap-2 px-2.5 pt-4'>
+            <div className='flex w-full flex-row gap-4'>
+              <Button
+                onClick={handleFollowToggle}
+                disabled={isFollowStatusLoading || followActionMutation.isPending}
+                className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
+                  followStatus?.isFollowing
+                    ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
+                    : 'bg-red-500 text-white hover:bg-red-600'
+                }`}
+              >
+                {followStatus?.isFollowing ? (
+                  <>
+                    <UserMinus className='mr-2 h-4 w-4' />
+                    {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
+                  </>
+                ) : (
+                  <>
+                    <UserPlus className='mr-2 h-4 w-4' />
+                    {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                  </>
+                )}
+              </Button>
+              <Button
+                variant='outline'
+                onClick={handleMessage}
+                className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
+              >
+                <MessageCircle className='h-4 w-4' />
+                Message
+              </Button>
+            </div>
           </div>
 
           {/* Zap Button */}
