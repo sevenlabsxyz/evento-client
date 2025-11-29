@@ -135,3 +135,7 @@ For detailed information about integrating with our APIs:
 ## Support
 
 For questions or assistance, contact the engineering team through our internal channels.
+
+## Evento Wallet
+
+- Bitrefill to buy gift cards directly from the app
