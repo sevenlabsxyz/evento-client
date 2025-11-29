@@ -2,17 +2,17 @@
 
 import { CircleIconButton } from '@/components/ui/circle-icon-button';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
-import { useDiscoverEvents } from '@/lib/hooks/use-discover-events';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
+import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
 import { Calendar, MoreHorizontal, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import { EventCompactItem } from '../event-compact-item';
+import { MasterEventCard } from '../master-event-card';
 
 type ForYouTabType = 'following' | 'discover';
 
 export function ForYouSection() {
-  const [activeTab, setActiveTab] = useState<ForYouTabType>('following');
-  const [loadedTabs, setLoadedTabs] = useState<ForYouTabType[]>(['following']);
+  const [activeTab, setActiveTab] = useState<ForYouTabType>('discover');
+  const [loadedTabs, setLoadedTabs] = useState<ForYouTabType[]>(['discover']);
 
   // Only load data for tabs that have been opened
   const followingQuery = useFollowingEvents({
@@ -20,8 +20,7 @@ export function ForYouSection() {
     enabled: loadedTabs.includes('following'),
   });
 
-  const discoverQuery = useDiscoverEvents({
-    limit: 10,
+  const discoverQuery = useForYouEvents({
     enabled: loadedTabs.includes('discover'),
   });
 
@@ -44,7 +43,11 @@ export function ForYouSection() {
   };
 
   const currentQuery = getCurrentQuery();
-  const events = currentQuery.data?.pages?.[0]?.events || [];
+  // Following uses infinite query (pages), For You uses simple query (flat array)
+  const events =
+    activeTab === 'discover'
+      ? discoverQuery.data || []
+      : followingQuery.data?.pages?.[0]?.events || [];
   const isLoading = currentQuery.isLoading;
 
   const ctaLabel = useMemo(() => {
@@ -57,7 +60,8 @@ export function ForYouSection() {
       case 'following':
         return followingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
       case 'discover':
-        return discoverQuery.data?.pages?.[0]?.pagination.totalCount || 0;
+        // For You events are not paginated, return array length
+        return discoverQuery.data?.length || 0;
       default:
         return 0;
     }
@@ -92,12 +96,12 @@ export function ForYouSection() {
         onValueChange={(value) => setActiveTab(value as ForYouTabType)}
         items={[
           {
-            value: 'following',
-            label: 'Following',
-          },
-          {
             value: 'discover',
             label: 'Discover',
+          },
+          {
+            value: 'following',
+            label: 'Following',
           },
         ]}
         wrapperClassName='mt-2'
@@ -106,27 +110,28 @@ export function ForYouSection() {
       {/* Content */}
       <div className='mt-2'>
         {isLoading ? (
-          // List view skeleton loading
-          <div className='flex flex-col gap-1'>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={`ske-list-${i}`} className='flex items-center gap-3 rounded-lg p-2'>
-                {/* Thumbnail */}
-                <div className='h-14 w-14 rounded-md bg-gray-100' />
-                {/* Text block */}
-                <div className='min-w-0 flex-1'>
-                  <div className='mb-1 h-4 w-2/3 rounded bg-gray-100' />
-                  <div className='flex items-center gap-3 text-xs'>
-                    <div className='h-3 w-20 rounded bg-gray-100' />
-                    <div className='h-3 w-16 rounded bg-gray-100' />
-                    <div className='h-3 w-24 rounded bg-gray-100' />
+          // Skeleton loading for MasterEventCard layout
+          <div className='flex flex-col gap-2'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={`ske-${i}`}
+                className='flex items-start gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4'
+              >
+                {/* Left content skeleton */}
+                <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                  <div className='h-4 w-32 rounded bg-gray-200' />
+                  <div className='h-5 w-3/4 rounded bg-gray-200' />
+                  <div className='flex items-center gap-2'>
+                    <div className='h-5 w-5 rounded-full bg-gray-200' />
+                    <div className='h-3 w-24 rounded bg-gray-200' />
                   </div>
-                  <div className='mt-2 flex items-center gap-2'>
-                    <div className='h-4 w-4 rounded-full bg-gray-100' />
-                    <div className='h-3 w-24 rounded bg-gray-100' />
+                  <div className='flex items-center gap-1'>
+                    <div className='h-3.5 w-3.5 rounded bg-gray-200' />
+                    <div className='h-3 w-32 rounded bg-gray-200' />
                   </div>
                 </div>
-                {/* Trailing icon */}
-                <div className='h-4 w-4 rounded-full bg-gray-100' />
+                {/* Right image skeleton */}
+                <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200' />
               </div>
             ))}
           </div>
@@ -137,20 +142,20 @@ export function ForYouSection() {
             </div>
             <h3 className='mb-2 text-base font-semibold text-gray-900'>
               {activeTab === 'following' && 'No events from people you follow'}
-              {activeTab === 'discover' && 'No curated events available'}
+              {activeTab === 'discover' && 'No featured events for you'}
             </h3>
             <p className='mb-4 text-sm text-gray-500'>
               {activeTab === 'following' && 'Follow creators to see their upcoming events here'}
-              {activeTab === 'discover' && 'Check back soon for curated events'}
+              {activeTab === 'discover' && 'Check back soon for featured events'}
             </p>
           </div>
         ) : (
-          <div className='flex flex-col gap-1'>
+          <div className='flex flex-col gap-2'>
             {events.slice(0, 10).map((event) => (
-              <EventCompactItem key={event.id} event={event} />
+              <MasterEventCard key={event.id} event={event} />
             ))}
 
-            {totalCount > events.length && (
+            {activeTab === 'following' && totalCount > events.length && (
               <button
                 onClick={() => {
                   // TODO: Open full-screen view all modal

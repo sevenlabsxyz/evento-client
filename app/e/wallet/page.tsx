@@ -25,6 +25,7 @@ import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-s
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
+import { WalletWelcome } from '@/components/wallet/wallet-welcome';
 import { Env } from '@/lib/constants/env';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
@@ -329,44 +330,10 @@ export default function WalletPage() {
   // Welcome Screen
   if (step === 'welcome') {
     return (
-      <div className='relative flex min-h-[calc(100vh-8rem)] flex-col'>
-        <div className='mx-auto flex w-full max-w-sm flex-1 flex-col items-center justify-center px-6'>
-          <div className='flex w-full flex-col items-center gap-8'>
-            <div className='text-center'>
-              <h1 className='text-3xl font-bold tracking-tight'>Lightning Wallet</h1>
-              <p className='mt-2 text-sm text-muted-foreground'>
-                Send and receive Bitcoin instantly
-              </p>
-            </div>
-
-            <div className='mt-4 w-full space-y-3'>
-              <Button onClick={() => setStep('setup')} className='w-full text-base' size='lg'>
-                Setup Wallet
-              </Button>
-              <Button
-                onClick={() => setStep('restore')}
-                className='w-full text-base'
-                size='lg'
-                variant='outline'
-              >
-                Restore Wallet
-              </Button>
-            </div>
-
-            <div className='mt-8 w-full text-center'>
-              <div className='rounded-lg bg-blue-50 p-4 text-sm text-blue-900'>
-                <p className='font-medium'>Non-custodial & Secure</p>
-                <p className='mt-1'>Your keys, your Bitcoin. We never have access to your funds.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Footer at bottom */}
-        <div className='pb-8 pt-4 text-center'>
-          <p className='text-xs text-muted-foreground'>Powered by Breez SDK</p>
-        </div>
-      </div>
+      <>
+        <WalletWelcome onSetup={() => setStep('setup')} onRestore={() => setStep('restore')} />
+        <Navbar />
+      </>
     );
   }
 

@@ -28,6 +28,7 @@ export function transformApiEventToDisplay(
     avatar: getOptimizedCoverUrl(host.user_details.image || '', 'feed'),
     title: host.user_details.bio ? 'Host' : undefined,
     company: undefined,
+    verification_status: host.user_details.verification_status,
   }));
 
   // Add creator as first host if not already included and we have user details
@@ -39,6 +40,7 @@ export function transformApiEventToDisplay(
       avatar: getOptimizedCoverUrl(apiEvent.user_details.image || '', 'feed'),
       title: 'Creator',
       company: undefined,
+      verification_status: apiEvent.user_details.verification_status,
     };
 
     if (!transformedHosts.find((h) => h.id === creatorHost.id)) {

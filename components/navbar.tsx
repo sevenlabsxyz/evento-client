@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { motion } from 'framer-motion';
-import { Calendar1, MessageCircle, Plus, User, Zap } from 'lucide-react';
+import { Calendar1, Plus, Search, User, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -23,7 +23,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
     // Hiding feed until improvements are made
     // { id: 'feed', icon: Calendar1, path: '/e/feed' },
     { id: 'add', icon: Plus, path: '/e/create', isCenter: true },
-    { id: 'messages', icon: MessageCircle, path: '/e/messages' },
+    { id: 'search', icon: Search, path: '/e/search' },
     // Temporarily hidden until notifications are fully working
     // { id: 'inbox', icon: Inbox, path: '/e/inbox' },
     { id: 'profile', icon: User, path: '/e/profile' },
@@ -37,7 +37,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
   };
 
   return (
-    <div className='fixed bottom-0 left-1/2 z-10 w-full max-w-full -translate-x-1/2 transform border-t border-gray-200 bg-white pb-4 md:max-w-3xl md:border-l md:border-r'>
+    <div className='fixed bottom-0 left-1/2 z-10 w-full max-w-full -translate-x-1/2 transform border-t border-gray-200 bg-white pb-4 md:hidden'>
       <div className='grid grid-cols-5 items-center px-2 py-3'>
         {navItems.map((item) => {
           const Icon = item.icon;

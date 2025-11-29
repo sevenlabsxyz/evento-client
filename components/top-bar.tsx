@@ -109,7 +109,7 @@ export function TopBar() {
     return (
       <motion.button
         onClick={handleMenuClick}
-        className={`rounded-full border border-gray-200 bg-gray-50 p-0 transition-all duration-300 hover:opacity-80 ${
+        className={`rounded-full border border-gray-200 bg-gray-50 p-0 transition-all duration-300 hover:opacity-80 md:hidden ${
           isOverlaid ? 'border-gray-200 bg-white' : 'hover:bg-gray-100'
         } ${isSpinning ? 'animate-spin' : ''}`}
         whileTap={{ scale: 0.95 }}
@@ -224,7 +224,7 @@ export function TopBar() {
 
   return (
     <div
-      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-3xl md:border-l md:border-r ${getTopBarStyles()}`}
+      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:left-[280px] md:max-w-4xl ${getTopBarStyles()} md:hidden`}
     >
       <div className='px-4 pb-4 pt-4'>
         <div

@@ -1,10 +1,10 @@
 'use client';
 
-import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
@@ -24,7 +24,6 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import {
   EventFilterType,
   EventSortBy,
@@ -41,8 +40,6 @@ import {
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
-import { EventHost } from '@/lib/types/event';
-import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
   BadgeCheck,
@@ -86,14 +83,6 @@ export default function ProfilePage() {
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
 
-  // Fetch pinned event
-  const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
-  const {
-    mutate: updatePinnedEvent,
-    isPending: isUpdatingPinnedEvent,
-    variables: updatePinnedEventVariables,
-  } = useUpdatePinnedEvent();
-
   // Fetch user events with the hook
   const {
     data: userEventsData,
@@ -113,13 +102,10 @@ export default function ProfilePage() {
   // Handle URL parameters for tab state
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'events' || tab === 'about') {
-      setActiveTab(tab);
-
-      // Remove param if on default tab
-      if (tab === 'about') {
-        router.replace('/e/profile', { scroll: false });
-      }
+    if (tab === 'events') {
+      setActiveTab('events');
+    } else {
+      setActiveTab('about');
     }
   }, [searchParams]);
 
@@ -248,32 +234,6 @@ export default function ProfilePage() {
           }
         ) || [];
 
-    const canPinEvent = (event: EventWithUser) => {
-      if (!user) return false;
-
-      // User can pin if they are the event creator
-      if (event.user_details.id === user.id) return true;
-
-      // User can pin if they are a co-host
-      const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
-      return isCoHost;
-    };
-
-    const handlePinEvent = (eventId: string, isPinned: boolean) => {
-      if (isUpdatingPinnedEvent) return;
-
-      updatePinnedEvent(eventId, {
-        onSuccess: () => {
-          toast.success(
-            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
-          );
-        },
-        onError: () => {
-          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
-        },
-      });
-    };
-
     const formatDateHeader = (date: string) => {
       const today = new Date().toISOString().slice(0, 10);
       const tomorrow = new Date();
@@ -367,26 +327,10 @@ export default function ProfilePage() {
                 <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
                 </h3>
-                <div className='divide-y divide-gray-100'>
-                  {group.events.map((event) => {
-                    const isPinned = pinnedEvent?.id === event.id;
-                    const canPin = canPinEvent(event);
-
-                    return (
-                      <div key={event.id} className='py-2'>
-                        <EventCompactItem
-                          event={event}
-                          isPinning={
-                            isUpdatingPinnedEvent && updatePinnedEventVariables === event.id
-                          }
-                          isPinned={isPinned}
-                          canPin={canPin}
-                          onPin={handlePinEvent}
-                          onBookmark={() => {}} // Placeholder for bookmark functionality
-                        />
-                      </div>
-                    );
-                  })}
+                <div className='space-y-3'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
                 </div>
               </div>
             ))
@@ -419,8 +363,6 @@ export default function ProfilePage() {
           isOpen={showEventSearchSheet}
           onClose={() => setShowEventSearchSheet(false)}
           username={user?.username}
-          onPin={handlePinEvent}
-          pinnedEventId={pinnedEvent?.id}
           isOwnProfile={true}
         />
       </div>
@@ -540,7 +482,13 @@ export default function ProfilePage() {
                 { value: 'events', label: 'Events' },
               ]}
               value={activeTab}
-              onValueChange={(v) => setActiveTab(v)}
+              onValueChange={(v) => {
+                if (v === 'about') {
+                  router.push('/e/profile', { scroll: false });
+                } else {
+                  router.push(`/e/profile?tab=${v}`, { scroll: false });
+                }
+              }}
             />
             {/* Tab Content */}
             <div>

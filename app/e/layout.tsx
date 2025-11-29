@@ -26,7 +26,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   return (
     <StreamChatProvider>
       <TopBar />
-      <div className={isOverlaid ? '' : 'pt-16'}>{children}</div>
+      <div className={`${isOverlaid ? '' : 'pt-16 md:pt-2'} md:ml-[280px]`}>{children}</div>
     </StreamChatProvider>
   );
 }

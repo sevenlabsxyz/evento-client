@@ -99,8 +99,8 @@ export function HubBlogGallery() {
           {[1, 2, 3].map((i) => (
             <Skeleton
               key={i}
-              className='h-96 flex-shrink-0 rounded-2xl'
-              style={{ width: '452px' }}
+              className='h-96 flex-shrink-0 rounded-2xl md:h-80'
+              style={{ width: '316px' }}
             />
           ))}
         </div>
@@ -157,7 +157,7 @@ export function HubBlogGallery() {
         >
           <CarouselContent className='hide-scrollbar px-4'>
             {posts.map((post) => (
-              <CarouselItem key={post.id} className='max-w-[280px] pl-3 md:max-w-[452px]'>
+              <CarouselItem key={post.id} className='max-w-[280px] pl-3 md:max-w-[316px]'>
                 <motion.button
                   onClick={() => {
                     setSelectedArticle(post);
@@ -176,17 +176,17 @@ export function HubBlogGallery() {
                             alt={post.title}
                             fill
                             className='object-cover object-center'
-                            sizes='(max-width: 768px) 280px, 452px'
+                            sizes='(max-width: 768px) 280px, 316px'
                           />
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className='min-h-[130px] rounded-2xl rounded-t-none border border-t-0 bg-gray-50 px-4'>
-                    <div className='mb-2 line-clamp-2 break-words pt-4 text-lg font-medium md:mb-3 md:pt-4 md:text-xl lg:pt-4 lg:text-2xl'>
+                    <div className='mb-2 line-clamp-2 break-words pt-4 text-lg font-medium md:mb-3 md:pt-4 md:text-lg lg:pt-4 lg:text-xl'>
                       {post.title}
                     </div>
-                    <div className='mb-4 line-clamp-3 text-sm text-muted-foreground md:mb-12 md:text-base lg:mb-9'>
+                    <div className='mb-4 line-clamp-3 text-sm text-muted-foreground md:mb-8 md:text-sm lg:mb-6'>
                       {post.excerpt}
                     </div>
                   </div>

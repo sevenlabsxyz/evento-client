@@ -255,7 +255,7 @@ export function ZapSheet({
       </div>
 
       {/* Content */}
-      <div className='flex-1 overflow-y-auto p-6'>
+      <div className='flex-1 overflow-y-auto px-4 pb-4 pt-0'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Recipient Card */}
           <div className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
@@ -264,8 +264,8 @@ export function ZapSheet({
                 <Image src={recipientAvatar} alt={recipientName} fill className='object-cover' />
               </div>
             ) : (
-              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-orange-100'>
-                <Zap className='h-6 w-6 text-orange-600' />
+              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
+                <Zap className='h-6 w-6 text-red-600' />
               </div>
             )}
             <div className='min-w-0 flex-1'>
@@ -289,10 +289,10 @@ export function ZapSheet({
                   onClick={() => handleQuickAmountSelect(amount)}
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                  className={`flex h-14 items-center justify-center rounded-xl border-2 font-semibold transition-all ${
+                  className={`flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all ${
                     selectedAmount === amount
-                      ? 'border-orange-500 bg-orange-50 text-orange-600'
-                      : 'border-gray-200 bg-white text-gray-900 hover:border-gray-300'
+                      ? 'border-red-500 bg-red-50 text-red-600'
+                      : 'hover:border-gray-100'
                   }`}
                 >
                   {amount.toLocaleString()}
@@ -302,7 +302,7 @@ export function ZapSheet({
                 onClick={handleCustomAmountClick}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className='flex h-14 items-center justify-center rounded-xl border-2 border-gray-200 bg-white font-semibold text-gray-900 transition-all hover:border-gray-300'
+                className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100'
               >
                 Custom
               </motion.button>
@@ -323,7 +323,7 @@ export function ZapSheet({
           <Button
             onClick={handleProceedToConfirm}
             disabled={!selectedAmount}
-            className='h-12 w-full rounded-full bg-orange-500 font-semibold text-white hover:bg-orange-600'
+            className='h-12 w-full rounded-full font-semibold'
           >
             Next
           </Button>
@@ -389,7 +389,7 @@ export function ZapSheet({
           <Button
             onClick={handleCustomAmountConfirm}
             disabled={!customAmount || Number(customAmount) <= 0}
-            className='h-12 w-full rounded-full bg-orange-500 font-semibold text-white hover:bg-orange-600'
+            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
           >
             Next
           </Button>
@@ -422,8 +422,8 @@ export function ZapSheet({
       <div className='flex-1 overflow-y-auto p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
-          <div className='rounded-xl border border-orange-200 bg-orange-50 p-8 text-center'>
-            <Zap className='mx-auto h-12 w-12 text-orange-500' />
+          <div className='rounded-xl border border-red-200 bg-red-50 p-8 text-center'>
+            <Zap className='mx-auto h-12 w-12 text-red-500' />
             <p className='mt-4 text-4xl font-bold text-gray-900'>
               {selectedAmount?.toLocaleString()} sats
             </p>
@@ -439,8 +439,8 @@ export function ZapSheet({
                   <Image src={recipientAvatar} alt={recipientName} fill className='object-cover' />
                 </div>
               ) : (
-                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-orange-100'>
-                  <Zap className='h-5 w-5 text-orange-600' />
+                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
+                  <Zap className='h-5 w-5 text-red-600' />
                 </div>
               )}
               <div>
@@ -463,7 +463,7 @@ export function ZapSheet({
           {/* Confirm Button */}
           <Button
             onClick={handleConfirmPayment}
-            className='h-12 w-full rounded-full bg-orange-500 font-semibold text-white hover:bg-orange-600'
+            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
           >
             Confirm & Send
           </Button>
@@ -475,7 +475,7 @@ export function ZapSheet({
   // Sending step
   const sendingContent = (
     <div className='flex flex-col items-center justify-center p-12'>
-      <Loader2 className='h-16 w-16 animate-spin text-orange-500' />
+      <Loader2 className='h-16 w-16 animate-spin text-red-500' />
       <p className='mt-6 text-xl font-semibold text-gray-900'>Sending Zap...</p>
       <p className='mt-2 text-sm text-gray-500'>Please wait</p>
     </div>

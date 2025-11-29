@@ -20,25 +20,26 @@ export function ProfileInfo({ user }: ProfileInfoProps) {
       </div>
 
       {/* Social Links */}
-      <div className='mb-3'>
-        <SocialLinks
-          user={{
-            bio_link: user.bio_link,
-            instagram_handle: user.instagram_handle,
-            x_handle: user.x_handle,
-            ln_address: user.ln_address,
-            nip05: user.nip05,
-          }}
-        />
-      </div>
+      {(user.bio_link || user.instagram_handle || user.x_handle || user.nip05) && (
+        <div className='mb-3'>
+          <SocialLinks
+            user={{
+              bio_link: user.bio_link,
+              instagram_handle: user.instagram_handle,
+              x_handle: user.x_handle,
+              nip05: user.nip05,
+            }}
+          />
+        </div>
+      )}
 
       {/* Bio */}
-      {sanitizedBio && (
+      {sanitizedBio ? (
         <div className='mb-3 rounded-xl bg-gray-50 p-4'>
           <h4 className='mb-2 text-sm font-semibold text-gray-900'>Bio</h4>
           <p className='text-sm text-gray-700'>{sanitizedBio}</p>
         </div>
-      )}
+      ) : null}
     </>
   );
 }

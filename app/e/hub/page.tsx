@@ -10,9 +10,12 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HubPage() {
+  const router = useRouter();
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
@@ -32,7 +35,14 @@ export default function HubPage() {
       leftMode: 'menu',
       showAvatar: true,
       centerMode: 'title',
-      buttons: [],
+      buttons: [
+        {
+          id: 'chat',
+          icon: MessageCircle,
+          onClick: () => router.push('/e/messages'),
+          label: 'Chat',
+        },
+      ],
       badge: undefined,
     });
 
@@ -40,7 +50,7 @@ export default function HubPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
@@ -73,7 +83,7 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-white px-4 pb-32 pt-4 md:max-w-3xl md:border-l md:border-r'>
+      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-white px-4 pb-32 pt-4 md:max-w-4xl'>
         <MyEventsSection />
         <EventInvitesSection />
         <ForYouSection />

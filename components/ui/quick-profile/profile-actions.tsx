@@ -2,27 +2,23 @@
 
 import { Button } from '@/components/ui/button';
 import { designTokens } from '@/lib/design-tokens/colors';
-import { MessageCircle, UserMinus, UserPlus, Zap } from 'lucide-react';
+import { MessageCircle, UserMinus, UserPlus } from 'lucide-react';
 import { useCallback } from 'react';
 
 interface ProfileActionsProps {
   isFollowing: boolean;
   isLoading: boolean;
   isPending: boolean;
-  hasLightningAddress: boolean;
   onFollowToggle: () => void;
   onMessage: () => void;
-  onTip: () => void;
 }
 
 export function ProfileActions({
   isFollowing,
   isLoading,
   isPending,
-  hasLightningAddress,
   onFollowToggle,
   onMessage,
-  onTip,
 }: ProfileActionsProps) {
   const handleFollowClick = useCallback(() => {
     onFollowToggle();
@@ -31,10 +27,6 @@ export function ProfileActions({
   const handleMessageClick = useCallback(() => {
     onMessage();
   }, [onMessage]);
-
-  const handleTipClick = useCallback(() => {
-    onTip();
-  }, [onTip]);
 
   return (
     <div className='mb-3 flex gap-2'>
@@ -60,23 +52,12 @@ export function ProfileActions({
         )}
       </Button>
       <Button
-        variant='outline'
         onClick={handleMessageClick}
-        className='rounded-xl bg-transparent px-4'
+        className='h-12 flex-1 rounded-full border border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100'
       >
         <MessageCircle className='mr-2 h-4 w-4' />
         Message
       </Button>
-      {hasLightningAddress && (
-        <Button
-          variant='outline'
-          onClick={handleTipClick}
-          className='group rounded-xl bg-transparent px-4 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700'
-        >
-          <Zap className='mr-2 h-4 w-4 text-black transition-colors group-hover:text-orange-700' />
-          Tip
-        </Button>
-      )}
     </div>
   );
 }
