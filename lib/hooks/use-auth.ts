@@ -238,6 +238,7 @@ export function useGoogleLogin() {
 
 /**
  * Hook to protect routes - redirects to login if not authenticated
+ * Also checks for beta access - redirects to beta gate if no access
  */
 export function useRequireAuth(redirectTo = '/auth/login') {
   const { isAuthenticated, isLoading } = useAuth();
@@ -246,9 +247,19 @@ export function useRequireAuth(redirectTo = '/auth/login') {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
+      // Check for beta access from localStorage
+      const hasBetaAccess = localStorage.getItem('evento-beta-access') === 'granted';
+
+      if (!hasBetaAccess) {
+        // No beta access - redirect to beta gate
+        router.push('/');
+        return;
+      }
+
+      // Has beta access but not authenticated - redirect to login
       router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
     }
-  }, [isAuthenticated, isLoading, router, redirectTo]);
+  }, [isAuthenticated, isLoading, router, redirectTo, pathname]);
 
   return { isAuthenticated, isLoading };
 }

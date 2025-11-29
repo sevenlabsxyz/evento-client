@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { BTCPriceService } from '@/lib/services/btc-price';
-import { AlertTriangle, ShieldAlert, Zap } from 'lucide-react';
+import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface BitrefillPaymentConfirmationSheetProps {
@@ -203,11 +203,7 @@ export function BitrefillPaymentConfirmationSheet({
               ) : invoiceDetails ? (
                 <>
                   {/* Amount Display */}
-                  <div className='mb-6 rounded-xl border border-gray-200 bg-gray-50 p-6 text-center'>
-                    <div className='mb-1 flex items-center justify-center gap-2'>
-                      <Zap className='h-5 w-5 text-amber-500' />
-                      <span className='text-sm text-gray-500'>Lightning Payment</span>
-                    </div>
+                  <div className='mb-6 rounded-3xl border border-gray-200 bg-gray-50 p-6 text-center'>
                     <div className='text-4xl font-bold text-gray-900'>
                       ${invoiceDetails.amountUSD.toFixed(2)}
                     </div>
@@ -230,10 +226,15 @@ export function BitrefillPaymentConfirmationSheet({
                     </div>
                     <div className='border-t border-gray-100 pt-2'>
                       <div className='flex justify-between'>
-                        <span className='font-medium text-gray-900'>Total</span>
-                        <span className='font-bold text-gray-900'>
-                          {totalAmount.toLocaleString()} sats
-                        </span>
+                        <span className='font-bold text-gray-900'>Total</span>
+                        <div className='flex flex-col'>
+                          <span className='text-lg font-bold text-gray-900'>
+                            {totalAmount.toLocaleString()} sats
+                          </span>
+                          <span className='text-right text-sm text-gray-500'>
+                            ${invoiceDetails.amountUSD.toFixed(2)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

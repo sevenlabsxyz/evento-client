@@ -7,21 +7,31 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/use-auth';
+import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function LoginContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get('redirect') || '/';
+  const { hasAccess: hasBetaAccess, isLoading: isBetaLoading } = useBetaAccess();
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  // Redirect to beta gate if no beta access
+  useEffect(() => {
+    if (!isBetaLoading && !hasBetaAccess) {
+      router.push('/');
+    }
+  }, [hasBetaAccess, isBetaLoading, router]);
 
   const {
     register,
@@ -41,8 +51,8 @@ function LoginContent() {
     loginWithGoogle();
   };
 
-  // Show loading while checking auth status
-  if (isCheckingAuth) {
+  // Show loading while checking beta access or auth status
+  if (isBetaLoading || isCheckingAuth || !hasBetaAccess) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
         <Loader2 className='h-8 w-8 animate-spin' />

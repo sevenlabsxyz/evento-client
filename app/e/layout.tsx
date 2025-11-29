@@ -1,16 +1,20 @@
 'use client';
 
 import { TopBar } from '@/components/top-bar';
+import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { usePathname } from 'next/navigation';
+import { Loader2 } from 'lucide-react';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function EventoLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const { isOverlaid, applyRouteConfig } = useTopBar();
   const pathname = usePathname();
+  const { hasAccess: hasBetaAccess, isLoading: isBetaLoading } = useBetaAccess();
 
   // Initialize wallet (singleton - manages Zustand state)
   useWallet();
@@ -22,6 +26,22 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     applyRouteConfig(pathname);
   }, [pathname, applyRouteConfig]);
+
+  // Redirect to beta gate if no beta access
+  useEffect(() => {
+    if (!isBetaLoading && !hasBetaAccess) {
+      router.push('/');
+    }
+  }, [hasBetaAccess, isBetaLoading, router]);
+
+  // Show loading while checking beta access
+  if (isBetaLoading || !hasBetaAccess) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin' />
+      </div>
+    );
+  }
 
   return (
     <StreamChatProvider>

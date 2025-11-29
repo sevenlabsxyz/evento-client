@@ -1,6 +1,7 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { Loader2, X } from 'lucide-react';
@@ -22,6 +23,7 @@ type PaymentStatus = 'idle' | 'processing' | 'success' | 'error';
 type DeliveryStatus = 'partial_delivery' | 'all_delivered' | 'all_error' | null;
 
 export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps) {
+  const { user } = useAuth();
   const { walletState, refreshBalance } = useWallet();
   const [balanceUSD, setBalanceUSD] = useState<number>(0);
 
@@ -41,8 +43,11 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
     url.searchParams.set('paymentMethod', 'lightning');
     url.searchParams.set('showPaymentInfo', 'true');
     url.searchParams.set('theme', 'light');
+    if (user?.email) {
+      url.searchParams.set('email', user.email);
+    }
     return url.toString();
-  }, []);
+  }, [user?.email]);
 
   // Fetch USD balance
   useEffect(() => {
@@ -76,7 +81,18 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
         return;
       }
 
-      const data = e.data;
+      let data = e.data;
+
+      // Parse JSON string if needed (Bitrefill sends data as string)
+      if (typeof data === 'string') {
+        try {
+          data = JSON.parse(data);
+        } catch (error) {
+          console.log('⚠️ [BITREFILL] Failed to parse JSON data:', error);
+          return;
+        }
+      }
+
       if (!data || typeof data !== 'object') {
         console.log('⚠️ [BITREFILL] Invalid data format:', data);
         return;

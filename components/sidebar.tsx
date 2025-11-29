@@ -3,6 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
@@ -296,9 +297,10 @@ export function Sidebar() {
   const pathname = usePathname();
   const { logout } = useAuth();
   const { user } = useUserProfile();
+  const { hasAccess: hasBetaAccess } = useBetaAccess();
 
-  // Don't show sidebar on auth pages
-  if (pathname?.startsWith('/auth')) {
+  // Don't show sidebar on auth pages, beta gate (root), or when no beta access
+  if (pathname?.startsWith('/auth') || pathname === '/' || !hasBetaAccess) {
     return null;
   }
 

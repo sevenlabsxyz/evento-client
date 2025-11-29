@@ -33,7 +33,7 @@ export function BitrefillPaymentStatusSheet({
               <Loader2 className='h-10 w-10 text-blue-500' />
             </motion.div>
           ),
-          iconBg: 'bg-blue-100',
+          iconBg: 'bg-blue-100 border border-blue-200',
           title: 'Processing Payment',
           message: 'Your payment is being processed. This usually takes just a few seconds.',
           showButton: false,
@@ -41,7 +41,7 @@ export function BitrefillPaymentStatusSheet({
       case 'success':
         return {
           icon: <CheckCircle2 className='h-10 w-10 text-green-500' />,
-          iconBg: 'bg-green-100',
+          iconBg: 'bg-green-100 border border-green-200',
           title: 'Purchase Complete!',
           message: getSuccessMessage(deliveryStatus),
           showButton: true,
@@ -49,7 +49,7 @@ export function BitrefillPaymentStatusSheet({
       case 'error':
         return {
           icon: <XCircle className='h-10 w-10 text-red-500' />,
-          iconBg: 'bg-red-100',
+          iconBg: 'bg-red-100 border border-red-200',
           title: 'Payment Failed',
           message: getErrorMessage(deliveryStatus),
           showButton: true,
@@ -60,7 +60,7 @@ export function BitrefillPaymentStatusSheet({
   const getSuccessMessage = (delivery: typeof deliveryStatus) => {
     switch (delivery) {
       case 'all_delivered':
-        return 'Your gift card has been delivered successfully. Check your email for the details.';
+        return 'Your gift card has been delivered successfully. Instructions were sent to your email but you can also read them now by clicking below.';
       case 'partial_delivery':
         return 'Some items were delivered. Please check Bitrefill for more details about remaining items.';
       case 'all_error':
@@ -138,7 +138,7 @@ export function BitrefillPaymentStatusSheet({
                   transition={{ delay: 0.3 }}
                 >
                   <Button onClick={onClose} className='h-12 w-full rounded-full'>
-                    {status === 'success' ? 'Continue Shopping' : 'Close'}
+                    {status === 'success' ? 'Done' : 'Close'}
                   </Button>
                 </motion.div>
               )}

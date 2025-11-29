@@ -1,8 +1,9 @@
 'use client';
 
 import { TopBar } from '@/components/top-bar';
+import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { Share } from 'lucide-react';
+import { Loader2, Share } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -10,6 +11,14 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
   const { setTopBar } = useTopBar();
   const pathname = usePathname();
   const router = useRouter();
+  const { hasAccess: hasBetaAccess, isLoading: isBetaLoading } = useBetaAccess();
+
+  // Redirect to beta gate if no beta access
+  useEffect(() => {
+    if (!isBetaLoading && !hasBetaAccess) {
+      router.push('/');
+    }
+  }, [hasBetaAccess, isBetaLoading, router]);
 
   // Set TopBar content
   useEffect(() => {
@@ -78,6 +87,15 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       setTopBar({ title: '', subtitle: '', buttons: [] });
     };
   }, [setTopBar, pathname, router]);
+
+  // Show loading while checking beta access
+  if (isBetaLoading || !hasBetaAccess) {
+    return (
+      <div className='flex min-h-screen items-center justify-center'>
+        <Loader2 className='h-8 w-8 animate-spin' />
+      </div>
+    );
+  }
 
   return (
     <>
