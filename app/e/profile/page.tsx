@@ -376,8 +376,12 @@ export default function ProfilePage() {
 
     return (
       <div className='space-y-4'>
-        {/* Social Links */}
-        {user && <SocialLinks user={user} />}
+        {/* Social Links - hidden on desktop (shown below Zap button instead) */}
+        {user && (
+          <div className='lg:hidden'>
+            <SocialLinks user={user} />
+          </div>
+        )}
 
         {/* Bio/Description */}
         {!user?.bio ? null : (
@@ -407,93 +411,105 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-32'>
-        {/* Cover Image Section */}
-        <div className='relative'>
-          {/* Banner */}
-          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
+    <div className='min-h-screen bg-white'>
+      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
+        <div className='lg:flex lg:gap-8'>
+          {/* Left Column - Profile Info (sticky on desktop) */}
+          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+            {/* Cover Image Section */}
+            <div className='relative'>
+              {/* Banner */}
+              <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-24 md:bg-none' />
 
-          {/* Profile Picture - Centered & Clickable */}
-          <UserAvatar
-            user={userData}
-            size='lg'
-            onAvatarClick={handleAvatarClick}
-            onVerificationClick={() => setShowVerificationModal(true)}
-            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
-          />
-        </div>
-
-        {/* Profile Section */}
-        <div className='mb-4 bg-white px-4 pb-0 pt-20'>
-          {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
-            <p className='text-gray-600'>{userData.username}</p>
-          </div>
-
-          {/* Stats - Centered */}
-          <div className='mb-4 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
-                <div className='text-sm text-gray-500'>Events</div>
-              </div>
-              <motion.button
-                className='text-center'
-                onClick={() => setShowFollowingSheet(true)}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
-                <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
-                <div className='text-sm text-gray-500'>Following</div>
-              </motion.button>
-              <motion.button
-                className='text-center'
-                onClick={() => setShowFollowersSheet(true)}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
-                <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
-              </motion.button>
-            </div>
-          </div>
-
-          {/* Zap Button */}
-          {user?.ln_address && (
-            <div className='mb-6'>
-              <ZapSheet
-                recipientLightningAddress={user.ln_address}
-                recipientName={user.name || 'You'}
-                recipientUsername={user.username}
-                recipientAvatar={user.image}
+              {/* Profile Picture - Centered & Clickable */}
+              <UserAvatar
+                user={userData}
+                size='lg'
+                onAvatarClick={handleAvatarClick}
+                onVerificationClick={() => setShowVerificationModal(true)}
+                className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
               />
             </div>
-          )}
 
-          {/* Tabbed Section */}
-          <div className='mb-4 w-full bg-white'>
-            {/* Tab Headers */}
-            <SegmentedTabs
-              items={[
-                { value: 'about', label: 'About' },
-                { value: 'events', label: 'Events' },
-              ]}
-              value={activeTab}
-              onValueChange={(v) => {
-                if (v === 'about') {
-                  router.push('/e/profile', { scroll: false });
-                } else {
-                  router.push(`/e/profile?tab=${v}`, { scroll: false });
-                }
-              }}
-            />
-            {/* Tab Content */}
-            <div>
-              {activeTab === 'about' && renderAboutTab()}
-              {activeTab === 'events' && renderEventsTab()}
+            {/* Profile Section */}
+            <div className='mb-4 bg-white px-4 pb-0 pt-20'>
+              {/* User Info - Centered */}
+              <div className='mb-6 text-center'>
+                <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
+                <p className='text-gray-600'>{userData.username}</p>
+              </div>
+
+              {/* Stats - Centered */}
+              <div className='mb-4 flex justify-center'>
+                <div className='grid grid-cols-3 gap-8'>
+                  <div className='text-center'>
+                    <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
+                    <div className='text-sm text-gray-500'>Events</div>
+                  </div>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowingSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
+                    <div className='text-sm text-gray-500'>Following</div>
+                  </motion.button>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowersSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
+                    <div className='text-sm text-gray-500'>Followers</div>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Zap Button */}
+              {user?.ln_address && (
+                <div className='mb-6'>
+                  <ZapSheet
+                    recipientLightningAddress={user.ln_address}
+                    recipientName={user.name || 'You'}
+                    recipientUsername={user.username}
+                    recipientAvatar={user.image}
+                  />
+                </div>
+              )}
+
+              {/* Social Links - desktop only, below Zap button */}
+              <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
+                <SocialLinks user={user} />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Tabs */}
+          <div className='px-4 pb-32 lg:w-1/2 lg:px-0'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'about', label: 'About' },
+                  { value: 'events', label: 'Events' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => {
+                  if (v === 'about') {
+                    router.push('/e/profile', { scroll: false });
+                  } else {
+                    router.push(`/e/profile?tab=${v}`, { scroll: false });
+                  }
+                }}
+              />
+              {/* Tab Content */}
+              <div>
+                {activeTab === 'about' && renderAboutTab()}
+                {activeTab === 'events' && renderEventsTab()}
+              </div>
             </div>
           </div>
         </div>

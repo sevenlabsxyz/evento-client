@@ -74,7 +74,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='relative flex flex-col bg-white'>
+            <SheetWithDetentFull.Content className='relative flex flex-col bg-white md:!max-w-[500px]'>
               <div className='sticky top-0 z-10 bg-transparent px-4 pb-3 pt-3'>
                 <div className='mb-3 flex justify-center'>
                   <SheetWithDetentFull.Handle />

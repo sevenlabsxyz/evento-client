@@ -1,10 +1,10 @@
 'use client';
 
-import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
@@ -501,28 +501,10 @@ export default function UserProfilePageClient() {
                 <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
                 </h3>
-                <div className='divide-y divide-gray-100'>
-                  {group.events.map((event) => {
-                    const isPinned = pinnedEvent?.id === event.id.toString();
-                    const canPin = canPinEvent(event);
-
-                    return (
-                      <div key={event.id} className='py-2'>
-                        <EventCompactItem
-                          key={event.id}
-                          event={event}
-                          isPinning={
-                            isUpdatingPinnedEvent &&
-                            updatePinnedEventVariables === event.id.toString()
-                          }
-                          isPinned={isPinned}
-                          canPin={canPin}
-                          onPin={handlePinEvent}
-                          onBookmark={() => {}} // Placeholder for bookmark functionality
-                        />
-                      </div>
-                    );
-                  })}
+                <div className='space-y-3'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
                 </div>
               </div>
             ))
@@ -566,16 +548,18 @@ export default function UserProfilePageClient() {
   const renderAboutTab = () => {
     return (
       <div className='space-y-4'>
-        {/* Social Links */}
+        {/* Social Links - hidden on desktop (shown below Zap button instead) */}
         {userData && (
-          <SocialLinks
-            user={{
-              bio_link: userData.bio_link,
-              instagram_handle: userData.instagram_handle,
-              x_handle: userData.x_handle,
-              nip05: userData.nip05,
-            }}
-          />
+          <div className='lg:hidden'>
+            <SocialLinks
+              user={{
+                bio_link: userData.bio_link,
+                instagram_handle: userData.instagram_handle,
+                x_handle: userData.x_handle,
+                nip05: userData.nip05,
+              }}
+            />
+          </div>
         )}
 
         {/* Bio/Description */}
@@ -595,125 +579,144 @@ export default function UserProfilePageClient() {
   };
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20'>
-        {/* Cover Image Section */}
-        <div className='relative'>
-          {/* Banner */}
-          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
+    <div className='min-h-screen bg-white md:ml-[280px]'>
+      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
+        <div className='lg:flex lg:gap-8'>
+          {/* Left Column - Profile Info (sticky on desktop) */}
+          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+            {/* Cover Image Section */}
+            <div className='relative'>
+              {/* Banner */}
+              <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-24 md:bg-none' />
 
-          {/* Profile Picture - Centered & Clickable */}
-          <UserAvatar
-            user={userProfile}
-            size='lg'
-            onAvatarClick={handleAvatarClick}
-            onVerificationClick={() => setShowVerificationModal(true)}
-            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
-          />
-        </div>
-
-        {/* Profile Section */}
-        <div className='mb-4 bg-white px-6 pb-2 pt-20'>
-          {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>
-              {userProfile?.name || 'Unknown User'}
-            </h2>
-            <p className='text-gray-600'>{userProfile?.username || ''}</p>
-          </div>
-
-          {/* Stats - Centered */}
-          <div className='mb-4 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
-                <div className='text-sm text-gray-500'>Events</div>
-              </div>
-              <motion.button
-                className='text-center'
-                onClick={() => setShowFollowingSheet(true)}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
-                <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
-                <div className='text-sm text-gray-500'>Following</div>
-              </motion.button>
-              <motion.button
-                className='text-center'
-                onClick={() => setShowFollowersSheet(true)}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-              >
-                <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
-              </motion.button>
-            </div>
-          </div>
-
-          {/* Action Buttons */}
-          <div className='-mx-2.5 mb-4 flex gap-2 px-2.5 pt-4'>
-            <div className='flex w-full flex-row gap-4'>
-              <Button
-                onClick={handleFollowToggle}
-                disabled={isFollowStatusLoading || followActionMutation.isPending}
-                className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
-                  followStatus?.isFollowing
-                    ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
-                    : 'bg-red-500 text-white hover:bg-red-600'
-                }`}
-              >
-                {followStatus?.isFollowing ? (
-                  <>
-                    <UserMinus className='mr-2 h-4 w-4' />
-                    {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className='mr-2 h-4 w-4' />
-                    {followActionMutation.isPending ? 'Following...' : 'Follow'}
-                  </>
-                )}
-              </Button>
-              <Button
-                variant='outline'
-                onClick={handleMessage}
-                className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
-              >
-                <MessageCircle className='h-4 w-4' />
-                Message
-              </Button>
-            </div>
-          </div>
-
-          {/* Zap Button */}
-          {userData?.ln_address && (
-            <div className='mb-6'>
-              <ZapSheet
-                recipientLightningAddress={userData.ln_address}
-                recipientName={userData.name || 'Unknown User'}
-                recipientUsername={userData.username}
-                recipientAvatar={userData.image}
+              {/* Profile Picture - Centered & Clickable */}
+              <UserAvatar
+                user={userProfile}
+                size='lg'
+                onAvatarClick={handleAvatarClick}
+                onVerificationClick={() => setShowVerificationModal(true)}
+                className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
               />
             </div>
-          )}
 
-          {/* Tabbed Section */}
-          <div className='mb-4 w-full bg-white'>
-            {/* Tab Headers */}
-            <SegmentedTabs
-              items={[
-                { value: 'about', label: 'About' },
-                { value: 'events', label: 'Events' },
-              ]}
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v)}
-            />
+            {/* Profile Section */}
+            <div className='mb-4 bg-white px-6 pb-2 pt-20'>
+              {/* User Info - Centered */}
+              <div className='mb-6 text-center'>
+                <h2 className='text-2xl font-bold text-gray-900'>
+                  {userProfile?.name || 'Unknown User'}
+                </h2>
+                <p className='text-gray-600'>{userProfile?.username || ''}</p>
+              </div>
 
-            {/* Tab Content */}
-            <div>
-              {activeTab === 'about' && renderAboutTab()}
-              {activeTab === 'events' && renderEventsTab()}
+              {/* Stats - Centered */}
+              <div className='mb-4 flex justify-center'>
+                <div className='grid grid-cols-3 gap-8'>
+                  <div className='text-center'>
+                    <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
+                    <div className='text-sm text-gray-500'>Events</div>
+                  </div>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowingSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                    <div className='text-sm text-gray-500'>Following</div>
+                  </motion.button>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowersSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                    <div className='text-sm text-gray-500'>Followers</div>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className='-mx-2.5 mb-4 flex gap-2 px-2.5 pt-4'>
+                <div className='flex w-full flex-row gap-4'>
+                  <Button
+                    onClick={handleFollowToggle}
+                    disabled={isFollowStatusLoading || followActionMutation.isPending}
+                    className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
+                      followStatus?.isFollowing
+                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
+                        : 'bg-red-500 text-white hover:bg-red-600'
+                    }`}
+                  >
+                    {followStatus?.isFollowing ? (
+                      <>
+                        <UserMinus className='mr-2 h-4 w-4' />
+                        {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className='mr-2 h-4 w-4' />
+                        {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant='outline'
+                    onClick={handleMessage}
+                    className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
+                  >
+                    <MessageCircle className='h-4 w-4' />
+                    Message
+                  </Button>
+                </div>
+              </div>
+
+              {/* Zap Button */}
+              {userData?.ln_address && (
+                <div className='mb-6'>
+                  <ZapSheet
+                    recipientLightningAddress={userData.ln_address}
+                    recipientName={userData.name || 'Unknown User'}
+                    recipientUsername={userData.username}
+                    recipientAvatar={userData.image}
+                  />
+                </div>
+              )}
+
+              {/* Social Links - desktop only, below Zap button */}
+              <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
+                <SocialLinks
+                  user={{
+                    bio_link: userData?.bio_link,
+                    instagram_handle: userData?.instagram_handle,
+                    x_handle: userData?.x_handle,
+                    nip05: userData?.nip05,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Tabs */}
+          <div className='pb-20 lg:w-1/2'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white px-6 lg:px-0'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'about', label: 'About' },
+                  { value: 'events', label: 'Events' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v)}
+              />
+
+              {/* Tab Content */}
+              <div>
+                {activeTab === 'about' && renderAboutTab()}
+                {activeTab === 'events' && renderEventsTab()}
+              </div>
             </div>
           </div>
         </div>

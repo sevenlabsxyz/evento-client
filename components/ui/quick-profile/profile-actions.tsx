@@ -42,7 +42,7 @@ export function ProfileActions({
         {isFollowing ? (
           <>
             <UserMinus className='mr-2 h-4 w-4' />
-            {isPending ? 'Unfollowing...' : 'Following2222'}
+            {isPending ? 'Unfollowing...' : 'Following'}
           </>
         ) : (
           <>

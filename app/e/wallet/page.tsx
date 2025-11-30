@@ -223,13 +223,7 @@ export default function WalletPage() {
         setUnclaimedDepositsCount(deposits.length);
         if (deposits.length > 0) {
           toast.error(
-            `${deposits.length} deposit${deposits.length > 1 ? 's' : ''} need manual claiming`,
-            {
-              action: {
-                label: 'View',
-                onClick: () => router.push('/e/wallet/deposits'),
-              },
-            }
+            `${deposits.length} deposit${deposits.length > 1 ? 's' : ''} need manual claiming`
           );
         }
       }
@@ -396,179 +390,189 @@ export default function WalletPage() {
 
   // Main Wallet Screen
   return (
-    <div className='px-4 pb-28 pt-4'>
-      <div className='mx-auto max-w-sm'>
-        <div className='space-y-6'>
-          {/* Backup Reminder */}
-          {showBackupReminder && (
-            <BackupReminder
-              onBackup={() => {
-                setShowBackupReminder(false);
-                setStep('encrypted-backup');
-              }}
-              onDismiss={() => setShowBackupReminder(false)}
-            />
-          )}
+    <div className='min-h-screen bg-white'>
+      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
+        <div className='px-4 pt-4 md:flex md:gap-8'>
+          {/* Left Column - sticky on desktop */}
+          <div className='md:sticky md:top-0 md:w-1/2 md:self-start'>
+            <div className='space-y-6'>
+              {/* Backup Reminder */}
+              {showBackupReminder && (
+                <BackupReminder
+                  onBackup={() => {
+                    setShowBackupReminder(false);
+                    setStep('encrypted-backup');
+                  }}
+                  onDismiss={() => setShowBackupReminder(false)}
+                />
+              )}
 
-          {/* Wallet Balance Card */}
-          {walletState.isInitialized && user?.username && (
-            <WalletBalance
-              onSend={() => openDrawer('send')}
-              onReceive={() => openDrawer('receive')}
-              onScan={() => openDrawer('scan')}
-              lightningAddress={user.lightning_address || `${user.username}@evento.cash`}
-            />
-          )}
+              {/* Wallet Balance Card */}
+              {walletState.isInitialized && user?.username && (
+                <WalletBalance
+                  onSend={() => openDrawer('send')}
+                  onReceive={() => openDrawer('receive')}
+                  onScan={() => openDrawer('scan')}
+                  lightningAddress={user.lightning_address || `${user.username}@evento.cash`}
+                />
+              )}
 
-          {/* Quick Tools Section */}
-          <QuickToolsSection
-            onToolClick={(toolId) => {
-              openDrawer(toolId);
-            }}
-          />
-
-          {/* Recent Transactions Preview */}
-          <div className='space-y-3'>
-            <h3 className='font-semibold'>Recent Transactions</h3>
-            <TransactionHistory
-              payments={payments.slice(0, 5)}
-              isLoading={isLoadingPayments}
-              onRefresh={() => {}}
-              onTransactionClick={handleTransactionClick}
-              showViewAllButton={!isLoadingPayments && payments.length > 0}
-              onViewAll={() => openDrawer('history')}
-              maxTransactions={3}
-            />
+              {/* Quick Tools Section */}
+              <QuickToolsSection
+                onToolClick={(toolId) => {
+                  openDrawer(toolId);
+                }}
+              />
+            </div>
           </div>
 
-          {/* Incoming Onchain Bitcoin Alert */}
-          {unclaimedDepositsCount > 0 && (
-            <div className='rounded-2xl border border-red-200 bg-red-50 px-6 py-4'>
-              {/* Header Row */}
-              <div className='mb-1 flex items-center justify-between gap-3'>
-                <div className='flex flex-row items-center gap-1'>
-                  <ChevronsRight className='h-7 w-7' />
-                  <div className='text-lg font-semibold'>Money Incoming</div>
-                </div>
-                <motion.button
-                  onClick={() => setShowOnchainEducationalSheet(true)}
-                  className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white transition-colors'
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                >
-                  <HelpCircle className='h-5 w-5 text-gray-600' />
-                </motion.button>
+          {/* Right Column - scrollable */}
+          <div className='pb-28 md:w-1/2'>
+            <div className='space-y-6'>
+              {/* Recent Transactions Preview */}
+              <div className='space-y-3'>
+                <h3 className='font-semibold'>Recent Transactions</h3>
+                <TransactionHistory
+                  payments={payments.slice(0, 5)}
+                  isLoading={isLoadingPayments}
+                  onRefresh={() => {}}
+                  onTransactionClick={handleTransactionClick}
+                  showViewAllButton={!isLoadingPayments && payments.length > 0}
+                  onViewAll={() => openDrawer('history')}
+                  maxTransactions={3}
+                />
               </div>
 
-              {/* Description */}
-              <p className='mb-6 pr-16 text-sm text-muted-foreground'>
-                {
-                  "The network's a bit busy. Tap here to pay a small fee and get your funds instantly."
-                }
-              </p>
+              {/* Incoming Onchain Bitcoin Alert */}
+              {unclaimedDepositsCount > 0 && (
+                <div className='rounded-2xl border border-red-200 bg-red-50 px-6 py-4'>
+                  {/* Header Row */}
+                  <div className='mb-1 flex items-center justify-between gap-3'>
+                    <div className='flex flex-row items-center gap-1'>
+                      <ChevronsRight className='h-7 w-7' />
+                      <div className='text-lg font-semibold'>Money Incoming</div>
+                    </div>
+                    <motion.button
+                      onClick={() => setShowOnchainEducationalSheet(true)}
+                      className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white transition-colors'
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                    >
+                      <HelpCircle className='h-5 w-5 text-gray-600' />
+                    </motion.button>
+                  </div>
 
-              {/* Action Button */}
-              <Button
-                onClick={() => setShowIncomingFundsModal(true)}
-                variant='outline'
-                size='lg'
-                className='h-12 w-full rounded-full border-red-200 bg-white hover:bg-orange-100'
-              >
-                Speed It Up!
-              </Button>
+                  {/* Description */}
+                  <p className='mb-6 pr-16 text-sm text-muted-foreground'>
+                    {
+                      "The network's a bit busy. Tap here to pay a small fee and get your funds instantly."
+                    }
+                  </p>
+
+                  {/* Action Button */}
+                  <Button
+                    onClick={() => setShowIncomingFundsModal(true)}
+                    variant='outline'
+                    size='lg'
+                    className='h-12 w-full rounded-full border-red-200 bg-white hover:bg-orange-100'
+                  >
+                    Speed It Up!
+                  </Button>
+                </div>
+              )}
+
+              {/* Educational Content */}
+              <WalletEducationGallery />
             </div>
-          )}
-
-          {/* Educational Content */}
-          <WalletEducationGallery />
-
-          {/* Sheets */}
-          <ReceiveLightningSheet
-            open={openDrawers.includes('receive')}
-            onOpenChange={(open) => !open && closeDrawer('receive')}
-          />
-          <SendLightningSheet
-            open={openDrawers.includes('send')}
-            onOpenChange={(open) => {
-              if (!open) {
-                closeDrawer('send');
-                setScannedData(''); // Clear scanned data when closing
-              }
-            }}
-            onBackupRequired={handleBackupRequired}
-            onOpenScan={() => {
-              closeDrawer('send');
-              openDrawer('scan');
-            }}
-            scannedData={scannedData}
-          />
-          <ScanQrSheet
-            open={openDrawers.includes('scan')}
-            onOpenChange={(open) => !open && closeDrawer('scan')}
-            onScanSuccess={handleScanSuccess}
-          />
-          <TransactionHistorySheet
-            open={openDrawers.includes('history')}
-            onOpenChange={(open) => !open && closeDrawer('history')}
-            payments={payments}
-            isLoading={isLoadingPayments}
-            onTransactionClick={handleTransactionClick}
-            selectedTransaction={selectedTransaction}
-            onTransactionDetailsClose={() => closeDrawer('transaction-details')}
-            isDetailsSheetOpen={openDrawers.includes('transaction-details')}
-          />
-          {selectedTransaction && !openDrawers.includes('history') && (
-            <TransactionDetailsSheet
-              open={openDrawers.includes('transaction-details')}
-              onOpenChange={(open) => !open && closeDrawer('transaction-details')}
-              payment={selectedTransaction}
-            />
-          )}
-
-          {/* Quick Tools Sheets */}
-          <BTCConverterSheet
-            open={openDrawers.includes('converter')}
-            onOpenChange={(open) => !open && closeDrawer('converter')}
-          />
-          <BuySellBitcoinSheet
-            open={openDrawers.includes('buy-sell')}
-            onOpenChange={(open) => !open && closeDrawer('buy-sell')}
-          />
-          <SpendBitcoinSheet
-            open={openDrawers.includes('spend')}
-            onOpenChange={(open) => !open && closeDrawer('spend')}
-          />
-          <EarnBitcoinSheet
-            open={openDrawers.includes('earn')}
-            onOpenChange={(open) => !open && closeDrawer('earn')}
-            lightningAddress={user?.lightning_address || `${user?.username}@evento.cash`}
-          />
-
-          {/* Incoming Onchain Funds Sheet */}
-          <IncomingFundsSheet
-            open={showIncomingFundsModal}
-            onOpenChange={setShowIncomingFundsModal}
-            onRefresh={async () => {
-              try {
-                const deposits = await breezSDK.listUnclaimedDeposits();
-                setUnclaimedDepositsCount(deposits.length);
-              } catch (error) {
-                console.error('Failed to refresh unclaimed deposits:', error);
-              }
-            }}
-          />
-
-          {/* Beta Information Sheet */}
-          <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
-
-          {/* Onchain Educational Sheet */}
-          <WalletEducationalSheet
-            article={onchainEducationalArticle}
-            open={showOnchainEducationalSheet}
-            onOpenChange={setShowOnchainEducationalSheet}
-          />
+          </div>
         </div>
       </div>
+
+      {/* Sheets */}
+      <ReceiveLightningSheet
+        open={openDrawers.includes('receive')}
+        onOpenChange={(open) => !open && closeDrawer('receive')}
+      />
+      <SendLightningSheet
+        open={openDrawers.includes('send')}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeDrawer('send');
+            setScannedData(''); // Clear scanned data when closing
+          }
+        }}
+        onBackupRequired={handleBackupRequired}
+        onOpenScan={() => {
+          closeDrawer('send');
+          openDrawer('scan');
+        }}
+        scannedData={scannedData}
+      />
+      <ScanQrSheet
+        open={openDrawers.includes('scan')}
+        onOpenChange={(open) => !open && closeDrawer('scan')}
+        onScanSuccess={handleScanSuccess}
+      />
+      <TransactionHistorySheet
+        open={openDrawers.includes('history')}
+        onOpenChange={(open) => !open && closeDrawer('history')}
+        payments={payments}
+        isLoading={isLoadingPayments}
+        onTransactionClick={handleTransactionClick}
+        selectedTransaction={selectedTransaction}
+        onTransactionDetailsClose={() => closeDrawer('transaction-details')}
+        isDetailsSheetOpen={openDrawers.includes('transaction-details')}
+      />
+      {selectedTransaction && !openDrawers.includes('history') && (
+        <TransactionDetailsSheet
+          open={openDrawers.includes('transaction-details')}
+          onOpenChange={(open) => !open && closeDrawer('transaction-details')}
+          payment={selectedTransaction}
+        />
+      )}
+
+      {/* Quick Tools Sheets */}
+      <BTCConverterSheet
+        open={openDrawers.includes('converter')}
+        onOpenChange={(open) => !open && closeDrawer('converter')}
+      />
+      <BuySellBitcoinSheet
+        open={openDrawers.includes('buy-sell')}
+        onOpenChange={(open) => !open && closeDrawer('buy-sell')}
+      />
+      <SpendBitcoinSheet
+        open={openDrawers.includes('spend')}
+        onOpenChange={(open) => !open && closeDrawer('spend')}
+      />
+      <EarnBitcoinSheet
+        open={openDrawers.includes('earn')}
+        onOpenChange={(open) => !open && closeDrawer('earn')}
+        lightningAddress={user?.lightning_address || `${user?.username}@evento.cash`}
+      />
+
+      {/* Incoming Onchain Funds Sheet */}
+      <IncomingFundsSheet
+        open={showIncomingFundsModal}
+        onOpenChange={setShowIncomingFundsModal}
+        onRefresh={async () => {
+          try {
+            const deposits = await breezSDK.listUnclaimedDeposits();
+            setUnclaimedDepositsCount(deposits.length);
+          } catch (error) {
+            console.error('Failed to refresh unclaimed deposits:', error);
+          }
+        }}
+      />
+
+      {/* Beta Information Sheet */}
+      <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
+
+      {/* Onchain Educational Sheet */}
+      <WalletEducationalSheet
+        article={onchainEducationalArticle}
+        open={showOnchainEducationalSheet}
+        onOpenChange={setShowOnchainEducationalSheet}
+      />
 
       {/* Bottom Navigation */}
       <Navbar />

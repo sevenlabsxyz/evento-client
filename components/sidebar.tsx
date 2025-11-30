@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 // Menu sections configuration
 const menuSections = [
@@ -70,11 +71,13 @@ function SidebarContent({
   user,
   handleNavigation,
   handleLogout,
+  pathname,
   isDesktop = false,
 }: {
   user: any;
   handleNavigation: (path: string, isExternal?: boolean) => void;
   handleLogout: () => void;
+  pathname: string;
   isDesktop?: boolean;
 }) {
   return (
@@ -142,17 +145,26 @@ function SidebarContent({
                   {section.title}
                 </h3>
                 <ul className='m-0 grid list-none gap-2.5 p-0'>
-                  {section.items.map((item) => (
-                    <li key={item.path}>
-                      <button
-                        onClick={() => handleNavigation(item.path, (item as any).isExternal)}
-                        className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent'
-                      >
-                        <span className='text-[0]'>{item.icon}</span>
-                        <span className='text-lg font-medium'>{item.name}</span>
-                      </button>
-                    </li>
-                  ))}
+                  {section.items.map((item) => {
+                    const isActive =
+                      pathname === item.path ||
+                      (item.path !== '/' && pathname?.startsWith(item.path));
+                    return (
+                      <li key={item.path}>
+                        <button
+                          onClick={() => handleNavigation(item.path, (item as any).isExternal)}
+                          className={`-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
+                            isActive
+                              ? 'bg-sidebar-accent font-semibold text-sidebar-foreground'
+                              : 'text-sidebar-foreground hover:bg-sidebar-accent'
+                          }`}
+                        >
+                          <span className='text-[0]'>{item.icon}</span>
+                          <span className='text-lg font-medium'>{item.name}</span>
+                        </button>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
@@ -181,10 +193,12 @@ function MobileSidebarContent({
   user,
   handleNavigation,
   handleLogout,
+  pathname,
 }: {
   user: any;
   handleNavigation: (path: string, isExternal?: boolean) => void;
   handleLogout: () => void;
+  pathname: string;
 }) {
   return (
     <div className='flex h-full flex-col'>
@@ -256,17 +270,26 @@ function MobileSidebarContent({
                     {section.title}
                   </h3>
                   <ul className='m-0 grid list-none gap-2.5 p-0'>
-                    {section.items.map((item) => (
-                      <li key={item.path}>
-                        <button
-                          onClick={() => handleNavigation(item.path, (item as any).isExternal)}
-                          className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-sidebar-foreground transition-colors hover:bg-sidebar-accent'
-                        >
-                          <span className='text-[0]'>{item.icon}</span>
-                          <span className='text-lg font-medium'>{item.name}</span>
-                        </button>
-                      </li>
-                    ))}
+                    {section.items.map((item) => {
+                      const isActive =
+                        pathname === item.path ||
+                        (item.path !== '/' && pathname?.startsWith(item.path));
+                      return (
+                        <li key={item.path}>
+                          <button
+                            onClick={() => handleNavigation(item.path, (item as any).isExternal)}
+                            className={`-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors ${
+                              isActive
+                                ? 'bg-sidebar-accent font-semibold text-sidebar-foreground'
+                                : 'text-sidebar-foreground hover:bg-sidebar-accent'
+                            }`}
+                          >
+                            <span className='text-[0]'>{item.icon}</span>
+                            <span className='text-lg font-medium'>{item.name}</span>
+                          </button>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               ))}
@@ -299,6 +322,14 @@ export function Sidebar() {
   const { user } = useUserProfile();
   const { hasAccess: hasBetaAccess } = useBetaAccess();
 
+  // Prefetch priority routes on mount
+  useEffect(() => {
+    const priorityRoutes = ['/e/hub', '/e/search', '/e/profile', '/e/wallet'];
+    priorityRoutes.forEach((route) => {
+      router.prefetch(route);
+    });
+  }, [router]);
+
   // Don't show sidebar on auth pages, beta gate (root), or when no beta access
   if (pathname?.startsWith('/auth') || pathname === '/' || !hasBetaAccess) {
     return null;
@@ -326,6 +357,7 @@ export function Sidebar() {
           user={user}
           handleNavigation={handleNavigation}
           handleLogout={handleLogout}
+          pathname={pathname || ''}
           isDesktop={true}
         />
       </aside>
@@ -368,6 +400,7 @@ export function Sidebar() {
                   user={user}
                   handleNavigation={handleNavigation}
                   handleLogout={handleLogout}
+                  pathname={pathname || ''}
                 />
               </Sheet.Content>
             </Sheet.View>

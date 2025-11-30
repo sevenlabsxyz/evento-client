@@ -1,31 +1,22 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowUpDown, Check, Loader2, X, Zap } from 'lucide-react';
-import Image from 'next/image';
+import { Zap } from 'lucide-react';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
+import { ZapAmountStep } from './steps/zap-amount-step';
+import { ZapConfirmStep } from './steps/zap-confirm-step';
+import { ZapCustomStep } from './steps/zap-custom-step';
+import { ZapNoWalletStep } from './steps/zap-no-wallet-step';
+import { ZapSendingStep } from './steps/zap-sending-step';
+import { ZapSuccessStep } from './steps/zap-success-step';
+import type { LnurlPayRequestDetails, RecipientInfo, Step, ZapSheetProps } from './zap-types';
 
 const DEFAULT_QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
-
-interface ZapSheetProps {
-  recipientLightningAddress: string;
-  recipientName: string;
-  recipientUsername?: string;
-  recipientAvatar?: string;
-  children?: React.ReactNode;
-  quickAmounts?: number[];
-  onSuccess?: (amountSats: number) => void;
-  onError?: (error: Error) => void;
-}
-
-type Step = 'amount' | 'custom' | 'confirm' | 'sending' | 'success' | 'no-wallet';
 
 export function ZapSheet({
   recipientLightningAddress,
@@ -45,8 +36,19 @@ export function ZapSheet({
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
   const [amountUSD, setAmountUSD] = useState<string>('');
   const [prepareResponse, setPrepareResponse] = useState<any>(null);
+  const [isPreparing, setIsPreparing] = useState(false);
+  const [comment, setComment] = useState('');
+  const [payRequest, setPayRequest] = useState<LnurlPayRequestDetails | null>(null);
 
   const { satsToUSD, usdToSats } = useAmountConverter();
+
+  // Recipient info object for step components
+  const recipient: RecipientInfo = {
+    name: recipientName,
+    username: recipientUsername,
+    avatar: recipientAvatar,
+    lightningAddress: recipientLightningAddress,
+  };
 
   // Handle open/close state and determine initial step based on wallet
   useEffect(() => {
@@ -64,8 +66,34 @@ export function ZapSheet({
       setCustomAmountUSD('');
       setAmountUSD('');
       setPrepareResponse(null);
+      setIsPreparing(false);
+      setComment('');
+      setPayRequest(null);
     }
   }, [open, recipientLightningAddress]);
+
+  // Parse lightning address when sheet opens to get payRequest details (for commentAllowed)
+  useEffect(() => {
+    const parseAddress = async () => {
+      if (open && recipientLightningAddress && !payRequest) {
+        try {
+          const parsed = await breezSDK.parseInput(recipientLightningAddress);
+          if (parsed.type === 'lightningAddress') {
+            const parsedPayRequest = (parsed as any).payRequest as LnurlPayRequestDetails;
+            setPayRequest(parsedPayRequest);
+          }
+        } catch (error: any) {
+          setOpen(false);
+          if (error?.message === 'SDK not connected') {
+            toast.error('Wallet not connected. Activate Evento Wallet first.');
+          } else {
+            toast.error('Failed to load payment details. Please try again.');
+          }
+        }
+      }
+    };
+    parseAddress();
+  }, [open, recipientLightningAddress, payRequest]);
 
   // Convert selected amount to USD when it changes
   useEffect(() => {
@@ -143,24 +171,31 @@ export function ZapSheet({
   const handleProceedToConfirm = async () => {
     if (!selectedAmount) return;
 
+    setIsPreparing(true);
+
     try {
-      // Parse the lightning address to get LNURL data
-      const parsed = await breezSDK.parseInput(recipientLightningAddress);
-
-      if (parsed.type === 'lightningAddress') {
-        const payRequest = (parsed as any).payRequest;
-
-        // Prepare the LNURL payment
-        const response = await breezSDK.prepareLnurlPay({
-          payRequest,
-          amountSats: selectedAmount,
-        });
-
-        setPrepareResponse(response);
-        setStep('confirm');
-      } else {
-        toast.error('Invalid lightning address');
+      // Use cached payRequest if available, otherwise parse
+      let currentPayRequest = payRequest;
+      if (!currentPayRequest) {
+        const parsed = await breezSDK.parseInput(recipientLightningAddress);
+        if (parsed.type === 'lightningAddress') {
+          currentPayRequest = (parsed as any).payRequest as LnurlPayRequestDetails;
+          setPayRequest(currentPayRequest);
+        } else {
+          toast.error('Invalid lightning address');
+          return;
+        }
       }
+
+      // Prepare the LNURL payment
+      const response = await breezSDK.prepareLnurlPay({
+        payRequest: currentPayRequest,
+        amountSats: selectedAmount,
+        comment: comment || undefined,
+      });
+
+      setPrepareResponse(response);
+      setStep('confirm');
     } catch (error: any) {
       console.error('Failed to prepare zap:', error);
 
@@ -170,11 +205,14 @@ export function ZapSheet({
         error.message?.toLowerCase().includes('sdk not') ||
         !breezSDK.isConnected()
       ) {
-        toast.error('Please unlock your Evento wallet first');
+        setOpen(false);
+        toast.error('Wallet not connected. Please set up your wallet first.');
       } else {
         toast.error(error.message || 'Failed to prepare payment');
       }
       onError?.(error);
+    } finally {
+      setIsPreparing(false);
     }
   };
 
@@ -199,7 +237,8 @@ export function ZapSheet({
         error.message?.toLowerCase().includes('sdk not') ||
         !breezSDK.isConnected()
       ) {
-        toast.error('Please unlock your Evento wallet first');
+        setOpen(false);
+        toast.error('Wallet not connected. Please set up your wallet first.');
       } else {
         toast.error(error.message || 'Failed to send payment');
       }
@@ -209,9 +248,19 @@ export function ZapSheet({
   };
 
   const handleClose = () => {
-    if (step !== 'sending') {
+    // Block closing during async operations
+    if (step !== 'sending' && !isPreparing) {
       setOpen(false);
     }
+  };
+
+  const handleBack = () => {
+    setStep('amount');
+  };
+
+  // Handle opening the zap sheet
+  const handleOpenSheet = () => {
+    setOpen(true);
   };
 
   // Render trigger
@@ -220,16 +269,16 @@ export function ZapSheet({
       // Clone child element and add onClick
       if (isValidElement(children)) {
         return cloneElement(children as React.ReactElement<any>, {
-          onClick: () => setOpen(true),
+          onClick: handleOpenSheet,
         });
       }
-      return <div onClick={() => setOpen(true)}>{children}</div>;
+      return <div onClick={handleOpenSheet}>{children}</div>;
     }
 
     // Default zap button
     return (
       <motion.button
-        onClick={() => setOpen(true)}
+        onClick={handleOpenSheet}
         className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-black text-base font-semibold text-white transition-colors hover:bg-red-600 active:bg-red-700'
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
@@ -240,312 +289,69 @@ export function ZapSheet({
     );
   };
 
-  // Amount selection step
-  const amountContent = (
-    <div className='flex flex-col'>
-      {/* Header */}
-      <div className='flex items-center justify-between p-4'>
-        <h2 className='text-xl font-semibold'>Send Zap</h2>
-        <button
-          onClick={handleClose}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-        >
-          <X className='h-5 w-5' />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto px-4 pb-4 pt-0'>
-        <div className='mx-auto max-w-md space-y-6'>
-          {/* Recipient Card */}
-          <div className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            {recipientAvatar ? (
-              <div className='relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full'>
-                <Image src={recipientAvatar} alt={recipientName} fill className='object-cover' />
-              </div>
-            ) : (
-              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-                <Zap className='h-6 w-6 text-red-600' />
-              </div>
-            )}
-            <div className='min-w-0 flex-1'>
-              <p className='truncate font-semibold text-gray-900'>{recipientName}</p>
-              {recipientUsername && (
-                <p className='truncate text-sm text-gray-500'>@{recipientUsername}</p>
-              )}
-              <p className='truncate font-mono text-xs text-gray-400'>
-                {recipientLightningAddress}
-              </p>
-            </div>
-          </div>
-
-          {/* Quick Amount Buttons */}
-          <div className='space-y-3'>
-            <p className='text-sm font-medium text-gray-600'>Select amount</p>
-            <div className='grid grid-cols-3 gap-3'>
-              {quickAmounts.map((amount) => (
-                <motion.button
-                  key={amount}
-                  onClick={() => handleQuickAmountSelect(amount)}
-                  whileTap={{ scale: 0.95 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                  className={`flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all ${
-                    selectedAmount === amount
-                      ? 'border-red-500 bg-red-50 text-red-600'
-                      : 'hover:border-gray-100'
-                  }`}
-                >
-                  {amount.toLocaleString()}
-                </motion.button>
-              ))}
-              <motion.button
-                onClick={handleCustomAmountClick}
-                whileTap={{ scale: 0.95 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100'
-              >
-                Custom
-              </motion.button>
-            </div>
-          </div>
-
-          {/* Selected Amount Display */}
-          {selectedAmount && (
-            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4 text-center'>
-              <p className='text-3xl font-bold text-gray-900'>
-                {selectedAmount.toLocaleString()} sats
-              </p>
-              {amountUSD && <p className='mt-1 text-sm text-gray-500'>≈ ${amountUSD} USD</p>}
-            </div>
-          )}
-
-          {/* Next Button */}
-          <Button
-            onClick={handleProceedToConfirm}
-            disabled={!selectedAmount}
-            className='h-12 w-full rounded-full font-semibold'
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Custom amount step
-  const customAmountContent = (
-    <div className='flex flex-col'>
-      {/* Header */}
-      <div className='flex items-center justify-between p-4'>
-        <button
-          onClick={() => setStep('amount')}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-        >
-          <ArrowLeft className='h-5 w-5' />
-        </button>
-        <h2 className='text-xl font-semibold'>Custom Amount</h2>
-        <button
-          onClick={handleClose}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-        >
-          <X className='h-5 w-5' />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className='p-6'>
-        <div className='mx-auto max-w-md space-y-6'>
-          {/* Amount Display */}
-          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
-            <div className='text-4xl font-bold text-gray-900'>
-              {inputMode === 'usd' ? `$${customAmountUSD || '0'}` : `${customAmount || '0'}`}
-            </div>
-            <div className='mt-1 text-lg font-medium text-gray-600'>
-              {inputMode === 'usd' ? 'USD' : 'sats'}
-            </div>
-            <button
-              onClick={toggleInputMode}
-              className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
-            >
-              <ArrowUpDown className='h-4 w-4' />
-              <span>
-                {inputMode === 'usd' && customAmount
-                  ? `${Number(customAmount).toLocaleString()} sats`
-                  : inputMode === 'sats' && customAmountUSD
-                    ? `$${customAmountUSD}`
-                    : 'Convert'}
-              </span>
-            </button>
-          </div>
-
-          {/* Number Pad */}
-          <NumericKeypad
+  // Render current step content
+  const renderStepContent = () => {
+    switch (step) {
+      case 'amount':
+        return (
+          <ZapAmountStep
+            recipient={recipient}
+            quickAmounts={quickAmounts}
+            selectedAmount={selectedAmount}
+            amountUSD={amountUSD}
+            comment={comment}
+            payRequest={payRequest}
+            isPreparing={isPreparing}
+            onSelectAmount={handleQuickAmountSelect}
+            onCustomClick={handleCustomAmountClick}
+            onCommentChange={setComment}
+            onNext={handleProceedToConfirm}
+            onClose={handleClose}
+          />
+        );
+      case 'custom':
+        return (
+          <ZapCustomStep
+            customAmount={customAmount}
+            customAmountUSD={customAmountUSD}
+            inputMode={inputMode}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
-            showDecimal={true}
+            onToggleMode={toggleInputMode}
+            onConfirm={handleCustomAmountConfirm}
+            onBack={handleBack}
+            onClose={handleClose}
           />
-
-          {/* Confirm Button */}
-          <Button
-            onClick={handleCustomAmountConfirm}
-            disabled={!customAmount || Number(customAmount) <= 0}
-            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
-          >
-            Next
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Confirmation step
-  const confirmContent = (
-    <div className='flex flex-col'>
-      {/* Header */}
-      <div className='flex items-center justify-between p-4'>
-        <button
-          onClick={() => setStep('amount')}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-        >
-          <ArrowLeft className='h-5 w-5' />
-        </button>
-        <h2 className='text-xl font-semibold'>Confirm Zap</h2>
-        <button
-          onClick={handleClose}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-        >
-          <X className='h-5 w-5' />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto p-6'>
-        <div className='mx-auto max-w-md space-y-6'>
-          {/* Amount Display */}
-          <div className='rounded-xl border border-red-200 bg-red-50 p-8 text-center'>
-            <Zap className='mx-auto h-12 w-12 text-red-500' />
-            <p className='mt-4 text-4xl font-bold text-gray-900'>
-              {selectedAmount?.toLocaleString()} sats
-            </p>
-            {amountUSD && <p className='mt-1 text-lg text-gray-600'>≈ ${amountUSD} USD</p>}
-          </div>
-
-          {/* Recipient */}
-          <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
-            <p className='mb-1 text-xs text-gray-500'>Sending to</p>
-            <div className='flex items-center gap-3'>
-              {recipientAvatar ? (
-                <div className='relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full'>
-                  <Image src={recipientAvatar} alt={recipientName} fill className='object-cover' />
-                </div>
-              ) : (
-                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-                  <Zap className='h-5 w-5 text-red-600' />
-                </div>
-              )}
-              <div>
-                <p className='font-semibold text-gray-900'>{recipientName}</p>
-                <p className='font-mono text-xs text-gray-500'>{recipientLightningAddress}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Fee */}
-          {prepareResponse?.feeSats !== undefined && (
-            <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
-              <div className='flex justify-between'>
-                <span className='text-sm text-gray-500'>Network Fee</span>
-                <span className='text-sm font-medium'>{prepareResponse.feeSats} sats</span>
-              </div>
-            </div>
-          )}
-
-          {/* Confirm Button */}
-          <Button
-            onClick={handleConfirmPayment}
-            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
-          >
-            Confirm & Send
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Sending step
-  const sendingContent = (
-    <div className='flex flex-col items-center justify-center p-12'>
-      <Loader2 className='h-16 w-16 animate-spin text-red-500' />
-      <p className='mt-6 text-xl font-semibold text-gray-900'>Sending Zap...</p>
-      <p className='mt-2 text-sm text-gray-500'>Please wait</p>
-    </div>
-  );
-
-  // Success step
-  const successContent = (
-    <div className='flex flex-col'>
-      {/* Content */}
-      <div className='flex flex-1 flex-col items-center justify-center p-12'>
-        <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className='flex h-24 w-24 items-center justify-center rounded-full bg-green-100'
-        >
-          <Check className='h-12 w-12 text-green-600' />
-        </motion.div>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className='mt-6 text-2xl font-bold text-gray-900'
-        >
-          Zap Sent!
-        </motion.p>
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className='mt-2 text-lg text-gray-600'
-        >
-          {selectedAmount?.toLocaleString()} sats to {recipientName}
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className='mt-8 w-full max-w-xs'
-        >
-          <Button
-            onClick={handleClose}
-            className='h-12 w-full rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800'
-          >
-            Done
-          </Button>
-        </motion.div>
-      </div>
-    </div>
-  );
-
-  // No wallet step
-  const noWalletContent = (
-    <div className='flex flex-col items-center justify-center p-12 text-center'>
-      <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-        <Zap className='h-8 w-8 text-gray-400' />
-      </div>
-      <h3 className='mb-2 text-xl font-semibold text-gray-900'>Wallet Not Set Up</h3>
-      <p className='mb-8 text-gray-600'>
-        This user hasn't set up their Evento wallet yet. We've let them know!
-      </p>
-      <Button
-        onClick={handleClose}
-        className='h-12 w-full max-w-xs rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800'
-      >
-        Done
-      </Button>
-    </div>
-  );
+        );
+      case 'confirm':
+        return (
+          <ZapConfirmStep
+            recipient={recipient}
+            selectedAmount={selectedAmount!}
+            amountUSD={amountUSD}
+            comment={comment}
+            feeSats={prepareResponse?.feeSats}
+            onConfirm={handleConfirmPayment}
+            onBack={handleBack}
+            onClose={handleClose}
+          />
+        );
+      case 'sending':
+        return <ZapSendingStep />;
+      case 'success':
+        return (
+          <ZapSuccessStep
+            selectedAmount={selectedAmount!}
+            recipientName={recipientName}
+            onClose={handleClose}
+          />
+        );
+      case 'no-wallet':
+        return <ZapNoWalletStep onClose={handleClose} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <>
@@ -554,7 +360,8 @@ export function ZapSheet({
       <SheetWithDetentFull.Root
         presented={open}
         onPresentedChange={(presented) => {
-          if (!presented && step !== 'sending') {
+          // Block closing during async operations
+          if (!presented && step !== 'sending' && !isPreparing) {
             setOpen(false);
           }
         }}
@@ -562,7 +369,7 @@ export function ZapSheet({
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='grid h-full grid-rows-[1fr]'>
+            <SheetWithDetentFull.Content className='grid h-full grid-rows-[1fr] md:!max-w-[500px]'>
               <SheetWithDetentFull.ScrollRoot asChild>
                 <SheetWithDetentFull.ScrollView className='min-h-0'>
                   <SheetWithDetentFull.ScrollContent>
@@ -574,12 +381,7 @@ export function ZapSheet({
                       <SheetWithDetentFull.Title>Send Zap</SheetWithDetentFull.Title>
                     </VisuallyHidden.Root>
 
-                    {step === 'amount' && amountContent}
-                    {step === 'custom' && customAmountContent}
-                    {step === 'confirm' && confirmContent}
-                    {step === 'sending' && sendingContent}
-                    {step === 'success' && successContent}
-                    {step === 'no-wallet' && noWalletContent}
+                    {renderStepContent()}
                   </SheetWithDetentFull.ScrollContent>
                 </SheetWithDetentFull.ScrollView>
               </SheetWithDetentFull.ScrollRoot>

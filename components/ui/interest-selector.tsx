@@ -45,7 +45,7 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
   // Display-only mode: gray styling, no checkmark, no interaction
   if (displayOnly) {
     return (
-      <span className='inline-flex items-center whitespace-nowrap rounded-full bg-white px-4 py-2 text-base font-medium text-gray-700 ring-1 ring-inset ring-gray-200'>
+      <span className='inline-flex items-center whitespace-nowrap rounded-full bg-white px-4 py-2 text-base font-medium text-gray-700 ring-1 ring-inset ring-gray-200 lg:text-sm'>
         {text}
       </span>
     );

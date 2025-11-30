@@ -40,7 +40,7 @@ export function TransactionHistorySheet({
             <VisuallyHidden.Root asChild>
               <SheetWithDetentFull.Title>Transaction History</SheetWithDetentFull.Title>
             </VisuallyHidden.Root>
-            <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3'>
+            <div className='flex items-center justify-between bg-white px-4 py-3'>
               <h2 className='text-xl font-semibold text-gray-900'>Transaction History</h2>
               <button
                 onClick={() => onOpenChange(false)}

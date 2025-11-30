@@ -40,7 +40,7 @@ export default function RowCard({
 
         {/* Content */}
         <div className='min-w-0 flex-1'>
-          <h3 className='mb-1 text-lg font-semibold leading-4 text-gray-900'>{title}</h3>
+          <h3 className='mb-1 text-lg font-bold leading-4 text-gray-900'>{title}</h3>
           {subtitle && (
             <p className='pt-1.5 text-base leading-4 leading-relaxed text-gray-500'>{subtitle}</p>
           )}

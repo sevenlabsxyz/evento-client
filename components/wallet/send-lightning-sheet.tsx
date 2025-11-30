@@ -13,7 +13,6 @@ import { VisuallyHidden } from '@silk-hq/components';
 import { AlertCircle, ArrowLeft, Loader2, Scan, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
-import { MorphingText } from '../ui/morphing-text';
 import { AmountInputSheet } from './amount-input-sheet';
 
 interface SendLightningSheetProps {
@@ -311,6 +310,13 @@ export function SendLightningSheet({
   };
 
   const handleAmountConfirm = async (amountSats: number) => {
+    console.log('📝 [SEND] handleAmountConfirm called:', {
+      amountSats,
+      parsedInputType: parsedInput?.type,
+      commentAllowed,
+      paymentType,
+    });
+
     // Validate amount against LNURL constraints
     if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
       if (amountSats < minSendable) {
@@ -373,9 +379,15 @@ export function SendLightningSheet({
   };
 
   const handlePreparePayment = async (amountSats: number) => {
+    console.log('💸 [SEND] handlePreparePayment called:', {
+      amountSats,
+      parsedInputType: parsedInput?.type,
+    });
+
     try {
       if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
         // Prepare LNURL payment
+        console.log('💸 [SEND] Preparing LNURL payment...');
         const payRequest =
           parsedInput.type === 'lightningAddress' ? (parsedInput as any).payRequest : parsedInput;
 
@@ -385,13 +397,22 @@ export function SendLightningSheet({
           comment: comment || undefined,
         });
 
+        console.log('✅ [SEND] LNURL payment prepared:', prepareResponse);
         setLnurlPrepareResponse(prepareResponse);
       } else if (parsedInput?.type === 'bolt11Invoice') {
         // Prepare BOLT11 payment
+        console.log('💸 [SEND] Preparing BOLT11 payment...');
         await prepareSend(invoice, amountSats);
+        console.log('✅ [SEND] BOLT11 payment prepared');
+      } else {
+        // Unknown input type - show error
+        console.error('❌ [SEND] Unknown input type, cannot prepare payment:', parsedInput?.type);
+        toast.error('Unable to prepare payment - unknown input type');
+        throw new Error(`Unknown input type: ${parsedInput?.type}`);
       }
       // Note: Step change and detent change are handled by the caller
     } catch (error: any) {
+      console.error('❌ [SEND] Failed to prepare payment:', error);
       toast.error(error.message || 'Failed to prepare payment');
       throw error; // Re-throw so caller can handle cleanup
     }
@@ -469,7 +490,7 @@ export function SendLightningSheet({
   const confirmationContent = (
     <div className='flex flex-col'>
       {/* Header */}
-      <div className='flex items-center justify-between p-4'>
+      <div className='flex items-center justify-between p-4 pt-0'>
         <h2 className='text-xl font-semibold'>Confirm Payment</h2>
         <button
           onClick={() => {
@@ -602,7 +623,7 @@ export function SendLightningSheet({
               Sending...
             </>
           ) : (
-            <MorphingText className='scale-[0.4]' texts={['Click to Confirm', 'Send Instantly']} />
+            'Send'
           )}
         </Button>
       </div>
@@ -623,7 +644,7 @@ export function SendLightningSheet({
   const inputContent = (
     <div className='flex h-full flex-col'>
       {/* Header */}
-      <div className='flex items-center justify-between p-4'>
+      <div className='flex items-center justify-between p-4 pt-0'>
         <h2 className='text-xl font-semibold'>Send</h2>
         <button
           onClick={() => onOpenChange(false)}
@@ -833,14 +854,16 @@ export function SendLightningSheet({
       <div className='flex items-center justify-between border-b p-4'>
         <button
           onClick={() => setStep('amount')}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:opacity-50'
+          disabled={isPreparingPayment}
         >
           <ArrowLeft className='h-5 w-5' />
         </button>
         <h2 className='text-xl font-semibold'>Add Comment</h2>
         <button
           onClick={() => onOpenChange(false)}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:opacity-50'
+          disabled={isPreparingPayment}
         >
           <X className='h-5 w-5' />
         </button>
@@ -866,8 +889,19 @@ export function SendLightningSheet({
             </div>
           </div>
 
-          <Button onClick={handleCommentConfirm} className='h-12 w-full rounded-full'>
-            Continue
+          <Button
+            onClick={handleCommentConfirm}
+            className='h-12 w-full rounded-full'
+            disabled={isPreparingPayment}
+          >
+            {isPreparingPayment ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Preparing...
+              </>
+            ) : (
+              'Continue'
+            )}
           </Button>
         </div>
       </div>
@@ -879,8 +913,8 @@ export function SendLightningSheet({
       <SheetWithDetentFull.Root
         presented={open}
         onPresentedChange={(presented) => {
-          // Prevent closing while payment is sending
-          if (!presented && isLoading) {
+          // Prevent closing while payment is sending or preparing
+          if (!presented && (isLoading || isPreparingPayment)) {
             return;
           }
 

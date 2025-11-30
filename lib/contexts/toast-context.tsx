@@ -2,6 +2,7 @@
 import { SilkToast, type ToastType } from '@/components/ui/silk-toast';
 import { SheetStack } from '@silk-hq/components';
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
+export type { ToastType };
 
 // ================================================================================================
 // Types
