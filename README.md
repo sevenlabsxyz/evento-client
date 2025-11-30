@@ -138,4 +138,4 @@ For questions or assistance, contact the engineering team through our internal c
 
 ## Evento Wallet
 
-- Bitrefill to buy gift cards directly from the app
+- Bitrefill to buy gift cards directly from the app and now can earn, buy, sell
