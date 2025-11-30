@@ -1,7 +1,7 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import EventRSVPSheet from '@/components/event-detail/event-rsvp-sheet';
-import { CircleIconButton } from '@/components/ui/circle-icon-button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
@@ -70,12 +70,7 @@ export function EventInvitesSection() {
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <h2 className='text-xl font-semibold'>Invites</h2>
-          <CircleIconButton
-            icon={ArrowRight}
-            onClick={() => setShowInvitesSheet(true)}
-            iconSize='sm'
-            ariaLabel='View all invites'
-          />
+          <CircledIconButton icon={ArrowRight} onClick={() => setShowInvitesSheet(true)} />
         </div>
 
         <div className='no-scrollbar flex gap-3 overflow-x-auto pb-2'>

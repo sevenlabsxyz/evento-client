@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   BACKUP_INFO: 'evento_backup_info',
   LAST_BACKUP_REMINDER: 'evento_last_backup_reminder',
   HAS_TRANSACTION: 'evento_has_transaction',
+  BACKUP_DISMISSED_DATE: 'evento_backup_dismissed_date',
 } as const;
 
 export class WalletStorageService {
@@ -171,27 +172,46 @@ export class WalletStorageService {
   }
 
   /**
+   * Check if backup was dismissed today
+   */
+  static isDismissedToday(): boolean {
+    try {
+      const dismissedDate = localStorage.getItem(STORAGE_KEYS.BACKUP_DISMISSED_DATE);
+      if (!dismissedDate) return false;
+
+      const today = new Date().toDateString();
+      const dismissed = new Date(dismissedDate).toDateString();
+      return today === dismissed;
+    } catch (error) {
+      console.error('Failed to check dismissed date:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Dismiss backup reminder for today
+   */
+  static dismissBackupForToday(): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.BACKUP_DISMISSED_DATE, new Date().toISOString());
+    } catch (error) {
+      console.error('Failed to dismiss backup:', error);
+    }
+  }
+
+  /**
    * Check if should show backup reminder
-   * Shows after 7 days OR after first transaction
+   * Shows if: not backed up AND not dismissed today
    */
   static shouldShowBackupReminder(): boolean {
     try {
-      const lastReminder = localStorage.getItem(STORAGE_KEYS.LAST_BACKUP_REMINDER);
-      const hasTransaction = localStorage.getItem(STORAGE_KEYS.HAS_TRANSACTION) === 'true';
-
-      // If wallet has had a transaction, show reminder immediately
-      if (hasTransaction) {
-        return true;
+      // Check if dismissed today
+      if (this.isDismissedToday()) {
+        return false;
       }
 
-      // Otherwise, check if 7 days have passed
-      if (!lastReminder) return false; // Don't show immediately for new wallets
-
-      const lastReminderDate = new Date(lastReminder);
-      const daysSinceReminder = (Date.now() - lastReminderDate.getTime()) / (1000 * 60 * 60 * 24);
-
-      // Show reminder after 7 days
-      return daysSinceReminder >= 7;
+      // Always show if not dismissed (we'll check hasBackup in the component)
+      return true;
     } catch (error) {
       console.error('Failed to check backup reminder:', error);
       return false;

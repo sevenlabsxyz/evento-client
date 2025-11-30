@@ -1,11 +1,12 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
+import { CircledIconButton } from '@/components/circled-icon-button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { ZapSheet } from '@/components/zap/zap-sheet';
 import { UserDetails } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 interface EventHostProps {
@@ -68,19 +69,25 @@ export default function EventHost({ event }: EventHostProps) {
                 </div>
               </button>
 
-              {event.contactEnabled && (
-                <Button
-                  variant='outline'
-                  size='icon'
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleContactHost(host.id);
-                  }}
-                  className='h-10 w-10 rounded-full border-gray-200 bg-gray-50'
+              <div className='flex items-center gap-2'>
+                <ZapSheet
+                  recipientLightningAddress={`${host.username}@evento.cash`}
+                  recipientName={host.name}
+                  recipientUsername={host.username}
+                  recipientAvatar={host.avatar}
                 >
-                  <MessageCircle className='h-4 w-4' />
-                </Button>
-              )}
+                  <CircledIconButton icon={Zap} />
+                </ZapSheet>
+                {event.contactEnabled && (
+                  <CircledIconButton
+                    icon={MessageCircle}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleContactHost(host.id);
+                    }}
+                  />
+                )}
+              </div>
             </div>
           ))}
         </div>

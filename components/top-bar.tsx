@@ -1,5 +1,6 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
@@ -11,7 +12,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { Button } from './ui/button';
 
 export function TopBar() {
   const { openSidebar } = useSidebar();
@@ -88,22 +88,7 @@ export function TopBar() {
 
   const renderLeftContent = () => {
     if (leftMode === 'back') {
-      return (
-        <button
-          onClick={handleBackPress}
-          className={
-            'mt-0.5 flex h-[32px] w-[32px] items-center justify-center border border-transparent'
-          }
-        >
-          <motion.div
-            whileTap={{ scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            style={{ display: 'inline-block' }}
-          >
-            <ArrowLeft className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
-          </motion.div>
-        </button>
-      );
+      return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
     }
 
     return (
@@ -242,20 +227,9 @@ export function TopBar() {
           <div className='ml-3 flex items-center gap-3'>
             {buttons.length > 0 && (
               <div className='flex gap-3'>
-                {buttons.map((button) => {
-                  const Icon = button.icon;
-                  return (
-                    <Button
-                      key={button.id}
-                      size='icon'
-                      variant='outline'
-                      onClick={button.onClick}
-                      className='rounded-full'
-                    >
-                      <Icon className='!h-[1.25rem] !w-[1.25rem]' />
-                    </Button>
-                  );
-                })}
+                {buttons.map((button) => (
+                  <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
+                ))}
               </div>
             )}
           </div>

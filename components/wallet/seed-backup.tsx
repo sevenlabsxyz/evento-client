@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Check, Copy, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
@@ -15,6 +16,7 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
   const [showSeed, setShowSeed] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
+  const { markAsBackedUp } = useWallet();
 
   const words = mnemonic.split(' ');
 
@@ -34,6 +36,8 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
       toast.error('Please confirm you have saved your seed phrase');
       return;
     }
+    markAsBackedUp();
+    toast.success('Wallet backed up successfully!');
     onComplete();
   };
 

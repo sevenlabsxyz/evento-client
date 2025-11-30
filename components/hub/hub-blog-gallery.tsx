@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@/components/ui/button';
+import { CircledIconButton } from '@/components/circled-icon-button';
 import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -119,28 +119,16 @@ export function HubBlogGallery() {
         <div className='flex items-center justify-between'>
           <h3 className='font-semibold'>Latest from our Blog</h3>
           <div className='flex items-center gap-2'>
-            <Button
-              size='icon'
-              variant='outline'
-              onClick={() => {
-                carouselApi?.scrollPrev();
-              }}
+            <CircledIconButton
+              icon={ArrowLeft}
+              onClick={() => carouselApi?.scrollPrev()}
               disabled={!canScrollPrev}
-              className='rounded-full disabled:pointer-events-auto'
-            >
-              <ArrowLeft className='size-5' />
-            </Button>
-            <Button
-              size='icon'
-              variant='outline'
-              onClick={() => {
-                carouselApi?.scrollNext();
-              }}
+            />
+            <CircledIconButton
+              icon={ArrowRight}
+              onClick={() => carouselApi?.scrollNext()}
               disabled={!canScrollNext}
-              className='rounded-full disabled:pointer-events-auto'
-            >
-              <ArrowRight className='size-5' />
-            </Button>
+            />
           </div>
         </div>
 

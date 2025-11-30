@@ -34,8 +34,8 @@ export default function DetachedMenuSheet({
       <DetachedSheet.Portal>
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6 pb-24'>
+          <DetachedSheet.Content className='md:!max-w-[500px]'>
+            <div className='p-6 pb-24 md:pb-8'>
               {/* Handle */}
               <div className='mb-4 flex justify-center'>
                 <DetachedSheet.Handle />

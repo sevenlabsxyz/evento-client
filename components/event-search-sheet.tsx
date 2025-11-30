@@ -1,13 +1,28 @@
 'use client';
 
-import { EventCompactItem } from '@/components/event-compact-item';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
-import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
+import {
+  EventFilterType,
+  EventSortBy,
+  EventTimeframe,
+  useUserEvents,
+} from '@/lib/hooks/use-user-events';
 import { useAuth } from '@/lib/stores/auth-store';
 import { EventWithUser } from '@/lib/types/api';
 import debounce from 'lodash.debounce';
-import { Search, SortAsc } from 'lucide-react';
+import {
+  ArrowDownWideNarrow,
+  ArrowUpWideNarrow,
+  Calendar,
+  ChevronDown,
+  History,
+  Search,
+} from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SheetWithDetentFull } from './ui/sheet-with-detent-full';
 
@@ -33,7 +48,10 @@ export default function EventSearchSheet({
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<EventFilterType>(initialFilter ?? 'upcoming');
-  const [sortDesc, setSortDesc] = useState(true);
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
+  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [timeframePopoverOpen, setTimeframePopoverOpen] = useState(false);
+  const [sortPopoverOpen, setSortPopoverOpen] = useState(false);
   const { user } = useAuth();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -78,7 +96,8 @@ export default function EventSearchSheet({
     username,
     search: searchQuery,
     filter,
-    sortBy: sortDesc ? 'date-desc' : 'date-asc',
+    timeframe,
+    sortBy,
     limit: 10,
     enabled: isOpen,
   });
@@ -120,11 +139,6 @@ export default function EventSearchSheet({
     setFilter(newFilter);
   };
 
-  // Toggle sort order
-  const handleSortToggle = () => {
-    setSortDesc(!sortDesc);
-  };
-
   return (
     <SheetWithDetentFull.Root
       presented={isOpen}
@@ -152,39 +166,103 @@ export default function EventSearchSheet({
                 />
               </div>
 
-              <div className='scrollbar-hide flex justify-between gap-2 overflow-x-auto whitespace-nowrap py-3'>
-                <button
-                  className={`${
-                    filter === 'upcoming' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
-                  } cursor-pointer rounded-2xl px-3 py-1.5 text-sm font-medium`}
-                  onClick={() => handleFilterChange('upcoming')}
-                >
-                  Upcoming
-                </button>
-                <button
-                  className={`${
-                    filter === 'attending' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
-                  } cursor-pointer rounded-2xl px-3 py-1.5 text-sm font-medium`}
-                  onClick={() => handleFilterChange('attending')}
-                >
-                  Attending
-                </button>
-                <button
-                  className={`${
-                    filter === 'hosting' ? 'bg-black text-white' : 'bg-gray-100 text-gray-600'
-                  } cursor-pointer rounded-2xl px-3 py-1.5 text-sm font-medium`}
-                  onClick={() => handleFilterChange('hosting')}
-                >
-                  Hosting
-                </button>
-                <button
-                  className='flex cursor-pointer items-center gap-1 whitespace-nowrap rounded-2xl border-none bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-600'
-                  onClick={handleSortToggle}
-                >
-                  <SortAsc className='h-3 w-3' />
-                  {sortDesc ? 'Newest' : 'Oldest'}
-                </button>
-              </div>
+              {/* Filter Tabs */}
+              <SegmentedTabs
+                items={[
+                  { value: 'upcoming', label: 'All' },
+                  { value: 'attending', label: 'Attending' },
+                  { value: 'hosting', label: 'Hosting' },
+                ]}
+                value={filter}
+                onValueChange={(v) => handleFilterChange(v as EventFilterType)}
+                wrapperClassName='py-3 px-0'
+                align='left'
+              />
+
+              {/* Time/Sort Controls */}
+              <ButtonGroup className='w-full pb-2'>
+                <Popover open={timeframePopoverOpen} onOpenChange={setTimeframePopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      className='rounded-l-full rounded-r-none bg-white hover:bg-gray-50'
+                    >
+                      {timeframe === 'future' ? 'Upcoming' : 'Past'}
+                      <ChevronDown className='ml-1 h-3 w-3' />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align='start' className='w-56 p-2'>
+                    <button
+                      className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                      onClick={() => {
+                        setTimeframe('future');
+                        setTimeframePopoverOpen(false);
+                      }}
+                    >
+                      <Calendar className='mt-0.5 h-4 w-4 text-gray-500' />
+                      <div>
+                        <div className='text-sm font-medium'>Upcoming</div>
+                        <div className='text-xs text-gray-500'>Events happening soon</div>
+                      </div>
+                    </button>
+                    <button
+                      className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                      onClick={() => {
+                        setTimeframe('past');
+                        setTimeframePopoverOpen(false);
+                      }}
+                    >
+                      <History className='mt-0.5 h-4 w-4 text-gray-500' />
+                      <div>
+                        <div className='text-sm font-medium'>Past</div>
+                        <div className='text-xs text-gray-500'>Events that have ended</div>
+                      </div>
+                    </button>
+                  </PopoverContent>
+                </Popover>
+
+                <Popover open={sortPopoverOpen} onOpenChange={setSortPopoverOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant='outline'
+                      size='sm'
+                      className='rounded-l-none rounded-r-full bg-white hover:bg-gray-50'
+                    >
+                      {sortBy === 'date-desc' ? 'Latest' : 'Oldest'}
+                      <ChevronDown className='ml-1 h-3 w-3' />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align='start' className='w-56 p-2'>
+                    <button
+                      className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                      onClick={() => {
+                        setSortBy('date-desc');
+                        setSortPopoverOpen(false);
+                      }}
+                    >
+                      <ArrowDownWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                      <div>
+                        <div className='text-sm font-medium'>Latest</div>
+                        <div className='text-xs text-gray-500'>Most recent events first</div>
+                      </div>
+                    </button>
+                    <button
+                      className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                      onClick={() => {
+                        setSortBy('date-asc');
+                        setSortPopoverOpen(false);
+                      }}
+                    >
+                      <ArrowUpWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                      <div>
+                        <div className='text-sm font-medium'>Oldest</div>
+                        <div className='text-xs text-gray-500'>Oldest events first</div>
+                      </div>
+                    </button>
+                  </PopoverContent>
+                </Popover>
+              </ButtonGroup>
             </div>
 
             <SheetWithDetentFull.ScrollRoot asChild>
@@ -219,22 +297,11 @@ export default function EventSearchSheet({
                   ) : (
                     // Events List
                     <>
-                      {events.map((event) => {
-                        const isPinned = pinnedEventId === event.id;
-                        const canPin = canPinEvent(event);
-
-                        return (
-                          <div key={event.id} className='border-b border-gray-100 last:border-b-0'>
-                            <EventCompactItem
-                              event={event}
-                              onBookmark={() => {}}
-                              isPinned={isPinned}
-                              canPin={canPin}
-                              onPin={onPin}
-                            />
-                          </div>
-                        );
-                      })}
+                      {events.map((event) => (
+                        <div key={event.id} className='px-4 py-2'>
+                          <MasterEventCard event={event} />
+                        </div>
+                      ))}
 
                       {hasNextPage && (
                         <div className='flex justify-center p-4'>

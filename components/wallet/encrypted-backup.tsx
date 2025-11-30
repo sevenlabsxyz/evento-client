@@ -20,6 +20,7 @@ export function EncryptedBackup({ onComplete, onCancel }: EncryptedBackupProps) 
   const [showPassword, setShowPassword] = useState(false);
   const [encryptedSeed, setEncryptedSeed] = useState('');
   const [copied, setCopied] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
   const { getEncryptedBackup, isLoading, markAsBackedUp } = useWallet();
 
   const handleGetBackup = async (e: React.FormEvent) => {
@@ -51,6 +52,10 @@ export function EncryptedBackup({ onComplete, onCancel }: EncryptedBackupProps) 
   };
 
   const handleComplete = () => {
+    if (!confirmed) {
+      toast.error('Please confirm you have saved your backup');
+      return;
+    }
     markAsBackedUp();
     toast.success('Wallet backed up successfully!');
     onComplete();
@@ -180,8 +185,22 @@ export function EncryptedBackup({ onComplete, onCancel }: EncryptedBackupProps) 
           </div>
         </div>
 
+        <div className='flex items-start gap-3 rounded-lg bg-gray-50 p-4'>
+          <input
+            type='checkbox'
+            id='confirm-backup'
+            checked={confirmed}
+            onChange={(e) => setConfirmed(e.target.checked)}
+            className='mt-1 h-4 w-4 rounded border-gray-300'
+          />
+          <label htmlFor='confirm-backup' className='text-sm'>
+            I have saved my encrypted backup to a secure location. I understand that I will need
+            both this backup AND my password to restore my wallet.
+          </label>
+        </div>
+
         <div className='flex gap-3'>
-          <Button onClick={handleComplete} className='flex-1' size='lg'>
+          <Button onClick={handleComplete} disabled={!confirmed} className='flex-1' size='lg'>
             I've Saved My Backup
           </Button>
           {onCancel && (

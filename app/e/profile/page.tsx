@@ -11,25 +11,14 @@ import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import {
-  EventFilterType,
-  EventSortBy,
-  EventTimeframe,
-  useUserEvents,
-} from '@/lib/hooks/use-user-events';
+import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
@@ -42,15 +31,17 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { motion } from 'framer-motion';
 import {
+  ArrowDownWideNarrow,
+  ArrowUpWideNarrow,
   BadgeCheck,
   Calendar,
+  ChevronDown,
   Edit3,
+  History,
   Loader2,
   MessageCircle,
   Search,
   Settings,
-  SortAsc,
-  SortDesc,
 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -62,9 +53,10 @@ export default function ProfilePage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('about');
-  const [eventsFilter, setEventsFilter] = useState<EventFilterType>('upcoming');
-  const [timeframe, setTimeframe] = useState<EventTimeframe>('all');
-  const [sortBy, setSortBy] = useState<EventSortBy>('created-desc');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
+  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [timeframePopoverOpen, setTimeframePopoverOpen] = useState(false);
+  const [sortPopoverOpen, setSortPopoverOpen] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -83,7 +75,7 @@ export default function ProfilePage() {
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
 
-  // Fetch user events with the hook
+  // Fetch user events with the hook (always show all events - 'upcoming' filter)
   const {
     data: userEventsData,
     isLoading: isLoadingEvents,
@@ -92,7 +84,7 @@ export default function ProfilePage() {
     hasNextPage,
   } = useUserEvents({
     username: user?.username || '',
-    filter: eventsFilter,
+    filter: 'upcoming',
     timeframe: timeframe,
     sortBy: sortBy,
     limit: 10,
@@ -252,60 +244,105 @@ export default function ProfilePage() {
 
     return (
       <div className='space-y-4'>
-        {/* Filter Tabs */}
-        <Tabs
-          value={eventsFilter}
-          onValueChange={(value) => setEventsFilter(value as EventFilterType)}
-          className='w-full'
-        >
-          <TabsList className='grid w-full grid-cols-3'>
-            <TabsTrigger value='upcoming'>All</TabsTrigger>
-            <TabsTrigger value='attending'>Attending</TabsTrigger>
-            <TabsTrigger value='hosting'>Hosting</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* Controls - Single unified ButtonGroup */}
+        <ButtonGroup className='w-full justify-between'>
+          <ButtonGroup>
+            {/* Timeframe Popover */}
+            <Popover open={timeframePopoverOpen} onOpenChange={setTimeframePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='rounded-l-full rounded-r-none bg-white hover:bg-gray-50'
+                >
+                  {timeframe === 'future' ? 'Upcoming' : 'Past'}
+                  <ChevronDown className='ml-1 h-3 w-3' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2'>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setTimeframe('future');
+                    setTimeframePopoverOpen(false);
+                  }}
+                >
+                  <Calendar className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Upcoming</div>
+                    <div className='text-xs text-gray-500'>Events happening soon</div>
+                  </div>
+                </button>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setTimeframe('past');
+                    setTimeframePopoverOpen(false);
+                  }}
+                >
+                  <History className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Past</div>
+                    <div className='text-xs text-gray-500'>Events that have ended</div>
+                  </div>
+                </button>
+              </PopoverContent>
+            </Popover>
 
-        {/* Controls */}
-        <div className='mt-4 grid w-full grid-cols-3 items-center gap-2'>
-          <Select
-            value={timeframe}
-            onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
-          >
-            <SelectTrigger className='text-sm'>
-              <Calendar className='mr-2 h-4 w-4' />
-              <SelectValue placeholder='Timeframe' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>All</SelectItem>
-              <SelectItem value='future'>Future</SelectItem>
-              <SelectItem value='past'>Past</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
-            <SelectTrigger className='text-sm'>
-              {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
-                <SortAsc className='mr-2 h-4 w-4' />
-              ) : (
-                <SortDesc className='mr-2 h-4 w-4' />
-              )}
-              <SelectValue placeholder='Sort by' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='created-desc'>Created Desc</SelectItem>
-              <SelectItem value='created-asc'>Created Asc</SelectItem>
-              <SelectItem value='date-desc'>Date Desc</SelectItem>
-              <SelectItem value='date-asc'>Date Asc</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Sort Popover */}
+            <Popover open={sortPopoverOpen} onOpenChange={setSortPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='rounded-l-none rounded-r-full bg-white hover:bg-gray-50'
+                >
+                  {sortBy === 'date-desc' ? 'Latest' : 'Oldest'}
+                  <ChevronDown className='ml-1 h-3 w-3' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2'>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setSortBy('date-desc');
+                    setSortPopoverOpen(false);
+                  }}
+                >
+                  <ArrowDownWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Latest</div>
+                    <div className='text-xs text-gray-500'>Most recent events first</div>
+                  </div>
+                </button>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setSortBy('date-asc');
+                    setSortPopoverOpen(false);
+                  }}
+                >
+                  <ArrowUpWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Oldest</div>
+                    <div className='text-xs text-gray-500'>Oldest events first</div>
+                  </div>
+                </button>
+              </PopoverContent>
+            </Popover>
+          </ButtonGroup>
+
+          {/* Search Button */}
           <Button
+            size='icon'
             variant='outline'
             onClick={() => setShowEventSearchSheet(true)}
+            className='rounded-full'
             aria-label='Search events'
           >
-            <Search className='h-5 w-5' />
-            <span>Search</span>
+            <Search className='!h-[1.25rem] !w-[1.25rem]' />
           </Button>
-        </div>
+        </ButtonGroup>
 
         {/* Events List */}
         <div className='space-y-8'>

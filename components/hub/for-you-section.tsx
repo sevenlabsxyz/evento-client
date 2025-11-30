@@ -1,10 +1,9 @@
 'use client';
 
-import { CircleIconButton } from '@/components/ui/circle-icon-button';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
 import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
-import { Calendar, MoreHorizontal, Sparkles } from 'lucide-react';
+import { Calendar, Sparkles } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
@@ -77,16 +76,6 @@ export function ForYouSection() {
       {/* Header */}
       <div className='flex items-center justify-between'>
         <h2 className='text-xl font-semibold'>For You</h2>
-        <div className='flex items-center gap-2'>
-          <CircleIconButton
-            icon={MoreHorizontal}
-            onClick={() => {
-              // Options menu placeholder - can be used for future features
-            }}
-            iconSize='sm'
-            ariaLabel='More options'
-          />
-        </div>
       </div>
 
       {/* Segmented Tabs */}

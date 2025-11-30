@@ -3,7 +3,8 @@
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BackupReminder } from '@/components/wallet/backup-reminder';
+import { BackupCallout } from '@/components/wallet/backup-callout';
+import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
 import { IncomingFundsSheet } from '@/components/wallet/incoming-funds-sheet';
@@ -71,6 +72,7 @@ export default function WalletPage() {
   const [openDrawers, setOpenDrawers] = useState<DrawerContent[]>([]);
   const [selectedTransaction, setSelectedTransaction] = useState<Payment | null>(null);
   const [showBackupReminder, setShowBackupReminder] = useState(false);
+  const [showBackupChoiceSheet, setShowBackupChoiceSheet] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [scannedData, setScannedData] = useState<string>('');
   const [unclaimedDepositsCount, setUnclaimedDepositsCount] = useState(0);
@@ -395,18 +397,7 @@ export default function WalletPage() {
         <div className='px-4 pt-4 md:flex md:gap-8'>
           {/* Left Column - sticky on desktop */}
           <div className='md:sticky md:top-0 md:w-1/2 md:self-start'>
-            <div className='space-y-6'>
-              {/* Backup Reminder */}
-              {showBackupReminder && (
-                <BackupReminder
-                  onBackup={() => {
-                    setShowBackupReminder(false);
-                    setStep('encrypted-backup');
-                  }}
-                  onDismiss={() => setShowBackupReminder(false)}
-                />
-              )}
-
+            <div className='space-y-4'>
               {/* Wallet Balance Card */}
               {walletState.isInitialized && user?.username && (
                 <WalletBalance
@@ -414,6 +405,14 @@ export default function WalletPage() {
                   onReceive={() => openDrawer('receive')}
                   onScan={() => openDrawer('scan')}
                   lightningAddress={user.lightning_address || `${user.username}@evento.cash`}
+                />
+              )}
+
+              {/* Backup Callout - subtle reminder below action buttons */}
+              {showBackupReminder && (
+                <BackupCallout
+                  onBackup={() => setShowBackupChoiceSheet(true)}
+                  onDismiss={() => setShowBackupReminder(false)}
                 />
               )}
 
@@ -566,6 +565,26 @@ export default function WalletPage() {
 
       {/* Beta Information Sheet */}
       <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
+
+      {/* Backup Choice Sheet */}
+      <BackupChoiceSheet
+        open={showBackupChoiceSheet}
+        onOpenChange={setShowBackupChoiceSheet}
+        onSelectSeedPhrase={() => {
+          if (mnemonic) {
+            setShowBackupReminder(false);
+            setStep('backup');
+          } else {
+            toast.error('Seed phrase not available. Please use encrypted backup.');
+            setShowBackupReminder(false);
+            setStep('encrypted-backup');
+          }
+        }}
+        onSelectEncryptedBackup={() => {
+          setShowBackupReminder(false);
+          setStep('encrypted-backup');
+        }}
+      />
 
       {/* Onchain Educational Sheet */}
       <WalletEducationalSheet

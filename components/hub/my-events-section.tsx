@@ -1,11 +1,11 @@
 'use client';
 
 import EventSearchSheet from '@/components/event-search-sheet';
+import { Button } from '@/components/ui/button';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
-import { EventWithUser } from '@/lib/types/api';
-import { ArrowRight, Calendar, Sparkles } from 'lucide-react';
+import { ArrowRight, Calendar } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
@@ -15,25 +15,25 @@ export function MyEventsSection() {
   const [loadedTabs, setLoadedTabs] = useState<EventFilterType[]>(['upcoming']);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // Only load data for tabs that have been opened (12 events = 4 columns × 3 cards)
+  // Only load data for tabs that have been opened (6 events max)
   const upcomingQuery = useUserEvents({
     username: user?.username,
     filter: 'upcoming',
-    limit: 12,
+    limit: 6,
     enabled: loadedTabs.includes('upcoming'),
   });
 
   const hostingQuery = useUserEvents({
     username: user?.username,
     filter: 'hosting',
-    limit: 12,
+    limit: 6,
     enabled: loadedTabs.includes('hosting'),
   });
 
   const attendingQuery = useUserEvents({
     username: user?.username,
     filter: 'attending',
-    limit: 12,
+    limit: 6,
     enabled: loadedTabs.includes('attending'),
   });
 
@@ -60,12 +60,6 @@ export function MyEventsSection() {
   const currentQuery = getCurrentQuery();
   const events = currentQuery.data?.pages?.[0]?.events || [];
   const isLoading = currentQuery.isLoading;
-
-  const ctaLabel = useMemo(() => {
-    if (activeTab === 'upcoming') return 'View All Upcoming Events';
-    if (activeTab === 'hosting') return 'View All Hosting Events';
-    return 'View All Attending Events';
-  }, [activeTab]);
 
   const getTabCount = (tab: EventFilterType) => {
     switch (tab) {
@@ -119,38 +113,31 @@ export function MyEventsSection() {
           wrapperClassName='mt-2'
         />
 
-        {/* Content - Horizontal scrollable grid */}
+        {/* Content - Vertical list */}
         <div className='mt-2'>
           {isLoading ? (
-            // Skeleton loading for horizontal column layout
-            <div className='scrollbar-hide -mx-4 flex gap-3 overflow-x-auto px-4 pb-2'>
-              {Array.from({ length: 4 }).map((_, colIndex) => (
+            // Skeleton loading for vertical layout
+            <div className='flex flex-col gap-2'>
+              {Array.from({ length: 6 }).map((_, index) => (
                 <div
-                  key={`col-ske-${colIndex}`}
-                  className='flex w-[90%] shrink-0 flex-col gap-2 md:w-[70%]'
+                  key={`ske-${index}`}
+                  className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4'
                 >
-                  {Array.from({ length: 3 }).map((_, cardIndex) => (
-                    <div
-                      key={`ske-${colIndex}-${cardIndex}`}
-                      className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4'
-                    >
-                      {/* Left content skeleton */}
-                      <div className='flex min-w-0 flex-1 flex-col gap-2'>
-                        <div className='h-4 w-32 rounded bg-gray-200' />
-                        <div className='h-5 w-3/4 rounded bg-gray-200' />
-                        <div className='flex items-center gap-2'>
-                          <div className='h-5 w-5 rounded-full bg-gray-200' />
-                          <div className='h-3 w-24 rounded bg-gray-200' />
-                        </div>
-                        <div className='flex items-center gap-1'>
-                          <div className='h-3.5 w-3.5 rounded bg-gray-200' />
-                          <div className='h-3 w-32 rounded bg-gray-200' />
-                        </div>
-                      </div>
-                      {/* Right image skeleton */}
-                      <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200' />
+                  {/* Left content skeleton */}
+                  <div className='flex min-w-0 flex-1 flex-col gap-2'>
+                    <div className='h-4 w-32 rounded bg-gray-200' />
+                    <div className='h-5 w-3/4 rounded bg-gray-200' />
+                    <div className='flex items-center gap-2'>
+                      <div className='h-5 w-5 rounded-full bg-gray-200' />
+                      <div className='h-3 w-24 rounded bg-gray-200' />
                     </div>
-                  ))}
+                    <div className='flex items-center gap-1'>
+                      <div className='h-3.5 w-3.5 rounded bg-gray-200' />
+                      <div className='h-3 w-32 rounded bg-gray-200' />
+                    </div>
+                  </div>
+                  {/* Right image skeleton */}
+                  <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200' />
                 </div>
               ))}
             </div>
@@ -171,79 +158,28 @@ export function MyEventsSection() {
               </p>
             </div>
           ) : (
-            // Group events into columns of 3 for horizontal scroll
-            // View All card is treated as the last card in the sequence
+            // Vertical list of events
             (() => {
               const hasMoreEvents = totalCount > events.length;
-              // If we have more events, reserve last slot for View All card
-              const maxEventsToShow = hasMoreEvents ? 11 : 12;
-              const eventsToShow = events.slice(0, maxEventsToShow);
-
-              // Build items array: events + optional View All card
-              type ColumnItem = { type: 'event'; event: EventWithUser } | { type: 'viewAll' };
-              const items: ColumnItem[] = eventsToShow.map((event) => ({
-                type: 'event',
-                event,
-              }));
-              if (hasMoreEvents) {
-                items.push({ type: 'viewAll' });
-              }
-
-              // Group items into columns of 3
-              const columns: ColumnItem[][] = [];
-              for (let i = 0; i < items.length; i += 3) {
-                columns.push(items.slice(i, i + 3));
-              }
+              const eventsToShow = events.slice(0, 6);
 
               return (
-                <div className='scrollbar-hide -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2'>
-                  {columns.map((columnItems, colIndex) => (
-                    <div
-                      key={colIndex}
-                      className='flex w-[90%] shrink-0 snap-start flex-col gap-2 first:pl-4 md:w-[70%] md:first:pl-0'
+                <>
+                  <div className='flex flex-col gap-2'>
+                    {eventsToShow.map((event) => (
+                      <MasterEventCard key={event.id} event={event} />
+                    ))}
+                  </div>
+                  {hasMoreEvents && (
+                    <Button
+                      onClick={handleViewAll}
+                      variant='ghost'
+                      className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
                     >
-                      {columnItems.map((item, itemIndex) =>
-                        item.type === 'event' ? (
-                          <MasterEventCard key={item.event.id} event={item.event} />
-                        ) : (
-                          <button
-                            key='view-all'
-                            onClick={handleViewAll}
-                            aria-label={ctaLabel}
-                            className='relative flex w-full items-start gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100'
-                          >
-                            {/* Soft background gradient */}
-                            <div className='pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-red-50/70 via-transparent to-amber-50/70 opacity-80' />
-
-                            {/* Left content */}
-                            <div className='relative flex min-w-0 flex-1 flex-col gap-1'>
-                              <div className='inline-flex items-center gap-1 text-sm'>
-                                <Sparkles className='h-3.5 w-3.5 text-amber-500' />
-                                <span className='font-medium text-amber-600'>Discover more</span>
-                              </div>
-                              <h3 className='text-lg font-bold leading-tight text-gray-900'>
-                                {ctaLabel}
-                              </h3>
-                              <p className='text-sm text-gray-600'>
-                                Explore the full list of your {activeTab.toLowerCase()} events.
-                              </p>
-                              <div className='mt-1 inline-flex w-fit items-center gap-1 rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white'>
-                                View all <ArrowRight className='h-4 w-4' />
-                              </div>
-                            </div>
-
-                            {/* Right placeholder - same size as event image */}
-                            <div className='relative flex h-24 w-24 shrink-0 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-100'>
-                              <span className='text-2xl font-bold text-gray-600'>
-                                +{Math.max(totalCount - eventsToShow.length, 0)}
-                              </span>
-                            </div>
-                          </button>
-                        )
-                      )}
-                    </div>
-                  ))}
-                </div>
+                      View All Events <ArrowRight className='h-4 w-4' />
+                    </Button>
+                  )}
+                </>
               );
             })()
           )}

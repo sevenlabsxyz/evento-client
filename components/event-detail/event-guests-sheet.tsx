@@ -1,12 +1,13 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { Button } from '@/components/ui/button';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowRight, MessageCircle, Search } from 'lucide-react';
+import { ArrowRight, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 
@@ -84,7 +85,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                 <div className='relative mt-3'>
                   <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
                   <input
-                    className='w-full rounded-xl bg-gray-100 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
+                    className='w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
                     placeholder='Search guests'
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
@@ -124,9 +125,10 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                     ) : (
                       <div className='space-y-3 px-4 pb-6'>
                         {listForTab.map((rsvp) => (
-                          <div
+                          <button
                             key={rsvp.id}
-                            className='flex items-center gap-3 rounded-2xl bg-gray-50 p-3'
+                            onClick={() => handleViewProfile(rsvp.user_details)}
+                            className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
                           >
                             <div className='flex flex-1 items-center gap-3'>
                               <UserAvatar
@@ -137,8 +139,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                                   verification_status:
                                     rsvp.user_details?.verification_status || null,
                                 }}
-                                size='sm'
-                                onAvatarClick={() => handleViewProfile(rsvp.user_details)}
+                                size='base'
                               />
                               <div className='min-w-0 flex-1'>
                                 <div className='truncate font-medium text-gray-900'>
@@ -149,30 +150,14 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                                 </div>
                               </div>
                             </div>
-                            <div className='flex items-center gap-2'>
-                              <Button
-                                variant='outline'
-                                size='sm'
-                                className='px-2'
-                                onClick={() => {
-                                  // TODO: wire to chat/DM route
-                                  console.log('chat with', rsvp.user_details?.username);
-                                }}
-                                aria-label='Chat'
-                              >
-                                <MessageCircle className='h-4 w-4' />
-                              </Button>
-                              <Button
-                                variant='outline'
-                                size='sm'
-                                className='px-2'
-                                onClick={() => handleViewProfile(rsvp.user_details)}
-                                aria-label='View user profile'
-                              >
-                                <ArrowRight className='h-4 w-4' />
-                              </Button>
-                            </div>
-                          </div>
+                            <CircledIconButton
+                              icon={ArrowRight}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleViewProfile(rsvp.user_details);
+                              }}
+                            />
+                          </button>
                         ))}
                       </div>
                     )}

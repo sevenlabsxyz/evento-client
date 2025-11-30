@@ -146,7 +146,7 @@ export default function EventGuestsSection({
                   image: r.user_details?.image || undefined,
                   verification_status: r.user_details?.verification_status || null,
                 }}
-                size='sm'
+                size='base'
               />
             </button>
           ))}

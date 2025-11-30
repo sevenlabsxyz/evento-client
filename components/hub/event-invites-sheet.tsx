@@ -1,11 +1,11 @@
+import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { EventInvite } from '@/lib/types/api';
-import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Calendar, Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
-import { EventInviteCard } from './event-invite-card';
+import { MasterInviteCard } from './master-invite-card';
 
 interface EventInvitesSheetProps {
   showInvitesSheet: boolean;
@@ -53,7 +53,7 @@ export function EventInvitesSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='bg-white'>
+          <SheetWithDetentFull.Content className='flex flex-col bg-white'>
             <div className='px-4 pt-2'>
               <div className='mb-4 flex justify-center'>
                 <SheetWithDetentFull.Handle />
@@ -64,35 +64,21 @@ export function EventInvitesSheet({
               </VisuallyHidden.Root>
 
               {/* Tabs */}
-              <div className='mb-4 flex rounded-xl bg-gray-100 p-1'>
-                <button
-                  onClick={() => setActiveTab('pending')}
-                  className={cn(
-                    'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
-                    activeTab === 'pending'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  )}
-                >
-                  Pending ({pendingInvites.length})
-                </button>
-                <button
-                  onClick={() => setActiveTab('responded')}
-                  className={cn(
-                    'flex-1 rounded-lg py-2 text-sm font-medium transition-colors',
-                    activeTab === 'responded'
-                      ? 'bg-white text-gray-900 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  )}
-                >
-                  Responded ({respondedInvites.length})
-                </button>
-              </div>
+              <SegmentedTabs
+                items={[
+                  { value: 'pending', label: `Waiting (${pendingInvites.length})` },
+                  { value: 'responded', label: 'Archive' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v as 'pending' | 'responded')}
+                wrapperClassName='mb-4 px-0 py-0'
+                align='left'
+              />
             </div>
 
             {/* Scrollable content */}
             <SheetWithDetentFull.ScrollRoot asChild>
-              <SheetWithDetentFull.ScrollView className='max-h-full overflow-y-auto'>
+              <SheetWithDetentFull.ScrollView className='pb-safe flex-1 overflow-y-auto'>
                 <SheetWithDetentFull.ScrollContent>
                   <div className='px-4 pb-6'>
                     {activeTab === 'pending' ? (
@@ -115,7 +101,7 @@ export function EventInvitesSheet({
                       ) : (
                         <div className='space-y-4'>
                           {pendingInvites.map((invite: EventInvite) => (
-                            <EventInviteCard
+                            <MasterInviteCard
                               key={invite.id}
                               invite={invite}
                               onRSVP={() => handleRSVP(invite.event_id)}
@@ -145,7 +131,7 @@ export function EventInvitesSheet({
                     ) : (
                       <div className='space-y-4'>
                         {respondedInvites.map((invite: EventInvite) => (
-                          <EventInviteCard
+                          <MasterInviteCard
                             key={invite.id}
                             invite={invite}
                             onRSVP={() => handleRSVP(invite.event_id)}
