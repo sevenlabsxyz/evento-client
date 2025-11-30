@@ -121,7 +121,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='grid h-full grid-rows-[1fr]'>
+          <SheetWithDetentFull.Content className='grid h-full grid-rows-[1fr] md:!max-w-[500px]'>
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView className='min-h-0'>
                 <SheetWithDetentFull.ScrollContent>

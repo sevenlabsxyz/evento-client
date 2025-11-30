@@ -165,7 +165,7 @@ export function WalletEducationGallery() {
         >
           <CarouselContent className='hide-scrollbar px-4'>
             {posts.map((post) => (
-              <CarouselItem key={post.id} className='max-w-[280px] pl-3 md:max-w-[452px]'>
+              <CarouselItem key={post.id} className='max-w-[280px] pl-3'>
                 <motion.button
                   onClick={() => {
                     setSelectedArticle(post);

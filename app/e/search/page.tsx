@@ -75,7 +75,7 @@ export default function SearchPage() {
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               autoFocus
-              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-base outline-none transition-colors focus:border-gray-300 focus:bg-white'
+              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-base outline-none transition-colors focus:border-gray-300'
             />
           </div>
         </div>

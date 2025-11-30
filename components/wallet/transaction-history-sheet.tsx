@@ -33,14 +33,14 @@ export function TransactionHistorySheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr]'>
+          <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr] md:!max-w-[600px]'>
             <div className='my-4 flex items-center'>
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
             </div>
             <VisuallyHidden.Root asChild>
               <SheetWithDetentFull.Title>Transaction History</SheetWithDetentFull.Title>
             </VisuallyHidden.Root>
-            <div className='flex items-center justify-between bg-white px-4 py-3'>
+            <div className='flex items-center justify-between bg-white px-4 py-3 pt-0'>
               <h2 className='text-xl font-semibold text-gray-900'>Transaction History</h2>
               <button
                 onClick={() => onOpenChange(false)}
@@ -51,7 +51,7 @@ export function TransactionHistorySheet({
             </div>
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView className='min-h-0'>
-                <SheetWithDetentFull.ScrollContent className='bg-white px-4 py-6 pb-8'>
+                <SheetWithDetentFull.ScrollContent className='bg-white px-4 py-2 pb-8'>
                   <TransactionHistory
                     payments={payments}
                     isLoading={isLoading}

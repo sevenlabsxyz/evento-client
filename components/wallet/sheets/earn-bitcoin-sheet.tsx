@@ -42,7 +42,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='grid h-full grid-rows-[1fr]'>
+          <SheetWithDetentFull.Content className='grid h-full grid-rows-[1fr] md:!max-w-[700px]'>
             <SheetWithDetentFull.ScrollRoot asChild>
               <SheetWithDetentFull.ScrollView className='min-h-0'>
                 <SheetWithDetentFull.ScrollContent>
@@ -52,7 +52,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                   </div>
 
                   {/* Header */}
-                  <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3'>
+                  <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0'>
                     <h2 className='text-xl font-semibold'>Earn Bitcoin</h2>
                     <button onClick={() => onOpenChange(false)}>
                       <X className='h-5 w-5 text-gray-500' />

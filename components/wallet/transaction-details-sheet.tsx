@@ -166,8 +166,10 @@ export function TransactionDetailsSheet({
     <SheetWithDetentFull.Root presented={open} onPresentedChange={onOpenChange}>
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
+          {' '}
+          q
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content>
+          <SheetWithDetentFull.Content className='md:!max-w-[500px]'>
             <div className='my-4 flex items-center'>
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
             </div>
@@ -178,7 +180,7 @@ export function TransactionDetailsSheet({
               <SheetWithDetentFull.ScrollView>
                 <SheetWithDetentFull.ScrollContent>
                   {/* Header */}
-                  <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3'>
+                  <div className='flex items-center justify-between bg-white px-4 py-3 pt-0'>
                     <h2 className='text-xl font-semibold text-gray-900'>Transaction Details</h2>
                     <button
                       onClick={() => onOpenChange(false)}
@@ -189,7 +191,7 @@ export function TransactionDetailsSheet({
                   </div>
 
                   {/* Content */}
-                  <div className='h-[95vh] overflow-y-auto bg-white px-4 py-6 pb-8'>
+                  <div className='h-[95vh] overflow-y-auto bg-white px-4 py-2 pb-8 md:pb-24'>
                     <div className='mx-auto min-h-fit max-w-md space-y-4 pb-8'>
                       {/* Amount Card - Glassmorphic */}
                       <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm backdrop-blur-xl'>
