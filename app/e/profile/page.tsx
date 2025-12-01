@@ -83,7 +83,6 @@ export default function ProfilePage() {
     isFetchingNextPage,
     hasNextPage,
   } = useUserEvents({
-    username: user?.username || '',
     filter: 'upcoming',
     timeframe: timeframe,
     sortBy: sortBy,

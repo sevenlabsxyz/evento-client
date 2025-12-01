@@ -217,12 +217,11 @@ export default function UserProfilePageClient() {
     isFetchingNextPage,
     hasNextPage,
   } = useUserEvents({
-    username: userData?.username || '',
     filter: 'upcoming',
     timeframe: timeframe,
     sortBy: sortBy,
     limit: 10,
-    enabled: !!userData?.username && activeTab === 'events',
+    enabled: activeTab === 'events',
   });
 
   // Handle loading state

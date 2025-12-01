@@ -7,6 +7,7 @@ import { ProfileHeader } from '@/components/ui/quick-profile/profile-header';
 import { ProfileInfo } from '@/components/ui/quick-profile/profile-info';
 import { ProfileStats } from '@/components/ui/quick-profile/profile-stats';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { ZapSheet } from '@/components/zap/zap-sheet';
 import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
@@ -102,16 +103,27 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                         followersCount={followers?.length || 0}
                       />
 
-                      <div className='flex flex-col'>
+                      <div className='flex flex-col gap-2'>
                         {/* Action Buttons */}
                         {user.username !== loggedInUser?.username && (
-                          <ProfileActions
-                            isFollowing={followStatus?.isFollowing || false}
-                            isLoading={isLoading}
-                            isPending={followActionMutation.isPending}
-                            onFollowToggle={handleFollowToggle}
-                            onMessage={handleMessage}
-                          />
+                          <>
+                            {/* Zap Button - Full Width (uses default ZapSheet button) */}
+                            <ZapSheet
+                              recipientLightningAddress={`${user.username}@evento.cash`}
+                              recipientName={user.name || user.username}
+                              recipientUsername={user.username}
+                              recipientAvatar={user.image}
+                            />
+
+                            {/* Follow & Message Buttons */}
+                            <ProfileActions
+                              isFollowing={followStatus?.isFollowing || false}
+                              isLoading={isLoading}
+                              isPending={followActionMutation.isPending}
+                              onFollowToggle={handleFollowToggle}
+                              onMessage={handleMessage}
+                            />
+                          </>
                         )}
 
                         {/* View Full Profile Button */}
@@ -119,8 +131,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                           onClick={handleViewFullProfile}
                           className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
                         >
-                          <ArrowRight className='mr-2 h-4 w-4' />
                           View Full Profile
+                          <ArrowRight className='ml-2 h-4 w-4' />
                         </Button>
                       </div>
                     </div>

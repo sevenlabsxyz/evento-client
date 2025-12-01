@@ -6,7 +6,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { BackupCallout } from '@/components/wallet/backup-callout';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
-import { EncryptedBackup } from '@/components/wallet/encrypted-backup';
 import { IncomingFundsSheet } from '@/components/wallet/incoming-funds-sheet';
 import { QuickToolsSection } from '@/components/wallet/quick-tools-section';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
@@ -43,7 +42,7 @@ import { ChevronsRight, Eye, EyeOff, HelpCircle, Settings } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'encrypted-backup' | 'main';
+type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
 type DrawerContent =
   | 'receive'
   | 'send'
@@ -336,40 +335,40 @@ export default function WalletPage() {
   // Setup Screen
   if (step === 'setup') {
     return (
-      <div className='mx-auto max-w-sm pb-28 pt-4'>
-        <WalletSetup onComplete={handleSetupComplete} onCancel={() => setStep('welcome')} />
-      </div>
+      <>
+        <div className='mx-auto max-w-sm pb-28 pt-4'>
+          <WalletSetup onComplete={handleSetupComplete} onCancel={() => setStep('welcome')} />
+        </div>
+        <Navbar />
+      </>
     );
   }
 
   // Restore Screen
   if (step === 'restore') {
     return (
-      <div className='mx-auto max-w-sm pb-28 pt-4'>
-        <WalletRestore onComplete={handleRestoreComplete} onCancel={() => setStep('welcome')} />
-      </div>
+      <>
+        <div className='mx-auto max-w-sm pb-28 pt-4'>
+          <WalletRestore onComplete={handleRestoreComplete} onCancel={() => setStep('welcome')} />
+        </div>
+        <Navbar />
+      </>
     );
   }
 
   // Backup Screen
   if (step === 'backup' && mnemonic) {
     return (
-      <div className='mx-auto max-w-sm pb-28 pt-4'>
-        <SeedBackup
-          mnemonic={mnemonic}
-          onComplete={handleBackupComplete}
-          onSkip={handleBackupSkip}
-        />
-      </div>
-    );
-  }
-
-  // Encrypted Backup Screen
-  if (step === 'encrypted-backup') {
-    return (
-      <div className='mx-auto max-w-sm pb-28 pt-4'>
-        <EncryptedBackup onComplete={() => setStep('main')} onCancel={() => setStep('main')} />
-      </div>
+      <>
+        <div className='mx-auto max-w-sm pb-28 pt-4'>
+          <SeedBackup
+            mnemonic={mnemonic}
+            onComplete={handleBackupComplete}
+            onCancel={handleBackupSkip}
+          />
+        </div>
+        <Navbar />
+      </>
     );
   }
 
@@ -386,6 +385,7 @@ export default function WalletPage() {
           <WalletUnlock />
         </div>
         <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
+        <Navbar />
       </>
     );
   }
@@ -410,10 +410,7 @@ export default function WalletPage() {
 
               {/* Backup Callout - subtle reminder below action buttons */}
               {showBackupReminder && (
-                <BackupCallout
-                  onBackup={() => setShowBackupChoiceSheet(true)}
-                  onDismiss={() => setShowBackupReminder(false)}
-                />
+                <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
               )}
 
               {/* Quick Tools Section */}
@@ -429,8 +426,10 @@ export default function WalletPage() {
           <div className='pb-28 md:w-1/2'>
             <div className='space-y-6'>
               {/* Recent Transactions Preview */}
-              <div className='space-y-3'>
-                <h3 className='font-semibold'>Recent Transactions</h3>
+              <div className='mt-6 space-y-3 md:mt-0'>
+                <h3 className='text-base font-semibold text-muted-foreground'>
+                  Recent Transactions
+                </h3>
                 <TransactionHistory
                   payments={payments.slice(0, 5)}
                   isLoading={isLoadingPayments}
@@ -455,7 +454,11 @@ export default function WalletPage() {
                       onClick={() => setShowOnchainEducationalSheet(true)}
                       className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white transition-colors'
                       whileTap={{ scale: 0.95 }}
-                      transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                      transition={{
+                        type: 'spring',
+                        stiffness: 400,
+                        damping: 17,
+                      }}
                     >
                       <HelpCircle className='h-5 w-5 text-gray-600' />
                     </motion.button>
@@ -570,19 +573,8 @@ export default function WalletPage() {
       <BackupChoiceSheet
         open={showBackupChoiceSheet}
         onOpenChange={setShowBackupChoiceSheet}
-        onSelectSeedPhrase={() => {
-          if (mnemonic) {
-            setShowBackupReminder(false);
-            setStep('backup');
-          } else {
-            toast.error('Seed phrase not available. Please use encrypted backup.');
-            setShowBackupReminder(false);
-            setStep('encrypted-backup');
-          }
-        }}
-        onSelectEncryptedBackup={() => {
+        onEncryptedBackupComplete={() => {
           setShowBackupReminder(false);
-          setStep('encrypted-backup');
         }}
       />
 

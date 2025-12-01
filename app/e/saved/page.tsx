@@ -85,7 +85,7 @@ export default function SavedListsPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-2xl'>
       {/* Content */}
       <div className='flex-1 overflow-y-auto pb-20'>
         {/* Add New List Button */}

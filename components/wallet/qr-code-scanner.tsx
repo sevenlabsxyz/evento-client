@@ -12,6 +12,7 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const hasStarted = useRef(false);
   const isRunning = useRef(false);
+  const hasScanned = useRef(false);
 
   useEffect(() => {
     if (hasStarted.current) return;
@@ -28,6 +29,13 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
             fps: 10,
           },
           (decodedText) => {
+            if (hasScanned.current) return;
+            hasScanned.current = true;
+
+            // Stop scanner immediately to prevent repeated callbacks
+            scannerRef.current?.stop().catch(() => {});
+            isRunning.current = false;
+
             onScanSuccess(decodedText);
           },
           (errorMessage) => {

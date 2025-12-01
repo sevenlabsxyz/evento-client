@@ -6,7 +6,7 @@ import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { ArrowRight, Calendar } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
 export function MyEventsSection() {
@@ -15,26 +15,19 @@ export function MyEventsSection() {
   const [loadedTabs, setLoadedTabs] = useState<EventFilterType[]>(['upcoming']);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // Only load data for tabs that have been opened (6 events max)
+  // Only load data for tabs that have been opened (6 events max, future only)
   const upcomingQuery = useUserEvents({
-    username: user?.username,
     filter: 'upcoming',
+    timeframe: 'future',
     limit: 6,
     enabled: loadedTabs.includes('upcoming'),
   });
 
   const hostingQuery = useUserEvents({
-    username: user?.username,
     filter: 'hosting',
+    timeframe: 'future',
     limit: 6,
     enabled: loadedTabs.includes('hosting'),
-  });
-
-  const attendingQuery = useUserEvents({
-    username: user?.username,
-    filter: 'attending',
-    limit: 6,
-    enabled: loadedTabs.includes('attending'),
   });
 
   // Track when tabs are opened for lazy loading
@@ -50,8 +43,6 @@ export function MyEventsSection() {
         return upcomingQuery;
       case 'hosting':
         return hostingQuery;
-      case 'attending':
-        return attendingQuery;
       default:
         return upcomingQuery;
     }
@@ -60,24 +51,6 @@ export function MyEventsSection() {
   const currentQuery = getCurrentQuery();
   const events = currentQuery.data?.pages?.[0]?.events || [];
   const isLoading = currentQuery.isLoading;
-
-  const getTabCount = (tab: EventFilterType) => {
-    switch (tab) {
-      case 'upcoming':
-        return upcomingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
-      case 'hosting':
-        return hostingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
-      case 'attending':
-        return attendingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
-      default:
-        return 0;
-    }
-  };
-
-  const totalCount = useMemo(
-    () => getTabCount(activeTab),
-    [activeTab, upcomingQuery.data, hostingQuery.data, attendingQuery.data]
-  );
 
   const handleViewAll = () => {
     setIsSheetOpen(true);
@@ -104,10 +77,6 @@ export function MyEventsSection() {
             {
               value: 'hosting',
               label: 'Hosting',
-            },
-            {
-              value: 'attending',
-              label: 'Attending',
             },
           ]}
           wrapperClassName='mt-2'
@@ -149,39 +118,28 @@ export function MyEventsSection() {
               <h3 className='mb-2 text-base font-semibold text-gray-900'>
                 {activeTab === 'upcoming' && 'No upcoming events'}
                 {activeTab === 'hosting' && "No events you're hosting"}
-                {activeTab === 'attending' && "No events you're attending"}
               </h3>
               <p className='mb-4 text-sm text-gray-500'>
                 {activeTab === 'upcoming' && 'Create your first event or RSVP to others'}
                 {activeTab === 'hosting' && 'Create an event to get started'}
-                {activeTab === 'attending' && 'RSVP to events to see them here'}
               </p>
             </div>
           ) : (
             // Vertical list of events
-            (() => {
-              const hasMoreEvents = totalCount > events.length;
-              const eventsToShow = events.slice(0, 6);
-
-              return (
-                <>
-                  <div className='flex flex-col gap-2'>
-                    {eventsToShow.map((event) => (
-                      <MasterEventCard key={event.id} event={event} />
-                    ))}
-                  </div>
-                  {hasMoreEvents && (
-                    <Button
-                      onClick={handleViewAll}
-                      variant='ghost'
-                      className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
-                    >
-                      View All Events <ArrowRight className='h-4 w-4' />
-                    </Button>
-                  )}
-                </>
-              );
-            })()
+            <>
+              <div className='flex flex-col gap-2'>
+                {events.slice(0, 6).map((event) => (
+                  <MasterEventCard key={event.id} event={event} />
+                ))}
+              </div>
+              <Button
+                onClick={handleViewAll}
+                variant='ghost'
+                className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
+              >
+                View All Events <ArrowRight className='h-4 w-4' />
+              </Button>
+            </>
           )}
           <EventSearchSheet
             isOpen={isSheetOpen}

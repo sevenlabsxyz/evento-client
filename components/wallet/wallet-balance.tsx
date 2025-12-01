@@ -8,7 +8,7 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { motion } from 'framer-motion';
-import { ChevronRight, HelpCircle, Zap } from 'lucide-react';
+import { ArrowDownLeft, ArrowUpRight, ChevronRight, HelpCircle, Scan, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 
@@ -167,23 +167,26 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
               <Button
                 onClick={onReceive}
                 variant='outline'
-                className='font-lg h-12 rounded-full bg-white active:bg-gray-100'
+                className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100'
               >
+                <ArrowDownLeft className='h-5 w-5' />
                 Receive
               </Button>
               <Button
                 onClick={onSend}
                 variant='outline'
-                className='font-lg h-12 rounded-full bg-white active:bg-gray-100'
+                className='font-lg h-12 rounded-full bg-white font-semibold active:bg-gray-100'
               >
+                <ArrowUpRight className='h-5 w-5' />
                 Send
               </Button>
             </div>
             <Button
               onClick={onScan}
               variant='outline'
-              className='font-lg h-12 w-full rounded-full bg-white active:bg-gray-100'
+              className='font-lg h-12 w-full rounded-full bg-white font-semibold active:bg-gray-100'
             >
+              <Scan className='h-5 w-5' />
               Scan
             </Button>
           </div>

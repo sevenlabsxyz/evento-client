@@ -28,7 +28,7 @@ describe('useUserEvents', () => {
   });
 
   it('should return initial state correctly', () => {
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     expect(result.current).toMatchObject({
       data: undefined,
@@ -41,15 +41,8 @@ describe('useUserEvents', () => {
     });
   });
 
-  it('should not fetch when username is not provided', () => {
-    const { result } = renderHook(() => useUserEvents({}), { wrapper });
-
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.data).toBeUndefined();
-  });
-
   it('should not fetch when enabled is false', () => {
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser', enabled: false }), {
+    const { result } = renderHook(() => useUserEvents({ enabled: false }), {
       wrapper,
     });
 
@@ -86,14 +79,14 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/user-events?username=testuser&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
+      '/v1/events/user-events?sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
     );
     expect(result.current.data?.pages[0]).toEqual(mockResponse.data);
   });
@@ -129,7 +122,6 @@ describe('useUserEvents', () => {
     const { result } = renderHook(
       () =>
         useUserEvents({
-          username: 'testuser',
           search: 'test',
           filter: 'hosting',
           timeframe: 'future',
@@ -144,7 +136,7 @@ describe('useUserEvents', () => {
     });
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/user-events?username=testuser&filter=hosting&search=test&sortBy=created&sortOrder=asc&timeframe=future&page=1&limit=5'
+      '/v1/events/user-events?filter=hosting&search=test&sortBy=created&sortOrder=asc&timeframe=future&page=1&limit=5'
     );
     expect(result.current.data?.pages[0]).toEqual(mockResponse.data);
   });
@@ -170,7 +162,7 @@ describe('useUserEvents', () => {
 
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useUserEvents({ username: 'testuser', filter }), {
+      const { result } = renderHook(() => useUserEvents({ filter }), {
         wrapper,
       });
 
@@ -180,8 +172,8 @@ describe('useUserEvents', () => {
 
       const expectedUrl =
         filter === 'upcoming'
-          ? '/v1/events/user-events?username=testuser&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
-          : `/v1/events/user-events?username=testuser&filter=${filter}&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10`;
+          ? '/v1/events/user-events?sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
+          : `/v1/events/user-events?filter=${filter}&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10`;
 
       expect(mockApiClient.get).toHaveBeenCalledWith(expectedUrl);
 
@@ -211,7 +203,7 @@ describe('useUserEvents', () => {
 
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useUserEvents({ username: 'testuser', timeframe }), {
+      const { result } = renderHook(() => useUserEvents({ timeframe }), {
         wrapper,
       });
 
@@ -220,7 +212,7 @@ describe('useUserEvents', () => {
       });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/events/user-events?username=testuser&sortBy=date&sortOrder=desc&timeframe=${timeframe}&page=1&limit=10`
+        `/v1/events/user-events?sortBy=date&sortOrder=desc&timeframe=${timeframe}&page=1&limit=10`
       );
 
       // Reset for next iteration
@@ -249,7 +241,7 @@ describe('useUserEvents', () => {
 
       mockApiClient.get.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useUserEvents({ username: 'testuser', sortBy }), {
+      const { result } = renderHook(() => useUserEvents({ sortBy }), {
         wrapper,
       });
 
@@ -259,7 +251,7 @@ describe('useUserEvents', () => {
 
       const [field, order] = sortBy.split('-');
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        `/v1/events/user-events?username=testuser&sortBy=${field}&sortOrder=${order}&timeframe=all&page=1&limit=10`
+        `/v1/events/user-events?sortBy=${field}&sortOrder=${order}&timeframe=all&page=1&limit=10`
       );
 
       // Reset for next iteration
@@ -272,7 +264,7 @@ describe('useUserEvents', () => {
     const apiError = new Error('API Error');
     mockApiClient.get.mockRejectedValue(apiError);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -286,7 +278,7 @@ describe('useUserEvents', () => {
     (unauthorizedError as any).response = { status: 401 };
     mockApiClient.get.mockRejectedValue(unauthorizedError);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -301,7 +293,7 @@ describe('useUserEvents', () => {
     const networkError = new Error('Network Error');
     mockApiClient.get.mockRejectedValue(networkError);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -313,7 +305,7 @@ describe('useUserEvents', () => {
     const mockApiClient = require('@/lib/api/client').default;
     mockApiClient.get.mockResolvedValue(null);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -325,7 +317,7 @@ describe('useUserEvents', () => {
     const mockApiClient = require('@/lib/api/client').default;
     mockApiClient.get.mockResolvedValue({});
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -351,7 +343,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -388,7 +380,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -450,7 +442,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValueOnce(mockResponse1).mockResolvedValueOnce(mockResponse2);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -495,7 +487,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
@@ -530,17 +522,14 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(
-      () => useUserEvents({ username: 'testuser', search: 'test search' }),
-      { wrapper }
-    );
+    const { result } = renderHook(() => useUserEvents({ search: 'test search' }), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);
     });
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/user-events?username=testuser&search=test+search&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
+      '/v1/events/user-events?search=test+search&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
     );
   });
 
@@ -562,7 +551,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser', search: '' }), {
+    const { result } = renderHook(() => useUserEvents({ search: '' }), {
       wrapper,
     });
 
@@ -571,7 +560,7 @@ describe('useUserEvents', () => {
     });
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/user-events?username=testuser&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
+      '/v1/events/user-events?sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=10'
     );
   });
 
@@ -593,7 +582,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser', limit: 20 }), {
+    const { result } = renderHook(() => useUserEvents({ limit: 20 }), {
       wrapper,
     });
 
@@ -602,19 +591,8 @@ describe('useUserEvents', () => {
     });
 
     expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/user-events?username=testuser&sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=20'
+      '/v1/events/user-events?sortBy=date&sortOrder=desc&timeframe=all&page=1&limit=20'
     );
-  });
-
-  it('should return empty data when username is not provided', async () => {
-    const { result } = renderHook(() => useUserEvents({}), { wrapper });
-
-    await waitFor(() => {
-      expect(result.current.isLoading).toBe(false);
-    });
-
-    // When username is not provided, the hook should not fetch data
-    expect(result.current.data).toBeUndefined();
   });
 
   it('should handle response with missing pagination', async () => {
@@ -638,7 +616,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     // The hook should be defined and have the expected structure
     expect(result.current).toBeDefined();
@@ -664,7 +642,7 @@ describe('useUserEvents', () => {
 
     mockApiClient.get.mockResolvedValue(mockResponse);
 
-    const { result } = renderHook(() => useUserEvents({ username: 'testuser' }), { wrapper });
+    const { result } = renderHook(() => useUserEvents({}), { wrapper });
 
     await waitFor(() => {
       expect(result.current.isLoading).toBe(false);

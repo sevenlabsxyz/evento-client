@@ -1,13 +1,12 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Eye, EyeOff, Loader2, Wallet } from 'lucide-react';
+import { AlertCircle, Key, Loader2, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletSetupProps {
@@ -15,40 +14,54 @@ interface WalletSetupProps {
   onCancel?: () => void;
 }
 
+type Step = 'create-pin' | 'confirm-pin' | 'creating' | 'error';
+
 export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
+  const [step, setStep] = useState<Step>('create-pin');
+  const [pin, setPin] = useState('');
+  const [confirmPin, setConfirmPin] = useState('');
   const [error, setError] = useState<string | null>(null);
+
   const { createWallet } = useWallet();
   const { user } = useAuth();
   const { checkAvailability, registerAddress } = useLightningAddress();
 
-  const handleCreateWallet = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleNumberClick = (num: string) => {
+    if (step === 'create-pin' && pin.length < 6) {
+      setPin(pin + num);
+    } else if (step === 'confirm-pin' && confirmPin.length < 6) {
+      setConfirmPin(confirmPin + num);
+    }
+  };
 
-    // Validation
-    if (!password) {
-      toast.error('Please enter a password');
+  const handleDelete = () => {
+    if (step === 'create-pin') {
+      setPin(pin.slice(0, -1));
+    } else if (step === 'confirm-pin') {
+      setConfirmPin(confirmPin.slice(0, -1));
+    }
+  };
+
+  const handleCreatePinNext = () => {
+    if (pin.length < 4) {
+      toast.error('PIN must be at least 4 digits');
+      return;
+    }
+    setStep('confirm-pin');
+  };
+
+  const handleConfirmAndCreate = async () => {
+    if (confirmPin !== pin) {
+      toast.error('PINs do not match');
+      setConfirmPin('');
       return;
     }
 
-    if (password.length < 8) {
-      toast.error('Password must be at least 8 characters');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
-      return;
-    }
+    setStep('creating');
+    setError(null);
 
     try {
-      setIsCreating(true);
-      setError(null);
-      const mnemonic = await createWallet(password);
+      const mnemonic = await createWallet(pin);
 
       // Automatically register Lightning address
       if (user?.username) {
@@ -79,26 +92,46 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
 
       toast.success('Wallet created successfully!');
       onComplete(mnemonic);
-    } catch (error: any) {
-      console.error('Wallet creation error:', error);
+    } catch (err: any) {
+      console.error('Wallet creation error:', err);
 
       // Provide helpful error messages
-      let errorMessage = error.message || 'Failed to create wallet';
+      let errorMessage = err.message || 'Failed to create wallet';
 
-      if (error.message?.includes('API key')) {
+      if (err.message?.includes('API key')) {
         errorMessage = 'Breez API key is missing. Please contact support.';
-      } else if (error.message?.includes('WASM') || error.message?.includes('defaultConfig')) {
+      } else if (err.message?.includes('WASM') || err.message?.includes('defaultConfig')) {
         errorMessage = 'Wallet initialization failed. Please refresh the page and try again.';
       }
 
       setError(errorMessage);
-      toast.error(errorMessage);
-      setIsCreating(false);
+      setStep('error');
     }
   };
 
-  // Show error state
-  if (error) {
+  const handleRetry = () => {
+    setStep('create-pin');
+    setPin('');
+    setConfirmPin('');
+    setError(null);
+  };
+
+  // Render PIN dots
+  const renderPinDots = (currentPin: string) => (
+    <div className='flex justify-center gap-3'>
+      {[0, 1, 2, 3, 4, 5].map((index) => (
+        <div
+          key={index}
+          className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+        >
+          {currentPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+        </div>
+      ))}
+    </div>
+  );
+
+  // Error state
+  if (step === 'error') {
     return (
       <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-6'>
         <div className='text-center'>
@@ -109,7 +142,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           <p className='mt-2 text-sm text-muted-foreground'>{error}</p>
         </div>
         <div className='flex gap-3'>
-          <Button onClick={handleCreateWallet} variant='default' size='lg'>
+          <Button onClick={handleRetry} variant='default' size='lg'>
             Try Again
           </Button>
           {onCancel && (
@@ -122,109 +155,117 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     );
   }
 
-  return (
-    <div className='space-y-6'>
-      <div className='text-center'>
-        <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-          <Wallet className='h-8 w-8 text-orange-600' />
+  // Creating state
+  if (step === 'creating') {
+    return (
+      <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6'>
+        <div className='text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
+            <Loader2 className='h-8 w-8 animate-spin text-orange-600' />
+          </div>
+          <h2 className='text-2xl font-bold'>Creating Wallet</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>Setting up your wallet...</p>
         </div>
-        <h2 className='text-2xl font-bold'>Create Wallet Password</h2>
-        <p className='mt-2 text-sm text-muted-foreground'>
-          Set a strong password to protect your wallet
-        </p>
       </div>
+    );
+  }
 
-      <form onSubmit={handleCreateWallet} className='space-y-4'>
-        <div className='space-y-2'>
-          <Label htmlFor='password'>Password</Label>
-          <div className='relative'>
-            <Input
-              id='password'
-              type={showPassword ? 'text' : 'password'}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder='Enter password (min 8 characters)'
-              disabled={isCreating}
-              className='pr-10'
-            />
-            <button
-              type='button'
-              onClick={() => setShowPassword(!showPassword)}
-              className='absolute right-3 top-3 text-muted-foreground hover:text-foreground'
-            >
-              {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-            </button>
+  // Create PIN step
+  if (step === 'create-pin') {
+    return (
+      <div className='space-y-6'>
+        <div className='text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
+            <Wallet className='h-8 w-8 text-orange-600' />
           </div>
+          <h2 className='text-2xl font-bold'>Create a PIN</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>
+            Set a 4-6 digit PIN to protect your wallet
+          </p>
         </div>
 
-        <div className='space-y-2'>
-          <Label htmlFor='confirmPassword'>Confirm Password</Label>
-          <div className='relative'>
-            <Input
-              id='confirmPassword'
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder='Re-enter password'
-              disabled={isCreating}
-              className='pr-10'
-            />
-            <button
-              type='button'
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className='absolute right-3 top-3 text-muted-foreground hover:text-foreground'
-            >
-              {showConfirmPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}
-            </button>
-          </div>
-        </div>
+        <div className='space-y-4'>
+          {renderPinDots(pin)}
 
-        {error && (
-          <div className='rounded-lg bg-red-50 p-3'>
+          <NumericKeypad
+            onNumberClick={handleNumberClick}
+            onDelete={handleDelete}
+            showDecimal={false}
+          />
+
+          <div className='rounded-lg bg-amber-50 p-4'>
             <div className='flex items-start gap-2'>
-              <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
-              <p className='text-sm text-red-900'>{error}</p>
+              <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
+              <div className='text-sm text-amber-900'>
+                <p className='font-medium'>Important</p>
+                <p className='mt-1'>Remember this PIN! You'll need it to access your wallet.</p>
+              </div>
             </div>
           </div>
-        )}
 
-        <div className='rounded-lg bg-amber-50 p-4'>
-          <div className='flex items-start gap-2'>
-            <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
-            <div className='text-sm text-amber-900'>
-              <p className='font-medium'>Important</p>
-              <p className='mt-1'>
-                Remember this password! You'll need it to access your wallet. If you forget it, you
-                can only recover your wallet using your seed phrase.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className='flex gap-3'>
-          <Button type='submit' className='flex-1' size='lg' disabled={isCreating}>
-            {isCreating ? (
-              <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Creating...
-              </>
-            ) : (
-              'Create Wallet'
-            )}
+          <Button
+            onClick={handleCreatePinNext}
+            className='mt-6 w-full rounded-full'
+            size='lg'
+            disabled={pin.length < 4}
+          >
+            Next
           </Button>
+
           {onCancel && (
-            <Button
-              type='button'
-              onClick={onCancel}
-              variant='outline'
-              size='lg'
-              disabled={isCreating}
-            >
+            <Button onClick={onCancel} variant='ghost' className='w-full'>
               Cancel
             </Button>
           )}
         </div>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
+
+  // Confirm PIN step
+  if (step === 'confirm-pin') {
+    return (
+      <div className='space-y-6'>
+        <div className='text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
+            <Key className='h-8 w-8 text-black' />
+          </div>
+          <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>
+        </div>
+
+        <div className='space-y-4'>
+          {renderPinDots(confirmPin)}
+
+          <NumericKeypad
+            onNumberClick={handleNumberClick}
+            onDelete={handleDelete}
+            showDecimal={false}
+          />
+
+          <Button
+            onClick={handleConfirmAndCreate}
+            className='mt-6 w-full rounded-full'
+            size='lg'
+            disabled={confirmPin.length < 4}
+          >
+            Create Wallet
+          </Button>
+
+          <Button
+            onClick={() => {
+              setStep('create-pin');
+              setConfirmPin('');
+            }}
+            variant='ghost'
+            className='w-full'
+          >
+            Back
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }

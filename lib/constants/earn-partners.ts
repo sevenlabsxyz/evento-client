@@ -18,7 +18,7 @@ export const EARN_PARTNERS: EarnPartner[] = [
     description: 'Earn Bitcoin by playing games and completing tasks',
     logo: '/assets/partners/zbd.webp',
     link: 'https://zbd.gg',
-    ctaText: 'Start Playing',
+    ctaText: 'Visit',
   },
   {
     id: 'fold',
@@ -26,7 +26,15 @@ export const EARN_PARTNERS: EarnPartner[] = [
     description: 'Earn Bitcoin rewards on everyday purchases with the Fold debit card',
     logo: '/assets/partners/fold.webp',
     link: 'https://foldapp.com',
-    ctaText: 'Get Fold Card',
+    ctaText: 'Visit',
+  },
+  {
+    id: 'stacker-news',
+    name: 'Stacker News',
+    description: 'Earn Bitcoin by sharing and engaging with content',
+    logo: '/assets/partners/stacker-news.avif',
+    link: 'https://stacker.news',
+    ctaText: 'Visit',
   },
   {
     id: 'lolli',
@@ -34,6 +42,6 @@ export const EARN_PARTNERS: EarnPartner[] = [
     description: 'Earn Bitcoin when you shop at 1,000+ top stores online',
     logo: '/assets/partners/lolli.webp',
     link: 'https://lolli.com',
-    ctaText: 'Shop & Earn',
+    ctaText: 'Visit',
   },
 ];

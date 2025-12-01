@@ -34,7 +34,7 @@ export function UserAvatar({
   // Size variants configuration
   const sizeVariants = {
     xs: {
-      avatar: 'h-4 w-4',
+      avatar: 'h-5 w-5',
       border: 'border-1',
       badge: 'h-2 w-2',
       badgePosition: 'bottom-0 right-0',

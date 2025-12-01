@@ -2,10 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { Delete } from 'lucide-react';
+import { useRef } from 'react';
 
 interface NumericKeypadProps {
   onNumberClick: (num: string) => void;
   onDelete: () => void;
+  onLongPressDelete?: () => void;
   showDecimal?: boolean;
   disabled?: boolean;
 }
@@ -13,9 +15,25 @@ interface NumericKeypadProps {
 export function NumericKeypad({
   onNumberClick,
   onDelete,
+  onLongPressDelete,
   showDecimal = true,
   disabled = false,
 }: NumericKeypadProps) {
+  const pressTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleDeletePressStart = () => {
+    if (!onLongPressDelete) return;
+    pressTimerRef.current = setTimeout(() => {
+      onLongPressDelete();
+    }, 3000); // 3 seconds
+  };
+
+  const handleDeletePressEnd = () => {
+    if (pressTimerRef.current) {
+      clearTimeout(pressTimerRef.current);
+      pressTimerRef.current = null;
+    }
+  };
   // Number layout: 1-9, then decimal (optional), 0, delete
   const numbers = showDecimal
     ? ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0']
@@ -44,6 +62,11 @@ export function NumericKeypad({
       })}
       <motion.button
         onClick={onDelete}
+        onMouseDown={handleDeletePressStart}
+        onMouseUp={handleDeletePressEnd}
+        onMouseLeave={handleDeletePressEnd}
+        onTouchStart={handleDeletePressStart}
+        onTouchEnd={handleDeletePressEnd}
         disabled={disabled}
         whileTap={{ scale: 0.95 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}

@@ -376,7 +376,7 @@ export default function CreatePage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:border-l md:border-r'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl'>
       {/* Header */}
 
       {/* Cover Image Selector */}

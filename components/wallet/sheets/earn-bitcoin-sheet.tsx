@@ -1,9 +1,8 @@
-import { Button } from '@/components/ui/button';
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { EARN_PARTNERS, type EarnPartner } from '@/lib/constants/earn-partners';
-import { ExternalLink, X } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 
 type EarnBitcoinSheetProps = {
   open: boolean;
@@ -14,7 +13,10 @@ type EarnBitcoinSheetProps = {
 export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnBitcoinSheetProps) {
   const PartnerCard = ({ partner }: { partner: EarnPartner }) => {
     return (
-      <div className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+      <div
+        className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 hover:bg-gray-100'
+        onClick={() => window.open(partner.link, '_blank')}
+      >
         {/* Left: Logo + Content */}
         <div className='flex items-start gap-3'>
           <div className='relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-2xl'>
@@ -27,12 +29,11 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
         </div>
 
         {/* Right: Button */}
-        <Button asChild variant='default' className='flex-shrink-0'>
-          <Link href={partner.link} target='_blank' rel='noopener noreferrer'>
-            {partner.ctaText}
-            <ExternalLink className='ml-2 h-4 w-4' />
-          </Link>
-        </Button>
+        <CircledIconButton
+          className='text flex-shrink-0'
+          icon={ArrowUpRight}
+          onClick={() => window.open(partner.link, '_blank')}
+        />
       </div>
     );
   };

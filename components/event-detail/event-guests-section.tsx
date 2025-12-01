@@ -1,5 +1,6 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import GuestsSheet from '@/components/event-detail/event-guests-sheet';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -112,17 +113,15 @@ export default function EventGuestsSection({
             <h3 className='text-lg font-semibold text-gray-900'>Guest List</h3>
             <p className='text-sm text-gray-500'>{goingCount} going</p>
           </div>
-          <Button variant='outline' size='sm' onClick={handlePrimaryClick}>
-            {isHostOrCoHost ? (
+          {isHostOrCoHost ? (
+            <Button variant='outline' size='sm' onClick={handlePrimaryClick}>
               <span className='inline-flex items-center gap-2'>
                 <UserPlus className='h-4 w-4' /> Invite
               </span>
-            ) : (
-              <span className='inline-flex items-center gap-2'>
-                <Share className='h-4 w-4' /> Share Event
-              </span>
-            )}
-          </Button>
+            </Button>
+          ) : (
+            <CircledIconButton icon={Share} onClick={handlePrimaryClick} />
+          )}
         </div>
 
         <div className='flex items-center'>

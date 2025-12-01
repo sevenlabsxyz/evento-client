@@ -1,7 +1,7 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
@@ -18,7 +18,6 @@ import {
   UserCircle,
   Zap,
 } from 'lucide-react';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -92,24 +91,13 @@ function SidebarContent({
       >
         <div className='grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5'>
           {/* User avatar */}
-          <button
-            onClick={() => handleNavigation('/e/profile')}
-            className='row-span-2 h-[50px] w-[50px] cursor-pointer rounded-full border-0 bg-transparent p-0 transition-opacity hover:opacity-80'
-            aria-label='Go to profile'
-          >
-            <Avatar className='h-[50px] w-[50px] border border-black/10'>
-              <AvatarImage src={user?.image || ''} alt={user?.name || user?.username || 'User'} />
-              <AvatarFallback className='bg-white bg-gradient-to-br'>
-                <Image
-                  src='/assets/img/evento-sublogo.svg'
-                  width={32}
-                  height={32}
-                  alt='Evento'
-                  className='h-full w-full p-1'
-                />
-              </AvatarFallback>
-            </Avatar>
-          </button>
+          <UserAvatar
+            user={user}
+            onAvatarClick={() => handleNavigation('/e/profile')}
+            height={50}
+            width={50}
+            className='row-span-2'
+          />
           <button
             onClick={() => handleNavigation('/e/profile')}
             className='cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-bold text-sidebar-foreground transition-colors hover:text-sidebar-foreground/80'
@@ -212,24 +200,13 @@ function MobileSidebarContent({
       >
         <div className='grid grid-cols-[50px_1fr] gap-x-3 gap-y-0.5'>
           {/* User avatar */}
-          <button
-            onClick={() => handleNavigation('/e/profile')}
-            className='row-span-2 h-[50px] w-[50px] cursor-pointer rounded-full border-0 bg-transparent p-0 transition-opacity hover:opacity-80'
-            aria-label='Go to profile'
-          >
-            <Avatar className='h-[50px] w-[50px] border border-black/10'>
-              <AvatarImage src={user?.image || ''} alt={user?.name || user?.username || 'User'} />
-              <AvatarFallback className='bg-white bg-gradient-to-br'>
-                <Image
-                  src='/assets/img/evento-sublogo.svg'
-                  width={32}
-                  height={32}
-                  alt='Evento'
-                  className='h-full w-full p-1'
-                />
-              </AvatarFallback>
-            </Avatar>
-          </button>
+          <UserAvatar
+            user={user}
+            onAvatarClick={() => handleNavigation('/e/profile')}
+            height={50}
+            width={50}
+            className='row-span-2'
+          />
           <button
             onClick={() => handleNavigation('/e/profile')}
             className='cursor-pointer border-0 bg-transparent p-0 text-left text-xl font-bold text-sidebar-foreground transition-colors hover:text-sidebar-foreground/80'

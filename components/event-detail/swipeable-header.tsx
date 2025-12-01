@@ -80,7 +80,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
           src={images[currentIndex]}
           alt={`${event.title} - Image ${currentIndex + 1}`}
           fill
-          className='object-cover transition-transform duration-300 ease-out'
+          className='rounded-3xl border border-gray-200 object-cover transition-transform duration-300 ease-out'
           priority
           unoptimized={images[currentIndex]?.endsWith('.gif')} // Optimizing GIFs may impact performance
         />

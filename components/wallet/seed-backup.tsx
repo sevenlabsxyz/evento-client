@@ -9,10 +9,10 @@ import { useState } from 'react';
 interface SeedBackupProps {
   mnemonic: string;
   onComplete: () => void;
-  onSkip: () => void;
+  onCancel: () => void;
 }
 
-export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
+export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) {
   const [showSeed, setShowSeed] = useState(false);
   const [copied, setCopied] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
@@ -24,16 +24,16 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
     try {
       await navigator.clipboard.writeText(mnemonic);
       setCopied(true);
-      toast.success('Seed phrase copied to clipboard');
+      toast.success('Recovery phrase copied to clipboard');
       setTimeout(() => setCopied(false), 3000);
     } catch (error) {
-      toast.error('Failed to copy seed phrase');
+      toast.error('Failed to copy recovery phrase');
     }
   };
 
   const handleComplete = () => {
     if (!confirmed) {
-      toast.error('Please confirm you have saved your seed phrase');
+      toast.error('Please confirm you have saved your recovery phrase');
       return;
     }
     markAsBackedUp();
@@ -44,19 +44,19 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
   return (
     <div className='space-y-6'>
       <div className='text-center'>
-        <h2 className='text-2xl font-bold'>Backup Your Seed Phrase</h2>
+        <h2 className='text-2xl font-bold'>Your Recovery Phrase</h2>
         <p className='mt-2 text-sm text-muted-foreground'>
           Write down these 12 words in order and store them safely
         </p>
       </div>
 
-      <div className='rounded-lg bg-red-50 p-4'>
+      <div className='rounded-2xl bg-red-50 p-4'>
         <div className='flex gap-3'>
           <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
           <div className='text-sm text-red-900'>
-            <p className='font-medium'>Never share your seed phrase</p>
+            <p className='font-medium'>Keep this private</p>
             <p className='mt-1'>
-              Anyone with your seed phrase can access your funds. Store it securely offline.
+              Anyone with these words can access your wallet. Store them securely offline.
             </p>
           </div>
         </div>
@@ -64,7 +64,7 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
 
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <span className='text-sm font-medium'>Your Seed Phrase</span>
+          <span className='text-sm font-medium'>Your Recovery Phrase</span>
           <Button variant='ghost' size='sm' onClick={() => setShowSeed(!showSeed)}>
             {showSeed ? (
               <>
@@ -80,10 +80,10 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
           </Button>
         </div>
 
-        <div className={`rounded-lg border-2 border-dashed p-4 ${showSeed ? '' : 'blur-sm'}`}>
+        <div className={`rounded-2xl border-2 border-dashed p-4 ${showSeed ? '' : 'blur-sm'}`}>
           <div className='grid grid-cols-2 gap-3'>
             {words.map((word, index) => (
-              <div key={index} className='flex items-center gap-2 rounded-md bg-gray-50 p-2'>
+              <div key={index} className='flex items-center gap-2 rounded-xl bg-gray-50 p-2'>
                 <span className='w-6 text-xs text-muted-foreground'>{index + 1}.</span>
                 <span className='font-mono text-sm'>{word}</span>
               </div>
@@ -92,7 +92,7 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
         </div>
 
         {showSeed && (
-          <Button variant='outline' onClick={handleCopy} className='w-full'>
+          <Button variant='outline' onClick={handleCopy} className='w-full rounded-full'>
             {copied ? (
               <>
                 <Check className='mr-2 h-4 w-4' />
@@ -107,7 +107,7 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
           </Button>
         )}
 
-        <div className='flex items-start gap-3 rounded-lg bg-gray-50 p-4'>
+        <div className='flex items-start gap-3 rounded-2xl bg-gray-50 p-4'>
           <input
             type='checkbox'
             id='confirm'
@@ -116,18 +116,22 @@ export function SeedBackup({ mnemonic, onComplete, onSkip }: SeedBackupProps) {
             className='mt-1 h-4 w-4 rounded border-gray-300'
           />
           <label htmlFor='confirm' className='text-sm'>
-            I have written down my seed phrase and stored it in a safe place. I understand that I
-            will need it to recover my wallet.
+            I've saved my recovery phrase in a safe place
           </label>
         </div>
       </div>
 
       <div className='space-y-3'>
-        <Button onClick={handleComplete} disabled={!confirmed} className='w-full' size='lg'>
-          I've Saved My Seed Phrase
+        <Button
+          onClick={handleComplete}
+          disabled={!confirmed}
+          className='w-full rounded-full'
+          size='lg'
+        >
+          Done
         </Button>
-        <Button onClick={onSkip} variant='ghost' className='w-full'>
-          I'll Do This Later
+        <Button onClick={onCancel} variant='ghost' className='w-full rounded-full'>
+          Cancel
         </Button>
       </div>
     </div>

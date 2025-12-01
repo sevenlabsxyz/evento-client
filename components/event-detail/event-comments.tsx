@@ -81,7 +81,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
     return (
       <div className='flex flex-col items-center justify-center py-12'>
         <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
-        <h3 className='mb-2 text-lg font-medium text-gray-900'>Couldn't load comments</h3>
+        <h3 className='mb-2 text-lg font-medium text-gray-900'>Could not load comments</h3>
         <p className='text-center text-sm text-gray-500'>
           There was a problem loading comments. Please try again later.
         </p>
@@ -103,7 +103,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
                   image: user?.image,
                   verification_status: user?.verification_status,
                 }}
-                size='sm'
+                size='base'
                 onAvatarClick={() => setSelectedUser(user)}
               />
             </div>
@@ -115,7 +115,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder='Add a comment'
-                className='min-h-[40px] w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
+                className='min-h-[40px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500'
                 disabled={!user}
                 rows={1}
               />

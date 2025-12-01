@@ -86,6 +86,9 @@ export function ZapSheet({
           setOpen(false);
           if (error?.message === 'SDK not connected') {
             toast.error('Wallet not connected. Activate Evento Wallet first.');
+          } else if (error?.message?.toLowerCase().includes('invalid input')) {
+            // Lightning address doesn't exist (404 from LNURL endpoint)
+            toast.error('User has not set up Evento Wallet yet.');
           } else {
             toast.error('Failed to load payment details. Please try again.');
           }

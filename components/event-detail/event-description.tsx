@@ -2,6 +2,7 @@
 
 import { Event } from '@/lib/types/event';
 import { useEffect, useRef, useState } from 'react';
+import { Button } from '../ui/button';
 
 interface EventDescriptionProps {
   event: Event;
@@ -60,26 +61,28 @@ export default function EventDescription({ event }: EventDescriptionProps) {
         {/* Centered compact Read more button */}
         {!expanded && isOverflowing && (
           <div className='flex justify-center'>
-            <button
+            <Button
               type='button'
+              variant={'outline'}
               onClick={() => setExpanded(true)}
-              className='rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200'
+              className='h-12 w-full bg-gray-50'
             >
               Read more
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Optional collapse action when expanded */}
         {expanded && (
           <div className='flex justify-center'>
-            <button
+            <Button
               type='button'
+              variant={'outline'}
               onClick={() => setExpanded(false)}
-              className='rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200'
+              className='h-12 w-full bg-gray-50'
             >
               Show less
-            </button>
+            </Button>
           </div>
         )}
       </div>

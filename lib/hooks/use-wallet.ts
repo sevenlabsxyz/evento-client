@@ -204,6 +204,55 @@ export function useWallet() {
   );
 
   /**
+   * Restore wallet from raw mnemonic (12/24 words)
+   * Used when user imports a seed phrase directly
+   */
+  const restoreFromMnemonic = useCallback(
+    async (mnemonic: string, pin: string): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Clear any existing wallet data first
+        WalletStorageService.clearWalletData();
+        clearSeed();
+
+        // Connect to Breez SDK with the mnemonic
+        await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+
+        // Get balance to verify connection
+        const balance = await breezSDK.getBalance();
+
+        // Encrypt mnemonic with the new PIN
+        const encryptedSeed = await WalletStorageService.encryptSeed(mnemonic, pin);
+        WalletStorageService.saveEncryptedSeed(encryptedSeed);
+
+        // Store seed in memory with TTL
+        setInMemorySeed(mnemonic);
+
+        // Update wallet state
+        const newState: WalletState = {
+          isInitialized: true,
+          isConnected: true,
+          balance,
+          hasBackup: true, // User imported their own seed, so they have it
+          lastBackupDate: new Date(),
+        };
+
+        setWalletState(newState);
+        WalletStorageService.saveWalletState(newState);
+      } catch (err: any) {
+        console.error('Failed to restore wallet from mnemonic:', err);
+        setError(err.message || 'Failed to restore wallet');
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setInMemorySeed, clearSeed]
+  );
+
+  /**
    * Unlock wallet with password
    */
   const unlockWallet = useCallback(
@@ -356,6 +405,7 @@ export function useWallet() {
     error,
     createWallet,
     restoreWallet,
+    restoreFromMnemonic,
     unlockWallet,
     lockWallet,
     refreshBalance,

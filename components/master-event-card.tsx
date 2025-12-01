@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { MapPin } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { UserAvatar } from './ui/user-avatar';
 
@@ -17,13 +18,6 @@ interface MasterEventCardProps {
 export function MasterEventCard({ event, className, onClick }: MasterEventCardProps) {
   const router = useRouter();
 
-  // Get local time (user's browser timezone)
-  const localTime = new Date(event.computed_start_date).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-  });
-
   // Get event time with timezone
   const { timeWithTz: eventTimeWithTz } = formatEventDate(
     event.computed_start_date,
@@ -31,7 +25,7 @@ export function MasterEventCard({ event, className, onClick }: MasterEventCardPr
   );
 
   // Price display
-  const showPrice = event.cost && Number(event.cost) > 0;
+  const showPrice = event.cost && Number(event.cost) > 0 ? true : false;
   const priceDisplay = showPrice ? `$${Number(event.cost)}` : null;
 
   // Capacity display (placeholder - needs actual RSVP count data)
@@ -57,13 +51,11 @@ export function MasterEventCard({ event, className, onClick }: MasterEventCardPr
       <div className='flex min-w-0 flex-1 flex-col gap-1'>
         {/* Time Row */}
         <div className='flex items-center gap-1 text-sm'>
-          <span className='text-gray-500'>{localTime}</span>
-          <span className='text-gray-400'>·</span>
-          <span className='font-medium text-amber-600'>{eventTimeWithTz}</span>
+          <span className='font-medium text-red-500'>{eventTimeWithTz}</span>
         </div>
 
         {/* Title */}
-        <h3 className='text-lg font-bold leading-tight text-gray-900'>{event.title}</h3>
+        <h3 className='py-1 text-lg font-bold leading-tight text-gray-900'>{event.title}</h3>
 
         {/* Host */}
         <div className='flex items-center gap-2'>
@@ -77,14 +69,17 @@ export function MasterEventCard({ event, className, onClick }: MasterEventCardPr
             size='xs'
           />
           <span className='text-sm text-gray-600'>
-            By {event.user_details.name || event.user_details.username}
+            by{' '}
+            <span className='font-semibold'>
+              @{event.user_details.name || event.user_details.username}
+            </span>
           </span>
         </div>
 
         {/* Location */}
         {event.location && (
-          <div className='flex items-center gap-1 text-sm text-gray-600'>
-            <MapPin className='h-3.5 w-3.5 shrink-0' />
+          <div className='flex items-center gap-1 py-1 text-sm text-gray-600'>
+            <MapPin className='mx-0.5 h-4 w-4 shrink-0' />
             <span className='truncate'>{event.location}</span>
           </div>
         )}
@@ -108,14 +103,16 @@ export function MasterEventCard({ event, className, onClick }: MasterEventCardPr
 
       {/* Right Image */}
       <div className='shrink-0'>
-        <img
+        <Image
           src={
             event.cover && isGif(event.cover)
               ? event.cover
               : getOptimizedCoverUrl(event.cover || '', 'thumbnail')
           }
           alt={event.title}
-          className='h-24 w-24 rounded-xl object-cover'
+          width={96}
+          height={96}
+          className='h-24 w-24 rounded-xl border border-gray-200 object-cover'
         />
       </div>
     </button>
