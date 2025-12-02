@@ -40,7 +40,7 @@ export function NumericKeypad({
     : ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0'];
 
   return (
-    <div className='grid grid-cols-3 gap-3'>
+    <div className='grid grid-cols-3 gap-3 px-4'>
       {numbers.map((num, index) => {
         // Empty slot (for layout when decimal is hidden)
         if (num === '') {

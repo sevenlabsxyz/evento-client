@@ -1,11 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
-import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowUpDown, Loader2, X } from 'lucide-react';
+import { ArrowUpDown, Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface AmountInputSheetProps {
@@ -88,85 +87,57 @@ export function AmountInputSheet({
   };
 
   return (
-    <SheetWithDetentFull.Root presented={open} onPresentedChange={onOpenChange}>
-      <SheetWithDetentFull.Portal>
-        <SheetWithDetentFull.View>
-          <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content>
-            <div className='my-4 flex items-center'>
-              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+    <MasterScrollableSheet open={open} onOpenChange={onOpenChange} title='Enter Amount'>
+      <div className='p-6'>
+        <div className='mx-auto max-w-md space-y-6'>
+          {/* Amount Display */}
+          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
+            <div className='text-4xl font-bold text-gray-900'>
+              {inputMode === 'usd' ? `$${amountUSD || '0'}` : `${amount || '0'}`}
             </div>
-            <VisuallyHidden.Root asChild>
-              <SheetWithDetentFull.Title>Enter Amount</SheetWithDetentFull.Title>
-            </VisuallyHidden.Root>
-
-            <div className='flex flex-col'>
-              {/* Header */}
-              <div className='flex items-center justify-between p-4'>
-                <h2 className='text-xl font-semibold'>Enter Amount</h2>
-                <button
-                  onClick={() => onOpenChange(false)}
-                  className='rounded-full p-2 transition-colors hover:bg-gray-100'
-                >
-                  <X className='h-5 w-5' />
-                </button>
-              </div>
-
-              {/* Content */}
-              <div className='p-6'>
-                <div className='mx-auto max-w-md space-y-6'>
-                  {/* Amount Display */}
-                  <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
-                    <div className='text-4xl font-bold text-gray-900'>
-                      {inputMode === 'usd' ? `$${amountUSD || '0'}` : `${amount || '0'}`}
-                    </div>
-                    <div className='mt-1 text-lg font-medium text-gray-600'>
-                      {inputMode === 'usd' ? 'USD' : 'sats'}
-                    </div>
-                    <button
-                      onClick={toggleInputMode}
-                      className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
-                    >
-                      <ArrowUpDown className='h-4 w-4' />
-                      <span>
-                        {inputMode === 'usd' && amount
-                          ? `${Number(amount).toLocaleString()} sats`
-                          : inputMode === 'sats' && amountUSD
-                            ? `$${amountUSD}`
-                            : 'Convert'}
-                      </span>
-                    </button>
-                  </div>
-
-                  {/* Number Pad */}
-                  <NumericKeypad
-                    onNumberClick={handleNumberClick}
-                    onDelete={handleDelete}
-                    showDecimal={true}
-                  />
-
-                  {/* Next Button */}
-                  <Button
-                    onClick={handleConfirm}
-                    disabled={!amount || Number(amount) <= 0 || isLoading}
-                    className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
-                    variant='outline'
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                        Preparing...
-                      </>
-                    ) : (
-                      'Next'
-                    )}
-                  </Button>
-                </div>
-              </div>
+            <div className='mt-1 text-lg font-medium text-gray-600'>
+              {inputMode === 'usd' ? 'USD' : 'sats'}
             </div>
-          </SheetWithDetentFull.Content>
-        </SheetWithDetentFull.View>
-      </SheetWithDetentFull.Portal>
-    </SheetWithDetentFull.Root>
+            <button
+              onClick={toggleInputMode}
+              className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
+            >
+              <ArrowUpDown className='h-4 w-4' />
+              <span>
+                {inputMode === 'usd' && amount
+                  ? `${Number(amount).toLocaleString()} sats`
+                  : inputMode === 'sats' && amountUSD
+                    ? `$${amountUSD}`
+                    : 'Convert'}
+              </span>
+            </button>
+          </div>
+
+          {/* Number Pad */}
+          <NumericKeypad
+            onNumberClick={handleNumberClick}
+            onDelete={handleDelete}
+            showDecimal={true}
+          />
+
+          {/* Next Button */}
+          <Button
+            onClick={handleConfirm}
+            disabled={!amount || Number(amount) <= 0 || isLoading}
+            className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
+            variant='outline'
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Preparing...
+              </>
+            ) : (
+              'Next'
+            )}
+          </Button>
+        </div>
+      </div>
+    </MasterScrollableSheet>
   );
 }

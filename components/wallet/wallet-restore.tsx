@@ -145,7 +145,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
 
   // Render PIN dots
   const renderPinDots = (currentPin: string) => (
-    <div className='flex justify-center gap-3'>
+    <div className='flex justify-between gap-3 px-4'>
       {[0, 1, 2, 3, 4, 5].map((index) => (
         <div
           key={index}

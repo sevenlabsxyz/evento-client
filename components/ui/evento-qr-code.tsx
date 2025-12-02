@@ -8,9 +8,16 @@ interface EventoQRCodeProps {
   size?: number;
   className?: string;
   showLogo?: boolean;
+  qrStyle?: 'fluid' | 'squares' | 'dots';
 }
 
-export function EventoQRCode({ value, size = 256, className, showLogo = true }: EventoQRCodeProps) {
+export function EventoQRCode({
+  value,
+  size = 256,
+  className,
+  showLogo = true,
+  qrStyle = 'dots',
+}: EventoQRCodeProps) {
   return (
     <div
       className={cn(
@@ -20,10 +27,10 @@ export function EventoQRCode({ value, size = 256, className, showLogo = true }: 
     >
       <QRCode
         value={value}
-        size={size}
+        size={300}
         bgColor='#FFFFFF'
         fgColor='#000000'
-        qrStyle='dots'
+        qrStyle={qrStyle}
         quietZone={10}
         logoImage={showLogo ? '/assets/img/evento-sublogo.svg' : undefined}
         logoWidth={size * 0.2}
