@@ -193,7 +193,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content>
+          <SheetWithDetentFull.Content className='flex flex-col'>
             <div className='my-4 flex items-center'>
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
             </div>
@@ -220,7 +220,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
             />
 
             {/* Content */}
-            <SheetWithDetentFull.ScrollRoot className='flex-1'>
+            <SheetWithDetentFull.ScrollRoot className='min-h-0 flex-1'>
               <SheetWithDetentFull.ScrollView>
                 <SheetWithDetentFull.ScrollContent>
                   <div className='mx-auto max-w-md space-y-6 p-6'>
@@ -490,6 +490,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
               open={amountSheetOpen}
               onOpenChange={setAmountSheetOpen}
               onConfirm={handleAmountConfirm}
+              isLoading={isGenerating}
             />
           </SheetWithDetentFull.Content>
         </SheetWithDetentFull.View>

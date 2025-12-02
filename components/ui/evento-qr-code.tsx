@@ -12,7 +12,12 @@ interface EventoQRCodeProps {
 
 export function EventoQRCode({ value, size = 256, className, showLogo = true }: EventoQRCodeProps) {
   return (
-    <div className={cn('inline-block rounded-2xl bg-white p-4 shadow-sm', className)}>
+    <div
+      className={cn(
+        'inline-block rounded-2xl border border-gray-200 bg-white p-4 shadow-sm',
+        className
+      )}
+    >
       <QRCode
         value={value}
         size={size}
