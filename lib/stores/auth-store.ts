@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UserDetails } from '../types/api';
+import { STORAGE_KEYS } from '../utils/storage';
 
 interface AuthState {
   // State
@@ -58,7 +59,7 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: 'evento-auth-storage',
+      name: STORAGE_KEYS.AUTH,
 
       // Only persist non-sensitive data
       partialize: (state) => ({

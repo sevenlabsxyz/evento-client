@@ -2,10 +2,19 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { authService } from '../services/auth';
+import { WalletStorageService } from '../services/wallet-storage';
 import { useAuthStore } from '../stores/auth-store';
+import { useBetaAccessStore } from '../stores/beta-access-store';
+import { useRecentLightningAddressesStore } from '../stores/recent-lightning-addresses-store';
+import { useRecentSearchesStore } from '../stores/recent-searches-store';
+import { useViewModeStore } from '../stores/view-mode-store';
+import { useWalletPreferences } from '../stores/wallet-preferences-store';
+import { useWalletSeedStore } from '../stores/wallet-seed-store';
+import { useWalletStore } from '../stores/wallet-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
 import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '../utils/auth';
+import { STORAGE_KEYS } from '../utils/storage';
 // import { debugLog } from '../utils/debug';
 
 // Key for user query
@@ -81,8 +90,35 @@ export function useAuth() {
   const logoutMutation = useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
+      // Clear auth store
       clearAuth();
+
+      // Clear all other Zustand stores
+      useBetaAccessStore.getState().revokeAccess();
+      useRecentSearchesStore.getState().clearRecentSearches();
+      useViewModeStore.setState({ feedViewMode: 'card' });
+      useRecentLightningAddressesStore.getState().clearRecentAddresses();
+      useWalletPreferences.setState({ balanceHidden: false });
+      useWalletSeedStore.getState().clearSeed();
+      useWalletStore.setState({
+        walletState: {
+          isInitialized: false,
+          isConnected: false,
+          balance: 0,
+          hasBackup: false,
+        },
+        isLoading: true,
+        error: null,
+        lightningAddress: null,
+      });
+
+      // Clear wallet storage
+      WalletStorageService.clearWalletData();
+
+      // Invalidate queries
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+
+      // Redirect to login
       router.push('/auth/login');
     },
   });
@@ -248,7 +284,7 @@ export function useRequireAuth(redirectTo = '/auth/login') {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       // Check for beta access from localStorage
-      const hasBetaAccess = localStorage.getItem('evento-beta-access') === 'granted';
+      const hasBetaAccess = localStorage.getItem(STORAGE_KEYS.BETA_ACCESS) === 'granted';
 
       if (!hasBetaAccess) {
         // No beta access - redirect to beta gate

@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { STORAGE_KEYS } from '../utils/storage';
 
 interface RecentLightningAddressesState {
   recentAddresses: string[];
@@ -28,7 +29,7 @@ export const useRecentLightningAddressesStore = create<RecentLightningAddressesS
       clearRecentAddresses: () => set({ recentAddresses: [] }),
     }),
     {
-      name: 'evento-recent-lightning-addresses',
+      name: STORAGE_KEYS.RECENT_LIGHTNING_ADDRESSES,
     }
   )
 );

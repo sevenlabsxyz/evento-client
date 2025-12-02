@@ -1,6 +1,7 @@
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
+import { clearAllStorage } from '../utils/storage';
 
 export const authService = {
   /**
@@ -130,7 +131,7 @@ export const authService = {
   },
 
   /**
-   * Logout user via Supabase SDK
+   * Logout user via Supabase SDK and clear all storage
    */
   logout: async (): Promise<void> => {
     const supabase = createClient();
@@ -139,6 +140,14 @@ export const authService = {
     if (error) {
       console.error('Logout failed:', error);
       // Don't throw here - we want to continue even if logout fails
+    }
+
+    // Clear all application storage (localStorage keys)
+    try {
+      clearAllStorage();
+    } catch (storageError) {
+      console.error('Failed to clear storage during logout:', storageError);
+      // Continue even if storage clearing fails
     }
   },
 

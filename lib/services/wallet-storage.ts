@@ -1,14 +1,6 @@
 import { BackupOptions, WalletState } from '@/lib/types/wallet';
 import * as bip39 from 'bip39';
-
-const STORAGE_KEYS = {
-  WALLET_STATE: 'evento_wallet_state',
-  ENCRYPTED_SEED: 'evento_encrypted_seed',
-  BACKUP_INFO: 'evento_backup_info',
-  LAST_BACKUP_REMINDER: 'evento_last_backup_reminder',
-  HAS_TRANSACTION: 'evento_has_transaction',
-  BACKUP_DISMISSED_DATE: 'evento_backup_dismissed_date',
-} as const;
+import { STORAGE_KEYS } from '../utils/storage';
 
 export class WalletStorageService {
   /**

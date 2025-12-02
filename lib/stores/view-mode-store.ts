@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { STORAGE_KEYS } from '../utils/storage';
 
 export type ViewMode = 'card' | 'compact';
 
@@ -15,7 +16,7 @@ export const useViewModeStore = create<ViewModeState>()(
       setFeedViewMode: (mode) => set({ feedViewMode: mode }),
     }),
     {
-      name: 'evento-view-mode', // Local storage key
+      name: STORAGE_KEYS.VIEW_MODE, // Local storage key
     }
   )
 );

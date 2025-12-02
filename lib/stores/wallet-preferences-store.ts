@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { STORAGE_KEYS } from '../utils/storage';
 
 interface WalletPreferencesStore {
   balanceHidden: boolean;
@@ -17,7 +18,7 @@ export const useWalletPreferences = create<WalletPreferencesStore>()(
       setBalanceHidden: (hidden: boolean) => set({ balanceHidden: hidden }),
     }),
     {
-      name: 'wallet-preferences',
+      name: STORAGE_KEYS.WALLET_PREFERENCES,
     }
   )
 );
