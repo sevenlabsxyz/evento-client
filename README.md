@@ -2,7 +2,7 @@
 
 ## Overview
 
-**Create Events. Connect People. Build Communities.**
+**Events Made Social**
 
 Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
 
