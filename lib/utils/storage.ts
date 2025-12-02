@@ -10,6 +10,8 @@ export const STORAGE_KEYS = {
   // Auth related
   AUTH: 'evento-auth-storage',
   BETA_ACCESS: 'evento-beta-access',
+  SUPABASE_ACCESS_TOKEN: 'evento-supabase-access-token',
+  SUPABASE_REFRESH_TOKEN: 'evento-supabase-refresh-token',
 
   // Wallet related
   WALLET_STATE: 'evento_wallet_state',

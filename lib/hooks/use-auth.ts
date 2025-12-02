@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { authService } from '../services/auth';
-import { WalletStorageService } from '../services/wallet-storage';
 import { useAuthStore } from '../stores/auth-store';
 import { useBetaAccessStore } from '../stores/beta-access-store';
 import { useRecentLightningAddressesStore } from '../stores/recent-lightning-addresses-store';
@@ -111,9 +110,6 @@ export function useAuth() {
         error: null,
         lightningAddress: null,
       });
-
-      // Clear wallet storage
-      WalletStorageService.clearWalletData();
 
       // Invalidate queries
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });

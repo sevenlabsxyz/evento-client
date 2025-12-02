@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
+import { STORAGE_KEYS } from '@/lib/utils/storage';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -26,9 +27,9 @@ function AuthCallbackContent() {
         if (accessToken) {
           // OAuth callback with tokens
           // Store tokens and get user info
-          localStorage.setItem('supabase_access_token', accessToken);
+          localStorage.setItem(STORAGE_KEYS.SUPABASE_ACCESS_TOKEN, accessToken);
           if (refreshToken) {
-            localStorage.setItem('supabase_refresh_token', refreshToken);
+            localStorage.setItem(STORAGE_KEYS.SUPABASE_REFRESH_TOKEN, refreshToken);
           }
 
           // Give the tokens a moment to be stored, then get user info

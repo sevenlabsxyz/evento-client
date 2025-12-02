@@ -1,6 +1,6 @@
 import { BackupOptions, WalletState } from '@/lib/types/wallet';
 import * as bip39 from 'bip39';
-import { STORAGE_KEYS } from '../utils/storage';
+import { clearWalletStorage, STORAGE_KEYS } from '../utils/storage';
 
 export class WalletStorageService {
   /**
@@ -248,9 +248,7 @@ export class WalletStorageService {
    */
   static clearWalletData(): void {
     try {
-      Object.values(STORAGE_KEYS).forEach((key) => {
-        localStorage.removeItem(key);
-      });
+      clearWalletStorage();
     } catch (error) {
       console.error('Failed to clear wallet data:', error);
     }
