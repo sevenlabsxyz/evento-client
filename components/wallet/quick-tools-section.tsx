@@ -57,7 +57,7 @@ export function QuickToolsSection({ onToolClick }: QuickToolsSectionProps) {
               className='font-lg flex flex-col items-center justify-center'
             >
               <motion.div
-                className={`flex h-14 w-14 items-center justify-center rounded-xl border border-gray-200 ${tool.iconBg} mb-2`}
+                className={`flex h-14 w-14 items-center justify-center rounded-xl border border-gray-200 shadow-sm hover:bg-gray-100 ${tool.iconBg} mb-2`}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >

@@ -11,7 +11,7 @@ export function BackupCallout({ onBackup }: BackupCalloutProps) {
   return (
     <button
       onClick={onBackup}
-      className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100'
+      className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 text-left shadow-sm transition-colors hover:bg-gray-100'
     >
       <CircledIconButton icon={Shield} onClick={() => {}} />
       <div className='min-w-0 flex-1'>

@@ -1,13 +1,16 @@
 import { WalletState } from '@/lib/types/wallet';
+import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { create } from 'zustand';
 
 interface WalletStore {
   walletState: WalletState;
   isLoading: boolean;
   error: string | null;
+  lightningAddress: LightningAddressInfo | null;
   setWalletState: (state: WalletState | ((prev: WalletState) => WalletState)) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  setLightningAddress: (address: LightningAddressInfo | null) => void;
 }
 
 export const useWalletStore = create<WalletStore>((set) => ({
@@ -19,6 +22,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
   },
   isLoading: true,
   error: null,
+  lightningAddress: null,
 
   setWalletState: (stateOrUpdater) =>
     set((state) => ({
@@ -28,4 +32,5 @@ export const useWalletStore = create<WalletStore>((set) => ({
 
   setLoading: (loading) => set({ isLoading: loading }),
   setError: (error) => set({ error }),
+  setLightningAddress: (address) => set({ lightningAddress: address }),
 }));

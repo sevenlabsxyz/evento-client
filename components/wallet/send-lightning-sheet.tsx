@@ -18,7 +18,6 @@ import { AmountInputSheet } from './amount-input-sheet';
 interface SendLightningSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onBackupRequired?: () => void;
   onOpenScan?: () => void;
   scannedData?: string;
 }
@@ -26,7 +25,6 @@ interface SendLightningSheetProps {
 export function SendLightningSheet({
   open,
   onOpenChange,
-  onBackupRequired,
   onOpenScan,
   scannedData,
 }: SendLightningSheetProps) {
@@ -97,11 +95,22 @@ export function SendLightningSheet({
     }
   }, [scannedData, open]);
 
+  // Strip common URI prefixes (lightning:, bitcoin:) from input
+  const stripUriPrefixes = (value: string): string => {
+    let cleaned = value.trim();
+    const prefixPatterns = [/^lightning:/i, /^bitcoin:/i];
+    for (const pattern of prefixPatterns) {
+      cleaned = cleaned.replace(pattern, '');
+    }
+    return cleaned;
+  };
+
   const handleInvoiceChange = (value: string) => {
-    setInvoice(value);
+    const cleanedValue = stripUriPrefixes(value);
+    setInvoice(cleanedValue);
 
     // Reset state when input changes
-    if (!value.trim()) {
+    if (!cleanedValue) {
       setIsLightningInvoice(false);
       setHasFixedAmount(false);
       setInvoiceAmount(null);
@@ -139,12 +148,6 @@ export function SendLightningSheet({
   const handleContinue = async () => {
     if (!invoice || !invoice.trim()) {
       toast.error('Please enter a Lightning invoice or address');
-      return;
-    }
-
-    // Check if wallet is backed up before allowing first transaction
-    if (!walletState.hasBackup) {
-      onBackupRequired?.();
       return;
     }
 

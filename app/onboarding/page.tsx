@@ -32,7 +32,7 @@ function OnboardingContent() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+    <div className='flex min-h-screen items-center justify-center bg-white'>
       <div className='h-screen w-full max-w-md md:h-auto'>
         <UserOnboardingFlow onSubmit={handleOnboardingComplete} />
       </div>

@@ -289,12 +289,29 @@ export default function WalletPage() {
     }
   };
 
-  const handleScanSuccess = (decodedText: string) => {
+  const handleScanSuccess = async (decodedText: string) => {
     console.log('QR Code scanned:', decodedText);
-    setScannedData(decodedText);
-    // Close scan drawer and open send drawer
-    closeDrawer('scan');
-    openDrawer('send');
+
+    // Strip common URI prefixes (case-insensitive)
+    let cleanedData = decodedText.trim();
+    const prefixPatterns = [/^lightning:/i, /^bitcoin:/i];
+
+    for (const pattern of prefixPatterns) {
+      cleanedData = cleanedData.replace(pattern, '');
+    }
+
+    // Validate the QR code
+    try {
+      await breezSDK.parseInput(cleanedData);
+      // Valid - proceed to send sheet
+      setScannedData(cleanedData);
+      closeDrawer('scan');
+      openDrawer('send');
+    } catch (error) {
+      // Invalid QR code
+      toast.error('Cannot read this QR code type');
+      closeDrawer('scan');
+    }
   };
 
   if (isCheckingAuth || isWalletLoading) {
@@ -404,7 +421,6 @@ export default function WalletPage() {
                   onSend={() => openDrawer('send')}
                   onReceive={() => openDrawer('receive')}
                   onScan={() => openDrawer('scan')}
-                  lightningAddress={user.lightning_address || `${user.username}@evento.cash`}
                 />
               )}
 
@@ -503,7 +519,6 @@ export default function WalletPage() {
             setScannedData(''); // Clear scanned data when closing
           }
         }}
-        onBackupRequired={handleBackupRequired}
         onOpenScan={() => {
           closeDrawer('send');
           openDrawer('scan');

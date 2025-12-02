@@ -1,27 +1,18 @@
 'use client';
 
 import { Env } from '@/lib/constants/env';
-import { useEffect, useState } from 'react';
-
-const BETA_ACCESS_KEY = 'evento-beta-access';
+import { useBetaAccessStore } from '@/lib/stores/beta-access-store';
+import { useEffect } from 'react';
 
 export function useBetaAccess() {
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const { hasAccess, isLoading, initialize, grantAccess, revokeAccess } = useBetaAccessStore();
 
+  // Initialize on first hook usage
   useEffect(() => {
-    const stored = localStorage.getItem(BETA_ACCESS_KEY);
-    setHasAccess(stored === 'granted');
-  }, []);
-
-  const grantAccess = () => {
-    localStorage.setItem(BETA_ACCESS_KEY, 'granted');
-    setHasAccess(true);
-  };
-
-  const revokeAccess = () => {
-    localStorage.removeItem(BETA_ACCESS_KEY);
-    setHasAccess(false);
-  };
+    if (hasAccess === null) {
+      initialize();
+    }
+  }, [hasAccess, initialize]);
 
   const validateCode = (code: string): boolean => {
     const validCode = Env.NEXT_PUBLIC_BETA_ACCESS_CODE;
@@ -34,7 +25,7 @@ export function useBetaAccess() {
 
   return {
     hasAccess,
-    isLoading: hasAccess === null,
+    isLoading,
     grantAccess,
     revokeAccess,
     validateCode,

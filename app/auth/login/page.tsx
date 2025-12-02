@@ -1,7 +1,6 @@
 'use client';
 
 import { EventoIcon } from '@/components/icons/evento';
-import Google from '@/components/icons/google';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -117,13 +116,15 @@ function LoginContent() {
             </Button>
           </form>
 
+          {/* Separator - commented out while Google login is not functional
           <div className='relative'>
             <div className='absolute inset-0 flex items-center'>
               <span className='w-full border-t' />
             </div>
           </div>
+          */}
 
-          {/* Google Login Button */}
+          {/* Google Login Button - commented out while not functional
           <Button
             variant='secondary'
             className='w-full border border-gray-200 py-6 text-base'
@@ -142,6 +143,7 @@ function LoginContent() {
               </>
             )}
           </Button>
+          */}
         </CardContent>
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>

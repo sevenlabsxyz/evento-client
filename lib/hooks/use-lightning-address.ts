@@ -1,46 +1,39 @@
 'use client';
 
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { useWalletStore } from '@/lib/stores/wallet-store';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from './use-wallet';
 
-interface LightningAddressState {
-  address: LightningAddressInfo | null;
-  isLoading: boolean;
-  error: string | null;
-}
-
 export function useLightningAddress() {
   const { walletState } = useWallet();
-  const [state, setState] = useState<LightningAddressState>({
-    address: null,
-    isLoading: false,
-    error: null,
-  });
+  const lightningAddress = useWalletStore((state) => state.lightningAddress);
+  const setLightningAddress = useWalletStore((state) => state.setLightningAddress);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // Load Lightning address info on mount
   useEffect(() => {
-    if (walletState.isConnected) {
+    if (walletState.isConnected && !lightningAddress) {
       loadLightningAddress();
     }
-  }, [walletState.isConnected]);
+  }, [walletState.isConnected, lightningAddress]);
 
   const loadLightningAddress = useCallback(async () => {
     try {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      setIsLoading(true);
+      setError(null);
 
       const addressInfo = await breezSDK.getLightningAddress();
-      setState((prev) => ({ ...prev, address: addressInfo, isLoading: false }));
+      setLightningAddress(addressInfo);
     } catch (error: any) {
       console.error('Failed to load Lightning address:', error);
-      setState((prev) => ({
-        ...prev,
-        error: error.message || 'Failed to load Lightning address',
-        isLoading: false,
-      }));
+      setError(error.message || 'Failed to load Lightning address');
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [setLightningAddress]);
 
   const checkAvailability = useCallback(async (username: string): Promise<boolean> => {
     try {
@@ -54,54 +47,48 @@ export function useLightningAddress() {
   const registerAddress = useCallback(
     async (username: string, description?: string): Promise<LightningAddressInfo> => {
       try {
-        setState((prev) => ({ ...prev, isLoading: true, error: null }));
+        setIsLoading(true);
+        setError(null);
 
         const addressInfo = await breezSDK.registerLightningAddress(username, description);
-        setState((prev) => ({
-          ...prev,
-          address: addressInfo,
-          isLoading: false,
-        }));
+        setLightningAddress(addressInfo);
 
         return addressInfo;
       } catch (error: any) {
         console.error('Failed to register address:', error);
-        setState((prev) => ({
-          ...prev,
-          error: error.message || 'Failed to register Lightning address',
-          isLoading: false,
-        }));
+        setError(error.message || 'Failed to register Lightning address');
         throw error;
+      } finally {
+        setIsLoading(false);
       }
     },
-    []
+    [setLightningAddress]
   );
 
   const deleteAddress = useCallback(async (): Promise<void> => {
     try {
-      setState((prev) => ({ ...prev, isLoading: true, error: null }));
+      setIsLoading(true);
+      setError(null);
 
       await breezSDK.deleteLightningAddress();
-      setState((prev) => ({ ...prev, address: null, isLoading: false }));
+      setLightningAddress(null);
     } catch (error: any) {
       console.error('Failed to delete address:', error);
-      setState((prev) => ({
-        ...prev,
-        error: error.message || 'Failed to delete Lightning address',
-        isLoading: false,
-      }));
+      setError(error.message || 'Failed to delete Lightning address');
       throw error;
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  }, [setLightningAddress]);
 
   const clearError = useCallback(() => {
-    setState((prev) => ({ ...prev, error: null }));
+    setError(null);
   }, []);
 
   return {
-    address: state.address,
-    isLoading: state.isLoading,
-    error: state.error,
+    address: lightningAddress,
+    isLoading,
+    error,
     checkAvailability,
     registerAddress,
     deleteAddress,

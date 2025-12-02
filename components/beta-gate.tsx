@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, KeyRound, Loader2, Sparkles } from 'lucide-react';
+import { AlertCircle, KeyRound, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -112,18 +112,18 @@ export function BetaGate() {
               )}
             </Button>
           </form>
-
-          <div className='relative'>
-            <div className='absolute inset-0 flex items-center'>
-              <span className='w-full border-t' />
+          {/*
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
             </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-gray-50 px-2 text-muted-foreground'>or</span>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-gray-50 px-2 text-muted-foreground">or</span>
             </div>
-          </div>
+          </div>*/}
 
           {/* Request Access Button */}
-          <Button
+          {/*<Button
             variant='secondary'
             className='w-full border border-gray-200 bg-white py-6 text-base'
             onClick={handleRequestAccess}
@@ -140,7 +140,7 @@ export function BetaGate() {
                 Request Access
               </>
             )}
-          </Button>
+          </Button>*/}
         </CardContent>
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>

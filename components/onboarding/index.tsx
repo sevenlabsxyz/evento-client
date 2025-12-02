@@ -244,7 +244,7 @@ export const UserOnboardingFlow = ({
             href='/'
             className='mb-6 flex max-h-[60px] max-w-[60px] flex-col items-center gap-2 rounded-2xl border border-gray-200 p-1.5 font-medium shadow-sm md:mx-auto'
           >
-            <Image src='/assets/logo/sublogo.svg' alt='Evento' height='50' width='50' />
+            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' height='50' width='50' />
           </Link>
           <AnimatePresence mode='wait'>
             {step === 1 && (
@@ -276,7 +276,7 @@ export const UserOnboardingFlow = ({
           </AnimatePresence>
         </div>
       </div>
-      <div className='flex flex-col px-4 md:px-0'>
+      <div className='flex flex-col px-4 pb-6 md:px-0'>
         <div className='flex flex-col gap-2'>
           {step > 1 && (
             <Button

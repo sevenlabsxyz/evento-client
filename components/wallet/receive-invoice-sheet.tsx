@@ -10,7 +10,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { toast } from '@/lib/utils/toast';
 import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
-import { Bitcoin, CheckCircle2, Copy, X, Zap } from 'lucide-react';
+import { Bitcoin, CheckCircle2, Copy, Loader2, X, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
 
@@ -32,7 +32,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   const [showSuccess, setShowSuccess] = useState(false);
 
   const { createInvoice } = useReceivePayment();
-  const { address } = useLightningAddress();
+  const { address, isLoading: isAddressLoading } = useLightningAddress();
   const { satsToUSD } = useAmountConverter();
 
   // Generate QR code for lightning address when sheet opens
@@ -220,10 +220,10 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
             />
 
             {/* Content */}
-            <SheetWithDetentFull.ScrollRoot asChild>
-              <SheetWithDetentFull.ScrollView className='min-h-0'>
-                <SheetWithDetentFull.ScrollContent className='p-6'>
-                  <div className='mx-auto max-w-md space-y-6'>
+            <SheetWithDetentFull.ScrollRoot className='flex-1'>
+              <SheetWithDetentFull.ScrollView>
+                <SheetWithDetentFull.ScrollContent>
+                  <div className='mx-auto max-w-md space-y-6 p-6'>
                     {/* Success Screen */}
                     {showSuccess ? (
                       <div className='flex flex-col items-center justify-center space-y-6 py-12'>
@@ -274,6 +274,19 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         {/* Lightning Tab Content */}
                         {activeTab === 'lightning' && (
                           <>
+                            {/* Registering State - Show when address is not yet available */}
+                            {!address?.lightningAddress && !invoiceAmount && (
+                              <div className='flex flex-col items-center justify-center py-12 text-center'>
+                                <Loader2 className='mb-4 h-8 w-8 animate-spin text-gray-400' />
+                                <p className='text-sm font-medium text-gray-600'>
+                                  Registering your Lightning address...
+                                </p>
+                                <p className='mt-1 text-xs text-gray-400'>
+                                  This may take a few moments
+                                </p>
+                              </div>
+                            )}
+
                             {/* Show Lightning Address or Invoice based on state */}
                             {(address?.lightningAddress || activeInvoice) && (
                               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>

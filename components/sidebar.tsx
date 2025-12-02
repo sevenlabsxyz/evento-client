@@ -307,8 +307,13 @@ export function Sidebar() {
     });
   }, [router]);
 
-  // Don't show sidebar on auth pages, beta gate (root), or when no beta access
-  if (pathname?.startsWith('/auth') || pathname === '/' || !hasBetaAccess) {
+  // Don't show sidebar on auth pages, beta gate (root), onboarding, or when no beta access
+  if (
+    pathname?.startsWith('/auth') ||
+    pathname === '/' ||
+    pathname === '/onboarding' ||
+    !hasBetaAccess
+  ) {
     return null;
   }
 

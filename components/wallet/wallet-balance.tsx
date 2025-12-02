@@ -1,14 +1,24 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { Button } from '@/components/ui/button';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
+import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { motion } from 'framer-motion';
-import { ArrowDownLeft, ArrowUpRight, ChevronRight, HelpCircle, Scan, Zap } from 'lucide-react';
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  ChevronRight,
+  HelpCircle,
+  Loader2,
+  Scan,
+  Zap,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 
@@ -16,11 +26,11 @@ interface WalletBalanceProps {
   onSend: () => void;
   onReceive: () => void;
   onScan: () => void;
-  lightningAddress: string;
 }
 
-export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: WalletBalanceProps) {
+export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps) {
   const { walletState, isLoading, refreshBalance } = useWallet();
+  const { address, isLoading: isAddressLoading } = useLightningAddress();
   const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
   const [balanceUSD, setBalanceUSD] = useState<number>(0);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
@@ -103,26 +113,26 @@ export function WalletBalance({ onSend, onReceive, onScan, lightningAddress }: W
           <div className='mb-4 flex items-center gap-3'>
             <motion.button
               onClick={onReceive}
-              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-white p-3 text-left transition-colors hover:bg-gray-100'
+              className='flex flex-1 items-center justify-between rounded-full border border-gray-200 bg-white p-3 text-left shadow-sm transition-colors hover:bg-gray-100'
               whileTap={{ scale: 0.95 }}
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               <div className='flex min-w-0 flex-1 items-center gap-2'>
                 <Zap className='h-4 w-4 flex-shrink-0 text-black' />
-                <div className='truncate font-mono text-sm font-bold text-gray-900'>
-                  {lightningAddress}
-                </div>
+                {isAddressLoading || !address ? (
+                  <div className='flex items-center gap-2'>
+                    <Loader2 className='h-4 w-4 animate-spin text-gray-400' />
+                    <span className='text-sm text-gray-500'>Registering...</span>
+                  </div>
+                ) : (
+                  <div className='truncate font-mono text-sm font-bold text-gray-900'>
+                    {address.lightningAddress}
+                  </div>
+                )}
               </div>
               <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
             </motion.button>
-            <motion.button
-              onClick={() => setShowEducationalSheet(true)}
-              className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white transition-colors hover:bg-gray-100'
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            >
-              <HelpCircle className='h-5 w-5 text-gray-600' />
-            </motion.button>
+            <CircledIconButton icon={HelpCircle} onClick={() => setShowEducationalSheet(true)} />
           </div>
 
           {/* Balance Display - Centered & Clickable to toggle */}
