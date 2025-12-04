@@ -215,7 +215,7 @@ export default function SettingsPage() {
               <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>GENERAL</h2>
             </div>
             <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-              <div className='border-b border-gray-100'>
+              <div className='border-b border-gray-100 p-4'>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center gap-3'>
                     <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
