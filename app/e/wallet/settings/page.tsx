@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
-import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -16,9 +16,9 @@ export default function WalletSettingsPage() {
   const pathname = usePathname();
   const { walletState, lockWallet } = useWallet();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
-  const { address } = useLightningAddress();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
+  const [showBackupChoiceSheet, setShowBackupChoiceSheet] = useState(false);
 
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -101,11 +101,9 @@ export default function WalletSettingsPage() {
                 )}
               </div>
             </div>
-            {/*{!walletState.hasBackup && (*/}
-            <Button onClick={() => router.push('/e/wallet')} variant='outline' size='sm'>
+            <Button onClick={() => setShowBackupChoiceSheet(true)} variant='outline' size='sm'>
               Backup Now
             </Button>
-            {/*)}*/}
           </div>
         </div>
       </div>
@@ -155,6 +153,15 @@ export default function WalletSettingsPage() {
 
       {/* Beta Information Sheet */}
       <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
+
+      {/* Backup Choice Sheet */}
+      <BackupChoiceSheet
+        open={showBackupChoiceSheet}
+        onOpenChange={setShowBackupChoiceSheet}
+        onEncryptedBackupComplete={() => {
+          setShowBackupChoiceSheet(false);
+        }}
+      />
     </div>
   );
 }
