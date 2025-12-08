@@ -75,8 +75,8 @@ export const OnboardingUsername = ({
       setIsCheckingAvailability(true);
       refetch().then(({ data: freshData }) => {
         setIsCheckingAvailability(false);
-        // If no user found, username is available
-        setIsAvailable(!freshData);
+        // If no user found (no id property), username is available
+        setIsAvailable(!freshData?.id);
       });
     }
   }, [debouncedUsername, validationError, refetch, currentUser]);
