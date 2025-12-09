@@ -27,6 +27,7 @@ export function ZapSheet({
   quickAmounts = DEFAULT_QUICK_AMOUNTS,
   onSuccess,
   onError,
+  currentUsername,
 }: ZapSheetProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('amount');
@@ -263,6 +264,10 @@ export function ZapSheet({
 
   // Handle opening the zap sheet
   const handleOpenSheet = () => {
+    if (currentUsername && recipientUsername && currentUsername === recipientUsername) {
+      toast.error('You cannot zap yourself!');
+      return;
+    }
     setOpen(true);
   };
 
@@ -355,6 +360,13 @@ export function ZapSheet({
         return null;
     }
   };
+
+  // Don't render anything if user is trying to zap themselves
+  const isSelfZap = currentUsername && recipientUsername && currentUsername === recipientUsername;
+
+  if (isSelfZap) {
+    return null;
+  }
 
   return (
     <>

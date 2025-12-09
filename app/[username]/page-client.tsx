@@ -716,6 +716,7 @@ export default function UserProfilePageClient() {
                     recipientName={userData.name || 'Unknown User'}
                     recipientUsername={userData.username}
                     recipientAvatar={userData.image}
+                    currentUsername={user?.username}
                   />
                 </div>
               )}

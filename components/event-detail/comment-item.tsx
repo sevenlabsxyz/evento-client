@@ -247,6 +247,7 @@ export default function CommentItem({
                   recipientName={comment.user_details.name || comment.user_details.username}
                   recipientUsername={comment.user_details.username}
                   recipientAvatar={comment.user_details.image}
+                  currentUsername={currentUser?.username}
                 >
                   <CommentReactionButton icon={Zap} />
                 </ZapSheet>

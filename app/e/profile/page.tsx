@@ -16,7 +16,6 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
@@ -503,19 +502,7 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Zap Button */}
-              {user?.ln_address && (
-                <div className='mb-6'>
-                  <ZapSheet
-                    recipientLightningAddress={user.ln_address}
-                    recipientName={user.name || 'You'}
-                    recipientUsername={user.username}
-                    recipientAvatar={user.image}
-                  />
-                </div>
-              )}
-
-              {/* Social Links - desktop only, below Zap button */}
+              {/* Social Links - desktop only */}
               <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
                 <SocialLinks user={user} />
               </div>

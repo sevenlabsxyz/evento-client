@@ -9,6 +9,7 @@ export interface ZapSheetProps {
   quickAmounts?: number[];
   onSuccess?: (amountSats: number) => void;
   onError?: (error: Error) => void;
+  currentUsername?: string;
 }
 
 export interface LnurlPayRequestDetails {
