@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { formatDateHeader } from '@/lib/utils/date';
 import { ArrowRight, Calendar } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
@@ -51,6 +52,23 @@ export function MyEventsSection() {
   const currentQuery = getCurrentQuery();
   const events = currentQuery.data?.pages?.[0]?.events || [];
   const isLoading = currentQuery.isLoading;
+
+  // Group events by date
+  const groupedEvents = events.reduce(
+    (groups: { date: string; events: typeof events }[], event) => {
+      const date = event.computed_start_date;
+      const group = groups.find((g) => g.date === date);
+
+      if (group) {
+        group.events.push(event);
+      } else {
+        groups.push({ date, events: [event] });
+      }
+
+      return groups;
+    },
+    []
+  );
 
   const handleViewAll = () => {
     setIsSheetOpen(true);
@@ -125,11 +143,20 @@ export function MyEventsSection() {
               </p>
             </div>
           ) : (
-            // Vertical list of events
+            // Vertical list of events grouped by date
             <>
-              <div className='flex flex-col gap-2'>
-                {events.slice(0, 6).map((event) => (
-                  <MasterEventCard key={event.id} event={event} />
+              <div className='flex flex-col gap-4'>
+                {groupedEvents.map((group) => (
+                  <div key={group.date} className='space-y-2'>
+                    <h3 className='text-sm font-medium text-gray-500'>
+                      {formatDateHeader(group.date)}
+                    </h3>
+                    <div className='flex flex-col gap-2'>
+                      {group.events.map((event) => (
+                        <MasterEventCard key={event.id} event={event} />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
               <Button

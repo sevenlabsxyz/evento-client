@@ -29,6 +29,7 @@ import {
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
+import { formatDateHeader } from '@/lib/utils/date';
 import { motion } from 'framer-motion';
 import {
   ArrowDownWideNarrow,
@@ -224,22 +225,6 @@ export default function ProfilePage() {
             }
           }
         ) || [];
-
-    const formatDateHeader = (date: string) => {
-      const today = new Date().toISOString().slice(0, 10);
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowStr = tomorrow.toISOString().slice(0, 10);
-
-      if (date === today) return 'Today';
-      if (date === tomorrowStr) return 'Tomorrow';
-
-      return new Date(date).toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      });
-    };
 
     return (
       <div className='space-y-4'>
