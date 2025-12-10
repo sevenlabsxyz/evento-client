@@ -49,19 +49,21 @@ export function WalletEducationalSheet({
       {/* Feature Image */}
       {article.feature_image && (
         <div className='mb-6 px-6'>
-          <Image
-            src={article.feature_image}
-            alt={article.title}
-            width={800}
-            height={450}
-            className='h-auto w-full rounded-3xl border border-gray-200'
-          />
+          <div className='relative aspect-video w-full overflow-hidden rounded-3xl border border-gray-200'>
+            <Image
+              src={article.feature_image}
+              alt={article.title}
+              fill
+              className='object-cover'
+              sizes='(max-width: 768px) 100vw, 800px'
+            />
+          </div>
         </div>
       )}
 
       {/* Article Content */}
       <div className='px-6 pb-24'>
-        <div className='prose prose-xl max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:leading-relaxed prose-p:text-gray-700 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-gray-900 prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-base prose-code:text-gray-900 prose-ol:my-4 prose-ul:my-4 prose-li:text-gray-700 prose-img:rounded-2xl prose-img:border prose-img:border-gray-200'>
+        <div className='prose prose-lg mx-auto max-w-full prose-headings:break-words prose-headings:font-bold prose-headings:text-gray-900 prose-p:break-words prose-p:leading-relaxed prose-p:text-gray-700 prose-a:break-words prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-gray-900 prose-code:break-words prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-ol:my-4 prose-ul:my-4 prose-li:text-gray-700 prose-img:max-w-full prose-img:rounded-2xl prose-img:border prose-img:border-gray-200'>
           <EnhancedBlogContent html={article.html} />
         </div>
 
