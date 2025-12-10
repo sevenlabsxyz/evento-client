@@ -10,7 +10,6 @@ import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { UserAvatar } from '../ui/user-avatar';
-import './followers-sheet.css';
 
 interface FollowersSheetProps {
   isOpen: boolean;
@@ -71,16 +70,14 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
         <SheetWithDetent.Portal>
           <SheetWithDetent.View>
             <SheetWithDetent.Backdrop />
-            <SheetWithDetent.Content className='FollowersSheet-content'>
-              <div className='FollowersSheet-header'>
-                <SheetWithDetent.Handle className='FollowersSheet-handle' />
+            <SheetWithDetent.Content className='grid grid-rows-[min-content_1fr_min-content]'>
+              <div className='grid grid-rows-[min-content_1fr] gap-3 border-b border-gray-200 px-5 pb-3 text-[0]'>
+                <SheetWithDetent.Handle className='col-start-1 col-end-[-1] row-start-1 mt-2 self-start justify-self-center' />
                 <VisuallyHidden.Root asChild>
-                  <SheetWithDetent.Title className='FollowersSheet-title'>
-                    Followers
-                  </SheetWithDetent.Title>
+                  <SheetWithDetent.Title>Followers</SheetWithDetent.Title>
                 </VisuallyHidden.Root>
                 <input
-                  className='FollowersSheet-input'
+                  className='box-border h-11 w-full appearance-none rounded-xl border-none bg-gray-200 px-3 text-lg text-gray-800 outline-none placeholder:text-gray-500'
                   type='text'
                   placeholder='Search followers'
                   value={searchText}
@@ -89,12 +86,15 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                 />
               </div>
               <SheetWithDetent.ScrollRoot asChild>
-                <SheetWithDetent.ScrollView className='FollowersSheet-scrollView'>
-                  <SheetWithDetent.ScrollContent className='FollowersSheet-scrollContent'>
+                <SheetWithDetent.ScrollView className='min-h-0'>
+                  <SheetWithDetent.ScrollContent className='grid gap-5 p-5'>
                     {isLoading ? (
                       // Loading State
                       Array.from({ length: 3 }).map((_, index) => (
-                        <div key={`loading-${index}`} className='FollowersSheet-loadingContainer'>
+                        <div
+                          key={`loading-${index}`}
+                          className='grid grid-flow-col justify-start gap-3.5'
+                        >
                           <Skeleton className='h-10 w-10 rounded-full' />
                           <div className='flex-1 space-y-2'>
                             <Skeleton className='h-4 w-40' />
@@ -104,13 +104,15 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                       ))
                     ) : error ? (
                       // Error State
-                      <div className='FollowersSheet-errorContainer'>
-                        <div className='FollowersSheet-errorText'>Failed to load followers</div>
+                      <div className='flex items-center justify-center px-4 py-12'>
+                        <div className='text-center text-base text-red-500'>
+                          Failed to load followers
+                        </div>
                       </div>
                     ) : filteredFollowers.length === 0 ? (
                       // Empty State
-                      <div className='FollowersSheet-emptyContainer'>
-                        <div className='FollowersSheet-emptyText'>
+                      <div className='flex items-center justify-center px-4 py-12'>
+                        <div className='text-center text-base text-gray-500'>
                           {searchText.trim()
                             ? `No followers found matching "${searchText}"`
                             : `@${username} has no followers yet`}
@@ -121,11 +123,11 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                       filteredFollowers.map((follower, index) => (
                         <div
                           key={follower.id || `follower-${index}`}
-                          className='FollowersSheet-userContainer'
+                          className='grid grid-cols-[1fr_auto] items-center gap-4'
                         >
                           <button
                             onClick={() => handleUserClick(follower.username)}
-                            className='FollowersSheet-userButton'
+                            className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
                           >
                             <UserAvatar
                               user={{
@@ -145,22 +147,22 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                               </div>
                             </div>
                           </button>
-                          <div className='FollowersSheet-actions'>
+                          <div className='flex gap-2'>
                             <Button
                               variant='ghost'
                               size='icon'
-                              className='FollowersSheet-actionButton'
+                              className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
                               onClick={() => handleMessageClick(follower.id)}
                             >
-                              <MessageCircle className='FollowersSheet-actionIcon' />
+                              <MessageCircle className='h-4 w-4 text-gray-500' />
                             </Button>
                             <Button
                               variant='ghost'
                               size='icon'
-                              className='FollowersSheet-actionButton'
+                              className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
                               onClick={() => handleUserClick(follower.username)}
                             >
-                              <ArrowRight className='FollowersSheet-actionIcon' />
+                              <ArrowRight className='h-4 w-4 text-gray-500' />
                             </Button>
                           </div>
                         </div>
@@ -179,8 +181,6 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
           isOpen={!!selectedUser}
           onClose={() => {
             setSelectedUser(null);
-            // Close parent sheet after QuickProfile closes for better UX
-            onClose();
           }}
           user={selectedUser}
         />
