@@ -2,7 +2,6 @@
 
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 import { BackupCallout } from '@/components/wallet/backup-callout';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
@@ -22,6 +21,7 @@ import { TransactionHistorySheet } from '@/components/wallet/transaction-history
 import { WalletBalance } from '@/components/wallet/wallet-balance';
 import { WalletEducationGallery } from '@/components/wallet/wallet-education-section-gallery';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
+import { WalletLoadingScreen } from '@/components/wallet/wallet-loading-screen';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
@@ -316,25 +316,8 @@ export default function WalletPage() {
 
   if (isCheckingAuth || isWalletLoading) {
     return (
-      <div className='mx-auto max-w-sm space-y-6 pb-28 pt-4'>
-        {/* Balance Card Skeleton */}
-        <Skeleton className='h-32 w-full rounded-2xl' />
-
-        {/* Action Buttons Skeleton */}
-        <div className='grid grid-cols-2 gap-3'>
-          <Skeleton className='h-20 rounded-xl' />
-          <Skeleton className='h-20 rounded-xl' />
-        </div>
-
-        {/* Recent Transactions Skeleton */}
-        <div className='space-y-3'>
-          <Skeleton className='h-6 w-40' />
-          <div className='space-y-3'>
-            {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className='h-20 w-full rounded-lg' />
-            ))}
-          </div>
-        </div>
+      <div className='mx-auto max-w-sm pb-28 pt-4'>
+        <WalletLoadingScreen />
       </div>
     );
   }
