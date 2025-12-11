@@ -1,19 +1,23 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 const LOADING_MESSAGES = [
-  'Initializing wallet...',
-  'Connecting to Lightning Network...',
-  'Syncing with the network...',
-  'Fetching wallet information...',
+  'Getting things ready for you...',
+  'Preparing your wallet...',
   'Almost there...',
-  'Hang tight, loading a few last things...',
+  'Making magic happen...',
+  'Setting up your financial superpowers...',
+  'Connecting to the future of money...',
+  'Your wallet is waking up...',
+  'Brewing up something good...',
+  'Just a moment...',
+  'Loading your digital vault...',
 ];
 
-const MESSAGE_DURATION = 3000; // 3 seconds per message
+const MESSAGE_DURATION = 3500; // 3.5 seconds per message
 
 interface WalletLoadingScreenProps {
   className?: string;
@@ -41,22 +45,25 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
     <div
       className={`flex min-h-[400px] flex-col items-center justify-center space-y-6 ${className || ''}`}
     >
-      {/* Animated Loader */}
+      {/* Animated Logo */}
       <motion.div
+        className='rounded-full border border-gray-200 bg-gray-50 shadow-sm'
         animate={{
           rotate: 360,
         }}
         transition={{
-          duration: 2,
-          repeat: Infinity,
-          ease: 'linear',
+          rotate: {
+            duration: 2,
+            ease: 'linear',
+            repeat: Infinity,
+          },
         }}
       >
-        <Loader2 className='h-12 w-12 text-red-500' />
+        <Image src='/assets/img/evento-sublogo.svg' alt='Evento Logo' width={96} height={96} />
       </motion.div>
 
       {/* Rotating Messages */}
-      <div className='relative h-8 w-full max-w-xs'>
+      <div className='relative mt-4 h-8 w-full max-w-xs'>
         <AnimatePresence mode='wait'>
           <motion.p
             key={currentMessageIndex}
@@ -64,36 +71,23 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
-            className='absolute inset-0 text-center text-base font-medium text-gray-700'
+            className='absolute inset-0 text-center text-xl font-medium text-gray-900'
           >
             {LOADING_MESSAGES[currentMessageIndex]}
           </motion.p>
         </AnimatePresence>
       </div>
 
-      {/* Progress Dots */}
-      <div className='flex items-center gap-2'>
-        {LOADING_MESSAGES.map((_, index) => (
-          <motion.div
-            key={index}
-            className='h-2 w-2 rounded-full bg-gray-300'
-            animate={{
-              backgroundColor: index === currentMessageIndex ? '#ef4444' : '#d1d5db',
-              scale: index === currentMessageIndex ? 1.2 : 1,
-            }}
-            transition={{ duration: 0.3 }}
-          />
-        ))}
-      </div>
-
       {/* Subtle hint for slow connections */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 10 }}
+        transition={{ delay: 20 }}
         className='mt-4 text-center text-sm text-gray-500'
       >
-        This may take longer on slower connections
+        This may take longer on slower connections.
+        <br />
+        Do not refresh the page.
       </motion.p>
     </div>
   );
