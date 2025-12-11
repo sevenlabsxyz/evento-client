@@ -3,7 +3,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { toast } from '@/lib/utils/toast';
 import { Copy, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type BTCConverterSheetProps = {
   open: boolean;
@@ -32,6 +32,22 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
   const [btcPrice, setBtcPrice] = useState<number>(0);
   const [isLoading, setIsLoading] = useState(true);
 
+  const handleUsdChange = useCallback(
+    (value: string, price: number = btcPrice) => {
+      setUsdValue(value);
+      const usd = parseFloat(value) || 0;
+
+      if (price > 0) {
+        const btc = usd / price;
+        const sats = Math.round(btc * SATS_PER_BTC);
+
+        setBtcValue(btc.toFixed(8));
+        setSatsValue(sats.toString());
+      }
+    },
+    [btcPrice]
+  );
+
   // Fetch BTC price on mount
   useEffect(() => {
     const fetchPrice = async () => {
@@ -52,20 +68,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
     if (open) {
       fetchPrice();
     }
-  }, [open]);
-
-  const handleUsdChange = (value: string, price: number = btcPrice) => {
-    setUsdValue(value);
-    const usd = parseFloat(value) || 0;
-
-    if (price > 0) {
-      const btc = usd / price;
-      const sats = Math.round(btc * SATS_PER_BTC);
-
-      setBtcValue(btc.toFixed(8));
-      setSatsValue(sats.toString());
-    }
-  };
+  }, [handleUsdChange, open]);
 
   const handleBtcChange = (value: string) => {
     setBtcValue(value);

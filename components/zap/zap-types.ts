@@ -13,10 +13,16 @@ export interface ZapSheetProps {
 }
 
 export interface LnurlPayRequestDetails {
-  commentAllowed: number;
+  callback: string;
   minSendable: number;
   maxSendable: number;
-  [key: string]: unknown;
+  metadataStr: string;
+  commentAllowed: number;
+  domain: string;
+  url: string;
+  address?: string;
+  allowsNostr?: boolean;
+  nostrPubkey?: string;
 }
 
 export interface RecipientInfo {

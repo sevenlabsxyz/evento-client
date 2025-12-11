@@ -22,7 +22,7 @@ import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { Calendar, Check, ChevronRight, Edit3, Globe, Lock, MapPin } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function EditEventDetailsPage() {
   const params = useParams();
@@ -79,6 +79,32 @@ export default function EditEventDetailsPage() {
   // Check if all required fields are filled and there are changes
   const isFormValid = isValid() && hasChanges();
 
+  const handleSaveChanges = useCallback(async () => {
+    try {
+      const formData = getFormData();
+      await updateEventMutation.mutateAsync(
+        {
+          ...formData,
+          id: eventId,
+        },
+        {
+          onSuccess: () => {
+            toast.success('Event updated successfully!');
+            // Navigate back to the manage page on success
+            router.push(`/e/${eventId}/manage`);
+          },
+          onError: () => {
+            toast.error('Failed to update event');
+          },
+        }
+      );
+    } catch (error) {
+      // Error handling is done in the mutation hook
+      console.error('Failed to update event:', error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [eventId, getFormData, router]);
+
   // Configure TopBar
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -108,6 +134,7 @@ export default function EditEventDetailsPage() {
     clearRoute,
     isFormValid,
     updateEventMutation.isPending,
+    handleSaveChanges,
   ]);
 
   // Populate form when event data is loaded
@@ -218,7 +245,8 @@ export default function EditEventDetailsPage() {
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
           <p className='mb-4 text-gray-600'>
-            The event you're trying to edit doesn't exist or you don't have permission.
+            The event you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
+            permission.
           </p>
           <button
             onClick={() => router.back()}
@@ -233,31 +261,6 @@ export default function EditEventDetailsPage() {
 
   const handleImageSelect = (imageUrl: string) => {
     setCoverImage(imageUrl);
-  };
-
-  const handleSaveChanges = async () => {
-    try {
-      const formData = getFormData();
-      await updateEventMutation.mutateAsync(
-        {
-          ...formData,
-          id: eventId,
-        },
-        {
-          onSuccess: () => {
-            toast.success('Event updated successfully!');
-            // Navigate back to the manage page on success
-            router.push(`/e/${eventId}/manage`);
-          },
-          onError: () => {
-            toast.error('Failed to update event');
-          },
-        }
-      );
-    } catch (error) {
-      // Error handling is done in the mutation hook
-      console.error('Failed to update event:', error);
-    }
   };
 
   return (

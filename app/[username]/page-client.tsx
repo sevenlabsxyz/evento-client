@@ -50,7 +50,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
@@ -99,25 +99,29 @@ export default function UserProfilePageClient() {
   const { data: userPrompts = [], isLoading: isLoadingPrompts } = useOtherUserPrompts(userData?.id);
 
   // Transform API data to match expected format (moved before useEffect)
-  const userProfile = userData
-    ? {
-        name: userData.name || 'Unknown User',
-        username: `@${userData.username}`,
-        image: userData.image || '/placeholder.svg?height=80&width=80',
-        verification_status: userData.verification_status,
-        status: userData.bio || '',
-        bio: userData.bio || '',
-        website: userData.bio_link || '',
-        isVerified: userData.verification_status === 'verified',
-        stats: {
-          events: eventCount,
-          following: following.length,
-          followers: followers.length,
-          countries: 0, // This would need to be calculated from events
-          mutuals: 0, // This would need to be calculated
-        },
-      }
-    : null;
+  const userProfile = useMemo(
+    () =>
+      userData
+        ? {
+            name: userData.name || 'Unknown User',
+            username: `@${userData.username}`,
+            image: userData.image || '/placeholder.svg?height=80&width=80',
+            verification_status: userData.verification_status,
+            status: userData.bio || '',
+            bio: userData.bio || '',
+            website: userData.bio_link || '',
+            isVerified: userData.verification_status === 'verified',
+            stats: {
+              events: eventCount,
+              following: following.length,
+              followers: followers.length,
+              countries: 0, // This would need to be calculated from events
+              mutuals: 0, // This would need to be calculated
+            },
+          }
+        : null,
+    [eventCount, followers.length, following.length, userData]
+  );
 
   const handleFollowToggle = () => {
     if (!userData?.id) {
@@ -145,7 +149,7 @@ export default function UserProfilePageClient() {
   };
 
   // Share functionality
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     const shareData = {
       title: `${userProfile?.name || 'User'} on Evento`,
       text: `Check out ${userProfile?.name || 'User'}'s profile on Evento`,
@@ -168,7 +172,7 @@ export default function UserProfilePageClient() {
         toast.error('Failed to share profile');
       }
     }
-  };
+  }, [userProfile?.name]);
 
   // Set TopBar content for overlay mode - moved before conditional returns
   useEffect(() => {
@@ -199,7 +203,7 @@ export default function UserProfilePageClient() {
         isOverlaid: false,
       });
     };
-  }, [userProfile?.name, userProfile?.username, setTopBar]);
+  }, [userProfile?.name, userProfile?.username, setTopBar, userData, userProfile, handleShare]);
 
   // Fetch pinned event
   const { data: pinnedEvent } = usePinnedEvent(user?.username || '');

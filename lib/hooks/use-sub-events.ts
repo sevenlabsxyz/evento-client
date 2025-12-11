@@ -13,12 +13,10 @@ export function useSubEvents(eventId?: string) {
           return [];
         }
 
-        const response = await apiClient.get<EventWithUser[]>(
+        const response = await apiClient.get<{ data: EventWithUser[] }>(
           `/v1/events/sub-events?event_id=${eventId}`
         );
-
-        // The API client interceptor returns response.data directly
-        const responseData = response;
+        const responseData = response.data;
 
         // Check if it's the expected array format
         if (!responseData || !Array.isArray(responseData)) {

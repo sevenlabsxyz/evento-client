@@ -36,7 +36,7 @@ export function MyEventsSection() {
     if (!loadedTabs.includes(activeTab)) {
       setLoadedTabs((prev) => [...prev, activeTab]);
     }
-  }, [activeTab]);
+  }, [activeTab, loadedTabs]);
 
   const getCurrentQuery = () => {
     switch (activeTab) {

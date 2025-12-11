@@ -93,6 +93,8 @@ export default async function BlogPost({ params }: { params: { slug: string } })
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   try {
     const post = await getBlogPost(params.slug);
+    if (!post) return null;
+
     return {
       title: post.title,
       description: post.excerpt,

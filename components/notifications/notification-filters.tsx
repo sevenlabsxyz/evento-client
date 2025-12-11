@@ -116,10 +116,10 @@ export function NotificationFilters({
                   Read
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
-                  checked={currentFilters.status === 'unread'}
+                  checked={currentFilters.status === 'unseen'}
                   onCheckedChange={(checked) => {
                     if (checked) {
-                      onFilterChange({ ...currentFilters, status: 'unread' });
+                      onFilterChange({ ...currentFilters, status: 'unseen' });
                     } else {
                       const { status, ...rest } = currentFilters;
                       onFilterChange(rest);

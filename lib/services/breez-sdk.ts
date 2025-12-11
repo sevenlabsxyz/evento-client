@@ -270,7 +270,7 @@ export class BreezSDKService {
       const response = await this.sdk.receivePayment(request);
       return {
         paymentRequest: response.paymentRequest,
-        feeSats: response.feeSats,
+        feeSats: Number(response.fee),
       };
     } catch (error) {
       console.error('Failed to create invoice:', error);
@@ -327,11 +327,12 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
+      // WaitForPaymentIdentifier is an intersection type requiring the string to have a type property
+      const identifier = Object.assign(paymentRequest, {
+        type: 'paymentRequest' as const,
+      }) as any;
       const request: WaitForPaymentRequest = {
-        identifier: {
-          type: 'paymentRequest',
-          paymentRequest,
-        },
+        identifier,
       };
 
       const response: WaitForPaymentResponse = await this.sdk.waitForPayment(request);
@@ -626,7 +627,7 @@ export class BreezSDKService {
         const payment = (event as any).payment;
         const isIncoming = payment?.paymentType === 'receive';
         const direction = isIncoming ? 'Incoming' : 'Outgoing';
-        const amount = Number(payment?.amount || 0n);
+        const amount = Number(payment?.amount || BigInt(0));
         console.log(
           `💰 [BREEZ:PAYMENT_SUCCEEDED] ${timestamp} - ${direction}: ${amount.toLocaleString()} sats`,
           payment

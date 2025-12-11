@@ -46,7 +46,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className='flex flex-col items-center justify-center p-6 text-center'>
           <div className='mb-2 text-lg font-semibold text-gray-900'>Something went wrong</div>
           <div className='mb-4 text-sm text-gray-600'>
-            We're sorry, but there was an error loading this content.
+            We&apos;re sorry, but there was an error loading this content.
           </div>
           <button
             className='rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600'

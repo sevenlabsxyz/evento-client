@@ -123,7 +123,6 @@ export function LinkEditSheet({
                     type='text'
                     value={field.text}
                     onChange={(e) => setField({ ...field, text: e.target.value })}
-                    onChange={(e) => setField({ ...field, text: e.target.value })}
                     placeholder='Text to display'
                     className='LinkEditSheet-input'
                   />
@@ -134,12 +133,6 @@ export function LinkEditSheet({
                     <input
                       type='checkbox'
                       checked={field.openInNewTab}
-                      onChange={() =>
-                        setField({
-                          ...field,
-                          openInNewTab: !field.openInNewTab,
-                        })
-                      }
                       onChange={() =>
                         setField({
                           ...field,

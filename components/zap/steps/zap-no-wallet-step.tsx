@@ -15,7 +15,7 @@ export function ZapNoWalletStep({ onClose }: ZapNoWalletStepProps) {
       </div>
       <h3 className='mb-2 text-xl font-semibold text-gray-900'>Wallet Not Set Up</h3>
       <p className='mb-8 text-gray-600'>
-        This user hasn't set up their Evento wallet yet. We've let them know!
+        This user hasn&apos;t set up their Evento wallet yet. We&apos;ve let them know!
       </p>
       <Button
         onClick={onClose}

@@ -1,3 +1,2 @@
-# Run linting, tests, and format staged files
-# pnpm lint && pnpm test && pnpm format && git add . // TODO: Re-enable linting when lint errors are fixed
-pnpm test && pnpm format && git add .
+# Run typechecking, linting, tests, and format staged files
+pnpm tsc && pnpm lint && pnpm test && pnpm format && git add .

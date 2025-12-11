@@ -207,7 +207,15 @@ export default function SingleChatPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, applyRouteConfig, channel, client?.user?.id, pinnedMessages]);
+  }, [
+    pathname,
+    applyRouteConfig,
+    channel,
+    client?.user?.id,
+    pinnedMessages,
+    setTopBarForRoute,
+    clearRoute,
+  ]);
 
   // Handle message submission
   const handleSubmit = async (e?: React.FormEvent) => {

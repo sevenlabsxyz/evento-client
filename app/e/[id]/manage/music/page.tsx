@@ -9,7 +9,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { Check, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface EventMusic {
   spotify?: {
@@ -40,6 +40,60 @@ export default function MusicManagementPage() {
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [wavlakeUrl, setWavlakeUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSave = useCallback(async () => {
+    try {
+      if (!existingEvent) return;
+
+      setIsSubmitting(true);
+
+      // Prepare update data
+      const updateData = {
+        id: eventId,
+        spotify_url: musicData.spotify?.url || '',
+        wavlake_url: musicData.wavlake?.url || '',
+        // Include other required fields from existing event
+        title: existingEvent.title,
+        description: existingEvent.description,
+        location: existingEvent.location,
+        timezone: existingEvent.timezone,
+        start_date_day: existingEvent.start_date_day,
+        start_date_month: existingEvent.start_date_month,
+        start_date_year: existingEvent.start_date_year,
+        start_date_hours: existingEvent.start_date_hours,
+        start_date_minutes: existingEvent.start_date_minutes,
+        end_date_day: existingEvent.end_date_day,
+        end_date_month: existingEvent.end_date_month,
+        end_date_year: existingEvent.end_date_year,
+        end_date_hours: existingEvent.end_date_hours,
+        end_date_minutes: existingEvent.end_date_minutes,
+        visibility: existingEvent.visibility,
+        status: existingEvent.status,
+      };
+
+      await updateEventMutation.mutateAsync(updateData, {
+        onSuccess: () => {
+          toast.success('Music settings updated successfully!');
+          router.push(`/e/${eventId}/manage`);
+        },
+        onError: () => {
+          toast.error('Failed to update music settings');
+        },
+      });
+    } catch (error) {
+      console.error('Failed to save music settings:', error);
+      toast.error('Failed to update music settings');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [
+    eventId,
+    existingEvent,
+    musicData.spotify?.url,
+    musicData.wavlake?.url,
+    router,
+    updateEventMutation,
+  ]);
 
   // Update musicData when existingEvent loads
   useEffect(() => {
@@ -73,7 +127,7 @@ export default function MusicManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, applyRouteConfig, clearRoute, isSubmitting]);
+  }, [setTopBarForRoute, applyRouteConfig, clearRoute, isSubmitting, pathname, handleSave]);
 
   if (isLoading) {
     return (
@@ -127,7 +181,9 @@ export default function MusicManagementPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to manage doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -213,51 +269,6 @@ export default function MusicManagementPage() {
     delete newMusicData.wavlake;
     setMusicData(newMusicData);
     toast.success('Wavlake track removed! Click Save to update the event.');
-  };
-
-  const handleSave = async () => {
-    try {
-      setIsSubmitting(true);
-
-      // Prepare update data
-      const updateData = {
-        id: eventId,
-        spotify_url: musicData.spotify?.url || '',
-        wavlake_url: musicData.wavlake?.url || '',
-        // Include other required fields from existing event
-        title: existingEvent.title,
-        description: existingEvent.description,
-        location: existingEvent.location,
-        timezone: existingEvent.timezone,
-        start_date_day: existingEvent.start_date_day,
-        start_date_month: existingEvent.start_date_month,
-        start_date_year: existingEvent.start_date_year,
-        start_date_hours: existingEvent.start_date_hours,
-        start_date_minutes: existingEvent.start_date_minutes,
-        end_date_day: existingEvent.end_date_day,
-        end_date_month: existingEvent.end_date_month,
-        end_date_year: existingEvent.end_date_year,
-        end_date_hours: existingEvent.end_date_hours,
-        end_date_minutes: existingEvent.end_date_minutes,
-        visibility: existingEvent.visibility,
-        status: existingEvent.status,
-      };
-
-      await updateEventMutation.mutateAsync(updateData, {
-        onSuccess: () => {
-          toast.success('Music settings updated successfully!');
-          router.push(`/e/${eventId}/manage`);
-        },
-        onError: () => {
-          toast.error('Failed to update music settings');
-        },
-      });
-    } catch (error) {
-      console.error('Failed to save music settings:', error);
-      toast.error('Failed to update music settings');
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   return (

@@ -112,6 +112,7 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
               }`}
               onClick={() => handleGifClick(gif)}
             >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={gif.images.fixed_width.webp}
                 alt={gif.title || 'GIF'}

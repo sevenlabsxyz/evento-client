@@ -300,7 +300,7 @@ export default function TipSheet({
                     {/* Amount Summary */}
                     <div className='mb-6 rounded-xl border border-red-200 bg-red-50 p-4'>
                       <div className='text-center'>
-                        <p className='mb-1 text-base text-gray-600'>You're sending</p>
+                        <p className='mb-1 text-base text-gray-600'>You&apos;re sending</p>
                         <div className='flex items-center justify-center gap-2'>
                           <span className='text-2xl font-bold text-gray-900'>
                             {formatAmount(amount)}
@@ -350,7 +350,7 @@ export default function TipSheet({
                             Copy Invoice
                           </Button>
                           <p className='text-center text-sm text-gray-500'>
-                            Wallet didn't open? Copy the invoice and paste it in your Lightning
+                            Wallet didn&apos;t open? Copy the invoice and paste it in your Lightning
                             wallet.
                           </p>
                         </>

@@ -25,7 +25,7 @@ export function useEditComment() {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
-        return response.data;
+        return response.data as EventComment;
       }
 
       // If the API returns the comment directly without wrapping it

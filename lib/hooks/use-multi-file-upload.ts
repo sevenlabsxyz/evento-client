@@ -39,20 +39,23 @@ export function useMultiFileUpload({
 
   const acceptedFileTypes = acceptedTypes.join(',');
 
-  const validateFile = (file: File): string | null => {
-    // Check file type
-    if (!acceptedTypes.includes(file.type)) {
-      return `File type ${file.type} is not supported`;
-    }
+  const validateFile = useCallback(
+    (file: File): string | null => {
+      // Check file type
+      if (!acceptedTypes.includes(file.type)) {
+        return `File type ${file.type} is not supported`;
+      }
 
-    // Check file size
-    const fileSizeMB = file.size / (1024 * 1024);
-    if (fileSizeMB > maxFileSize) {
-      return `File size (${fileSizeMB.toFixed(1)}MB) exceeds limit of ${maxFileSize}MB`;
-    }
+      // Check file size
+      const fileSizeMB = file.size / (1024 * 1024);
+      if (fileSizeMB > maxFileSize) {
+        return `File size (${fileSizeMB.toFixed(1)}MB) exceeds limit of ${maxFileSize}MB`;
+      }
 
-    return null;
-  };
+      return null;
+    },
+    [acceptedTypes, maxFileSize]
+  );
 
   const handleFileSelect = useCallback(
     async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,7 +85,9 @@ export function useMultiFileUpload({
       // Show errors for invalid files
       if (invalidFiles.length > 0) {
         toast.error(
-          `Invalid files:\n${invalidFiles.slice(0, 3).join('\n')}${invalidFiles.length > 3 ? '\n...' : ''}`
+          `Invalid files:\n${invalidFiles.slice(0, 3).join('\n')}${
+            invalidFiles.length > 3 ? '\n...' : ''
+          }`
         );
       }
 
@@ -124,7 +129,7 @@ export function useMultiFileUpload({
         inputFileRef.current.value = '';
       }
     },
-    [selectedFilesData, maxFiles, maxFileSize, acceptedTypes]
+    [selectedFilesData, maxFiles, validateFile]
   );
 
   const removeFileFromSelection = useCallback((fileName: string) => {

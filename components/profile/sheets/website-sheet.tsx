@@ -58,7 +58,7 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600'>
-                  You're about to visit an external website. This will open in a new tab.
+                  You&apos;re about to visit an external website. This will open in a new tab.
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3'>
                   <p className='break-all text-sm text-gray-700'>{url}</p>

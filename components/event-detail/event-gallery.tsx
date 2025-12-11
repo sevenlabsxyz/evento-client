@@ -34,6 +34,7 @@ function GalleryImage({ src, index, onImageClick }: GalleryImageProps) {
       className='relative aspect-square cursor-pointer overflow-hidden rounded-md'
     >
       {isGif(src) ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           alt={`Gallery image ${index + 1}`}

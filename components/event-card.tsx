@@ -150,6 +150,7 @@ export function EventCard({
 
       {/* Event Image - Square aspect ratio */}
       <div className='relative'>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={
             event.cover && isGif(event.cover)

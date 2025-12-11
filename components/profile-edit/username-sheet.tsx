@@ -53,6 +53,7 @@ export default function UsernameSheet({
     };
 
     checkAvailability();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedUsername, currentUsername]);
 
   const handleSave = async () => {

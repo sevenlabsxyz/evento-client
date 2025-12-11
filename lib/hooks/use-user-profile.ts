@@ -75,7 +75,7 @@ export function useUpdateUserProfile() {
         Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
       );
 
-      const response = await apiClient.patch<UserDetails[]>('/v1/user', filteredUpdates);
+      const response = await apiClient.patch<{ data: UserDetails[] }>('/v1/user', filteredUpdates);
       return response.data?.[0] || null;
     },
     onSuccess: (updatedUser) => {
@@ -104,7 +104,7 @@ export function useUploadProfileImage() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await apiClient.post<UserDetails[]>(
+      const response = await apiClient.post<{ data: UserDetails[] }>(
         '/v1/user/details/image-upload',
         formData,
         {
@@ -165,7 +165,7 @@ export function useFollowStatus(userId: string) {
     queryFn: async () => {
       if (!userId) return { isFollowing: false };
 
-      const response = await apiClient.get<{ isFollowing: boolean }>(
+      const response = await apiClient.get<{ data: { isFollowing: boolean } }>(
         `/v1/user/follow?id=${userId}`
       );
       return response.data || { isFollowing: false };
@@ -224,9 +224,14 @@ export function useUserFollowers(userId: string) {
   return useQuery({
     queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/followers/list?id=${userId}`);
+      const response = await apiClient.get<{
+        data: {
+          follower_id: string;
+          user_details: UserDetails;
+        }[];
+      }>(`/v1/user/followers/list?id=${userId}`);
       // Transform the API response to match UI expectations
-      const transformedData = (response.data || []).map((item: any) => ({
+      const transformedData = (response.data || []).map((item) => ({
         id: item.user_details?.id || item.follower_id,
         username: item.user_details?.username || '',
         name: item.user_details?.name || '',
@@ -247,7 +252,12 @@ export function useUserFollowing(userId: string) {
   return useQuery({
     queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/follows/list?id=${userId}`);
+      const response = await apiClient.get<{
+        data: {
+          follower_id: string;
+          user_details: UserDetails;
+        }[];
+      }>(`/v1/user/follows/list?id=${userId}`);
       // Transform the API response to match UI expectations
       const transformedData = (response.data || []).map((item: any) => ({
         id: item.user_details?.id || item.followed_id,
@@ -270,7 +280,9 @@ export function useUserEventCount(userId: string) {
   return useQuery({
     queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
-      const response = await apiClient.get<{ count: number }>(`/v1/user/events/count?id=${userId}`);
+      const response = await apiClient.get<{ data: { count: number } }>(
+        `/v1/user/events/count?id=${userId}`
+      );
       return response.data?.count || 0;
     },
     enabled: !!userId,

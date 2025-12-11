@@ -139,6 +139,8 @@ export interface Event {
   cost: number | null;
   creator_user_id: string;
   hosts: EventHost[];
+  max_capacity?: number;
+  show_capacity_count?: boolean;
 
   // Date components (stored separately for timezone handling)
   start_date_day: number;
@@ -172,15 +174,9 @@ export interface Event {
 
   // Relations (populated in some responses)
   user_details?: UserDetails;
-  hosts?: Array<{
-    id: string;
-    name: string;
-    username: string;
-    avatar: string;
-    image?: string;
-    title?: string;
-    company?: string;
-  }>;
+  guestListSettings?: {
+    isPublic: boolean;
+  };
 }
 
 // Event Invite

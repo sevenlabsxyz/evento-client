@@ -116,7 +116,7 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
             className='mt-1 h-4 w-4 rounded border-gray-300'
           />
           <label htmlFor='confirm' className='text-sm'>
-            I've saved my recovery phrase in a safe place
+            I&apos;ve saved my recovery phrase in a safe place
           </label>
         </div>
       </div>

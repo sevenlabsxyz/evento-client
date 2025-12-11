@@ -30,7 +30,7 @@ export const eventFormSchema = z.object({
 
   // Visibility and status
   visibility: z.enum(['public', 'private']).default('private'),
-  status: z.enum(['published', 'draft']).default('published'),
+  status: z.enum(['published', 'draft', 'cancelled', 'archived']).default('published'),
 
   // Social media URLs
   spotify_url: z.string().url().optional().or(z.literal('')),

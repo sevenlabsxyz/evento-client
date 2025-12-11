@@ -47,7 +47,9 @@ export default function GalleryPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to view doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to view doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -151,6 +153,7 @@ export default function GalleryPage() {
                 onClick={() => handleImageClick(index)}
                 className='aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90'
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={getOptimizedImageUrl(image.url)}
                   alt={`Gallery image ${index + 1}`}
@@ -178,7 +181,7 @@ export default function GalleryPage() {
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900'>No Photos Yet</h3>
             <p className='text-sm text-gray-500'>
-              Photos from this event will appear here once they're added.
+              Photos from this event will appear here once they&apos;re added.
             </p>
           </div>
         )}

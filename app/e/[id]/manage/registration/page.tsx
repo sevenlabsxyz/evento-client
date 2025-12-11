@@ -38,6 +38,9 @@ export default function RegistrationQuestionsPage() {
   // Get existing event data from API
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
 
+  // Mock registration questions data (empty for now to show empty state)
+  const [questions, setQuestions] = useState<RegistrationQuestion[]>([]);
+
   if (isLoading) {
     return (
       <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
@@ -85,7 +88,9 @@ export default function RegistrationQuestionsPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to manage doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -96,9 +101,6 @@ export default function RegistrationQuestionsPage() {
       </div>
     );
   }
-
-  // Mock registration questions data (empty for now to show empty state)
-  const [questions, setQuestions] = useState<RegistrationQuestion[]>([]);
 
   const handleAddQuestion = () => {
     router.push(`/e/event/${eventId}/manage/registration/types`);

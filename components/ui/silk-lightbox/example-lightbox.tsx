@@ -135,6 +135,7 @@ const ExampleLightbox = () => {
         <Lightbox.View>
           <Lightbox.Backdrop />
           <Lightbox.Content>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               width={imageWidth}
               height={imageHeight}

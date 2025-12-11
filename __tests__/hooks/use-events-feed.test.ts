@@ -80,6 +80,7 @@ describe('useEventsFeed', () => {
     created_at: '2024-01-10T09:00:00Z',
     updated_at: '2024-01-10T09:00:00Z',
     user_details: createMockUserDetails(),
+    hosts: [],
     ...overrides,
   });
 

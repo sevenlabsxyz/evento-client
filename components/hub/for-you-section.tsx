@@ -4,7 +4,7 @@ import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
 import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
 import { Calendar, Sparkles } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
 type ForYouTabType = 'following' | 'discover';
@@ -54,22 +54,22 @@ export function ForYouSection() {
     return 'View All Discover Events';
   }, [activeTab]);
 
-  const getTabCount = (tab: ForYouTabType) => {
-    switch (tab) {
-      case 'following':
-        return followingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
-      case 'discover':
-        // For You events are not paginated, return array length
-        return discoverQuery.data?.length || 0;
-      default:
-        return 0;
-    }
-  };
-
-  const totalCount = useMemo(
-    () => getTabCount(activeTab),
-    [activeTab, followingQuery.data, discoverQuery.data]
+  const getTabCount = useCallback(
+    (tab: ForYouTabType) => {
+      switch (tab) {
+        case 'following':
+          return followingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
+        case 'discover':
+          // For You events are not paginated, return array length
+          return discoverQuery.data?.length || 0;
+        default:
+          return 0;
+      }
+    },
+    [discoverQuery.data?.length, followingQuery.data?.pages]
   );
+
+  const totalCount = useMemo(() => getTabCount(activeTab), [getTabCount, activeTab]);
 
   return (
     <div className='flex flex-col'>

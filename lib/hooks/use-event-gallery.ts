@@ -26,7 +26,7 @@ export function useEventGallery(eventId: string) {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
-        return response.data || [];
+        return (response.data as GalleryItem[]) || [];
       }
 
       // Fallback for direct data response

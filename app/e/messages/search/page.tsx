@@ -121,6 +121,7 @@ export default function UserSearchPage() {
                 className='flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50'
               >
                 <div className='relative flex-shrink-0'>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={user.avatar || '/placeholder.svg'}
                     alt={user.name}

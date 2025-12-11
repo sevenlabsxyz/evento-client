@@ -38,7 +38,7 @@ export function useCheckUsername() {
       }
 
       try {
-        const response = await apiClient.get<UsernameCheckResponse>(
+        const response = await apiClient.get<{ data: UsernameCheckResponse }>(
           `/v1/user/check-username?username=${encodeURIComponent(cleanUsername)}`
         );
 

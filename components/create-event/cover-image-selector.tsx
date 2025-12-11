@@ -23,6 +23,7 @@ export default function CoverImageSelector({
         <div className='h-full w-full'>
           {isGif(selectedImage) ? (
             // For GIFs, use a regular img tag to ensure they play automatically
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={selectedImage}
               alt='Selected GIF cover'

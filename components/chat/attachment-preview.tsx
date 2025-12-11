@@ -17,6 +17,7 @@ export function AttachmentPreview({ attachments, onRemove }: AttachmentPreviewPr
           <div key={index} className='relative flex-1'>
             {file.type.startsWith('image/') ? (
               <div className='relative'>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={URL.createObjectURL(file)}
                   alt={file.name}

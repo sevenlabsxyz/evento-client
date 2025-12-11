@@ -90,16 +90,19 @@ const SheetWithDetentView = React.forwardRef<
 
     //
 
-    const setRefs = React.useCallback((node: HTMLElement | null) => {
-      // @ts-ignore - intentionally breaking the readonly nature for compatibility
-      viewRef.current = node;
+    const setRefs = React.useCallback(
+      (node: HTMLElement | null) => {
+        // @ts-ignore - intentionally breaking the readonly nature for compatibility
+        viewRef.current = node;
 
-      if (typeof ref === 'function') {
-        ref(node);
-      } else if (ref) {
-        ref.current = node;
-      }
-    }, []);
+        if (typeof ref === 'function') {
+          ref(node);
+        } else if (ref) {
+          ref.current = node;
+        }
+      },
+      [ref, viewRef]
+    );
 
     return (
       <Sheet.View

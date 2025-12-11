@@ -125,7 +125,7 @@ describe('useSubEvents', () => {
       },
     ];
 
-    mockApiClient.get.mockResolvedValue(mockSubEvents);
+    mockApiClient.get.mockResolvedValue({ data: mockSubEvents });
     transformApiEventResponse
       .mockReturnValueOnce(transformedEvents[0])
       .mockReturnValueOnce(transformedEvents[1]);
@@ -144,7 +144,7 @@ describe('useSubEvents', () => {
   it('should handle empty sub-events response', async () => {
     const mockApiClient = require('@/lib/api/client').apiClient;
 
-    mockApiClient.get.mockResolvedValue([]);
+    mockApiClient.get.mockResolvedValue({ data: [] });
 
     const { result } = renderHook(() => useSubEvents('event123'), { wrapper });
 
@@ -183,7 +183,7 @@ describe('useSubEvents', () => {
       },
     };
 
-    mockApiClient.get.mockResolvedValue([mockSubEvent]);
+    mockApiClient.get.mockResolvedValue({ data: [mockSubEvent] });
     transformApiEventResponse.mockReturnValue(transformedEvent);
 
     const { result } = renderHook(() => useSubEvents('event123'), { wrapper });
@@ -228,7 +228,7 @@ describe('useSubEvents', () => {
       },
     };
 
-    mockApiClient.get.mockResolvedValue([mockSubEvent]);
+    mockApiClient.get.mockResolvedValue({ data: [mockSubEvent] });
     transformApiEventResponse.mockReturnValue(transformedEvent);
 
     const { result } = renderHook(() => useSubEvents('event123'), { wrapper });
@@ -282,7 +282,7 @@ describe('useSubEvents', () => {
       },
     };
 
-    mockApiClient.get.mockResolvedValue(mockSubEvents);
+    mockApiClient.get.mockResolvedValue({ data: mockSubEvents });
     transformApiEventResponse.mockReturnValue(transformedEvent);
 
     const { result } = renderHook(() => useSubEvents('event123'), { wrapper });

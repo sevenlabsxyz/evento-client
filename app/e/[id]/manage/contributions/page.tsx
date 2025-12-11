@@ -11,7 +11,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { Check, DollarSign } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface PaymentMethod {
   enabled: boolean;
@@ -60,173 +60,7 @@ export default function ContributionsManagementPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Initialize with existing event data
-  useEffect(() => {
-    if (existingEvent) {
-      setContributions({
-        enabled: !!(
-          existingEvent.contrib_cashapp ||
-          existingEvent.contrib_venmo ||
-          existingEvent.contrib_paypal ||
-          existingEvent.contrib_btclightning
-        ),
-        suggestedAmount: {
-          amount: existingEvent.cost ? parseFloat(existingEvent.cost) : 0,
-          currency: 'USD',
-        },
-        paymentMethods: {
-          cashApp: {
-            enabled: !!existingEvent.contrib_cashapp,
-            value: existingEvent.contrib_cashapp || '',
-          },
-          bitcoin: {
-            enabled: !!existingEvent.contrib_btclightning,
-            value: existingEvent.contrib_btclightning || '',
-          },
-          venmo: {
-            enabled: !!existingEvent.contrib_venmo,
-            value: existingEvent.contrib_venmo || '',
-          },
-          paypal: {
-            enabled: !!existingEvent.contrib_paypal,
-            value: existingEvent.contrib_paypal || '',
-          },
-        },
-      });
-    }
-  }, [existingEvent]);
-
-  // Configure TopBar
-  useEffect(() => {
-    applyRouteConfig(pathname);
-    setTopBarForRoute(pathname, {
-      title: 'Contributions',
-      leftMode: 'back',
-      centerMode: 'title',
-      showAvatar: false,
-      buttons: [
-        {
-          id: 'save-contributions',
-          icon: Check,
-          onClick: () => void handleSave(),
-          label: 'Save',
-          disabled: isSubmitting,
-        },
-      ],
-    });
-
-    return () => {
-      clearRoute(pathname);
-    };
-  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig]);
-
-  // Conditional returns MUST come after all hooks
-  if (isLoading) {
-    return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-        <div className='space-y-6 p-4'>
-          <Skeleton className='h-4 w-3/4' />
-
-          {/* Contribution Settings Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
-            <div className='mb-4 flex items-center gap-3'>
-              <Skeleton className='h-12 w-12 rounded-xl' />
-              <div className='space-y-2'>
-                <Skeleton className='h-5 w-24' />
-                <Skeleton className='h-4 w-40' />
-              </div>
-            </div>
-            <div className='space-y-4'>
-              <div className='space-y-2'>
-                <Skeleton className='h-4 w-20' />
-                <Skeleton className='h-12 w-full rounded-xl' />
-              </div>
-              <div className='space-y-2'>
-                <Skeleton className='h-4 w-28' />
-                <Skeleton className='h-24 w-full rounded-xl' />
-              </div>
-              <Skeleton className='h-12 w-full rounded-xl' />
-            </div>
-          </div>
-
-          {/* Information Section Skeleton */}
-          <div className='rounded-2xl bg-blue-50 p-4'>
-            <Skeleton className='mb-2 h-5 w-32' />
-            <Skeleton className='h-4 w-full' />
-            <Skeleton className='mt-1 h-4 w-3/4' />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !existingEvent) {
-    return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
-          <button
-            onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  const currencies = [{ value: 'USD', label: '$', name: 'US Dollar' }];
-
-  const handleAmountChange = (amount: number) => {
-    setContributions((prev) => ({
-      ...prev,
-      suggestedAmount: {
-        ...prev.suggestedAmount!,
-        amount,
-      },
-    }));
-  };
-
-  const handlePaymentMethodToggle = (method: keyof EventContributions['paymentMethods']) => {
-    setContributions((prev) => ({
-      ...prev,
-      paymentMethods: {
-        ...prev.paymentMethods,
-        [method]: {
-          ...prev.paymentMethods[method]!,
-          enabled: !prev.paymentMethods[method]!.enabled,
-        },
-      },
-    }));
-  };
-
-  const handlePaymentMethodValue = (
-    method: keyof EventContributions['paymentMethods'],
-    value: string
-  ) => {
-    // Auto-format values
-    let formattedValue = value;
-    if (method === 'cashApp' && value && !value.startsWith('$')) {
-      formattedValue = '$' + value.replace(/^\$/, '');
-    } else if (method === 'venmo' && value && !value.startsWith('@')) {
-      formattedValue = '@' + value.replace(/^@/, '');
-    }
-
-    setContributions((prev) => ({
-      ...prev,
-      paymentMethods: {
-        ...prev.paymentMethods,
-        [method]: {
-          ...prev.paymentMethods[method]!,
-          value: formattedValue,
-        },
-      },
-    }));
-  };
-
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
     if (!existingEvent) return;
 
     try {
@@ -285,6 +119,181 @@ export default function ContributionsManagementPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }, [
+    contributions.paymentMethods,
+    contributions.suggestedAmount?.amount,
+    eventId,
+    existingEvent,
+    router,
+    updateEventMutation,
+  ]);
+
+  // Initialize with existing event data
+  useEffect(() => {
+    if (existingEvent) {
+      setContributions({
+        enabled: !!(
+          existingEvent.contrib_cashapp ||
+          existingEvent.contrib_venmo ||
+          existingEvent.contrib_paypal ||
+          existingEvent.contrib_btclightning
+        ),
+        suggestedAmount: {
+          amount: existingEvent.cost ? parseFloat(existingEvent.cost.toString()) : 0,
+          currency: 'USD',
+        },
+        paymentMethods: {
+          cashApp: {
+            enabled: !!existingEvent.contrib_cashapp,
+            value: existingEvent.contrib_cashapp || '',
+          },
+          bitcoin: {
+            enabled: !!existingEvent.contrib_btclightning,
+            value: existingEvent.contrib_btclightning || '',
+          },
+          venmo: {
+            enabled: !!existingEvent.contrib_venmo,
+            value: existingEvent.contrib_venmo || '',
+          },
+          paypal: {
+            enabled: !!existingEvent.contrib_paypal,
+            value: existingEvent.contrib_paypal || '',
+          },
+        },
+      });
+    }
+  }, [existingEvent]);
+
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Contributions',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'save-contributions',
+          icon: Check,
+          onClick: () => void handleSave(),
+          label: 'Save',
+          disabled: isSubmitting,
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig, pathname, handleSave]);
+
+  // Conditional returns MUST come after all hooks
+  if (isLoading) {
+    return (
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Contribution Settings Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-24' />
+                <Skeleton className='h-4 w-40' />
+              </div>
+            </div>
+            <div className='space-y-4'>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-20' />
+                <Skeleton className='h-12 w-full rounded-xl' />
+              </div>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-28' />
+                <Skeleton className='h-24 w-full rounded-xl' />
+              </div>
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-32' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-3/4' />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !existingEvent) {
+    return (
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to manage doesn&apos;t exist.
+          </p>
+          <button
+            onClick={() => router.back()}
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const currencies = [{ value: 'USD', label: '$', name: 'US Dollar' }];
+
+  const handleAmountChange = (amount: number) => {
+    setContributions((prev) => ({
+      ...prev,
+      suggestedAmount: {
+        ...prev.suggestedAmount!,
+        amount,
+      },
+    }));
+  };
+
+  const handlePaymentMethodToggle = (method: keyof EventContributions['paymentMethods']) => {
+    setContributions((prev) => ({
+      ...prev,
+      paymentMethods: {
+        ...prev.paymentMethods,
+        [method]: {
+          ...prev.paymentMethods[method]!,
+          enabled: !prev.paymentMethods[method]!.enabled,
+        },
+      },
+    }));
+  };
+
+  const handlePaymentMethodValue = (
+    method: keyof EventContributions['paymentMethods'],
+    value: string
+  ) => {
+    // Auto-format values
+    let formattedValue = value;
+    if (method === 'cashApp' && value && !value.startsWith('$')) {
+      formattedValue = '$' + value.replace(/^\$/, '');
+    } else if (method === 'venmo' && value && !value.startsWith('@')) {
+      formattedValue = '@' + value.replace(/^@/, '');
+    }
+
+    setContributions((prev) => ({
+      ...prev,
+      paymentMethods: {
+        ...prev.paymentMethods,
+        [method]: {
+          ...prev.paymentMethods[method]!,
+          value: formattedValue,
+        },
+      },
+    }));
   };
 
   const paymentMethods = [

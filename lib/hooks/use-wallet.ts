@@ -89,7 +89,7 @@ export function useWallet() {
     };
 
     initWallet();
-  }, [getInMemorySeed, isSeedValid]);
+  }, [getInMemorySeed, isSeedValid, setError, setLoading, setWalletState]);
 
   // Save wallet state whenever it changes
   useEffect(() => {
@@ -141,7 +141,7 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed, clearSeed]
+    [setLoading, setError, clearSeed, setInMemorySeed, setWalletState]
   );
 
   /**
@@ -200,7 +200,7 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed, clearSeed]
+    [setLoading, setError, clearSeed, setInMemorySeed, setWalletState]
   );
 
   /**
@@ -249,7 +249,7 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed, clearSeed]
+    [setLoading, setError, clearSeed, setInMemorySeed, setWalletState]
   );
 
   /**
@@ -317,7 +317,7 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed]
+    [setError, setInMemorySeed, setLoading, setWalletState]
   );
 
   /**
@@ -335,7 +335,7 @@ export function useWallet() {
       console.error('Failed to lock wallet:', err);
       setError(err.message || 'Failed to lock wallet');
     }
-  }, [clearSeed]);
+  }, [clearSeed, setError, setWalletState]);
 
   /**
    * Refresh balance
@@ -376,7 +376,7 @@ export function useWallet() {
 
       return newState;
     });
-  }, []);
+  }, [setWalletState]);
 
   /**
    * Get encrypted backup (requires password confirmation)

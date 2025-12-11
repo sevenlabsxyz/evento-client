@@ -29,23 +29,13 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
 
-  if (!post) return null;
-
-  const authorName = post.authors && post.authors.length > 0 ? post.authors[0].name : 'Evento Team';
-
-  const publishedDate = new Date(post.published_at || '').toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
   // Fetch related blog posts
   useEffect(() => {
     const fetchRelatedPosts = async () => {
       try {
         setIsLoadingRelated(true);
 
-        if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
+        if (!post || !Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
           return;
         }
 
@@ -72,7 +62,17 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
     };
 
     fetchRelatedPosts();
-  }, [post.slug]);
+  }, [post]);
+
+  if (!post) return null;
+
+  const authorName = post.authors && post.authors.length > 0 ? post.authors[0].name : 'Evento Team';
+
+  const publishedDate = new Date(post.published_at || '').toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 
   const handleShare = async () => {
     const shareData = {

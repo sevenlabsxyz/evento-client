@@ -71,6 +71,7 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
       <div className='str-chat__channel-preview-messenger--left'>
         <div className='str-chat__avatar str-chat__avatar--circle'>
           {displayImage && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={displayImage}
               alt={displayTitle || 'Channel'}
@@ -88,7 +89,7 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
       <div className='str-chat__channel-preview-messenger--main'>
         <div className='str-chat__channel-preview-messenger--name'>
           <span>{displayTitle || 'Unknown Channel'}</span>
-          {unread > 0 && <span className='str-chat__channel-preview-unread-badge'>{unread}</span>}
+          {!!unread && <span className='str-chat__channel-preview-unread-badge'>{unread}</span>}
         </div>
         <div className='str-chat__channel-preview-messenger--last-message'>
           {getLastMessagePreview()}

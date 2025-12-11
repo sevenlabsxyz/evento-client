@@ -69,7 +69,8 @@ describe('useEditComment', () => {
       username: 'testuser',
       name: 'Test User',
       image: 'test.jpg',
-      verification_status: null,
+      bio: 'Test bio',
+      verification_status: 'pending',
     },
     replies: [],
     ...overrides,
@@ -537,6 +538,7 @@ and special characters! @#$%^&*()`;
           username: 'testuser',
           name: 'Test User',
           image: 'test.jpg',
+          bio: 'Test Bio',
           verification_status: 'verified',
         },
       });

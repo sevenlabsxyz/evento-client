@@ -31,7 +31,7 @@ export default function ContactPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, pathname]);
 
   const router = useRouter();
   const prefilledTitle = useSearchParams().get('title') ?? '';

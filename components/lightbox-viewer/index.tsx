@@ -109,6 +109,8 @@ const MobileGalleryMenu = React.memo(
   }
 );
 
+MobileGalleryMenu.displayName = 'MobileGalleryMenu';
+
 export const LightboxViewer = React.memo(
   ({
     images,
@@ -187,7 +189,9 @@ export const LightboxViewer = React.memo(
               // Check if Web Share API is supported
               if (navigator.share) {
                 try {
-                  const response = await fetch(imageUrl, { signal: controller.signal });
+                  const response = await fetch(imageUrl, {
+                    signal: controller.signal,
+                  });
                   if (!response.ok) throw new Error('Network response was not ok');
                   const blob = await response.blob();
                   const file = new File([blob], fileName, { type: blob.type });
@@ -212,7 +216,9 @@ export const LightboxViewer = React.memo(
               }
             } else {
               // Non-iOS devices: Use traditional download
-              const response = await fetch(imageUrl, { signal: controller.signal });
+              const response = await fetch(imageUrl, {
+                signal: controller.signal,
+              });
               if (!response.ok) throw new Error('Network response was not ok');
               const blob = await response.blob();
               const url = window.URL.createObjectURL(blob);
@@ -377,6 +383,7 @@ export const LightboxViewer = React.memo(
                     </button>
                   </div>
                 ) : (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={getImageUrl(images[selectedImage])}
                     alt={`Fullscreen view of image ${selectedImage + 1}`}
@@ -482,3 +489,5 @@ export const LightboxViewer = React.memo(
     );
   }
 );
+
+LightboxViewer.displayName = 'LightboxViewer';

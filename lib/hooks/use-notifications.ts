@@ -145,12 +145,12 @@ export function useNotification(messageId: string, enabled: boolean = true) {
     queryKey: ['notifications', 'message', messageId],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationMessage>(
+        const response = await apiClient.get<{ data: NotificationMessage }>(
           `/v1/notifications/messages/${messageId}`
         );
 
         if (response?.data) {
-          return formatNotificationForUI(response.data);
+          return formatNotificationForUI(response.data as NotificationMessage);
         }
 
         throw new Error('Invalid response format');
@@ -255,7 +255,7 @@ export function useBulkMarkAsSeen() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response?.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as seen');
@@ -279,7 +279,7 @@ export function useBulkMarkAsRead() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response?.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as read');
@@ -303,7 +303,7 @@ export function useMarkAllAsSeen() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response?.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as seen');
@@ -321,13 +321,13 @@ export function useMarkAllAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (params: MarkAllNotificationsParams = {}) => {
+    mutationFn: async (params: MarkAllNotificationsParams = { status: 'read' }) => {
       const response = await apiClient.put<{ success: boolean }>(
-        '/v1/notifications/mark-all/read',
+        '/v1/notifications/messages/mark-all',
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response?.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as read');

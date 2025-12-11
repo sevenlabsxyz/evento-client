@@ -154,6 +154,7 @@ export default function WeatherDetailSheet({
                 <div className='text-center'>
                   <div className='mb-2 flex items-center justify-center'>
                     {!iconError && iconLoaded ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         ref={iconRef}
                         src={iconUrl}

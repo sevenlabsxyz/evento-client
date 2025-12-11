@@ -11,7 +11,7 @@ import { toast } from '@/lib/utils/toast';
 import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AlertCircle, ArrowLeft, Loader2, Scan, X } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Badge } from '../ui/badge';
 import { AmountInputSheet } from './amount-input-sheet';
 
@@ -88,24 +88,7 @@ export function SendLightningSheet({
     setBitcoinPrepareResponse(null);
   };
 
-  // Populate invoice field when scanned data is provided
-  useEffect(() => {
-    if (scannedData && open) {
-      handleInvoiceChange(scannedData);
-    }
-  }, [scannedData, open]);
-
-  // Strip common URI prefixes (lightning:, bitcoin:) from input
-  const stripUriPrefixes = (value: string): string => {
-    let cleaned = value.trim();
-    const prefixPatterns = [/^lightning:/i, /^bitcoin:/i];
-    for (const pattern of prefixPatterns) {
-      cleaned = cleaned.replace(pattern, '');
-    }
-    return cleaned;
-  };
-
-  const handleInvoiceChange = (value: string) => {
+  const handleInvoiceChange = useCallback((value: string) => {
     const cleanedValue = stripUriPrefixes(value);
     setInvoice(cleanedValue);
 
@@ -119,6 +102,23 @@ export function SendLightningSheet({
       setAmountUSD('');
       setParsedInput(null);
     }
+  }, []);
+
+  // Populate invoice field when scanned data is provided
+  useEffect(() => {
+    if (scannedData && open) {
+      handleInvoiceChange(scannedData);
+    }
+  }, [scannedData, open, handleInvoiceChange]);
+
+  // Strip common URI prefixes (lightning:, bitcoin:) from input
+  const stripUriPrefixes = (value: string): string => {
+    let cleaned = value.trim();
+    const prefixPatterns = [/^lightning:/i, /^bitcoin:/i];
+    for (const pattern of prefixPatterns) {
+      cleaned = cleaned.replace(pattern, '');
+    }
+    return cleaned;
   };
 
   const handleAmountChange = async (value: string, mode: 'sats' | 'usd') => {

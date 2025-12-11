@@ -48,7 +48,7 @@ export default function SubEventsManagementPage() {
         showAvatar: true,
       });
     };
-  }, [setTopBar]);
+  }, [eventId, router, setTopBar]);
 
   const handleDelete = async (subEvent: EventWithUser) => {
     // await deleteSubEvent.mutateAsync({

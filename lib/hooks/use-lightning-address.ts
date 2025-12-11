@@ -13,13 +13,6 @@ export function useLightningAddress() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load Lightning address info on mount
-  useEffect(() => {
-    if (walletState.isConnected && !lightningAddress) {
-      loadLightningAddress();
-    }
-  }, [walletState.isConnected, lightningAddress]);
-
   const loadLightningAddress = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -34,6 +27,13 @@ export function useLightningAddress() {
       setIsLoading(false);
     }
   }, [setLightningAddress]);
+
+  // Load Lightning address info on mount
+  useEffect(() => {
+    if (walletState.isConnected && !lightningAddress) {
+      loadLightningAddress();
+    }
+  }, [walletState.isConnected, lightningAddress, loadLightningAddress]);
 
   const checkAvailability = useCallback(async (username: string): Promise<boolean> => {
     try {

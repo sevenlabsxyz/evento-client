@@ -113,13 +113,16 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
 
           {/* Invite Message */}
           {invite.message && (
-            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>"{invite.message}"</p>
+            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>
+              &quot;{invite.message}&quot;
+            </p>
           )}
         </div>
 
         {/* Right Image */}
         {coverImage && (
           <div className='shrink-0'>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={coverImage} alt={event.title} className='h-24 w-24 rounded-xl object-cover' />
           </div>
         )}

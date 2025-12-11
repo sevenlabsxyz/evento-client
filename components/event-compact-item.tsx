@@ -43,6 +43,7 @@ export function EventCompactItem({
     >
       {/* Event thumbnail */}
       <div className='h-14 w-14 overflow-hidden rounded-md'>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={getOptimizedCoverUrl(event.cover || '', 'feed')}
           alt={event.title}

@@ -80,38 +80,29 @@ describe('useNotifications', () => {
         archived_at: null,
       },
     ],
-    activities: [
-      {
-        id: 'activity_1',
-        actor: {
-          id: 'user_1',
-          object: 'user',
-        },
-        created_at: '2023-01-01T00:00:00Z',
-      },
-    ],
     data: { event_id: 'event_1' },
     created_at: '2023-01-01T00:00:00Z',
-    updated_at: '2023-01-01T00:00:00Z',
     trigger_data: { event_id: 'event_1' },
     ...overrides,
   });
 
   const createMockFeedResponse = (
-    overrides: Partial<NotificationFeedResponse> = {}
+    overrides: Partial<NotificationFeedResponse['data']> = {}
   ): NotificationFeedResponse => ({
-    entries: [createMockNotificationMessage()],
-    meta: {
-      total_count: 1,
-      unseen_count: 1,
-      unread_count: 1,
+    data: {
+      entries: [createMockNotificationMessage()],
+      meta: {
+        total_count: 1,
+        unseen_count: 1,
+        unread_count: 1,
+      },
+      page_info: {
+        after: 'cursor_1',
+        before: null,
+        page_size: 20,
+      },
+      ...overrides,
     },
-    page_info: {
-      after: 'cursor_1',
-      before: null,
-      page_size: 20,
-    },
-    ...overrides,
   });
 
   describe('formatNotificationForUI', () => {
@@ -194,7 +185,7 @@ describe('useNotifications', () => {
   describe('useNotificationsFeed', () => {
     it('fetches notifications feed successfully', async () => {
       const mockResponse = createMockFeedResponse();
-      mockApiClient.get.mockResolvedValue({ data: mockResponse });
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useNotificationsFeed(), {
         wrapper: createTestWrapper(queryClient),
@@ -211,7 +202,7 @@ describe('useNotifications', () => {
 
     it('applies filters correctly', async () => {
       const mockResponse = createMockFeedResponse();
-      mockApiClient.get.mockResolvedValue({ data: mockResponse });
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const filters: NotificationFilterParams = {
         page_size: 10,
@@ -239,7 +230,7 @@ describe('useNotifications', () => {
 
     it('handles pagination with after parameter', async () => {
       const mockResponse = createMockFeedResponse();
-      mockApiClient.get.mockResolvedValue({ data: mockResponse });
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const filters: NotificationFilterParams = {
         after: 'cursor_1',
@@ -258,7 +249,7 @@ describe('useNotifications', () => {
 
     it('handles trigger_data filters', async () => {
       const mockResponse = createMockFeedResponse();
-      mockApiClient.get.mockResolvedValue({ data: mockResponse });
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const filters: NotificationFilterParams = {
         trigger_data: {
@@ -326,9 +317,7 @@ describe('useNotifications', () => {
         page_info: { after: null, before: 'cursor_1', page_size: 20 },
       });
 
-      mockApiClient.get
-        .mockResolvedValueOnce({ data: firstPage })
-        .mockResolvedValueOnce({ data: secondPage });
+      mockApiClient.get.mockResolvedValueOnce(firstPage).mockResolvedValueOnce(secondPage);
 
       const { result } = renderHook(() => useNotificationsFeed(), {
         wrapper: createTestWrapper(queryClient),
@@ -556,7 +545,8 @@ describe('useNotifications', () => {
       });
 
       const params: NotificationBulkActionParams = {
-        message_ids: ['notif_1', 'notif_2'],
+        notification_ids: ['notif_1', 'notif_2'],
+        action: 'read',
       };
 
       await act(async () => {
@@ -581,7 +571,8 @@ describe('useNotifications', () => {
       });
 
       const params: NotificationBulkActionParams = {
-        message_ids: ['notif_1', 'notif_2'],
+        notification_ids: ['notif_1', 'notif_2'],
+        action: 'read',
       };
 
       await act(async () => {
@@ -594,14 +585,15 @@ describe('useNotifications', () => {
     });
 
     it('handles failed response', async () => {
-      mockApiClient.put.mockResolvedValue({ data: { success: false } });
+      mockApiClient.put.mockResolvedValue({ success: false });
 
       const { result } = renderHook(() => useBulkMarkAsSeen(), {
         wrapper: createTestWrapper(queryClient),
       });
 
       const params: NotificationBulkActionParams = {
-        message_ids: ['notif_1', 'notif_2'],
+        notification_ids: ['notif_1', 'notif_2'],
+        action: 'read',
       };
 
       await act(async () => {
@@ -622,7 +614,8 @@ describe('useNotifications', () => {
       });
 
       const params: NotificationBulkActionParams = {
-        message_ids: ['notif_1', 'notif_2'],
+        notification_ids: ['notif_1', 'notif_2'],
+        action: 'read',
       };
 
       await act(async () => {
@@ -693,26 +686,28 @@ describe('useNotifications', () => {
       });
 
       await act(async () => {
-        await result.current.mutateAsync({});
+        await result.current.mutateAsync(undefined);
       });
 
       await waitFor(() => {
         expect(result.current.isSuccess).toBe(true);
       });
-      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/mark-all/read', {});
+      expect(mockApiClient.put).toHaveBeenCalledWith('/v1/notifications/messages/mark-all', {
+        status: 'read',
+      });
     });
   });
 
   describe('useUnreadCount', () => {
     it('fetches unread count successfully', async () => {
-      const mockResponse = createMockFeedResponse({
+      const mockResponse: NotificationFeedResponse = createMockFeedResponse({
         meta: {
           total_count: 10,
           unseen_count: 3,
           unread_count: 5,
         },
       });
-      mockApiClient.get.mockResolvedValue({ data: mockResponse });
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useUnreadCount(), {
         wrapper: createTestWrapper(queryClient),
@@ -750,9 +745,9 @@ describe('useNotifications', () => {
 
     it('returns zero counts when meta is missing', async () => {
       const mockResponse = createMockFeedResponse({
-        meta: undefined as unknown as NotificationFeedResponse['meta'],
+        meta: undefined as unknown as NotificationFeedResponse['data']['meta'],
       });
-      mockApiClient.get.mockResolvedValue({ data: mockResponse });
+      mockApiClient.get.mockResolvedValue(mockResponse);
 
       const { result } = renderHook(() => useUnreadCount(), {
         wrapper: createTestWrapper(queryClient),

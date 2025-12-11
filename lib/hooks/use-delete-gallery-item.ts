@@ -14,7 +14,7 @@ export function useDeleteGalleryItem() {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && !response.success) {
+      if ('success' in response && !(response as { success: boolean }).success) {
         throw new Error('Failed to delete photo');
       }
 

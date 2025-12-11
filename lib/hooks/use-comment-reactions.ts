@@ -27,7 +27,7 @@ export function useCommentReactions(commentId: string) {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
-        return response.data;
+        return response.data as CommentReactions;
       }
 
       return response as unknown as CommentReactions;

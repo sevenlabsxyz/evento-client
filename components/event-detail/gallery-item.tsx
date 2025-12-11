@@ -67,6 +67,7 @@ export default function GalleryItem({
     >
       {/* Image */}
       {isGif(item.url) ? (
+        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={item.url}
           alt={`Gallery image by ${item.user_details?.username || 'user'}`}

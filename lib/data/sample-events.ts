@@ -23,6 +23,8 @@ export const sampleEvents: Event[] = [
         lng: -115.1761,
       },
     },
+    computedStartDate: '2025-07-15T09:00:00',
+    computedEndDate: '2025-07-16T17:00:00',
     coverImages: [
       '/api/placeholder/400/300',
       '/api/placeholder/400/301',
@@ -138,7 +140,7 @@ export const sampleEvents: Event[] = [
         name: 'John Smith',
         email: 'john.smith@email.com',
         avatar: '/api/placeholder/40/45',
-        status: 'invited',
+        status: 'going',
       },
       {
         id: 'guest-7',
@@ -312,7 +314,7 @@ export const sampleEvents: Event[] = [
         name: 'Sophia Kim',
         email: 'sophia.kim@mlstartup.io',
         avatar: '/api/placeholder/40/56',
-        status: 'invited',
+        status: 'not-going',
       },
       {
         id: 'ai-guest-8',
@@ -322,6 +324,8 @@ export const sampleEvents: Event[] = [
         status: 'maybe',
       },
     ],
+    computedStartDate: '2025-07-15T09:00:00',
+    computedEndDate: '2025-07-16T17:00:00',
     guestListSettings: {
       isPublic: false,
       allowPublicRSVP: false,

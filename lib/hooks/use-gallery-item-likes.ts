@@ -32,7 +32,7 @@ export function useGalleryItemLikes(itemId?: string) {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
-        return response.data;
+        return response.data as GalleryLikesResponse;
       }
 
       // Fallback
@@ -58,7 +58,7 @@ export function useGalleryItemLikes(itemId?: string) {
 
       // Check if it's the expected API response structure
       if ('success' in response && 'data' in response) {
-        return response.data;
+        return response.data as LikeActionResponse;
       }
 
       throw new Error('Failed to toggle like');

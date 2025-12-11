@@ -105,8 +105,8 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
           <div className='text-center'>
             <h4 className='text-lg font-semibold'>Backup Your Seed Phrase</h4>
             <p className='mt-2 text-sm text-muted-foreground'>
-              Before sending your first payment, you need to backup your wallet's seed phrase. This
-              ensures you can recover your funds if you lose access to your device.
+              Before sending your first payment, you need to backup your wallet&apos;s seed phrase.
+              This ensures you can recover your funds if you lose access to your device.
             </p>
           </div>
 
@@ -157,7 +157,7 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
 
         <div className='space-y-4'>
           <div className='rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white'>
-            <div className='mb-2 text-sm opacity-90'>You're sending</div>
+            <div className='mb-2 text-sm opacity-90'>You&apos;re sending</div>
             <div className='flex items-baseline gap-2'>
               <Zap className='h-6 w-6 fill-current' />
               <span className='text-4xl font-bold'>{Number(amount).toLocaleString()}</span>

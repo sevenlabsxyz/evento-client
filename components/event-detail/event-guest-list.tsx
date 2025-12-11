@@ -55,6 +55,7 @@ export default function EventGuestList({ event, currentUserId }: EventGuestListP
                     zIndex: displayAvatars.length - index,
                   }}
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={guest.avatar}
                     alt={guest.name}
