@@ -2,10 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { WalletStorageService } from '@/lib/services/wallet-storage';
+import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, KeyRound, Lock } from 'lucide-react';
+import { AlertCircle, AlertTriangle, KeyRound, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletUnlockProps {
@@ -16,7 +19,10 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
   const [pin, setPin] = useState('');
   const [isPasswordMode, setIsPasswordMode] = useState(false);
   const [password, setPassword] = useState('');
+  const [showRemoveSheet, setShowRemoveSheet] = useState(false);
+  const [confirmStep, setConfirmStep] = useState<'info' | 'confirm'>('info');
   const { unlockWallet, isLoading, error } = useWallet();
+  const clearSeed = useWalletSeedStore((state) => state.clearSeed);
 
   const handleNumberClick = (number: string) => {
     if (pin.length < 6) {
@@ -31,6 +37,22 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
   const handleLongPressDelete = () => {
     setIsPasswordMode(true);
     setPin(''); // Clear PIN when switching modes
+  };
+
+  const handleRemoveWallet = () => {
+    // Clear all wallet data from localStorage
+    WalletStorageService.clearWalletData();
+    // Clear in-memory seed
+    clearSeed();
+    // Close sheet
+    setShowRemoveSheet(false);
+    // Force page reload to reset all state
+    window.location.reload();
+  };
+
+  const handleOpenRemoveSheet = () => {
+    setConfirmStep('info');
+    setShowRemoveSheet(true);
   };
 
   const handleUnlock = async () => {
@@ -121,7 +143,79 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
         >
           {isLoading ? 'Unlocking...' : 'Unlock'}
         </Button>
+
+        <Button variant='ghost' onClick={handleOpenRemoveSheet} className='w-full text-gray-500'>
+          Use different wallet
+        </Button>
       </div>
+
+      {/* Remove Wallet Confirmation Sheet */}
+      <MasterScrollableSheet
+        title='Start Fresh?'
+        open={showRemoveSheet}
+        onOpenChange={setShowRemoveSheet}
+      >
+        <div className='px-4 pb-8'>
+          {confirmStep === 'info' ? (
+            <div className='space-y-6'>
+              <div className='space-y-4'>
+                <h3 className='text-lg font-semibold'>Before you continue...</h3>
+                <p className='text-gray-600'>
+                  This will remove your wallet from this device. Make sure you have your backup
+                  phrase saved somewhere safe before continuing.
+                </p>
+                <p className='text-gray-600'>
+                  Without your backup phrase, there&apos;s no way to recover your funds. Evento
+                  doesn&apos;t store your wallet information — only you have access to it.
+                </p>
+              </div>
+
+              <div className='space-y-3'>
+                <Button onClick={() => setConfirmStep('confirm')} className='w-full rounded-full'>
+                  I understand, continue
+                </Button>
+                <Button
+                  variant='outline'
+                  onClick={() => setShowRemoveSheet(false)}
+                  className='w-full rounded-full'
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className='space-y-6'>
+              <div className='flex flex-col items-center space-y-4 text-center'>
+                <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+                  <AlertTriangle className='h-8 w-8 text-red-600' />
+                </div>
+                <h3 className='text-lg font-semibold'>Are you sure?</h3>
+                <p className='text-gray-600'>
+                  This cannot be undone. Once removed, you&apos;ll need your backup phrase to access
+                  this wallet again.
+                </p>
+              </div>
+
+              <div className='space-y-3'>
+                <Button
+                  variant='destructive'
+                  onClick={handleRemoveWallet}
+                  className='w-full rounded-full'
+                >
+                  Remove Wallet
+                </Button>
+                <Button
+                  variant='outline'
+                  onClick={() => setConfirmStep('info')}
+                  className='w-full rounded-full'
+                >
+                  Go Back
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      </MasterScrollableSheet>
     </div>
   );
 }

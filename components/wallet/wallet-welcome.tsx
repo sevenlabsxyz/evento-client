@@ -28,15 +28,15 @@ export function WalletWelcome({ onSetup, onRestore }: WalletWelcomeProps) {
           {/* Buttons */}
           <div className='mt-4 w-full space-y-3'>
             <Button onClick={onSetup} className='h-12 w-full rounded-full text-base'>
-              Create Wallet
-              <ArrowRight className='ml-2 h-4 w-4' />
+              Create wallet
+              <ArrowRight className='h-4 w-4' />
             </Button>
             <Button
               onClick={onRestore}
               className='h-12 w-full rounded-full bg-gray-50 text-base'
               variant='outline'
             >
-              Restore
+              I already have a wallet
             </Button>
           </div>
         </div>

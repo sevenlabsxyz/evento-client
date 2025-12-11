@@ -165,9 +165,13 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10'>
             <RefreshCw className='h-8 w-8 text-primary' />
           </div>
-          <h2 className='text-2xl font-bold'>Restore Your Wallet</h2>
+          <h2 className='text-2xl font-bold'>Sign in to your wallet</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
-            Enter your backup string or 12-word seed phrase
+            Your wallet backup is what lets you open your Bitcoin wallet on a new device.
+            <br />
+            <br />
+            If you saved your backup code or 12-word phrase when you first created your Evento
+            wallet, paste it here to regain access.
           </p>
         </div>
 
