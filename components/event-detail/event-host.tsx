@@ -4,6 +4,7 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { UserDetails } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
 import { MessageCircle, Zap } from 'lucide-react';
@@ -14,6 +15,7 @@ interface EventHostProps {
 }
 
 export default function EventHost({ event }: EventHostProps) {
+  const { user: loggedInUser } = useAuth();
   const [selectedHost, setSelectedHost] = useState<UserDetails | null>(null);
 
   if (!event.hosts || event.hosts.length === 0) {
@@ -75,6 +77,7 @@ export default function EventHost({ event }: EventHostProps) {
                   recipientName={host.name}
                   recipientUsername={host.username}
                   recipientAvatar={host.avatar}
+                  currentUsername={loggedInUser?.username}
                 >
                   <CircledIconButton icon={Zap} />
                 </ZapSheet>

@@ -113,6 +113,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                               recipientName={user.name || user.username}
                               recipientUsername={user.username}
                               recipientAvatar={user.image}
+                              currentUsername={loggedInUser?.username}
                             />
 
                             {/* Follow & Message Buttons */}
