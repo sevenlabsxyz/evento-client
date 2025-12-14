@@ -1,7 +1,8 @@
 'use client';
 
-import { BlogSection } from '@/components/hub/blog-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
+import { ForYouSection } from '@/components/hub/for-you-section';
+import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,9 +10,12 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HubPage() {
+  const router = useRouter();
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
@@ -31,19 +35,27 @@ export default function HubPage() {
       leftMode: 'menu',
       showAvatar: true,
       centerMode: 'title',
-      buttons: [],
+      buttons: [
+        {
+          id: 'chat',
+          icon: MessageCircle,
+          onClick: () => router.push('/e/messages'),
+          label: 'Chat',
+        },
+      ],
+      badge: undefined,
     });
 
     // Cleanup on unmount
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='mx-auto h-full w-full max-w-full bg-gray-50 px-4 pb-16 pt-4 md:max-w-sm'>
+        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-24 pt-4 md:max-w-sm'>
           {/* Welcome text */}
           <div className='mb-4'>
             <Skeleton className='h-5 w-48' />
@@ -71,10 +83,11 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-gray-50 px-4 pb-16 pt-4 md:max-w-3xl md:border-l md:border-r'>
-        <EventInvitesSection />
+      <div className='mx-auto flex h-full w-full flex-col gap-4 bg-white px-4 pb-32 pt-4 md:max-w-4xl'>
         <MyEventsSection />
-        <BlogSection />
+        <EventInvitesSection />
+        <ForYouSection />
+        <HubBlogGallery />
       </div>
       <Navbar />
     </>

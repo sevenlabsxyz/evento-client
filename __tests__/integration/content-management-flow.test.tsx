@@ -60,16 +60,16 @@ jest.mock('next/navigation', () => ({
   useParams: () => ({}),
 }));
 
-// Mock toast
-jest.mock('@/lib/hooks/use-toast-manager', () => ({
-  useToast: () => ({
-    toast: {
-      success: jest.fn(),
-      error: jest.fn(),
-      warning: jest.fn(),
-    },
-  }),
-}));
+// // Mock toast
+// jest.mock("@/lib/hooks/use-toast-manager", () => ({
+//   useToast: () => ({
+//     toast: {w
+//       success: jest.fn(),
+//       error: jest.fn(),
+//       warning: jest.fn(),
+//     },
+//   }),
+// }));
 
 describe('Content Management Integration Flow', () => {
   let queryClient: QueryClient;

@@ -19,6 +19,9 @@ interface TopBarConfig {
   centerMode: CenterMode;
   title: string;
   subtitle: string;
+  badge?: string;
+  badgePath?: string;
+  onBadgeClick?: () => void;
   buttons: TopBarButton[];
   showAvatar: boolean;
   isOverlaid: boolean;
@@ -166,6 +169,9 @@ export const useTopBar = () => {
   const centerMode = useTopBarStore((state) => state.centerMode);
   const title = useTopBarStore((state) => state.title);
   const subtitle = useTopBarStore((state) => state.subtitle);
+  const badge = useTopBarStore((state) => state.badge);
+  const badgePath = useTopBarStore((state) => state.badgePath);
+  const onBadgeClick = useTopBarStore((state) => state.onBadgeClick);
   const buttons = useTopBarStore((state) => state.buttons);
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
@@ -193,6 +199,9 @@ export const useTopBar = () => {
     centerMode,
     title,
     subtitle,
+    badge,
+    badgePath,
+    onBadgeClick,
     buttons,
     showAvatar,
     isOverlaid,

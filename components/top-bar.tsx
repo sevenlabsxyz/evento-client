@@ -1,9 +1,12 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,6 +21,9 @@ export function TopBar() {
     centerMode,
     title,
     subtitle,
+    badge,
+    badgePath,
+    onBadgeClick,
     buttons,
     showAvatar,
     isOverlaid,
@@ -82,27 +88,20 @@ export function TopBar() {
 
   const renderLeftContent = () => {
     if (leftMode === 'back') {
-      return (
-        <button
-          onClick={handleBackPress}
-          className={
-            'mt-0.5 flex h-[32px] w-[32px] items-center justify-center border border-transparent'
-          }
-        >
-          <ArrowLeft className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
-        </button>
-      );
+      return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
     }
 
     return (
-      <button
+      <motion.button
         onClick={handleMenuClick}
-        className={`rounded-full border border-gray-200 bg-gray-50 p-0 transition-all duration-300 hover:opacity-80 ${
+        className={`rounded-full border border-gray-200 bg-gray-50 p-0 transition-all duration-300 hover:opacity-80 md:hidden ${
           isOverlaid ? 'border-gray-200 bg-white' : 'hover:bg-gray-100'
         } ${isSpinning ? 'animate-spin' : ''}`}
+        whileTap={{ scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
         <Image priority src='/assets/img/evento-sublogo.svg' alt='Evento' width={32} height={32} />
-      </button>
+      </motion.button>
     );
   };
 
@@ -133,7 +132,24 @@ export function TopBar() {
     if (centerMode === 'title' && !isOverlaid) {
       return (
         <div className='flex min-w-0 flex-1 flex-col gap-1'>
-          <h1 className='truncate text-lg font-semibold text-gray-500'>{title}</h1>
+          <div className='flex items-center gap-2'>
+            <h1 className='truncate text-lg font-semibold text-gray-500'>{title}</h1>
+            {badge && (
+              <motion.div
+                whileTap={onBadgeClick || badgePath ? { scale: 0.95 } : undefined}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                style={{ display: 'inline-block' }}
+              >
+                <Badge
+                  variant='secondary'
+                  className={`border border-gray-200 text-xs ${onBadgeClick || badgePath ? 'cursor-pointer hover:opacity-80' : ''}`}
+                  onClick={onBadgeClick || (badgePath ? () => router.push(badgePath) : undefined)}
+                >
+                  {badge}
+                </Badge>
+              </motion.div>
+            )}
+          </div>
           {subtitle && <p className='truncate text-sm text-gray-500'>{subtitle}</p>}
         </div>
       );
@@ -193,7 +209,7 @@ export function TopBar() {
 
   return (
     <div
-      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:max-w-3xl md:border-b md:border-l md:border-r ${getTopBarStyles()}`}
+      className={`fixed left-0 right-0 top-0 z-40 mx-auto h-16 w-full max-w-full transition-all duration-300 md:left-[280px] md:max-w-4xl ${getTopBarStyles()} md:hidden`}
     >
       <div className='px-4 pb-4 pt-4'>
         <div
@@ -211,47 +227,10 @@ export function TopBar() {
           <div className='ml-3 flex items-center gap-3'>
             {buttons.length > 0 && (
               <div className='flex gap-3'>
-                {buttons.map((button) => {
-                  const Icon = button.icon;
-                  return (
-                    <button
-                      key={button.id}
-                      onClick={button.onClick}
-                      className={`flex flex-row items-center gap-2 transition-all duration-300 hover:opacity-80 ${
-                        isOverlaid
-                          ? 'flex h-8 w-8 items-center justify-center rounded-full border border-gray-200 bg-white'
-                          : 'p-0'
-                      }`}
-                    >
-                      <Icon
-                        className={`${
-                          isOverlaid ? 'h-5 w-5 text-gray-500' : 'h-6 w-6 text-gray-400'
-                        }`}
-                        strokeWidth={2.5}
-                      />
-                    </button>
-                  );
-                })}
+                {buttons.map((button) => (
+                  <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
+                ))}
               </div>
-            )}
-            {showAvatar && (
-              <button
-                onClick={() => router.push('/e/profile')}
-                className={`ml-1 rounded-full transition-opacity hover:opacity-80`}
-              >
-                <Avatar className='h-8 w-8'>
-                  <AvatarImage src={user?.image} alt={user?.name || 'Profile'} />
-                  <AvatarFallback className='bg-gray-100'>
-                    <Image
-                      src='/assets/img/evento-sublogo.svg'
-                      alt='Evento'
-                      width={32}
-                      height={32}
-                      className='h-full w-full p-1'
-                    />
-                  </AvatarFallback>
-                </Avatar>
-              </button>
             )}
           </div>
         </div>

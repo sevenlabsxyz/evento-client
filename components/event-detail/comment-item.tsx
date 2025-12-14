@@ -1,5 +1,7 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
+import { CommentReactionButton } from '@/components/comment-reaction-button';
 import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -12,17 +14,13 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
-import { Heart, MoreHorizontal, Reply, SendHorizontal } from 'lucide-react';
+import { Heart, MoreHorizontal, Reply, SendHorizontal, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { ReplyAvatar } from '../ui/reply-avatar';
+import { ZapSheet } from '../zap/zap-sheet';
+import { CommentActionsSheet } from './comment-actions-sheet';
 
 interface CommentItemProps {
   comment: EventComment;
@@ -50,6 +48,7 @@ export default function CommentItem({
   const [editText, setEditText] = useState(comment.message);
   const [showReplies, setShowReplies] = useState(true);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [showActionsSheet, setShowActionsSheet] = useState(false);
   const deleteCommentMutation = useDeleteComment();
   const editCommentMutation = useEditComment();
   const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(comment.id);
@@ -175,7 +174,7 @@ export default function CommentItem({
           <div className='flex-shrink-0'>
             <UserAvatar
               user={comment.user_details}
-              size='sm'
+              size='base'
               onAvatarClick={useCallback(
                 () => setSelectedUser(comment.user_details),
                 [comment.user_details]
@@ -187,29 +186,17 @@ export default function CommentItem({
             {/* Comment header */}
             <div className='flex items-center justify-between'>
               <div className='flex items-center'>
-                <span className='font-medium'>@{comment.user_details.username}</span>
+                <span className='text-sm font-semibold'>@{comment.user_details.username}</span>
                 <span className='ml-2 text-xs text-gray-500' title={formattedDate}>
                   {timeAgo}
                 </span>
               </div>
 
               {isAuthor && (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className='rounded-full p-1 text-gray-500 hover:bg-gray-100'>
-                      <MoreHorizontal className='h-4 w-4' />
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align='end'>
-                    <DropdownMenuItem onClick={() => setIsEditing(true)}>Edit</DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={handleDelete}
-                      className='text-red-600 focus:bg-red-50 focus:text-red-600'
-                    >
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <CircledIconButton
+                  icon={MoreHorizontal}
+                  onClick={() => setShowActionsSheet(true)}
+                />
               )}
             </div>
 
@@ -239,43 +226,33 @@ export default function CommentItem({
                 </div>
               </div>
             ) : (
-              <p className='text-sm text-gray-800'>{comment.message}</p>
+              <p className='text-base text-gray-800'>{comment.message}</p>
             )}
 
             {/* Comment actions */}
             {!isEditing && (
-              <div className='flex items-center space-x-4 pt-2'>
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className={cn(
-                    'flex h-8 w-8 items-center justify-center gap-1 rounded-full',
-                    userReaction === 'like'
-                      ? 'bg-red-50 text-red-500'
-                      : 'bg-gray-100 text-gray-600 hover:text-gray-900',
-                    reactions.like > 0 && 'px-6'
-                  )}
-                  onClick={() => handleReaction()}
+              <div className='flex items-center space-x-2 pt-2'>
+                <CommentReactionButton
+                  icon={Heart}
+                  count={reactions.like}
+                  isActive={userReaction === 'like'}
+                  activeClassName='bg-red-50 text-red-500'
+                  fillWhenActive
+                  onClick={handleReaction}
                   disabled={isToggling}
-                >
-                  <Heart
-                    className='h-5 w-5'
-                    fill={userReaction === 'like' ? 'currentColor' : 'none'}
-                  />
-                  {reactions.like > 0 && (
-                    <span className='text-sm font-medium'>{reactions.like}</span>
-                  )}
-                </Button>
+                />
 
-                <Button
-                  variant='ghost'
-                  size='sm'
-                  className='flex h-8 items-center gap-1 rounded-full bg-gray-100 text-gray-600 hover:text-gray-900'
-                  onClick={handleReplyClick}
+                <ZapSheet
+                  recipientLightningAddress={comment.user_details.ln_address || ''}
+                  recipientName={comment.user_details.name || comment.user_details.username}
+                  recipientUsername={comment.user_details.username}
+                  recipientAvatar={comment.user_details.image}
+                  currentUsername={currentUser?.username}
                 >
-                  <Reply className='h-4 w-4' />
-                  <span className='text-xs'>Reply</span>
-                </Button>
+                  <CommentReactionButton icon={Zap} />
+                </ZapSheet>
+
+                <CommentReactionButton icon={Reply} label='Reply' onClick={handleReplyClick} />
               </div>
             )}
 
@@ -369,6 +346,14 @@ export default function CommentItem({
         onConfirm={confirmDelete}
         itemType={isReply ? 'reply' : 'comment'}
         isLoading={deleteCommentMutation.isPending}
+      />
+
+      {/* Comment Actions Sheet */}
+      <CommentActionsSheet
+        isOpen={showActionsSheet}
+        onClose={() => setShowActionsSheet(false)}
+        onEdit={() => setIsEditing(true)}
+        onDelete={handleDelete}
       />
 
       {selectedUser && (

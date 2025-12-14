@@ -1,35 +1,23 @@
 'use client';
 
-import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
-import {
-  EventFilterType,
-  EventSortBy,
-  EventTimeframe,
-  useUserEvents,
-} from '@/lib/hooks/use-user-events';
+import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
@@ -40,18 +28,20 @@ import {
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
-import { EventHost } from '@/lib/types/event';
-import { toast } from '@/lib/utils/toast';
+import { formatDateHeader } from '@/lib/utils/date';
+import { motion } from 'framer-motion';
 import {
+  ArrowDownWideNarrow,
+  ArrowUpWideNarrow,
   BadgeCheck,
   Calendar,
+  ChevronDown,
   Edit3,
+  History,
   Loader2,
   MessageCircle,
   Search,
   Settings,
-  SortAsc,
-  SortDesc,
 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -63,15 +53,17 @@ export default function ProfilePage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
   const pathname = usePathname();
   const [activeTab, setActiveTab] = useState('about');
-  const [eventsFilter, setEventsFilter] = useState<EventFilterType>('upcoming');
-  const [timeframe, setTimeframe] = useState<EventTimeframe>('all');
-  const [sortBy, setSortBy] = useState<EventSortBy>('created-desc');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
+  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [timeframePopoverOpen, setTimeframePopoverOpen] = useState(false);
+  const [sortPopoverOpen, setSortPopoverOpen] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
+  const [showZapModal, setShowZapModal] = useState(false);
 
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
@@ -83,15 +75,7 @@ export default function ProfilePage() {
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
 
-  // Fetch pinned event
-  const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
-  const {
-    mutate: updatePinnedEvent,
-    isPending: isUpdatingPinnedEvent,
-    variables: updatePinnedEventVariables,
-  } = useUpdatePinnedEvent();
-
-  // Fetch user events with the hook
+  // Fetch user events with the hook (always show all events - 'upcoming' filter)
   const {
     data: userEventsData,
     isLoading: isLoadingEvents,
@@ -99,8 +83,7 @@ export default function ProfilePage() {
     isFetchingNextPage,
     hasNextPage,
   } = useUserEvents({
-    username: user?.username || '',
-    filter: eventsFilter,
+    filter: 'upcoming',
     timeframe: timeframe,
     sortBy: sortBy,
     limit: 10,
@@ -110,13 +93,10 @@ export default function ProfilePage() {
   // Handle URL parameters for tab state
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'events' || tab === 'about') {
-      setActiveTab(tab);
-
-      // Remove param if on default tab
-      if (tab === 'about') {
-        router.replace('/e/profile', { scroll: false });
-      }
+    if (tab === 'events') {
+      setActiveTab('events');
+    } else {
+      setActiveTab('about');
     }
   }, [searchParams]);
 
@@ -245,104 +225,107 @@ export default function ProfilePage() {
           }
         ) || [];
 
-    const canPinEvent = (event: EventWithUser) => {
-      if (!user) return false;
-
-      // User can pin if they are the event creator
-      if (event.user_details.id === user.id) return true;
-
-      // User can pin if they are a co-host
-      const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
-      return isCoHost;
-    };
-
-    const handlePinEvent = (eventId: string, isPinned: boolean) => {
-      if (isUpdatingPinnedEvent) return;
-
-      updatePinnedEvent(eventId, {
-        onSuccess: () => {
-          toast.success(
-            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
-          );
-        },
-        onError: () => {
-          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
-        },
-      });
-    };
-
-    const formatDateHeader = (date: string) => {
-      const today = new Date().toISOString().slice(0, 10);
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowStr = tomorrow.toISOString().slice(0, 10);
-
-      if (date === today) return 'Today';
-      if (date === tomorrowStr) return 'Tomorrow';
-
-      return new Date(date).toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      });
-    };
-
     return (
       <div className='space-y-4'>
-        {/* Filter Tabs */}
-        <Tabs
-          value={eventsFilter}
-          onValueChange={(value) => setEventsFilter(value as EventFilterType)}
-          className='w-full'
-        >
-          <TabsList className='grid w-full grid-cols-3'>
-            <TabsTrigger value='upcoming'>All</TabsTrigger>
-            <TabsTrigger value='attending'>Attending</TabsTrigger>
-            <TabsTrigger value='hosting'>Hosting</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* Controls - Single unified ButtonGroup */}
+        <ButtonGroup className='w-full justify-between'>
+          <ButtonGroup>
+            {/* Timeframe Popover */}
+            <Popover open={timeframePopoverOpen} onOpenChange={setTimeframePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='rounded-l-full rounded-r-none bg-white hover:bg-gray-50'
+                >
+                  {timeframe === 'future' ? 'Upcoming' : 'Past'}
+                  <ChevronDown className='ml-1 h-3 w-3' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2'>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setTimeframe('future');
+                    setTimeframePopoverOpen(false);
+                  }}
+                >
+                  <Calendar className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Upcoming</div>
+                    <div className='text-xs text-gray-500'>Events happening soon</div>
+                  </div>
+                </button>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setTimeframe('past');
+                    setTimeframePopoverOpen(false);
+                  }}
+                >
+                  <History className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Past</div>
+                    <div className='text-xs text-gray-500'>Events that have ended</div>
+                  </div>
+                </button>
+              </PopoverContent>
+            </Popover>
 
-        {/* Controls */}
-        <div className='mt-4 grid w-full grid-cols-3 items-center gap-2'>
-          <Select
-            value={timeframe}
-            onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
-          >
-            <SelectTrigger className='text-sm'>
-              <Calendar className='mr-2 h-4 w-4' />
-              <SelectValue placeholder='Timeframe' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>All</SelectItem>
-              <SelectItem value='future'>Future</SelectItem>
-              <SelectItem value='past'>Past</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
-            <SelectTrigger className='text-sm'>
-              {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
-                <SortAsc className='mr-2 h-4 w-4' />
-              ) : (
-                <SortDesc className='mr-2 h-4 w-4' />
-              )}
-              <SelectValue placeholder='Sort by' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='created-desc'>Created Desc</SelectItem>
-              <SelectItem value='created-asc'>Created Asc</SelectItem>
-              <SelectItem value='date-desc'>Date Desc</SelectItem>
-              <SelectItem value='date-asc'>Date Asc</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Sort Popover */}
+            <Popover open={sortPopoverOpen} onOpenChange={setSortPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='rounded-l-none rounded-r-full bg-white hover:bg-gray-50'
+                >
+                  {sortBy === 'date-desc' ? 'Latest' : 'Oldest'}
+                  <ChevronDown className='ml-1 h-3 w-3' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2'>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setSortBy('date-desc');
+                    setSortPopoverOpen(false);
+                  }}
+                >
+                  <ArrowDownWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Latest</div>
+                    <div className='text-xs text-gray-500'>Most recent events first</div>
+                  </div>
+                </button>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setSortBy('date-asc');
+                    setSortPopoverOpen(false);
+                  }}
+                >
+                  <ArrowUpWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Oldest</div>
+                    <div className='text-xs text-gray-500'>Oldest events first</div>
+                  </div>
+                </button>
+              </PopoverContent>
+            </Popover>
+          </ButtonGroup>
+
+          {/* Search Button */}
           <Button
+            size='icon'
             variant='outline'
             onClick={() => setShowEventSearchSheet(true)}
+            className='rounded-full'
             aria-label='Search events'
           >
-            <Search className='h-5 w-5' />
-            <span>Search</span>
+            <Search className='!h-[1.25rem] !w-[1.25rem]' />
           </Button>
-        </div>
+        </ButtonGroup>
 
         {/* Events List */}
         <div className='space-y-8'>
@@ -364,26 +347,10 @@ export default function ProfilePage() {
                 <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
                 </h3>
-                <div className='divide-y divide-gray-100'>
-                  {group.events.map((event) => {
-                    const isPinned = pinnedEvent?.id === event.id;
-                    const canPin = canPinEvent(event);
-
-                    return (
-                      <div key={event.id} className='py-2'>
-                        <EventCompactItem
-                          event={event}
-                          isPinning={
-                            isUpdatingPinnedEvent && updatePinnedEventVariables === event.id
-                          }
-                          isPinned={isPinned}
-                          canPin={canPin}
-                          onPin={handlePinEvent}
-                          onBookmark={() => {}} // Placeholder for bookmark functionality
-                        />
-                      </div>
-                    );
-                  })}
+                <div className='space-y-3'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
                 </div>
               </div>
             ))
@@ -416,8 +383,6 @@ export default function ProfilePage() {
           isOpen={showEventSearchSheet}
           onClose={() => setShowEventSearchSheet(false)}
           username={user?.username}
-          onPin={handlePinEvent}
-          pinnedEventId={pinnedEvent?.id}
           isOwnProfile={true}
         />
       </div>
@@ -431,8 +396,12 @@ export default function ProfilePage() {
 
     return (
       <div className='space-y-4'>
-        {/* Social Links */}
-        {user && <SocialLinks user={user} />}
+        {/* Social Links - hidden on desktop (shown below Zap button instead) */}
+        {user && (
+          <div className='lg:hidden'>
+            <SocialLinks user={user} />
+          </div>
+        )}
 
         {/* Bio/Description */}
         {!user?.bio ? null : (
@@ -462,65 +431,93 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20'>
-        {/* Cover Image Section */}
-        <div className='relative'>
-          {/* Banner */}
-          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
+    <div className='min-h-screen bg-white'>
+      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
+        <div className='lg:flex lg:gap-8'>
+          {/* Left Column - Profile Info (sticky on desktop) */}
+          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+            {/* Cover Image Section */}
+            <div className='relative'>
+              {/* Banner */}
+              <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-24 md:bg-none' />
 
-          {/* Profile Picture - Centered & Clickable */}
-          <UserAvatar
-            user={userData}
-            size='lg'
-            onAvatarClick={handleAvatarClick}
-            onVerificationClick={() => setShowVerificationModal(true)}
-            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
-          />
-        </div>
+              {/* Profile Picture - Centered & Clickable */}
+              <UserAvatar
+                user={userData}
+                size='lg'
+                onAvatarClick={handleAvatarClick}
+                onVerificationClick={() => setShowVerificationModal(true)}
+                className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
+              />
+            </div>
 
-        {/* Profile Section */}
-        <div className='mb-4 bg-white px-4 pb-0 pt-20'>
-          {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
-            <p className='text-gray-600'>{userData.username}</p>
-          </div>
-
-          {/* Stats - Centered */}
-          <div className='mb-4 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
-                <div className='text-sm text-gray-500'>Events</div>
+            {/* Profile Section */}
+            <div className='mb-4 bg-white px-4 pb-0 pt-20'>
+              {/* User Info - Centered */}
+              <div className='mb-6 text-center'>
+                <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
+                <p className='text-gray-600'>{userData.username}</p>
               </div>
-              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
-                <div className='text-sm text-gray-500'>Following</div>
-              </button>
-              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
-              </button>
+
+              {/* Stats - Centered */}
+              <div className='mb-4 flex justify-center'>
+                <div className='grid grid-cols-3 gap-8'>
+                  <div className='text-center'>
+                    <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
+                    <div className='text-sm text-gray-500'>Events</div>
+                  </div>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowingSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
+                    <div className='text-sm text-gray-500'>Following</div>
+                  </motion.button>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowersSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
+                    <div className='text-sm text-gray-500'>Followers</div>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Social Links - desktop only */}
+              <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
+                <SocialLinks user={user} />
+              </div>
             </div>
           </div>
 
-          {/* Tabbed Section */}
-          <div className='mb-4 w-full bg-white'>
-            {/* Tab Headers */}
-            <SegmentedTabs
-              items={[
-                { value: 'about', label: 'About' },
-                { value: 'events', label: 'Events' },
-              ]}
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v)}
-            />
-            {/* Tab Content */}
-            <div>
-              {activeTab === 'about' && renderAboutTab()}
-              {activeTab === 'events' && renderEventsTab()}
+          {/* Right Column - Tabs */}
+          <div className='px-4 pb-32 lg:w-1/2 lg:px-0'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'about', label: 'About' },
+                  { value: 'events', label: 'Events' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => {
+                  if (v === 'about') {
+                    router.push('/e/profile', { scroll: false });
+                  } else {
+                    router.push(`/e/profile?tab=${v}`, { scroll: false });
+                  }
+                }}
+              />
+              {/* Tab Content */}
+              <div>
+                {activeTab === 'about' && renderAboutTab()}
+                {activeTab === 'events' && renderEventsTab()}
+              </div>
             </div>
           </div>
         </div>

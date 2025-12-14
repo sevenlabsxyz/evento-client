@@ -17,14 +17,14 @@ export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps)
   const sortedPrompts = [...prompts].sort((a, b) => a.display_order - b.display_order);
 
   return (
-    <div className='rounded-2xl bg-white p-6 shadow-sm'>
-      <h2 className='mb-4 text-xl font-bold text-gray-900'>About Me</h2>
+    <div className='rounded-3xl border border-gray-200 bg-gray-50 p-6'>
+      <h2 className='mb-4 text-lg font-bold text-gray-900'>About Me</h2>
 
       <div className='space-y-4'>
         {sortedPrompts.map((userPrompt) => (
           <div
             key={userPrompt.id}
-            className={`rounded-lg border p-4 ${
+            className={`rounded-3xl border px-6 py-4 ${
               isOwnProfile && !userPrompt.is_visible
                 ? 'border-gray-300 bg-gray-50'
                 : 'border-gray-200 bg-white'
@@ -32,7 +32,9 @@ export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps)
           >
             {/* Question */}
             <div className='mb-2 flex items-start justify-between gap-2'>
-              <h3 className='text-sm font-semibold text-gray-700'>{userPrompt.prompt.question}</h3>
+              <h3 className='text-lg font-semibold text-gray-700 lg:text-base'>
+                {userPrompt.prompt.question}
+              </h3>
 
               {/* Hidden indicator (only for own profile) */}
               {isOwnProfile && !userPrompt.is_visible && (
@@ -44,7 +46,11 @@ export function UserPrompts({ prompts, isOwnProfile = false }: UserPromptsProps)
             </div>
 
             {/* Answer */}
-            <p className='text-base text-gray-900'>{userPrompt.answer}</p>
+            <p className='text-base text-muted-foreground'>
+              {'"'}
+              {userPrompt.answer}
+              {'"'}
+            </p>
           </div>
         ))}
       </div>

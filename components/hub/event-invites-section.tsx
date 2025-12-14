@@ -1,7 +1,7 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import EventRSVPSheet from '@/components/event-detail/event-rsvp-sheet';
-import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
@@ -36,7 +36,7 @@ export function EventInvitesSection() {
     return (
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Invites</h2>
+          <h2 className='text-xl font-semibold'>Invites</h2>
         </div>
         <div className='no-scrollbar flex gap-3 overflow-x-auto pb-2'>
           {[...Array(5)].map((_, i) => (
@@ -52,7 +52,7 @@ export function EventInvitesSection() {
     return (
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Invites</h2>
+          <h2 className='text-xl font-semibold'>Invites</h2>
         </div>
         <div className='flex flex-col items-center justify-center py-8 text-center'>
           <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
@@ -69,15 +69,8 @@ export function EventInvitesSection() {
     <>
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
-          <h2 className='text-lg font-semibold'>Invites</h2>
-          <Button
-            variant='ghost'
-            className='h-8 w-8 rounded-full bg-white p-0 shadow-sm'
-            size='sm'
-            onClick={() => setShowInvitesSheet(true)}
-          >
-            <ArrowRight className='h-4 w-4' />
-          </Button>
+          <h2 className='text-xl font-semibold'>Invites</h2>
+          <CircledIconButton icon={ArrowRight} onClick={() => setShowInvitesSheet(true)} />
         </div>
 
         <div className='no-scrollbar flex gap-3 overflow-x-auto pb-2'>

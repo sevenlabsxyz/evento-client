@@ -34,8 +34,8 @@ export default function DetachedMenuSheet({
       <DetachedSheet.Portal>
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6 pb-24'>
+          <DetachedSheet.Content className='md:!max-w-[500px]'>
+            <div className='p-6 pb-24 md:pb-8'>
               {/* Handle */}
               <div className='mb-4 flex justify-center'>
                 <DetachedSheet.Handle />
@@ -58,7 +58,7 @@ export default function DetachedMenuSheet({
                       onClick={option.onClick}
                       variant={option.variant || 'secondary'}
                       disabled={option.disabled}
-                      className='flex w-full items-center gap-4 rounded-xl border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50'
+                      className='flex w-full items-center gap-4 rounded-full border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50'
                     >
                       <IconComponent className='h-5 w-5' />
                       <span className='font-medium'>{option.label}</span>

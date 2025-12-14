@@ -18,6 +18,7 @@ import { OnboardingInterests } from './onboarding-interests';
 import { OnboardingName } from './onboarding-name';
 import { OnboardingPrompts } from './onboarding-prompts';
 import { OnboardingUsername } from './onboarding-username';
+import { OnboardingWelcomeCarousel } from './onboarding-welcome-carousel';
 import { StepIndicator } from './step-indicator';
 
 interface UserOnboardingFlowProps {
@@ -145,7 +146,7 @@ export const UserOnboardingFlow = ({
   const isSaveButtonDisabled = (() => {
     if (step === 1) return !name || name.length <= 2;
     if (step === 2) return !username || username.length <= 2;
-    return false; // Steps 3, 4, 5 - always enabled (skippable)
+    return false; // Steps 3, 4, 5, 6 - always enabled (skippable)
   })();
 
   const updateUserFn = async ({
@@ -174,8 +175,11 @@ export const UserOnboardingFlow = ({
         }
       }
       setStep(5);
+    } else if (step === 5) {
+      // Move to welcome carousel
+      setStep(6);
     } else {
-      // Step 5 - Final step
+      // Step 6 - Final step
       setUpdating(true);
 
       try {
@@ -239,12 +243,12 @@ export const UserOnboardingFlow = ({
     <div className='flex h-full flex-col'>
       <div className='flex-grow overflow-y-auto px-4 pt-4 md:px-0'>
         <div className='mb-6 flex flex-col md:px-4'>
-          <StepIndicator currentStep={step} totalSteps={5} />
+          <StepIndicator currentStep={step} totalSteps={6} />
           <Link
             href='/'
             className='mb-6 flex max-h-[60px] max-w-[60px] flex-col items-center gap-2 rounded-2xl border border-gray-200 p-1.5 font-medium shadow-sm md:mx-auto'
           >
-            <Image src='/assets/logo/sublogo.svg' alt='Evento' height='50' width='50' />
+            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' height='50' width='50' />
           </Link>
           <AnimatePresence mode='wait'>
             {step === 1 && (
@@ -273,10 +277,11 @@ export const UserOnboardingFlow = ({
             )}
             {step === 4 && <OnboardingInterests onInterestsSelected={setSelectedInterestIds} />}
             {step === 5 && <OnboardingPrompts onPromptsAnswered={setAnsweredPrompts} />}
+            {step === 6 && <OnboardingWelcomeCarousel />}
           </AnimatePresence>
         </div>
       </div>
-      <div className='flex flex-col px-4 md:px-0'>
+      <div className='flex flex-col px-4 pb-6 md:px-0'>
         <div className='flex flex-col gap-2'>
           {step > 1 && (
             <Button
@@ -299,7 +304,7 @@ export const UserOnboardingFlow = ({
               </>
             ) : (
               <>
-                {step < 5 ? (step === 4 ? 'Next (or Skip)' : 'Next') : 'Complete Setup'}
+                {step < 6 ? (step === 4 ? 'Next (or Skip)' : 'Next') : 'Complete Setup'}
                 <ArrowRight className='ml-2 h-4 w-4' />
               </>
             )}

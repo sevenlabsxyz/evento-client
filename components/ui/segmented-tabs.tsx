@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
 import React from 'react';
 
 export type SegmentedTabItem = {
@@ -29,15 +30,15 @@ export function SegmentedTabs({
   align = 'center',
   wrapperClassName,
   gapClassName,
-  buttonBaseClassName = 'rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all border shadow-sm',
-  activeClassName = 'bg-gray-200 text-black',
-  inactiveClassName = 'bg-white text-gray-500 hover:bg-gray-50',
+  buttonBaseClassName = 'rounded-full px-5 py-2 text-base font-semibold transition-colors border border-gray-200',
+  activeClassName = 'bg-gray-50 text-black',
+  inactiveClassName = 'bg-transparent text-gray-500 hover:bg-gray-50 border-transparent',
 }: SegmentedTabsProps) {
   const defaultGapClassName = `flex flex-row items-center ${align === 'center' ? 'justify-center' : 'justify-start'} gap-2`;
   const Buttons = (
     <>
       {items.map((item) => (
-        <button
+        <motion.button
           key={item.value}
           onClick={() => !item.disabled && onValueChange(item.value)}
           disabled={item.disabled}
@@ -49,9 +50,11 @@ export function SegmentedTabs({
             value === item.value ? activeClassName : inactiveClassName,
             item.disabled && 'pointer-events-none opacity-50'
           )}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           {item.label}
-        </button>
+        </motion.button>
       ))}
     </>
   );

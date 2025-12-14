@@ -27,8 +27,7 @@ export default function SavedListsPage() {
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: 'Saved',
-      subtitle: 'Your saved events',
+      title: 'Saved Events',
     });
 
     return () => {
@@ -86,14 +85,14 @@ export default function SavedListsPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-2xl'>
       {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-gray-50 pb-20'>
+      <div className='flex-1 overflow-y-auto pb-20'>
         {/* Add New List Button */}
         <div className='px-4 py-4'>
           <Button
             onClick={() => setShowCreateModal(true)}
-            className='w-full rounded-xl bg-red-500 py-3 font-medium text-white hover:bg-red-600'
+            className='h-12 w-full rounded-full py-3 font-medium text-white hover:bg-red-600'
           >
             <Plus className='mr-2 h-5 w-5' />
             Add New List
@@ -111,7 +110,7 @@ export default function SavedListsPage() {
           /* Empty State */
           <div className='flex flex-1 items-center justify-center px-4 py-12'>
             <div className='text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-gray-50'>
                 <Bookmark className='h-8 w-8 text-gray-400' />
               </div>
               <h3 className='mb-2 text-lg font-semibold text-gray-900'>No saved lists</h3>
@@ -133,7 +132,7 @@ export default function SavedListsPage() {
               <div
                 key={list.id}
                 onClick={() => handleListClick(list.id)}
-                className='cursor-pointer rounded-2xl bg-white p-4 shadow-sm transition-shadow hover:shadow-md'
+                className='cursor-pointer rounded-2xl border border-gray-200 bg-gray-50 p-4'
               >
                 <div className='flex items-center justify-between'>
                   <div className='flex-1'>

@@ -1,35 +1,24 @@
 'use client';
 
-import { EventCompactItem } from '@/components/event-compact-item';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Navbar } from '@/components/navbar';
-import TipSheet from '@/components/profile/sheets/tip-sheet';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { ZapSheet } from '@/components/zap/zap-sheet';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
-import {
-  EventFilterType,
-  EventSortBy,
-  useUserEvents,
-  type EventTimeframe,
-} from '@/lib/hooks/use-user-events';
+import { EventSortBy, useUserEvents, type EventTimeframe } from '@/lib/hooks/use-user-events';
 import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useFollowAction,
@@ -45,18 +34,20 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { EventHost } from '@/lib/types/event';
 import { toast } from '@/lib/utils/toast';
+import { motion } from 'framer-motion';
 import {
+  ArrowDownWideNarrow,
+  ArrowUpWideNarrow,
   BadgeCheck,
   Calendar,
+  ChevronDown,
+  History,
   Loader2,
   MessageCircle,
   Search,
   Share,
-  SortAsc,
-  SortDesc,
   UserMinus,
   UserPlus,
-  Zap,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -68,9 +59,10 @@ export default function UserProfilePageClient() {
   const params = useParams();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
-  const [eventsFilter, setEventsFilter] = useState<EventFilterType>('upcoming');
-  const [timeframe, setTimeframe] = useState<EventTimeframe>('all');
-  const [sortBy, setSortBy] = useState<EventSortBy>('created-desc');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
+  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [timeframePopoverOpen, setTimeframePopoverOpen] = useState(false);
+  const [sortPopoverOpen, setSortPopoverOpen] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
@@ -79,7 +71,6 @@ export default function UserProfilePageClient() {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
-  const [showTipSheet, setShowTipSheet] = useState(false);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -218,7 +209,7 @@ export default function UserProfilePageClient() {
     variables: updatePinnedEventVariables,
   } = useUpdatePinnedEvent();
 
-  // Fetch user events
+  // Fetch user events (always show all events - 'upcoming' filter)
   const {
     data: userEventsData,
     isLoading: isLoadingEvents,
@@ -226,12 +217,11 @@ export default function UserProfilePageClient() {
     isFetchingNextPage,
     hasNextPage,
   } = useUserEvents({
-    username: userData?.username || '',
-    filter: eventsFilter,
+    filter: 'upcoming',
     timeframe: timeframe,
     sortBy: sortBy,
     limit: 10,
-    enabled: !!userData?.username && activeTab === 'events',
+    enabled: activeTab === 'events',
   });
 
   // Handle loading state
@@ -303,14 +293,6 @@ export default function UserProfilePageClient() {
 
   const handleMessage = () => {
     toast.success('Message feature coming soon!');
-  };
-
-  const handleTip = () => {
-    if (!userData?.ln_address) {
-      toast.error("This user hasn't set up Lightning payments yet");
-      return;
-    }
-    setShowTipSheet(true);
   };
 
   // Handle profile photo click for lightbox
@@ -434,60 +416,105 @@ export default function UserProfilePageClient() {
 
     return (
       <div className='space-y-4'>
-        {/* Filter Tabs */}
-        <Tabs
-          value={eventsFilter}
-          onValueChange={(value) => setEventsFilter(value as EventFilterType)}
-          className='w-full'
-        >
-          <TabsList className='grid w-full grid-cols-3'>
-            <TabsTrigger value='upcoming'>All</TabsTrigger>
-            <TabsTrigger value='attending'>Attending</TabsTrigger>
-            <TabsTrigger value='hosting'>Hosting</TabsTrigger>
-          </TabsList>
-        </Tabs>
+        {/* Controls - Single unified ButtonGroup */}
+        <ButtonGroup className='w-full justify-between'>
+          <ButtonGroup>
+            {/* Timeframe Popover */}
+            <Popover open={timeframePopoverOpen} onOpenChange={setTimeframePopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='rounded-l-full rounded-r-none bg-white hover:bg-gray-50'
+                >
+                  {timeframe === 'future' ? 'Upcoming' : 'Past'}
+                  <ChevronDown className='ml-1 h-3 w-3' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2'>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setTimeframe('future');
+                    setTimeframePopoverOpen(false);
+                  }}
+                >
+                  <Calendar className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Upcoming</div>
+                    <div className='text-xs text-gray-500'>Events happening soon</div>
+                  </div>
+                </button>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setTimeframe('past');
+                    setTimeframePopoverOpen(false);
+                  }}
+                >
+                  <History className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Past</div>
+                    <div className='text-xs text-gray-500'>Events that have ended</div>
+                  </div>
+                </button>
+              </PopoverContent>
+            </Popover>
 
-        {/* Controls */}
-        <div className='mt-4 grid w-full grid-cols-3 items-center gap-2'>
-          <Select
-            value={timeframe}
-            onValueChange={(value: string) => setTimeframe(value as EventTimeframe)}
-          >
-            <SelectTrigger className='text-sm'>
-              <Calendar className='mr-2 h-4 w-4' />
-              <SelectValue placeholder='Timeframe' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='all'>All</SelectItem>
-              <SelectItem value='future'>Future</SelectItem>
-              <SelectItem value='past'>Past</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select value={sortBy} onValueChange={(value: string) => setSortBy(value as EventSortBy)}>
-            <SelectTrigger className='text-sm'>
-              {sortBy === 'date-desc' || sortBy === 'created-desc' ? (
-                <SortAsc className='mr-2 h-4 w-4' />
-              ) : (
-                <SortDesc className='mr-2 h-4 w-4' />
-              )}
-              <SelectValue placeholder='Sort by' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='created-desc'>Created Desc</SelectItem>
-              <SelectItem value='created-asc'>Created Asc</SelectItem>
-              <SelectItem value='date-desc'>Date Desc</SelectItem>
-              <SelectItem value='date-asc'>Date Asc</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Sort Popover */}
+            <Popover open={sortPopoverOpen} onOpenChange={setSortPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='rounded-l-none rounded-r-full bg-white hover:bg-gray-50'
+                >
+                  {sortBy === 'date-desc' ? 'Latest' : 'Oldest'}
+                  <ChevronDown className='ml-1 h-3 w-3' />
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align='start' className='w-56 p-2'>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setSortBy('date-desc');
+                    setSortPopoverOpen(false);
+                  }}
+                >
+                  <ArrowDownWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Latest</div>
+                    <div className='text-xs text-gray-500'>Most recent events first</div>
+                  </div>
+                </button>
+                <button
+                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
+                  onClick={() => {
+                    setSortBy('date-asc');
+                    setSortPopoverOpen(false);
+                  }}
+                >
+                  <ArrowUpWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
+                  <div>
+                    <div className='text-sm font-medium'>Oldest</div>
+                    <div className='text-xs text-gray-500'>Oldest events first</div>
+                  </div>
+                </button>
+              </PopoverContent>
+            </Popover>
+          </ButtonGroup>
+
+          {/* Search Button */}
           <Button
+            size='icon'
             variant='outline'
             onClick={() => setShowEventSearchSheet(true)}
+            className='rounded-full'
             aria-label='Search events'
           >
-            <Search className='h-5 w-5' />
-            <span>Search</span>
+            <Search className='!h-[1.25rem] !w-[1.25rem]' />
           </Button>
-        </div>
+        </ButtonGroup>
 
         {/* Events List */}
         <div className='space-y-8'>
@@ -510,28 +537,10 @@ export default function UserProfilePageClient() {
                 <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
                 </h3>
-                <div className='divide-y divide-gray-100'>
-                  {group.events.map((event) => {
-                    const isPinned = pinnedEvent?.id === event.id.toString();
-                    const canPin = canPinEvent(event);
-
-                    return (
-                      <div key={event.id} className='py-2'>
-                        <EventCompactItem
-                          key={event.id}
-                          event={event}
-                          isPinning={
-                            isUpdatingPinnedEvent &&
-                            updatePinnedEventVariables === event.id.toString()
-                          }
-                          isPinned={isPinned}
-                          canPin={canPin}
-                          onPin={handlePinEvent}
-                          onBookmark={() => {}} // Placeholder for bookmark functionality
-                        />
-                      </div>
-                    );
-                  })}
+                <div className='space-y-3'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
                 </div>
               </div>
             ))
@@ -575,17 +584,18 @@ export default function UserProfilePageClient() {
   const renderAboutTab = () => {
     return (
       <div className='space-y-4'>
-        {/* Social Links */}
+        {/* Social Links - hidden on desktop (shown below Zap button instead) */}
         {userData && (
-          <SocialLinks
-            user={{
-              bio_link: userData.bio_link,
-              instagram_handle: userData.instagram_handle,
-              x_handle: userData.x_handle,
-              ln_address: userData.ln_address,
-              nip05: userData.nip05,
-            }}
-          />
+          <div className='lg:hidden'>
+            <SocialLinks
+              user={{
+                bio_link: userData.bio_link,
+                instagram_handle: userData.instagram_handle,
+                x_handle: userData.x_handle,
+                nip05: userData.nip05,
+              }}
+            />
+          </div>
         )}
 
         {/* Bio/Description */}
@@ -605,111 +615,145 @@ export default function UserProfilePageClient() {
   };
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20'>
-        {/* Cover Image Section */}
-        <div className='relative'>
-          {/* Banner */}
-          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
+    <div className='min-h-screen bg-white md:ml-[280px]'>
+      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
+        <div className='lg:flex lg:gap-8'>
+          {/* Left Column - Profile Info (sticky on desktop) */}
+          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+            {/* Cover Image Section */}
+            <div className='relative'>
+              {/* Banner */}
+              <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-24 md:bg-none' />
 
-          {/* Profile Picture - Centered & Clickable */}
-          <UserAvatar
-            user={userProfile}
-            size='lg'
-            onAvatarClick={handleAvatarClick}
-            onVerificationClick={() => setShowVerificationModal(true)}
-            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
-          />
-        </div>
+              {/* Profile Picture - Centered & Clickable */}
+              <UserAvatar
+                user={userProfile}
+                size='lg'
+                onAvatarClick={handleAvatarClick}
+                onVerificationClick={() => setShowVerificationModal(true)}
+                className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
+              />
+            </div>
 
-        {/* Profile Section */}
-        <div className='mb-4 bg-white px-6 pb-2 pt-20'>
-          {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>
-              {userProfile?.name || 'Unknown User'}
-            </h2>
-            <p className='text-gray-600'>{userProfile?.username || ''}</p>
-          </div>
-
-          {/* Stats - Centered */}
-          <div className='mb-4 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
-                <div className='text-sm text-gray-500'>Events</div>
+            {/* Profile Section */}
+            <div className='mb-4 bg-white px-6 pb-2 pt-20'>
+              {/* User Info - Centered */}
+              <div className='mb-6 text-center'>
+                <h2 className='text-2xl font-bold text-gray-900'>
+                  {userProfile?.name || 'Unknown User'}
+                </h2>
+                <p className='text-gray-600'>{userProfile?.username || ''}</p>
               </div>
-              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
-                <div className='text-sm text-gray-500'>Following</div>
-              </button>
-              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
-              </button>
+
+              {/* Stats - Centered */}
+              <div className='mb-4 flex justify-center'>
+                <div className='grid grid-cols-3 gap-8'>
+                  <div className='text-center'>
+                    <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
+                    <div className='text-sm text-gray-500'>Events</div>
+                  </div>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowingSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                    <div className='text-sm text-gray-500'>Following</div>
+                  </motion.button>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowersSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                    <div className='text-sm text-gray-500'>Followers</div>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className='-mx-2.5 mb-4 flex gap-2 px-2.5 pt-4'>
+                <div className='flex w-full flex-row gap-4'>
+                  <Button
+                    onClick={handleFollowToggle}
+                    disabled={isFollowStatusLoading || followActionMutation.isPending}
+                    className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
+                      followStatus?.isFollowing
+                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
+                        : 'bg-red-500 text-white hover:bg-red-600'
+                    }`}
+                  >
+                    {followStatus?.isFollowing ? (
+                      <>
+                        <UserMinus className='mr-2 h-4 w-4' />
+                        {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className='mr-2 h-4 w-4' />
+                        {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant='outline'
+                    onClick={handleMessage}
+                    className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
+                  >
+                    <MessageCircle className='h-4 w-4' />
+                    Message
+                  </Button>
+                </div>
+              </div>
+
+              {/* Zap Button */}
+              {userData?.ln_address && (
+                <div className='mb-6'>
+                  <ZapSheet
+                    recipientLightningAddress={userData.ln_address}
+                    recipientName={userData.name || 'Unknown User'}
+                    recipientUsername={userData.username}
+                    recipientAvatar={userData.image}
+                    currentUsername={user?.username}
+                  />
+                </div>
+              )}
+
+              {/* Social Links - desktop only, below Zap button */}
+              <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
+                <SocialLinks
+                  user={{
+                    bio_link: userData?.bio_link,
+                    instagram_handle: userData?.instagram_handle,
+                    x_handle: userData?.x_handle,
+                    nip05: userData?.nip05,
+                  }}
+                />
+              </div>
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className='-mx-2.5 mb-6 flex gap-2 px-2.5'>
-            <Button
-              onClick={handleFollowToggle}
-              disabled={isFollowStatusLoading || followActionMutation.isPending}
-              className={`flex-1 rounded-xl px-2.5 ${
-                followStatus?.isFollowing
-                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                  : 'bg-red-500 text-white hover:bg-red-600'
-              }`}
-            >
-              {followStatus?.isFollowing ? (
-                <>
-                  <UserMinus className='mr-2 h-4 w-4' />
-                  {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
-                </>
-              ) : (
-                <>
-                  <UserPlus className='mr-2 h-4 w-4' />
-                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
-                </>
-              )}
-            </Button>
-            <Button
-              variant='outline'
-              onClick={handleMessage}
-              className='rounded-xl bg-transparent px-3'
-            >
-              <MessageCircle className='h-4 w-4' />
-              Message
-            </Button>
-            {userData?.ln_address && (
-              <Button
-                variant='outline'
-                onClick={handleTip}
-                className='group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700'
-              >
-                <Zap className='h-4 w-4 text-black transition-colors group-hover:text-orange-700' />
-                Tip
-              </Button>
-            )}
-          </div>
+          {/* Right Column - Tabs */}
+          <div className='pb-20 lg:w-1/2'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white px-6 lg:px-0'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'about', label: 'About' },
+                  { value: 'events', label: 'Events' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v)}
+              />
 
-          {/* Tabbed Section */}
-          <div className='mb-4 w-full bg-white'>
-            {/* Tab Headers */}
-            <SegmentedTabs
-              items={[
-                { value: 'about', label: 'About' },
-                { value: 'events', label: 'Events' },
-              ]}
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v)}
-            />
-
-            {/* Tab Content */}
-            <div>
-              {activeTab === 'about' && renderAboutTab()}
-              {activeTab === 'events' && renderEventsTab()}
+              {/* Tab Content */}
+              <div>
+                {activeTab === 'about' && renderAboutTab()}
+                {activeTab === 'events' && renderEventsTab()}
+              </div>
             </div>
           </div>
         </div>
@@ -815,19 +859,6 @@ export default function UserProfilePageClient() {
         userId=''
         eventId=''
       />
-
-      {/* Tip Sheet */}
-      {userData?.ln_address && (
-        <TipSheet
-          isOpen={showTipSheet}
-          onClose={() => setShowTipSheet(false)}
-          lightningAddress={userData.ln_address}
-          recipientName={userData.name || 'Unknown User'}
-          recipientUsername={userData.username}
-          recipientImage={userData.image}
-          recipientVerificationStatus={userData.verification_status}
-        />
-      )}
     </div>
   );
 }

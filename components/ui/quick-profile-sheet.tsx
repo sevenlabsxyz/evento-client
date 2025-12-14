@@ -6,7 +6,8 @@ import { ProfileActions } from '@/components/ui/quick-profile/profile-actions';
 import { ProfileHeader } from '@/components/ui/quick-profile/profile-header';
 import { ProfileInfo } from '@/components/ui/quick-profile/profile-info';
 import { ProfileStats } from '@/components/ui/quick-profile/profile-stats';
-import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { ZapSheet } from '@/components/zap/zap-sheet';
 import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
@@ -16,8 +17,7 @@ import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useState } from 'react';
-import TipSheet from '../profile/sheets/tip-sheet';
+import { useCallback } from 'react';
 
 interface QuickProfileSheetProps {
   isOpen: boolean;
@@ -28,7 +28,6 @@ interface QuickProfileSheetProps {
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
-  const [showTipSheet, setShowTipSheet] = useState(false);
 
   // Use optimized hook for all profile data
   const { followStatus, eventCount, followers, following, isLoading } = useQuickProfileData(
@@ -60,14 +59,6 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
     toast.success('Message feature coming soon!');
   }, []);
 
-  const handleTip = useCallback(() => {
-    if (!user.ln_address) {
-      toast.error("This user hasn't set up Lightning payments yet");
-      return;
-    }
-    setShowTipSheet(true);
-  }, [user.ln_address]);
-
   const handleViewFullProfile = useCallback(() => {
     // Validate username before navigation to prevent potential exploits
     if (!validateUsername(user.username)) {
@@ -80,77 +71,79 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
 
   return (
     <ErrorBoundary>
-      <SheetWithDetent.Root presented={isOpen} onPresentedChange={(p) => !p && onClose()}>
-        <SheetWithDetent.Portal>
-          <SheetWithDetent.View>
-            <SheetWithDetent.Backdrop />
-            <SheetWithDetent.Content className='relative flex flex-col rounded-t-2xl bg-white'>
-              <div className='sticky top-0 z-10 rounded-t-3xl bg-transparent px-4 pb-3 pt-3'>
+      <SheetWithDetentFull.Root presented={isOpen} onPresentedChange={(p) => !p && onClose()}>
+        <SheetWithDetentFull.Portal>
+          <SheetWithDetentFull.View>
+            <SheetWithDetentFull.Backdrop />
+            <SheetWithDetentFull.Content className='relative flex flex-col bg-white md:!max-w-[500px]'>
+              <div className='sticky top-0 z-10 bg-transparent px-4 pb-3 pt-3'>
                 <div className='mb-3 flex justify-center'>
-                  <SheetWithDetent.Handle />
+                  <SheetWithDetentFull.Handle />
                 </div>
                 <VisuallyHidden.Root asChild>
-                  <SheetWithDetent.Title className='sr-only'>
+                  <SheetWithDetentFull.Title className='sr-only'>
                     Quick profile for {user.name || user.username} (@
                     {user.username})
-                  </SheetWithDetent.Title>
+                  </SheetWithDetentFull.Title>
                 </VisuallyHidden.Root>
               </div>
 
-              <div className='flex-1 overflow-y-auto pb-6'>
-                <ProfileHeader user={user} />
+              <SheetWithDetentFull.ScrollRoot asChild>
+                <SheetWithDetentFull.ScrollView>
+                  <SheetWithDetentFull.ScrollContent>
+                    <ProfileHeader user={user} />
 
-                {/* Profile Content */}
-                <div className='px-6 pt-16'>
-                  <ProfileInfo user={user} />
+                    {/* Profile Content */}
+                    <div className='flex flex-col gap-4 px-6 pb-6 pt-16'>
+                      <ProfileInfo user={user} />
 
-                  <ProfileStats
-                    eventCount={eventCount}
-                    followingCount={following?.length || 0}
-                    followersCount={followers?.length || 0}
-                  />
+                      <ProfileStats
+                        eventCount={eventCount}
+                        followingCount={following?.length || 0}
+                        followersCount={followers?.length || 0}
+                      />
 
-                  {/* Action Buttons */}
-                  {user.username !== loggedInUser?.username && (
-                    <ProfileActions
-                      isFollowing={followStatus?.isFollowing || false}
-                      isLoading={isLoading}
-                      isPending={followActionMutation.isPending}
-                      hasLightningAddress={!!user.ln_address}
-                      onFollowToggle={handleFollowToggle}
-                      onMessage={handleMessage}
-                      onTip={handleTip}
-                    />
-                  )}
+                      <div className='flex flex-col gap-2'>
+                        {/* Action Buttons */}
+                        {user.username !== loggedInUser?.username && (
+                          <>
+                            {/* Zap Button - Full Width (uses default ZapSheet button) */}
+                            <ZapSheet
+                              recipientLightningAddress={`${user.username}@evento.cash`}
+                              recipientName={user.name || user.username}
+                              recipientUsername={user.username}
+                              recipientAvatar={user.image}
+                              currentUsername={loggedInUser?.username}
+                            />
 
-                  {/* View Full Profile Button */}
-                  <Button
-                    onClick={handleViewFullProfile}
-                    variant='outline'
-                    className='w-full rounded-xl border-gray-300 py-3'
-                  >
-                    <ArrowRight className='mr-2 h-4 w-4' />
-                    View Full Profile
-                  </Button>
-                </div>
-              </div>
-            </SheetWithDetent.Content>
-          </SheetWithDetent.View>
-        </SheetWithDetent.Portal>
+                            {/* Follow & Message Buttons */}
+                            <ProfileActions
+                              isFollowing={followStatus?.isFollowing || false}
+                              isLoading={isLoading}
+                              isPending={followActionMutation.isPending}
+                              onFollowToggle={handleFollowToggle}
+                              onMessage={handleMessage}
+                            />
+                          </>
+                        )}
 
-        {/* Tip Sheet */}
-        {user.ln_address && (
-          <TipSheet
-            isOpen={showTipSheet}
-            onClose={() => setShowTipSheet(false)}
-            lightningAddress={user.ln_address}
-            recipientName={user.name || 'Unknown User'}
-            recipientUsername={user.username}
-            recipientImage={user.image}
-            recipientVerificationStatus={user.verification_status}
-          />
-        )}
-      </SheetWithDetent.Root>
+                        {/* View Full Profile Button */}
+                        <Button
+                          onClick={handleViewFullProfile}
+                          className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
+                        >
+                          View Full Profile
+                          <ArrowRight className='ml-2 h-4 w-4' />
+                        </Button>
+                      </div>
+                    </div>
+                  </SheetWithDetentFull.ScrollContent>
+                </SheetWithDetentFull.ScrollView>
+              </SheetWithDetentFull.ScrollRoot>
+            </SheetWithDetentFull.Content>
+          </SheetWithDetentFull.View>
+        </SheetWithDetentFull.Portal>
+      </SheetWithDetentFull.Root>
     </ErrorBoundary>
   );
 }

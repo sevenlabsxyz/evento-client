@@ -174,7 +174,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
           <div className='grid grid-cols-4 gap-2'>
             <button
               onClick={handleRSVP}
-              className={`flex h-16 flex-col items-center justify-center rounded-xl transition-colors ${rsvpButton.className}`}
+              className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className}`}
             >
               <Star className='mb-1 h-5 w-5' />
               <span className='text-xs font-medium'>{rsvpButton.label}</span>
@@ -182,7 +182,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
 
             <button
               onClick={handleContact}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
+              className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
             >
               <Mail className='mb-1 h-5 w-5' />
               <span className='text-xs font-medium'>Contact</span>
@@ -190,7 +190,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
 
             <button
               onClick={handleShare}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
+              className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
             >
               <Share className='mb-1 h-5 w-5' />
               <span className='text-xs font-medium'>Share</span>
@@ -198,7 +198,7 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
 
             <button
               onClick={() => setShowMoreSheet(true)}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
+              className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
             >
               <MoreHorizontal className='mb-1 h-5 w-5' />
               <span className='text-xs font-medium'>More</span>

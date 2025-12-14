@@ -5,6 +5,7 @@ export interface EventHost {
   avatar: string;
   title?: string;
   company?: string;
+  verification_status?: string | null;
 }
 
 export type GuestStatus = 'going' | 'not-going' | 'maybe';

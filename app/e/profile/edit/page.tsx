@@ -107,9 +107,9 @@ export default function EditProfilePage() {
   if (isLoading || isCheckingAuth || updateProfileMutation.isPending) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4'>
+        <div className='flex-1 space-y-4 overflow-y-auto p-4'>
           {/* Profile Image Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -121,7 +121,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Basic Info Module */}
-          <div className='space-y-4 rounded-2xl bg-white p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             {/* Username */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
@@ -144,7 +144,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Social Links Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -156,7 +156,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Biography Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -168,7 +168,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Bitcoin Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -180,7 +180,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Nostr Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -192,7 +192,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Interests Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -204,7 +204,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Prompts Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -223,9 +223,9 @@ export default function EditProfilePage() {
     <>
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         {/* Content */}
-        <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4'>
+        <div className='flex-1 space-y-4 overflow-y-auto p-4'>
           {/* Profile Image Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowProfileImageSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -244,7 +244,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Basic Info Module */}
-          <div className='space-y-4 rounded-2xl bg-white p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             {/* Username */}
             <button
               onClick={() => setShowUsernameSheet(true)}
@@ -277,7 +277,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Social Links Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowSocialLinksSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -298,7 +298,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Biography Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowBiographySheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -319,7 +319,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Interests Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowInterestsSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -336,7 +336,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Prompts Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowPromptsSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -353,7 +353,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Bitcoin Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowLightningSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -370,7 +370,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Nostr Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
               onClick={() => setShowNostrSheet(true)}
               className='flex w-full items-center gap-4 text-left'

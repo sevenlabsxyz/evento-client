@@ -128,10 +128,10 @@ export default function ManageEventPage() {
     router.push(route);
   };
 
-  const handleOpenEventChat = () => {
-    // TODO: Open event chat functionality
-    console.log('Open event chat');
-  };
+  // const handleOpenEventChat = () => {
+  //   // TODO: Open event chat functionality
+  //   console.log('Open event chat');
+  // };
 
   const handleCancelEvent = () => {
     setShowCancelModal(true);
@@ -186,9 +186,9 @@ export default function ManageEventPage() {
       {/* Content */}
       <div className='p-4'>
         {/* Square Action Buttons */}
-        <div className='mb-6 flex gap-2 [&>*]:flex-1'>
-          {/* Check In Guests Button */}
-          {/* <button
+        {/*<div className="mb-6 flex gap-2 [&>*]:flex-1">*/}
+        {/* Check In Guests Button */}
+        {/* <button
             onClick={handleCheckInGuests}
             className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
           >
@@ -196,23 +196,16 @@ export default function ManageEventPage() {
             <span className='text-xs font-medium'>Check In Guests</span>
           </button> */}
 
-          {/* Open Event Chat Button */}
-          <button
-            onClick={handleOpenEventChat}
-            className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
-          >
-            <MessageCircle className='mb-1 h-5 w-5' />
-            <span className='text-xs font-medium'>Open Event Chat</span>
-          </button>
-        </div>
+        {/* Open Event Chat Button */}
+        {/*</div>*/}
 
         {/* Management Options */}
-        <div className='space-y-1'>
+        <div className='space-y-2'>
           {managementOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => handleOptionClick(option.route)}
-              className='flex w-full items-center gap-4 rounded-2xl bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+              className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
             >
               <div
                 className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
@@ -241,7 +234,7 @@ export default function ManageEventPage() {
         <div className='pt-6'>
           <button
             onClick={handleCancelEvent}
-            className='flex w-full items-center gap-3 rounded-xl p-4 hover:bg-red-50'
+            className='flex w-full items-center gap-3 rounded-xl bg-gray-50 p-4 hover:bg-red-50'
           >
             <div className='text-red-600'>
               <X className='h-5 w-5' />

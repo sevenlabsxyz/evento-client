@@ -54,6 +54,7 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
           // For GIFs, use standard img tag to preserve animation
           if (isGif(src)) {
             return (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={key}
                 src={src}
@@ -68,13 +69,13 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
 
           // For normal images, use Next.js Image with blur placeholder
           return (
-            <div key={key} className='relative my-2 overflow-hidden' style={{ maxWidth: '100%' }}>
+            <div key={key} className='relative my-2 w-full overflow-hidden'>
               <Image
                 src={src}
                 alt={alt}
                 width={width}
                 height={height}
-                className='h-auto max-w-full'
+                className='h-auto w-full max-w-full'
                 sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
                 placeholder='blur'
                 blurDataURL={generateBlurDataURL(src)}
@@ -115,7 +116,11 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
     // For external images
     if (url.startsWith('http')) {
       // Try to generate a tiny version for Evento images on supported domains
-      if (url.includes('evento.so') || url.includes('laughing-sunfish.pikapod.net')) {
+      if (
+        url.includes('evento.so') ||
+        url.includes('laughing-sunfish.pikapod.net') ||
+        url.includes('blogapi.evento.so')
+      ) {
         // Add blur parameters - create a tiny 10px version for blurry placeholder
         if (url.includes('?')) {
           return `${url}&width=10&quality=30`;
@@ -139,5 +144,5 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
   }
 
-  return <div className={className}>{processedContent}</div>;
+  return <div className={`max-w-full overflow-hidden ${className || ''}`}>{processedContent}</div>;
 }

@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import { BadgeCheck } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
-type UserAvatarSize = 'xs' | 'sm' | 'md' | 'lg';
+type UserAvatarSize = 'xs' | 'sm' | 'base' | 'md' | 'lg';
 
 interface UserAvatarProps {
   user?: {
@@ -34,7 +34,7 @@ export function UserAvatar({
   // Size variants configuration
   const sizeVariants = {
     xs: {
-      avatar: 'h-4 w-4',
+      avatar: 'h-5 w-5',
       border: 'border-1',
       badge: 'h-2 w-2',
       badgePosition: 'bottom-0 right-0',
@@ -46,6 +46,13 @@ export function UserAvatar({
       badge: 'h-4 w-4',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-sm',
+    },
+    base: {
+      avatar: 'h-10 w-10',
+      border: 'border-2',
+      badge: 'h-5 w-5',
+      badgePosition: 'bottom-0 right-0',
+      textSize: 'text-base',
     },
     md: {
       avatar: 'h-16 w-16',
@@ -72,7 +79,7 @@ export function UserAvatar({
   };
 
   return (
-    <button onClick={onAvatarClick} className={cn('relative shadow-lg', className)}>
+    <button onClick={onAvatarClick} className={cn('relative', className)}>
       <Avatar
         className={cn(
           // Only use size config if no explicit dimensions are provided

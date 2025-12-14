@@ -284,39 +284,45 @@ export default function EventDetailPageClient() {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50'>
+    <div className='min-h-screen bg-white'>
       {/* Main content */}
-      <div className='mx-auto max-w-full bg-white md:max-w-sm'>
-        <SwipeableHeader
-          event={event}
-          onImageClick={(index) => {
-            setLightboxImages(event.coverImages);
-            setSelectedImageIndex(index);
-          }}
-        />
-        <div className='pb-20'>
-          <div className='px-4'>
-            <EventInfo event={event} currentUserId={user?.id || ''} />
+      <div className='mx-auto max-w-full bg-white md:pt-4 lg:max-w-4xl'>
+        <div className='lg:flex lg:gap-8'>
+          {/* Left Column - Image & Quick Actions (sticky on desktop) */}
+          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+            <SwipeableHeader
+              event={event}
+              onImageClick={(index) => {
+                setLightboxImages(event.coverImages);
+                setSelectedImageIndex(index);
+              }}
+            />
+            <div className='px-4'>
+              <EventInfo event={event} currentUserId={user?.id || ''} />
+            </div>
           </div>
 
-          {/* Tabbed Section */}
-          <div className='mb-4 w-full bg-white'>
-            {/* Tab Headers */}
-            <SegmentedTabs
-              items={[
-                { value: 'details', label: 'Details' },
-                { value: 'comments', label: 'Comments' },
-                { value: 'gallery', label: 'Gallery' },
-              ]}
-              value={activeTab}
-              onValueChange={(v) => handleTabChange(v)}
-            />
+          {/* Right Column - Tabs */}
+          <div className='pb-20 lg:w-1/2'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'details', label: 'Details' },
+                  { value: 'comments', label: 'Comments' },
+                  { value: 'gallery', label: 'Gallery' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => handleTabChange(v)}
+              />
 
-            {/* Tab Content */}
-            <div className='px-4'>
-              {activeTab === 'details' && renderDetailsTab()}
-              {activeTab === 'comments' && renderCommentsTab()}
-              {activeTab === 'gallery' && renderGalleryTab()}
+              {/* Tab Content */}
+              <div className='px-4'>
+                {activeTab === 'details' && renderDetailsTab()}
+                {activeTab === 'comments' && renderCommentsTab()}
+                {activeTab === 'gallery' && renderGalleryTab()}
+              </div>
             </div>
           </div>
         </div>

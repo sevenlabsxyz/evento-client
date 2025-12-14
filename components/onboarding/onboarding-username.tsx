@@ -75,8 +75,8 @@ export const OnboardingUsername = ({
       setIsCheckingAvailability(true);
       refetch().then(({ data: freshData }) => {
         setIsCheckingAvailability(false);
-        // If no user found, username is available
-        setIsAvailable(!freshData);
+        // If no user found (no id property), username is available
+        setIsAvailable(!freshData?.id);
       });
     }
   }, [debouncedUsername, validationError, refetch, currentUser]);
@@ -106,7 +106,7 @@ export const OnboardingUsername = ({
             disabled={updating}
             placeholder={'shakespeare123'}
             onChange={onUsernameChange}
-            className={`mb-2 min-h-[60px] border bg-gray-100 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 md:text-2xl ${validationError && showValidation ? 'border-red-500' : ''} ${canProceed ? 'border-green-500' : ''} `}
+            className={`mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 md:text-2xl ${validationError && showValidation ? 'border-red-500' : ''} ${canProceed ? 'border-green-500' : ''} `}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && canProceed) onEnterPress();
             }}

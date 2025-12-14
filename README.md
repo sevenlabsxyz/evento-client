@@ -1,12 +1,12 @@
-# Evento App ([app.evento.so](https://app.evento.so))
+# Evento App + Bitcoin Wallet ([app.evento.so](https://app.evento.so))
 
 ## Overview
 
-**Create Events. Connect People. Build Communities.**
+**Events Made Social**
 
 Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
 
-The application features a comprehensive suite of capabilities including:
+The application features a comprehensive suite of capabilities:
 
 - **Seamless event creation and management**
 - **Interactive guest list and RSVP tracking**

@@ -9,7 +9,6 @@ export type EventTimeframe = 'all' | 'future' | 'past';
 export type EventSortBy = 'date-asc' | 'date-desc' | 'created-asc' | 'created-desc';
 
 export interface UserEventsParams {
-  username?: string;
   search?: string;
   filter?: EventFilterType;
   timeframe?: EventTimeframe;
@@ -37,7 +36,6 @@ export interface UserEventsResponse {
  */
 export function useUserEvents(params: UserEventsParams) {
   const {
-    username,
     search = '',
     filter = 'upcoming',
     timeframe = 'all',
@@ -47,27 +45,12 @@ export function useUserEvents(params: UserEventsParams) {
   } = params;
 
   return useInfiniteQuery<UserEventsResponse, Error, InfiniteData<UserEventsResponse>>({
-    queryKey: ['user-events', username, search, filter, timeframe, sortBy, limit],
+    queryKey: ['user-events', search, filter, timeframe, sortBy, limit],
     queryFn: async ({ pageParam }) => {
       const page = (pageParam as number) || 1;
-      // Only fetch if we have a username
-      if (!username) {
-        return {
-          events: [],
-          pagination: {
-            totalCount: 0,
-            totalPages: 0,
-            currentPage: 1,
-            limit,
-            hasNextPage: false,
-            hasPreviousPage: false,
-          },
-        };
-      }
 
       // Build query params
       const queryParams = new URLSearchParams();
-      queryParams.append('username', username);
 
       if (filter !== 'upcoming') {
         queryParams.append('filter', filter);
@@ -103,7 +86,7 @@ export function useUserEvents(params: UserEventsParams) {
 
       throw new Error('Failed to fetch user events');
     },
-    enabled: !!username && enabled,
+    enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes cache
     getNextPageParam: (lastPage) => {
       if (lastPage.pagination.currentPage < lastPage.pagination.totalPages) {
