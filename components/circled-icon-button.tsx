@@ -20,7 +20,7 @@ export function CircledIconButton({
       variant='outline'
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-full ${className || ''}`}
+      className={`rounded-full bg-gray-50 ${className || ''}`}
     >
       <Icon className='!h-[1.25rem] !w-[1.25rem]' />
     </Button>

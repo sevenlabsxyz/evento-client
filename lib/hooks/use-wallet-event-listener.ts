@@ -1,5 +1,8 @@
 'use client';
 
+// Set to true to enable verbose wallet event logging
+const DEBUG_WALLET = false;
+
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletStore } from '@/lib/stores/wallet-store';
@@ -46,7 +49,7 @@ export function useWalletEventListener() {
   useEffect(() => {
     if (!isConnected) return;
 
-    console.log('Setting up Breez SDK event listener...');
+    if (DEBUG_WALLET) console.log('Setting up Breez SDK event listener...');
     const unsubscribe = breezSDK.onEvent((event) => {
       // Logging is handled in breez-sdk.ts service layer
 
@@ -77,7 +80,7 @@ export function useWalletEventListener() {
     });
 
     return () => {
-      console.log('Cleaning up Breez SDK event listener');
+      if (DEBUG_WALLET) console.log('Cleaning up Breez SDK event listener');
       unsubscribe();
     };
   }, [isConnected]); // Only depends on primitive isConnected value

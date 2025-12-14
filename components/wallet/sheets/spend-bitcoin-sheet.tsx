@@ -1,5 +1,8 @@
 'use client';
 
+// Set to true to enable verbose Bitrefill logging
+const DEBUG_BITREFILL = false;
+
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -70,14 +73,17 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
   useEffect(() => {
     const handleMessage = (e: MessageEvent) => {
       // Log ALL messages first (before filtering)
-      console.log('📨 [BITREFILL] Raw message received:', {
-        origin: e.origin,
-        data: e.data,
-        type: typeof e.data,
-      });
+      if (DEBUG_BITREFILL) {
+        console.log('📨 [BITREFILL] Raw message received:', {
+          origin: e.origin,
+          data: e.data,
+          type: typeof e.data,
+        });
+      }
 
       if (e.origin !== 'https://embed.bitrefill.com') {
-        console.log('⚠️ [BITREFILL] Ignoring message from different origin:', e.origin);
+        if (DEBUG_BITREFILL)
+          console.log('⚠️ [BITREFILL] Ignoring message from different origin:', e.origin);
         return;
       }
 
@@ -88,23 +94,24 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
         try {
           data = JSON.parse(data);
         } catch (error) {
-          console.log('⚠️ [BITREFILL] Failed to parse JSON data:', error);
+          if (DEBUG_BITREFILL) console.log('⚠️ [BITREFILL] Failed to parse JSON data:', error);
           return;
         }
       }
 
       if (!data || typeof data !== 'object') {
-        console.log('⚠️ [BITREFILL] Invalid data format:', data);
+        if (DEBUG_BITREFILL) console.log('⚠️ [BITREFILL] Invalid data format:', data);
         return;
       }
 
-      console.log('✅ [BITREFILL] Valid event received:', data);
+      if (DEBUG_BITREFILL) console.log('✅ [BITREFILL] Valid event received:', data);
 
       const { event, invoiceId, paymentUri, status, deliveryStatus: msgDeliveryStatus } = data;
 
       switch (event) {
         case 'invoice_created':
-          console.log('🧾 [BITREFILL] Invoice created:', { invoiceId, paymentUri });
+          if (DEBUG_BITREFILL)
+            console.log('🧾 [BITREFILL] Invoice created:', { invoiceId, paymentUri });
           // Store invoice for when user clicks "open in wallet"
           if (invoiceId && paymentUri) {
             setCurrentInvoice({ invoiceId, paymentUri });
@@ -112,10 +119,11 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'payment_intent':
-          console.log('💳 [BITREFILL] Payment intent (user clicked pay):', {
-            invoiceId,
-            paymentUri,
-          });
+          if (DEBUG_BITREFILL)
+            console.log('💳 [BITREFILL] Payment intent (user clicked pay):', {
+              invoiceId,
+              paymentUri,
+            });
           // User clicked "open in wallet" - show confirmation sheet
           if (invoiceId && paymentUri) {
             setCurrentInvoice({ invoiceId, paymentUri });
@@ -124,7 +132,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'invoice_update':
-          console.log('🔄 [BITREFILL] Invoice update:', { status, invoiceId });
+          if (DEBUG_BITREFILL) console.log('🔄 [BITREFILL] Invoice update:', { status, invoiceId });
           // Track status: payment_detected, payment_confirmed, expired, refunded
           if (status === 'payment_confirmed') {
             setPaymentStatus('success');
@@ -135,7 +143,8 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'invoice_complete':
-          console.log('✅ [BITREFILL] Invoice complete:', { deliveryStatus: msgDeliveryStatus });
+          if (DEBUG_BITREFILL)
+            console.log('✅ [BITREFILL] Invoice complete:', { deliveryStatus: msgDeliveryStatus });
           // Final delivery status
           setDeliveryStatus(msgDeliveryStatus || null);
           setPaymentStatus(msgDeliveryStatus === 'all_error' ? 'error' : 'success');
@@ -145,15 +154,15 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         default:
-          console.log('❓ [BITREFILL] Unknown event type:', event, data);
+          if (DEBUG_BITREFILL) console.log('❓ [BITREFILL] Unknown event type:', event, data);
       }
     };
 
     window.addEventListener('message', handleMessage);
-    console.log('🎧 [BITREFILL] Message listener attached');
+    if (DEBUG_BITREFILL) console.log('🎧 [BITREFILL] Message listener attached');
     return () => {
       window.removeEventListener('message', handleMessage);
-      console.log('🔇 [BITREFILL] Message listener removed');
+      if (DEBUG_BITREFILL) console.log('🔇 [BITREFILL] Message listener removed');
     };
   }, [refreshBalance]);
 

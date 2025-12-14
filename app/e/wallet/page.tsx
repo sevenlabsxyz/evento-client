@@ -19,7 +19,7 @@ import { TransactionDetailsSheet } from '@/components/wallet/transaction-details
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
-import { WalletEducationGallery } from '@/components/wallet/wallet-education-section-gallery';
+import { WalletEducationList } from '@/components/wallet/wallet-education-list';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { WalletLoadingScreen } from '@/components/wallet/wallet-loading-screen';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
@@ -393,10 +393,9 @@ export default function WalletPage() {
   // Main Wallet Screen
   return (
     <div className='min-h-screen bg-white'>
-      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
-        <div className='px-4 pt-4 md:flex md:gap-8'>
-          {/* Left Column - sticky on desktop */}
-          <div className='md:sticky md:top-0 md:w-1/2 md:self-start'>
+      <div className='mx-auto bg-white md:max-w-md'>
+        <div className='px-4 pt-4'>
+          <div>
             <div className='space-y-4'>
               {/* Wallet Balance Card */}
               {walletState.isInitialized && user?.username && (
@@ -421,14 +420,11 @@ export default function WalletPage() {
             </div>
           </div>
 
-          {/* Right Column - scrollable */}
-          <div className='pb-28 md:w-1/2'>
+          <div className='pb-28'>
             <div className='space-y-6'>
               {/* Recent Transactions Preview */}
-              <div className='mt-6 space-y-3 md:mt-0'>
-                <h3 className='text-base font-semibold text-muted-foreground'>
-                  Recent Transactions
-                </h3>
+              <div className='mt-6 space-y-3 md:mt-4'>
+                <h3 className='text-sm font-semibold'>Recent Transactions</h3>
                 <TransactionHistory
                   payments={payments.slice(0, 5)}
                   isLoading={isLoadingPayments}
@@ -483,7 +479,7 @@ export default function WalletPage() {
               )}
 
               {/* Educational Content */}
-              <WalletEducationGallery />
+              <WalletEducationList />
             </div>
           </div>
         </div>

@@ -69,7 +69,7 @@ export function MasterScrollableSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className={`flex flex-col ${className ?? ''}`}>
+          <SheetWithDetentFull.Content className={`flex flex-col md:!max-w-md ${className ?? ''}`}>
             {/* Handle */}
             <div className='my-4 flex items-center'>
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />

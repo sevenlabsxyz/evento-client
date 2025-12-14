@@ -136,7 +136,8 @@ function SidebarContent({
                   {section.items.map((item) => {
                     const isActive =
                       pathname === item.path ||
-                      (item.path !== '/' && pathname?.startsWith(item.path));
+                      (item.path !== '/' && pathname?.startsWith(item.path)) ||
+                      (item.path === '/' && pathname === '/e/hub');
                     return (
                       <li key={item.path}>
                         <button

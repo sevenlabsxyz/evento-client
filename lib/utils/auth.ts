@@ -1,24 +1,29 @@
 import { UserDetails } from '../types/api';
 
+// Set to true to enable auth debug logging
+const DEBUG_AUTH = false;
+
 /**
  * Check if a user has completed onboarding
  * A user is considered onboarded if they have both username and name filled
  */
 export function isUserOnboarded(user: UserDetails | null): boolean {
   if (!user) {
-    console.log('isUserOnboarded: No user provided');
+    if (DEBUG_AUTH) console.log('isUserOnboarded: No user provided');
     return false;
   }
 
   const hasUsername = user.username && user.username.trim() !== '';
   const hasName = user.name && user.name.trim() !== '';
 
-  console.log('isUserOnboarded: Checking user:', {
-    username: user.username,
-    name: user.name,
-    hasUsername,
-    hasName,
-  });
+  if (DEBUG_AUTH) {
+    console.log('isUserOnboarded: Checking user:', {
+      username: user.username,
+      name: user.name,
+      hasUsername,
+      hasName,
+    });
+  }
 
   return Boolean(hasUsername && hasName);
 }

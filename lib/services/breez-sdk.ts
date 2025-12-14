@@ -32,6 +32,9 @@ import {
   WaitForPaymentResponse,
 } from '@breeztech/breez-sdk-spark';
 
+// Set to true to enable verbose logging
+const DEBUG_BREEZ = false;
+
 let sdkInstance: BreezSdk | null = null;
 let isInitializing = false;
 let initializationError: Error | null = null;
@@ -69,14 +72,17 @@ export class BreezSDKService {
   async connect(mnemonic: string, apiKey: string, network: Network = 'mainnet'): Promise<BreezSdk> {
     const newFingerprint = getWalletFingerprint(mnemonic);
 
-    console.log('🔑 [BREEZ:CONNECT] Attempting to connect wallet');
-    console.log('  → New wallet fingerprint:', newFingerprint);
-    console.log('  → Current wallet fingerprint:', currentWalletFingerprint || 'none');
-    console.log('  → SDK instance exists:', sdkInstance !== null);
+    if (DEBUG_BREEZ) {
+      console.log('🔑 [BREEZ:CONNECT] Attempting to connect wallet');
+      console.log('  → New wallet fingerprint:', newFingerprint);
+      console.log('  → Current wallet fingerprint:', currentWalletFingerprint || 'none');
+      console.log('  → SDK instance exists:', sdkInstance !== null);
+    }
 
     if (sdkInstance) {
       if (currentWalletFingerprint === newFingerprint) {
-        console.log('✅ [BREEZ:CONNECT] Same wallet, returning existing SDK instance');
+        if (DEBUG_BREEZ)
+          console.log('✅ [BREEZ:CONNECT] Same wallet, returning existing SDK instance');
         return sdkInstance;
       } else {
         console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!');
@@ -101,12 +107,12 @@ export class BreezSDKService {
 
       // Dynamically import the SDK module
       if (!sdkModule) {
-        console.log('Loading Breez SDK module...');
+        if (DEBUG_BREEZ) console.log('Loading Breez SDK module...');
         sdkModule = await import('@breeztech/breez-sdk-spark');
 
         // Initialize WASM if there's a default export (initialization function)
         if (sdkModule.default && typeof sdkModule.default === 'function') {
-          console.log('Initializing Breez SDK WASM...');
+          if (DEBUG_BREEZ) console.log('Initializing Breez SDK WASM...');
           await sdkModule.default();
         }
       }
@@ -160,8 +166,10 @@ export class BreezSDKService {
       // Set up event listener
       await this.setupEventListener();
 
-      console.log('✅ [BREEZ:CONNECT] Breez SDK connected successfully');
-      console.log('  → Wallet fingerprint:', currentWalletFingerprint);
+      if (DEBUG_BREEZ) {
+        console.log('✅ [BREEZ:CONNECT] Breez SDK connected successfully');
+        console.log('  → Wallet fingerprint:', currentWalletFingerprint);
+      }
       return this.sdk!;
     } catch (error: any) {
       console.error('Failed to connect to Breez SDK:', error);
@@ -187,8 +195,10 @@ export class BreezSDKService {
   async disconnect(): Promise<void> {
     if (this.sdk) {
       try {
-        console.log('🔌 [BREEZ:DISCONNECT] Disconnecting wallet...');
-        console.log('  → Current wallet fingerprint:', currentWalletFingerprint || 'unknown');
+        if (DEBUG_BREEZ) {
+          console.log('🔌 [BREEZ:DISCONNECT] Disconnecting wallet...');
+          console.log('  → Current wallet fingerprint:', currentWalletFingerprint || 'unknown');
+        }
 
         // Remove event listener
         if (this.eventListenerId) {
@@ -202,8 +212,10 @@ export class BreezSDKService {
         currentWalletFingerprint = null;
         this.eventCallbacks.clear();
 
-        console.log('✅ [BREEZ:DISCONNECT] Breez SDK disconnected successfully');
-        console.log('  → Wallet fingerprint cleared');
+        if (DEBUG_BREEZ) {
+          console.log('✅ [BREEZ:DISCONNECT] Breez SDK disconnected successfully');
+          console.log('  → Wallet fingerprint cleared');
+        }
       } catch (error) {
         console.error('❌ [BREEZ:DISCONNECT] Failed to disconnect from Breez SDK:', error);
         throw error;
@@ -232,15 +244,19 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log('💰 [BREEZ:GET_BALANCE] Fetching wallet balance...');
-      console.log('  → Wallet fingerprint:', currentWalletFingerprint || 'unknown');
+      if (DEBUG_BREEZ) {
+        console.log('💰 [BREEZ:GET_BALANCE] Fetching wallet balance...');
+        console.log('  → Wallet fingerprint:', currentWalletFingerprint || 'unknown');
+      }
 
       const nodeInfo = await this.sdk.getInfo({ ensureSynced: true });
 
-      console.log('💰 [BREEZ:GET_BALANCE] Balance fetched');
-      console.log('  → Full nodeInfo:', nodeInfo);
-      console.log('  → balanceSats:', nodeInfo.balanceSats);
-      console.log('  → Wallet fingerprint:', currentWalletFingerprint || 'unknown');
+      if (DEBUG_BREEZ) {
+        console.log('💰 [BREEZ:GET_BALANCE] Balance fetched');
+        console.log('  → Full nodeInfo:', nodeInfo);
+        console.log('  → balanceSats:', nodeInfo.balanceSats);
+        console.log('  → Wallet fingerprint:', currentWalletFingerprint || 'unknown');
+      }
 
       return Number(nodeInfo.balanceSats);
     } catch (error) {
@@ -286,12 +302,14 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log(
-        '📥 [BREEZ:RECEIVE_PAYMENT] Generating payment method:',
-        request.paymentMethod.type
-      );
+      if (DEBUG_BREEZ)
+        console.log(
+          '📥 [BREEZ:RECEIVE_PAYMENT] Generating payment method:',
+          request.paymentMethod.type
+        );
       const response = await this.sdk.receivePayment(request);
-      console.log('✅ [BREEZ:RECEIVE_PAYMENT] Payment method generated successfully');
+      if (DEBUG_BREEZ)
+        console.log('✅ [BREEZ:RECEIVE_PAYMENT] Payment method generated successfully');
       return response;
     } catch (error) {
       console.error('Failed to receive payment:', error);
@@ -309,9 +327,9 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log('⚡ [BREEZ:PREPARE_SEND] Preparing send payment...');
+      if (DEBUG_BREEZ) console.log('⚡ [BREEZ:PREPARE_SEND] Preparing send payment...');
       const response = await this.sdk.prepareSendPayment(request);
-      console.log('✅ [BREEZ:PREPARE_SEND] Send payment prepared successfully');
+      if (DEBUG_BREEZ) console.log('✅ [BREEZ:PREPARE_SEND] Send payment prepared successfully');
       return response;
     } catch (error) {
       console.error('Failed to prepare send payment:', error);
@@ -391,9 +409,10 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log('💸 [BREEZ:SEND_PAYMENT_OPTIONS] Sending payment with options...');
+      if (DEBUG_BREEZ)
+        console.log('💸 [BREEZ:SEND_PAYMENT_OPTIONS] Sending payment with options...');
       const response = await this.sdk.sendPayment(request);
-      console.log('✅ [BREEZ:SEND_PAYMENT_OPTIONS] Payment sent successfully');
+      if (DEBUG_BREEZ) console.log('✅ [BREEZ:SEND_PAYMENT_OPTIONS] Payment sent successfully');
       return response;
     } catch (error) {
       console.error('Failed to send payment with options:', error);
@@ -410,7 +429,7 @@ export class BreezSDKService {
 
     try {
       const parsed = await this.sdk.parse(input);
-      console.log('📝 [BREEZ:PARSE_INPUT] Input parsed:', parsed.type);
+      if (DEBUG_BREEZ) console.log('📝 [BREEZ:PARSE_INPUT] Input parsed:', parsed.type);
       return parsed;
     } catch (error) {
       console.error('Failed to parse input:', error);
@@ -425,9 +444,9 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log('💸 [BREEZ:PREPARE_LNURL_PAY] Preparing LNURL payment...');
+      if (DEBUG_BREEZ) console.log('💸 [BREEZ:PREPARE_LNURL_PAY] Preparing LNURL payment...');
       const response = await this.sdk.prepareLnurlPay(params);
-      console.log('✅ [BREEZ:PREPARE_LNURL_PAY] LNURL payment prepared');
+      if (DEBUG_BREEZ) console.log('✅ [BREEZ:PREPARE_LNURL_PAY] LNURL payment prepared');
       return response;
     } catch (error) {
       console.error('Failed to prepare LNURL payment:', error);
@@ -442,9 +461,9 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log('💸 [BREEZ:LNURL_PAY] Executing LNURL payment...');
+      if (DEBUG_BREEZ) console.log('💸 [BREEZ:LNURL_PAY] Executing LNURL payment...');
       const response = await this.sdk.lnurlPay(params);
-      console.log('✅ [BREEZ:LNURL_PAY] LNURL payment executed successfully');
+      if (DEBUG_BREEZ) console.log('✅ [BREEZ:LNURL_PAY] LNURL payment executed successfully');
       return response;
     } catch (error) {
       console.error('Failed to execute LNURL payment:', error);
@@ -573,13 +592,15 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log(
-        `💰 [BREEZ:CLAIM_DEPOSIT] Claiming deposit ${txid}:${vout} with max fee:`,
-        maxFee
-      );
+      if (DEBUG_BREEZ)
+        console.log(
+          `💰 [BREEZ:CLAIM_DEPOSIT] Claiming deposit ${txid}:${vout} with max fee:`,
+          maxFee
+        );
       const request: ClaimDepositRequest = { txid, vout, maxFee };
       await this.sdk.claimDeposit(request);
-      console.log(`✅ [BREEZ:CLAIM_DEPOSIT] Successfully claimed deposit ${txid}:${vout}`);
+      if (DEBUG_BREEZ)
+        console.log(`✅ [BREEZ:CLAIM_DEPOSIT] Successfully claimed deposit ${txid}:${vout}`);
     } catch (error) {
       console.error('Failed to claim deposit:', error);
       throw error;
@@ -599,12 +620,14 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      console.log(
-        `🔄 [BREEZ:REFUND_DEPOSIT] Refunding deposit ${txid}:${vout} to ${destinationAddress}`
-      );
+      if (DEBUG_BREEZ)
+        console.log(
+          `🔄 [BREEZ:REFUND_DEPOSIT] Refunding deposit ${txid}:${vout} to ${destinationAddress}`
+        );
       const request: RefundDepositRequest = { txid, vout, destinationAddress, fee };
       await this.sdk.refundDeposit(request);
-      console.log(`✅ [BREEZ:REFUND_DEPOSIT] Successfully refunded deposit ${txid}:${vout}`);
+      if (DEBUG_BREEZ)
+        console.log(`✅ [BREEZ:REFUND_DEPOSIT] Successfully refunded deposit ${txid}:${vout}`);
     } catch (error) {
       console.error('Failed to refund deposit:', error);
       throw error;
@@ -619,7 +642,8 @@ export class BreezSDKService {
 
     switch (event.type) {
       case 'synced':
-        console.log(`🔄 [BREEZ:SYNCED] ${timestamp} - Wallet synchronized with network`);
+        if (DEBUG_BREEZ)
+          console.log(`🔄 [BREEZ:SYNCED] ${timestamp} - Wallet synchronized with network`);
         break;
 
       case 'paymentSucceeded': {
@@ -627,12 +651,14 @@ export class BreezSDKService {
         const isIncoming = payment?.paymentType === 'receive';
         const direction = isIncoming ? 'Incoming' : 'Outgoing';
         const amount = Number(payment?.amount || 0n);
-        console.log(
-          `💰 [BREEZ:PAYMENT_SUCCEEDED] ${timestamp} - ${direction}: ${amount.toLocaleString()} sats`,
-          payment
-        );
+        if (DEBUG_BREEZ) {
+          console.log(
+            `💰 [BREEZ:PAYMENT_SUCCEEDED] ${timestamp} - ${direction}: ${amount.toLocaleString()} sats`,
+            payment
+          );
+        }
 
-        // Show toast for incoming payments
+        // Show toast for incoming payments (always, not just debug)
         if (isIncoming) {
           toast.success(`+${amount.toLocaleString()} sats received`);
         }
@@ -643,37 +669,43 @@ export class BreezSDKService {
         const payment = (event as any).payment;
         const direction = payment?.paymentType === 'received' ? 'Incoming' : 'Outgoing';
         const amount = payment?.amountSats || 0;
-        console.log(
-          `❌ [BREEZ:PAYMENT_FAILED] ${timestamp} - ${direction} payment failed: ${amount.toLocaleString()} sats`,
-          payment
-        );
+        if (DEBUG_BREEZ) {
+          console.log(
+            `❌ [BREEZ:PAYMENT_FAILED] ${timestamp} - ${direction} payment failed: ${amount.toLocaleString()} sats`,
+            payment
+          );
+        }
         break;
       }
 
       case 'claimedDeposits': {
         const deposits = (event as any).claimedDeposits || [];
         const totalAmount = deposits.reduce((sum: number, d: any) => sum + (d.amountSats || 0), 0);
-        console.log(
-          `📥 [BREEZ:CLAIMED_DEPOSITS] ${timestamp} - Auto-claimed ${deposits.length} deposit(s) (${totalAmount.toLocaleString()} sats total)`,
-          deposits
-        );
+        if (DEBUG_BREEZ) {
+          console.log(
+            `📥 [BREEZ:CLAIMED_DEPOSITS] ${timestamp} - Auto-claimed ${deposits.length} deposit(s) (${totalAmount.toLocaleString()} sats total)`,
+            deposits
+          );
+        }
         break;
       }
 
       case 'unclaimedDeposits': {
         const deposits = (event as any).unclaimedDeposits || [];
         const totalAmount = deposits.reduce((sum: number, d: any) => sum + (d.amountSats || 0), 0);
-        console.log(
-          `⚠️ [BREEZ:UNCLAIMED_DEPOSITS] ${timestamp} - Failed to auto-claim ${deposits.length} deposit(s) (${totalAmount.toLocaleString()} sats total)`,
-          deposits
-        );
-        console.log('  → Reason: Fee exceeded maxDepositClaimFee threshold');
-        console.log('  → Action required: User must manually claim deposits');
+        if (DEBUG_BREEZ) {
+          console.log(
+            `⚠️ [BREEZ:UNCLAIMED_DEPOSITS] ${timestamp} - Failed to auto-claim ${deposits.length} deposit(s) (${totalAmount.toLocaleString()} sats total)`,
+            deposits
+          );
+          console.log('  → Reason: Fee exceeded maxDepositClaimFee threshold');
+          console.log('  → Action required: User must manually claim deposits');
+        }
         break;
       }
 
       default:
-        console.log(`🔔 [BREEZ:UNKNOWN_EVENT] ${timestamp}`, event);
+        if (DEBUG_BREEZ) console.log(`🔔 [BREEZ:UNKNOWN_EVENT] ${timestamp}`, event);
         break;
     }
   }
@@ -702,7 +734,7 @@ export class BreezSDKService {
       };
 
       this.eventListenerId = await this.sdk.addEventListener(eventListener);
-      console.log('Event listener registered:', this.eventListenerId);
+      if (DEBUG_BREEZ) console.log('Event listener registered:', this.eventListenerId);
     } catch (error) {
       console.error('Failed to set up event listener:', error);
     }

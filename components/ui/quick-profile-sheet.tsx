@@ -130,7 +130,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                         {/* View Full Profile Button */}
                         <Button
                           onClick={handleViewFullProfile}
-                          className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
+                          variant={'ghost'}
+                          // className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
                         >
                           View Full Profile
                           <ArrowRight className='ml-2 h-4 w-4' />

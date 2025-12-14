@@ -91,111 +91,105 @@ export default function SettingsPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-4xl'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
         <div className='flex-1 overflow-y-auto bg-white px-0 pt-4'>
-          <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6'>
-            {/* Left Column */}
-            <div>
-              {/* GENERAL */}
-              <div className='mb-2 px-4'>
-                <Skeleton className='h-3 w-24' />
-              </div>
-              <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-                <div className='border-b border-gray-100'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-4 w-28' />
-                    </div>
-                    <Skeleton className='h-4 w-16' />
+          <div>
+            {/* GENERAL */}
+            <div className='mb-2 px-4'>
+              <Skeleton className='h-3 w-24' />
+            </div>
+            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+              <div className='border-b border-gray-100'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-28' />
                   </div>
-                </div>
-                <div className='p-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-4 w-24' />
-                    </div>
-                    <Skeleton className='h-4 w-20' />
-                  </div>
+                  <Skeleton className='h-4 w-16' />
                 </div>
               </div>
-
-              {/* HELP CENTER */}
-              <div className='mb-2 px-4'>
-                <Skeleton className='h-3 w-28' />
-              </div>
-              <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-                <div className='border-b border-gray-100'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-4 w-32' />
-                    </div>
-                    <Skeleton className='h-4 w-4 rounded' />
+              <div className='p-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-24' />
                   </div>
+                  <Skeleton className='h-4 w-20' />
                 </div>
-                <div className='p-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-4 w-28' />
-                    </div>
-                    <Skeleton className='h-4 w-4 rounded' />
-                  </div>
-                </div>
-              </div>
-
-              {/* ABOUT */}
-              <div className='mb-2 px-4'>
-                <Skeleton className='h-3 w-16' />
-              </div>
-              <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-                {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className={`p-4 ${i < 3 ? 'border-b border-gray-100' : ''}`}>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-3'>
-                        <Skeleton className='h-8 w-8 rounded-lg' />
-                        <Skeleton className='h-4 w-36' />
-                      </div>
-                      <Skeleton className='h-4 w-4 rounded' />
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
 
-            {/* Right Column */}
-            <div>
-              {/* DEVELOPER */}
-              <div className='mb-2 px-4'>
-                <Skeleton className='h-3 w-24' />
-              </div>
-              <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-                <div className='border-b border-gray-100'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-4 w-28' />
-                    </div>
-                    <Skeleton className='h-4 w-4 rounded' />
+            {/* HELP CENTER */}
+            <div className='mb-2 px-4'>
+              <Skeleton className='h-3 w-28' />
+            </div>
+            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+              <div className='border-b border-gray-100'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-32' />
                   </div>
-                </div>
-                <div className='p-4'>
-                  <div className='flex items-center justify-between'>
-                    <div className='flex items-center gap-3'>
-                      <Skeleton className='h-8 w-8 rounded-lg' />
-                      <Skeleton className='h-4 w-32' />
-                    </div>
-                    <Skeleton className='h-4 w-4 rounded' />
-                  </div>
+                  <Skeleton className='h-4 w-4 rounded' />
                 </div>
               </div>
+              <div className='p-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-28' />
+                  </div>
+                  <Skeleton className='h-4 w-4 rounded' />
+                </div>
+              </div>
+            </div>
 
-              {/* Version */}
-              <div className='px-4 pb-24 pt-6 text-center'>
-                <Skeleton className='mx-auto h-4 w-28' />
+            {/* ABOUT */}
+            <div className='mb-2 px-4'>
+              <Skeleton className='h-3 w-16' />
+            </div>
+            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className={`p-4 ${i < 3 ? 'border-b border-gray-100' : ''}`}>
+                  <div className='flex items-center justify-between'>
+                    <div className='flex items-center gap-3'>
+                      <Skeleton className='h-8 w-8 rounded-lg' />
+                      <Skeleton className='h-4 w-36' />
+                    </div>
+                    <Skeleton className='h-4 w-4 rounded' />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* DEVELOPER */}
+            <div className='mb-2 px-4'>
+              <Skeleton className='h-3 w-24' />
+            </div>
+            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+              <div className='border-b border-gray-100'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-28' />
+                  </div>
+                  <Skeleton className='h-4 w-4 rounded' />
+                </div>
               </div>
+              <div className='p-4'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-8 w-8 rounded-lg' />
+                    <Skeleton className='h-4 w-32' />
+                  </div>
+                  <Skeleton className='h-4 w-4 rounded' />
+                </div>
+              </div>
+            </div>
+
+            {/* Version */}
+            <div className='px-4 pb-24 pt-6 text-center'>
+              <Skeleton className='mx-auto h-4 w-28' />
             </div>
           </div>
         </div>
@@ -204,182 +198,174 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-4xl'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
       {/* Content */}
       <div className='flex-1 overflow-y-auto bg-white px-0 pt-4'>
-        <div className='grid grid-cols-1 md:grid-cols-2 md:gap-6'>
-          {/* Left Column */}
-          <div>
-            {/* GENERAL Section */}
-            <div className='mb-2 px-4'>
-              <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>GENERAL</h2>
-            </div>
-            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-              <div className='border-b border-gray-100 p-4'>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Languages className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Language</span>
+        <div>
+          {/* GENERAL Section */}
+          <div className='mb-2 px-4'>
+            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>GENERAL</h2>
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+            <div className='border-b border-gray-100 p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Languages className='h-4 w-4 text-red-600' />
                   </div>
-                  <div>
-                    <span className='text-gray-500'>English</span>
-                  </div>
+                  <span className='font-medium'>Language</span>
                 </div>
-              </div>
-
-              <div className='p-4'>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <DollarSign className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Currency</span>
-                  </div>
-                  <div>
-                    <span className='text-gray-500'>US Dollar</span>
-                  </div>
+                <div>
+                  <span className='text-gray-500'>English</span>
                 </div>
               </div>
             </div>
 
-            {/* Help Center Section */}
-            <div className='mb-2 px-4'>
-              <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
-                HELP CENTER
-              </h2>
-            </div>
-            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-              <div className='border-b border-gray-100'>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={() => setContactSheetOpen(true)}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Mail className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Talk to us</span>
+            <div className='p-4'>
+              <div className='flex items-center justify-between'>
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <DollarSign className='h-4 w-4 text-red-600' />
                   </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
-              </div>
-            </div>
-
-            {/* About Section */}
-            <div className='mb-2 px-4'>
-              <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ABOUT</h2>
-            </div>
-            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-              <div className='border-b border-gray-100'>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={() => handleExternalLink('https://evento.so')}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Info className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>About Evento</span>
-                  </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
-              </div>
-
-              <div className='border-b border-gray-100'>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={() => handleExternalLink('https://evento.so/terms')}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Scale className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Terms of Service</span>
-                  </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
-              </div>
-
-              <div className='border-b border-gray-100'>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={() => handleExternalLink('https://evento.so/privacy')}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Shield className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Privacy Policy</span>
-                  </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
-              </div>
-
-              <div>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={handleShare}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Share className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Share to a Friend</span>
-                  </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
+                  <span className='font-medium'>Currency</span>
+                </div>
+                <div>
+                  <span className='text-gray-500'>US Dollar</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column */}
-          <div>
-            {/* Developer Section */}
-            <div className='mb-2 px-4'>
-              <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
-                DEVELOPER
-              </h2>
-            </div>
-            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-              <div className='border-b border-gray-100'>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={() => setApiSheetOpen(true)}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Code className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Evento API</span>
+          {/* Help Center Section */}
+          <div className='mb-2 px-4'>
+            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
+              HELP CENTER
+            </h2>
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+            <div className='border-b border-gray-100'>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={() => setContactSheetOpen(true)}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Mail className='h-4 w-4 text-red-600' />
                   </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
-              </div>
+                  <span className='font-medium'>Talk to us</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
+            </div>
+          </div>
 
-              <div>
-                <button
-                  className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                  onClick={() => handleExternalLink('https://docs.evento.so')}
-                >
-                  <div className='flex items-center gap-3'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <BookOpen className='h-4 w-4 text-red-600' />
-                    </div>
-                    <span className='font-medium'>Documentation</span>
+          {/* About Section */}
+          <div className='mb-2 px-4'>
+            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ABOUT</h2>
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+            <div className='border-b border-gray-100'>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={() => handleExternalLink('https://evento.so')}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Info className='h-4 w-4 text-red-600' />
                   </div>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
-                </button>
-              </div>
+                  <span className='font-medium'>About Evento</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
             </div>
 
-            {/* Version Info */}
-            <div className='px-4 pb-24 pt-6 text-center'>
-              <p className='text-sm font-semibold text-gray-500 opacity-50'>
-                Version: {packageJson.version}
-              </p>
+            <div className='border-b border-gray-100'>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={() => handleExternalLink('https://evento.so/terms')}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Scale className='h-4 w-4 text-red-600' />
+                  </div>
+                  <span className='font-medium'>Terms of Service</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
             </div>
+
+            <div className='border-b border-gray-100'>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={() => handleExternalLink('https://evento.so/privacy')}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Shield className='h-4 w-4 text-red-600' />
+                  </div>
+                  <span className='font-medium'>Privacy Policy</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
+            </div>
+
+            <div>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={handleShare}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Share className='h-4 w-4 text-red-600' />
+                  </div>
+                  <span className='font-medium'>Share to a Friend</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
+            </div>
+          </div>
+
+          {/* Developer Section */}
+          <div className='mb-2 px-4'>
+            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+            <div className='border-b border-gray-100'>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={() => setApiSheetOpen(true)}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <Code className='h-4 w-4 text-red-600' />
+                  </div>
+                  <span className='font-medium'>Evento API</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
+            </div>
+
+            <div>
+              <button
+                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                onClick={() => handleExternalLink('https://docs.evento.so')}
+              >
+                <div className='flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <BookOpen className='h-4 w-4 text-red-600' />
+                  </div>
+                  <span className='font-medium'>Documentation</span>
+                </div>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </button>
+            </div>
+          </div>
+
+          {/* Version Info */}
+          <div className='px-4 pb-24 pt-6 text-center'>
+            <p className='text-sm font-semibold text-gray-500 opacity-50'>
+              Version: {packageJson.version}
+            </p>
           </div>
         </div>
       </div>

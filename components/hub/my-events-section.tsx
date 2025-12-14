@@ -1,12 +1,13 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import { Button } from '@/components/ui/button';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { formatDateHeader } from '@/lib/utils/date';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { ArrowRight, Calendar, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
@@ -83,22 +84,25 @@ export function MyEventsSection() {
         </div>
 
         {/* Segmented Tabs */}
-        <SegmentedTabs
-          align='left'
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as EventFilterType)}
-          items={[
-            {
-              value: 'upcoming',
-              label: 'Upcoming',
-            },
-            {
-              value: 'hosting',
-              label: 'Hosting',
-            },
-          ]}
-          wrapperClassName='mt-2'
-        />
+        <div className='mt-2 flex items-center justify-between'>
+          <SegmentedTabs
+            align='left'
+            value={activeTab}
+            onValueChange={(value) => setActiveTab(value as EventFilterType)}
+            items={[
+              {
+                value: 'upcoming',
+                label: 'Upcoming',
+              },
+              {
+                value: 'hosting',
+                label: 'Hosting',
+              },
+            ]}
+            wrapperClassName=''
+          />
+          <CircledIconButton icon={Search} onClick={handleViewAll} />
+        </div>
 
         {/* Content - Vertical list */}
         <div className='mt-2'>

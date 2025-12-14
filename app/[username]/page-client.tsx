@@ -584,18 +584,16 @@ export default function UserProfilePageClient() {
   const renderAboutTab = () => {
     return (
       <div className='space-y-4'>
-        {/* Social Links - hidden on desktop (shown below Zap button instead) */}
+        {/* Social Links */}
         {userData && (
-          <div className='lg:hidden'>
-            <SocialLinks
-              user={{
-                bio_link: userData.bio_link,
-                instagram_handle: userData.instagram_handle,
-                x_handle: userData.x_handle,
-                nip05: userData.nip05,
-              }}
-            />
-          </div>
+          <SocialLinks
+            user={{
+              bio_link: userData.bio_link,
+              instagram_handle: userData.instagram_handle,
+              x_handle: userData.x_handle,
+              nip05: userData.nip05,
+            }}
+          />
         )}
 
         {/* Bio/Description */}
@@ -616,10 +614,10 @@ export default function UserProfilePageClient() {
 
   return (
     <div className='min-h-screen bg-white md:ml-[280px]'>
-      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
-        <div className='lg:flex lg:gap-8'>
-          {/* Left Column - Profile Info (sticky on desktop) */}
-          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+      <div className='mx-auto max-w-full bg-white md:max-w-md'>
+        <div>
+          {/* Profile Info */}
+          <div>
             {/* Cover Image Section */}
             <div className='relative'>
               {/* Banner */}
@@ -720,23 +718,11 @@ export default function UserProfilePageClient() {
                   />
                 </div>
               )}
-
-              {/* Social Links - desktop only, below Zap button */}
-              <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
-                <SocialLinks
-                  user={{
-                    bio_link: userData?.bio_link,
-                    instagram_handle: userData?.instagram_handle,
-                    x_handle: userData?.x_handle,
-                    nip05: userData?.nip05,
-                  }}
-                />
-              </div>
             </div>
           </div>
 
-          {/* Right Column - Tabs */}
-          <div className='pb-20 lg:w-1/2'>
+          {/* Tabs */}
+          <div className='pb-20'>
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white px-6 lg:px-0'>
               {/* Tab Headers */}

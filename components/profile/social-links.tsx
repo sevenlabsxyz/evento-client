@@ -31,7 +31,7 @@ export default function SocialLinks({ user }: SocialLinksProps) {
 
   return (
     <>
-      <div className='flex w-full max-w-md flex-wrap justify-center gap-2 rounded-3xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
+      <div className='flex w-full flex-wrap justify-center gap-2 rounded-3xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
         {/* Website */}
         {user.bio_link && (
           <Button

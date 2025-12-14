@@ -1,5 +1,8 @@
 'use client';
 
+// Set to true to enable verbose wallet logging
+const DEBUG_WALLET = false;
+
 import { Env } from '@/lib/constants/env';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
@@ -258,7 +261,7 @@ export function useWallet() {
   const unlockWallet = useCallback(
     async (password: string): Promise<void> => {
       try {
-        console.log('🔓 [WALLET:UNLOCK] Starting wallet unlock...');
+        if (DEBUG_WALLET) console.log('🔓 [WALLET:UNLOCK] Starting wallet unlock...');
 
         setLoading(true);
         setError(null);
@@ -268,29 +271,32 @@ export function useWallet() {
           throw new Error('No wallet found');
         }
 
-        console.log('🔓 [WALLET:UNLOCK] Encrypted seed found, attempting decryption...');
+        if (DEBUG_WALLET)
+          console.log('🔓 [WALLET:UNLOCK] Encrypted seed found, attempting decryption...');
 
         // Decrypt seed
         const mnemonic = await WalletStorageService.decryptSeed(encryptedSeed, password);
 
         // Create fingerprint for logging (first 3 words)
         const fingerprint = mnemonic.trim().split(/\s+/).slice(0, 3).join(' ');
-        console.log('✅ [WALLET:UNLOCK] Seed decrypted successfully');
-        console.log('  → Wallet fingerprint:', fingerprint);
+        if (DEBUG_WALLET) {
+          console.log('✅ [WALLET:UNLOCK] Seed decrypted successfully');
+          console.log('  → Wallet fingerprint:', fingerprint);
+        }
 
         // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
-        console.log('✅ [WALLET:UNLOCK] Seed stored in memory');
+        if (DEBUG_WALLET) console.log('✅ [WALLET:UNLOCK] Seed stored in memory');
 
         // Connect to Breez SDK
-        console.log('🔑 [WALLET:UNLOCK] Connecting to Breez SDK...');
+        if (DEBUG_WALLET) console.log('🔑 [WALLET:UNLOCK] Connecting to Breez SDK...');
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-        console.log('✅ [WALLET:UNLOCK] Breez SDK connected');
+        if (DEBUG_WALLET) console.log('✅ [WALLET:UNLOCK] Breez SDK connected');
 
         // Get balance
-        console.log('💰 [WALLET:UNLOCK] Fetching wallet balance...');
+        if (DEBUG_WALLET) console.log('💰 [WALLET:UNLOCK] Fetching wallet balance...');
         const balance = await breezSDK.getBalance();
-        console.log('✅ [WALLET:UNLOCK] Balance fetched:', balance, 'sats');
+        if (DEBUG_WALLET) console.log('✅ [WALLET:UNLOCK] Balance fetched:', balance, 'sats');
 
         // Get current saved state
         const savedState = WalletStorageService.getWalletState();
@@ -305,8 +311,10 @@ export function useWallet() {
           lightningAddress: savedState?.lightningAddress,
         };
 
-        console.log('✅ [WALLET:UNLOCK] Wallet unlocked successfully');
-        console.log('  → Final state:', newState);
+        if (DEBUG_WALLET) {
+          console.log('✅ [WALLET:UNLOCK] Wallet unlocked successfully');
+          console.log('  → Final state:', newState);
+        }
 
         setWalletState(newState);
       } catch (err: any) {

@@ -396,12 +396,8 @@ export default function ProfilePage() {
 
     return (
       <div className='space-y-4'>
-        {/* Social Links - hidden on desktop (shown below Zap button instead) */}
-        {user && (
-          <div className='lg:hidden'>
-            <SocialLinks user={user} />
-          </div>
-        )}
+        {/* Social Links */}
+        {user && <SocialLinks user={user} />}
 
         {/* Bio/Description */}
         {!user?.bio ? null : (
@@ -432,10 +428,10 @@ export default function ProfilePage() {
 
   return (
     <div className='min-h-screen bg-white'>
-      <div className='mx-auto max-w-full bg-white md:max-w-4xl'>
-        <div className='lg:flex lg:gap-8'>
-          {/* Left Column - Profile Info (sticky on desktop) */}
-          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+      <div className='mx-auto max-w-full bg-white md:max-w-md'>
+        <div>
+          {/* Profile Info */}
+          <div>
             {/* Cover Image Section */}
             <div className='relative'>
               {/* Banner */}
@@ -487,15 +483,30 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+<<<<<<< Updated upstream
               {/* Social Links - desktop only */}
               <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
                 <SocialLinks user={user} />
               </div>
+=======
+              {/* Zap Button */}
+              {user?.ln_address && (
+                <div className='mb-6'>
+                  <ZapSheet
+                    recipientLightningAddress={user.ln_address}
+                    recipientName={user.name || 'You'}
+                    recipientUsername={user.username}
+                    recipientAvatar={user.image}
+                  />
+                </div>
+              )}
+
+>>>>>>> Stashed changes
             </div>
           </div>
 
-          {/* Right Column - Tabs */}
-          <div className='px-4 pb-32 lg:w-1/2 lg:px-0'>
+          {/* Tabs */}
+          <div className='px-4 pb-32'>
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
