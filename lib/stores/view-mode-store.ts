@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -15,7 +16,7 @@ export const useViewModeStore = create<ViewModeState>()(
       setFeedViewMode: (mode) => set({ feedViewMode: mode }),
     }),
     {
-      name: 'evento-view-mode', // Local storage key
+      name: STORAGE_KEYS.VIEW_MODE,
     }
   )
 );

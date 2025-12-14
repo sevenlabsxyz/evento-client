@@ -34,7 +34,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
   const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
   const [balanceUSD, setBalanceUSD] = useState<number>(0);
   const [isLoadingPrice, setIsLoadingPrice] = useState(false);
-  const [showUSD, setShowUSD] = useState(true);
+  const [showUSD, setShowUSD] = useState(false);
   const [showEducationalSheet, setShowEducationalSheet] = useState(false);
   const [educationalArticle, setEducationalArticle] = useState<any>(null);
 

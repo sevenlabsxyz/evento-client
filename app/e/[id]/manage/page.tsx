@@ -30,6 +30,7 @@ export default function ManageEventPage() {
     setTopBar({
       title: 'Manage Event',
       leftMode: 'back',
+      onBackPress: () => router.push(`/e/${eventId}`),
       showAvatar: false,
       subtitle: undefined,
       centerMode: 'title',

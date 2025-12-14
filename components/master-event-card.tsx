@@ -7,15 +7,17 @@ import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { useRef } from 'react';
 import { UserAvatar } from './ui/user-avatar';
 
 interface MasterEventCardProps {
   event: EventWithUser;
   className?: string;
   onClick?: () => void;
+  onLongPress?: () => void;
 }
 
-export function MasterEventCard({ event, className, onClick }: MasterEventCardProps) {
+export function MasterEventCard({ event, className, onClick, onLongPress }: MasterEventCardProps) {
   const router = useRouter();
 
   // Get event time with timezone
@@ -31,7 +33,31 @@ export function MasterEventCard({ event, className, onClick }: MasterEventCardPr
   // Capacity display (placeholder - needs actual RSVP count data)
   const showCapacity = event.max_capacity && event.show_capacity_count;
 
+  // Long press handling
+  const longPressTimer = useRef<NodeJS.Timeout | null>(null);
+  const isLongPress = useRef(false);
+
+  const handleTouchStart = () => {
+    if (!onLongPress) return;
+    isLongPress.current = false;
+    longPressTimer.current = setTimeout(() => {
+      isLongPress.current = true;
+      onLongPress();
+    }, 500);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const handleClick = () => {
+    if (isLongPress.current) {
+      isLongPress.current = false;
+      return;
+    }
     if (onClick) {
       onClick();
     } else {
@@ -42,6 +68,15 @@ export function MasterEventCard({ event, className, onClick }: MasterEventCardPr
   return (
     <button
       onClick={handleClick}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+      onTouchCancel={handleTouchEnd}
+      onContextMenu={(e) => {
+        if (onLongPress) {
+          e.preventDefault();
+          onLongPress();
+        }
+      }}
       className={cn(
         'flex w-full items-start gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100',
         className

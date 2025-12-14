@@ -114,11 +114,12 @@ export default function EventGuestsSection({
             <p className='text-sm text-gray-500'>{goingCount} going</p>
           </div>
           {isHostOrCoHost ? (
-            <Button variant='outline' size='sm' onClick={handlePrimaryClick}>
-              <span className='inline-flex items-center gap-2'>
-                <UserPlus className='h-4 w-4' /> Invite
-              </span>
-            </Button>
+            <button
+              onClick={handlePrimaryClick}
+              className='inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium hover:bg-gray-100'
+            >
+              <UserPlus className='h-4 w-4' /> Invite
+            </button>
           ) : (
             <CircledIconButton icon={Share} onClick={handlePrimaryClick} />
           )}

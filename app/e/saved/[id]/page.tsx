@@ -1,7 +1,6 @@
 'use client';
 
-import { EventCard } from '@/components/event-card';
-import { EventCompactItem } from '@/components/event-compact-item';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Button } from '@/components/ui/button';
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { Input } from '@/components/ui/input';
@@ -12,28 +11,26 @@ import { useListEvents } from '@/lib/hooks/use-list-events';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
 import { useUpdateList } from '@/lib/hooks/use-update-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Edit2, Grid3x3, List, Loader2, Trash2, X } from 'lucide-react';
+import { Bookmark, Edit2, Loader2, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-type ViewMode = 'card' | 'list';
 
 export default function SavedListDetailPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const params = useParams();
   const listId = params.id as string;
+  const { setTopBar } = useTopBar();
 
   const [showRenameModal, setShowRenameModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [newListName, setNewListName] = useState('');
-  const [removingEventId, setRemovingEventId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<ViewMode>('card');
-  const [activeEventMenuId, setActiveEventMenuId] = useState<string | null>(null);
   const [showRemoveConfirmModal, setShowRemoveConfirmModal] = useState(false);
   const [eventToRemove, setEventToRemove] = useState<string | null>(null);
+  const [removingEventId, setRemovingEventId] = useState<string | null>(null);
 
   const { data: lists = [] } = useUserLists();
   const { data: listEvents = [], isLoading: eventsLoading } = useListEvents(listId);
@@ -43,6 +40,33 @@ export default function SavedListDetailPage() {
 
   const currentList = lists.find((l) => l.id === listId);
 
+  // Configure TopBar
+  useEffect(() => {
+    setTopBar({
+      title: currentList?.name || 'Loading...',
+      leftMode: 'back',
+      onBackPress: () => router.push('/e/saved'),
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'edit',
+          icon: Edit2,
+          onClick: () => setShowMoreMenu(true),
+        },
+      ],
+    });
+
+    return () => {
+      setTopBar({
+        title: '',
+        leftMode: 'menu',
+        showAvatar: true,
+        buttons: [],
+      });
+    };
+  }, [currentList?.name, setTopBar, router]);
+
   useEffect(() => {
     if (currentList) {
       setNewListName(currentList.name);
@@ -51,7 +75,6 @@ export default function SavedListDetailPage() {
 
   const handleRemoveEventClick = (eventId: string) => {
     setEventToRemove(eventId);
-    setActiveEventMenuId(null);
     setShowRemoveConfirmModal(true);
   };
 
@@ -137,120 +160,24 @@ export default function SavedListDetailPage() {
 
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center gap-3 border-b border-gray-100 px-4 py-4'>
-        <Button variant='ghost' size='icon' className='h-8 w-8' onClick={() => router.back()}>
-          <X className='h-5 w-5' />
-        </Button>
-        <div className='flex-1'>
-          <div className='flex items-center gap-2'>
-            <h1 className='text-xl font-bold'>{currentList?.name || 'Loading...'}</h1>
-            {currentList?.is_default && (
-              <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800'>
-                Default
-              </span>
-            )}
-          </div>
-          <p className='text-sm text-gray-500'>{listEvents.length} events saved</p>
-        </div>
-        <div className='flex items-center gap-2'>
-          {/* View Mode Toggle */}
-          <div className='flex rounded-lg bg-gray-100 p-1'>
-            <button
-              onClick={() => setViewMode('card')}
-              className={`rounded p-1.5 transition-colors ${
-                viewMode === 'card' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
-              }`}
-              title='Card view'
-            >
-              <Grid3x3 className='h-4 w-4' />
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`rounded p-1.5 transition-colors ${
-                viewMode === 'list' ? 'bg-white shadow-sm' : 'hover:bg-gray-200'
-              }`}
-              title='List view'
-            >
-              <List className='h-4 w-4' />
-            </button>
-          </div>
-
-          {/* More Menu */}
-          <div className='relative'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className='h-8 w-8 rounded-full bg-gray-100'
-              onClick={() => setShowMoreMenu(!showMoreMenu)}
-            >
-              <Edit2 className='h-4 w-4' />
-            </Button>
-            {showMoreMenu && (
-              <div className='absolute right-0 top-10 z-10 w-48 rounded-lg border border-gray-200 bg-white shadow-lg'>
-                <button
-                  onClick={() => {
-                    setShowMoreMenu(false);
-                    setShowRenameModal(true);
-                  }}
-                  className='flex w-full items-center gap-2 px-4 py-3 text-left text-sm hover:bg-gray-50'
-                >
-                  <Edit2 className='h-4 w-4' />
-                  Rename List
-                </button>
-                {!currentList?.is_default && (
-                  <button
-                    onClick={() => {
-                      setShowMoreMenu(false);
-                      setShowDeleteModal(true);
-                    }}
-                    className='flex w-full items-center gap-2 px-4 py-3 text-left text-sm text-red-600 hover:bg-gray-50'
-                  >
-                    <Trash2 className='h-4 w-4' />
-                    Delete List
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
       {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-gray-50 pb-20'>
+      <div className='flex-1 overflow-y-auto bg-white pb-20'>
         {eventsLoading ? (
           <div className='space-y-4 px-4 py-4'>
             {[1, 2, 3].map((i) => (
-              <Skeleton key={i} className='h-48 w-full rounded-2xl' />
+              <Skeleton key={i} className='h-32 w-full rounded-2xl' />
             ))}
           </div>
         ) : listEvents.length > 0 ? (
-          viewMode === 'card' ? (
-            /* Card View */
-            <div className='space-y-4 px-4 py-4'>
-              {listEvents.map((listEvent) => (
-                <EventCard
-                  key={listEvent.list_event_id}
-                  event={listEvent.event}
-                  onMenuClick={(eventId) => setActiveEventMenuId(eventId)}
-                  customMenuOptions={[]}
-                />
-              ))}
-            </div>
-          ) : (
-            /* List View */
-            <div className='px-4 py-4'>
-              <div className='divide-y divide-gray-100 rounded-2xl bg-white shadow-sm'>
-                {listEvents.map((listEvent) => (
-                  <EventCompactItem
-                    key={listEvent.list_event_id}
-                    event={listEvent.event}
-                    onMenuClick={(eventId) => setActiveEventMenuId(eventId)}
-                  />
-                ))}
-              </div>
-            </div>
-          )
+          <div className='space-y-3 px-4 py-4'>
+            {listEvents.map((listEvent) => (
+              <MasterEventCard
+                key={listEvent.list_event_id}
+                event={listEvent.event}
+                onLongPress={() => handleRemoveEventClick(listEvent.event.id)}
+              />
+            ))}
+          </div>
         ) : (
           <div className='flex flex-1 items-center justify-center px-4 py-12'>
             <div className='text-center'>
@@ -258,19 +185,44 @@ export default function SavedListDetailPage() {
                 <Bookmark className='h-8 w-8 text-gray-400' />
               </div>
               <h3 className='mb-2 text-lg font-semibold text-gray-900'>No events in this list</h3>
-              <p className='mb-6 text-sm text-gray-500'>
+              <p className='text-sm text-gray-500'>
                 Use the &quot;Save Event&quot; feature in any event to add it to this list.
               </p>
-              <Button
-                onClick={() => router.push('/e/feed')}
-                className='bg-red-500 text-white hover:bg-red-600'
-              >
-                Discover Events
-              </Button>
             </div>
           </div>
         )}
       </div>
+
+      {/* Edit Menu Sheet */}
+      <DetachedMenuSheet
+        isOpen={showMoreMenu}
+        onClose={() => setShowMoreMenu(false)}
+        options={[
+          {
+            id: 'rename',
+            label: 'Rename List',
+            icon: Edit2,
+            onClick: () => {
+              setShowMoreMenu(false);
+              setShowRenameModal(true);
+            },
+          },
+          ...(!currentList?.is_default
+            ? [
+                {
+                  id: 'delete',
+                  label: 'Delete List',
+                  icon: Trash2,
+                  onClick: () => {
+                    setShowMoreMenu(false);
+                    setShowDeleteModal(true);
+                  },
+                  variant: 'destructive' as const,
+                },
+              ]
+            : []),
+        ]}
+      />
 
       {/* Rename Modal */}
       {showRenameModal && (
@@ -319,21 +271,41 @@ export default function SavedListDetailPage() {
         </div>
       )}
 
-      {/* Event Menu Sheet */}
-      {activeEventMenuId && (
-        <DetachedMenuSheet
-          isOpen={!!activeEventMenuId}
-          onClose={() => setActiveEventMenuId(null)}
-          options={[
-            {
-              id: 'remove',
-              label: 'Remove from List',
-              icon: X,
-              onClick: () => handleRemoveEventClick(activeEventMenuId),
-              variant: 'destructive',
-            },
-          ]}
-        />
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
+            <h3 className='mb-2 text-xl font-bold'>Delete List?</h3>
+            <p className='mb-6 text-sm text-gray-600'>
+              This will remove all events from &quot;{currentList?.name}&quot;. This action cannot
+              be undone.
+            </p>
+            <div className='flex gap-3'>
+              <Button
+                variant='outline'
+                onClick={() => setShowDeleteModal(false)}
+                className='flex-1'
+                disabled={deleteListMutation.isPending}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleDeleteList}
+                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                disabled={deleteListMutation.isPending}
+              >
+                {deleteListMutation.isPending ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Deleting...
+                  </>
+                ) : (
+                  'Delete'
+                )}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
       {/* Remove Event Confirmation Modal */}
@@ -369,43 +341,6 @@ export default function SavedListDetailPage() {
                   </>
                 ) : (
                   'Remove'
-                )}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
-            <h3 className='mb-2 text-xl font-bold'>Delete List?</h3>
-            <p className='mb-6 text-sm text-gray-600'>
-              This will remove all events from &quot;{currentList?.name}&quot;. This action cannot
-              be undone.
-            </p>
-            <div className='flex gap-3'>
-              <Button
-                variant='outline'
-                onClick={() => setShowDeleteModal(false)}
-                className='flex-1'
-                disabled={deleteListMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={handleDeleteList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                disabled={deleteListMutation.isPending}
-              >
-                {deleteListMutation.isPending ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Deleting...
-                  </>
-                ) : (
-                  'Delete'
                 )}
               </Button>
             </div>

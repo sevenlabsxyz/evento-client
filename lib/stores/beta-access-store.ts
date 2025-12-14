@@ -1,6 +1,5 @@
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { create } from 'zustand';
-
-const BETA_ACCESS_KEY = 'evento-beta-access';
 
 interface BetaAccessState {
   hasAccess: boolean | null;
@@ -14,15 +13,15 @@ export const useBetaAccessStore = create<BetaAccessState>((set) => ({
   hasAccess: null,
   isLoading: true,
   initialize: () => {
-    const stored = localStorage.getItem(BETA_ACCESS_KEY);
+    const stored = localStorage.getItem(STORAGE_KEYS.BETA_ACCESS);
     set({ hasAccess: stored === 'granted', isLoading: false });
   },
   grantAccess: () => {
-    localStorage.setItem(BETA_ACCESS_KEY, 'granted');
+    localStorage.setItem(STORAGE_KEYS.BETA_ACCESS, 'granted');
     set({ hasAccess: true, isLoading: false });
   },
   revokeAccess: () => {
-    localStorage.removeItem(BETA_ACCESS_KEY);
+    localStorage.removeItem(STORAGE_KEYS.BETA_ACCESS);
     set({ hasAccess: false });
   },
 }));

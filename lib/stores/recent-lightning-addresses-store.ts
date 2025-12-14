@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -28,7 +29,7 @@ export const useRecentLightningAddressesStore = create<RecentLightningAddressesS
       clearRecentAddresses: () => set({ recentAddresses: [] }),
     }),
     {
-      name: 'evento-recent-lightning-addresses',
+      name: STORAGE_KEYS.RECENT_LIGHTNING_ADDRESSES,
     }
   )
 );

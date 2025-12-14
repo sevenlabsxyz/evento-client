@@ -1,9 +1,10 @@
 'use client';
 
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { CircledIconButton } from '@/components/circled-icon-button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { InviteItem, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { VisuallyHidden } from '@silk-hq/components';
+import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import CsvImportSheet from './csv-import-sheet';
 import Step1SearchUsers from './invite-users-step1';
@@ -63,15 +64,6 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
     });
   };
 
-  const removeEmail = (email: string) => {
-    setSelectedEmails((prev) => {
-      const next = new Set(prev);
-      next.delete(email);
-      return next;
-    });
-    setSelectedUsers((prev) => prev.filter((u) => (u.email || '').trim() !== email));
-  };
-
   // Reset state
   const resetState = () => {
     setStep(1);
@@ -89,6 +81,13 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
     }
   }, [isOpen]);
 
+  // Dynamic title and header based on step
+  const title = step === 1 ? 'Invite Guests' : 'Add Note';
+  const headerLeft =
+    step === 2 ? (
+      <CircledIconButton icon={ArrowLeft} onClick={() => setStep(1)} className='bg-white' />
+    ) : undefined;
+
   return (
     <>
       <CsvImportSheet
@@ -96,48 +95,36 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
         onClose={() => setIsCsvImportOpen(false)}
         onImport={handleCsvImport}
       />
-      <SheetWithDetentFull.Root presented={isOpen} onPresentedChange={(p) => !p && onClose()}>
-        <SheetWithDetentFull.Portal>
-          <SheetWithDetentFull.View>
-            <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='flex flex-col rounded-t-2xl bg-white'>
-              <div className='sticky top-0 z-10 bg-white px-4 pt-3'>
-                <div className='mb-3 flex justify-center'>
-                  <SheetWithDetentFull.Handle />
-                </div>
-                <VisuallyHidden.Root asChild>
-                  <SheetWithDetentFull.Title className='sr-only'>
-                    Invite Guests
-                  </SheetWithDetentFull.Title>
-                </VisuallyHidden.Root>
-              </div>
-
-              {step === 1 ? (
-                <Step1SearchUsers
-                  searchText={searchText}
-                  setSearchText={setSearchText}
-                  selectedEmails={selectedEmails}
-                  selectedUsers={selectedUsers}
-                  toggleUser={toggleUser}
-                  onCSVClick={handleCSVClick}
-                  onNext={() => setStep(2)}
-                />
-              ) : (
-                <Step2SendInvites
-                  eventId={eventId}
-                  selectedEmails={selectedEmails}
-                  selectedUsers={selectedUsers}
-                  message={message}
-                  setMessage={setMessage}
-                  onBack={() => setStep(1)}
-                  onClose={onClose}
-                  onReset={resetState}
-                />
-              )}
-            </SheetWithDetentFull.Content>
-          </SheetWithDetentFull.View>
-        </SheetWithDetentFull.Portal>
-      </SheetWithDetentFull.Root>
+      <MasterScrollableSheet
+        title={title}
+        open={isOpen}
+        onOpenChange={(open) => !open && onClose()}
+        headerLeft={headerLeft}
+        contentClassName='pb-0'
+      >
+        {step === 1 ? (
+          <Step1SearchUsers
+            searchText={searchText}
+            setSearchText={setSearchText}
+            selectedEmails={selectedEmails}
+            selectedUsers={selectedUsers}
+            toggleUser={toggleUser}
+            onCSVClick={handleCSVClick}
+            onNext={() => setStep(2)}
+          />
+        ) : (
+          <Step2SendInvites
+            eventId={eventId}
+            selectedEmails={selectedEmails}
+            selectedUsers={selectedUsers}
+            message={message}
+            setMessage={setMessage}
+            onBack={() => setStep(1)}
+            onClose={onClose}
+            onReset={resetState}
+          />
+        )}
+      </MasterScrollableSheet>
     </>
   );
 }

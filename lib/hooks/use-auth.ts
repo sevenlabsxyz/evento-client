@@ -1,3 +1,5 @@
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
+import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -81,8 +83,16 @@ export function useAuth() {
   const logoutMutation = useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
+      // Clear auth store
       clearAuth();
-      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+
+      // Clear all app storage (except beta access)
+      clearAllAppStorage();
+
+      // Clear ALL React Query cache to prevent stale data
+      queryClient.clear();
+
+      // Redirect to login
       router.push('/auth/login');
     },
   });
@@ -168,9 +178,6 @@ export function useVerifyCode() {
     onSuccess: async (data) => {
       console.log('Verify: Code verification successful, user data:', data);
 
-      // Set user data
-      setUser(data);
-
       // Clear email from store
       clearEmail();
 
@@ -182,6 +189,12 @@ export function useVerifyCode() {
         console.log('Verify: Fetching user data to check onboarding status');
         const userData = await authService.getCurrentUser();
         console.log('Verify: User data received:', userData);
+
+        // Set FULL user data from backend in store before redirecting
+        // This prevents the flash where stale/minimal data triggers wrong redirects
+        if (userData) {
+          setUser(userData);
+        }
 
         // Check if user has completed onboarding
         const isOnboarded = isUserOnboarded(userData);
@@ -204,7 +217,8 @@ export function useVerifyCode() {
         }
       } catch (error) {
         console.error('Verify: Failed to check onboarding status:', error);
-        // On error, proceed to default redirect
+        // On error, set minimal Supabase data as fallback and proceed
+        setUser(data);
         const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
         console.log('Verify: Error occurred, redirecting to default:', redirectUrl);
         router.push(redirectUrl);
@@ -248,7 +262,7 @@ export function useRequireAuth(redirectTo = '/auth/login') {
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       // Check for beta access from localStorage
-      const hasBetaAccess = localStorage.getItem('evento-beta-access') === 'granted';
+      const hasBetaAccess = localStorage.getItem(STORAGE_KEYS.BETA_ACCESS) === 'granted';
 
       if (!hasBetaAccess) {
         // No beta access - redirect to beta gate

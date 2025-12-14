@@ -8,7 +8,7 @@ export const eventFormSchema = z.object({
   // Required fields
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string(),
-  location: z.string().min(1, 'Location is required'),
+  location: z.string(),
   timezone: z.string().min(1, 'Timezone is required'),
 
   // Cover image
@@ -84,7 +84,7 @@ export const apiEventSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   cover: z.string().nullable(),
-  location: z.string(),
+  location: z.string().nullable(),
   start_date_day: z.number(),
   start_date_month: z.number(),
   start_date_year: z.number(),

@@ -30,7 +30,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
 
         {/* Right: Button */}
         <CircledIconButton
-          className='text flex-shrink-0'
+          className='flex-shrink-0 bg-white'
           icon={ArrowUpRight}
           onClick={() => window.open(partner.link, '_blank')}
         />

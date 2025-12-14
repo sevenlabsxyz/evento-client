@@ -76,10 +76,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
             <SheetWithDetentFull.Content className='relative flex flex-col bg-white md:!max-w-[500px]'>
-              <div className='sticky top-0 z-10 bg-transparent px-4 pb-3 pt-3'>
-                <div className='mb-3 flex justify-center'>
-                  <SheetWithDetentFull.Handle />
-                </div>
+              <div className='sticky top-0 z-10 bg-transparent px-4'>
                 <VisuallyHidden.Root asChild>
                   <SheetWithDetentFull.Title className='sr-only'>
                     Quick profile for {user.name || user.username} (@
@@ -130,7 +127,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                         {/* View Full Profile Button */}
                         <Button
                           onClick={handleViewFullProfile}
-                          variant={'ghost'}
+                          variant={'link'}
+                          className='shadow-none'
                           // className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
                         >
                           View Full Profile

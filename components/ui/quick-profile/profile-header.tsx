@@ -13,10 +13,10 @@ export function ProfileHeader({ user }: ProfileHeaderProps) {
     <>
       {/* Banner */}
       <div
-        className={`absolute left-0 right-0 top-0 h-32 w-full ${designTokens.colors.gradients.primaryBanner}`}
+        className={`absolute left-0 right-0 top-0 h-32 w-full rounded-tl-3xl rounded-tr-3xl ${designTokens.colors.gradients.primaryBanner}`}
       />
 
-      <div className='relative h-28'>
+      <div className='relative h-32'>
         {/* Profile Picture - Centered & Overlapping */}
         <UserAvatar
           user={{

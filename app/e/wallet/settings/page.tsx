@@ -1,13 +1,15 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Lock, Shield, Trash2 } from 'lucide-react';
+import { AlertCircle, ChevronRight, Lock, Shield, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +18,7 @@ export default function WalletSettingsPage() {
   const pathname = usePathname();
   const { walletState, lockWallet } = useWallet();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [showBackupChoiceSheet, setShowBackupChoiceSheet] = useState(false);
 
@@ -41,11 +43,6 @@ export default function WalletSettingsPage() {
   };
 
   const handleDeleteWallet = () => {
-    if (!showDeleteConfirm) {
-      setShowDeleteConfirm(true);
-      return;
-    }
-
     // Clear all wallet data
     WalletStorageService.clearWalletData();
     toast.success('Wallet deleted');
@@ -69,7 +66,7 @@ export default function WalletSettingsPage() {
           {/* Lock Wallet */}
           <button
             onClick={handleLockWallet}
-            className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
+            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
               <Lock className='h-5 w-5 text-blue-600' />
@@ -78,10 +75,14 @@ export default function WalletSettingsPage() {
               <div className='font-medium'>Lock Wallet</div>
               <div className='text-sm text-muted-foreground'>Require password to access</div>
             </div>
+            <CircledIconButton icon={ChevronRight} className='bg-white' />
           </button>
 
           {/* Backup Status */}
-          <div className='flex items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <button
+            onClick={() => setShowBackupChoiceSheet(true)}
+            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
+          >
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 walletState.hasBackup ? 'bg-green-100' : 'bg-amber-100'
@@ -101,10 +102,8 @@ export default function WalletSettingsPage() {
                 )}
               </div>
             </div>
-            <Button onClick={() => setShowBackupChoiceSheet(true)} variant='outline' size='sm'>
-              Backup Now
-            </Button>
-          </div>
+            <CircledIconButton icon={ChevronRight} className='bg-white' />
+          </button>
         </div>
       </div>
 
@@ -112,7 +111,7 @@ export default function WalletSettingsPage() {
       <div className='space-y-4'>
         <h2 className='text-lg font-semibold text-red-600'>Danger Zone</h2>
 
-        <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
+        <div className='rounded-3xl border border-red-200 bg-red-50 p-4'>
           <div className='mb-4 flex items-start gap-3'>
             <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
             <div className='text-sm text-red-900'>
@@ -124,30 +123,10 @@ export default function WalletSettingsPage() {
             </div>
           </div>
 
-          {!showDeleteConfirm ? (
-            <Button onClick={handleDeleteWallet} variant='destructive' className='w-full'>
-              <Trash2 className='mr-2 h-4 w-4' />
-              Delete Wallet
-            </Button>
-          ) : (
-            <div className='space-y-3'>
-              <p className='text-sm font-medium text-red-900'>
-                Are you absolutely sure? This action cannot be undone.
-              </p>
-              <div className='flex gap-2'>
-                <Button onClick={handleDeleteWallet} variant='destructive' className='flex-1'>
-                  Yes, Delete Wallet
-                </Button>
-                <Button
-                  onClick={() => setShowDeleteConfirm(false)}
-                  variant='outline'
-                  className='flex-1'
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          )}
+          <Button onClick={() => setShowDeleteSheet(true)} variant='destructive' className='w-full'>
+            <Trash2 className='mr-2 h-4 w-4' />
+            Delete Wallet
+          </Button>
         </div>
       </div>
 
@@ -162,6 +141,36 @@ export default function WalletSettingsPage() {
           setShowBackupChoiceSheet(false);
         }}
       />
+
+      {/* Delete Wallet Confirmation Sheet */}
+      <MasterScrollableSheet
+        title='Delete Wallet'
+        open={showDeleteSheet}
+        onOpenChange={setShowDeleteSheet}
+      >
+        <div className='space-y-6 px-4 pb-8'>
+          <div className='flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4'>
+            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
+            <div className='text-sm text-red-900'>
+              <p className='font-medium'>This action cannot be undone</p>
+              <p className='mt-1'>
+                Your wallet will be permanently deleted from this device. Make sure you have backed
+                up your recovery phrase before proceeding.
+              </p>
+            </div>
+          </div>
+
+          <div className='space-y-3'>
+            <Button onClick={handleDeleteWallet} variant='destructive' className='w-full'>
+              <Trash2 className='mr-2 h-4 w-4' />
+              Yes, Delete Wallet
+            </Button>
+            <Button onClick={() => setShowDeleteSheet(false)} variant='outline' className='w-full'>
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </MasterScrollableSheet>
     </div>
   );
 }

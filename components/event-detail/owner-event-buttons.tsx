@@ -2,17 +2,7 @@
 
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
-import {
-  Copy,
-  EyeOff,
-  Image,
-  Link,
-  Mail,
-  MessageCircle,
-  MoreHorizontal,
-  Settings,
-  UserPlus,
-} from 'lucide-react';
+import { Copy, EyeOff, Image, Link, Mail, MoreHorizontal, Settings, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -29,10 +19,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
   const handleInvite = () => {
     setIsInviteOpen(true);
-  };
-
-  const handleChat = () => {
-    router.push(`/e/messages/${eventId}`);
   };
 
   const handleManage = () => {
@@ -89,15 +75,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         <span className='text-xs font-medium'>Invite</span>
       </button>
 
-      {/* Chat Button */}
-      <button
-        onClick={handleChat}
-        className='flex h-16 flex-col items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-      >
-        <MessageCircle className='mb-1 h-5 w-5' />
-        <span className='text-xs font-medium'>Chat</span>
-      </button>
-
       {/* Manage Button */}
       <button
         onClick={handleManage}
@@ -105,6 +82,15 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       >
         <Settings className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Manage</span>
+      </button>
+
+      {/* Blasts Button */}
+      <button
+        onClick={handleEmailBlasts}
+        className='flex h-16 flex-col items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+      >
+        <Mail className='mb-1 h-5 w-5' />
+        <span className='text-xs font-medium'>Blasts</span>
       </button>
 
       {/* More Button */}
@@ -121,15 +107,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         isOpen={moreOptionsOpen}
         onClose={() => setMoreOptionsOpen(false)}
         options={[
-          {
-            id: 'email-blasts',
-            label: 'Email Blasts',
-            icon: Mail,
-            onClick: () => {
-              handleEmailBlasts();
-              setMoreOptionsOpen(false);
-            },
-          },
           {
             id: 'gallery-settings',
             label: 'Gallery Settings',

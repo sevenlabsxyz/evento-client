@@ -10,6 +10,7 @@ import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SubmitButton } from '@/components/ui/submit-button';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { apiEventSchema } from '@/lib/schemas/event';
@@ -20,7 +21,7 @@ import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, Check, ChevronRight, Edit3, Globe, Lock, MapPin } from 'lucide-react';
+import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -87,28 +88,12 @@ export default function EditEventDetailsPage() {
       leftMode: 'back',
       centerMode: 'title',
       showAvatar: false,
-      buttons: [
-        {
-          id: 'save-details',
-          icon: Check,
-          onClick: () => void handleSaveChanges(),
-          label: 'Save',
-          disabled: !isFormValid || updateEventMutation.isPending,
-        },
-      ],
     });
 
     return () => {
       clearRoute(pathname);
     };
-  }, [
-    setTopBarForRoute,
-    pathname,
-    applyRouteConfig,
-    clearRoute,
-    isFormValid,
-    updateEventMutation.isPending,
-  ]);
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute]);
 
   // Populate form when event data is loaded
   useEffect(() => {
@@ -492,6 +477,19 @@ export default function EditEventDetailsPage() {
         onVisibilitySelect={setVisibility}
         currentVisibility={visibility}
       />
+
+      {/* Fixed Bottom Button */}
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
+        <div className='mx-auto max-w-full md:max-w-sm'>
+          <SubmitButton
+            onClick={handleSaveChanges}
+            disabled={!isFormValid || updateEventMutation.isPending}
+            loading={updateEventMutation.isPending}
+          >
+            Save
+          </SubmitButton>
+        </div>
+      </div>
     </div>
   );
 }

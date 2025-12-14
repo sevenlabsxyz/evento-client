@@ -113,20 +113,22 @@ export default function WalletPage() {
       onBadgeClick: () => setShowBetaSheet(true),
       centerMode: 'title',
       showAvatar: false,
-      buttons: [
-        {
-          id: 'toggle-balance',
-          icon: balanceHidden ? EyeOff : Eye,
-          onClick: toggleBalanceVisibility,
-          label: balanceHidden ? 'Show balance' : 'Hide balance',
-        },
-        {
-          id: 'settings',
-          icon: Settings,
-          onClick: () => router.push('/e/wallet/settings'),
-          label: 'Settings',
-        },
-      ],
+      buttons: walletState.isConnected
+        ? [
+            {
+              id: 'toggle-balance',
+              icon: balanceHidden ? EyeOff : Eye,
+              onClick: toggleBalanceVisibility,
+              label: balanceHidden ? 'Show balance' : 'Hide balance',
+            },
+            {
+              id: 'settings',
+              icon: Settings,
+              onClick: () => router.push('/e/wallet/settings'),
+              label: 'Settings',
+            },
+          ]
+        : [],
     });
     return () => {
       clearRoute(pathname);

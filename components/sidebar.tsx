@@ -1,5 +1,6 @@
 'use client';
 
+import { LogoutConfirmationSheet } from '@/components/logout-confirmation-sheet';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -19,7 +20,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 // Menu sections configuration
 const menuSections = [
@@ -296,9 +297,10 @@ export function Sidebar() {
   const { isOpen, closeSidebar } = useSidebar();
   const router = useRouter();
   const pathname = usePathname();
-  const { logout } = useAuth();
+  const { logout, isLoggingOut } = useAuth();
   const { user } = useUserProfile();
   const { hasAccess: hasBetaAccess } = useBetaAccess();
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
   // Prefetch priority routes on mount
   useEffect(() => {
@@ -327,9 +329,18 @@ export function Sidebar() {
     closeSidebar();
   };
 
-  const handleLogout = () => {
+  const handleLogoutClick = () => {
+    setShowLogoutConfirmation(true);
+  };
+
+  const handleLogoutConfirm = () => {
     logout();
     closeSidebar();
+    setShowLogoutConfirmation(false);
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirmation(false);
   };
 
   return (
@@ -339,7 +350,7 @@ export function Sidebar() {
         <SidebarContent
           user={user}
           handleNavigation={handleNavigation}
-          handleLogout={handleLogout}
+          handleLogout={handleLogoutClick}
           pathname={pathname || ''}
           isDesktop={true}
         />
@@ -382,7 +393,7 @@ export function Sidebar() {
                 <MobileSidebarContent
                   user={user}
                   handleNavigation={handleNavigation}
-                  handleLogout={handleLogout}
+                  handleLogout={handleLogoutClick}
                   pathname={pathname || ''}
                 />
               </Sheet.Content>
@@ -390,6 +401,14 @@ export function Sidebar() {
           </Sheet.Portal>
         </Sheet.Root>
       </div>
+
+      {/* Logout Confirmation Sheet */}
+      <LogoutConfirmationSheet
+        isOpen={showLogoutConfirmation}
+        onClose={handleLogoutCancel}
+        onConfirm={handleLogoutConfirm}
+        isLoading={isLoggingOut}
+      />
     </>
   );
 }

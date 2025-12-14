@@ -398,7 +398,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   // Validation
   isValid: () => {
     const state = get();
-    return !!(state.title.trim() && state.location);
+    return !!state.title.trim();
   },
 
   // Change detection

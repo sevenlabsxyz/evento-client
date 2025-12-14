@@ -26,7 +26,7 @@ export default function EmailBlastPage() {
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
-      title: 'Email Blast',
+      title: 'Email Blasts',
       buttons: [
         {
           icon: Plus,
@@ -56,10 +56,17 @@ export default function EmailBlastPage() {
     <div className='mx-auto mt-2 min-h-screen max-w-full bg-white md:max-w-sm'>
       {/* Content */}
       <div className='p-4'>
+        {/* Create Email Blast Button */}
+        <button
+          onClick={handleCreateBlast}
+          className='mb-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
+        >
+          <Plus className='h-5 w-5' />
+          Create Email Blast
+        </button>
+
         {/* Email Blast History */}
         <div className='space-y-3'>
-          <h2 className='mb-4 text-lg font-semibold text-gray-900'>Recent Email Blasts</h2>
-
           {isLoading ? (
             <div className='py-12 text-center'>
               <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />

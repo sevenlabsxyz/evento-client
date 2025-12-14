@@ -1,10 +1,9 @@
-import { Button } from '@/components/ui/button';
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { GLOBAL_EXCHANGES, getExchangesForCountry, type Exchange } from '@/lib/constants/exchanges';
 import { detectUserCountry } from '@/lib/utils/geo-detection';
-import { ExternalLink, Loader2, MapPin, X } from 'lucide-react';
+import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 type BuySellBitcoinSheetProps = {
@@ -43,7 +42,10 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
 
   const ExchangeCard = ({ exchange }: { exchange: Exchange }) => {
     return (
-      <div className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+      <div
+        className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 hover:bg-gray-100'
+        onClick={() => window.open(exchange.link, '_blank')}
+      >
         {/* Left: Logo + Content */}
         <div className='flex items-center gap-3'>
           <div className='relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-2xl'>
@@ -56,12 +58,11 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
         </div>
 
         {/* Right: Button */}
-        <Button asChild variant='default' className='flex-shrink-0'>
-          <Link href={exchange.link} target='_blank' rel='noopener noreferrer'>
-            Visit
-            <ExternalLink className='ml-2 h-4 w-4' />
-          </Link>
-        </Button>
+        <CircledIconButton
+          className='flex-shrink-0 bg-white'
+          icon={ArrowUpRight}
+          onClick={() => window.open(exchange.link, '_blank')}
+        />
       </div>
     );
   };
