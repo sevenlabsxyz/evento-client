@@ -10,32 +10,28 @@
 
 ## Overview
 
-Evento is a modern, social-first event management platform built with Next.js 14 and TypeScript. It's designed to make event organizing friction-free and fun, whether you're bringing together five friends or five hundred attendees.
+Evento is a modern, social-first event management platform. It's designed to make event organizing friction-free and fun, whether you're bringing together five friends or five hundred attendees. It features a built-in Bitcoin Lightning wallet allowing for frictionless movement of money between event goers and hosts.
 
 ### Key Features
 
 - 🎉 **Seamless Event Creation** - Intuitive event builder with rich text editing
-- 👥 **Interactive Guest Management** - RSVP tracking, check-ins, and guest lists
+- 👥 **Interactive Guest Management** - RSVP tracking, check-ins\*, and guest lists
+- 🎨 **Beautiful UI** - Modern, responsive design with minimalistic branding
+- ⚡ **Bitcoin Wallet** - In-app Bitcoin wallet powered by Breez SDK for Lightning payments
 - 📧 **Email Communications** - Targeted email blasts with scheduling
 - 📍 **Location Services** - Google Maps integration with dynamic location display
-- 💳 **Multiple Payment Options** - Stripe, PayPal, Lightning Network, and Venmo
-- ⚡ **Bitcoin Wallet** - In-app Bitcoin wallet powered by Breez SDK for Lightning payments
 - 🎵 **Music Integration** - Embed playlists from Spotify and Wavlake
-- 🔔 **Real-time Notifications** - Stay updated with instant alerts
 - 📸 **Event Gallery** - Share and react to event photos
-- 💬 **Live Chat** - Real-time messaging with Stream Chat
-- 🌤️ **Weather Integration** - Event weather forecasts
-- 🎨 **Beautiful UI** - Modern, responsive design with Tailwind CSS
-- 🔐 **Secure Authentication** - Powered by Supabase Auth
+- 💬 **Live Chat** - Real-time messaging for DMs and group chats\*
 
 ## Quick Start
 
 ### Prerequisites
 
-- **Node.js** 18.x or later ([Download](https://nodejs.org/))
-- **PNPM** package manager ([Install](https://pnpm.io/installation))
-- **Supabase** account ([Sign up](https://supabase.com))
-- **Google Maps API** key ([Get key](https://console.cloud.google.com/))
+- **Node.js** 18.x or later
+- **PNPM** package manager
+- **Supabase** account
+- **Google Maps API** key
 
 ### Installation
 
@@ -52,123 +48,15 @@ Evento is a modern, social-first event management platform built with Next.js 14
     pnpm install
     ```
 
-3. **Set up environment variables**
-
-    ```bash
-    cp .env.example .env.local
-    ```
-
-    Edit `.env.local` with your credentials:
-
-    ```env
-    # Required
-    NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=your_google_maps_key
-
-    # Optional
-    NEXT_PUBLIC_GHOST_URL=your_ghost_url
-    NEXT_PUBLIC_GIPHY_API_KEY=your_giphy_key
-    NEXT_PUBLIC_OPENWEATHERMAP_API_KEY=your_weather_key
-    NEXT_PUBLIC_STREAM_CHAT_API_KEY=your_stream_key
-    ```
-
-4. **Set up the database**
-
-    ```bash
-    # Install Supabase CLI
-    npm install -g supabase
-
-    # Link to your project
-    supabase link --project-ref your-project-ref
-
-    # Push migrations
-    supabase db push
-    ```
-
-5. **Start the development server**
+3. **Start the development server**
 
     ```bash
     pnpm dev
     ```
 
-6. **Open your browser**
+4. **Open your browser**
 
     Navigate to [http://localhost:3000](http://localhost:3000)
-
-For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md).
-
-## Project Structure
-
-```
-├── app/             # Next.js 14 App Router pages and API routes
-│   ├── api/         # API routes (primarily for proxying)
-│   ├── blog/        # Blog pages
-│   ├── e/           # Event-specific pages
-├── components/      # React components
-│   ├── event-detail/# Event detail page components
-│   ├── manage-event/# Event management components
-│   ├── shared/      # Shared components
-│   ├── ui/          # UI components (based on shadcn UI)
-├── lib/             # Shared utilities
-│   ├── api/         # API client and utilities
-│   ├── constants/   # Constants including environment variables
-│   ├── hooks/       # Custom React hooks
-│   ├── schemas/     # Zod validation schemas
-│   ├── services/    # Service-specific utilities
-│   ├── stores/      # State management stores
-│   ├── supabase/    # Supabase client setup
-│   ├── types/       # TypeScript type definitions
-│   └── utils/       # Utility functions
-├── public/          # Static assets
-└── styles/          # Global styles
-```
-
-## Tech Stack
-
-### Frontend
-
-- **Framework**: [Next.js 14](https://nextjs.org/) with App Router
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
-- **Rich Text**: [TipTap](https://tiptap.dev/)
-- **Icons**: [Lucide React](https://lucide.dev/)
-
-### Backend & Data
-
-- **Authentication**: [Supabase Auth](https://supabase.com/auth)
-- **Database**: [Supabase PostgreSQL](https://supabase.com/database)
-- **State Management**: [TanStack Query](https://tanstack.com/query) (React Query)
-- **Form Handling**: [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/)
-- **API Client**: [Axios](https://axios-http.com/)
-
-### Integrations
-
-- **Maps**: Google Maps API
-- **Chat**: Stream Chat
-- **CMS**: Ghost
-- **Weather**: OpenWeatherMap
-- **Media**: Giphy API
-
-### Development
-
-- **Testing**: Jest + React Testing Library
-- **Linting**: ESLint
-- **Package Manager**: PNPM
-
-## Environment Variables
-
-All environment variables are centralized in `lib/constants/env.ts`. Always use these constants instead of directly accessing `process.env` in your code:
-
-```typescript
-// ❌ Bad
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-// ✅ Good
-import { Env } from '@/lib/constants/env';
-const apiUrl = Env.NEXT_PUBLIC_API_URL;
-```
 
 ## Development
 
@@ -232,15 +120,9 @@ pnpm start
 
 6. **Push and create a Pull Request** to the `dev` branch
 
-## Documentation
-
-- **[Setup Guide](SETUP_GUIDE.md)** - Detailed installation and configuration
-- **[Contributing Guidelines](CONTRIBUTING.md)** - How to contribute to this project
-- **[Code of Conduct](CODE_OF_CONDUCT.md)** - Community guidelines
-
 ## API Integration
 
-The application uses a RESTful API for backend communication. API endpoints are proxied through Next.js API routes for security and CORS handling. The backend API should be configured via the `API_PROXY_TARGET` environment variable.
+The application uses a RESTful API for backend communication. API endpoints are proxied through Next.js API routes for security and CORS handling.
 
 ## Contributing
 
@@ -264,130 +146,3 @@ We love contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md
 ## License
 
 This project is licensed under the GNU License - see the [LICENSE](LICENSE) file for details.
-
-## Overview
-
-**Events Made Social**
-
-Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
-
-The application features a comprehensive suite of capabilities:
-
-- **Seamless event creation and management**
-- **Interactive guest list and RSVP tracking**
-- **Targeted email communications with scheduling**
-- **Dynamic location services with map integration**
-- **Payments via multiple channels such as Stripe, PayPal, Lightning Network and Venmo**
-- **Music embedding via Spotify and Wavlake**
-- **Real-time updates and notifications**
-- **Community building tools**
-- **_etc..._**
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18.x or later
-- PNPM package manager
-- Google Maps API key (for location services)
-- Ghost CMS setup (for blog functionality)
-- Supabase account (for authentication and database)
-
-### Environment Setup
-
-1. Clone this repository
-2. Copy `.env.example` to `.env.local` and fill in the required environment variables
-3. Install dependencies:
-
-```bash
-pnpm install
-```
-
-4. Start the development server:
-
-```bash
-pnpm dev
-```
-
-5. Access the application at `http://localhost:3000`
-
-## Project Structure
-
-```
-├── app/             # Next.js 14 App Router pages and API routes
-│   ├── blog/        # Blog pages
-│   ├── e/           # Event-specific pages
-├── components/      # React components
-│   ├── event-detail/# Event detail page components
-│   ├── manage-event/# Event management components
-│   ├── shared/      # Shared components
-│   ├── ui/          # UI components (based on shadcn UI)
-├── lib/             # Shared utilities
-│   ├── api/         # API client and utilities
-│   ├── constants/   # Constants including environment variables
-│   ├── hooks/       # Custom React hooks
-│   ├── schemas/     # Zod validation schemas
-│   ├── services/    # Service-specific utilities
-│   ├── stores/      # State management stores
-│   ├── supabase/    # Supabase client setup
-│   ├── types/       # TypeScript type definitions
-│   └── utils/       # Utility functions
-├── public/          # Static assets
-└── styles/          # Global styles
-```
-
-## Key Technologies
-
-- **Framework**: Next.js with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom components based on shadcn/ui
-- **State Management**: React Query for server state, React Context/Hooks for local state
-- **Authentication**: Supabase Auth
-- **Database**: Supabase PostgreSQL
-- **Rich Text Editing**: TipTap
-- **Form Validation**: React Hook Form with Zod
-- **API Communication**: Axios
-- **Date Handling**: date-fns
-- **Icons**: Lucide React
-
-## Environment Variables
-
-All environment variables are centralized in `lib/constants/env.ts`. Always use these constants instead of directly accessing `process.env` in your code:
-
-```typescript
-// ❌ Bad
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-// ✅ Good
-import { Env } from '@/lib/constants/env';
-const apiUrl = Env.NEXT_PUBLIC_API_URL;
-```
-
-## Development Workflow
-
-### Code Formatting and Linting
-
-```bash
-# Run ESLint
-pnpm lint
-```
-
-### Building for Production
-
-```bash
-pnpm build
-```
-
-### Running Production Build
-
-```bash
-pnpm start
-```
-
-## API Integration
-
-For detailed information about integrating with our APIs:
-
-- See `FRONTEND_INTEGRATION_GUIDE.md` for implementing new frontend features
-- See `INTERNAL_API_REFERENCE.md` for internal API documentation
