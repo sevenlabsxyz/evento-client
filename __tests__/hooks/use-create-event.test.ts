@@ -56,7 +56,12 @@ describe('useCreateEvent', () => {
   const createMockEventData = (overrides: Partial<CreateEventData> = {}): CreateEventData => ({
     title: 'Test Event',
     description: 'Test event description',
-    location: 'Test Location',
+    location: {
+      type: 'manual_entry',
+      data: {
+        name: 'Test Location',
+      },
+    },
     timezone: 'UTC',
     cover: null,
     start_date_day: 15,
@@ -120,7 +125,12 @@ describe('useCreateEvent', () => {
       const invalidEventData = {
         title: '', // Invalid: empty title
         description: 'Test description',
-        location: 'Test Location',
+        location: {
+          type: 'manual_entry',
+          data: {
+            name: 'Test Location',
+          },
+        },
         timezone: 'UTC',
         start_date_day: 15,
         start_date_month: 6,
@@ -385,7 +395,12 @@ describe('useCreateEvent', () => {
       const incompleteEventData = {
         // Missing required fields
         description: 'Test description',
-        location: 'Test Location',
+        location: {
+          type: 'manual_entry',
+          data: {
+            name: 'Test Location',
+          },
+        },
         timezone: 'UTC',
         start_date_day: 15,
         start_date_month: 6,
@@ -543,7 +558,12 @@ describe('useCreateEventWithCallbacks', () => {
   const createMockEventData = (overrides: Partial<CreateEventData> = {}): CreateEventData => ({
     title: 'Test Event',
     description: 'Test event description',
-    location: 'Test Location',
+    location: {
+      type: 'manual_entry',
+      data: {
+        name: 'Test Location',
+      },
+    },
     timezone: 'UTC',
     cover: null,
     start_date_day: 15,
@@ -607,7 +627,12 @@ describe('useCreateEventWithCallbacks', () => {
       const invalidEventData = {
         title: '', // Invalid: empty title
         description: 'Test description',
-        location: 'Test Location',
+        location: {
+          type: 'manual_entry',
+          data: {
+            name: 'Test Location',
+          },
+        },
         timezone: 'UTC',
         start_date_day: 15,
         start_date_month: 6,

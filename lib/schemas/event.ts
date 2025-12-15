@@ -1,6 +1,45 @@
 import { z } from 'zod';
 
 /**
+ * Location object format expected by backend
+ */
+export const googlePlaceDataSchema = z.object({
+  place_id: z.string(),
+  name: z.string(),
+  formatted_address: z.string(),
+  address_components: z.array(z.any()),
+  geometry: z.object({
+    location: z.object({
+      lat: z.number(),
+      lng: z.number(),
+    }),
+  }),
+});
+
+export const locationObjectSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('google_place'),
+    data: z.object({
+      googlePlaceData: googlePlaceDataSchema,
+    }),
+  }),
+  z.object({
+    type: z.literal('manual_entry'),
+    data: z.object({
+      name: z.string(),
+    }),
+  }),
+  z.object({
+    type: z.literal('existing'),
+    data: z.object({
+      location_id: z.string(),
+    }),
+  }),
+]);
+
+export type LocationObject = z.infer<typeof locationObjectSchema>;
+
+/**
  * Base event schema for form validation
  * Matches the backend API expectations
  */
@@ -8,7 +47,7 @@ export const eventFormSchema = z.object({
   // Required fields
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string(),
-  location: z.string(),
+  location: locationObjectSchema.nullable(),
   timezone: z.string().min(1, 'Timezone is required'),
 
   // Cover image
@@ -75,6 +114,33 @@ export const updateEventSchema = eventFormSchema.omit({ settings: true }).extend
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
 
 /**
+ * Schema for location data returned from the API (from event_locations table)
+ */
+export const eventLocationSchema = z.object({
+  id: z.string(),
+  name: z.string().nullable(),
+  address: z.string().nullable(),
+  city: z.string().nullable(),
+  state_province: z.string().nullable(),
+  country: z.string().nullable(),
+  country_code: z.string().nullable(),
+  postal_code: z.string().nullable(),
+  // Latitude/longitude come as strings from DB, transform to numbers
+  latitude: z
+    .union([z.string(), z.number()])
+    .nullable()
+    .transform((val) => (val !== null ? Number(val) : null)),
+  longitude: z
+    .union([z.string(), z.number()])
+    .nullable()
+    .transform((val) => (val !== null ? Number(val) : null)),
+  location_type: z.string().nullable(),
+  is_verified: z.boolean().nullable(),
+});
+
+export type EventLocationData = z.infer<typeof eventLocationSchema>;
+
+/**
  * Schema for the event object returned from the API
  */
 export const apiEventSchema = z.object({
@@ -85,6 +151,8 @@ export const apiEventSchema = z.object({
   description: z.string().nullable(),
   cover: z.string().nullable(),
   location: z.string().nullable(),
+  // Location data from event_locations table (joined)
+  event_locations: eventLocationSchema.nullable().optional(),
   start_date_day: z.number(),
   start_date_month: z.number(),
   start_date_year: z.number(),

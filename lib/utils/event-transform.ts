@@ -17,8 +17,21 @@ export function transformApiEventToDisplay(
   );
   const endDateTime = formatEventDate(apiEvent.computed_end_date, apiEvent.timezone);
 
-  // Parse location string to structured format
-  const location = parseLocationString(apiEvent.location);
+  // Get location from event_locations (new format) or parse legacy location string
+  const eventLoc = (apiEvent as any).event_locations;
+  const location: EventLocation = eventLoc
+    ? {
+        name: eventLoc.name || '',
+        address: eventLoc.address || '',
+        city: eventLoc.city || '',
+        state: eventLoc.state_province || '',
+        country: eventLoc.country || '',
+        coordinates:
+          eventLoc.latitude && eventLoc.longitude
+            ? { lat: Number(eventLoc.latitude), lng: Number(eventLoc.longitude) }
+            : undefined,
+      }
+    : parseLocationString(apiEvent.location);
 
   // Transform hosts
   const transformedHosts: EventHost[] = hosts.map((host) => ({

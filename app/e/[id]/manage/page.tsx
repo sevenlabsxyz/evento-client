@@ -140,7 +140,7 @@ export default function ManageEventPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
         <div className='space-y-6 p-4'>
           {/* Action buttons skeleton */}
           <div className='flex gap-2'>
@@ -183,7 +183,7 @@ export default function ManageEventPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
       {/* Content */}
       <div className='p-4'>
         {/* Square Action Buttons */}

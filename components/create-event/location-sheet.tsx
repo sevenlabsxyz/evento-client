@@ -1,9 +1,9 @@
 'use client';
-import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
-import { VisuallyHidden } from '@silk-hq/components';
-import { ChevronRight, MapPin, Plus, Search } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import './location-sheet.css';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { LocationData, useGooglePlaces } from '@/lib/hooks/use-google-places';
+import { debugLog } from '@/lib/utils/debug';
+import { Loader2, MapPin, Plus, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 interface LocationSheetProps {
   isOpen: boolean;
@@ -12,93 +12,66 @@ interface LocationSheetProps {
   selectedLocation?: LocationData;
 }
 
-export interface LocationData {
-  name: string;
-  address: string;
-  city: string;
-  state?: string;
-  country: string;
-  zipCode?: string;
-  coordinates?: {
-    lat: number;
-    lng: number;
-  };
-  formatted: string; // Full formatted address for display
-}
+export type { LocationData };
 
-export default function LocationSheet({
-  isOpen,
-  onClose,
-  onLocationSelect,
-  selectedLocation,
-}: LocationSheetProps) {
-  const [activeDetent, setActiveDetent] = useState(0);
+export default function LocationSheet({ isOpen, onClose, onLocationSelect }: LocationSheetProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSelectingPlace, setIsSelectingPlace] = useState(false);
+  const [isGettingCurrentLocation, setIsGettingCurrentLocation] = useState(false);
 
-  // Mock Google Places API results - in real app this would come from actual API
-  const placesResults: LocationData[] = [
-    {
-      name: 'Moscone Center',
-      address: '747 Howard St',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
-      zipCode: '94103',
-      coordinates: { lat: 37.7849, lng: -122.4021 },
-      formatted: 'Moscone Center, 747 Howard St, San Francisco, CA 94103, United States',
-    },
-    {
-      name: 'Golden Gate Park',
-      address: 'Golden Gate Park',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
-      coordinates: { lat: 37.7694, lng: -122.4862 },
-      formatted: 'Golden Gate Park, San Francisco, CA, United States',
-    },
-    {
-      name: 'Union Square',
-      address: 'Union Square',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
-      coordinates: { lat: 37.788, lng: -122.4075 },
-      formatted: 'Union Square, San Francisco, CA, United States',
-    },
-    {
-      name: 'Pier 39',
-      address: 'Pier 39',
-      city: 'San Francisco',
-      state: 'CA',
-      country: 'United States',
-      coordinates: { lat: 37.8086, lng: -122.4098 },
-      formatted: 'Pier 39, San Francisco, CA, United States',
-    },
-  ];
+  const {
+    predictions,
+    isLoading,
+    error,
+    searchPlaces,
+    getPlaceDetails,
+    getCurrentLocation,
+    clearPredictions,
+    isScriptLoaded,
+  } = useGooglePlaces();
 
-  // Filter locations based on search query
-  const filteredLocations = useMemo(() => {
-    if (!searchQuery.trim()) return placesResults;
+  // Trigger search when query changes
+  useEffect(() => {
+    searchPlaces(searchQuery);
+  }, [searchQuery, searchPlaces]);
 
-    const query = searchQuery.toLowerCase();
-    return placesResults.filter(
-      (location) =>
-        location.name.toLowerCase().includes(query) ||
-        location.address.toLowerCase().includes(query) ||
-        location.city.toLowerCase().includes(query) ||
-        location.formatted.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+  // Clear predictions when sheet closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchQuery('');
+      clearPredictions();
+    }
+  }, [isOpen, clearPredictions]);
 
   const handleLocationSelect = (location: LocationData) => {
+    debugLog('LocationSheet', 'handleLocationSelect - Final location being sent to store', {
+      location,
+      hasGooglePlaceData: !!location.googlePlaceData,
+      googlePlaceData: location.googlePlaceData,
+    });
     onLocationSelect(location);
     onClose();
+  };
+
+  const handlePlaceSelect = async (placeId: string) => {
+    debugLog('LocationSheet', 'handlePlaceSelect - Fetching place details', { placeId });
+    setIsSelectingPlace(true);
+    const locationData = await getPlaceDetails(placeId);
+    setIsSelectingPlace(false);
+
+    debugLog('LocationSheet', 'handlePlaceSelect - Place details received', {
+      locationData,
+      hasGooglePlaceData: !!locationData?.googlePlaceData,
+    });
+
+    if (locationData) {
+      handleLocationSelect(locationData);
+    }
   };
 
   const handleCustomLocation = () => {
     if (!searchQuery.trim()) return;
 
-    // Create a custom location from the search query
     const customLocation: LocationData = {
       name: searchQuery,
       address: searchQuery,
@@ -107,146 +80,123 @@ export default function LocationSheet({
       formatted: searchQuery,
     };
 
+    debugLog('LocationSheet', 'handleCustomLocation - Created custom location', customLocation);
     handleLocationSelect(customLocation);
   };
 
-  const handleCurrentLocation = () => {
-    // In a real app, this would request GPS location
-    const currentLocation: LocationData = {
-      name: 'Current Location',
-      address: 'Your current location',
-      city: '',
-      country: '',
-      formatted: 'Current Location',
-    };
+  const handleCurrentLocation = async () => {
+    setIsGettingCurrentLocation(true);
+    const location = await getCurrentLocation();
+    setIsGettingCurrentLocation(false);
 
-    handleLocationSelect(currentLocation);
+    if (location) {
+      handleLocationSelect(location);
+    }
   };
 
+  // Search input as secondary header
+  const searchHeader = (
+    <div className='relative px-4 pb-4'>
+      <Search className='absolute left-7 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+      <input
+        type='text'
+        placeholder='Search for a place or address'
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        className='h-11 w-full rounded-xl bg-gray-100 pl-11 pr-4 text-base outline-none placeholder:text-gray-400'
+        autoFocus
+      />
+    </div>
+  );
+
   return (
-    <SheetWithDetent.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-      activeDetent={activeDetent}
-      onActiveDetentChange={setActiveDetent}
+    <MasterScrollableSheet
+      title='Choose Location'
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      headerSecondary={searchHeader}
+      contentClassName='pb-safe'
     >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className='LocationSheet-content'>
-            <div className='LocationSheet-header'>
-              <SheetWithDetent.Handle className='LocationSheet-handle' />
-              <VisuallyHidden.Root asChild>
-                <SheetWithDetent.Title className='LocationSheet-title'>
-                  Choose Location
-                </SheetWithDetent.Title>
-              </VisuallyHidden.Root>
-              <div className='LocationSheet-searchContainer'>
-                <Search className='LocationSheet-searchIcon' />
-                <input
-                  className='LocationSheet-input'
-                  type='text'
-                  placeholder='Search for a place or address'
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setActiveDetent(2)}
-                  autoFocus
-                />
-              </div>
+      <div className='flex flex-col'>
+        {/* Current Location Option */}
+        <button
+          onClick={handleCurrentLocation}
+          disabled={isGettingCurrentLocation}
+          className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
+        >
+          <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100'>
+            {isGettingCurrentLocation ? (
+              <Loader2 className='h-5 w-5 animate-spin text-blue-600' />
+            ) : (
+              <MapPin className='h-5 w-5 text-blue-600' />
+            )}
+          </div>
+          <div className='min-w-0 flex-1'>
+            <div className='truncate font-medium text-gray-900'>
+              {isGettingCurrentLocation ? 'Getting location...' : 'Use current location'}
             </div>
-            <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className='LocationSheet-scrollView'>
-                <SheetWithDetent.ScrollContent className='LocationSheet-scrollContent'>
-                  {/* Current Location Option */}
-                  <button
-                    onClick={handleCurrentLocation}
-                    className='LocationSheet-locationItem LocationSheet-currentLocation'
-                  >
-                    <div className='LocationSheet-locationIcon LocationSheet-locationIcon--blue'>
-                      <MapPin className='LocationSheet-icon' />
-                    </div>
-                    <div className='LocationSheet-locationDetails'>
-                      <div className='LocationSheet-locationName'>Use current location</div>
-                      <div className='LocationSheet-locationAddress'>
-                        We'll use your current GPS location
-                      </div>
-                    </div>
-                  </button>
+            <div className='truncate text-sm text-gray-500'>
+              {error || "We'll use your current GPS location"}
+            </div>
+          </div>
+        </button>
 
-                  {/* Search Results or Suggestions */}
-                  {searchQuery ? (
-                    <>
-                      {/* Google Places Results */}
-                      {filteredLocations.map((location, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleLocationSelect(location)}
-                          className='LocationSheet-locationItem'
-                        >
-                          <div className='LocationSheet-locationIcon'>
-                            <MapPin className='LocationSheet-icon' />
-                          </div>
-                          <div className='LocationSheet-locationDetails'>
-                            <div className='LocationSheet-locationName'>{location.name}</div>
-                            <div className='LocationSheet-locationAddress'>
-                              {location.formatted}
-                            </div>
-                          </div>
-                        </button>
-                      ))}
+        {/* Loading State */}
+        {(isLoading || isSelectingPlace) && (
+          <div className='flex items-center justify-center gap-2 py-4'>
+            <Loader2 className='h-5 w-5 animate-spin text-gray-400' />
+            <span className='text-sm text-gray-500'>
+              {isSelectingPlace ? 'Loading place details...' : 'Searching...'}
+            </span>
+          </div>
+        )}
 
-                      {/* Custom Location Option */}
-                      {filteredLocations.length === 0 && searchQuery.trim() && (
-                        <button
-                          onClick={handleCustomLocation}
-                          className='LocationSheet-locationItem'
-                        >
-                          <div className='LocationSheet-locationIcon LocationSheet-locationIcon--red'>
-                            <Plus className='LocationSheet-icon' />
-                          </div>
-                          <div className='LocationSheet-locationDetails'>
-                            <div className='LocationSheet-locationName'>Add "{searchQuery}"</div>
-                            <div className='LocationSheet-locationAddress'>
-                              Use as custom location
-                            </div>
-                          </div>
-                        </button>
-                      )}
-                    </>
-                  ) : (
-                    /* Default Suggestions */
-                    <>
-                      <div className='LocationSheet-sectionTitle'>Suggested</div>
-                      {placesResults.slice(0, 4).map((location, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleLocationSelect(location)}
-                          className='LocationSheet-locationItem LocationSheet-locationItem--withChevron'
-                        >
-                          <div className='LocationSheet-locationIcon'>
-                            <MapPin className='LocationSheet-icon' />
-                          </div>
-                          <div className='LocationSheet-locationDetails'>
-                            <div className='LocationSheet-locationName'>{location.name}</div>
-                            <div className='LocationSheet-locationAddress'>
-                              {location.city}, {location.state}
-                            </div>
-                          </div>
-                          <ChevronRight className='LocationSheet-chevron' />
-                        </button>
-                      ))}
-                    </>
-                  )}
+        {/* Search Results */}
+        {searchQuery && !isLoading ? (
+          <>
+            {/* Google Places Results */}
+            {predictions.map((prediction) => (
+              <button
+                key={prediction.placeId}
+                onClick={() => handlePlaceSelect(prediction.placeId)}
+                disabled={isSelectingPlace}
+                className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
+              >
+                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100'>
+                  <MapPin className='h-5 w-5 text-gray-500' />
+                </div>
+                <div className='min-w-0 flex-1'>
+                  <div className='truncate font-medium text-gray-900'>{prediction.mainText}</div>
+                  <div className='truncate text-sm text-gray-500'>{prediction.secondaryText}</div>
+                </div>
+              </button>
+            ))}
 
-                  {searchQuery && filteredLocations.length === 0 && !searchQuery.trim() && (
-                    <div className='LocationSheet-noResults'>No locations found</div>
-                  )}
-                </SheetWithDetent.ScrollContent>
-              </SheetWithDetent.ScrollView>
-            </SheetWithDetent.ScrollRoot>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+            {/* Custom Location Option - always show when there's a search query */}
+            {searchQuery.trim() && (
+              <button
+                onClick={handleCustomLocation}
+                className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
+              >
+                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
+                  <Plus className='h-5 w-5 text-red-500' />
+                </div>
+                <div className='min-w-0 flex-1'>
+                  <div className='truncate font-medium text-gray-900'>Add "{searchQuery}"</div>
+                  <div className='truncate text-sm text-gray-500'>Use as custom location</div>
+                </div>
+              </button>
+            )}
+          </>
+        ) : !searchQuery && isScriptLoaded ? (
+          /* Empty state - prompt to search */
+          <div className='px-4 py-6 text-center'>
+            <p className='text-sm text-gray-500'>
+              Type to search for places or add a custom location
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </MasterScrollableSheet>
   );
 }

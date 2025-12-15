@@ -1,5 +1,6 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
@@ -11,8 +12,6 @@ import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
-import { ButtonGroup } from '@/components/ui/button-group';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -29,16 +28,13 @@ import {
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
+import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
 import { motion } from 'framer-motion';
 import {
-  ArrowDownWideNarrow,
-  ArrowUpWideNarrow,
+  ArrowUpRight,
   BadgeCheck,
-  Calendar,
-  ChevronDown,
   Edit3,
-  History,
   Loader2,
   MessageCircle,
   Search,
@@ -56,8 +52,6 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
-  const [timeframePopoverOpen, setTimeframePopoverOpen] = useState(false);
-  const [sortPopoverOpen, setSortPopoverOpen] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -202,7 +196,7 @@ export default function ProfilePage() {
       userEventsData?.pages
         .flatMap((page) => page.events)
         .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
-          const date = event.computed_start_date;
+          const date = event.computed_start_date.slice(0, 10); // Extract YYYY-MM-DD
           const group = groups.find((g) => g.date === date);
 
           if (group) {
@@ -228,105 +222,65 @@ export default function ProfilePage() {
 
     return (
       <div className='space-y-4'>
-        {/* Controls - Single unified ButtonGroup */}
-        <ButtonGroup className='w-full justify-between'>
-          <ButtonGroup>
-            {/* Timeframe Popover */}
-            <Popover open={timeframePopoverOpen} onOpenChange={setTimeframePopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className='rounded-l-full rounded-r-none bg-white hover:bg-gray-50'
-                >
-                  {timeframe === 'future' ? 'Upcoming' : 'Past'}
-                  <ChevronDown className='ml-1 h-3 w-3' />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align='start' className='w-56 p-2'>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setTimeframe('future');
-                    setTimeframePopoverOpen(false);
-                  }}
-                >
-                  <Calendar className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Upcoming</div>
-                    <div className='text-xs text-gray-500'>Events happening soon</div>
-                  </div>
-                </button>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setTimeframe('past');
-                    setTimeframePopoverOpen(false);
-                  }}
-                >
-                  <History className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Past</div>
-                    <div className='text-xs text-gray-500'>Events that have ended</div>
-                  </div>
-                </button>
-              </PopoverContent>
-            </Popover>
+        {/* Filter Controls */}
+        <div className='flex items-center justify-between gap-2'>
+          {/* Timeframe Toggle */}
+          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+            <button
+              onClick={() => setTimeframe('future')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'future'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Upcoming
+            </button>
+            <button
+              onClick={() => setTimeframe('past')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'past'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Past
+            </button>
+          </div>
 
-            {/* Sort Popover */}
-            <Popover open={sortPopoverOpen} onOpenChange={setSortPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className='rounded-l-none rounded-r-full bg-white hover:bg-gray-50'
-                >
-                  {sortBy === 'date-desc' ? 'Latest' : 'Oldest'}
-                  <ChevronDown className='ml-1 h-3 w-3' />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align='start' className='w-56 p-2'>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setSortBy('date-desc');
-                    setSortPopoverOpen(false);
-                  }}
-                >
-                  <ArrowDownWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Latest</div>
-                    <div className='text-xs text-gray-500'>Most recent events first</div>
-                  </div>
-                </button>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setSortBy('date-asc');
-                    setSortPopoverOpen(false);
-                  }}
-                >
-                  <ArrowUpWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Oldest</div>
-                    <div className='text-xs text-gray-500'>Oldest events first</div>
-                  </div>
-                </button>
-              </PopoverContent>
-            </Popover>
-          </ButtonGroup>
+          <div className='flex items-center gap-2'>
+            {/* Sort Toggle */}
+            <div className='flex items-center rounded-full bg-gray-50 p-1'>
+              <button
+                onClick={() => setSortBy('date-desc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-desc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Latest
+              </button>
+              <button
+                onClick={() => setSortBy('date-asc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-asc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Oldest
+              </button>
+            </div>
 
-          {/* Search Button */}
-          <Button
-            size='icon'
-            variant='outline'
-            onClick={() => setShowEventSearchSheet(true)}
-            className='rounded-full'
-            aria-label='Search events'
-          >
-            <Search className='!h-[1.25rem] !w-[1.25rem]' />
-          </Button>
-        </ButtonGroup>
+            {/* Search Button */}
+            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
+          </div>
+        </div>
 
         {/* Events List */}
         <div className='space-y-8'>
@@ -489,7 +443,7 @@ export default function ProfilePage() {
               </div>
               {/* Zap Button */}
               {user?.ln_address && (
-                <div className='mb-6'>
+                <div>
                   <ZapSheet
                     recipientLightningAddress={user.ln_address}
                     recipientName={user.name || 'You'}
@@ -498,6 +452,17 @@ export default function ProfilePage() {
                   />
                 </div>
               )}
+              {/* Edit Profile Button - desktop only */}
+              <div className='mt-2 hidden lg:block'>
+                <Button
+                  variant='ghost'
+                  className='w-full shadow-none'
+                  onClick={() => router.push('/e/profile/edit')}
+                >
+                  Edit Profile
+                  <ArrowUpRight className='h-4 w-4' />
+                </Button>
+              </div>
             </div>
           </div>
 

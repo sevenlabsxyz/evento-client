@@ -30,13 +30,13 @@ export function SegmentedTabs({
   align = 'center',
   wrapperClassName,
   gapClassName,
-  buttonBaseClassName = 'rounded-full px-5 py-2 text-base font-semibold transition-colors border border-gray-200',
-  activeClassName = 'bg-gray-50 text-black',
+  buttonBaseClassName = 'rounded-full px-5 py-2 text-sm font-semibold transition-colors border border-gray-200',
+  activeClassName = 'bg-white text-black',
   inactiveClassName = 'bg-transparent text-gray-500 hover:bg-gray-50 border-transparent',
 }: SegmentedTabsProps) {
   const defaultGapClassName = `flex flex-row items-center ${align === 'center' ? 'justify-center' : 'justify-start'} gap-2`;
   const Buttons = (
-    <>
+    <div className='mb-2 rounded-full bg-gray-50 p-2'>
       {items.map((item) => (
         <motion.button
           key={item.value}
@@ -56,7 +56,7 @@ export function SegmentedTabs({
           {item.label}
         </motion.button>
       ))}
-    </>
+    </div>
   );
 
   // Always render a single wrapper div. Apply default padding if none provided,

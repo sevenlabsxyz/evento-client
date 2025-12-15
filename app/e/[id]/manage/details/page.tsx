@@ -5,7 +5,7 @@ import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionModal from '@/components/create-event/image-selection-modal';
-import LocationModal from '@/components/create-event/location-modal';
+import LocationSheet from '@/components/create-event/location-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
@@ -142,7 +142,7 @@ export default function EditEventDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
         <div className='space-y-4 p-4'>
           {/* Cover image skeleton */}
           <Skeleton className='aspect-video w-full rounded-2xl' />
@@ -246,7 +246,7 @@ export default function EditEventDetailsPage() {
   };
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
       {/* Cover Image Selector */}
       <div className='mb-4 px-4'>
         <CoverImageSelector
@@ -448,7 +448,7 @@ export default function EditEventDetailsPage() {
         selectedTimezone={timezone}
       />
 
-      <LocationModal
+      <LocationSheet
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         onLocationSelect={setLocation}
@@ -480,7 +480,7 @@ export default function EditEventDetailsPage() {
 
       {/* Fixed Bottom Button */}
       <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
-        <div className='mx-auto max-w-full md:max-w-sm'>
+        <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleSaveChanges}
             disabled={!isFormValid || updateEventMutation.isPending}

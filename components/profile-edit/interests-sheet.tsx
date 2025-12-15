@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { InterestsSelector } from '@/components/ui/interest-selector';
-import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
   useAllInterests,
@@ -11,10 +11,8 @@ import {
 } from '@/lib/hooks/use-user-interests';
 import { Interest } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { VisuallyHidden } from '@silk-hq/components';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
-import './interests-sheet.css';
 
 interface InterestsSheetProps {
   isOpen: boolean;
@@ -22,7 +20,6 @@ interface InterestsSheetProps {
 }
 
 export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps) {
-  const [activeDetent, setActiveDetent] = useState(2); // Start full screen
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedSlugs, setSelectedSlugs] = useState<string[]>([]);
 
@@ -134,100 +131,88 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
   const isLoading = isLoadingAllInterests || isLoadingUserInterests;
 
   return (
-    <SheetWithDetent.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && handleClose()}
-      activeDetent={activeDetent}
-      onActiveDetentChange={setActiveDetent}
+    <MasterScrollableSheet
+      title='Interests'
+      open={isOpen}
+      onOpenChange={(open) => !open && handleClose()}
+      headerLeft={
+        <div>
+          <h2 className='text-xl font-semibold'>Interests</h2>
+          <p className='text-sm text-gray-500'>
+            {selectedSlugs.length} interest{selectedSlugs.length !== 1 ? 's' : ''} selected
+          </p>
+        </div>
+      }
+      headerSecondary={
+        <div className='px-4 pb-4'>
+          <input
+            className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-300 focus:bg-white'
+            type='text'
+            placeholder='Search interests...'
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+      }
+      contentClassName='px-4 pb-8'
     >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className='InterestsSheet-content'>
-            <div className='InterestsSheet-header'>
-              <SheetWithDetent.Handle className='InterestsSheet-handle' />
-              <VisuallyHidden.Root asChild>
-                <SheetWithDetent.Title className='InterestsSheet-title'>
-                  Interests
-                </SheetWithDetent.Title>
-              </VisuallyHidden.Root>
-              <input
-                className='InterestsSheet-input'
-                type='text'
-                placeholder='Search interests...'
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <p className='InterestsSheet-count'>
-                {selectedSlugs.length} interest{selectedSlugs.length !== 1 ? 's' : ''} selected
-              </p>
+      {isLoading ? (
+        // Loading State
+        <div className='space-y-4'>
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className='space-y-2'>
+              <Skeleton className='h-6 w-32' />
+              <div className='flex flex-wrap gap-2'>
+                {[1, 2, 3, 4].map((j) => (
+                  <Skeleton key={j} className='h-9 w-24 rounded-full' />
+                ))}
+              </div>
             </div>
-            <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className='InterestsSheet-scrollView'>
-                <SheetWithDetent.ScrollContent className='InterestsSheet-scrollContent'>
-                  {isLoading ? (
-                    // Loading State
-                    <div className='space-y-4'>
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <div key={i} className='space-y-2'>
-                          <Skeleton className='h-6 w-32' />
-                          <div className='flex flex-wrap gap-2'>
-                            {[1, 2, 3, 4].map((j) => (
-                              <Skeleton key={j} className='h-9 w-24 rounded-full' />
-                            ))}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : filteredCategories.length === 0 ? (
-                    // Empty State
-                    <div className='InterestsSheet-emptyContainer'>
-                      <div className='InterestsSheet-emptyText'>
-                        {searchQuery.trim()
-                          ? `No interests found matching "${searchQuery}"`
-                          : 'No interests available'}
-                      </div>
-                    </div>
-                  ) : (
-                    // Interests List
-                    <>
-                      <InterestsSelector
-                        categories={filteredCategories}
-                        initialSelectedInterests={selectedSlugs}
-                        onChange={handleSelectionChange}
-                        hideTitle
-                        className='w-full'
-                        contentClassName='w-full'
-                      />
+          ))}
+        </div>
+      ) : filteredCategories.length === 0 ? (
+        // Empty State
+        <div className='flex flex-col items-center justify-center py-12'>
+          <p className='text-gray-500'>
+            {searchQuery.trim()
+              ? `No interests found matching "${searchQuery}"`
+              : 'No interests available'}
+          </p>
+        </div>
+      ) : (
+        // Interests List
+        <>
+          <InterestsSelector
+            categories={filteredCategories}
+            initialSelectedInterests={selectedSlugs}
+            onChange={handleSelectionChange}
+            hideTitle
+            className='w-full'
+            contentClassName='w-full'
+          />
 
-                      {/* Save/Cancel Buttons */}
-                      <div className='InterestsSheet-buttonContainer'>
-                        <Button
-                          onClick={handleSave}
-                          disabled={!hasChanges || isSaving}
-                          className='InterestsSheet-saveButton'
-                        >
-                          {isSaving ? (
-                            <>
-                              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                              Saving...
-                            </>
-                          ) : (
-                            'Save'
-                          )}
-                        </Button>
-                        <Button onClick={handleClose} variant='outline' className='w-full'>
-                          Cancel
-                        </Button>
-                      </div>
-                    </>
-                  )}
-                </SheetWithDetent.ScrollContent>
-              </SheetWithDetent.ScrollView>
-            </SheetWithDetent.ScrollRoot>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+          {/* Save/Cancel Buttons */}
+          <div className='mt-6 flex flex-col gap-3'>
+            <Button
+              onClick={handleSave}
+              disabled={!hasChanges || isSaving}
+              className='w-full bg-red-500 text-white hover:bg-red-600'
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Saving...
+                </>
+              ) : (
+                'Save'
+              )}
+            </Button>
+            <Button onClick={handleClose} variant='outline' className='w-full'>
+              Cancel
+            </Button>
+          </div>
+        </>
+      )}
+    </MasterScrollableSheet>
   );
 }

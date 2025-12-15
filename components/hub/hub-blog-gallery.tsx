@@ -94,7 +94,7 @@ export function HubBlogGallery() {
   if (isLoading) {
     return (
       <div className='space-y-3'>
-        <h3 className='font-semibold'>Latest from our Blog</h3>
+        <h2 className='text-xl font-semibold'>Latest from Evento</h2>
         <div className='flex gap-3 overflow-x-hidden'>
           {[1, 2, 3].map((i) => (
             <Skeleton
@@ -117,7 +117,7 @@ export function HubBlogGallery() {
     <>
       <div className='space-y-3 pb-2 pt-4'>
         <div className='flex items-center justify-between'>
-          <h3 className='font-semibold'>Latest from our Blog</h3>
+          <h2 className='text-xl font-semibold'>Latest from Evento</h2>
           <div className='flex items-center gap-2'>
             <CircledIconButton
               icon={ArrowLeft}

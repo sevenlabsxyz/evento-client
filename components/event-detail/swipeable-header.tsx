@@ -1,5 +1,6 @@
 'use client';
 
+import { NO_COVER_FALLBACK } from '@/components/event-covers';
 import { Event } from '@/lib/types/event';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
@@ -15,7 +16,8 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const images = event.coverImages || [];
+  // Use fallback image when no cover images exist
+  const images = event.coverImages?.length ? event.coverImages : [NO_COVER_FALLBACK];
   const hasMultipleImages = images.length > 1;
 
   // Minimum swipe distance to trigger change
@@ -56,14 +58,6 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
   const handleImageClick = () => {
     onImageClick(currentIndex);
   };
-
-  if (images.length === 0) {
-    return (
-      <div className='relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gray-200'>
-        <span className='text-gray-500'>No image available</span>
-      </div>
-    );
-  }
 
   return (
     <div className='relative mx-auto aspect-square w-[94%] overflow-hidden rounded-3xl shadow-md'>

@@ -46,7 +46,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -68,7 +73,12 @@ describe('useUpdateEvent', () => {
           id: 'event123',
           title: 'Updated Event Title',
           description: 'Updated description',
-          location: 'Updated Location',
+          location: {
+            type: 'manual_entry',
+            data: {
+              name: 'Updated Location',
+            },
+          },
           timezone: 'UTC',
         },
       ],
@@ -96,7 +106,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -131,7 +146,12 @@ describe('useUpdateEvent', () => {
       id: '', // Invalid: empty ID
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -163,7 +183,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -200,7 +225,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -233,7 +263,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -276,7 +311,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -327,7 +367,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -373,7 +418,12 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -456,7 +506,12 @@ describe('useUpdateEventWithCallbacks', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -501,7 +556,12 @@ describe('useUpdateEventWithCallbacks', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -539,7 +599,12 @@ describe('useUpdateEventWithCallbacks', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -584,7 +649,12 @@ describe('useUpdateEventWithCallbacks', () => {
       id: '', // Invalid: empty ID
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: 'Updated Location',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Updated Location',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,

@@ -1,4 +1,4 @@
-import { LocationData } from '@/components/create-event/location-modal';
+import { LocationData } from '@/lib/hooks/use-google-places';
 import { ApiEvent, EventFormData } from '@/lib/schemas/event';
 import { debugError, debugLog } from '@/lib/utils/debug';
 import { buildTitleWithEmoji, extractEmojiFromTitle } from '@/lib/utils/emoji';
@@ -266,12 +266,38 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
         endTime,
       });
 
-      // Parse location string into structured data
+      // Parse location from event_locations (new format) or legacy location string
       debugLog('EventFormStore', 'Parsing location', {
-        location: event.location,
+        event_locations: event.event_locations,
+        legacy_location: event.location,
       });
-      const location = event.location ? parseLocationString(event.location) : null;
-      debugLog('EventFormStore', 'Parsed location', location);
+
+      let location: LocationData | null = null;
+
+      if (event.event_locations) {
+        // New format: location data from event_locations table
+        const loc = event.event_locations;
+        location = {
+          name: loc.name || '',
+          address: loc.address || '',
+          city: loc.city || '',
+          state: loc.state_province || undefined,
+          country: loc.country || '',
+          zipCode: loc.postal_code || undefined,
+          coordinates:
+            loc.latitude && loc.longitude ? { lat: loc.latitude, lng: loc.longitude } : undefined,
+          formatted: [loc.name, loc.address, loc.city, loc.state_province, loc.country]
+            .filter(Boolean)
+            .join(', '),
+        };
+        debugLog('EventFormStore', 'Parsed location from event_locations', location);
+      } else if (event.location) {
+        // Fallback: legacy location string
+        location = parseLocationString(event.location);
+        debugLog('EventFormStore', 'Parsed location from legacy string', location);
+      } else {
+        debugLog('EventFormStore', 'No location data found');
+      }
 
       // Handle cover image URL
       debugLog('EventFormStore', 'Processing cover image', {
@@ -335,10 +361,42 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
     // Combine emoji and title for the final title
     const finalTitle = buildTitleWithEmoji(state.emoji, state.title);
 
-    return {
+    // Transform location to backend format
+    let locationObject = null;
+    debugLog('EventFormStore', 'getFormData - Raw location state', {
+      hasLocation: !!state.location,
+      location: state.location,
+      hasGooglePlaceData: !!state.location?.googlePlaceData,
+    });
+
+    if (state.location) {
+      if (state.location.googlePlaceData) {
+        // Google Places selection - send raw Google data
+        locationObject = {
+          type: 'google_place' as const,
+          data: {
+            googlePlaceData: state.location.googlePlaceData,
+          },
+        };
+        debugLog('EventFormStore', 'getFormData - Created google_place location', locationObject);
+      } else {
+        // Manual/custom entry - just send the name
+        locationObject = {
+          type: 'manual_entry' as const,
+          data: {
+            name: state.location.name || state.location.formatted,
+          },
+        };
+        debugLog('EventFormStore', 'getFormData - Created manual_entry location', locationObject);
+      }
+    } else {
+      debugLog('EventFormStore', 'getFormData - No location set, sending null');
+    }
+
+    const formData = {
       title: finalTitle,
       description: state.description,
-      location: state.location?.formatted || '',
+      location: locationObject,
       timezone: state.timezone,
       cover: state.coverImage ? extractRelativePath(state.coverImage) : null,
 
@@ -381,6 +439,13 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
           }
         : undefined,
     };
+
+    debugLog('EventFormStore', 'getFormData - Final payload', {
+      location: formData.location,
+      title: formData.title,
+    });
+
+    return formData;
   },
 
   // Reset to initial state with fresh default date/time

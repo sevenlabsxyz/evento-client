@@ -4,17 +4,12 @@ First off, thank you for considering contributing to Evento! It's people like yo
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
 - [Development Setup](#development-setup)
 - [Pull Request Process](#pull-request-process)
 - [Coding Standards](#coding-standards)
 - [Commit Message Guidelines](#commit-message-guidelines)
 - [Testing Guidelines](#testing-guidelines)
-
-## Code of Conduct
-
-This project and everyone participating in it is governed by our [Code of Conduct](CODE_OF_CONDUCT.md). By participating, you are expected to uphold this code. Please report unacceptable behavior to the project maintainers.
 
 ## How Can I Contribute?
 
@@ -46,7 +41,7 @@ Steps to reproduce the behavior:
 **Expected behavior**
 What you expected to happen.
 
-**Screenshots**
+**Screenshots & Videos**
 If applicable, add screenshots.
 
 **Environment:**
@@ -123,19 +118,10 @@ We actively welcome your pull requests! Here's how to contribute:
 
     Fill in your API keys and credentials in `.env.local`
 
-5. **Set up the database**
-
-    ```bash
-    supabase link --project-ref your-project-ref
-    supabase db push
-    ```
-
-6. **Start the development server**
+5. **Start the development server**
     ```bash
     pnpm dev
     ```
-
-For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md).
 
 ## Pull Request Process
 
@@ -158,99 +144,6 @@ For detailed setup instructions, see [SETUP_GUIDE.md](SETUP_GUIDE.md).
 - [ ] New and existing unit tests pass locally with my changes
 - [ ] Any dependent changes have been merged and published
 
-### PR Title Format
-
-Use conventional commit format for PR titles:
-
-```
-type(scope): brief description
-
-Examples:
-feat(events): add recurring event support
-fix(auth): resolve login redirect issue
-docs(readme): update installation instructions
-```
-
-### Review Process
-
-1. At least one maintainer must review and approve your PR
-2. All CI checks must pass
-3. Any requested changes must be addressed
-4. Once approved, a maintainer will merge your PR
-
-## Coding Standards
-
-### TypeScript
-
-- Use TypeScript for all new code
-- Avoid using `any` - use proper types or `unknown`
-- Use interfaces for object shapes
-- Use type aliases for unions and primitives
-
-```typescript
-// ✅ Good
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-// ❌ Bad
-const user: any = { ... };
-```
-
-### React Components
-
-- Use functional components with hooks
-- Keep components small and focused
-- Extract reusable logic into custom hooks
-- Use proper prop types
-
-```typescript
-// ✅ Good
-interface ButtonProps {
-  onClick: () => void;
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary';
-}
-
-export function Button({
-  onClick,
-  children,
-  variant = 'primary',
-}: ButtonProps) {
-  return (
-    <button onClick={onClick} className={variant}>
-      {children}
-    </button>
-  );
-}
-```
-
-### File Organization
-
-- One component per file
-- Group related files in directories
-- Use index files for clean imports
-- Keep test files next to source files
-
-```
-components/
-├── event-card/
-│   ├── event-card.tsx
-│   ├── event-card.test.tsx
-│   ├── event-card-header.tsx
-│   └── index.ts
-```
-
-### Naming Conventions
-
-- **Components**: PascalCase (`EventCard.tsx`)
-- **Hooks**: camelCase with `use` prefix (`useEventData.ts`)
-- **Utilities**: camelCase (`formatDate.ts`)
-- **Constants**: UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
-- **Types/Interfaces**: PascalCase (`UserProfile`)
-
 ### Code Style
 
 - Use 2 spaces for indentation
@@ -258,16 +151,6 @@ components/
 - Add trailing commas in multi-line objects/arrays
 - Use template literals for string interpolation
 - Prefer `const` over `let`, avoid `var`
-
-```typescript
-// ✅ Good
-const greeting = `Hello, ${name}!`;
-const items = ['item1', 'item2', 'item3'];
-
-// ❌ Bad
-var greeting = 'Hello, ' + name + '!';
-const items = ['item1', 'item2', 'item3'];
-```
 
 ## Commit Message Guidelines
 
@@ -337,25 +220,6 @@ Add missing step for database migration setup.
 - Update tests when modifying existing code
 - Test edge cases and error conditions
 
-### Test Structure
-
-```typescript
-describe('ComponentName', () => {
-    describe('feature or method', () => {
-        it('should do something specific', () => {
-            // Arrange
-            const input = 'test';
-
-            // Act
-            const result = doSomething(input);
-
-            // Assert
-            expect(result).toBe('expected');
-        });
-    });
-});
-```
-
 ### Running Tests
 
 ```bash
@@ -372,13 +236,6 @@ pnpm test:coverage
 pnpm test path/to/test.test.ts
 ```
 
-### What to Test
-
-- **Components**: Rendering, user interactions, edge cases
-- **Hooks**: Return values, state changes, side effects
-- **Utilities**: Input/output, edge cases, error handling
-- **API calls**: Success cases, error cases, loading states
-
 ## Documentation
 
 ### Code Comments
@@ -387,18 +244,6 @@ pnpm test path/to/test.test.ts
 - Add comments for complex logic
 - Document public APIs and interfaces
 - Keep comments up to date with code changes
-
-```typescript
-/**
- * Formats a date string according to the user's locale
- * @param date - ISO 8601 date string
- * @param locale - BCP 47 language tag (default: 'en-US')
- * @returns Formatted date string
- */
-export function formatDate(date: string, locale = 'en-US'): string {
-    return new Date(date).toLocaleDateString(locale);
-}
-```
 
 ### README Updates
 
@@ -427,7 +272,7 @@ Contributors will be recognized in:
 
 ## License
 
-By contributing to Evento, you agree that your contributions will be licensed under the MIT License.
+By contributing to Evento, you agree that your contributions will be licensed under the GNU License.
 
 ---
 

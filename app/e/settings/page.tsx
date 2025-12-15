@@ -7,9 +7,7 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
-  BookOpen,
   ChevronRight,
-  Code,
   DollarSign,
   Info,
   Languages,
@@ -326,7 +324,7 @@ export default function SettingsPage() {
           </div>
 
           {/* Developer Section */}
-          <div className='mb-2 px-4'>
+          {/*<div className='mb-2 px-4'>
             <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
           </div>
           <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
@@ -359,7 +357,7 @@ export default function SettingsPage() {
                 <ChevronRight className='h-4 w-4 text-gray-400' />
               </button>
             </div>
-          </div>
+          </div>*/}
 
           {/* Version Info */}
           <div className='px-4 pb-24 pt-6 text-center'>

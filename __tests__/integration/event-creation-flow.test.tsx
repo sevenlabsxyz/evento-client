@@ -143,7 +143,12 @@ describe('Event Creation Integration Flow', () => {
     const eventData = {
       title: 'Test Event',
       description: 'Test Description',
-      location: 'Test Location, 123 Test St, Test City, TS 12345, Test Country',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Test Location, 123 Test St, Test City, TS 12345, Test Country',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 1,
       start_date_month: 1,
@@ -184,7 +189,12 @@ describe('Event Creation Integration Flow', () => {
     const eventData = {
       title: 'Test Event',
       description: 'Test Description',
-      location: 'Test Location, 123 Test St, Test City, TS 12345, Test Country',
+      location: {
+        type: 'manual_entry',
+        data: {
+          name: 'Test Location, 123 Test St, Test City, TS 12345, Test Country',
+        },
+      },
       timezone: 'UTC',
       start_date_day: 1,
       start_date_month: 1,

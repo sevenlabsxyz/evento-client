@@ -64,6 +64,19 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
     });
   };
 
+  // Remove handlers for Step 2 review
+  const handleRemoveEmail = (email: string) => {
+    setSelectedEmails((prev) => {
+      const next = new Set(prev);
+      next.delete(email);
+      return next;
+    });
+  };
+
+  const handleRemoveUser = (userId: string) => {
+    setSelectedUsers((prev) => prev.filter((u) => u.id !== userId));
+  };
+
   // Reset state
   const resetState = () => {
     setStep(1);
@@ -122,6 +135,8 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
             onBack={() => setStep(1)}
             onClose={onClose}
             onReset={resetState}
+            onRemoveEmail={handleRemoveEmail}
+            onRemoveUser={handleRemoveUser}
           />
         )}
       </MasterScrollableSheet>

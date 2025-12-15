@@ -1,159 +1,12 @@
-# Evento App + Bitcoin Wallet ([app.evento.so](https://app.evento.so))
-
-## Overview
-
-**Events Made Social**
-
-Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
-
-The application features a comprehensive suite of capabilities:
-
-- **Seamless event creation and management**
-- **Interactive guest list and RSVP tracking**
-- **Targeted email communications with scheduling**
-- **Dynamic location services with map integration**
-- **Payments via multiple channels such as Stripe, PayPal, Lightning Network and Venmo**
-- **Music embedding via Spotify and Wavlake**
-- **Real-time updates and notifications**
-- **Community building tools**
-- **_etc..._**
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 18.x or later
-- PNPM package manager
-- Supabase account (for authentication and database)
-- Google Maps API key (for location services)
-- Ghost CMS setup (for blog functionality)
-
-### Environment Setup
-
-1. Clone this repository
-2. Copy `.env.example` to `.env.local` and fill in the required environment variables
-3. Install dependencies:
-
-```bash
-pnpm install
-```
-
-4. Start the development server:
-
-```bash
-pnpm dev
-```
-
-5. Access the application at `http://localhost:3000`
-
-## Project Structure
-
-```
-├── app/             # Next.js 14 App Router pages and API routes
-│   ├── api/         # API routes (primarily for proxying)
-│   ├── blog/        # Blog pages
-│   ├── e/           # Event-specific pages
-├── components/      # React components
-│   ├── event-detail/# Event detail page components
-│   ├── manage-event/# Event management components
-│   ├── shared/      # Shared components
-│   ├── ui/          # UI components (based on shadcn UI)
-├── lib/             # Shared utilities
-│   ├── api/         # API client and utilities
-│   ├── constants/   # Constants including environment variables
-│   ├── hooks/       # Custom React hooks
-│   ├── schemas/     # Zod validation schemas
-│   ├── services/    # Service-specific utilities
-│   ├── stores/      # State management stores
-│   ├── supabase/    # Supabase client setup
-│   ├── types/       # TypeScript type definitions
-│   └── utils/       # Utility functions
-├── public/          # Static assets
-└── styles/          # Global styles
-```
-
-## Key Technologies
-
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom components based on shadcn/ui
-- **State Management**: React Query for server state, React Context/Hooks for local state
-- **Authentication**: Supabase Auth
-- **Database**: Supabase PostgreSQL
-- **Rich Text Editing**: TipTap
-- **Form Validation**: React Hook Form with Zod
-- **API Communication**: Axios
-- **Date Handling**: date-fns
-- **Icons**: Lucide React
-
-## Environment Variables
-
-All environment variables are centralized in `lib/constants/env.ts`. Always use these constants instead of directly accessing `process.env` in your code:
-
-```typescript
-// ❌ Bad
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-// ✅ Good
-import { Env } from '@/lib/constants/env';
-const apiUrl = Env.NEXT_PUBLIC_API_URL;
-```
-
-## Development Workflow
-
-### Code Formatting and Linting
-
-```bash
-# Run ESLint
-pnpm lint
-```
-
-### Building for Production
-
-```bash
-pnpm build
-```
-
-### Running Production Build
-
-```bash
-pnpm start
-```
-
-## API Integration
-
-For detailed information about integrating with our APIs:
-
-- See `FRONTEND_INTEGRATION_GUIDE.md` for implementing new frontend features
-- See `INTERNAL_API_REFERENCE.md` for internal API documentation
-
-## Additional Resources
-
-- **API Docs**: See `EVENTO_API_DOCS.md` for detailed API documentation
-
-## Support
-
-For questions or assistance, contact the engineering team through our internal channels.
-
-# Evento - Social Event Management Platform
+# Evento - Social Events Management Platform
 
 <div align="center">
 
-![Evento Logo](public/evento-logo.svg)
-
-**Create Events. Connect People. Build Communities.**
-
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)](https://www.typescriptlang.org/)
-[![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
-[Features](#features) • [Quick Start](#quick-start) • [Documentation](#documentation) • [Contributing](#contributing) • [License](#license)
+![Evento Logo](public/assets/pwa/icon@256px.png)
 
 </div>
 
----
+**Create Events. Connect People. Build Communities.**
 
 ## Overview
 
@@ -407,24 +260,134 @@ We love contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md
 ## Community
 
 - **Report bugs** by opening an [issue](https://github.com/sevenlabsxyz/evento-client/issues)
-- **Request features** through [GitHub Discussions](https://github.com/sevenlabsxyz/evento-client/discussions)
-- **Ask questions** in our community channels
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the GNU License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
+## Overview
 
-- Built with [Next.js](https://nextjs.org/)
-- UI components from [shadcn/ui](https://ui.shadcn.com/) and [Silk UI](https://silkhq.com/)
-- Database and auth by [Supabase](https://supabase.com/)
-- Bitcoin wallet powered by [Breez SDK](https://breez.technology/)
-- Icons by [Lucide](https://lucide.dev/)
+**Events Made Social**
 
-## Support
+Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
 
-- 📖 **Documentation**: Check our [Setup Guide](SETUP_GUIDE.md)
-- 🐛 **Bug Reports**: [Open an issue](https://github.com/sevenlabsxyz/evento-client/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/sevenlabsxyz/evento-client/discussions)
-- 📧 **Email**: support@evento.so
+The application features a comprehensive suite of capabilities:
+
+- **Seamless event creation and management**
+- **Interactive guest list and RSVP tracking**
+- **Targeted email communications with scheduling**
+- **Dynamic location services with map integration**
+- **Payments via multiple channels such as Stripe, PayPal, Lightning Network and Venmo**
+- **Music embedding via Spotify and Wavlake**
+- **Real-time updates and notifications**
+- **Community building tools**
+- **_etc..._**
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 18.x or later
+- PNPM package manager
+- Google Maps API key (for location services)
+- Ghost CMS setup (for blog functionality)
+- Supabase account (for authentication and database)
+
+### Environment Setup
+
+1. Clone this repository
+2. Copy `.env.example` to `.env.local` and fill in the required environment variables
+3. Install dependencies:
+
+```bash
+pnpm install
+```
+
+4. Start the development server:
+
+```bash
+pnpm dev
+```
+
+5. Access the application at `http://localhost:3000`
+
+## Project Structure
+
+```
+├── app/             # Next.js 14 App Router pages and API routes
+│   ├── blog/        # Blog pages
+│   ├── e/           # Event-specific pages
+├── components/      # React components
+│   ├── event-detail/# Event detail page components
+│   ├── manage-event/# Event management components
+│   ├── shared/      # Shared components
+│   ├── ui/          # UI components (based on shadcn UI)
+├── lib/             # Shared utilities
+│   ├── api/         # API client and utilities
+│   ├── constants/   # Constants including environment variables
+│   ├── hooks/       # Custom React hooks
+│   ├── schemas/     # Zod validation schemas
+│   ├── services/    # Service-specific utilities
+│   ├── stores/      # State management stores
+│   ├── supabase/    # Supabase client setup
+│   ├── types/       # TypeScript type definitions
+│   └── utils/       # Utility functions
+├── public/          # Static assets
+└── styles/          # Global styles
+```
+
+## Key Technologies
+
+- **Framework**: Next.js with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Custom components based on shadcn/ui
+- **State Management**: React Query for server state, React Context/Hooks for local state
+- **Authentication**: Supabase Auth
+- **Database**: Supabase PostgreSQL
+- **Rich Text Editing**: TipTap
+- **Form Validation**: React Hook Form with Zod
+- **API Communication**: Axios
+- **Date Handling**: date-fns
+- **Icons**: Lucide React
+
+## Environment Variables
+
+All environment variables are centralized in `lib/constants/env.ts`. Always use these constants instead of directly accessing `process.env` in your code:
+
+```typescript
+// ❌ Bad
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+// ✅ Good
+import { Env } from '@/lib/constants/env';
+const apiUrl = Env.NEXT_PUBLIC_API_URL;
+```
+
+## Development Workflow
+
+### Code Formatting and Linting
+
+```bash
+# Run ESLint
+pnpm lint
+```
+
+### Building for Production
+
+```bash
+pnpm build
+```
+
+### Running Production Build
+
+```bash
+pnpm start
+```
+
+## API Integration
+
+For detailed information about integrating with our APIs:
+
+- See `FRONTEND_INTEGRATION_GUIDE.md` for implementing new frontend features
+- See `INTERNAL_API_REFERENCE.md` for internal API documentation

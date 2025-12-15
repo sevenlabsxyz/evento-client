@@ -1,9 +1,10 @@
 'use client';
 
-import { Check, Clock, X } from 'lucide-react';
+import { ArrowRight, Check, Clock, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
+import { Button } from '../ui/button';
 
 interface EventCreatedModalProps {
   isOpen: boolean;
@@ -42,7 +43,6 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
   };
 
   const handleInviteGuests = () => {
-    onClose();
     setIsInviteOpen(true);
   };
 
@@ -79,12 +79,10 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
 
           {/* Actions */}
           <div className='w-full max-w-sm space-y-4'>
-            <button
-              onClick={handleViewEvent}
-              className='w-full rounded-2xl bg-black py-4 text-lg font-semibold text-white'
-            >
+            <Button onClick={handleViewEvent} className='h-14 w-full rounded-full text-lg'>
               View Event Page
-            </button>
+              <ArrowRight className='ml-2 h-4 w-4' />
+            </Button>
 
             <button
               onClick={handleInviteGuests}

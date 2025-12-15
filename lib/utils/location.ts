@@ -1,4 +1,4 @@
-import { LocationData } from '@/components/create-event/location-modal';
+import { LocationData } from '@/lib/hooks/use-google-places';
 import { EventLocation } from '@/lib/types/event';
 
 /**

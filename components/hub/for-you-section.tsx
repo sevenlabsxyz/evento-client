@@ -1,10 +1,13 @@
 'use client';
 
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
 import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
-import { Calendar, Sparkles } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { EventWithUser } from '@/lib/types/api';
+import { formatDateHeader } from '@/lib/utils/date';
+import { Calendar, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
 type ForYouTabType = 'following' | 'discover';
@@ -12,10 +15,10 @@ type ForYouTabType = 'following' | 'discover';
 export function ForYouSection() {
   const [activeTab, setActiveTab] = useState<ForYouTabType>('discover');
   const [loadedTabs, setLoadedTabs] = useState<ForYouTabType[]>(['discover']);
+  const [showFollowFeedSheet, setShowFollowFeedSheet] = useState(false);
 
   // Only load data for tabs that have been opened
   const followingQuery = useFollowingEvents({
-    limit: 10,
     enabled: loadedTabs.includes('following'),
   });
 
@@ -42,34 +45,36 @@ export function ForYouSection() {
   };
 
   const currentQuery = getCurrentQuery();
-  // Following uses infinite query (pages), For You uses simple query (flat array)
-  const events =
-    activeTab === 'discover'
-      ? discoverQuery.data || []
-      : followingQuery.data?.pages?.[0]?.events || [];
+
+  // Both queries now return simple arrays
+  const followingEvents = followingQuery.data || [];
+  const discoverEvents = discoverQuery.data || [];
+  const events = activeTab === 'discover' ? discoverEvents : followingEvents;
   const isLoading = currentQuery.isLoading;
 
-  const ctaLabel = useMemo(() => {
-    if (activeTab === 'following') return 'View All Following Events';
-    return 'View All Discover Events';
-  }, [activeTab]);
+  // Discover shows up to 10, Following shows up to 5
+  const displayLimit = activeTab === 'discover' ? 10 : 5;
 
-  const getTabCount = (tab: ForYouTabType) => {
-    switch (tab) {
-      case 'following':
-        return followingQuery.data?.pages?.[0]?.pagination.totalCount || 0;
-      case 'discover':
-        // For You events are not paginated, return array length
-        return discoverQuery.data?.length || 0;
-      default:
-        return 0;
-    }
+  // Group events by date
+  const groupEventsByDate = (eventsToGroup: EventWithUser[]) => {
+    return eventsToGroup.reduce((groups: { date: string; events: EventWithUser[] }[], event) => {
+      const date = event.computed_start_date;
+      const group = groups.find((g) => g.date === date);
+      if (group) {
+        group.events.push(event);
+      } else {
+        groups.push({ date, events: [event] });
+      }
+      return groups;
+    }, []);
   };
 
-  const totalCount = useMemo(
-    () => getTabCount(activeTab),
-    [activeTab, followingQuery.data, discoverQuery.data]
-  );
+  // Get limited events and group them
+  const limitedEvents = events.slice(0, displayLimit);
+  const groupedEvents = groupEventsByDate(limitedEvents);
+
+  // Group all following events for the sheet
+  const groupedFollowingEvents = groupEventsByDate(followingEvents);
 
   return (
     <div className='flex flex-col'>
@@ -139,18 +144,24 @@ export function ForYouSection() {
             </p>
           </div>
         ) : (
-          <div className='flex flex-col gap-2'>
-            {events.slice(0, 10).map((event) => (
-              <MasterEventCard key={event.id} event={event} />
+          <div className='flex flex-col gap-4'>
+            {groupedEvents.map((group) => (
+              <div key={group.date} className='space-y-2'>
+                <h3 className='text-sm font-medium text-gray-500'>
+                  {formatDateHeader(group.date)}
+                </h3>
+                <div className='flex flex-col gap-2'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              </div>
             ))}
 
-            {activeTab === 'following' && totalCount > events.length && (
+            {activeTab === 'following' && followingEvents.length > displayLimit && (
               <button
-                onClick={() => {
-                  // TODO: Open full-screen view all modal
-                  console.log('View all clicked for:', activeTab);
-                }}
-                aria-label={ctaLabel}
+                onClick={() => setShowFollowFeedSheet(true)}
+                aria-label='Open Follow Feed'
                 className='relative flex items-center gap-3 rounded-lg p-2 text-left transition-colors hover:border-gray-300'
               >
                 {/* Soft background gradient */}
@@ -159,16 +170,16 @@ export function ForYouSection() {
                 {/* Thumbnail placeholder with +count */}
                 <div className='flex h-14 w-14 items-center justify-center overflow-hidden rounded-md border border-dashed border-gray-200 bg-gray-50'>
                   <span className='text-base font-semibold text-gray-600'>
-                    +{Math.max(totalCount - Math.min(events.length, 10), 0)}
+                    +{followingEvents.length - displayLimit}
                   </span>
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='flex items-center justify-between'>
-                    <h4 className='line-clamp-1 font-medium text-gray-900'>{ctaLabel}</h4>
+                    <h4 className='line-clamp-1 font-medium text-gray-900'>Open Follow Feed</h4>
                   </div>
                   <div className='mt-1 flex items-center gap-1 text-xs text-gray-500'>
-                    <Sparkles className='h-3 w-3 text-amber-500' />
-                    <span>Explore the full list of {activeTab} events.</span>
+                    <Users className='h-3 w-3 text-red-500' />
+                    <span>See all events from people you follow.</span>
                   </div>
                 </div>
               </button>
@@ -176,6 +187,26 @@ export function ForYouSection() {
           </div>
         )}
       </div>
+
+      {/* Follow Feed Sheet */}
+      <MasterScrollableSheet
+        title='Follow Feed'
+        open={showFollowFeedSheet}
+        onOpenChange={setShowFollowFeedSheet}
+      >
+        <div className='flex flex-col gap-4 px-4 pb-8'>
+          {groupedFollowingEvents.map((group) => (
+            <div key={group.date} className='space-y-2'>
+              <h3 className='text-sm font-medium text-gray-500'>{formatDateHeader(group.date)}</h3>
+              <div className='flex flex-col gap-2'>
+                {group.events.map((event) => (
+                  <MasterEventCard key={event.id} event={event} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </MasterScrollableSheet>
     </div>
   );
 }

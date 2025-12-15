@@ -1,5 +1,6 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
@@ -11,14 +12,21 @@ import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
-import { ButtonGroup } from '@/components/ui/button-group';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
-import { EventSortBy, useUserEvents, type EventTimeframe } from '@/lib/hooks/use-user-events';
+import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
+import { EventSortBy, type EventTimeframe } from '@/lib/hooks/use-user-events';
 import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useFollowAction,
@@ -33,16 +41,12 @@ import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { EventHost } from '@/lib/types/event';
+import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
-  ArrowDownWideNarrow,
-  ArrowUpWideNarrow,
+  ArrowLeft,
   BadgeCheck,
-  Calendar,
-  ChevronDown,
-  History,
-  Loader2,
   MessageCircle,
   Search,
   Share,
@@ -61,8 +65,6 @@ export default function UserProfilePageClient() {
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
-  const [timeframePopoverOpen, setTimeframePopoverOpen] = useState(false);
-  const [sortPopoverOpen, setSortPopoverOpen] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
@@ -209,18 +211,9 @@ export default function UserProfilePageClient() {
     variables: updatePinnedEventVariables,
   } = useUpdatePinnedEvent();
 
-  // Fetch user events (always show all events - 'upcoming' filter)
-  const {
-    data: userEventsData,
-    isLoading: isLoadingEvents,
-    fetchNextPage,
-    isFetchingNextPage,
-    hasNextPage,
-  } = useUserEvents({
-    filter: 'upcoming',
-    timeframe: timeframe,
-    sortBy: sortBy,
-    limit: 10,
+  // Fetch public events for the viewed user
+  const { data: publicEventsData, isLoading: isLoadingEvents } = usePublicUserEvents({
+    username,
     enabled: activeTab === 'events',
   });
 
@@ -233,22 +226,32 @@ export default function UserProfilePageClient() {
     );
   }
 
-  // Handle user not found
-  if (userError || !userProfile) {
+  // Handle user not found - check for valid user data (id must exist)
+  if (userError || !userData?.id) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-            <UserMinus className='h-8 w-8 text-gray-400' />
-          </div>
-          <h2 className='mb-2 text-xl font-bold text-gray-900'>User not found</h2>
-          <p className='mb-4 text-gray-500'>
-            The user @{username} doesn&apos;t exist or may have been deleted.
-          </p>
-          <Button onClick={() => router.back()} variant='outline'>
-            Go Back
-          </Button>
-        </div>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <Empty className='flex-1'>
+          <EmptyHeader>
+            <EmptyMedia variant='icon'>
+              <UserMinus className='h-6 w-6' />
+            </EmptyMedia>
+            <EmptyTitle>User not found</EmptyTitle>
+            <EmptyDescription>
+              The user @{username} doesn&apos;t exist or may have been deleted.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              onClick={() => router.back()}
+              variant='outline'
+              className='rounded-full bg-gray-50'
+            >
+              <ArrowLeft className='h-4 w-4' />
+              Go Back
+            </Button>
+          </EmptyContent>
+        </Empty>
+        <Navbar />
       </div>
     );
   }
@@ -343,34 +346,44 @@ export default function UserProfilePageClient() {
   }));
 
   const renderEventsTab = () => {
+    // Filter events by timeframe (client-side filtering)
+    const today = new Date().toISOString().slice(0, 10);
+    const filteredEvents = (publicEventsData || []).filter((event: EventWithUser) => {
+      const eventDate = event.computed_start_date;
+      if (timeframe === 'future') {
+        return eventDate >= today;
+      } else if (timeframe === 'past') {
+        return eventDate < today;
+      }
+      return true;
+    });
+
     // Group events by date
-    const groupedEvents =
-      userEventsData?.pages
-        .flatMap((page) => page.events)
-        .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
-          const date = event.computed_start_date;
-          const group = groups.find((g) => g.date === date);
+    const groupedEvents = filteredEvents
+      .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
+        const date = event.computed_start_date;
+        const group = groups.find((g) => g.date === date);
 
-          if (group) {
-            group.events.push(event);
+        if (group) {
+          group.events.push(event);
+        } else {
+          groups.push({ date, events: [event] });
+        }
+
+        return groups;
+      }, [])
+      .sort(
+        (
+          a: { date: string; events: EventWithUser[] },
+          b: { date: string; events: EventWithUser[] }
+        ) => {
+          if (sortBy === 'date-desc') {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
           } else {
-            groups.push({ date, events: [event] });
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
           }
-
-          return groups;
-        }, [])
-        .sort(
-          (
-            a: { date: string; events: EventWithUser[] },
-            b: { date: string; events: EventWithUser[] }
-          ) => {
-            if (sortBy === 'date-desc') {
-              return new Date(b.date).getTime() - new Date(a.date).getTime();
-            } else {
-              return new Date(a.date).getTime() - new Date(b.date).getTime();
-            }
-          }
-        ) || [];
+        }
+      );
 
     const canPinEvent = (event: EventWithUser) => {
       if (!user) return false;
@@ -416,105 +429,65 @@ export default function UserProfilePageClient() {
 
     return (
       <div className='space-y-4'>
-        {/* Controls - Single unified ButtonGroup */}
-        <ButtonGroup className='w-full justify-between'>
-          <ButtonGroup>
-            {/* Timeframe Popover */}
-            <Popover open={timeframePopoverOpen} onOpenChange={setTimeframePopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className='rounded-l-full rounded-r-none bg-white hover:bg-gray-50'
-                >
-                  {timeframe === 'future' ? 'Upcoming' : 'Past'}
-                  <ChevronDown className='ml-1 h-3 w-3' />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align='start' className='w-56 p-2'>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setTimeframe('future');
-                    setTimeframePopoverOpen(false);
-                  }}
-                >
-                  <Calendar className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Upcoming</div>
-                    <div className='text-xs text-gray-500'>Events happening soon</div>
-                  </div>
-                </button>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setTimeframe('past');
-                    setTimeframePopoverOpen(false);
-                  }}
-                >
-                  <History className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Past</div>
-                    <div className='text-xs text-gray-500'>Events that have ended</div>
-                  </div>
-                </button>
-              </PopoverContent>
-            </Popover>
+        {/* Filter Controls */}
+        <div className='flex items-center justify-between gap-2'>
+          {/* Timeframe Toggle */}
+          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+            <button
+              onClick={() => setTimeframe('future')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'future'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Upcoming
+            </button>
+            <button
+              onClick={() => setTimeframe('past')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'past'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Past
+            </button>
+          </div>
 
-            {/* Sort Popover */}
-            <Popover open={sortPopoverOpen} onOpenChange={setSortPopoverOpen}>
-              <PopoverTrigger asChild>
-                <Button
-                  variant='outline'
-                  size='sm'
-                  className='rounded-l-none rounded-r-full bg-white hover:bg-gray-50'
-                >
-                  {sortBy === 'date-desc' ? 'Latest' : 'Oldest'}
-                  <ChevronDown className='ml-1 h-3 w-3' />
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent align='start' className='w-56 p-2'>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setSortBy('date-desc');
-                    setSortPopoverOpen(false);
-                  }}
-                >
-                  <ArrowDownWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Latest</div>
-                    <div className='text-xs text-gray-500'>Most recent events first</div>
-                  </div>
-                </button>
-                <button
-                  className='flex w-full items-start gap-3 rounded-lg px-3 py-2.5 text-left hover:bg-gray-100'
-                  onClick={() => {
-                    setSortBy('date-asc');
-                    setSortPopoverOpen(false);
-                  }}
-                >
-                  <ArrowUpWideNarrow className='mt-0.5 h-4 w-4 text-gray-500' />
-                  <div>
-                    <div className='text-sm font-medium'>Oldest</div>
-                    <div className='text-xs text-gray-500'>Oldest events first</div>
-                  </div>
-                </button>
-              </PopoverContent>
-            </Popover>
-          </ButtonGroup>
+          <div className='flex items-center gap-2'>
+            {/* Sort Toggle */}
+            <div className='flex items-center rounded-full bg-gray-50 p-1'>
+              <button
+                onClick={() => setSortBy('date-desc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-desc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Latest
+              </button>
+              <button
+                onClick={() => setSortBy('date-asc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-asc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Oldest
+              </button>
+            </div>
 
-          {/* Search Button */}
-          <Button
-            size='icon'
-            variant='outline'
-            onClick={() => setShowEventSearchSheet(true)}
-            className='rounded-full'
-            aria-label='Search events'
-          >
-            <Search className='!h-[1.25rem] !w-[1.25rem]' />
-          </Button>
-        </ButtonGroup>
+            {/* Search Button */}
+            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
+          </div>
+        </div>
 
         {/* Events List */}
         <div className='space-y-8'>
@@ -545,37 +518,14 @@ export default function UserProfilePageClient() {
               </div>
             ))
           )}
-
-          {/* Load More Button */}
-          {hasNextPage && (
-            <div className='flex justify-center pt-4'>
-              <Button
-                variant='outline'
-                onClick={() => fetchNextPage()}
-                disabled={isFetchingNextPage}
-                className='w-full'
-              >
-                {isFetchingNextPage ? (
-                  <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Loading...
-                  </>
-                ) : (
-                  'Load more'
-                )}
-              </Button>
-            </div>
-          )}
         </div>
 
         {/* Event Search Sheet */}
         <EventSearchSheet
           isOpen={showEventSearchSheet}
           onClose={() => setShowEventSearchSheet(false)}
-          username={user?.username}
-          onPin={handlePinEvent}
-          pinnedEventId={pinnedEvent?.id}
-          isOwnProfile={true}
+          username={username}
+          isOwnProfile={false}
         />
       </div>
     );
