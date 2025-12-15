@@ -52,7 +52,7 @@ export const OnboardingAvatar = ({
               <UploadCloud className='h-12 w-12 text-white' />
             </div>
           )}
-          <Avatar className='md:h-64 md:w-64'>
+          <Avatar className='h-48 w-48 md:h-64 md:w-64'>
             <AvatarImage src={uploadedImg || '/assets/logo/sublogo.svg'} />
             <AvatarFallback className='text-xs'>Loading...</AvatarFallback>
           </Avatar>
