@@ -3,8 +3,10 @@
 <div align="center">
 
 ![Evento Logo](public/assets/pwa/icon@256px.png)
-**Create Events. Connect People. Build Communities.**
 
+<div>
+Create Events. Connect People. Build Communities.
+</div>
 </div>
 
 ## Overview

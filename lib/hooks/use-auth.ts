@@ -190,11 +190,9 @@ export function useVerifyCode() {
         const userData = await authService.getCurrentUser();
         console.log('Verify: User data received:', userData);
 
-        // Set FULL user data from backend in store before redirecting
-        // This prevents the flash where stale/minimal data triggers wrong redirects
-        if (userData) {
-          setUser(userData);
-        }
+        // Set user data - prefer backend data, fallback to Supabase data for new users
+        // This ensures isAuthenticated is true even for new users not yet in backend
+        setUser(userData || data);
 
         // Check if user has completed onboarding
         const isOnboarded = isUserOnboarded(userData);
