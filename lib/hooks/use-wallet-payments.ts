@@ -4,6 +4,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { FeeEstimate, InvoiceData } from '@/lib/types/wallet';
+import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
 import { Payment, PrepareSendPaymentResponse } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from './use-wallet';
@@ -34,9 +35,10 @@ export function useReceivePayment() {
 
         return invoice;
       } catch (err: any) {
-        console.error('Failed to create invoice:', err);
-        setError(err.message || 'Failed to create invoice');
-        throw err;
+        logBreezError(err, 'creating invoice');
+        const userMessage = getBreezErrorMessage(err, 'create invoice');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setIsLoading(false);
       }
@@ -83,9 +85,10 @@ export function useSendPayment() {
         setFeeEstimate(fees);
         return response;
       } catch (err: any) {
-        console.error('Failed to prepare payment:', err);
-        setError(err.message || 'Failed to prepare payment');
-        throw err;
+        logBreezError(err, 'preparing payment');
+        const userMessage = getBreezErrorMessage(err, 'prepare payment');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setIsLoading(false);
       }
@@ -106,9 +109,10 @@ export function useSendPayment() {
         const response = await breezSDK.sendPayment(paymentRequest, amountSats);
         return response;
       } catch (err: any) {
-        console.error('Failed to send payment:', err);
-        setError(err.message || 'Failed to send payment');
-        throw err;
+        logBreezError(err, 'sending payment');
+        const userMessage = getBreezErrorMessage(err, 'send payment');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setIsLoading(false);
       }
@@ -156,8 +160,9 @@ export function usePaymentHistory() {
         WalletStorageService.markHasTransaction();
       }
     } catch (err: any) {
-      console.error('Failed to fetch payments:', err);
-      setError(err.message || 'Failed to fetch payment history');
+      logBreezError(err, 'fetching payment history');
+      const userMessage = getBreezErrorMessage(err, 'fetch payment history');
+      setError(userMessage);
     } finally {
       setIsLoading(false);
     }
@@ -220,9 +225,10 @@ export function useZap() {
         // Send the payment
         await breezSDK.sendPayment(recipientLightningAddress, amountSats);
       } catch (err: any) {
-        console.error('Failed to send zap:', err);
-        setError(err.message || 'Failed to send zap');
-        throw err;
+        logBreezError(err, 'sending zap');
+        const userMessage = getBreezErrorMessage(err, 'send zap');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setIsLoading(false);
       }

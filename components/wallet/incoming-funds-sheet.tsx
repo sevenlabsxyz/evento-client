@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { breezSDK, type DepositInfo, type Fee } from '@/lib/services/breez-sdk';
+import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import {
@@ -37,8 +38,9 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
       const depositList = await breezSDK.listUnclaimedDeposits();
       setDeposits(depositList);
     } catch (error: any) {
-      console.error('Failed to load deposits:', error);
-      toast.error('Failed to load incoming funds');
+      logBreezError(error, 'loading unclaimed deposits');
+      const userMessage = getBreezErrorMessage(error, 'load incoming funds');
+      toast.error(userMessage);
     } finally {
       setIsLoading(false);
     }

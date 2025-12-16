@@ -10,6 +10,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { BTCPrice, WalletState } from '@/lib/types/wallet';
+import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useWallet() {
@@ -61,7 +62,7 @@ export function useWallet() {
                 lightningAddress: savedState?.lightningAddress,
               });
             } catch (err) {
-              console.error('Failed to connect wallet:', err);
+              logBreezError(err, 'auto-connecting wallet on init');
               setWalletState({
                 isInitialized: true,
                 isConnected: false,
@@ -84,7 +85,7 @@ export function useWallet() {
           }
         }
       } catch (err) {
-        console.error('Failed to initialize wallet:', err);
+        logBreezError(err, 'initializing wallet');
         setError('Failed to load wallet');
       } finally {
         setLoading(false);
@@ -137,9 +138,10 @@ export function useWallet() {
 
         return mnemonic;
       } catch (err: any) {
-        console.error('Failed to create wallet:', err);
-        setError(err.message || 'Failed to create wallet');
-        throw err;
+        logBreezError(err, 'creating wallet');
+        const userMessage = getBreezErrorMessage(err, 'create wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setLoading(false);
       }
@@ -196,9 +198,10 @@ export function useWallet() {
         // Persist to localStorage
         WalletStorageService.saveWalletState(newState);
       } catch (err: any) {
-        console.error('Failed to restore wallet:', err);
-        setError(err.message || 'Failed to restore wallet');
-        throw err;
+        logBreezError(err, 'restoring wallet from backup');
+        const userMessage = getBreezErrorMessage(err, 'restore wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setLoading(false);
       }
@@ -245,9 +248,10 @@ export function useWallet() {
         setWalletState(newState);
         WalletStorageService.saveWalletState(newState);
       } catch (err: any) {
-        console.error('Failed to restore wallet from mnemonic:', err);
-        setError(err.message || 'Failed to restore wallet');
-        throw err;
+        logBreezError(err, 'restoring wallet from mnemonic');
+        const userMessage = getBreezErrorMessage(err, 'restore wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setLoading(false);
       }
@@ -318,9 +322,10 @@ export function useWallet() {
 
         setWalletState(newState);
       } catch (err: any) {
-        console.error('❌ [WALLET:UNLOCK] Failed to unlock wallet:', err);
-        setError(err.message || 'Invalid password');
-        throw err;
+        logBreezError(err, 'unlocking wallet');
+        const userMessage = getBreezErrorMessage(err, 'unlock wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setLoading(false);
       }
@@ -340,8 +345,9 @@ export function useWallet() {
         isConnected: false,
       }));
     } catch (err: any) {
-      console.error('Failed to lock wallet:', err);
-      setError(err.message || 'Failed to lock wallet');
+      logBreezError(err, 'locking wallet');
+      const userMessage = getBreezErrorMessage(err, 'lock wallet');
+      setError(userMessage);
     }
   }, [clearSeed]);
 
@@ -360,8 +366,9 @@ export function useWallet() {
         balance,
       }));
     } catch (err: any) {
-      console.error('Failed to refresh balance:', err);
-      setError(err.message || 'Failed to refresh balance');
+      logBreezError(err, 'refreshing balance');
+      const userMessage = getBreezErrorMessage(err, 'refresh balance');
+      setError(userMessage);
     }
   }, [setWalletState, setError]);
 
@@ -441,7 +448,7 @@ export function useWalletBalance() {
       setBalance(sats);
       setBalanceUSD(usd);
     } catch (error) {
-      console.error('Failed to refresh balance:', error);
+      logBreezError(error, 'refreshing balance in useWalletBalance');
     } finally {
       setLoading(false);
     }
