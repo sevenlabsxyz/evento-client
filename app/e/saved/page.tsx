@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useCreateList } from '@/lib/hooks/use-create-list';
+import { useEnsureDefaultList } from '@/lib/hooks/use-ensure-default-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
@@ -23,6 +24,9 @@ export default function SavedListsPage() {
 
   const { data: lists = [], isLoading: listsLoading } = useUserLists();
   const createListMutation = useCreateList();
+
+  // Ensure default list exists
+  useEnsureDefaultList();
 
   // Set TopBar content
   useEffect(() => {

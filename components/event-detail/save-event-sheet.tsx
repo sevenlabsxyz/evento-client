@@ -6,6 +6,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAddEventToList } from '@/lib/hooks/use-add-event-to-list';
 import { useCreateList } from '@/lib/hooks/use-create-list';
+import { useEnsureDefaultList } from '@/lib/hooks/use-ensure-default-list';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
@@ -29,6 +30,9 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
   const addToListMutation = useAddEventToList();
   const removeFromListMutation = useRemoveEventFromList();
   const createListMutation = useCreateList();
+
+  // Ensure default list exists when sheet opens
+  useEnsureDefaultList();
 
   // Reset state when sheet closes
   useEffect(() => {
@@ -80,7 +84,9 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
     }
 
     try {
-      const newList = await createListMutation.mutateAsync({ name: trimmedName });
+      const newList = await createListMutation.mutateAsync({
+        name: trimmedName,
+      });
       toast.success('List created');
 
       // Automatically add event to the new list
