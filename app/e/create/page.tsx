@@ -7,6 +7,7 @@ import CoverImageSelector from '@/components/create-event/cover-image-selector';
 import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventCreatedModal from '@/components/create-event/event-created-modal';
+import { EventCreationOverlay } from '@/components/create-event/event-creation-overlay';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionSheet from '@/components/create-event/image-selection-sheet';
 import InsertElementsSheet from '@/components/create-event/insert-elements-sheet';
@@ -31,12 +32,6 @@ import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-type Attachment = {
-  type: string;
-  url?: string;
-  data?: any;
-};
 
 export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -776,6 +771,9 @@ export default function CreatePage() {
           eventData={createdEventData}
         />
       )}
+
+      {/* Loading Overlay */}
+      <EventCreationOverlay isVisible={createEventMutation.isPending} />
     </div>
   );
 }
