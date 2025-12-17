@@ -28,6 +28,9 @@ interface MasterScrollableSheetProps {
   // Optional styling
   className?: string;
   contentClassName?: string;
+
+  // Optional footer (renders below scroll area, sticky at bottom)
+  footer?: React.ReactNode;
 }
 
 export function MasterScrollableSheet({
@@ -42,6 +45,7 @@ export function MasterScrollableSheet({
   headerSecondary,
   className,
   contentClassName,
+  footer,
 }: MasterScrollableSheetProps) {
   // Internal state for uncontrolled mode
   const [internalOpen, setInternalOpen] = useState(false);
@@ -91,7 +95,9 @@ export function MasterScrollableSheet({
             {headerSecondary}
 
             {/* Scrollable Content - wrapper ensures height propagates to Silk Scroll */}
-            <div className='min-h-0 flex-1 overflow-hidden'>
+            <div
+              className={`min-h-0 flex-1 overflow-hidden ${footer ? 'max-h-[calc(100%-330px)]' : ''}`}
+            >
               <SheetWithDetentFull.ScrollRoot className='h-full'>
                 <SheetWithDetentFull.ScrollView className='h-full'>
                   <SheetWithDetentFull.ScrollContent className={contentClassName}>
@@ -100,6 +106,13 @@ export function MasterScrollableSheet({
                 </SheetWithDetentFull.ScrollView>
               </SheetWithDetentFull.ScrollRoot>
             </div>
+
+            {/* Optional Footer - sticky at bottom, outside scroll area */}
+            {footer && (
+              <div className='flex-shrink-0 border-t border-gray-200 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]'>
+                {footer}
+              </div>
+            )}
           </SheetWithDetentFull.Content>
         </SheetWithDetentFull.View>
       </SheetWithDetentFull.Portal>

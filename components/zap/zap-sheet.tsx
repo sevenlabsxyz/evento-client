@@ -86,7 +86,7 @@ export function ZapSheet({
         } catch (error: any) {
           setOpen(false);
           if (error?.message === 'SDK not connected') {
-            toast.error('Wallet not connected. Activate Evento Wallet first.');
+            toast.error('Unlock your Evento Wallet to continue.');
           } else if (error?.message?.toLowerCase().includes('invalid input')) {
             // Lightning address doesn't exist (404 from LNURL endpoint)
             toast.error('User has not set up Evento Wallet yet.');
@@ -165,10 +165,53 @@ export function ZapSheet({
     setInputMode(inputMode === 'sats' ? 'usd' : 'sats');
   };
 
-  const handleCustomAmountConfirm = () => {
-    if (customAmount && Number(customAmount) > 0) {
-      setSelectedAmount(Number(customAmount));
+  const handleCustomAmountConfirm = async () => {
+    if (!customAmount || Number(customAmount) <= 0) return;
+
+    const amountSats = Number(customAmount);
+    setSelectedAmount(amountSats);
+    setIsPreparing(true);
+
+    try {
+      // Use cached payRequest if available, otherwise parse
+      let currentPayRequest = payRequest;
+      if (!currentPayRequest) {
+        const parsed = await breezSDK.parseInput(recipientLightningAddress);
+        if (parsed.type === 'lightningAddress') {
+          currentPayRequest = (parsed as any).payRequest as LnurlPayRequestDetails;
+          setPayRequest(currentPayRequest);
+        } else {
+          toast.error('Invalid lightning address');
+          return;
+        }
+      }
+
+      // Prepare the LNURL payment
+      const response = await breezSDK.prepareLnurlPay({
+        payRequest: currentPayRequest,
+        amountSats,
+        comment: comment || undefined,
+      });
+
+      setPrepareResponse(response);
       setStep('confirm');
+    } catch (error: any) {
+      console.error('Failed to prepare zap:', error);
+
+      // Check for wallet not connected error
+      if (
+        error.message?.toLowerCase().includes('not connected') ||
+        error.message?.toLowerCase().includes('sdk not') ||
+        !breezSDK.isConnected()
+      ) {
+        setOpen(false);
+        toast.error('Wallet not connected. Please set up your wallet first.');
+      } else {
+        toast.error(error.message || 'Failed to prepare payment');
+      }
+      onError?.(error);
+    } finally {
+      setIsPreparing(false);
     }
   };
 
@@ -323,6 +366,7 @@ export function ZapSheet({
             customAmount={customAmount}
             customAmountUSD={customAmountUSD}
             inputMode={inputMode}
+            isPreparing={isPreparing}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
             onToggleMode={toggleInputMode}

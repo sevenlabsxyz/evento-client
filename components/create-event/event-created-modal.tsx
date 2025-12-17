@@ -38,7 +38,6 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
   };
 
   const handleViewEvent = () => {
-    onClose();
     router.push(`/e/${eventData.id}`);
   };
 
@@ -51,7 +50,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
       <div className='fixed inset-0 z-50 bg-white'>
         {/* Close Button */}
         <div className='absolute right-4 top-4'>
-          <button onClick={onClose} className='rounded-full p-2 hover:bg-gray-100'>
+          <button onClick={handleViewEvent} className='rounded-full p-2 hover:bg-gray-100'>
             <X className='h-6 w-6 text-gray-400' />
           </button>
         </div>

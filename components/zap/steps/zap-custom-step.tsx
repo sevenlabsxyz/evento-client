@@ -2,12 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
-import { ArrowLeft, ArrowUpDown, X } from 'lucide-react';
+import { ArrowLeft, ArrowUpDown, Loader2, X } from 'lucide-react';
 
 interface ZapCustomStepProps {
   customAmount: string;
   customAmountUSD: string;
   inputMode: 'sats' | 'usd';
+  isPreparing: boolean;
   onNumberClick: (num: string) => void;
   onDelete: () => void;
   onToggleMode: () => void;
@@ -20,6 +21,7 @@ export function ZapCustomStep({
   customAmount,
   customAmountUSD,
   inputMode,
+  isPreparing,
   onNumberClick,
   onDelete,
   onToggleMode,
@@ -72,10 +74,17 @@ export function ZapCustomStep({
           {/* Confirm Button */}
           <Button
             onClick={onConfirm}
-            disabled={!customAmount || Number(customAmount) <= 0}
+            disabled={!customAmount || Number(customAmount) <= 0 || isPreparing}
             className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
           >
-            Next
+            {isPreparing ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Preparing...
+              </>
+            ) : (
+              'Next'
+            )}
           </Button>
         </div>
       </div>

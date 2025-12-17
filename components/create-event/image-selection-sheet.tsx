@@ -1,14 +1,12 @@
 'use client';
 
 import GiphyPicker from '@/components/giphy/giphy-picker';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import ProgressiveImage from '@/components/ui/progressive-image';
-import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
-import { VisuallyHidden } from '@silk-hq/components';
 import { useCallback, useState } from 'react';
 import CoverUploader from './cover-uploader';
-import './image-selection-sheet.css';
 
 interface ImageSelectionSheetProps {
   isOpen: boolean;
@@ -44,97 +42,84 @@ export default function ImageSelectionSheet({
     [onImageSelect, onClose]
   );
 
+  // Custom header with title and subtitle
+  const headerContent = (
+    <div className='flex flex-col'>
+      <h2 className='text-xl font-semibold text-gray-900'>Add Cover Image</h2>
+      <p className='text-sm text-gray-500'>Choose from our curated collection</p>
+    </div>
+  );
+
+  // Tab navigation component
+  const tabNavigation = (
+    <div className='border-b border-gray-200 px-4 pb-3'>
+      <div className='grid grid-cols-6 gap-2'>
+        {coverImageCategories.map((category) => {
+          const IconComponent = category.icon;
+          const isActive = activeTab === category.id;
+          return (
+            <button
+              key={category.id}
+              onClick={() => setActiveTab(category.id)}
+              className={`relative flex flex-col items-center gap-2 px-1 py-2 transition-colors ${
+                isActive ? 'text-gray-900' : 'text-gray-400'
+              }`}
+            >
+              <IconComponent className='h-6 w-6' strokeWidth={2.5} />
+              <span className='text-center text-xs font-medium leading-tight'>{category.name}</span>
+              {isActive && (
+                <div className='absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gray-900' />
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // Footer with upload button (only for non-giphy tabs)
+  const footerContent =
+    activeTab !== 'giphy' ? (
+      <CoverUploader
+        onCoverUploaded={handleCoverUploaded}
+        className='w-full rounded-full py-4 font-semibold'
+        buttonText='Upload Custom Image'
+        buttonVariant='default'
+      />
+    ) : undefined;
+
   return (
-    <SheetWithDetentFull.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
+    <MasterScrollableSheet
+      title='Add Cover Image'
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      headerLeft={headerContent}
+      headerSecondary={tabNavigation}
+      footer={footerContent}
+      contentClassName='p-4'
     >
-      <SheetWithDetentFull.Portal>
-        <SheetWithDetentFull.View>
-          <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='ImageSelectionSheet-content'>
-            {/* Fixed Header */}
-            <div className='ImageSelectionSheet-header'>
-              <div className='mb-4 flex justify-center'>
-                <SheetWithDetentFull.Handle className='ImageSelectionSheet-handle' />
-              </div>
-              <VisuallyHidden.Root asChild>
-                <SheetWithDetentFull.Title className='ImageSelectionSheet-title'>
-                  Add Cover Image
-                </SheetWithDetentFull.Title>
-              </VisuallyHidden.Root>
-              <h2 className='ImageSelectionSheet-visibleTitle'>Add Cover Image</h2>
-              <p className='ImageSelectionSheet-subtitle'>Choose from our curated collection</p>
-
-              {/* Tab Navigation */}
-              <div className='ImageSelectionSheet-tabs'>
-                <div className='ImageSelectionSheet-tabsContainer'>
-                  {coverImageCategories.map((category) => {
-                    const IconComponent = category.icon;
-                    return (
-                      <button
-                        key={category.id}
-                        onClick={() => setActiveTab(category.id)}
-                        className={`ImageSelectionSheet-tab ${
-                          activeTab === category.id ? 'ImageSelectionSheet-tab--active' : ''
-                        }`}
-                      >
-                        <IconComponent className='ImageSelectionSheet-tabIcon' strokeWidth={2.5} />
-                        <span className='ImageSelectionSheet-tabLabel'>{category.name}</span>
-                        {activeTab === category.id && (
-                          <div className='ImageSelectionSheet-tabIndicator'></div>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
-
-            {/* Scrollable Content */}
-            <SheetWithDetentFull.ScrollRoot asChild>
-              <SheetWithDetentFull.ScrollView className='ImageSelectionSheet-scrollView'>
-                <SheetWithDetentFull.ScrollContent className='ImageSelectionSheet-scrollContent'>
-                  {activeTab === 'giphy' ? (
-                    <div className='h-full w-full'>
-                      <GiphyPicker onGifSelect={handleGifSelect} />
-                    </div>
-                  ) : (
-                    <div className='ImageSelectionSheet-imageGrid'>
-                      {images.map((image) => (
-                        <button
-                          key={image.id}
-                          onClick={() => handleImageSelect(image)}
-                          className='ImageSelectionSheet-imageButton'
-                        >
-                          <ProgressiveImage
-                            src={getCoverImageUrl500x500(image.url)}
-                            alt={image.title || 'Cover image'}
-                            fill
-                            className='ImageSelectionSheet-image'
-                          />
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </SheetWithDetentFull.ScrollContent>
-              </SheetWithDetentFull.ScrollView>
-            </SheetWithDetentFull.ScrollRoot>
-
-            {/* Custom Image Upload - Only show for non-GIF tabs */}
-            {activeTab !== 'giphy' && (
-              <div className='ImageSelectionSheet-footer'>
-                <CoverUploader
-                  onCoverUploaded={handleCoverUploaded}
-                  className='ImageSelectionSheet-uploadButton'
-                  buttonText='Upload Custom Image'
-                  buttonVariant='default'
-                />
-              </div>
-            )}
-          </SheetWithDetentFull.Content>
-        </SheetWithDetentFull.View>
-      </SheetWithDetentFull.Portal>
-    </SheetWithDetentFull.Root>
+      {activeTab === 'giphy' ? (
+        <div className='h-full w-full'>
+          <GiphyPicker onGifSelect={handleGifSelect} />
+        </div>
+      ) : (
+        <div className='grid grid-cols-2 gap-1'>
+          {images.map((image) => (
+            <button
+              key={image.id}
+              onClick={() => handleImageSelect(image)}
+              className='relative aspect-square w-full overflow-hidden rounded-2xl transition-transform hover:scale-105 active:scale-[0.98]'
+            >
+              <ProgressiveImage
+                src={getCoverImageUrl500x500(image.url)}
+                alt={image.title || 'Cover image'}
+                fill
+                className='object-cover'
+              />
+            </button>
+          ))}
+        </div>
+      )}
+    </MasterScrollableSheet>
   );
 }
