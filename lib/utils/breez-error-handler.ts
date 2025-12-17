@@ -1,3 +1,65 @@
+/**
+ * Constant strings for error contexts
+ * Use these instead of string literals to prevent typos
+ */
+export const BREEZ_ERROR_CONTEXT = {
+  // SDK Connection
+  CONNECTING: 'connecting to Breez SDK',
+  DISCONNECTING: 'disconnecting from Breez SDK',
+
+  // Wallet Operations
+  CREATING_WALLET: 'creating wallet',
+  RESTORING_WALLET: 'restoring wallet from backup',
+  RESTORING_FROM_MNEMONIC: 'restoring wallet from mnemonic',
+  UNLOCKING_WALLET: 'unlocking wallet',
+  LOCKING_WALLET: 'locking wallet',
+  INITIALIZING_WALLET: 'initializing wallet',
+  AUTO_CONNECTING_WALLET: 'auto-connecting wallet on init',
+
+  // Balance Operations
+  FETCHING_BALANCE: 'fetching wallet balance',
+  REFRESHING_BALANCE: 'refreshing balance',
+
+  // Invoice Operations
+  CREATING_INVOICE: 'creating invoice',
+
+  // Payment Operations
+  RECEIVING_PAYMENT: 'receiving payment',
+  PREPARING_PAYMENT: 'preparing payment',
+  PREPARING_SEND_PAYMENT: 'preparing send payment',
+  SENDING_PAYMENT: 'sending payment',
+  SENDING_PAYMENT_WITH_OPTIONS: 'sending payment with options',
+  WAITING_FOR_PAYMENT: 'waiting for payment',
+  PARSING_INPUT: 'parsing input',
+  PARSING_PAYMENT_INPUT: 'parsing payment input',
+
+  // LNURL Operations
+  PREPARING_LNURL_PAYMENT: 'preparing LNURL payment',
+  EXECUTING_LNURL_PAYMENT: 'executing LNURL payment',
+
+  // Payment History
+  LISTING_PAYMENTS: 'listing payments',
+  FETCHING_PAYMENT_HISTORY: 'fetching payment history',
+
+  // Node Info
+  FETCHING_NODE_INFO: 'fetching node info',
+
+  // Lightning Address Operations
+  CHECKING_LIGHTNING_ADDRESS_AVAILABILITY: 'checking Lightning address availability',
+  REGISTERING_LIGHTNING_ADDRESS: 'registering Lightning address',
+  LOADING_LIGHTNING_ADDRESS: 'loading Lightning address',
+  FETCHING_LIGHTNING_ADDRESS: 'fetching Lightning address',
+  DELETING_LIGHTNING_ADDRESS: 'deleting Lightning address',
+
+  // Deposit Operations
+  LISTING_UNCLAIMED_DEPOSITS: 'listing unclaimed deposits',
+  CLAIMING_DEPOSIT: 'claiming deposit',
+  REFUNDING_DEPOSIT: 'refunding deposit',
+
+  // Zap Operations
+  SENDING_ZAP: 'sending zap',
+} as const;
+
 export interface BreezErrorInfo {
   userMessage: string;
   originalError: string;

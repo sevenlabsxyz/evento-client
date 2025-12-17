@@ -2,7 +2,11 @@
 
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { useWalletStore } from '@/lib/stores/wallet-store';
-import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
+import {
+  BREEZ_ERROR_CONTEXT,
+  getBreezErrorMessage,
+  logBreezError,
+} from '@/lib/utils/breez-error-handler';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from './use-wallet';
@@ -22,7 +26,7 @@ export function useLightningAddress() {
       const addressInfo = await breezSDK.getLightningAddress();
       setLightningAddress(addressInfo);
     } catch (error: any) {
-      logBreezError(error, 'loading Lightning address');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.LOADING_LIGHTNING_ADDRESS);
       const userMessage = getBreezErrorMessage(error, 'load Lightning address');
       setError(userMessage);
     } finally {
@@ -41,7 +45,7 @@ export function useLightningAddress() {
     try {
       return await breezSDK.checkLightningAddressAvailable(username);
     } catch (error: any) {
-      logBreezError(error, 'checking Lightning address availability');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CHECKING_LIGHTNING_ADDRESS_AVAILABILITY);
       const userMessage = getBreezErrorMessage(error, 'check Lightning address availability');
       throw new Error(userMessage);
     }
@@ -58,7 +62,7 @@ export function useLightningAddress() {
 
         return addressInfo;
       } catch (error: any) {
-        logBreezError(error, 'registering Lightning address');
+        logBreezError(error, BREEZ_ERROR_CONTEXT.REGISTERING_LIGHTNING_ADDRESS);
         const userMessage = getBreezErrorMessage(error, 'register Lightning address');
         setError(userMessage);
         throw new Error(userMessage);
@@ -77,7 +81,7 @@ export function useLightningAddress() {
       await breezSDK.deleteLightningAddress();
       setLightningAddress(null);
     } catch (error: any) {
-      logBreezError(error, 'deleting Lightning address');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.DELETING_LIGHTNING_ADDRESS);
       const userMessage = getBreezErrorMessage(error, 'delete Lightning address');
       setError(userMessage);
       throw new Error(userMessage);

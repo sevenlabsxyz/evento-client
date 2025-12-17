@@ -1,4 +1,8 @@
-import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
+import {
+  BREEZ_ERROR_CONTEXT,
+  getBreezErrorMessage,
+  logBreezError,
+} from '@/lib/utils/breez-error-handler';
 import { toast } from '@/lib/utils/toast';
 import {
   BreezSdk,
@@ -173,7 +177,7 @@ export class BreezSDKService {
       }
       return this.sdk!;
     } catch (error: any) {
-      logBreezError(error, 'connecting to Breez SDK');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CONNECTING);
       initializationError = error;
       isInitializing = false;
 
@@ -219,7 +223,7 @@ export class BreezSDKService {
           console.log('  → Wallet fingerprint cleared');
         }
       } catch (error) {
-        logBreezError(error, 'disconnecting from Breez SDK');
+        logBreezError(error, BREEZ_ERROR_CONTEXT.DISCONNECTING);
         const userMessage = getBreezErrorMessage(error, 'disconnect wallet');
         throw new Error(userMessage);
       }
@@ -263,7 +267,7 @@ export class BreezSDKService {
 
       return Number(nodeInfo.balanceSats);
     } catch (error) {
-      logBreezError(error, 'fetching wallet balance');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.FETCHING_BALANCE);
       const userMessage = getBreezErrorMessage(error, 'fetch balance');
       throw new Error(userMessage);
     }
@@ -293,7 +297,7 @@ export class BreezSDKService {
         feeSats: response.feeSats,
       };
     } catch (error) {
-      logBreezError(error, 'creating invoice');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CREATING_INVOICE);
       const userMessage = getBreezErrorMessage(error, 'create invoice');
       throw new Error(userMessage);
     }
@@ -317,7 +321,7 @@ export class BreezSDKService {
         console.log('✅ [BREEZ:RECEIVE_PAYMENT] Payment method generated successfully');
       return response;
     } catch (error) {
-      logBreezError(error, 'receiving payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.RECEIVING_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'generate payment method');
       throw new Error(userMessage);
     }
@@ -338,7 +342,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ) console.log('✅ [BREEZ:PREPARE_SEND] Send payment prepared successfully');
       return response;
     } catch (error) {
-      logBreezError(error, 'preparing send payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_SEND_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'prepare payment');
       throw new Error(userMessage);
     }
@@ -362,7 +366,7 @@ export class BreezSDKService {
       const response: WaitForPaymentResponse = await this.sdk.waitForPayment(request);
       return response.payment;
     } catch (error) {
-      logBreezError(error, 'waiting for payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.WAITING_FOR_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'wait for payment');
       throw new Error(userMessage);
     }
@@ -386,7 +390,7 @@ export class BreezSDKService {
       const response = await this.sdk.prepareSendPayment(request);
       return response;
     } catch (error) {
-      logBreezError(error, 'preparing payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'prepare payment');
       throw new Error(userMessage);
     }
@@ -405,7 +409,7 @@ export class BreezSDKService {
       });
       return response;
     } catch (error) {
-      logBreezError(error, 'sending payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.SENDING_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'send payment');
       throw new Error(userMessage);
     }
@@ -425,7 +429,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ) console.log('✅ [BREEZ:SEND_PAYMENT_OPTIONS] Payment sent successfully');
       return response;
     } catch (error) {
-      logBreezError(error, 'sending payment with options');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.SENDING_PAYMENT_WITH_OPTIONS);
       const userMessage = getBreezErrorMessage(error, 'send payment');
       throw new Error(userMessage);
     }
@@ -443,7 +447,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ) console.log('📝 [BREEZ:PARSE_INPUT] Input parsed:', parsed.type);
       return parsed;
     } catch (error) {
-      logBreezError(error, 'parsing input');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PARSING_INPUT);
       const userMessage = getBreezErrorMessage(error, 'parse input');
       throw new Error(userMessage);
     }
@@ -461,7 +465,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ) console.log('✅ [BREEZ:PREPARE_LNURL_PAY] LNURL payment prepared');
       return response;
     } catch (error) {
-      logBreezError(error, 'preparing LNURL payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_LNURL_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'prepare Lightning address payment');
       throw new Error(userMessage);
     }
@@ -479,7 +483,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ) console.log('✅ [BREEZ:LNURL_PAY] LNURL payment executed successfully');
       return response;
     } catch (error) {
-      logBreezError(error, 'executing LNURL payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.EXECUTING_LNURL_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'send Lightning address payment');
       throw new Error(userMessage);
     }
@@ -495,7 +499,7 @@ export class BreezSDKService {
       const payments = await this.sdk.listPayments({});
       return payments.payments;
     } catch (error) {
-      logBreezError(error, 'listing payments');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.LISTING_PAYMENTS);
       const userMessage = getBreezErrorMessage(error, 'fetch payment history');
       throw new Error(userMessage);
     }
@@ -511,7 +515,7 @@ export class BreezSDKService {
       const info = await this.sdk.getInfo({ ensureSynced: true });
       return info;
     } catch (error) {
-      logBreezError(error, 'fetching node info');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.FETCHING_NODE_INFO);
       const userMessage = getBreezErrorMessage(error, 'fetch wallet info');
       throw new Error(userMessage);
     }
@@ -528,7 +532,7 @@ export class BreezSDKService {
       const isAvailable = await this.sdk.checkLightningAddressAvailable(request);
       return isAvailable;
     } catch (error) {
-      logBreezError(error, 'checking Lightning address availability');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CHECKING_LIGHTNING_ADDRESS_AVAILABILITY);
       const userMessage = getBreezErrorMessage(error, 'check Lightning address availability');
       throw new Error(userMessage);
     }
@@ -551,7 +555,7 @@ export class BreezSDKService {
       const addressInfo = await this.sdk.registerLightningAddress(request);
       return addressInfo;
     } catch (error) {
-      logBreezError(error, 'registering Lightning address');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.REGISTERING_LIGHTNING_ADDRESS);
       const userMessage = getBreezErrorMessage(error, 'register Lightning address');
       throw new Error(userMessage);
     }
@@ -567,7 +571,7 @@ export class BreezSDKService {
       const addressInfo = await this.sdk.getLightningAddress();
       return addressInfo || null;
     } catch (error) {
-      logBreezError(error, 'fetching Lightning address');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.FETCHING_LIGHTNING_ADDRESS);
       const userMessage = getBreezErrorMessage(error, 'fetch Lightning address');
       throw new Error(userMessage);
     }
@@ -582,7 +586,7 @@ export class BreezSDKService {
     try {
       await this.sdk.deleteLightningAddress();
     } catch (error) {
-      logBreezError(error, 'deleting Lightning address');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.DELETING_LIGHTNING_ADDRESS);
       const userMessage = getBreezErrorMessage(error, 'delete Lightning address');
       throw new Error(userMessage);
     }
@@ -599,7 +603,7 @@ export class BreezSDKService {
       const result = await this.sdk.listUnclaimedDeposits({});
       return result.deposits;
     } catch (error) {
-      logBreezError(error, 'listing unclaimed deposits');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.LISTING_UNCLAIMED_DEPOSITS);
       const userMessage = getBreezErrorMessage(error, 'fetch unclaimed deposits');
       throw new Error(userMessage);
     }
@@ -623,7 +627,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ)
         console.log(`✅ [BREEZ:CLAIM_DEPOSIT] Successfully claimed deposit ${txid}:${vout}`);
     } catch (error) {
-      logBreezError(error, 'claiming deposit');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CLAIMING_DEPOSIT);
       const userMessage = getBreezErrorMessage(error, 'claim deposit');
       throw new Error(userMessage);
     }
@@ -656,7 +660,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ)
         console.log(`✅ [BREEZ:REFUND_DEPOSIT] Successfully refunded deposit ${txid}:${vout}`);
     } catch (error) {
-      logBreezError(error, 'refunding deposit');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.REFUNDING_DEPOSIT);
       const userMessage = getBreezErrorMessage(error, 'refund deposit');
       throw new Error(userMessage);
     }

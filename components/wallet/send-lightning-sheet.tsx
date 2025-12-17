@@ -8,7 +8,11 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { useRecentLightningAddressesStore } from '@/lib/stores/recent-lightning-addresses-store';
-import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
+import {
+  BREEZ_ERROR_CONTEXT,
+  getBreezErrorMessage,
+  logBreezError,
+} from '@/lib/utils/breez-error-handler';
 import { toast } from '@/lib/utils/toast';
 import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -307,7 +311,7 @@ export function SendLightningSheet({
 
       setIsValidating(false);
     } catch (error: any) {
-      logBreezError(error, 'parsing payment input');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PARSING_PAYMENT_INPUT);
       setParsedInput(null);
       setIsValidating(false);
       const userMessage = getBreezErrorMessage(error, 'parse payment input');
