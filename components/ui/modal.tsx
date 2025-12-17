@@ -18,7 +18,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
-import { useMediaQuery } from '@/hooks/use-media-query';
+import { useMediaQuery } from '@/lib/hooks/use-media-query';
 
 export const Modal = ({
   open,
