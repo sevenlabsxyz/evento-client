@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { motion } from 'framer-motion';
 import { Loader2, X, Zap } from 'lucide-react';
 import Image from 'next/image';
@@ -40,9 +41,15 @@ export function ZapAmountStep({
       {/* Header */}
       <div className='flex items-center justify-between p-4 pt-0'>
         <h2 className='text-xl font-semibold'>Send Zap</h2>
-        <button onClick={onClose} className='rounded-full p-2 transition-colors hover:bg-gray-100'>
-          <X className='h-5 w-5' />
-        </button>
+        <div className='flex items-center gap-3'>
+          <WalletBalanceDisplay />
+          <button
+            onClick={onClose}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
       </div>
 
       {/* Content */}

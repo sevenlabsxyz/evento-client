@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { ArrowLeft, ArrowUpDown, Loader2, X } from 'lucide-react';
 
 interface ZapCustomStepProps {
@@ -37,9 +38,15 @@ export function ZapCustomStep({
           <ArrowLeft className='h-5 w-5' />
         </button>
         <h2 className='text-xl font-semibold'>Custom Amount</h2>
-        <button onClick={onClose} className='rounded-full p-2 transition-colors hover:bg-gray-100'>
-          <X className='h-5 w-5' />
-        </button>
+        <div className='flex items-center gap-3'>
+          <WalletBalanceDisplay />
+          <button
+            onClick={onClose}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
       </div>
 
       {/* Content */}

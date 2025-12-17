@@ -1,5 +1,6 @@
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { toast } from '@/lib/utils/toast';
 import { Copy, X } from 'lucide-react';
@@ -138,9 +139,12 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                       </div>
                       <div className='text-sm text-gray-500'>Current BTC Price</div>
                     </div>
-                    <button onClick={() => onOpenChange(false)}>
-                      <X className='h-5 w-5 text-gray-500' />
-                    </button>
+                    <div className='flex items-center gap-3'>
+                      <WalletBalanceDisplay />
+                      <button onClick={() => onOpenChange(false)}>
+                        <X className='h-5 w-5 text-gray-500' />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Content */}
