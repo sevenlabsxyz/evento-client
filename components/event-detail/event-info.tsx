@@ -2,10 +2,12 @@
 
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { streamChatService } from '@/lib/services/stream-chat';
 import { Event } from '@/lib/types/event';
+import { toast } from '@/lib/utils/toast';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import ContactHostSheet from './contact-host-sheet';
 import RsvpSheet from './event-rsvp-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
@@ -16,8 +18,8 @@ interface EventInfoProps {
   currentUserId?: string;
 }
 
-export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
-  const [showContactSheet, setShowContactSheet] = useState(false);
+export default function EventInfo({ event, currentUserId = '' }: EventInfoProps) {
+  const router = useRouter();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
@@ -28,7 +30,6 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
 
   // Check if event is saved to any list
   const { data: savedStatus } = useEventSavedStatus(event.id);
-  console.log(savedStatus);
   const isSaved = savedStatus?.is_saved ?? false;
 
   const rsvpButton = useMemo(() => {
@@ -57,8 +58,25 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
     setShowRsvpSheet(true);
   };
 
-  const handleContact = () => {
-    setShowContactSheet(true);
+  const handleContact = async () => {
+    // Get the first host (primary host) to start DM with
+    const primaryHost = event.hosts?.[0];
+    if (!primaryHost) {
+      toast.error('No host available to contact');
+      return;
+    }
+
+    try {
+      const res = await streamChatService.createDirectMessageChannel(primaryHost.id);
+      if (res?.channel?.id) {
+        router.push(`/e/messages/${res.channel.id}`);
+      } else {
+        toast.error('Unable to start chat');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to start chat');
+      console.error('createDirectMessageChannel error', err);
+    }
   };
 
   const handleShare = async () => {
@@ -206,13 +224,6 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
           </div>
         )}
       </div>
-
-      {/* Contact Host Sheet */}
-      <ContactHostSheet
-        isOpen={showContactSheet}
-        onClose={() => setShowContactSheet(false)}
-        onSendMessage={handleSendMessage}
-      />
 
       {/* More Options Sheet */}
       <MoreOptionsSheet

@@ -5,9 +5,12 @@ import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
+import { toast } from '@/lib/utils/toast';
 import { MessageCircle, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 interface EventHostProps {
@@ -15,6 +18,7 @@ interface EventHostProps {
 }
 
 export default function EventHost({ event }: EventHostProps) {
+  const router = useRouter();
   const { user: loggedInUser } = useAuth();
   const [selectedHost, setSelectedHost] = useState<UserDetails | null>(null);
 
@@ -22,8 +26,18 @@ export default function EventHost({ event }: EventHostProps) {
     return null;
   }
 
-  const handleContactHost = (hostId: string) => {
-    console.log('Contact host:', hostId);
+  const handleContactHost = async (hostId: string) => {
+    try {
+      const res = await streamChatService.createDirectMessageChannel(hostId);
+      if (res?.channel?.id) {
+        router.push(`/e/messages/${res.channel.id}`);
+      } else {
+        toast.error('Unable to start chat');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to start chat');
+      console.error('createDirectMessageChannel error', err);
+    }
   };
 
   const handleHostClick = (host: Event['hosts'][0]) => {
