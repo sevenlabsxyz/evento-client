@@ -12,9 +12,7 @@ export function useEventDetails(eventId: string) {
         console.log('[useEventDetails] ========== FETCH EVENT ==========');
         console.log('[useEventDetails] Fetching event:', eventId);
 
-        const response = await apiClient.get<ApiResponse<Event>>(
-          `/v1/events/details?id=${eventId}`
-        );
+        const response = await apiClient.get<ApiResponse<Event>>(`/v1/events/${eventId}`);
 
         console.log('[useEventDetails] Raw API response:', JSON.stringify(response, null, 2));
 

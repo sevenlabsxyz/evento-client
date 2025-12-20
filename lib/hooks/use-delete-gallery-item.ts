@@ -6,7 +6,9 @@ export function useDeleteGalleryItem() {
 
   return useMutation({
     mutationFn: async ({ galleryItemId, eventId }: { galleryItemId: string; eventId: string }) => {
-      const response = await apiClient.delete<null>(`/v1/events/gallery?id=${galleryItemId}`);
+      const response = await apiClient.delete<null>(
+        `/v1/events/${eventId}/gallery?galleryItemId=${galleryItemId}`
+      );
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

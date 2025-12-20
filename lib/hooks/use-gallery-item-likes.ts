@@ -12,17 +12,17 @@ interface LikeActionResponse {
   has_liked: boolean;
 }
 
-export function useGalleryItemLikes(itemId?: string) {
+export function useGalleryItemLikes(itemId?: string, eventId?: string) {
   const queryClient = useQueryClient();
 
   // Query to get likes for a gallery item
   const likesQuery = useQuery({
     queryKey: ['gallery', 'likes', itemId],
     queryFn: async (): Promise<GalleryLikesResponse> => {
-      if (!itemId) return { likes: 0, has_liked: false };
+      if (!itemId || !eventId) return { likes: 0, has_liked: false };
 
       const response = await apiClient.get<GalleryLikesResponse>(
-        `/v1/events/gallery/likes?itemId=${itemId}`
+        `/v1/events/${eventId}/gallery/likes?itemId=${itemId}`
       );
 
       // Handle the response structure { success, message, data }
@@ -38,18 +38,21 @@ export function useGalleryItemLikes(itemId?: string) {
       // Fallback
       return { likes: 0, has_liked: false };
     },
-    enabled: !!itemId,
+    enabled: !!itemId && !!eventId,
     staleTime: 1000 * 60, // Cache for 1 minute
   });
 
   // Mutation to toggle like status
   const likeMutation = useMutation({
     mutationFn: async (): Promise<LikeActionResponse> => {
-      if (!itemId) throw new Error('No gallery item ID provided');
+      if (!itemId || !eventId) throw new Error('No gallery item ID or event ID provided');
 
-      const response = await apiClient.post<LikeActionResponse>('/v1/events/gallery/likes', {
-        itemId,
-      });
+      const response = await apiClient.post<LikeActionResponse>(
+        `/v1/events/${eventId}/gallery/likes`,
+        {
+          itemId,
+        }
+      );
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

@@ -84,7 +84,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item123'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item123', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -92,7 +92,9 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery/likes?itemId=item123');
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        '/v1/events/event1/gallery/likes?itemId=item123'
+      );
       expect(result.current.likes).toBe(10);
       expect(result.current.hasLiked).toBe(true);
     });
@@ -108,7 +110,7 @@ describe('useGalleryItemLikes', () => {
       mockApiClient.post.mockReset();
       mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item456'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item456', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -116,7 +118,9 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery/likes?itemId=item456');
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        '/v1/events/event1/gallery/likes?itemId=item456'
+      );
       expect(result.current.likes).toBe(7);
       expect(result.current.hasLiked).toBe(false);
     });
@@ -125,7 +129,7 @@ describe('useGalleryItemLikes', () => {
       const apiError = new Error('API Error');
       mockApiClient.get.mockImplementationOnce(() => Promise.reject(apiError));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item789'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item789', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -140,7 +144,7 @@ describe('useGalleryItemLikes', () => {
     it('handles null response', async () => {
       mockApiClient.get.mockResolvedValueOnce(null as any);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item999'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item999', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -155,7 +159,7 @@ describe('useGalleryItemLikes', () => {
     it('handles undefined response', async () => {
       mockApiClient.get.mockResolvedValueOnce(undefined as any);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item888'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item888', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -170,7 +174,7 @@ describe('useGalleryItemLikes', () => {
     it('handles non-object response', async () => {
       mockApiClient.get.mockResolvedValueOnce('string response' as any);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item777'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item777', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -189,7 +193,7 @@ describe('useGalleryItemLikes', () => {
       });
       mockApiClient.get.mockResolvedValueOnce(mockLikes);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item666'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item666', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -204,7 +208,7 @@ describe('useGalleryItemLikes', () => {
 
   describe('disabled state', () => {
     it('does not fetch when itemId is undefined', () => {
-      const { result } = renderHook(() => useGalleryItemLikes(undefined), {
+      const { result } = renderHook(() => useGalleryItemLikes(undefined, 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -215,7 +219,7 @@ describe('useGalleryItemLikes', () => {
     });
 
     it('does not fetch when itemId is empty string', () => {
-      const { result } = renderHook(() => useGalleryItemLikes(''), {
+      const { result } = renderHook(() => useGalleryItemLikes('', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -226,7 +230,7 @@ describe('useGalleryItemLikes', () => {
     });
 
     it('does not fetch when itemId is null', () => {
-      const { result } = renderHook(() => useGalleryItemLikes(null as any), {
+      const { result } = renderHook(() => useGalleryItemLikes(null as any, 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -253,7 +257,7 @@ describe('useGalleryItemLikes', () => {
       const mockActionResponse = createMockApiResponse(mockLikeAction);
       mockApiClient.post.mockResolvedValueOnce(mockActionResponse);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item123'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item123', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -275,7 +279,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event1/gallery/likes', {
         itemId: 'item123',
       });
     });
@@ -293,7 +297,7 @@ describe('useGalleryItemLikes', () => {
       });
       mockApiClient.post.mockResolvedValueOnce(mockLikeAction);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item456'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item456', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -312,7 +316,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event1/gallery/likes', {
         itemId: 'item456',
       });
     });
@@ -327,7 +331,7 @@ describe('useGalleryItemLikes', () => {
       const apiError = new Error('Mutation failed');
       mockApiClient.post.mockImplementationOnce(() => Promise.reject(apiError));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item789'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item789', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -358,7 +362,7 @@ describe('useGalleryItemLikes', () => {
 
       mockApiClient.post.mockResolvedValueOnce(null as any);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item999'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item999', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -389,7 +393,7 @@ describe('useGalleryItemLikes', () => {
 
       mockApiClient.post.mockResolvedValueOnce(undefined as any);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item888'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item888', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -420,7 +424,7 @@ describe('useGalleryItemLikes', () => {
 
       mockApiClient.post.mockResolvedValueOnce('string response' as any);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item777'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item777', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -455,7 +459,7 @@ describe('useGalleryItemLikes', () => {
       });
       mockApiClient.post.mockResolvedValueOnce(mockLikeAction);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item666'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item666', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -478,7 +482,7 @@ describe('useGalleryItemLikes', () => {
     });
 
     it('shows error toast when itemId is undefined', () => {
-      const { result } = renderHook(() => useGalleryItemLikes(undefined), {
+      const { result } = renderHook(() => useGalleryItemLikes(undefined, 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -491,7 +495,7 @@ describe('useGalleryItemLikes', () => {
     });
 
     it('shows error toast when itemId is empty string', () => {
-      const { result } = renderHook(() => useGalleryItemLikes(''), {
+      const { result } = renderHook(() => useGalleryItemLikes('', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -515,7 +519,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item123'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item123', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -547,7 +551,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item456'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item456', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -579,7 +583,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item789'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item789', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -618,7 +622,7 @@ describe('useGalleryItemLikes', () => {
       });
       mockApiClient.get.mockReturnValue(controlledPromise);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item123'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item123', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -671,7 +675,7 @@ describe('useGalleryItemLikes', () => {
       });
       mockApiClient.post.mockImplementationOnce(() => controlledPromise);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item456'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item456', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(freshQueryClient)({ children }),
       });
 
@@ -707,7 +711,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event1/gallery/likes', {
         itemId: 'item456',
       });
     });
@@ -725,7 +729,7 @@ describe('useGalleryItemLikes', () => {
       mockApiClient.post.mockReset();
       mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item123'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item123', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -749,7 +753,7 @@ describe('useGalleryItemLikes', () => {
       mockApiClient.post.mockReset();
       mockApiClient.get.mockImplementationOnce(() => Promise.resolve(mockResponse));
 
-      const { result } = renderHook(() => useGalleryItemLikes('item456'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item456', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -773,7 +777,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item000'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item000', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -793,7 +797,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item999'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item999', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -814,7 +818,7 @@ describe('useGalleryItemLikes', () => {
       const mockResponse = createMockApiResponse(mockLikes);
       mockApiClient.get.mockResolvedValueOnce(mockResponse);
 
-      const { result } = renderHook(() => useGalleryItemLikes(itemId), {
+      const { result } = renderHook(() => useGalleryItemLikes(itemId, 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -822,7 +826,9 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/gallery/likes?itemId=${itemId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        `/v1/events/event1/gallery/likes?itemId=${itemId}`
+      );
       expect(result.current.likes).toBe(2);
       expect(result.current.hasLiked).toBe(false);
     });
@@ -849,7 +855,7 @@ describe('useGalleryItemLikes', () => {
         .mockResolvedValueOnce(mockActionResponse1)
         .mockResolvedValueOnce(mockActionResponse2);
 
-      const { result } = renderHook(() => useGalleryItemLikes('item123'), {
+      const { result } = renderHook(() => useGalleryItemLikes('item123', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 

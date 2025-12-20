@@ -173,7 +173,7 @@ describe('Event Creation Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', eventData);
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', eventData);
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeNull();
   });
@@ -219,7 +219,7 @@ describe('Event Creation Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', eventData);
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', eventData);
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeTruthy();
   });

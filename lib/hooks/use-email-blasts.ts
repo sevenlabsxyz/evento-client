@@ -11,7 +11,7 @@ export function useEmailBlasts(eventId: string) {
     queryFn: async () => {
       // API client response interceptor returns ApiResponse directly
       const response = await apiClient.get<ApiResponse<EmailBlast[]>>(
-        `/v1/events/email-blasts/${eventId}`
+        `/v1/events/${eventId}/email-blasts`
       );
       // Check if response has the expected structure
       if (response && response.data && Array.isArray(response.data)) {
@@ -32,7 +32,7 @@ export function useCreateEmailBlast(eventId: string) {
   return useMutation({
     mutationFn: async (data: CreateEmailBlastForm) => {
       const response = await apiClient.post<ApiResponse<EmailBlast>>(
-        `/v1/events/email-blasts/${eventId}`,
+        `/v1/events/${eventId}/email-blasts`,
         data
       );
       // Check if response has the expected structure
@@ -61,7 +61,7 @@ export function useCreateEmailBlastWithCallbacks(eventId: string) {
   return useMutation({
     mutationFn: async (data: CreateEmailBlastForm) => {
       const response = await apiClient.post<ApiResponse<EmailBlast>>(
-        `/v1/events/email-blasts/${eventId}`,
+        `/v1/events/${eventId}/email-blasts`,
         data
       );
       // Check if response has the expected structure

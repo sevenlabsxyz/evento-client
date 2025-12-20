@@ -74,7 +74,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps');
       expect(result.current.data).toEqual(mockRSVPs);
     });
 
@@ -347,7 +347,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps');
     });
 
     it('handles special characters in event ID', async () => {
@@ -364,7 +364,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/rsvps?event_id=${eventId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/${eventId}/rsvps`);
       expect(result.current.data![0].event_id).toBe(eventId);
     });
 
@@ -382,7 +382,7 @@ describe('useEventRSVPs', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/rsvps?event_id=${eventId}`);
+      expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/${eventId}/rsvps`);
     });
   });
 

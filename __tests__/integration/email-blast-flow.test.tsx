@@ -136,7 +136,7 @@ describe('Email Blast Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/email-blasts/event123');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/email-blasts');
     expect(result.current.data).toEqual(mockEmailBlasts);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -176,7 +176,7 @@ describe('Email Blast Integration Flow', () => {
     });
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      '/v1/events/email-blasts/event123',
+      '/v1/events/event123/email-blasts',
       mockEmailBlastData
     );
     expect(result.current.isPending).toBe(false);
@@ -201,7 +201,7 @@ describe('Email Blast Integration Flow', () => {
     });
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      '/v1/events/email-blasts/event123',
+      '/v1/events/event123/email-blasts',
       mockEmailBlastData
     );
     expect(result.current.isPending).toBe(false);
@@ -231,7 +231,7 @@ describe('Email Blast Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps');
     expect(result.current.data).toEqual(mockRSVPs);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -272,7 +272,7 @@ describe('Email Blast Integration Flow', () => {
       });
 
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/email-blasts/event123',
+        '/v1/events/event123/email-blasts',
         mockEmailBlastData
       );
       expect(result.current.isPending).toBe(false);
@@ -315,7 +315,7 @@ describe('Email Blast Integration Flow', () => {
     });
 
     expect(mockApiClient.post).toHaveBeenCalledWith(
-      '/v1/events/email-blasts/event123',
+      '/v1/events/event123/email-blasts',
       mockEmailBlastData
     );
     expect(result.current.isPending).toBe(false);

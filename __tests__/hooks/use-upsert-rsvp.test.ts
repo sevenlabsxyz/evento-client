@@ -75,7 +75,7 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
       event_id: 'event123',
       status: 'yes',
     });
@@ -118,7 +118,7 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/rsvps', {
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
       event_id: 'event123',
       status: 'maybe',
     });
@@ -164,7 +164,7 @@ describe('useUpsertRSVP', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
         event_id: 'event123',
         status,
       });
@@ -479,7 +479,7 @@ describe('useUpsertRSVP', () => {
     const data = await result.current.mutateAsync(mockArgs);
 
     expect(data).toEqual(mockResponse.data[0]);
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
       event_id: 'event123',
       status: 'yes',
     });

@@ -89,7 +89,7 @@ describe('useEmailBlasts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/email-blasts/event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/email-blasts');
       expect(result.current.data).toEqual(mockBlasts);
     });
 
@@ -271,7 +271,7 @@ describe('useCreateEmailBlast', () => {
         mutationResult = await result.current.mutateAsync(mockForm);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
       expect(mutationResult).toEqual(mockBlast);
     });
 
@@ -292,7 +292,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
     });
 
     it('handles invalid response format', async () => {
@@ -316,7 +316,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
     });
 
     it('handles null response', async () => {
@@ -335,7 +335,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
     });
   });
 
@@ -551,7 +551,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
         mutationResult = await result.current.mutateAsync(mockForm);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
       expect(mutationResult).toEqual(mockBlast);
     });
 
@@ -572,7 +572,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
     });
 
     it('handles invalid response format', async () => {
@@ -596,7 +596,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/email-blasts/event123', mockForm);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
     });
   });
 

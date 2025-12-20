@@ -72,7 +72,7 @@ describe('useDeleteComment', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
       expect(mutationResult).toEqual({ id: 'comment123' });
     });
 
@@ -90,7 +90,7 @@ describe('useDeleteComment', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
       expect(mutationResult).toEqual({ id: 'comment123' });
     });
 
@@ -112,7 +112,7 @@ describe('useDeleteComment', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
       expect(mutationResult).toEqual({ id: 'comment123' }); // Fallback to commentId
     });
 
@@ -133,7 +133,7 @@ describe('useDeleteComment', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
     });
 
     it('handles null response', async () => {
@@ -152,7 +152,7 @@ describe('useDeleteComment', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
     });
 
     it('handles undefined response', async () => {
@@ -171,7 +171,7 @@ describe('useDeleteComment', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
     });
 
     it('handles non-object response', async () => {
@@ -190,7 +190,7 @@ describe('useDeleteComment', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event456/comments/comment123');
     });
   });
 
@@ -391,7 +391,7 @@ describe('useDeleteComment', () => {
       });
 
       expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/comments?id=special-comment-123'
+        '/v1/events/event789/comments/special-comment-123'
       );
     });
 
@@ -414,7 +414,7 @@ describe('useDeleteComment', () => {
       });
 
       expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/comments?id=comment-with-special-chars-!@#$%'
+        '/v1/events/event456/comments/comment-with-special-chars-!@#$%'
       );
     });
   });
@@ -517,14 +517,14 @@ describe('useDeleteComment', () => {
         await result.current.mutateAsync(mockParams1);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event1/comments/comment1');
 
       // Second deletion
       await act(async () => {
         await result.current.mutateAsync(mockParams2);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment2');
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event1/comments/comment2');
       expect(mockApiClient.delete).toHaveBeenCalledTimes(2);
     });
 

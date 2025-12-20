@@ -96,7 +96,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123', mockUpdateData);
     expect(result.current.data).toEqual(mockResponse.data[0]);
   });
 
@@ -358,7 +358,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123', mockUpdateData);
   });
 
   it('should handle time fields correctly', async () => {
@@ -409,7 +409,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123', mockUpdateData);
   });
 
   it('should handle null time fields', async () => {
@@ -460,7 +460,7 @@ describe('useUpdateEvent', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123', mockUpdateData);
   });
 });
 
@@ -546,7 +546,7 @@ describe('useUpdateEventWithCallbacks', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/details', mockUpdateData);
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123', mockUpdateData);
     expect(result.current.data).toEqual(mockResponse.data[0]);
   });
 

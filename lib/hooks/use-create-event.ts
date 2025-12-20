@@ -29,7 +29,7 @@ export function useCreateEvent() {
 
       // Make API call
       const response = await apiClient.post<ApiResponse<CreateEventResponse[]>>(
-        '/v1/events/create',
+        '/v1/events',
         validatedData
       );
 
@@ -88,7 +88,7 @@ export function useCreateEventWithCallbacks() {
 
       // Make API call
       const response = await apiClient.post<ApiResponse<CreateEventResponse[]>>(
-        '/v1/events/create',
+        '/v1/events',
         validatedData
       );
 

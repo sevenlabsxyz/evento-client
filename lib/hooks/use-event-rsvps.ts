@@ -8,9 +8,7 @@ export function useEventRSVPs(eventId: string) {
   return useQuery({
     queryKey: ['eventRSVPs', eventId],
     queryFn: async (): Promise<EventRSVP[]> => {
-      const response = await apiClient.get<ApiResponse<EventRSVP[]>>(
-        `/v1/events/rsvps?event_id=${eventId}`
-      );
+      const response = await apiClient.get<ApiResponse<EventRSVP[]>>(`/v1/events/${eventId}/rsvps`);
       if (response && Array.isArray(response.data)) {
         return response.data;
       }

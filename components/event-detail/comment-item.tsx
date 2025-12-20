@@ -51,7 +51,10 @@ export default function CommentItem({
   const [showActionsSheet, setShowActionsSheet] = useState(false);
   const deleteCommentMutation = useDeleteComment();
   const editCommentMutation = useEditComment();
-  const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(comment.id);
+  const { reactions, userReaction, toggleReaction, isToggling } = useCommentReactions(
+    comment.id,
+    eventId
+  );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 

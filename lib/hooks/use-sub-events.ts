@@ -13,9 +13,7 @@ export function useSubEvents(eventId?: string) {
           return [];
         }
 
-        const response = await apiClient.get<EventWithUser[]>(
-          `/v1/events/sub-events?event_id=${eventId}`
-        );
+        const response = await apiClient.get<EventWithUser[]>(`/v1/events/${eventId}/sub-events`);
 
         // The API client interceptor returns response.data directly
         const responseData = response;

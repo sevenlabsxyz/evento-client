@@ -17,7 +17,7 @@ export function useEventGallery(eventId: string) {
   return useQuery({
     queryKey: ['event', 'gallery', eventId],
     queryFn: async (): Promise<GalleryItem[]> => {
-      const response = await apiClient.get<GalleryItem[]>(`/v1/events/gallery?id=${eventId}`);
+      const response = await apiClient.get<GalleryItem[]>(`/v1/events/${eventId}/gallery`);
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

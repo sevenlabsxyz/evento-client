@@ -30,7 +30,12 @@ export default function GalleryItem({
 }: GalleryItemProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showControls, setShowControls] = useState(false);
-  const { likes, hasLiked, toggleLike, isLoading: likesLoading } = useGalleryItemLikes(item.id);
+  const {
+    likes,
+    hasLiked,
+    toggleLike,
+    isLoading: likesLoading,
+  } = useGalleryItemLikes(item.id, eventId);
   const deleteGalleryItem = useDeleteGalleryItem();
 
   const isOwner = item.user_details?.id === currentUserId;
