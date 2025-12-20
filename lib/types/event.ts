@@ -80,6 +80,7 @@ export interface Event {
     condition: string;
   };
   type: 'conference' | 'networking' | 'workshop' | 'social' | 'business' | 'showcase';
+  eventType?: 'rsvp' | 'registration' | 'ticketed';
   tags?: string[];
   isActive: boolean;
   registrationUrl?: string;

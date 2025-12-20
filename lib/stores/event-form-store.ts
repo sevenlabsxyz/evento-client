@@ -53,6 +53,9 @@ interface EventFormState {
   contribBtclightning: string;
   cost: string;
 
+  // Event type (free RSVP vs paid ticketed)
+  eventType: 'rsvp' | 'ticketed';
+
   // Actions
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
@@ -75,6 +78,7 @@ interface EventFormState {
   setContribPaypal: (value: string) => void;
   setContribBtclightning: (value: string) => void;
   setCost: (cost: string) => void;
+  setEventType: (type: 'rsvp' | 'ticketed') => void;
 
   // Utility methods
   populateFromApiEvent: (event: ApiEvent) => void;
@@ -129,6 +133,7 @@ const initialState = {
   contribPaypal: '',
   contribBtclightning: '',
   cost: '',
+  eventType: 'rsvp' as const,
 };
 
 export const useEventFormStore = create<EventFormState>((set, get) => ({
@@ -208,6 +213,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   setContribPaypal: (contribPaypal) => set({ contribPaypal }),
   setContribBtclightning: (contribBtclightning) => set({ contribBtclightning }),
   setCost: (cost) => set({ cost }),
+  setEventType: (eventType) => set({ eventType }),
 
   // Populate from API event
   populateFromApiEvent: (event: ApiEvent) => {
@@ -417,6 +423,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       // Settings
       visibility: state.visibility,
       status: 'published',
+      type: state.eventType,
 
       // URLs
       spotify_url: state.spotifyUrl || undefined,
