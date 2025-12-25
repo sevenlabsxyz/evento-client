@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Textarea } from '@/components/ui/textarea';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
@@ -495,16 +496,19 @@ export function SendLightningSheet({
       {/* Header */}
       <div className='flex items-center justify-between p-4 pt-0'>
         <h2 className='text-xl font-semibold'>Confirm Payment</h2>
-        <button
-          onClick={() => {
-            resetForm();
-            onOpenChange(false);
-          }}
-          disabled={isSending}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
-        >
-          <X className='h-5 w-5' />
-        </button>
+        <div className='flex items-center gap-3'>
+          <WalletBalanceDisplay />
+          <button
+            onClick={() => {
+              resetForm();
+              onOpenChange(false);
+            }}
+            disabled={isSending}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
       </div>
 
       {/* Content */}
@@ -649,12 +653,15 @@ export function SendLightningSheet({
       {/* Header */}
       <div className='flex items-center justify-between p-4 pt-0'>
         <h2 className='text-xl font-semibold'>Send</h2>
-        <button
-          onClick={() => onOpenChange(false)}
-          className='rounded-full p-2 transition-colors hover:bg-gray-100'
-        >
-          <X className='h-5 w-5' />
-        </button>
+        <div className='flex items-center gap-3'>
+          <WalletBalanceDisplay />
+          <button
+            onClick={() => onOpenChange(false)}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
       </div>
 
       {/* Content */}

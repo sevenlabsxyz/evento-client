@@ -1,5 +1,6 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { GLOBAL_EXCHANGES, getExchangesForCountry, type Exchange } from '@/lib/constants/exchanges';
 import { detectUserCountry } from '@/lib/utils/geo-detection';
 import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
@@ -84,9 +85,12 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
                   {/* Header */}
                   <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0'>
                     <h2 className='text-xl font-semibold'>Buy/Sell Bitcoin</h2>
-                    <button onClick={() => onOpenChange(false)}>
-                      <X className='h-5 w-5 text-gray-500' />
-                    </button>
+                    <div className='flex items-center gap-3'>
+                      <WalletBalanceDisplay />
+                      <button onClick={() => onOpenChange(false)}>
+                        <X className='h-5 w-5 text-gray-500' />
+                      </button>
+                    </div>
                   </div>
 
                   {/* Content */}

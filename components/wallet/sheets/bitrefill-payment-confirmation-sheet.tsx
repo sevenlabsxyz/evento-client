@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { BTCPriceService } from '@/lib/services/btc-price';
@@ -188,7 +189,10 @@ export function BitrefillPaymentConfirmationSheet({
                 <DetachedSheet.Handle />
               </div>
 
-              <h2 className='mb-6 text-center text-lg font-semibold'>Confirm Purchase</h2>
+              <div className='mb-6 flex items-center justify-between'>
+                <h2 className='text-lg font-semibold'>Confirm Purchase</h2>
+                <WalletBalanceDisplay size='sm' />
+              </div>
 
               {isLoadingInvoice ? (
                 <div className='space-y-4'>

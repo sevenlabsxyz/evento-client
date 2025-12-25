@@ -4,9 +4,9 @@
 const DEBUG_BITREFILL = false;
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
-import { BTCPriceService } from '@/lib/services/btc-price';
 import { Loader2, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BitrefillPaymentConfirmationSheet } from './bitrefill-payment-confirmation-sheet';
@@ -27,8 +27,7 @@ type DeliveryStatus = 'partial_delivery' | 'all_delivered' | 'all_error' | null;
 
 export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps) {
   const { user } = useAuth();
-  const { walletState, refreshBalance } = useWallet();
-  const [balanceUSD, setBalanceUSD] = useState<number>(0);
+  const { refreshBalance } = useWallet();
 
   // Bitrefill state
   const [currentInvoice, setCurrentInvoice] = useState<BitrefillInvoice | null>(null);
@@ -51,23 +50,6 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
     }
     return url.toString();
   }, [user?.email]);
-
-  // Fetch USD balance
-  useEffect(() => {
-    const fetchUSD = async () => {
-      if (walletState.balance > 0) {
-        try {
-          const usd = await BTCPriceService.satsToUSD(walletState.balance);
-          setBalanceUSD(usd);
-        } catch (error) {
-          console.error('Failed to fetch USD balance:', error);
-        }
-      } else {
-        setBalanceUSD(0);
-      }
-    };
-    fetchUSD();
-  }, [walletState.balance]);
 
   // Handle Bitrefill iframe messages
   useEffect(() => {
@@ -217,12 +199,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
               <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3'>
                 <h2 className='text-xl font-semibold'>Spend Bitcoin</h2>
                 <div className='flex items-center gap-3'>
-                  <div className='text-right'>
-                    <div className='text-sm font-semibold text-gray-900'>
-                      ${balanceUSD.toFixed(2)}
-                    </div>
-                    <div className='text-xs text-gray-500'>available</div>
-                  </div>
+                  <WalletBalanceDisplay />
                   <button
                     onClick={() => onOpenChange(false)}
                     className='rounded-full p-1 hover:bg-gray-100'

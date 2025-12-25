@@ -4,6 +4,7 @@ import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -178,10 +179,13 @@ export default function TipSheet({
                     transition={{ duration: 0.2 }}
                     className='p-6'
                   >
-                    {/* Title */}
-                    <p className='mb-4 text-center text-sm text-gray-500'>
-                      Send Lightning Tip to <strong>@{recipientUsername}</strong>
-                    </p>
+                    {/* Header with Balance */}
+                    <div className='mb-4 flex items-center justify-between'>
+                      <p className='text-sm text-gray-500'>
+                        Send Lightning Tip to <strong>@{recipientUsername}</strong>
+                      </p>
+                      <WalletBalanceDisplay size='sm' />
+                    </div>
 
                     {/* Amount Display */}
                     <div className='mb-4 rounded-xl p-4'>
@@ -281,6 +285,11 @@ export default function TipSheet({
                     transition={{ duration: 0.2 }}
                     className='p-6'
                   >
+                    {/* Header with Balance */}
+                    <div className='mb-4 flex items-center justify-end'>
+                      <WalletBalanceDisplay size='sm' />
+                    </div>
+
                     {/* Recipient Info */}
                     <div className='mb-6 flex flex-col items-center'>
                       <UserAvatar
@@ -300,7 +309,7 @@ export default function TipSheet({
                     {/* Amount Summary */}
                     <div className='mb-6 rounded-xl border border-red-200 bg-red-50 p-4'>
                       <div className='text-center'>
-                        <p className='mb-1 text-base text-gray-600'>You're sending</p>
+                        <p className='mb-1 text-base text-gray-600'>You&apos;re sending</p>
                         <div className='flex items-center justify-center gap-2'>
                           <span className='text-2xl font-bold text-gray-900'>
                             {formatAmount(amount)}
@@ -350,7 +359,7 @@ export default function TipSheet({
                             Copy Invoice
                           </Button>
                           <p className='text-center text-sm text-gray-500'>
-                            Wallet didn't open? Copy the invoice and paste it in your Lightning
+                            Wallet didn&apos;t open? Copy the invoice and paste it in your Lightning
                             wallet.
                           </p>
                         </>

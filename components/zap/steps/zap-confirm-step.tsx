@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { ArrowLeft, X, Zap } from 'lucide-react';
 import Image from 'next/image';
 import type { RecipientInfo } from '../zap-types';
@@ -34,9 +35,15 @@ export function ZapConfirmStep({
           <ArrowLeft className='h-5 w-5' />
         </button>
         <h2 className='text-xl font-semibold'>Confirm Zap</h2>
-        <button onClick={onClose} className='rounded-full p-2 transition-colors hover:bg-gray-100'>
-          <X className='h-5 w-5' />
-        </button>
+        <div className='flex items-center gap-3'>
+          <WalletBalanceDisplay />
+          <button
+            onClick={onClose}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
       </div>
 
       {/* Content */}
