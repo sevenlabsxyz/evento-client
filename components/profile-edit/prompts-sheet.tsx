@@ -450,9 +450,10 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 maxLength={500}
                 autoFocus
               />
-              <p className='mt-1 text-right text-sm text-gray-500'>
-                {editingPrompt.answer.length}/500
-              </p>
+              <div className='mt-1 flex items-center justify-between text-sm text-gray-500'>
+                <span>Minimum 5 characters</span>
+                <span>{editingPrompt.answer.length}/500</span>
+              </div>
             </div>
 
             {/* Visibility toggle */}

@@ -225,9 +225,10 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                           autoFocus
                         />
                         <div className='flex items-center justify-between'>
-                          <p className='text-xs text-gray-500'>
-                            {prompt.answer.length}/500 characters
-                          </p>
+                          <div className='flex items-center gap-3 text-xs text-gray-500'>
+                            <span>Min: 5 characters</span>
+                            <span>{prompt.answer.length}/500</span>
+                          </div>
                           {prompt.answer.length >= 5 && (
                             <Button
                               size='sm'
