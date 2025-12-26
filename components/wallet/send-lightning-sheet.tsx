@@ -416,14 +416,16 @@ export function SendLightningSheet({
         console.log('✅ [SEND] BOLT11 payment prepared');
       } else {
         // Unknown input type - show error
-        console.error('❌ [SEND] Unknown input type, cannot prepare payment:', parsedInput?.type);
+        const errorMsg = `Unknown input type: ${parsedInput?.type}`;
+        logBreezError(new Error(errorMsg), BREEZ_ERROR_CONTEXT.PREPARING_PAYMENT);
         toast.error('Unable to prepare payment - unknown input type');
-        throw new Error(`Unknown input type: ${parsedInput?.type}`);
+        throw new Error(errorMsg);
       }
       // Note: Step change and detent change are handled by the caller
     } catch (error: any) {
-      console.error('❌ [SEND] Failed to prepare payment:', error);
-      toast.error(error.message || 'Failed to prepare payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_PAYMENT);
+      const userMessage = getBreezErrorMessage(error, 'prepare payment');
+      toast.error(userMessage);
       throw error; // Re-throw so caller can handle cleanup
     }
   };
@@ -437,8 +439,9 @@ export function SendLightningSheet({
       // Move to fee selection step
       setStep('bitcoin-fee');
     } catch (error: any) {
-      console.error('Failed to prepare Bitcoin payment:', error);
-      toast.error(error.message || 'Failed to prepare Bitcoin payment');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_PAYMENT);
+      const userMessage = getBreezErrorMessage(error, 'prepare Bitcoin payment');
+      toast.error(userMessage);
       throw error;
     }
   };

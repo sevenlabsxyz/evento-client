@@ -413,7 +413,7 @@ export function useWallet() {
       // Return the encrypted seed for backup
       return encryptedSeed;
     } catch (err: any) {
-      console.error('Failed to get encrypted backup:', err);
+      logBreezError(err, 'getting encrypted backup');
       throw new Error('Invalid password');
     }
   }, []);

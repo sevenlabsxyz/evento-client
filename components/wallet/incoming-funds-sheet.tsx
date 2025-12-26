@@ -86,8 +86,9 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
       setSelectedDeposit(null);
       setShowSpeedUpSheet(false);
     } catch (error: any) {
-      console.error('Failed to swap:', error);
-      toast.error(error.message || 'Failed to complete swap');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CLAIMING_DEPOSIT);
+      const userMessage = getBreezErrorMessage(error, 'claim deposit');
+      toast.error(userMessage);
     } finally {
       setProcessingTxid(null);
     }
