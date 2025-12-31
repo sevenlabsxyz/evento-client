@@ -2,6 +2,11 @@
 
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { useWalletStore } from '@/lib/stores/wallet-store';
+import {
+  BREEZ_ERROR_CONTEXT,
+  getBreezErrorMessage,
+  logBreezError,
+} from '@/lib/utils/breez-error-handler';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from './use-wallet';
@@ -13,13 +18,6 @@ export function useLightningAddress() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load Lightning address info on mount
-  useEffect(() => {
-    if (walletState.isConnected && !lightningAddress) {
-      loadLightningAddress();
-    }
-  }, [walletState.isConnected, lightningAddress]);
-
   const loadLightningAddress = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -28,19 +26,28 @@ export function useLightningAddress() {
       const addressInfo = await breezSDK.getLightningAddress();
       setLightningAddress(addressInfo);
     } catch (error: any) {
-      console.error('Failed to load Lightning address:', error);
-      setError(error.message || 'Failed to load Lightning address');
+      logBreezError(error, BREEZ_ERROR_CONTEXT.LOADING_LIGHTNING_ADDRESS);
+      const userMessage = getBreezErrorMessage(error, 'load Lightning address');
+      setError(userMessage);
     } finally {
       setIsLoading(false);
     }
   }, [setLightningAddress]);
 
+  // Load Lightning address info on mount
+  useEffect(() => {
+    if (walletState.isConnected && !lightningAddress) {
+      loadLightningAddress();
+    }
+  }, [walletState.isConnected, lightningAddress, loadLightningAddress]);
+
   const checkAvailability = useCallback(async (username: string): Promise<boolean> => {
     try {
       return await breezSDK.checkLightningAddressAvailable(username);
     } catch (error: any) {
-      console.error('Failed to check availability:', error);
-      throw error;
+      logBreezError(error, BREEZ_ERROR_CONTEXT.CHECKING_LIGHTNING_ADDRESS_AVAILABILITY);
+      const userMessage = getBreezErrorMessage(error, 'check Lightning address availability');
+      throw new Error(userMessage);
     }
   }, []);
 
@@ -55,9 +62,10 @@ export function useLightningAddress() {
 
         return addressInfo;
       } catch (error: any) {
-        console.error('Failed to register address:', error);
-        setError(error.message || 'Failed to register Lightning address');
-        throw error;
+        logBreezError(error, BREEZ_ERROR_CONTEXT.REGISTERING_LIGHTNING_ADDRESS);
+        const userMessage = getBreezErrorMessage(error, 'register Lightning address');
+        setError(userMessage);
+        throw new Error(userMessage);
       } finally {
         setIsLoading(false);
       }
@@ -73,9 +81,10 @@ export function useLightningAddress() {
       await breezSDK.deleteLightningAddress();
       setLightningAddress(null);
     } catch (error: any) {
-      console.error('Failed to delete address:', error);
-      setError(error.message || 'Failed to delete Lightning address');
-      throw error;
+      logBreezError(error, BREEZ_ERROR_CONTEXT.DELETING_LIGHTNING_ADDRESS);
+      const userMessage = getBreezErrorMessage(error, 'delete Lightning address');
+      setError(userMessage);
+      throw new Error(userMessage);
     } finally {
       setIsLoading(false);
     }
