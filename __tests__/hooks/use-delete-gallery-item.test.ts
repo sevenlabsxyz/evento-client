@@ -73,7 +73,9 @@ describe('useDeleteGalleryItem', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
       expect(mutationResult).toEqual({
         galleryItemId: 'gallery123',
         eventId: 'event456',
@@ -94,7 +96,9 @@ describe('useDeleteGalleryItem', () => {
         mutationResult = await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
       expect(mutationResult).toEqual({
         galleryItemId: 'gallery123',
         eventId: 'event456',
@@ -118,7 +122,9 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
     });
 
     it('handles API error response', async () => {
@@ -138,7 +144,9 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
     });
 
     it('handles null response', async () => {
@@ -157,7 +165,9 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
     });
 
     it('handles undefined response', async () => {
@@ -176,7 +186,9 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
     });
 
     it('handles non-object response', async () => {
@@ -195,7 +207,9 @@ describe('useDeleteGalleryItem', () => {
         }
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId=gallery123'
+      );
     });
   });
 
@@ -424,7 +438,7 @@ describe('useDeleteGalleryItem', () => {
       });
 
       expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=special-gallery-123'
+        '/v1/events/event789/gallery?galleryItemId=special-gallery-123'
       );
     });
 
@@ -445,7 +459,7 @@ describe('useDeleteGalleryItem', () => {
       });
 
       expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=gallery-with-special-chars-!@#$%'
+        '/v1/events/event456/gallery?galleryItemId=gallery-with-special-chars-!@#$%'
       );
     });
   });
@@ -522,14 +536,18 @@ describe('useDeleteGalleryItem', () => {
         await result.current.mutateAsync(mockParams1);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery1');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event1/gallery?galleryItemId=gallery1'
+      );
 
       // Second deletion
       await act(async () => {
         await result.current.mutateAsync(mockParams2);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery2');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event1/gallery?galleryItemId=gallery2'
+      );
       expect(mockApiClient.delete).toHaveBeenCalledTimes(2);
     });
 
@@ -595,7 +613,9 @@ describe('useDeleteGalleryItem', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events/event456/gallery?galleryItemId='
+      );
     });
 
     it('handles empty string event ID', async () => {
@@ -614,7 +634,9 @@ describe('useDeleteGalleryItem', () => {
         await result.current.mutateAsync(mockParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery123');
+      expect(mockApiClient.delete).toHaveBeenCalledWith(
+        '/v1/events//gallery?galleryItemId=gallery123'
+      );
     });
   });
 });

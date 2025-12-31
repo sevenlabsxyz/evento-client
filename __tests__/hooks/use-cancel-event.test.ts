@@ -87,9 +87,7 @@ describe('useCancelEvent', () => {
         mutationResult = await result.current.mutateAsync(cancelParams);
       });
 
-      expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/cancel?id=event1&sendEmails=true'
-      );
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event1/cancel?sendEmails=true');
       expect(mutationResult).toEqual(mockResponse);
     });
 
@@ -112,7 +110,7 @@ describe('useCancelEvent', () => {
       });
 
       expect(mockApiClient.delete).toHaveBeenCalledWith(
-        '/v1/events/cancel?id=event2&sendEmails=false'
+        '/v1/events/event2/cancel?sendEmails=false'
       );
       expect(mutationResult).toEqual(mockResponse);
     });
@@ -201,7 +199,7 @@ describe('useCancelEvent', () => {
         });
 
         expect(mockApiClient.delete).toHaveBeenCalledWith(
-          `/v1/events/cancel?id=${testCase.eventId}&sendEmails=${testCase.sendEmails}`
+          `/v1/events/${testCase.eventId}/cancel?sendEmails=${testCase.sendEmails}`
         );
       }
     });
@@ -427,11 +425,11 @@ describe('useCancelEvent', () => {
       expect(mockApiClient.delete).toHaveBeenCalledTimes(2);
       expect(mockApiClient.delete).toHaveBeenNthCalledWith(
         1,
-        '/v1/events/cancel?id=event1&sendEmails=true'
+        '/v1/events/event1/cancel?sendEmails=true'
       );
       expect(mockApiClient.delete).toHaveBeenNthCalledWith(
         2,
-        '/v1/events/cancel?id=event2&sendEmails=false'
+        '/v1/events/event2/cancel?sendEmails=false'
       );
     });
   });
@@ -449,12 +447,12 @@ describe('useCancelEvent', () => {
         {
           eventId: 'event1',
           sendEmails: true,
-          expectedUrl: '/v1/events/cancel?id=event1&sendEmails=true',
+          expectedUrl: '/v1/events/event1/cancel?sendEmails=true',
         },
         {
           eventId: 'event2',
           sendEmails: false,
-          expectedUrl: '/v1/events/cancel?id=event2&sendEmails=false',
+          expectedUrl: '/v1/events/event2/cancel?sendEmails=false',
         },
       ];
 
@@ -495,7 +493,7 @@ describe('useCancelEvent', () => {
         });
 
         expect(mockApiClient.delete).toHaveBeenCalledWith(
-          `/v1/events/cancel?id=${eventId}&sendEmails=true`
+          `/v1/events/${eventId}/cancel?sendEmails=true`
         );
       }
     });

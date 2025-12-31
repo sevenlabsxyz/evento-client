@@ -72,9 +72,7 @@ describe('useUserRSVP', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/rsvps/current-user?event_id=event123'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps/me');
     expect(result.current.data).toEqual({
       status: 'going',
       rsvp: mockRSVP,
@@ -95,9 +93,7 @@ describe('useUserRSVP', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/rsvps/current-user?event_id=event123'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps/me');
     expect(result.current.data).toEqual({
       status: null,
       rsvp: null,
@@ -342,14 +338,8 @@ describe('useUserRSVP', () => {
     });
 
     expect(mockApiClient.get).toHaveBeenCalledTimes(2);
-    expect(mockApiClient.get).toHaveBeenNthCalledWith(
-      1,
-      '/v1/events/rsvps/current-user?event_id=event1'
-    );
-    expect(mockApiClient.get).toHaveBeenNthCalledWith(
-      2,
-      '/v1/events/rsvps/current-user?event_id=event2'
-    );
+    expect(mockApiClient.get).toHaveBeenNthCalledWith(1, '/v1/events/event1/rsvps/me');
+    expect(mockApiClient.get).toHaveBeenNthCalledWith(2, '/v1/events/event2/rsvps/me');
   });
 
   it('should handle RSVP with null status', async () => {
@@ -464,9 +454,7 @@ describe('useUserRSVP', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      `/v1/events/rsvps/current-user?event_id=${longEventId}`
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/${longEventId}/rsvps/me`);
     expect(result.current.data).toEqual({
       status: null,
       rsvp: null,
@@ -490,9 +478,7 @@ describe('useUserRSVP', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      `/v1/events/rsvps/current-user?event_id=${specialEventId}`
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith(`/v1/events/${specialEventId}/rsvps/me`);
     expect(result.current.data).toEqual({
       status: null,
       rsvp: null,

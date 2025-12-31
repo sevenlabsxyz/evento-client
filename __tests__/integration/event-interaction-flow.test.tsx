@@ -186,7 +186,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/invites', inviteData);
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/invites', inviteData);
     expect(sendInvitesResult.current.isPending).toBe(false);
     expect(sendInvitesResult.current.error).toBeNull();
   });
@@ -226,7 +226,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments', commentData);
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/comments', commentData);
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeNull();
   });
@@ -270,7 +270,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/comments/comment1', {
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123/comments/comment1', {
       message: 'Updated comment!',
     });
     expect(result.current.isPending).toBe(false);
@@ -304,7 +304,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/comments?id=comment1');
+    expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/event123/comments/comment1');
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeNull();
   });
@@ -332,15 +332,18 @@ describe('Event Interaction Integration Flow', () => {
     });
 
     // Test fetching reactions
-    const { result: reactionsResult } = renderHook(() => useCommentReactions('comment1'), {
-      wrapper: createWrapper(queryClient),
-    });
+    const { result: reactionsResult } = renderHook(
+      () => useCommentReactions('comment1', 'event1'),
+      {
+        wrapper: createWrapper(queryClient),
+      }
+    );
 
     await act(async () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event1/comments/comment1/reactions');
     expect(reactionsResult.current.reactions).toEqual(mockReactions.reactions);
 
     // Test adding reaction
@@ -352,9 +355,12 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-      reactionType: 'like',
-    });
+    expect(mockApiClient.post).toHaveBeenCalledWith(
+      '/v1/events/event1/comments/comment1/reactions',
+      {
+        reactionType: 'like',
+      }
+    );
   });
 
   it('should handle event gallery management', async () => {
@@ -388,7 +394,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/gallery');
     expect(result.current.data).toEqual(mockGalleryItems);
     expect(result.current.isLoading).toBe(false);
   });
@@ -416,7 +422,7 @@ describe('Event Interaction Integration Flow', () => {
     });
 
     // Test fetching likes
-    const { result: likesResult } = renderHook(() => useGalleryItemLikes('gallery1'), {
+    const { result: likesResult } = renderHook(() => useGalleryItemLikes('gallery1', 'event1'), {
       wrapper: createWrapper(queryClient),
     });
 
@@ -424,7 +430,9 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery/likes?itemId=gallery1');
+    expect(mockApiClient.get).toHaveBeenCalledWith(
+      '/v1/events/event1/gallery/likes?itemId=gallery1'
+    );
     expect(likesResult.current.likes).toEqual(mockLikes.likes);
     expect(likesResult.current.hasLiked).toEqual(mockLikes.has_liked);
 
@@ -437,7 +445,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/gallery/likes', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event1/gallery/likes', {
       itemId: 'gallery1',
     });
   });
@@ -462,7 +470,7 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments', commentData);
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/comments', commentData);
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeTruthy();
   });

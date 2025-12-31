@@ -67,7 +67,7 @@ describe('useCommentReactions', () => {
       // Mock the API client to return data directly (as per interceptor)
       mockApiClient.get.mockResolvedValue(mockReactions);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -75,7 +75,9 @@ describe('useCommentReactions', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions');
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        '/v1/events/event1/comments/comment1/reactions'
+      );
 
       // Wait for the data to be available
       await waitFor(() => {
@@ -92,7 +94,7 @@ describe('useCommentReactions', () => {
       const wrappedResponse = createMockApiResponse(mockReactions);
       mockApiClient.get.mockResolvedValue(wrappedResponse);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -107,7 +109,7 @@ describe('useCommentReactions', () => {
     it('handles invalid response format', async () => {
       mockApiClient.get.mockResolvedValue(null as any);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -124,7 +126,7 @@ describe('useCommentReactions', () => {
       const apiError = new Error('API Error');
       mockApiClient.get.mockRejectedValue(apiError);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -171,7 +173,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.post.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -190,9 +192,12 @@ describe('useCommentReactions', () => {
         expect(result.current.isToggling).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-        reactionType: 'like',
-      });
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        '/v1/events/event1/comments/comment1/reactions',
+        {
+          reactionType: 'like',
+        }
+      );
     });
 
     it('handles mutation errors', async () => {
@@ -205,7 +210,7 @@ describe('useCommentReactions', () => {
       const apiError = new Error('Mutation failed');
       mockApiClient.post.mockRejectedValue(apiError);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -224,9 +229,12 @@ describe('useCommentReactions', () => {
         expect(result.current.isToggling).toBe(false);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-        reactionType: 'like',
-      });
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        '/v1/events/event1/comments/comment1/reactions',
+        {
+          reactionType: 'like',
+        }
+      );
     });
 
     it('handles invalid mutation response format', async () => {
@@ -238,7 +246,7 @@ describe('useCommentReactions', () => {
 
       mockApiClient.post.mockResolvedValue(null as any);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -274,7 +282,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.post.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -292,9 +300,12 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-          reactionType: 'like',
-        });
+        expect(mockApiClient.post).toHaveBeenCalledWith(
+          '/v1/events/event1/comments/comment1/reactions',
+          {
+            reactionType: 'like',
+          }
+        );
       });
     });
 
@@ -312,7 +323,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.post.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -330,9 +341,12 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-          reactionType: 'like',
-        });
+        expect(mockApiClient.post).toHaveBeenCalledWith(
+          '/v1/events/event1/comments/comment1/reactions',
+          {
+            reactionType: 'like',
+          }
+        );
       });
     });
 
@@ -350,7 +364,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.post.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -368,9 +382,12 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-          reactionType: 'like',
-        });
+        expect(mockApiClient.post).toHaveBeenCalledWith(
+          '/v1/events/event1/comments/comment1/reactions',
+          {
+            reactionType: 'like',
+          }
+        );
       });
     });
 
@@ -388,7 +405,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.post.mockResolvedValue(mockResponse);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -406,9 +423,12 @@ describe('useCommentReactions', () => {
 
       // Wait for mutation to complete
       await waitFor(() => {
-        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments/comment1/reactions', {
-          reactionType: 'like',
-        });
+        expect(mockApiClient.post).toHaveBeenCalledWith(
+          '/v1/events/event1/comments/comment1/reactions',
+          {
+            reactionType: 'like',
+          }
+        );
       });
     });
 
@@ -422,7 +442,7 @@ describe('useCommentReactions', () => {
       const apiError = new Error('Mutation failed');
       mockApiClient.post.mockRejectedValue(apiError);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -466,7 +486,7 @@ describe('useCommentReactions', () => {
 
       const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -502,7 +522,7 @@ describe('useCommentReactions', () => {
 
       const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -541,7 +561,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.get.mockReturnValue(controlledPromise);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -573,7 +593,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.post.mockReturnValue(controlledPromise);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -614,7 +634,7 @@ describe('useCommentReactions', () => {
       } as CommentReactions;
       mockApiClient.get.mockResolvedValue(mockReactions);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -632,7 +652,7 @@ describe('useCommentReactions', () => {
       } as CommentReactions;
       mockApiClient.get.mockResolvedValue(mockReactions);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -651,7 +671,7 @@ describe('useCommentReactions', () => {
       });
       mockApiClient.get.mockResolvedValue(mockReactions);
 
-      const { result } = renderHook(() => useCommentReactions('comment1'), {
+      const { result } = renderHook(() => useCommentReactions('comment1', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 

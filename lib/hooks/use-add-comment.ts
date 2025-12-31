@@ -17,7 +17,7 @@ export function useAddComment() {
   return useMutation({
     mutationFn: async (params: AddCommentParams): Promise<EventComment> => {
       const response = await apiClient.post<ApiResponse<EventComment[]>>(
-        '/v1/events/comments',
+        `/v1/events/${params.event_id}/comments`,
         params
       );
 

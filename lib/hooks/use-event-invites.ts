@@ -45,7 +45,10 @@ export function useSendEventInvites() {
       if (!payload?.id) throw new Error('Missing event id');
       if (!payload?.invites?.length) throw new Error('No invitees selected');
 
-      const res = await apiClient.post<SendInvitesResponse>('/v1/events/invites', payload);
+      const res = await apiClient.post<SendInvitesResponse>(
+        `/v1/events/${payload.id}/invites`,
+        payload
+      );
 
       return res.data;
     },

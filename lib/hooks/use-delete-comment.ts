@@ -19,7 +19,7 @@ export function useDeleteComment() {
       eventId,
     }: DeleteCommentParams): Promise<DeleteCommentResponse> => {
       const response = await apiClient.delete<DeleteCommentResponse>(
-        `/v1/events/comments?id=${commentId}`
+        `/v1/events/${eventId}/comments/${commentId}`
       );
 
       // Handle the response structure { success, message, data }

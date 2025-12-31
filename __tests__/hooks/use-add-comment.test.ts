@@ -114,7 +114,7 @@ describe('useAddComment', () => {
         mutationResult = await result.current.mutateAsync(commentParams);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments', commentParams);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event1/comments', commentParams);
       expect(mutationResult).toEqual(mockComment);
     });
 
@@ -141,7 +141,7 @@ describe('useAddComment', () => {
         mutationResult = await result.current.mutateAsync(replyParams);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/comments', replyParams);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event1/comments', replyParams);
       expect(mutationResult).toEqual(mockReply);
     });
 

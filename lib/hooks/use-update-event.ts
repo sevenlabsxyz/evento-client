@@ -17,9 +17,9 @@ export function useUpdateEvent() {
       // Validate data
       const validatedData = updateEventSchema.parse(data);
 
-      // Make API call - Note: the backend expects the ID in the body
+      // Make API call - eventId in path
       const response = await apiClient.patch<ApiResponse<UpdateEventResponse[]>>(
-        '/v1/events/details',
+        `/v1/events/${validatedData.id}`,
         validatedData
       );
 
@@ -55,9 +55,9 @@ export function useUpdateEventWithCallbacks() {
       // Validate data
       const validatedData = updateEventSchema.parse(data);
 
-      // Make API call
+      // Make API call - eventId in path
       const response = await apiClient.patch<ApiResponse<UpdateEventResponse[]>>(
-        '/v1/events/details',
+        `/v1/events/${validatedData.id}`,
         validatedData
       );
 

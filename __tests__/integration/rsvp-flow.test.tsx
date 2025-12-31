@@ -128,7 +128,7 @@ describe('RSVP Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/rsvps?event_id=event123');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps');
     expect(result.current.data).toEqual(mockRSVPs);
     expect(result.current.isLoading).toBe(false);
     expect(result.current.error).toBeNull();
@@ -159,9 +159,7 @@ describe('RSVP Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 200));
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith(
-      '/v1/events/rsvps/current-user?event_id=event123'
-    );
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/rsvps/me');
     expect(result.current.data).toEqual({
       status: 'yes',
       rsvp: mockUserRSVP,
@@ -202,7 +200,7 @@ describe('RSVP Integration Flow', () => {
       result.current.mutate(mockRSVPData);
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
       event_id: 'event123',
       status: 'yes',
     });
@@ -242,7 +240,7 @@ describe('RSVP Integration Flow', () => {
       result.current.mutate(mockRSVPData);
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/rsvps', {
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
       event_id: 'event123',
       status: 'maybe',
     });
@@ -272,7 +270,7 @@ describe('RSVP Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
       event_id: 'event123',
       status: 'yes',
     });
@@ -313,7 +311,7 @@ describe('RSVP Integration Flow', () => {
         result.current.mutate(mockRSVPData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/rsvps', {
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/rsvps', {
         event_id: 'event123',
         status: status,
       });

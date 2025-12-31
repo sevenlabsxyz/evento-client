@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
  * Hook for cancelling an event
- * Uses DELETE /v1/events/cancel API endpoint
+ * Uses DELETE /v1/events/{eventId}/cancel API endpoint
  */
 export function useCancelEvent() {
   const queryClient = useQueryClient();
@@ -13,7 +13,7 @@ export function useCancelEvent() {
     mutationFn: async ({ eventId, sendEmails }: { eventId: string; sendEmails: boolean }) => {
       try {
         const response = await apiClient.delete(
-          `/v1/events/cancel?id=${eventId}&sendEmails=${sendEmails}`
+          `/v1/events/${eventId}/cancel?sendEmails=${sendEmails}`
         );
 
         return response.data;

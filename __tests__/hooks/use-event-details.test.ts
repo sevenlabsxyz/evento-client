@@ -124,7 +124,7 @@ describe('useEventDetails', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123');
       expect(mockTransformApiEventResponse).toHaveBeenCalledWith(mockEvent);
       expect(result.current.data).toEqual(mockEvent);
     });
@@ -142,7 +142,7 @@ describe('useEventDetails', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123');
       expect(mockTransformApiEventResponse).toHaveBeenCalledWith(mockEvent);
       expect(result.current.data).toEqual(mockEvent);
     });
@@ -373,7 +373,7 @@ describe('useEventDetails', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=special-event-123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/special-event-123');
     });
 
     it('handles special characters in event ID', async () => {
@@ -390,9 +390,7 @@ describe('useEventDetails', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/details?id=event-with-special-chars-!@#$%'
-      );
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event-with-special-chars-!@#$%');
     });
   });
 
@@ -453,7 +451,7 @@ describe('useEventDetails', () => {
       });
 
       // Check that the query key is correct by verifying the query was made
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/details?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123');
     });
 
     it('has stale time configuration', async () => {

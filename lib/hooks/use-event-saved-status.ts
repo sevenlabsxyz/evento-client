@@ -10,7 +10,7 @@ export function useEventSavedStatus(eventId: string, enabled: boolean = true) {
     queryKey: queryKeys.eventSavedStatus(eventId),
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<SavedEventStatus>>(
-        `/v1/events/id/${eventId}/saved`
+        `/v1/events/${eventId}/saved`
       );
 
       if (response && response.data) {

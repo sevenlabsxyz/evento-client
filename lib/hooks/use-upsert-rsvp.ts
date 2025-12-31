@@ -24,9 +24,9 @@ export function useUpsertRSVP() {
       const body = { event_id: eventId, status };
       let res: UpsertRSVPResponse;
       if (hasExisting) {
-        res = await apiClient.patch<UpsertRSVPResponse>('/v1/events/rsvps', body);
+        res = await apiClient.patch<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
       } else {
-        res = await apiClient.post<UpsertRSVPResponse>('/v1/events/rsvps', body);
+        res = await apiClient.post<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
       }
       if (!res?.success) {
         throw new Error(

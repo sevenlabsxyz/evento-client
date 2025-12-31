@@ -12,9 +12,7 @@ export function useEventHosts(eventId: string) {
   return useQuery({
     queryKey: ['event', 'hosts', eventId],
     queryFn: async (): Promise<EventHost[]> => {
-      const response = await apiClient.get<ApiResponse<EventHost[]>>(
-        `/v1/events/hosts?id=${eventId}`
-      );
+      const response = await apiClient.get<ApiResponse<EventHost[]>>(`/v1/events/${eventId}/hosts`);
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

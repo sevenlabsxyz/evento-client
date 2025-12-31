@@ -116,7 +116,7 @@ describe('useCreateEvent', () => {
         mutationResult = await result.current.mutateAsync(mockEventData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mutationResult).toEqual(mockEvent);
       expect(mockPush).toHaveBeenCalledWith('/e/event123');
     });
@@ -175,7 +175,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -199,7 +199,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -223,7 +223,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -247,7 +247,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
 
@@ -267,7 +267,7 @@ describe('useCreateEvent', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mockPush).not.toHaveBeenCalled();
     });
   });
@@ -497,7 +497,7 @@ describe('useCreateEvent', () => {
         await result.current.mutateAsync(completeEventData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', completeEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', completeEventData);
       expect(mockPush).toHaveBeenCalledWith('/e/event123');
     });
   });
@@ -618,7 +618,7 @@ describe('useCreateEventWithCallbacks', () => {
         mutationResult = await result.current.mutateAsync(mockEventData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
       expect(mutationResult).toEqual(mockEvent);
       expect(mockPush).not.toHaveBeenCalled();
     });
@@ -676,7 +676,7 @@ describe('useCreateEventWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
     });
 
     it('handles invalid API response format', async () => {
@@ -699,7 +699,7 @@ describe('useCreateEventWithCallbacks', () => {
         }
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/create', mockEventData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events', mockEventData);
     });
   });
 

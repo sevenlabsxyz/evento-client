@@ -12,13 +12,13 @@ export interface CommentReactions {
 
 export type ReactionType = 'like';
 
-export function useCommentReactions(commentId: string) {
+export function useCommentReactions(commentId: string, eventId: string) {
   // Query to get current reactions
   const query = useQuery({
     queryKey: ['comment', 'reactions', commentId],
     queryFn: async (): Promise<CommentReactions> => {
       const response = await apiClient.get<CommentReactions>(
-        `/v1/events/comments/${commentId}/reactions`
+        `/v1/events/${eventId}/comments/${commentId}/reactions`
       );
 
       if (!response || typeof response !== 'object') {
@@ -52,7 +52,7 @@ export function useCommentReactions(commentId: string) {
           has_reacted: boolean;
           reaction_type?: ReactionType;
         }>
-      >(`/v1/events/comments/${commentId}/reactions`, { reactionType });
+      >(`/v1/events/${eventId}/comments/${commentId}/reactions`, { reactionType });
 
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');

@@ -80,7 +80,7 @@ describe('useEventGallery', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/gallery');
       expect(result.current.data).toEqual(mockGalleryItems);
     });
 
@@ -105,7 +105,7 @@ describe('useEventGallery', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/gallery');
       expect(result.current.data).toEqual(mockGalleryItems);
     });
 
@@ -293,7 +293,7 @@ describe('useEventGallery', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/gallery?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/gallery');
     });
 
     it('handles special characters in event ID', async () => {
@@ -310,7 +310,7 @@ describe('useEventGallery', () => {
       });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/gallery?id=event-with-special-chars-!@#$%'
+        '/v1/events/event-with-special-chars-!@#$%/gallery'
       );
     });
   });

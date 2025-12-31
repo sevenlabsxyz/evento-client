@@ -355,7 +355,9 @@ describe('Content Management Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery1');
+    expect(mockApiClient.delete).toHaveBeenCalledWith(
+      '/v1/events/event123/gallery?galleryItemId=gallery1'
+    );
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeNull();
   });
@@ -375,7 +377,9 @@ describe('Content Management Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.delete).toHaveBeenCalledWith('/v1/events/gallery?id=gallery1');
+    expect(mockApiClient.delete).toHaveBeenCalledWith(
+      '/v1/events/event123/gallery?galleryItemId=gallery1'
+    );
     expect(result.current.isPending).toBe(false);
     expect(result.current.error).toBeTruthy();
   });

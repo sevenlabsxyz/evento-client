@@ -34,20 +34,22 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
     acceptedFileTypes,
   } = useMultiFileUpload({
     onUpload: async (file: File) => {
-      // Create URL parameters
+      // Create URL parameters (eventId now in path, only filename in query)
       const params = new URLSearchParams({
-        id: eventId,
         filename: file.name,
       });
 
       // Upload file directly as binary with progress monitoring
-      const response = await fetch(`/api/v1/events/gallery/upload?${params.toString()}`, {
-        method: 'POST',
-        body: file,
-        headers: {
-          'Content-Type': file.type,
-        },
-      });
+      const response = await fetch(
+        `/api/v1/events/${eventId}/gallery/upload?${params.toString()}`,
+        {
+          method: 'POST',
+          body: file,
+          headers: {
+            'Content-Type': file.type,
+          },
+        }
+      );
 
       if (!response.ok) {
         const error = await response.json();

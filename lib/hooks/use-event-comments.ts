@@ -18,9 +18,7 @@ export function useEventComments(eventId: string) {
   return useQuery({
     queryKey: ['event', 'comments', eventId],
     queryFn: async (): Promise<EventComment[]> => {
-      const response = await apiClient.get<EventComment[]>(
-        `/v1/events/comments?event_id=${eventId}`
-      );
+      const response = await apiClient.get<EventComment[]>(`/v1/events/${eventId}/comments`);
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

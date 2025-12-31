@@ -170,7 +170,7 @@ describe('useEventInvites', () => {
           expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/invites', mockRequest);
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/invites', mockRequest);
         expect(mockToast.success).toHaveBeenCalledWith('Sent 1 invite');
       });
 
@@ -352,7 +352,7 @@ describe('useEventInvites', () => {
           expect(result.current.isSuccess).toBe(true);
         });
 
-        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/invites', mockRequest);
+        expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/invites', mockRequest);
       });
     });
 

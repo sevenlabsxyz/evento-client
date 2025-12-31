@@ -8,9 +8,7 @@ export function useUserRSVP(eventId: string) {
   return useQuery<{ status: RSVPStatus | null; rsvp: EventRSVP | null }, Error>({
     queryKey: ['event', 'user-rsvp', eventId],
     queryFn: async () => {
-      const res = await apiClient.get<ApiResponse<EventRSVP[]>>(
-        `/v1/events/rsvps/current-user?event_id=${eventId}`
-      );
+      const res = await apiClient.get<ApiResponse<EventRSVP[]>>(`/v1/events/${eventId}/rsvps/me`);
       const rsvp =
         Array.isArray(res.data) && res.data.length > 0 ? (res.data[0] as EventRSVP) : null;
       return { status: (rsvp?.status as RSVPStatus) ?? null, rsvp };

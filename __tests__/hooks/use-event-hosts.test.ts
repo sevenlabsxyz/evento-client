@@ -83,7 +83,7 @@ describe('useEventHosts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/hosts?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/hosts');
       expect(result.current.data).toEqual(mockEventHosts);
     });
 
@@ -116,7 +116,7 @@ describe('useEventHosts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/hosts?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/hosts');
       expect(result.current.data).toEqual(mockEventHosts);
     });
 
@@ -304,7 +304,7 @@ describe('useEventHosts', () => {
         expect(result.current.isSuccess).toBe(true);
       });
 
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/hosts?id=event123');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/event123/hosts');
     });
 
     it('handles special characters in event ID', async () => {
@@ -321,7 +321,7 @@ describe('useEventHosts', () => {
       });
 
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/v1/events/hosts?id=event-with-special-chars-!@#$%'
+        '/v1/events/event-with-special-chars-!@#$%/hosts'
       );
     });
   });
