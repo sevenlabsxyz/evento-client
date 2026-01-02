@@ -447,6 +447,11 @@ export function SendLightningSheet({
   };
 
   const handleSend = async () => {
+    // Prevent re-entry if already sending
+    if (isSending) {
+      return;
+    }
+
     setIsSending(true);
     try {
       if (paymentType === 'bitcoin') {
@@ -632,7 +637,12 @@ export function SendLightningSheet({
 
       {/* Footer */}
       <div className='p-4'>
-        <Button className='h-12 w-full rounded-full' onClick={handleSend} disabled={isSending}>
+        <Button
+          type='button'
+          className='h-12 w-full rounded-full'
+          onClick={handleSend}
+          disabled={isSending}
+        >
           {isSending ? (
             <>
               <Loader2 className='mr-2 h-4 w-4 animate-spin' />
