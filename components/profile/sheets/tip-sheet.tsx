@@ -2,7 +2,7 @@
 
 import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { Button } from '@/components/ui/button';
-import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { VerificationStatus } from '@/lib/types/api';
@@ -155,238 +155,226 @@ export default function TipSheet({
   };
 
   return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && handleClose()}
+    <MasterScrollableSheet
+      title='Send Lightning Tip'
+      open={isOpen}
+      onOpenChange={(open) => !open && handleClose()}
+      contentClassName='overflow-hidden'
     >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content className='overflow-hidden'>
-            <div className='relative h-full'>
-              {/* Handle */}
-              <div className='flex justify-center pt-2'>
-                <DetachedSheet.Handle />
+      <div className='relative'>
+        <AnimatePresence mode='wait'>
+          {view === 'amount' ? (
+            <motion.div
+              key='amount'
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.2 }}
+              className='p-6'
+            >
+              {/* Header with Balance */}
+              <div className='mb-4 flex items-center justify-between'>
+                <p className='text-sm text-gray-500'>
+                  Send Lightning Tip to <strong>@{recipientUsername}</strong>
+                </p>
+                <WalletBalanceDisplay size='sm' />
               </div>
 
-              <AnimatePresence mode='wait'>
-                {view === 'amount' ? (
-                  <motion.div
-                    key='amount'
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ duration: 0.2 }}
-                    className='p-6'
+              {/* Amount Display */}
+              <div className='mb-4 rounded-xl p-4'>
+                <div className='flex items-center justify-center gap-2'>
+                  <BitcoinSVGIcon className='h-6 w-6' />
+                  <div className='text-4xl font-bold text-gray-900'>
+                    {formatAmount(amount) || '0'}
+                  </div>
+                  <span className='text-sm text-gray-500'>sats</span>
+                </div>
+              </div>
+
+              {/* Quick Amount Buttons */}
+              <div className='mb-4 grid grid-cols-3 gap-2'>
+                <Button
+                  variant='secondary'
+                  size='sm'
+                  onClick={() => handleQuickAmount(100)}
+                  className='text-xs'
+                >
+                  100
+                </Button>
+                <Button
+                  variant='secondary'
+                  size='sm'
+                  onClick={() => handleQuickAmount(1000)}
+                  className='text-xs'
+                >
+                  1,000
+                </Button>
+                <Button
+                  variant='secondary'
+                  size='sm'
+                  onClick={() => handleQuickAmount(5000)}
+                  className='text-xs'
+                >
+                  5,000
+                </Button>
+              </div>
+
+              {/* Number Keypad */}
+              <div className='mb-6 grid grid-cols-3 gap-2'>
+                {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
+                  <Button
+                    key={num}
+                    variant='outline'
+                    size='lg'
+                    onClick={() => handleNumberPress(num.toString())}
+                    className='h-14 text-lg font-semibold'
                   >
-                    {/* Header with Balance */}
-                    <div className='mb-4 flex items-center justify-between'>
-                      <p className='text-sm text-gray-500'>
-                        Send Lightning Tip to <strong>@{recipientUsername}</strong>
-                      </p>
-                      <WalletBalanceDisplay size='sm' />
-                    </div>
+                    {num}
+                  </Button>
+                ))}
+                <div />
+                <Button
+                  variant='outline'
+                  size='lg'
+                  onClick={() => handleNumberPress('0')}
+                  className='h-14 text-lg font-semibold'
+                >
+                  0
+                </Button>
+                <Button
+                  variant='outline'
+                  size='lg'
+                  onClick={handleBackspace}
+                  className='h-14 border-none text-lg text-muted-foreground'
+                >
+                  ⌫
+                </Button>
+              </div>
 
-                    {/* Amount Display */}
-                    <div className='mb-4 rounded-xl p-4'>
-                      <div className='flex items-center justify-center gap-2'>
-                        <BitcoinSVGIcon className='h-6 w-6' />
-                        <div className='text-4xl font-bold text-gray-900'>
-                          {formatAmount(amount) || '0'}
-                        </div>
-                        <span className='text-sm text-gray-500'>sats</span>
-                      </div>
-                    </div>
+              {/* Action Buttons */}
+              <div className='flex flex-col gap-2'>
+                <Button
+                  onClick={handleNext}
+                  disabled={!amount || amount === '0'}
+                  className='flex-1 bg-red-600 py-4 text-base text-white hover:bg-red-700'
+                >
+                  Next
+                </Button>
+                <Button
+                  variant='secondary'
+                  onClick={handleClose}
+                  className='flex-1 border border-gray-100'
+                >
+                  Cancel
+                </Button>
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key='confirm'
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.2 }}
+              className='p-6'
+            >
+              {/* Header with Balance */}
+              <div className='mb-4 flex items-center justify-end'>
+                <WalletBalanceDisplay size='sm' />
+              </div>
 
-                    {/* Quick Amount Buttons */}
-                    <div className='mb-4 grid grid-cols-3 gap-2'>
-                      <Button
-                        variant='secondary'
-                        size='sm'
-                        onClick={() => handleQuickAmount(100)}
-                        className='text-xs'
-                      >
-                        100
-                      </Button>
-                      <Button
-                        variant='secondary'
-                        size='sm'
-                        onClick={() => handleQuickAmount(1000)}
-                        className='text-xs'
-                      >
-                        1,000
-                      </Button>
-                      <Button
-                        variant='secondary'
-                        size='sm'
-                        onClick={() => handleQuickAmount(5000)}
-                        className='text-xs'
-                      >
-                        5,000
-                      </Button>
-                    </div>
+              {/* Recipient Info */}
+              <div className='mb-6 flex flex-col items-center'>
+                <UserAvatar
+                  user={{
+                    name: recipientName,
+                    username: recipientUsername,
+                    image: recipientImage,
+                    verification_status: recipientVerificationStatus,
+                  }}
+                  size='md'
+                  className='mb-3'
+                />
+                <h3 className='font-semibold text-gray-900'>{recipientName}</h3>
+                <p className='text-sm text-gray-500'>@{recipientUsername}</p>
+              </div>
 
-                    {/* Number Keypad */}
-                    <div className='mb-6 grid grid-cols-3 gap-2'>
-                      {[7, 8, 9, 4, 5, 6, 1, 2, 3].map((num) => (
-                        <Button
-                          key={num}
-                          variant='outline'
-                          size='lg'
-                          onClick={() => handleNumberPress(num.toString())}
-                          className='h-14 text-lg font-semibold'
-                        >
-                          {num}
-                        </Button>
-                      ))}
-                      <div />
-                      <Button
-                        variant='outline'
-                        size='lg'
-                        onClick={() => handleNumberPress('0')}
-                        className='h-14 text-lg font-semibold'
-                      >
-                        0
-                      </Button>
-                      <Button
-                        variant='outline'
-                        size='lg'
-                        onClick={handleBackspace}
-                        className='h-14 border-none text-lg text-muted-foreground'
-                      >
-                        ⌫
-                      </Button>
-                    </div>
+              {/* Amount Summary */}
+              <div className='mb-6 rounded-xl border border-red-200 bg-red-50 p-4'>
+                <div className='text-center'>
+                  <p className='mb-1 text-base text-gray-600'>You&apos;re sending</p>
+                  <div className='flex items-center justify-center gap-2'>
+                    <span className='text-2xl font-bold text-gray-900'>{formatAmount(amount)}</span>
+                    <span className='text-sm text-gray-600'>sats</span>
+                  </div>
+                </div>
+              </div>
 
-                    {/* Action Buttons */}
-                    <div className='flex flex-col gap-2'>
-                      <Button
-                        onClick={handleNext}
-                        disabled={!amount || amount === '0'}
-                        className='flex-1 bg-red-600 py-4 text-base text-white hover:bg-red-700'
-                      >
-                        Next
-                      </Button>
-                      <Button
-                        variant='secondary'
-                        onClick={handleClose}
-                        className='flex-1 border border-gray-100'
-                      >
-                        Cancel
-                      </Button>
-                    </div>
-                  </motion.div>
+              {/* Payment Details */}
+              <div className='mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
+                <div className='flex items-center justify-between text-sm'>
+                  <span className='text-xs text-gray-600'>Lightning Address:</span>
+                  <span className='font-semibold text-gray-700'>
+                    {lightningAddress.length > 25
+                      ? `${lightningAddress.slice(0, 25)}...`
+                      : lightningAddress}
+                  </span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className='flex flex-col gap-3'>
+                {!invoice ? (
+                  <Button
+                    onClick={handlePay}
+                    disabled={isLoading}
+                    className='w-full bg-red-600 py-6 text-base text-white hover:bg-red-700'
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                        Creating Invoice...
+                      </>
+                    ) : (
+                      <>Pay with Lightning</>
+                    )}
+                  </Button>
                 ) : (
-                  <motion.div
-                    key='confirm'
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 20 }}
-                    transition={{ duration: 0.2 }}
-                    className='p-6'
-                  >
-                    {/* Header with Balance */}
-                    <div className='mb-4 flex items-center justify-end'>
-                      <WalletBalanceDisplay size='sm' />
-                    </div>
-
-                    {/* Recipient Info */}
-                    <div className='mb-6 flex flex-col items-center'>
-                      <UserAvatar
-                        user={{
-                          name: recipientName,
-                          username: recipientUsername,
-                          image: recipientImage,
-                          verification_status: recipientVerificationStatus,
-                        }}
-                        size='md'
-                        className='mb-3'
-                      />
-                      <h3 className='font-semibold text-gray-900'>{recipientName}</h3>
-                      <p className='text-sm text-gray-500'>@{recipientUsername}</p>
-                    </div>
-
-                    {/* Amount Summary */}
-                    <div className='mb-6 rounded-xl border border-red-200 bg-red-50 p-4'>
-                      <div className='text-center'>
-                        <p className='mb-1 text-base text-gray-600'>You&apos;re sending</p>
-                        <div className='flex items-center justify-center gap-2'>
-                          <span className='text-2xl font-bold text-gray-900'>
-                            {formatAmount(amount)}
-                          </span>
-                          <span className='text-sm text-gray-600'>sats</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Payment Details */}
-                    <div className='mb-6 space-y-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
-                      <div className='flex items-center justify-between text-sm'>
-                        <span className='text-xs text-gray-600'>Lightning Address:</span>
-                        <span className='font-semibold text-gray-700'>
-                          {lightningAddress.length > 25
-                            ? `${lightningAddress.slice(0, 25)}...`
-                            : lightningAddress}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Action Buttons */}
-                    <div className='flex flex-col gap-3'>
-                      {!invoice ? (
-                        <Button
-                          onClick={handlePay}
-                          disabled={isLoading}
-                          className='w-full bg-red-600 py-6 text-base text-white hover:bg-red-700'
-                        >
-                          {isLoading ? (
-                            <>
-                              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                              Creating Invoice...
-                            </>
-                          ) : (
-                            <>Pay with Lightning</>
-                          )}
-                        </Button>
-                      ) : (
-                        <>
-                          <Button
-                            onClick={handleCopyInvoice}
-                            variant='outline'
-                            className='w-full py-6 text-base'
-                          >
-                            <Copy className='mr-2 h-4 w-4' />
-                            Copy Invoice
-                          </Button>
-                          <p className='text-center text-sm text-gray-500'>
-                            Wallet didn&apos;t open? Copy the invoice and paste it in your Lightning
-                            wallet.
-                          </p>
-                        </>
-                      )}
-                      <Button
-                        variant='secondary'
-                        onClick={invoice ? handleClose : handleBack}
-                        disabled={isLoading}
-                        className='mb-6 w-full border border-gray-200'
-                      >
-                        {invoice ? (
-                          'Close'
-                        ) : (
-                          <>
-                            <ArrowLeft className='h-4 w-4' />
-                            Back
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </motion.div>
+                  <>
+                    <Button
+                      onClick={handleCopyInvoice}
+                      variant='outline'
+                      className='w-full py-6 text-base'
+                    >
+                      <Copy className='mr-2 h-4 w-4' />
+                      Copy Invoice
+                    </Button>
+                    <p className='text-center text-sm text-gray-500'>
+                      Wallet didn&apos;t open? Copy the invoice and paste it in your Lightning
+                      wallet.
+                    </p>
+                  </>
                 )}
-              </AnimatePresence>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
+                <Button
+                  variant='secondary'
+                  onClick={invoice ? handleClose : handleBack}
+                  disabled={isLoading}
+                  className='mb-6 w-full border border-gray-200'
+                >
+                  {invoice ? (
+                    'Close'
+                  ) : (
+                    <>
+                      <ArrowLeft className='h-4 w-4' />
+                      Back
+                    </>
+                  )}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </MasterScrollableSheet>
   );
 }

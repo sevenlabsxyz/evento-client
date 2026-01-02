@@ -1,6 +1,6 @@
 'use client';
 
-import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 
@@ -24,53 +24,38 @@ export default function DeleteConfirmationSheet({
   };
 
   return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
+    <MasterScrollableSheet
+      title={`Delete ${itemType}`}
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      contentClassName='p-6'
     >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6'>
-              {/* Handle */}
-              <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
-              </div>
+      <div className='mb-6 flex items-center gap-3'>
+        <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
+          <AlertTriangle className='h-5 w-5 text-red-500' />
+        </div>
+        <h2 className='text-xl font-semibold'>Delete {itemType}</h2>
+      </div>
 
-              {/* Header */}
-              <div className='mb-6 flex items-center gap-3'>
-                <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
-                  <AlertTriangle className='h-5 w-5 text-red-500' />
-                </div>
-                <h2 className='text-xl font-semibold'>Delete {itemType}</h2>
-              </div>
+      {/* Body */}
+      <div className='mb-8 text-gray-600'>
+        <p>Are you sure you want to delete this {itemType}? This action cannot be undone.</p>
+      </div>
 
-              {/* Body */}
-              <div className='mb-8 text-gray-600'>
-                <p>
-                  Are you sure you want to delete this {itemType}? This action cannot be undone.
-                </p>
-              </div>
-
-              {/* Actions */}
-              <div className='flex flex-col gap-3 sm:flex-row'>
-                <Button onClick={onClose} variant='outline' className='w-full'>
-                  Cancel
-                </Button>
-                <Button
-                  onClick={handleConfirm}
-                  variant='destructive'
-                  className='w-full'
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Deleting...' : `Delete ${itemType}`}
-                </Button>
-              </div>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
+      {/* Actions */}
+      <div className='flex flex-col gap-3 sm:flex-row'>
+        <Button onClick={onClose} variant='outline' className='w-full'>
+          Cancel
+        </Button>
+        <Button
+          onClick={handleConfirm}
+          variant='destructive'
+          className='w-full'
+          disabled={isLoading}
+        >
+          {isLoading ? 'Deleting...' : `Delete ${itemType}`}
+        </Button>
+      </div>
+    </MasterScrollableSheet>
   );
 }

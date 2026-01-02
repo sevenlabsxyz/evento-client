@@ -1,10 +1,8 @@
 'use client';
-import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import {
   formatTimezoneOffsetWithAbbreviation,
   getTimezoneAbbreviationSync,
 } from '@/lib/utils/timezone';
-import { VisuallyHidden } from '@silk-hq/components';
 import { useMemo, useState } from 'react';
 import './timezone-sheet.css';
 
@@ -1410,7 +1408,6 @@ export default function TimezoneSheet({
   onTimezoneSelect,
   selectedTimezone,
 }: TimezoneSheetProps) {
-  const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
 
   const { commonTimezonesList, regularTimezonesList } = useMemo(() => {
@@ -1465,94 +1462,73 @@ export default function TimezoneSheet({
   };
 
   return (
-    <SheetWithDetent.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-      activeDetent={activeDetent}
-      onActiveDetentChange={setActiveDetent}
-      // forComponent='closest'
+    <MasterScrollableSheet
+      title='Select Timezone'
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      contentClassName='TimezoneSheet-scrollContent'
     >
-      <SheetWithDetent.Portal>
-        <SheetWithDetent.View>
-          <SheetWithDetent.Backdrop />
-          <SheetWithDetent.Content className='TimezoneSheet-content'>
-            <div className='TimezoneSheet-header'>
-              <SheetWithDetent.Handle className='TimezoneSheet-handle' />
-              <VisuallyHidden.Root asChild>
-                <SheetWithDetent.Title className='TimezoneSheet-title'>
-                  Select Timezone
-                </SheetWithDetent.Title>
-              </VisuallyHidden.Root>
-              <input
-                className='TimezoneSheet-input'
-                type='text'
-                placeholder='Search for a timezone'
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onFocus={() => setActiveDetent(2)}
-              />
-            </div>
-            <SheetWithDetent.ScrollRoot asChild>
-              <SheetWithDetent.ScrollView className='TimezoneSheet-scrollView'>
-                <SheetWithDetent.ScrollContent className='TimezoneSheet-scrollContent'>
-                  {/* Common Timezones Section */}
-                  {commonTimezonesList.length > 0 && (
-                    <>
-                      <div className='TimezoneSheet-sectionHeader'>Common</div>
-                      {commonTimezonesList.map((timezone) => (
-                        <button
-                          key={`common-${timezone.city}-${timezone.country}`}
-                          onClick={() => handleTimezoneSelect(timezone)}
-                          className='TimezoneSheet-timezoneContainer'
-                        >
-                          <div className='TimezoneSheet-timezoneDetails'>
-                            <div className='TimezoneSheet-timezoneCity'>
-                              {timezone.city}, {timezone.country}
-                            </div>
-                          </div>
-                          <div className='TimezoneSheet-timezoneOffset'>
-                            {formatTimezoneOffsetWithAbbreviation(timezone.value, timezone.offset)}
-                          </div>
-                        </button>
-                      ))}
-                    </>
-                  )}
+      <div className='TimezoneSheet-header'>
+        <input
+          className='TimezoneSheet-input'
+          type='text'
+          placeholder='Search for a timezone'
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
+      </div>
+      {/* Common Timezones Section */}
+      {commonTimezonesList.length > 0 && (
+        <>
+          <div className='TimezoneSheet-sectionHeader'>Common</div>
+          {commonTimezonesList.map((timezone) => (
+            <button
+              key={`common-${timezone.city}-${timezone.country}`}
+              onClick={() => handleTimezoneSelect(timezone)}
+              className='TimezoneSheet-timezoneContainer'
+            >
+              <div className='TimezoneSheet-timezoneDetails'>
+                <div className='TimezoneSheet-timezoneCity'>
+                  {timezone.city}, {timezone.country}
+                </div>
+              </div>
+              <div className='TimezoneSheet-timezoneOffset'>
+                {formatTimezoneOffsetWithAbbreviation(timezone.value, timezone.offset)}
+              </div>
+            </button>
+          ))}
+        </>
+      )}
 
-                  {/* Regular Timezones Section */}
-                  {regularTimezonesList.length > 0 && (
-                    <>
-                      {commonTimezonesList.length > 0 && (
-                        <div className='TimezoneSheet-sectionHeader'>All Timezones</div>
-                      )}
-                      {regularTimezonesList.map((timezone) => (
-                        <button
-                          key={`${timezone.city}-${timezone.country}`}
-                          onClick={() => handleTimezoneSelect(timezone)}
-                          className='TimezoneSheet-timezoneContainer'
-                        >
-                          <div className='TimezoneSheet-timezoneDetails'>
-                            <div className='TimezoneSheet-timezoneCity'>
-                              {timezone.city}, {timezone.country}
-                            </div>
-                          </div>
-                          <div className='TimezoneSheet-timezoneOffset'>
-                            {formatTimezoneOffsetWithAbbreviation(timezone.value, timezone.offset)}
-                          </div>
-                        </button>
-                      ))}
-                    </>
-                  )}
+      {/* Regular Timezones Section */}
+      {regularTimezonesList.length > 0 && (
+        <>
+          {commonTimezonesList.length > 0 && (
+            <div className='TimezoneSheet-sectionHeader'>All Timezones</div>
+          )}
+          {regularTimezonesList.map((timezone) => (
+            <button
+              key={`${timezone.city}-${timezone.country}`}
+              onClick={() => handleTimezoneSelect(timezone)}
+              className='TimezoneSheet-timezoneContainer'
+            >
+              <div className='TimezoneSheet-timezoneDetails'>
+                <div className='TimezoneSheet-timezoneCity'>
+                  {timezone.city}, {timezone.country}
+                </div>
+              </div>
+              <div className='TimezoneSheet-timezoneOffset'>
+                {formatTimezoneOffsetWithAbbreviation(timezone.value, timezone.offset)}
+              </div>
+            </button>
+          ))}
+        </>
+      )}
 
-                  {/* No Results */}
-                  {commonTimezonesList.length === 0 && regularTimezonesList.length === 0 && (
-                    <div className='TimezoneSheet-noResults'>No timezones found</div>
-                  )}
-                </SheetWithDetent.ScrollContent>
-              </SheetWithDetent.ScrollView>
-            </SheetWithDetent.ScrollRoot>
-          </SheetWithDetent.Content>
-        </SheetWithDetent.View>
-      </SheetWithDetent.Portal>
-    </SheetWithDetent.Root>
+      {/* No Results */}
+      {commonTimezonesList.length === 0 && regularTimezonesList.length === 0 && (
+        <div className='TimezoneSheet-noResults'>No timezones found</div>
+      )}
+    </MasterScrollableSheet>
   );
 }

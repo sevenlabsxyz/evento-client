@@ -5,11 +5,10 @@ import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { RSVPStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { VisuallyHidden } from '@silk-hq/components';
 import { Check, Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useMemo } from 'react';
-import { DetachedSheet } from '../ui/detached-sheet';
+import { MasterScrollableSheet } from '../ui/master-scrollable-sheet';
 
 interface RsvpSheetProps {
   eventId: string;
@@ -119,51 +118,35 @@ export default function RsvpSheet({ eventId, isOpen, onClose }: RsvpSheetProps) 
   };
 
   return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && handleClose()}
+    <MasterScrollableSheet
+      title='RSVP'
+      open={isOpen}
+      onOpenChange={(open) => !open && handleClose()}
+      contentClassName='p-6 pb-24'
     >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6 pb-24'>
-              {/* Handle */}
-              <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
-              </div>
-
-              <VisuallyHidden.Root asChild>
-                <DetachedSheet.Title>RSVP</DetachedSheet.Title>
-              </VisuallyHidden.Root>
-
-              <div className='space-y-3'>
-                <button
-                  className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
-                  disabled={isLoadingCurrent || upsert.isPending}
-                  onClick={() => handleAction('yes')}
-                >
-                  {renderLabel('yes', buttons[0].label)}
-                </button>
-                <button
-                  className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
-                  disabled={isLoadingCurrent || upsert.isPending}
-                  onClick={() => handleAction('maybe')}
-                >
-                  {renderLabel('maybe', buttons[1].label)}
-                </button>
-                <button
-                  className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[2].classes}`}
-                  disabled={isLoadingCurrent || upsert.isPending}
-                  onClick={() => handleAction('no')}
-                >
-                  {renderLabel('no', buttons[2].label)}
-                </button>
-              </div>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
+      <div className='space-y-3'>
+        <button
+          className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
+          disabled={isLoadingCurrent || upsert.isPending}
+          onClick={() => handleAction('yes')}
+        >
+          {renderLabel('yes', buttons[0].label)}
+        </button>
+        <button
+          className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
+          disabled={isLoadingCurrent || upsert.isPending}
+          onClick={() => handleAction('maybe')}
+        >
+          {renderLabel('maybe', buttons[1].label)}
+        </button>
+        <button
+          className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[2].classes}`}
+          disabled={isLoadingCurrent || upsert.isPending}
+          onClick={() => handleAction('no')}
+        >
+          {renderLabel('no', buttons[2].label)}
+        </button>
+      </div>
+    </MasterScrollableSheet>
   );
 }
