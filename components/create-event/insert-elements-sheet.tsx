@@ -1,5 +1,4 @@
-import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { VisuallyHidden } from '@silk-hq/components';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import type { Editor } from '@tiptap/core';
 import { Minus } from 'lucide-react';
 
@@ -11,41 +10,26 @@ interface InsertElementsSheetProps {
 
 export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertElementsSheetProps) {
   return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-      forComponent='closest'
+    <MasterScrollableSheet
+      title='Insert Elements'
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      contentClassName='InsertSheet-content'
     >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content className='InsertSheet-content'>
-            <div className='mb-4 flex justify-center'>
-              <DetachedSheet.Handle className='InsertSheet-handle' />
-            </div>
-            <VisuallyHidden.Root asChild>
-              <DetachedSheet.Title>Insert Elements</DetachedSheet.Title>
-            </VisuallyHidden.Root>
+      <h3 className='InsertSheet-title'>Insert Elements</h3>
 
-            <div className='InsertSheet-container'>
-              <h3 className='InsertSheet-title'>Insert Elements</h3>
-
-              <div className='InsertSheet-options'>
-                <button
-                  onClick={() => {
-                    editor.chain().focus().setHorizontalRule().run();
-                    onClose();
-                  }}
-                  className='InsertSheet-option'
-                >
-                  <Minus className='mr-2 h-4 w-4' />
-                  <span className='grow'>Divider</span>
-                </button>
-              </div>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
+      <div className='InsertSheet-options'>
+        <button
+          onClick={() => {
+            editor.chain().focus().setHorizontalRule().run();
+            onClose();
+          }}
+          className='InsertSheet-option'
+        >
+          <Minus className='mr-2 h-4 w-4' />
+          <span className='grow'>Divider</span>
+        </button>
+      </div>
+    </MasterScrollableSheet>
   );
 }

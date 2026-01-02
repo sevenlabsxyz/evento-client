@@ -1,7 +1,6 @@
 'use client';
 
-import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { VisuallyHidden } from '@silk-hq/components';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useEffect, useState } from 'react';
 import './description-sheet.css';
 import { LinkProps } from './tiptap-utils';
@@ -78,97 +77,75 @@ export function LinkEditSheet({
   };
 
   return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-      forComponent='closest'
+    <MasterScrollableSheet
+      title='Edit Link'
+      open={isOpen}
+      onOpenChange={(open) => !open && onClose()}
+      contentClassName='LinkEditSheet-content'
     >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content className='LinkEditSheet-content'>
-            <div className='mb-4 flex justify-center'>
-              <DetachedSheet.Handle className='LinkEditSheet-handle' />
-            </div>
-            <VisuallyHidden.Root asChild>
-              <DetachedSheet.Title>Edit Link</DetachedSheet.Title>
-            </VisuallyHidden.Root>
+      <form onSubmit={handleSubmit} className='LinkEditSheet-container'>
+        <h3 className='LinkEditSheet-title'>Edit Link</h3>
 
-            <form onSubmit={handleSubmit} className='LinkEditSheet-container'>
-              <h3 className='LinkEditSheet-title'>Edit Link</h3>
+        <div className='LinkEditSheet-form'>
+          <div className='LinkEditSheet-field'>
+            <label className='LinkEditSheet-label'>Link</label>
+            <input
+              type='url'
+              value={field.url}
+              onChange={(e) => {
+                setField({ ...field, url: e.target.value });
+                setError('');
+              }}
+              placeholder='Paste a link (https://...)'
+              className='LinkEditSheet-input'
+              autoFocus
+              required
+            />
+            {error && <p className='LinkEditSheet-error'>{error}</p>}
+          </div>
 
-              <div className='LinkEditSheet-form'>
-                <div className='LinkEditSheet-field'>
-                  <label className='LinkEditSheet-label'>Link</label>
-                  <input
-                    type='url'
-                    value={field.url}
-                    onChange={(e) => {
-                      setField({ ...field, url: e.target.value });
-                      setError('');
-                    }}
-                    placeholder='Paste a link (https://...)'
-                    className='LinkEditSheet-input'
-                    autoFocus
-                    required
-                  />
-                  {error && <p className='LinkEditSheet-error'>{error}</p>}
-                  {error && <p className='LinkEditSheet-error'>{error}</p>}
-                </div>
+          <div className='LinkEditSheet-field'>
+            <label className='LinkEditSheet-label'>Display text (optional)</label>
+            <input
+              type='text'
+              value={field.text}
+              onChange={(e) => setField({ ...field, text: e.target.value })}
+              placeholder='Text to display'
+              className='LinkEditSheet-input'
+            />
+          </div>
 
-                <div className='LinkEditSheet-field'>
-                  <label className='LinkEditSheet-label'>Display text (optional)</label>
-                  <label className='LinkEditSheet-label'>Display text (optional)</label>
-                  <input
-                    type='text'
-                    value={field.text}
-                    onChange={(e) => setField({ ...field, text: e.target.value })}
-                    onChange={(e) => setField({ ...field, text: e.target.value })}
-                    placeholder='Text to display'
-                    className='LinkEditSheet-input'
-                  />
-                </div>
+          <div className='LinkEditSheet-field LinkEditSheet-field--checkbox'>
+            <label className='LinkEditSheet-checkboxLabel'>
+              <input
+                type='checkbox'
+                checked={field.openInNewTab}
+                onChange={() =>
+                  setField({
+                    ...field,
+                    openInNewTab: !field.openInNewTab,
+                  })
+                }
+                className='LinkEditSheet-checkbox'
+              />
+              <span>Open in new tab</span>
+            </label>
+          </div>
+        </div>
 
-                <div className='LinkEditSheet-field LinkEditSheet-field--checkbox'>
-                  <label className='LinkEditSheet-checkboxLabel'>
-                    <input
-                      type='checkbox'
-                      checked={field.openInNewTab}
-                      onChange={() =>
-                        setField({
-                          ...field,
-                          openInNewTab: !field.openInNewTab,
-                        })
-                      }
-                      onChange={() =>
-                        setField({
-                          ...field,
-                          openInNewTab: !field.openInNewTab,
-                        })
-                      }
-                      className='LinkEditSheet-checkbox'
-                    />
-                    <span>Open in new tab</span>
-                  </label>
-                </div>
-              </div>
-
-              <div className='LinkEditSheet-buttons'>
-                <button
-                  type='button'
-                  onClick={onClose}
-                  className='LinkEditSheet-button LinkEditSheet-button--cancel'
-                >
-                  Cancel
-                </button>
-                <button type='submit' className='LinkEditSheet-button LinkEditSheet-button--save'>
-                  Insert
-                </button>
-              </div>
-            </form>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
+        <div className='LinkEditSheet-buttons'>
+          <button
+            type='button'
+            onClick={onClose}
+            className='LinkEditSheet-button LinkEditSheet-button--cancel'
+          >
+            Cancel
+          </button>
+          <button type='submit' className='LinkEditSheet-button LinkEditSheet-button--save'>
+            Insert
+          </button>
+        </div>
+      </form>
+    </MasterScrollableSheet>
   );
 }

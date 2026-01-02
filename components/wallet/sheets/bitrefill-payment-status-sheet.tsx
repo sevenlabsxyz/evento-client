@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 
@@ -88,64 +88,56 @@ export function BitrefillPaymentStatusSheet({
   };
 
   return (
-    <DetachedSheet.Root presented={open} onPresentedChange={handleOpenChange}>
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6'>
-              <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
-              </div>
+    <MasterScrollableSheet
+      title={content.title}
+      open={open}
+      onOpenChange={handleOpenChange}
+      contentClassName='p-6'
+    >
+      {/* Status Icon */}
+      <div className='mb-6 flex justify-center'>
+        <motion.div
+          className={`flex h-20 w-20 items-center justify-center rounded-full ${content.iconBg}`}
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        >
+          {content.icon}
+        </motion.div>
+      </div>
 
-              {/* Status Icon */}
-              <div className='mb-6 flex justify-center'>
-                <motion.div
-                  className={`flex h-20 w-20 items-center justify-center rounded-full ${content.iconBg}`}
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                >
-                  {content.icon}
-                </motion.div>
-              </div>
+      {/* Title */}
+      <motion.h2
+        className='mb-2 text-center text-xl font-semibold text-gray-900'
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+      >
+        {content.title}
+      </motion.h2>
 
-              {/* Title */}
-              <motion.h2
-                className='mb-2 text-center text-xl font-semibold text-gray-900'
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                {content.title}
-              </motion.h2>
+      {/* Message */}
+      <motion.p
+        className='mb-8 text-center text-sm text-gray-600'
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        {content.message}
+      </motion.p>
 
-              {/* Message */}
-              <motion.p
-                className='mb-8 text-center text-sm text-gray-600'
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                {content.message}
-              </motion.p>
-
-              {/* Action Button */}
-              {content.showButton && (
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Button onClick={onClose} className='h-12 w-full rounded-full'>
-                    {status === 'success' ? 'Done' : 'Close'}
-                  </Button>
-                </motion.div>
-              )}
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
+      {/* Action Button */}
+      {content.showButton && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+        >
+          <Button onClick={onClose} className='h-12 w-full rounded-full'>
+            {status === 'success' ? 'Done' : 'Close'}
+          </Button>
+        </motion.div>
+      )}
+    </MasterScrollableSheet>
   );
 }
