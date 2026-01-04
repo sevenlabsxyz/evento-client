@@ -11,7 +11,7 @@ import {
   Mail,
   MessageCircle,
   Music,
-  // Share2,
+  UserPlus,
   Users,
   X,
 } from 'lucide-react';
@@ -69,15 +69,15 @@ export default function ManageEventPage() {
       iconColor: 'text-blue-600',
       route: `/e/${eventId}/manage/guests`,
     },
-    // {
-    //   id: 'hosts',
-    //   title: 'Hosts',
-    //   description: 'Manage event co-hosts',
-    //   icon: <Share2 className='h-6 w-6' />,
-    //   iconBg: 'bg-orange-100',
-    //   iconColor: 'text-orange-600',
-    //   route: `/e/${eventId}/manage/hosts`,
-    // },
+    {
+      id: 'cohosts',
+      title: 'Cohosts',
+      description: 'Invite others to help manage',
+      icon: <UserPlus className='h-6 w-6' />,
+      iconBg: 'bg-purple-100',
+      iconColor: 'text-purple-600',
+      route: `/e/${eventId}/manage/hosts`,
+    },
     {
       id: 'email-blasts',
       title: 'Email Blasts',
