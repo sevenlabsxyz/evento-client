@@ -245,8 +245,7 @@ export default function HostsManagementPage() {
                       </button>
                     </div>
                   );
-                }
-                ))}
+                })}
               </div>
             </div>
           )}
