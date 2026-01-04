@@ -7,7 +7,7 @@ import apiClient from '@/lib/api/client';
 import { useCancelCohostInvite, useEventCohostInvites } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/services/logger';
 import { toast } from '@/lib/utils/toast';
 import { Clock, Crown, Plus, Trash2, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';

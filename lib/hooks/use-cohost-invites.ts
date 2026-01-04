@@ -1,7 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { CohostInvite, CohostInviteTarget } from '@/lib/types/api';
-import { logger } from '@/lib/utils/logger';
+import { logger } from '@/lib/services/logger';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
