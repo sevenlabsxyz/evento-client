@@ -1,12 +1,23 @@
 'use client';
 
 import ManageCohostsSheet from '@/components/manage-event/manage-cohosts-sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import apiClient from '@/lib/api/client';
 import { useCancelCohostInvite, useEventCohostInvites } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { CohostInvite } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { Clock, Crown, Plus, Trash2, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -21,10 +32,22 @@ export default function HostsManagementPage() {
 
   const [isInviteSheetOpen, setIsInviteSheetOpen] = useState(false);
   const [removingHostId, setRemovingHostId] = useState<string | null>(null);
+  const [inviteToCancel, setInviteToCancel] = useState<CohostInvite | null>(null);
 
   const { data: existingEvent, isLoading, error, refetch } = useEventDetails(eventId);
   const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
   const cancelInviteMutation = useCancelCohostInvite(eventId);
+
+  const handleCancelInvite = (invite: CohostInvite) => {
+    setInviteToCancel(invite);
+  };
+
+  const confirmCancelInvite = () => {
+    if (inviteToCancel) {
+      cancelInviteMutation.mutate(inviteToCancel.id);
+      setInviteToCancel(null);
+    }
+  };
 
   const handleAddCoHost = () => {
     setIsInviteSheetOpen(true);
@@ -198,7 +221,7 @@ export default function HostsManagementPage() {
                       <p className='text-xs text-gray-500'>Pending cohost invite</p>
                     </div>
                     <button
-                      onClick={() => cancelInviteMutation.mutate(invite.id)}
+                      onClick={() => handleCancelInvite(invite)}
                       disabled={cancelInviteMutation.isPending}
                       className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200'
                     >
@@ -217,6 +240,32 @@ export default function HostsManagementPage() {
         isOpen={isInviteSheetOpen}
         onClose={() => setIsInviteSheetOpen(false)}
       />
+
+      <AlertDialog open={!!inviteToCancel} onOpenChange={() => setInviteToCancel(null)}>
+        <AlertDialogContent className='max-w-sm rounded-2xl'>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Invite?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel the cohost invitation to{' '}
+              <span className='font-medium text-gray-900'>
+                {inviteToCancel?.invitee?.username
+                  ? `@${inviteToCancel.invitee.username}`
+                  : inviteToCancel?.invitee_email}
+              </span>
+              ? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Invite</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCancelInvite}
+              className='bg-red-500 hover:bg-red-600'
+            >
+              Cancel Invite
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
