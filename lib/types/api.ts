@@ -343,7 +343,6 @@ export interface EmailBlast {
   scheduled_for: string | null;
   created_at: string;
   updated_at: string;
-  // Additional fields for UI display
   subject?: string;
   recipients?: string;
   recipientCount?: number;
@@ -351,6 +350,25 @@ export interface EmailBlast {
   failed?: number;
   pending?: number;
 }
+
+// Cohost Invite
+export interface CohostInvite {
+  id: string;
+  event_id: string;
+  inviter_id: string;
+  invitee_id: string | null;
+  invitee_email: string | null;
+  message: string | null;
+  status: 'pending' | 'accepted' | 'rejected' | 'expired';
+  created_at: string;
+  updated_at: string;
+  responded_at: string | null;
+  inviter?: UserDetails;
+  invitee?: UserDetails;
+  events?: EventWithUser;
+}
+
+export type CohostInviteTarget = { userId: string } | { email: string };
 
 // Email Blast creation form
 export interface CreateEmailBlastForm {

@@ -1,5 +1,6 @@
 'use client';
 
+import { CohostInvitesSection } from '@/components/hub/cohost-invites-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
@@ -84,6 +85,7 @@ export default function HubPage() {
   return (
     <>
       <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-4xl'>
+        <CohostInvitesSection />
         <MyEventsSection />
         <EventInvitesSection />
         <ForYouSection />
