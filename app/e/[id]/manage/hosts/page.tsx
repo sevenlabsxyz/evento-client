@@ -19,7 +19,7 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { CohostInvite } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { Clock, Crown, Plus, Trash2, X } from 'lucide-react';
+import { Clock, Crown, Loader2, Plus, Trash2, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -33,6 +33,7 @@ export default function HostsManagementPage() {
   const [isInviteSheetOpen, setIsInviteSheetOpen] = useState(false);
   const [removingHostId, setRemovingHostId] = useState<string | null>(null);
   const [inviteToCancel, setInviteToCancel] = useState<CohostInvite | null>(null);
+  const [cancellingInviteId, setCancellingInviteId] = useState<string | null>(null);
 
   const { data: existingEvent, isLoading, error, refetch } = useEventDetails(eventId);
   const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
@@ -44,7 +45,12 @@ export default function HostsManagementPage() {
 
   const confirmCancelInvite = () => {
     if (inviteToCancel) {
-      cancelInviteMutation.mutate(inviteToCancel.id);
+      setCancellingInviteId(inviteToCancel.id);
+      cancelInviteMutation.mutate(inviteToCancel.id, {
+        onSettled: () => {
+          setCancellingInviteId(null);
+        },
+      });
       setInviteToCancel(null);
     }
   };
@@ -204,30 +210,42 @@ export default function HostsManagementPage() {
             <div className='mt-6'>
               <h3 className='mb-3 text-sm font-medium text-gray-500'>Pending Invites</h3>
               <div className='space-y-2'>
-                {pendingInvites.map((invite) => (
-                  <div
-                    key={invite.id}
-                    className='flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3'
-                  >
-                    <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100'>
-                      <Clock className='h-4 w-4 text-amber-600' />
-                    </div>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium text-gray-900'>
-                        {invite.invitee?.username
-                          ? `@${invite.invitee.username}`
-                          : invite.invitee_email}
-                      </p>
-                      <p className='text-xs text-gray-500'>Pending cohost invite</p>
-                    </div>
-                    <button
-                      onClick={() => handleCancelInvite(invite)}
-                      disabled={cancelInviteMutation.isPending}
-                      className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200'
+                {pendingInvites.map((invite) => {
+                  const isCancelling = cancellingInviteId === invite.id;
+                  return (
+                    <div
+                      key={invite.id}
+                      className={`flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 transition-opacity ${
+                        isCancelling ? 'opacity-50' : ''
+                      }`}
                     >
-                      <X className='h-4 w-4 text-gray-500' />
-                    </button>
-                  </div>
+                      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100'>
+                        {isCancelling ? (
+                          <Loader2 className='h-4 w-4 animate-spin text-amber-600' />
+                        ) : (
+                          <Clock className='h-4 w-4 text-amber-600' />
+                        )}
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          {invite.invitee?.username
+                            ? `@${invite.invitee.username}`
+                            : invite.invitee_email}
+                        </p>
+                        <p className='text-xs text-gray-500'>
+                          {isCancelling ? 'Cancelling...' : 'Pending cohost invite'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleCancelInvite(invite)}
+                        disabled={isCancelling || cancelInviteMutation.isPending}
+                        className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50'
+                      >
+                        <X className='h-4 w-4 text-gray-500' />
+                      </button>
+                    </div>
+                  );
+                }
                 ))}
               </div>
             </div>
