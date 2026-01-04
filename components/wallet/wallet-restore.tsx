@@ -265,13 +265,9 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
               <Key className='h-8 w-8 text-black' />
             )}
           </div>
-          <h2 className='text-2xl font-bold'>
-            {isPasswordMode ? 'Enter Admin Password' : 'Enter Your PIN'}
-          </h2>
+          <h2 className='text-2xl font-bold'>Enter Your PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
-            {isPasswordMode
-              ? 'Admin mode enabled'
-              : 'Enter the PIN you used to encrypt this backup'}
+            Enter the PIN you used to encrypt this backup
           </p>
         </div>
 
