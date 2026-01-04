@@ -7,7 +7,6 @@ import apiClient from '@/lib/api/client';
 import { useCancelCohostInvite, useEventCohostInvites } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { logger } from '@/lib/services/logger';
 import { toast } from '@/lib/utils/toast';
 import { Clock, Crown, Plus, Trash2, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -24,20 +23,8 @@ export default function HostsManagementPage() {
   const [removingHostId, setRemovingHostId] = useState<string | null>(null);
 
   const { data: existingEvent, isLoading, error, refetch } = useEventDetails(eventId);
-  const {
-    data: pendingInvites = [],
-    isLoading: invitesLoading,
-    error: invitesError,
-  } = useEventCohostInvites(eventId, 'pending');
+  const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
   const cancelInviteMutation = useCancelCohostInvite(eventId);
-
-  logger.info('[HostsManagementPage] pendingInvites state', { 
-    pendingInvites, 
-    length: pendingInvites?.length,
-    invitesLoading,
-    invitesError,
-    eventId 
-  });
 
   const handleAddCoHost = () => {
     setIsInviteSheetOpen(true);

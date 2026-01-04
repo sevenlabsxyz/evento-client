@@ -1,7 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import { CohostInvite, CohostInviteTarget } from '@/lib/types/api';
-import { logger } from '@/lib/services/logger';
+
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -36,7 +36,7 @@ export function useSendCohostInvites(eventId: string) {
         `/v1/events/${eventId}/cohost-invites`,
         payload
       );
-      return res.data;
+      return res;
     },
     onSuccess: (data) => {
       const count = data?.data?.sent ?? 0;
@@ -56,17 +56,11 @@ export function useEventCohostInvites(eventId: string, status?: string, enabled 
     queryKey: [...queryKeys.eventCohostInvites(eventId), status],
     queryFn: async () => {
       const params = status ? `?status=${status}` : '';
-      logger.info('[useEventCohostInvites] Fetching', { eventId, status, params });
+
       const res = await apiClient.get<CohostInvitesResponse>(
         `/v1/events/${eventId}/cohost-invites${params}`
       );
-      logger.info('[useEventCohostInvites] Response', {
-        status: res.status,
-        resData: res.data,
-        extractedData: res.data?.data,
-        length: res.data?.data?.length,
-      });
-      return res.data?.data || [];
+      return res.data || [];
     },
     enabled,
   });
@@ -82,7 +76,7 @@ export function useMyCohostInvites(
       const res = await apiClient.get<CohostInvitesResponse>(
         `/v1/user/cohost-invites?status=${status}`
       );
-      return res.data?.data || [];
+      return res.data || [];
     },
     enabled,
   });
