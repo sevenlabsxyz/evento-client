@@ -55,9 +55,16 @@ export function useEventCohostInvites(eventId: string, status?: string, enabled 
     queryKey: [...queryKeys.eventCohostInvites(eventId), status],
     queryFn: async () => {
       const params = status ? `?status=${status}` : '';
+      console.log('[useEventCohostInvites] Fetching', { eventId, status, params });
       const res = await apiClient.get<CohostInvitesResponse>(
         `/v1/events/${eventId}/cohost-invites${params}`
       );
+      console.log('[useEventCohostInvites] Response', {
+        status: res.status,
+        resData: res.data,
+        extractedData: res.data?.data,
+        length: res.data?.data?.length,
+      });
       return res.data?.data || [];
     },
     enabled,

@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "dev:logged": "next dev 2>&1 | node ../evento-log-server/pipe-stdout.js client",
     "lint": "next lint",
     "start": "next start",
     "format": "prettier --config .prettierc.json --write .",

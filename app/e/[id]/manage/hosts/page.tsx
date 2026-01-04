@@ -23,8 +23,20 @@ export default function HostsManagementPage() {
   const [removingHostId, setRemovingHostId] = useState<string | null>(null);
 
   const { data: existingEvent, isLoading, error, refetch } = useEventDetails(eventId);
-  const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
+  const {
+    data: pendingInvites = [],
+    isLoading: invitesLoading,
+    error: invitesError,
+  } = useEventCohostInvites(eventId, 'pending');
   const cancelInviteMutation = useCancelCohostInvite(eventId);
+
+  console.log('[HostsManagementPage] pendingInvites state', {
+    pendingInvites,
+    length: pendingInvites?.length,
+    invitesLoading,
+    invitesError,
+    eventId,
+  });
 
   const handleAddCoHost = () => {
     setIsInviteSheetOpen(true);
