@@ -7,6 +7,7 @@ import EventGuestsSection from '@/components/event-detail/event-guests-section';
 import EventHost from '@/components/event-detail/event-host';
 import EventInfo from '@/components/event-detail/event-info';
 import EventLocation from '@/components/event-detail/event-location';
+import { EventPasswordGate } from '@/components/event-detail/event-password-gate';
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
 import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
@@ -23,7 +24,8 @@ import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { RSVPStatus } from '@/lib/types/api';
+import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
+import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { Share } from 'lucide-react';
@@ -41,6 +43,7 @@ export default function EventDetailPageClient() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
+  const [passwordAccessGranted, setPasswordAccessGranted] = useState(false);
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -211,6 +214,58 @@ export default function EventDetailPageClient() {
   }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, event?.title]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
+
+  // Check if user should bypass password protection
+  const shouldBypassPasswordGate = useMemo(() => {
+    if (!eventData?.password_protected) return true; // Not password protected
+    if (passwordAccessGranted) return true; // Just granted access via password
+
+    // Check localStorage for previous access
+    if (hasEventAccess(eventId)) return true;
+
+    // Check if user is a host or co-host
+    if (user && hostsData.some((host) => host.id === user.id)) return true;
+
+    // Check if user is the creator
+    if (user && eventData.creator_user_id === user.id) return true;
+
+    // Check if user has RSVP'd 'yes'
+    if (userRsvpData?.status === 'yes') return true;
+
+    return false;
+  }, [
+    eventData?.password_protected,
+    eventData?.creator_user_id,
+    passwordAccessGranted,
+    eventId,
+    user,
+    hostsData,
+    userRsvpData?.status,
+  ]);
+
+  // Show password gate if event is password protected and user doesn't have access
+  if (!isLoading && eventData?.password_protected && !shouldBypassPasswordGate) {
+    const passwordProtectedEvent: PasswordProtectedEventResponse = {
+      id: eventData.id,
+      title: eventData.title,
+      cover: eventData.cover,
+      password_protected: true,
+      hosts: hostsData.map((h) => ({
+        id: h.id,
+        name: h.name,
+        username: h.username,
+        avatar: h.avatar || h.image || '',
+        image: h.image,
+      })),
+    };
+
+    return (
+      <EventPasswordGate
+        event={passwordProtectedEvent}
+        onAccessGranted={() => setPasswordAccessGranted(true)}
+      />
+    );
+  }
 
   if (isLoading) {
     return (

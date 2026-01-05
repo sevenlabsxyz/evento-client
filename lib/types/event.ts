@@ -89,6 +89,9 @@ export interface Event {
     name: string;
     username: string;
   };
+
+  // Password protection
+  passwordProtected?: boolean;
 }
 
 export interface EventSummary {

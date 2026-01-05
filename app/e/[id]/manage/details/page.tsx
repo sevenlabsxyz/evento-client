@@ -6,6 +6,7 @@ import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionModal from '@/components/create-event/image-selection-modal';
 import LocationSheet from '@/components/create-event/location-sheet';
+import PasswordProtectionSheet from '@/components/create-event/password-protection-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
@@ -21,7 +22,7 @@ import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin } from 'lucide-react';
+import { Calendar, ChevronRight, Edit3, Globe, KeyRound, Lock, MapPin, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -49,6 +50,8 @@ export default function EditEventDetailsPage() {
     timezone,
     visibility,
     emoji,
+    passwordProtected,
+    password,
     setTitle,
     setDescription,
     setCoverImage,
@@ -60,6 +63,7 @@ export default function EditEventDetailsPage() {
     setTimezone,
     setVisibility,
     setEmoji,
+    setPasswordProtection,
     populateFromApiEvent,
     getFormData,
     isValid,
@@ -76,6 +80,7 @@ export default function EditEventDetailsPage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
+  const [showPasswordSheet, setShowPasswordSheet] = useState(false);
 
   // Check if all required fields are filled and there are changes
   const isFormValid = isValid() && hasChanges();
@@ -391,6 +396,33 @@ export default function EditEventDetailsPage() {
             </div>
           </button>
         </div>
+
+        {/* Password Protection */}
+        <div className='rounded-2xl bg-white p-4'>
+          <button
+            onClick={() => setShowPasswordSheet(true)}
+            className='flex w-full items-center gap-4 text-left'
+          >
+            <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}>
+              {passwordProtected ? (
+                <ShieldCheck className='h-4 w-4 text-red-600' />
+              ) : (
+                <ShieldOff className='h-4 w-4 text-gray-600' />
+              )}
+            </div>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>
+                Password Protection
+              </label>
+              <div className='flex items-center justify-between'>
+                <span className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}>
+                  {passwordProtected ? 'Protected' : 'Not Protected'}
+                </span>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Modals */}
@@ -476,6 +508,15 @@ export default function EditEventDetailsPage() {
         onClose={() => setShowVisibilitySheet(false)}
         onVisibilitySelect={setVisibility}
         currentVisibility={visibility}
+      />
+
+      {/* Password Protection Sheet */}
+      <PasswordProtectionSheet
+        isOpen={showPasswordSheet}
+        onClose={() => setShowPasswordSheet(false)}
+        onSave={setPasswordProtection}
+        isPasswordProtected={passwordProtected}
+        currentPassword={password}
       />
 
       {/* Fixed Bottom Button */}

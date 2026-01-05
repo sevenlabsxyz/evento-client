@@ -41,6 +41,10 @@ interface EventFormState {
   hasCapacity: boolean;
   capacity: string;
 
+  // Password protection
+  passwordProtected: boolean;
+  password: string | null;
+
   // Attachments and links
   spotifyUrl: string;
   wavlakeUrl: string;
@@ -67,6 +71,9 @@ interface EventFormState {
   setVisibility: (visibility: 'public' | 'private') => void;
   setHasCapacity: (hasCapacity: boolean) => void;
   setCapacity: (capacity: string) => void;
+  setPasswordProtected: (passwordProtected: boolean) => void;
+  setPassword: (password: string | null) => void;
+  setPasswordProtection: (enabled: boolean, password: string | null) => void;
   setSpotifyUrl: (url: string) => void;
   setWavlakeUrl: (url: string) => void;
   setAttachments: (attachments: Array<{ type: string; url?: string; data?: any }>) => void;
@@ -121,6 +128,8 @@ const initialState = {
   visibility: 'private' as const,
   hasCapacity: false,
   capacity: '',
+  passwordProtected: false,
+  password: null as string | null,
   spotifyUrl: '',
   wavlakeUrl: '',
   attachments: [],
@@ -200,6 +209,10 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   setVisibility: (visibility) => set({ visibility }),
   setHasCapacity: (hasCapacity) => set({ hasCapacity }),
   setCapacity: (capacity) => set({ capacity }),
+  setPasswordProtected: (passwordProtected) => set({ passwordProtected }),
+  setPassword: (password) => set({ password }),
+  setPasswordProtection: (enabled, password) =>
+    set({ passwordProtected: enabled, password: enabled ? password : null }),
   setSpotifyUrl: (spotifyUrl) => set({ spotifyUrl }),
   setWavlakeUrl: (wavlakeUrl) => set({ wavlakeUrl }),
   setAttachments: (attachments) => set({ attachments }),
@@ -326,6 +339,8 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
         endTime,
         timezone: event.timezone,
         visibility: event.visibility as 'public' | 'private',
+        passwordProtected: event.password_protected || false,
+        password: event.password || null,
         spotifyUrl: event.spotify_url || '',
         wavlakeUrl: event.wavlake_url || '',
         contribCashapp: event.contrib_cashapp || '',
@@ -431,6 +446,10 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       // Cost
       cost: state.cost || undefined,
 
+      // Password protection
+      password_protected: state.passwordProtected,
+      password: state.passwordProtected ? state.password || undefined : undefined,
+
       // Settings for capacity
       settings: state.hasCapacity
         ? {
@@ -497,7 +516,9 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       currentData.contrib_venmo !== state.initialData.contrib_venmo ||
       currentData.contrib_paypal !== state.initialData.contrib_paypal ||
       currentData.contrib_btclightning !== state.initialData.contrib_btclightning ||
-      currentData.cost !== state.initialData.cost
+      currentData.cost !== state.initialData.cost ||
+      currentData.password_protected !== state.initialData.password_protected ||
+      currentData.password !== state.initialData.password
     );
   },
 

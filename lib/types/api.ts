@@ -140,6 +140,10 @@ export interface Event {
   creator_user_id: string;
   hosts: EventHost[];
 
+  // Password protection
+  password_protected?: boolean;
+  password?: string; // Only returned for hosts in manage mode
+
   // Date components (stored separately for timezone handling)
   start_date_day: number;
   start_date_month: number;
@@ -415,3 +419,35 @@ export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
 export type EmailBlastRecipientFilter = 'all' | 'yes_only' | 'yes_and_maybe';
+
+// Password-protected event response (minimal data when locked)
+export interface PasswordProtectedEventResponse {
+  id: string;
+  title: string;
+  cover?: string;
+  password_protected: true;
+  hosts: Array<{
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    image?: string;
+  }>;
+}
+
+// Contact host message form
+export interface ContactHostForm {
+  name: string;
+  email: string;
+  message: string;
+}
+
+// Password verification request/response
+export interface VerifyEventPasswordRequest {
+  password: string;
+}
+
+export interface VerifyEventPasswordResponse {
+  success: boolean;
+  message: string;
+}

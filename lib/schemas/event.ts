@@ -91,6 +91,10 @@ export const eventFormSchema = z.object({
       show_capacity_count: z.boolean().optional(),
     })
     .optional(),
+
+  // Password protection
+  password_protected: z.boolean().optional(),
+  password: z.string().optional(),
 });
 
 export type EventFormData = z.infer<typeof eventFormSchema>;
@@ -186,6 +190,10 @@ export const apiEventSchema = z.object({
     .transform((val) => (val !== null ? String(val) : null)),
   computed_start_date: z.string(),
   computed_end_date: z.string(),
+
+  // Password protection
+  password_protected: z.boolean().optional(),
+  password: z.string().nullable().optional(),
 });
 
 export type ApiEvent = z.infer<typeof apiEventSchema>;
