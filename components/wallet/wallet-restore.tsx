@@ -1,12 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, CheckCircle2, Key, Loader2, RefreshCw } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Key, KeyRound, Loader2, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletRestoreProps {
@@ -43,6 +44,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   const [confirmPin, setConfirmPin] = useState('');
   const [isRestoring, setIsRestoring] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isPasswordMode, setIsPasswordMode] = useState(false);
+  const [password, setPassword] = useState('');
 
   const { restoreWallet, restoreFromMnemonic } = useWallet();
 
@@ -87,10 +90,17 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
     }
   };
 
+  const handleLongPressDelete = () => {
+    setIsPasswordMode(true);
+    setPin(''); // Clear PIN when switching modes
+  };
+
   // Restore encrypted backup with PIN
   const handleRestoreEncrypted = async () => {
-    if (pin.length < 4) {
-      toast.error('Please enter your PIN');
+    const credential = isPasswordMode ? password : pin;
+
+    if (!credential || credential.length < 4) {
+      toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
       return;
     }
 
@@ -98,12 +108,16 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
     setError(null);
 
     try {
-      await restoreWallet(backupInput.trim(), pin);
+      await restoreWallet(backupInput.trim(), credential);
       toast.success('Wallet restored successfully!');
       onComplete();
     } catch (err: any) {
       setError(err.message || 'Invalid backup or PIN');
-      setPin('');
+      if (isPasswordMode) {
+        setPassword('');
+      } else {
+        setPin('');
+      }
     } finally {
       setIsRestoring(false);
     }
@@ -245,7 +259,11 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
       <div className='space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
-            <Key className='h-8 w-8 text-black' />
+            {isPasswordMode ? (
+              <KeyRound className='h-8 w-8 text-black' />
+            ) : (
+              <Key className='h-8 w-8 text-black' />
+            )}
           </div>
           <h2 className='text-2xl font-bold'>Enter Your PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
@@ -254,14 +272,31 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
         </div>
 
         <div className='space-y-4'>
-          {renderPinDots(pin)}
+          {isPasswordMode ? (
+            <div className='px-4'>
+              <Input
+                type='password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder='Enter admin password'
+                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg'
+                autoFocus
+                disabled={isRestoring}
+              />
+            </div>
+          ) : (
+            <>
+              {renderPinDots(pin)}
 
-          <NumericKeypad
-            onNumberClick={handleNumberClick}
-            onDelete={handleDelete}
-            showDecimal={false}
-            disabled={isRestoring}
-          />
+              <NumericKeypad
+                onNumberClick={handleNumberClick}
+                onDelete={handleDelete}
+                onLongPressDelete={handleLongPressDelete}
+                showDecimal={false}
+                disabled={isRestoring}
+              />
+            </>
+          )}
 
           {error && (
             <div className='rounded-lg bg-red-50 p-3'>
@@ -276,7 +311,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             onClick={handleRestoreEncrypted}
             className='mt-6 w-full rounded-full'
             size='lg'
-            disabled={pin.length < 4 || isRestoring}
+            disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isRestoring}
           >
             {isRestoring ? (
               <>
@@ -292,6 +327,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             onClick={() => {
               setStep('input');
               setPin('');
+              setPassword('');
+              setIsPasswordMode(false);
               setError(null);
             }}
             variant='ghost'
