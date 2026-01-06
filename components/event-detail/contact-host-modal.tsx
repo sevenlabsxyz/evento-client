@@ -107,9 +107,7 @@ export function ContactHostModal({ open, onOpenChange, eventId, hostName }: Cont
         {success && (
           <Alert className='mb-4 border-green-200 bg-green-50 text-green-800'>
             <AlertCircle className='h-4 w-4' />
-            <AlertDescription className='-mb-1 mt-0.5'>
-              Message sent successfully!
-            </AlertDescription>
+            <AlertDescription className='-mb-1 mt-0.5'>Message sent successfully!</AlertDescription>
           </Alert>
         )}
 
