@@ -543,6 +543,9 @@ export default function UserProfilePageClient() {
               x_handle: userData.x_handle,
               nip05: userData.nip05,
             }}
+            showQRCode={true}
+            username={userData.username}
+            userImage={userData.image}
           />
         )}
 

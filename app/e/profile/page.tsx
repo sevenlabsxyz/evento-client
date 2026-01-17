@@ -351,8 +351,14 @@ export default function ProfilePage() {
 
     return (
       <div className='space-y-4'>
-        {/* Social Links */}
-        {user && <SocialLinks user={user} />}
+        {user && (
+          <SocialLinks
+            user={user}
+            showQRCode={true}
+            username={user.username}
+            userImage={user.image}
+          />
+        )}
 
         {/* Bio/Description */}
         {!user?.bio ? null : (
@@ -436,10 +442,6 @@ export default function ProfilePage() {
                     <div className='text-sm text-gray-500'>Followers</div>
                   </motion.button>
                 </div>
-              </div>
-              {/* Social Links - desktop only */}
-              <div className='hidden lg:mb-6 lg:flex lg:justify-center'>
-                <SocialLinks user={user} />
               </div>
               {/* Zap Button */}
               {user?.ln_address && (

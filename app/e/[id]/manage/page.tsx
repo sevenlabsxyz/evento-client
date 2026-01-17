@@ -5,7 +5,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
-  // DollarSign,
+  DollarSign,
   FileText,
   // Layers,
   Mail,
@@ -105,15 +105,15 @@ export default function ManageEventPage() {
       iconColor: 'text-pink-600',
       route: `/e/${eventId}/manage/music`,
     },
-    // {
-    //   id: "contributions",
-    //   title: "Contributions",
-    //   description: "Accept event donations",
-    //   icon: <DollarSign className="h-6 w-6" />,
-    //   iconBg: "bg-green-100",
-    //   iconColor: "text-green-600",
-    //   route: `/e/${eventId}/manage/contributions`,
-    // },
+    {
+      id: 'contributions',
+      title: 'Contributions',
+      description: 'Accept event donations',
+      icon: <DollarSign className='h-6 w-6' />,
+      iconBg: 'bg-green-100',
+      iconColor: 'text-green-600',
+      route: `/e/${eventId}/manage/contributions`,
+    },
     // {
     //   id: 'registration-questions',
     //   title: 'Registration Questions',

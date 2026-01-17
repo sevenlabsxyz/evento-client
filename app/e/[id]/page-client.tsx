@@ -1,6 +1,7 @@
 'use client';
 
 import EventComments from '@/components/event-detail/event-comments';
+import EventContributions from '@/components/event-detail/event-contributions';
 import EventDescription from '@/components/event-detail/event-description';
 import EventGallery from '@/components/event-detail/event-gallery';
 import EventGuestsSection from '@/components/event-detail/event-guests-section';
@@ -242,6 +243,7 @@ export default function EventDetailPageClient() {
   const renderDetailsTab = () => (
     <div className='space-y-6'>
       <EventHost event={event} />
+      {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
       <EventGuestsSection
         eventId={eventId}
         eventCreatorUserId={eventData?.creator_user_id || ''}
@@ -298,7 +300,7 @@ export default function EventDetailPageClient() {
               }}
             />
             <div className='px-4'>
-              <EventInfo event={event} currentUserId={user?.id || ''} />
+              <EventInfo event={event} currentUserId={user?.id || ''} eventData={eventData} />
             </div>
           </div>
 

@@ -2,14 +2,16 @@
 
 import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, CalendarPlus, Copy } from 'lucide-react';
+import { Bookmark, CalendarPlus, Copy, DollarSign } from 'lucide-react';
 
 interface MoreOptionsSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCalendar: () => void;
   onSaveEvent: () => void;
+  onContribute?: () => void;
   isSaved?: boolean;
+  hasContributions?: boolean;
 }
 
 export default function MoreOptionsSheet({
@@ -17,7 +19,9 @@ export default function MoreOptionsSheet({
   onClose,
   onAddToCalendar,
   onSaveEvent,
+  onContribute,
   isSaved = false,
+  hasContributions = false,
 }: MoreOptionsSheetProps) {
   const handleAddToCalendar = () => {
     onAddToCalendar();
@@ -29,15 +33,21 @@ export default function MoreOptionsSheet({
     onClose();
   };
 
+  const handleContribute = () => {
+    onContribute?.();
+    onClose();
+  };
+
   const handleCopyEventUrl = async () => {
     onClose();
     try {
       await navigator.clipboard.writeText(window.location.href);
       toast.success('Event URL copied to clipboard');
-    } catch (error) {
-      // Fallback for browsers that don't support clipboard API
+    } catch {
       const textArea = document.createElement('textarea');
       textArea.value = window.location.href;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
       document.body.appendChild(textArea);
       textArea.select();
       document.execCommand('copy');
@@ -69,6 +79,16 @@ export default function MoreOptionsSheet({
       variant: 'secondary',
     },
   ];
+
+  if (hasContributions && onContribute) {
+    options.unshift({
+      id: 'contribute',
+      icon: DollarSign,
+      label: 'Contribute to Event',
+      onClick: handleContribute,
+      variant: 'secondary',
+    });
+  }
 
   return <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />;
 }

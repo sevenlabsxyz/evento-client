@@ -1,14 +1,14 @@
 'use client';
 
-import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { Skeleton } from '@/components/ui/skeleton';
+import apiClient from '@/lib/api/client';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
-import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { Check, DollarSign } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -26,7 +26,6 @@ interface EventContributions {
   };
   paymentMethods: {
     cashApp?: PaymentMethod;
-    bitcoin?: PaymentMethod;
     venmo?: PaymentMethod;
     paypal?: PaymentMethod;
   };
@@ -41,7 +40,7 @@ export default function ContributionsManagementPage() {
 
   // Get existing event data from API
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
-  const updateEventMutation = useUpdateEvent();
+  const queryClient = useQueryClient();
 
   // State for contributions - MUST be before any conditional returns
   const [contributions, setContributions] = useState<EventContributions>({
@@ -52,7 +51,6 @@ export default function ContributionsManagementPage() {
     },
     paymentMethods: {
       cashApp: { enabled: false, value: '' },
-      bitcoin: { enabled: false, value: '' },
       venmo: { enabled: false, value: '' },
       paypal: { enabled: false, value: '' },
     },
@@ -67,21 +65,16 @@ export default function ContributionsManagementPage() {
         enabled: !!(
           existingEvent.contrib_cashapp ||
           existingEvent.contrib_venmo ||
-          existingEvent.contrib_paypal ||
-          existingEvent.contrib_btclightning
+          existingEvent.contrib_paypal
         ),
         suggestedAmount: {
-          amount: existingEvent.cost ? parseFloat(existingEvent.cost) : 0,
+          amount: existingEvent.cost ?? 0,
           currency: 'USD',
         },
         paymentMethods: {
           cashApp: {
             enabled: !!existingEvent.contrib_cashapp,
             value: existingEvent.contrib_cashapp || '',
-          },
-          bitcoin: {
-            enabled: !!existingEvent.contrib_btclightning,
-            value: existingEvent.contrib_btclightning || '',
           },
           venmo: {
             enabled: !!existingEvent.contrib_venmo,
@@ -232,9 +225,8 @@ export default function ContributionsManagementPage() {
     try {
       setIsSubmitting(true);
 
-      // Prepare update data
+      // Only update contribution-related fields via direct API call
       const updateData = {
-        id: eventId,
         contrib_cashapp: contributions.paymentMethods.cashApp?.enabled
           ? contributions.paymentMethods.cashApp.value
           : '',
@@ -244,41 +236,18 @@ export default function ContributionsManagementPage() {
         contrib_paypal: contributions.paymentMethods.paypal?.enabled
           ? contributions.paymentMethods.paypal.value
           : '',
-        contrib_btclightning: contributions.paymentMethods.bitcoin?.enabled
-          ? contributions.paymentMethods.bitcoin.value
-          : '',
         cost: contributions.suggestedAmount?.amount
           ? contributions.suggestedAmount.amount.toString()
           : '',
-        // Include other required fields from existing event
-        title: existingEvent.title,
-        description: existingEvent.description,
-        location: existingEvent.location,
-        timezone: existingEvent.timezone,
-        start_date_day: existingEvent.start_date_day,
-        start_date_month: existingEvent.start_date_month,
-        start_date_year: existingEvent.start_date_year,
-        start_date_hours: existingEvent.start_date_hours,
-        start_date_minutes: existingEvent.start_date_minutes,
-        end_date_day: existingEvent.end_date_day,
-        end_date_month: existingEvent.end_date_month,
-        end_date_year: existingEvent.end_date_year,
-        end_date_hours: existingEvent.end_date_hours,
-        end_date_minutes: existingEvent.end_date_minutes,
-        visibility: existingEvent.visibility,
-        status: existingEvent.status,
       };
 
-      await updateEventMutation.mutateAsync(updateData, {
-        onSuccess: () => {
-          toast.success('Contribution settings updated successfully!');
-          // Navigate back to the manage page on success
-          router.push(`/e/${eventId}/manage`);
-        },
-        onError: () => {
-          toast.error('Failed to update contribution settings');
-        },
-      });
+      await apiClient.patch(`/v1/events/${eventId}`, updateData);
+
+      // Invalidate event queries to refetch updated data
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+
+      toast.success('Contribution settings updated successfully!');
+      router.push(`/e/${eventId}/manage`);
     } catch (error) {
       console.error('Failed to save contribution settings:', error);
       toast.error('Failed to update contribution settings');
@@ -296,15 +265,6 @@ export default function ContributionsManagementPage() {
       iconColor: '',
       placeholder: '$username',
       hint: 'Enter as $username',
-    },
-    {
-      key: 'bitcoin' as const,
-      name: 'Bitcoin Lightning',
-      icon: <BitcoinSVGIcon className='h-6 w-6' />,
-      iconBg: 'bg-orange-100',
-      iconColor: '',
-      placeholder: 'username@domain.com',
-      hint: 'Lightning address format',
     },
     {
       key: 'venmo' as const,
@@ -426,6 +386,15 @@ export default function ContributionsManagementPage() {
             them, the respective app will open on their phone to complete the contribution.
           </p>
         </div>
+
+        {/* Save Button */}
+        <button
+          onClick={() => void handleSave()}
+          disabled={isSubmitting}
+          className='w-full rounded-xl bg-red-500 py-4 text-base font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50'
+        >
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
+        </button>
       </div>
     </div>
   );
