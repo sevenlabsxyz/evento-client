@@ -270,7 +270,8 @@ describe('Event Interaction Integration Flow', () => {
       await new Promise((resolve) => setTimeout(resolve, 100));
     });
 
-    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123/comments/comment1', {
+    expect(mockApiClient.patch).toHaveBeenCalledWith('/v1/events/event123/comments', {
+      commentId: 'comment1',
       message: 'Updated comment!',
     });
     expect(result.current.isPending).toBe(false);

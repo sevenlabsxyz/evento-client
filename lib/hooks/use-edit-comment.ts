@@ -17,12 +17,10 @@ export function useEditComment() {
       message,
       eventId,
     }: EditCommentParams): Promise<EventComment> => {
-      const response = await apiClient.patch<EventComment>(
-        `/v1/events/${eventId}/comments/${commentId}`,
-        {
-          message,
-        }
-      );
+      const response = await apiClient.patch<EventComment>(`/v1/events/${eventId}/comments`, {
+        commentId,
+        message,
+      });
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

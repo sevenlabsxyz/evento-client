@@ -22,7 +22,16 @@ import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, ChevronRight, Edit3, Globe, KeyRound, Lock, MapPin, ShieldCheck, ShieldOff } from 'lucide-react';
+import {
+  Calendar,
+  ChevronRight,
+  Edit3,
+  Globe,
+  Lock,
+  MapPin,
+  ShieldCheck,
+  ShieldOff,
+} from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -403,7 +412,9 @@ export default function EditEventDetailsPage() {
             onClick={() => setShowPasswordSheet(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}>
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+            >
               {passwordProtected ? (
                 <ShieldCheck className='h-4 w-4 text-red-600' />
               ) : (
@@ -415,7 +426,9 @@ export default function EditEventDetailsPage() {
                 Password Protection
               </label>
               <div className='flex items-center justify-between'>
-                <span className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}>
+                <span
+                  className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
+                >
                   {passwordProtected ? 'Protected' : 'Not Protected'}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400' />
