@@ -36,6 +36,14 @@ type SpeedOption = 'fast' | 'normal' | 'slow' | 'custom';
 // Total: ~180-215 vbytes. Using 200 as a reasonable estimate with buffer.
 const ESTIMATED_TX_VSIZE = 200;
 
+// Fee rate bounds (sat/vB)
+// Protects against API bugs or extreme fee spikes that could burn user funds
+const FEE_RATE_BOUNDS = {
+  MIN: 1, // Below this is likely a bug
+  MAX: 1000, // Above this is insane (even during black swan congestion events)
+  WARN: 100, // Log warning for unusually high fees
+} as const;
+
 export function SpeedUpSheet({
   open,
   onOpenChange,
@@ -93,6 +101,23 @@ export function SpeedUpSheet({
   };
 
   const calculateFee = (feeRate: number) => {
+    // Validate fee rate bounds to prevent API bugs or extreme fees from burning user funds
+    if (feeRate < FEE_RATE_BOUNDS.MIN) {
+      throw new Error(
+        `Fee rate too low: ${feeRate} sat/vB (min: ${FEE_RATE_BOUNDS.MIN})`
+      );
+    }
+
+    if (feeRate > FEE_RATE_BOUNDS.MAX) {
+      throw new Error(
+        `Fee rate too high: ${feeRate} sat/vB (max: ${FEE_RATE_BOUNDS.MAX})`
+      );
+    }
+
+    if (feeRate > FEE_RATE_BOUNDS.WARN) {
+      console.warn(`⚠️ High fee rate detected: ${feeRate} sat/vB - verify network conditions`);
+    }
+
     return Math.ceil(feeRate * ESTIMATED_TX_VSIZE);
   };
 
