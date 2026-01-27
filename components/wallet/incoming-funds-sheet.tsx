@@ -74,10 +74,14 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
     return () => unsubscribe();
   }, [open, loadDeposits, onRefresh]);
 
-  const handleClaimDeposit = async (deposit: DepositInfo, feeRate: number) => {
+  const handleClaimDeposit = async (deposit: DepositInfo, totalFeeSats: number) => {
     setProcessingTxid(deposit.txid);
     try {
-      const maxFee: Fee = { type: 'rate', satPerVbyte: feeRate };
+      // Use fixed fee type with the total sats amount calculated in speed-up-sheet
+      // This ensures the fee displayed to the user matches what's passed to the SDK,
+      // avoiding issues where rate-based fees could result in different totals
+      // depending on the actual transaction size.
+      const maxFee: Fee = { type: 'fixed', amount: totalFeeSats };
 
       await breezSDK.claimDeposit(deposit.txid, deposit.vout, maxFee);
       toast.success('Swap completed successfully!');

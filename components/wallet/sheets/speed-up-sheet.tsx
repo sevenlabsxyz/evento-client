@@ -12,7 +12,7 @@ interface SpeedUpSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   deposit: DepositInfo | null;
-  onConfirm: (deposit: DepositInfo, feeRate: number) => void;
+  onConfirm: (deposit: DepositInfo, totalFeeSats: number) => void;
   isProcessing: boolean;
 }
 
@@ -26,8 +26,23 @@ interface FeeEstimates {
 
 type SpeedOption = 'fast' | 'normal' | 'slow' | 'custom';
 
-// Typical swap transaction size in vbytes
-const ESTIMATED_TX_VSIZE = 140;
+// Submarine swap claim transaction size in vbytes
+// These transactions spend from a P2WSH HTLC script and include witness data
+// with the preimage, making them larger than standard P2WPKH transactions.
+// Typical breakdown:
+//   - Input (P2WSH HTLC spend with preimage witness): ~140-160 vbytes
+//   - Output (P2WPKH or P2TR): ~31-43 vbytes
+//   - Transaction overhead: ~10-11 vbytes
+// Total: ~180-215 vbytes. Using 200 as a reasonable estimate with buffer.
+const ESTIMATED_TX_VSIZE = 200;
+
+// Fee rate bounds (sat/vB)
+// Protects against API bugs or extreme fee spikes that could burn user funds
+const FEE_RATE_BOUNDS = {
+  MIN: 1, // Below this is likely a bug
+  MAX: 1000, // Above this is insane (even during black swan congestion events)
+  WARN: 100, // Log warning for unusually high fees
+} as const;
 
 export function SpeedUpSheet({
   open,
@@ -86,6 +101,23 @@ export function SpeedUpSheet({
   };
 
   const calculateFee = (feeRate: number) => {
+    // Validate fee rate bounds to prevent API bugs or extreme fees from burning user funds
+    if (feeRate < FEE_RATE_BOUNDS.MIN) {
+      throw new Error(
+        `Fee rate too low: ${feeRate} sat/vB (min: ${FEE_RATE_BOUNDS.MIN})`
+      );
+    }
+
+    if (feeRate > FEE_RATE_BOUNDS.MAX) {
+      throw new Error(
+        `Fee rate too high: ${feeRate} sat/vB (max: ${FEE_RATE_BOUNDS.MAX})`
+      );
+    }
+
+    if (feeRate > FEE_RATE_BOUNDS.WARN) {
+      console.warn(`⚠️ High fee rate detected: ${feeRate} sat/vB - verify network conditions`);
+    }
+
     return Math.ceil(feeRate * ESTIMATED_TX_VSIZE);
   };
 
@@ -151,7 +183,10 @@ export function SpeedUpSheet({
     if (!deposit) return;
     const feeRate = getFeeRate();
     if (feeRate === null) return;
-    onConfirm(deposit, feeRate);
+    // Calculate total fee in sats based on the estimated transaction size
+    // This ensures the displayed fee matches what's passed to the SDK
+    const totalFeeSats = calculateFee(feeRate);
+    onConfirm(deposit, totalFeeSats);
   };
 
   const canConfirm = (): boolean => {
