@@ -11,6 +11,7 @@
     "format-check": "prettier --config .prettierc.json --check ."
   },
   "dependencies": {
+    "@breeztech/breez-sdk-spark": "^0.7.12",
     "@giphy/js-fetch-api": "^5.7.0",
     "@giphy/js-types": "^5.1.0",
     "@giphy/react-components": "^10.1.0",
@@ -46,6 +47,7 @@
     "@tiptap/starter-kit": "^3.0.1",
     "@tryghost/content-api": "^1.11.28",
     "axios": "^1.10.0",
+    "bip39": "^3.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
@@ -54,6 +56,7 @@
     "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.454.0",
     "next": "14.2.16",
+    "qrcode": "^1.5.4",
     "react": "^18",
     "react-dom": "^18",
     "react-hook-form": "^7.60.0",
@@ -70,6 +73,7 @@
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/lodash.debounce": "^4.0.9",
     "@types/node": "^22",
+    "@types/qrcode": "^1.5.6",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
