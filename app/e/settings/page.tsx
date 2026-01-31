@@ -2,8 +2,11 @@
 
 import { APISheet } from '@/components/settings/api-sheet';
 import { ContactSheet } from '@/components/settings/contact-sheet';
+import { DeveloperModeDialog } from '@/components/settings/developer-mode-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
@@ -16,6 +19,7 @@ import {
   Scale,
   Share,
   Shield,
+  Terminal,
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -25,6 +29,10 @@ export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
+
+  // Developer mode state
+  const { isDeveloperMode, setDeveloperMode } = useDeveloperSettingsStore();
+  const [developerDialogOpen, setDeveloperDialogOpen] = useState(false);
 
   // Set TopBar content
   useEffect(() => {
@@ -86,6 +94,23 @@ export default function SettingsPage() {
     setApiSheetOpen(false);
     setShowApiContactForm(true);
     setContactSheetOpen(true);
+  };
+
+  const handleDeveloperModeToggle = (checked: boolean) => {
+    if (checked) {
+      // If turning ON, show confirmation dialog
+      setDeveloperDialogOpen(true);
+    } else {
+      // If turning OFF, just do it
+      setDeveloperMode(false);
+      toast.success('Developer Mode disabled');
+    }
+  };
+
+  const confirmDeveloperMode = () => {
+    setDeveloperMode(true);
+    setDeveloperDialogOpen(false);
+    toast.success('Developer Mode enabled');
   };
 
   if (isCheckingAuth) {
@@ -159,31 +184,6 @@ export default function SettingsPage() {
                   </div>
                 </div>
               ))}
-            </div>
-
-            {/* DEVELOPER */}
-            <div className='mb-2 px-4'>
-              <Skeleton className='h-3 w-24' />
-            </div>
-            <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
-              <div className='border-b border-gray-100'>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                    <Skeleton className='h-8 w-8 rounded-lg' />
-                    <Skeleton className='h-4 w-28' />
-                  </div>
-                  <Skeleton className='h-4 w-4 rounded' />
-                </div>
-              </div>
-              <div className='p-4'>
-                <div className='flex items-center justify-between'>
-                  <div className='flex items-center gap-3'>
-                    <Skeleton className='h-8 w-8 rounded-lg' />
-                    <Skeleton className='h-4 w-32' />
-                  </div>
-                  <Skeleton className='h-4 w-4 rounded' />
-                </div>
-              </div>
             </div>
 
             {/* Version */}
@@ -324,26 +324,50 @@ export default function SettingsPage() {
             </div>
           </div>
 
-          {/* Developer Section */}
+          {/* Advanced Section */}
           <div className='mb-2 px-4'>
-            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
+            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ADVANCED</h2>
           </div>
           <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
             <div className='border-b border-gray-100'>
-              <button
-                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                onClick={() => (window.location.href = '/e/settings/api-keys')}
-              >
+              <div className='flex w-full items-center justify-between p-4'>
                 <div className='flex items-center gap-3'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Key className='h-4 w-4 text-red-600' />
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                    <Terminal className='h-4 w-4 text-gray-600' />
                   </div>
-                  <span className='font-medium'>API Keys</span>
+                  <span className='font-medium'>Developer Mode</span>
                 </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
-              </button>
+                <Switch checked={isDeveloperMode} onCheckedChange={handleDeveloperModeToggle} />
+              </div>
             </div>
           </div>
+
+          {/* Developer Section - conditionally rendered */}
+          {isDeveloperMode && (
+            <>
+              <div className='mb-2 px-4'>
+                <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
+                  DEVELOPER
+                </h2>
+              </div>
+              <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+                <div className='border-b border-gray-100'>
+                  <button
+                    className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+                    onClick={() => (window.location.href = '/e/settings/api-keys')}
+                  >
+                    <div className='flex items-center gap-3'>
+                      <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                        <Key className='h-4 w-4 text-red-600' />
+                      </div>
+                      <span className='font-medium'>API Keys</span>
+                    </div>
+                    <ChevronRight className='h-4 w-4 text-gray-400' />
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Version Info */}
           <div className='px-4 pb-24 pt-6 text-center'>
@@ -372,6 +396,13 @@ export default function SettingsPage() {
         open={apiSheetOpen}
         onOpenChange={setApiSheetOpen}
         onContactRequest={handleApiAccess}
+      />
+
+      {/* Developer Mode Confirmation Dialog */}
+      <DeveloperModeDialog
+        open={developerDialogOpen}
+        onOpenChange={setDeveloperDialogOpen}
+        onConfirm={confirmDeveloperMode}
       />
     </div>
   );
