@@ -1,5 +1,7 @@
 'use client';
 
+import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
+import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
@@ -24,6 +26,7 @@ import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { usePublicUserBadges } from '@/lib/hooks/use-badges';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
 import { EventSortBy, type EventTimeframe } from '@/lib/hooks/use-user-events';
@@ -40,6 +43,7 @@ import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
+import { UserBadge } from '@/lib/types/badges';
 import { EventHost } from '@/lib/types/event';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
@@ -73,6 +77,7 @@ export default function UserProfilePageClient() {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
+  const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -99,6 +104,9 @@ export default function UserProfilePageClient() {
     userData?.id
   );
   const { data: userPrompts = [], isLoading: isLoadingPrompts } = useOtherUserPrompts(userData?.id);
+
+  // Get user badges (displayed badges only)
+  const { data: userBadges = [] } = usePublicUserBadges(userData?.id);
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
@@ -549,6 +557,15 @@ export default function UserProfilePageClient() {
           />
         )}
 
+        {/* User Badges */}
+        {userBadges.length > 0 && (
+          <UserBadgesDisplay
+            badges={userBadges}
+            isOwnProfile={false}
+            onBadgeClick={(badge) => setSelectedBadge(badge)}
+          />
+        )}
+
         {/* Bio/Description */}
         {!userProfile?.bio ? null : (
           <div>
@@ -797,6 +814,13 @@ export default function UserProfilePageClient() {
         handleDelete={async (photoId: string) => ({ success: false })}
         userId=''
         eventId=''
+      />
+
+      {/* Badge Detail Sheet */}
+      <BadgeDetailSheet
+        badge={selectedBadge}
+        isOpen={!!selectedBadge}
+        onClose={() => setSelectedBadge(null)}
       />
     </div>
   );

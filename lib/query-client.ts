@@ -103,4 +103,19 @@ export const queryKeys = {
   cohostInvites: ['cohost-invites'] as const,
   eventCohostInvites: (eventId: string) => [...queryKeys.cohostInvites, 'event', eventId] as const,
   myCohostInvites: () => [...queryKeys.cohostInvites, 'user', 'me'] as const,
+
+  // Badges
+  badges: ['badges'] as const,
+  userBadges: () => [...queryKeys.badges, 'user'] as const,
+  publicUserBadges: (userId: string) => [...queryKeys.badges, 'public', userId] as const,
+
+  // Registration
+  registration: ['registration'] as const,
+  registrationSettings: (eventId: string) =>
+    [...queryKeys.registration, 'settings', eventId] as const,
+  myRegistration: (eventId: string) => [...queryKeys.registration, 'my', eventId] as const,
+  registrationSubmissions: (eventId: string) =>
+    [...queryKeys.registration, 'submissions', eventId] as const,
+  registrationQuestions: (eventId: string) =>
+    [...queryKeys.registration, 'questions', eventId] as const,
 } as const;

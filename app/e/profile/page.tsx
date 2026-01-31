@@ -1,5 +1,8 @@
 'use client';
 
+import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
+import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
+import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
@@ -17,6 +20,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useUserBadges } from '@/lib/hooks/use-badges';
 import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
@@ -28,6 +32,7 @@ import {
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
+import { UserBadge } from '@/lib/types/badges';
 import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
 import { motion } from 'framer-motion';
@@ -59,6 +64,8 @@ export default function ProfilePage() {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showZapModal, setShowZapModal] = useState(false);
+  const [showBadgesManagementSheet, setShowBadgesManagementSheet] = useState(false);
+  const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
@@ -66,6 +73,9 @@ export default function ProfilePage() {
   // Get user interests and prompts
   const { data: userInterests = [], isLoading: isLoadingInterests } = useUserInterests();
   const { data: userPrompts = [], isLoading: isLoadingPrompts } = useUserPrompts();
+
+  // Get user badges
+  const { data: userBadges = [] } = useUserBadges();
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
@@ -360,6 +370,16 @@ export default function ProfilePage() {
           />
         )}
 
+        {/* User Badges */}
+        {userBadges.length > 0 && (
+          <UserBadgesDisplay
+            badges={userBadges}
+            isOwnProfile={true}
+            onManageClick={() => setShowBadgesManagementSheet(true)}
+            onBadgeClick={(badge) => setSelectedBadge(badge)}
+          />
+        )}
+
         {/* Bio/Description */}
         {!user?.bio ? null : (
           <div>
@@ -574,6 +594,19 @@ export default function ProfilePage() {
         onClose={() => setShowFollowingSheet(false)}
         userId={user?.id || ''}
         username={user?.username || 'user'}
+      />
+
+      {/* Badges Management Sheet */}
+      <BadgesManagementSheet
+        isOpen={showBadgesManagementSheet}
+        onClose={() => setShowBadgesManagementSheet(false)}
+      />
+
+      {/* Badge Detail Sheet */}
+      <BadgeDetailSheet
+        badge={selectedBadge}
+        isOpen={!!selectedBadge}
+        onClose={() => setSelectedBadge(null)}
       />
     </div>
   );
