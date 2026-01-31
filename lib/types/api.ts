@@ -136,6 +136,7 @@ export interface Event {
   timezone: string;
   status: 'draft' | 'published' | 'cancelled' | 'archived';
   visibility: 'public' | 'private';
+  type?: 'rsvp' | 'registration' | 'ticketed'; // Event type (defaults to 'rsvp' for backward compatibility)
   cost: number | null;
   creator_user_id: string;
   hosts: EventHost[];
@@ -415,3 +416,243 @@ export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
 export type EmailBlastRecipientFilter = 'all' | 'yes_only' | 'yes_and_maybe';
+export type EventType = 'rsvp' | 'registration' | 'ticketed';
+
+// ============================================
+// TICKETING TYPES
+// ============================================
+
+// Ticket Type - defines available ticket categories for an event
+export interface TicketType {
+  id: string;
+  event_id: string;
+  name: string;
+  description?: string;
+  price_amount: number;
+  price_currency: string;
+  quantity_total: number;
+  quantity_sold: number;
+  quantity_available: number;
+  is_sold_out: boolean;
+  is_active: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+// Discount Code - percentage-based discount codes
+export interface DiscountCode {
+  id: string;
+  event_id: string;
+  code: string;
+  percentage: number;
+  usage_limit: number;
+  usage_count: number;
+  is_active: boolean;
+  created_at: string;
+}
+
+// Order Status
+export type OrderStatus = 'pending' | 'paid' | 'expired' | 'cancelled';
+
+// Order - represents a checkout attempt
+export interface Order {
+  id: string;
+  event_id: string;
+  buyer_id?: string;
+  subtotal_amount: number;
+  discount_amount: number;
+  total_amount: number;
+  currency: string;
+  total_sats?: number;
+  exchange_rate?: number;
+  discount_code_id?: string;
+  correlation_hash?: string;
+  payment_hash?: string;
+  verify_url?: string;
+  preimage?: string;
+  bolt11_invoice?: string;
+  invoice_expires_at?: string;
+  status: OrderStatus;
+  created_at: string;
+  paid_at?: string;
+}
+
+// Order Item - line item in an order
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  ticket_type_id: string;
+  assigned_user_id?: string;
+  assigned_email?: string;
+  unit_price: number;
+  unit_price_sats: number;
+  created_at: string;
+}
+
+// Ticket Status
+export type TicketStatus = 'active' | 'used' | 'cancelled';
+
+// Ticket - issued after order is paid
+export interface Ticket {
+  id: string;
+  order_id: string;
+  order_item_id: string;
+  ticket_type_id: string;
+  event_id: string;
+  owner_id?: string;
+  assigned_email?: string;
+  token: string;
+  status: TicketStatus;
+  checked_in_at?: string;
+  created_at: string;
+  // Populated relations
+  ticket_type?: TicketType;
+  event?: Event;
+  owner?: UserDetails;
+}
+
+// Ticket with event details for My Tickets view
+export interface TicketWithEvent extends Ticket {
+  ticket_types: {
+    name: string;
+    description?: string;
+  };
+  events: {
+    id: string;
+    title: string;
+    cover?: string;
+    computed_start_date: string;
+    timezone: string;
+    location?: string;
+  };
+}
+
+// Pending Ticket Claim
+export interface PendingTicketClaim {
+  id: string;
+  email: string;
+  ticket_id: string;
+  created_at: string;
+  claimed_at?: string;
+  ticket?: TicketWithEvent;
+}
+
+// Checkout Request
+export interface CheckoutRequest {
+  items: Array<{
+    ticketTypeId: string;
+    assignedUserId?: string;
+    assignedEmail?: string;
+  }>;
+  discountCodeId?: string;
+}
+
+// Checkout Response
+export interface CheckoutResponse {
+  orderId: string;
+  invoice?: string;
+  totalSats?: number;
+  totalAmount: number;
+  currency: string;
+  expiresAt?: string;
+}
+
+// Order Status Response
+export interface OrderStatusResponse {
+  orderId: string;
+  status: OrderStatus;
+  totalSats?: number;
+  totalAmount: number;
+  currency: string;
+}
+
+// Validate Discount Response
+export interface ValidateDiscountResponse {
+  valid: boolean;
+  discountCodeId?: string;
+  percentage?: number;
+  message?: string;
+}
+
+// Sales Summary for Host Dashboard
+export interface SalesSummary {
+  totalRevenueSats: number;
+  totalRevenueFiat: number;
+  currency: string;
+  ticketsSold: number;
+  ticketsByType: Array<{
+    ticketTypeId: string;
+    name: string;
+    sold: number;
+    total: number;
+    revenueSats: number;
+  }>;
+  salesByDay: Array<{
+    date: string;
+    count: number;
+    cumulative: number;
+  }>;
+  discountUsage: Array<{
+    code: string;
+    percentage: number;
+    used: number;
+    limit: number;
+  }>;
+}
+
+// Attendee (checked-in ticket holder)
+export interface Attendee {
+  ticketId: string;
+  ticketType: string;
+  ownerName?: string;
+  ownerUsername?: string;
+  ownerImage?: string;
+  checkedInAt: string;
+}
+
+// Check-in Request
+export interface CheckInRequest {
+  token: string;
+}
+
+// Check-in Response
+export interface CheckInResponse {
+  success: boolean;
+  status: 'valid' | 'already_used' | 'invalid' | 'wrong_event' | 'cancelled';
+  message: string;
+  ticket?: {
+    id: string;
+    ticketType: string;
+    ownerName?: string;
+    ownerUsername?: string;
+    ownerImage?: string;
+    checkedInAt?: string;
+  };
+}
+
+// Create Ticket Type Form
+export interface CreateTicketTypeForm {
+  name: string;
+  description?: string;
+  price_amount: number;
+  price_currency: string;
+  quantity_total: number;
+}
+
+// Update Ticket Type Form
+export interface UpdateTicketTypeForm {
+  name?: string;
+  description?: string;
+  price_amount?: number;
+  price_currency?: string;
+  quantity_total?: number;
+  is_active?: boolean;
+}
+
+// Create Discount Code Form
+export interface CreateDiscountCodeForm {
+  code: string;
+  percentage: number;
+  usage_limit: number;
+}

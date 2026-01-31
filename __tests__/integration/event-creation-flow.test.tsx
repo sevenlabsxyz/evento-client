@@ -162,6 +162,7 @@ describe('Event Creation Integration Flow', () => {
       end_date_minutes: 0,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     await act(async () => {
@@ -208,6 +209,7 @@ describe('Event Creation Integration Flow', () => {
       end_date_minutes: 0,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     await act(async () => {

@@ -12,6 +12,7 @@ import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { TicketSelector } from '@/components/ticketing/ticket-selector';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -28,7 +29,7 @@ import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export default function EventDetailPageClient() {
   const params = useParams();
@@ -41,6 +42,7 @@ export default function EventDetailPageClient() {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
+  const ticketSelectorRef = useRef<HTMLDivElement>(null);
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -170,6 +172,22 @@ export default function EventDetailPageClient() {
     enabled: !!event?.location.city && !!event?.location.country && !!event?.computedStartDate,
   });
 
+  // Check if this is a ticketed event
+  const isTicketedEvent = event?.eventType === 'ticketed';
+
+  // Scroll to ticket selector
+  const handleGetTickets = useCallback(() => {
+    // Switch to details tab if not already there
+    if (activeTab !== 'details') {
+      handleTabChange('details');
+    }
+    // Scroll to ticket selector
+    setTimeout(() => {
+      ticketSelectorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
   // Configure TopBar for event pages
   useEffect(() => {
     const handleShare = async () => {
@@ -242,6 +260,14 @@ export default function EventDetailPageClient() {
   const renderDetailsTab = () => (
     <div className='space-y-6'>
       <EventHost event={event} />
+
+      {/* Ticket Selector for ticketed events */}
+      {isTicketedEvent && (
+        <div ref={ticketSelectorRef}>
+          <TicketSelector eventId={eventId} />
+        </div>
+      )}
+
       <EventGuestsSection
         eventId={eventId}
         eventCreatorUserId={eventData?.creator_user_id || ''}
@@ -298,7 +324,11 @@ export default function EventDetailPageClient() {
               }}
             />
             <div className='px-4'>
-              <EventInfo event={event} currentUserId={user?.id || ''} />
+              <EventInfo
+                event={event}
+                currentUserId={user?.id || ''}
+                onGetTickets={handleGetTickets}
+              />
             </div>
           </div>
 

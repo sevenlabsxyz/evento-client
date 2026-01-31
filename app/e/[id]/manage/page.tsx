@@ -5,13 +5,15 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
-  // DollarSign,
+  DollarSign,
   FileText,
   // Layers,
   Mail,
   MessageCircle,
   Music,
+  QrCode,
   // Share2,
+  Ticket,
   Users,
   X,
 } from 'lucide-react';
@@ -49,6 +51,42 @@ export default function ManageEventPage() {
   }, [setTopBar]);
 
   const [showCancelModal, setShowCancelModal] = useState(false);
+
+  // Check if this is a ticketed event
+  const isTicketedEvent = (eventDetails as any)?.type === 'ticketed';
+
+  // Ticketing options (only shown for ticketed events)
+  const ticketingOptions = isTicketedEvent
+    ? [
+        {
+          id: 'tickets',
+          title: 'Tickets',
+          description: 'Manage ticket types and pricing',
+          icon: <Ticket className='h-6 w-6' />,
+          iconBg: 'bg-purple-100',
+          iconColor: 'text-purple-600',
+          route: `/e/${eventId}/manage/tickets`,
+        },
+        {
+          id: 'sales',
+          title: 'Sales',
+          description: 'View revenue and analytics',
+          icon: <DollarSign className='h-6 w-6' />,
+          iconBg: 'bg-green-100',
+          iconColor: 'text-green-600',
+          route: `/e/${eventId}/manage/sales`,
+        },
+        {
+          id: 'check-in',
+          title: 'Check-In',
+          description: 'Scan tickets at the door',
+          icon: <QrCode className='h-6 w-6' />,
+          iconBg: 'bg-amber-100',
+          iconColor: 'text-amber-600',
+          route: `/e/${eventId}/manage/check-in`,
+        },
+      ]
+    : [];
 
   const managementOptions = [
     {
@@ -200,8 +238,45 @@ export default function ManageEventPage() {
         {/* Open Event Chat Button */}
         {/*</div>*/}
 
+        {/* Ticketing Options (for ticketed events) */}
+        {ticketingOptions.length > 0 && (
+          <div className='mb-4 space-y-2'>
+            <h2 className='mb-3 text-sm font-medium text-gray-500'>Ticketing</h2>
+            {ticketingOptions.map((option) => (
+              <button
+                key={option.id}
+                onClick={() => handleOptionClick(option.route)}
+                className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+              >
+                <div
+                  className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
+                >
+                  <div className={option.iconColor}>{option.icon}</div>
+                </div>
+                <div className='flex-1 text-left'>
+                  <h3 className='font-semibold text-gray-900'>{option.title}</h3>
+                  <p className='text-sm text-gray-500'>{option.description}</p>
+                </div>
+                <div className='text-gray-400'>
+                  <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path
+                      strokeLinecap='round'
+                      strokeLinejoin='round'
+                      strokeWidth={2}
+                      d='m9 18 6-6-6-6'
+                    />
+                  </svg>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Management Options */}
         <div className='space-y-2'>
+          {ticketingOptions.length > 0 && (
+            <h2 className='mb-3 text-sm font-medium text-gray-500'>Event Settings</h2>
+          )}
           {managementOptions.map((option) => (
             <button
               key={option.id}

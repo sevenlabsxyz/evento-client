@@ -90,6 +90,7 @@ export function transformApiEventToDisplay(
     capacity: undefined, // Not in current API
     weather: undefined, // Not in current API
     type: 'social', // Default, API doesn't provide this
+    eventType: (apiEvent as any).type || 'rsvp', // Ticketing type
     tags: [], // Not in current API
     isActive: apiEvent.status === 'published',
     registrationUrl: undefined, // Not in current API

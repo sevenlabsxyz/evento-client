@@ -7,6 +7,7 @@ import CoverImageSelector from '@/components/create-event/cover-image-selector';
 import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventCreatedModal from '@/components/create-event/event-created-modal';
+import EventTypeSheet from '@/components/create-event/event-type-sheet';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionSheet from '@/components/create-event/image-selection-sheet';
 import InsertElementsSheet from '@/components/create-event/insert-elements-sheet';
@@ -28,7 +29,17 @@ import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-da
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
-import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
+import {
+  Calendar,
+  ChevronRight,
+  Edit3,
+  Globe,
+  Lock,
+  MapPin,
+  Music,
+  Ticket,
+  Users,
+} from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -76,6 +87,7 @@ export default function CreatePage() {
     endTime,
     timezone,
     visibility,
+    eventType,
     hasCapacity,
     capacity,
     spotifyUrl,
@@ -92,6 +104,7 @@ export default function CreatePage() {
     setEndTime,
     setTimezone,
     setVisibility,
+    setEventType,
     setHasCapacity,
     setCapacity,
     setSpotifyUrl,
@@ -118,6 +131,7 @@ export default function CreatePage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
+  const [showEventTypeSheet, setShowEventTypeSheet] = useState(false);
 
   // Toolbar Sheet States
   const [showTextStylesSheet, setShowTextStylesSheet] = useState(false);
@@ -499,6 +513,31 @@ export default function CreatePage() {
           </button>
         </div>
 
+        {/* Event Type */}
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <button
+            onClick={() => setShowEventTypeSheet(true)}
+            className='flex w-full items-center gap-4 text-left'
+          >
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
+              {eventType === 'ticketed' ? (
+                <Ticket className='h-4 w-4 text-gray-600' />
+              ) : (
+                <Users className='h-4 w-4 text-gray-600' />
+              )}
+            </div>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Event Type</label>
+              <div className='flex items-center justify-between'>
+                <span className='font-medium text-gray-900'>
+                  {eventType === 'ticketed' ? 'Paid' : 'Free'}
+                </span>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </div>
+            </div>
+          </button>
+        </div>
+
         {/* Capacity Options */}
         <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
@@ -763,6 +802,14 @@ export default function CreatePage() {
         onClose={() => setShowVisibilitySheet(false)}
         onVisibilitySelect={setVisibility}
         currentVisibility={visibility}
+      />
+
+      {/* Event Type Sheet */}
+      <EventTypeSheet
+        isOpen={showEventTypeSheet}
+        onClose={() => setShowEventTypeSheet(false)}
+        onTypeSelect={setEventType}
+        currentType={eventType}
       />
 
       {/* Event Created Modal */}

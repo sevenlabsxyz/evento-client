@@ -4,6 +4,7 @@ import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
+import { MyTicketsSection } from '@/components/hub/my-tickets-section';
 import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -85,6 +86,7 @@ export default function HubPage() {
     <>
       <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-4xl'>
         <MyEventsSection />
+        <MyTicketsSection />
         <EventInvitesSection />
         <ForYouSection />
         <HubBlogGallery />

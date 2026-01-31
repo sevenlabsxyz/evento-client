@@ -65,6 +65,7 @@ describe('useUpdateEvent', () => {
       end_date_minutes: 30,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -121,6 +122,7 @@ describe('useUpdateEvent', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const apiError = new Error('API Error');
@@ -161,6 +163,7 @@ describe('useUpdateEvent', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const { result } = renderHook(() => useUpdateEvent(), { wrapper });
@@ -198,6 +201,7 @@ describe('useUpdateEvent', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -240,6 +244,7 @@ describe('useUpdateEvent', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     mockApiClient.patch.mockResolvedValue(null);
@@ -278,6 +283,7 @@ describe('useUpdateEvent', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -326,6 +332,7 @@ describe('useUpdateEvent', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
       // Optional fields
       cover: 'https://example.com/cover.jpg',
       spotify_url: 'https://open.spotify.com/track/123',
@@ -386,6 +393,7 @@ describe('useUpdateEvent', () => {
       end_date_minutes: 30,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -437,6 +445,7 @@ describe('useUpdateEvent', () => {
       end_date_minutes: null,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -521,6 +530,7 @@ describe('useUpdateEventWithCallbacks', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -571,6 +581,7 @@ describe('useUpdateEventWithCallbacks', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const apiError = new Error('API Error');
@@ -614,6 +625,7 @@ describe('useUpdateEventWithCallbacks', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const mockResponse = {
@@ -664,6 +676,7 @@ describe('useUpdateEventWithCallbacks', () => {
       end_date_year: 2024,
       visibility: 'public' as const,
       status: 'published' as const,
+      type: 'rsvp' as const,
     };
 
     const { result } = renderHook(() => useUpdateEventWithCallbacks(), {
