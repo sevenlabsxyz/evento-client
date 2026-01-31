@@ -103,15 +103,11 @@ export function SpeedUpSheet({
   const calculateFee = (feeRate: number) => {
     // Validate fee rate bounds to prevent API bugs or extreme fees from burning user funds
     if (feeRate < FEE_RATE_BOUNDS.MIN) {
-      throw new Error(
-        `Fee rate too low: ${feeRate} sat/vB (min: ${FEE_RATE_BOUNDS.MIN})`
-      );
+      throw new Error(`Fee rate too low: ${feeRate} sat/vB (min: ${FEE_RATE_BOUNDS.MIN})`);
     }
 
     if (feeRate > FEE_RATE_BOUNDS.MAX) {
-      throw new Error(
-        `Fee rate too high: ${feeRate} sat/vB (max: ${FEE_RATE_BOUNDS.MAX})`
-      );
+      throw new Error(`Fee rate too high: ${feeRate} sat/vB (max: ${FEE_RATE_BOUNDS.MAX})`);
     }
 
     if (feeRate > FEE_RATE_BOUNDS.WARN) {

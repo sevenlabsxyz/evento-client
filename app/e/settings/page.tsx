@@ -10,6 +10,7 @@ import {
   ChevronRight,
   DollarSign,
   Info,
+  Key,
   Languages,
   Mail,
   Scale,
@@ -324,40 +325,25 @@ export default function SettingsPage() {
           </div>
 
           {/* Developer Section */}
-          {/*<div className='mb-2 px-4'>
+          <div className='mb-2 px-4'>
             <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>DEVELOPER</h2>
           </div>
           <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
             <div className='border-b border-gray-100'>
               <button
                 className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                onClick={() => setApiSheetOpen(true)}
+                onClick={() => (window.location.href = '/e/settings/api-keys')}
               >
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Code className='h-4 w-4 text-red-600' />
+                    <Key className='h-4 w-4 text-red-600' />
                   </div>
-                  <span className='font-medium'>Evento API</span>
+                  <span className='font-medium'>API Keys</span>
                 </div>
                 <ChevronRight className='h-4 w-4 text-gray-400' />
               </button>
             </div>
-
-            <div>
-              <button
-                className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
-                onClick={() => handleExternalLink('https://docs.evento.so')}
-              >
-                <div className='flex items-center gap-3'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <BookOpen className='h-4 w-4 text-red-600' />
-                  </div>
-                  <span className='font-medium'>Documentation</span>
-                </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
-              </button>
-            </div>
-          </div>*/}
+          </div>
 
           {/* Version Info */}
           <div className='px-4 pb-24 pt-6 text-center'>
