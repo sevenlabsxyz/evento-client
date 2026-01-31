@@ -3,11 +3,14 @@
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { streamChatService } from '@/lib/services/stream-chat';
+import { Event as ApiEvent } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
+import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
+import ContributionPaymentSheet from './contribution-payment-sheet';
 import RsvpSheet from './event-rsvp-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
@@ -16,21 +19,26 @@ import SaveEventSheet from './save-event-sheet';
 interface EventInfoProps {
   event: Event;
   currentUserId?: string;
+  eventData?: ApiEvent | null;
 }
 
-export default function EventInfo({ event, currentUserId = '' }: EventInfoProps) {
+export default function EventInfo({ event, currentUserId = '', eventData }: EventInfoProps) {
   const router = useRouter();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
+  const [showContributionSheet, setShowContributionSheet] = useState(false);
 
-  // Current user's RSVP status for this event
   const { data: userRsvp } = useUserRSVP(event.id);
   const currentStatus = userRsvp?.status ?? null;
 
-  // Check if event is saved to any list
   const { data: savedStatus } = useEventSavedStatus(event.id);
   const isSaved = savedStatus?.is_saved ?? false;
+
+  const hasContributions = useMemo(() => {
+    if (!eventData) return false;
+    return getContributionMethods(eventData).length > 0;
+  }, [eventData]);
 
   const rsvpButton = useMemo(() => {
     if (currentStatus === 'yes')
@@ -59,7 +67,6 @@ export default function EventInfo({ event, currentUserId = '' }: EventInfoProps)
   };
 
   const handleContact = async () => {
-    // Get the first host (primary host) to start DM with
     const primaryHost = event.hosts?.[0];
     if (!primaryHost) {
       toast.error('No host available to contact');
@@ -80,30 +87,39 @@ export default function EventInfo({ event, currentUserId = '' }: EventInfoProps)
   };
 
   const handleShare = async () => {
+    const url = window.location.href;
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: event.title,
           text: event.description,
-          url: window.location.href,
+          url,
         });
-      } catch (error) {
-        console.log('Error sharing:', error);
+        return;
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return;
       }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard!');
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Link copied to clipboard!');
     }
   };
 
-  const handleSendMessage = (message: string) => {
-    console.log('Sending message:', message);
-    // In a real app, this would send the message to the host via API
-  };
-
   const handleAddToCalendar = () => {
-    // Generate .ics file content
     const formatICSDate = (dateStr: string) => {
-      // Convert ISO date to ICS format: YYYYMMDDTHHMMSSZ
       const date = new Date(dateStr);
       return date
         .toISOString()
@@ -143,7 +159,6 @@ export default function EventInfo({ event, currentUserId = '' }: EventInfoProps)
       .filter(Boolean)
       .join('\r\n');
 
-    // Create and download .ics file
     const blob = new Blob([icsContent], {
       type: 'text/calendar;charset=utf-8',
     });
@@ -157,13 +172,15 @@ export default function EventInfo({ event, currentUserId = '' }: EventInfoProps)
     URL.revokeObjectURL(url);
   };
 
-  // Check if current user is the event owner
+  const handleContribute = () => {
+    setShowContributionSheet(true);
+  };
+
   const isOwner = event.owner?.id === currentUserId;
 
   return (
     <>
       <div className='space-y-6 py-6'>
-        {/* Date and Time */}
         <div className='space-y-3'>
           <div className='flex items-center gap-3 text-black'>
             <span className='text-2xl font-bold'>{event.title}</span>
@@ -185,7 +202,6 @@ export default function EventInfo({ event, currentUserId = '' }: EventInfoProps)
           </div>
         </div>
 
-        {/* Action Buttons - Different for owners vs guests */}
         {isOwner ? (
           <OwnerEventButtons eventId={event.id} />
         ) : (
@@ -225,28 +241,36 @@ export default function EventInfo({ event, currentUserId = '' }: EventInfoProps)
         )}
       </div>
 
-      {/* More Options Sheet */}
       <MoreOptionsSheet
         isOpen={showMoreSheet}
         onClose={() => setShowMoreSheet(false)}
         onAddToCalendar={handleAddToCalendar}
         onSaveEvent={() => setShowSaveSheet(true)}
+        onContribute={handleContribute}
         isSaved={isSaved}
+        hasContributions={hasContributions}
       />
 
-      {/* Save Event Sheet */}
       <SaveEventSheet
         isOpen={showSaveSheet}
         onClose={() => setShowSaveSheet(false)}
         eventId={event.id}
       />
 
-      {/* RSVP Sheet */}
       <RsvpSheet
         eventId={event.id}
         isOpen={showRsvpSheet}
         onClose={() => setShowRsvpSheet(false)}
+        eventData={eventData}
       />
+
+      {eventData && (
+        <ContributionPaymentSheet
+          isOpen={showContributionSheet}
+          onClose={() => setShowContributionSheet(false)}
+          eventData={eventData}
+        />
+      )}
     </>
   );
 }

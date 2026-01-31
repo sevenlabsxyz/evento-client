@@ -5,6 +5,42 @@ import { CohostInvite, CohostInviteTarget } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
+interface EventHostApiItem {
+  event_id: string;
+  created_at: string;
+  user_details: {
+    id: string;
+    username: string;
+    name: string | null;
+    image: string | null;
+    verification_status: string | null;
+  };
+}
+
+interface EventHostsResponse {
+  success: boolean;
+  message: string;
+  data: EventHostApiItem[];
+}
+
+export function useEventHosts(eventId: string, enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.eventHosts(eventId),
+    queryFn: async () => {
+      const res = await apiClient.get<EventHostsResponse>(`/v1/events/${eventId}/hosts`);
+      const hosts = res.data || [];
+      return hosts.map((item) => ({
+        id: item.user_details.id,
+        username: item.user_details.username,
+        name: item.user_details.name,
+        image: item.user_details.image,
+        verification_status: item.user_details.verification_status,
+      }));
+    },
+    enabled,
+  });
+}
+
 interface SendCohostInvitesRequest {
   eventId: string;
   invites: CohostInviteTarget[];

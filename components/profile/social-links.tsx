@@ -1,10 +1,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Globe, Instagram } from 'lucide-react';
+import { Globe, Instagram, QrCode } from 'lucide-react';
 import { useState } from 'react';
 import InstagramSheet from './sheets/instagram-sheet';
 import NostrSheet from './sheets/nostr-sheet';
+import QRCodeSheet from './sheets/qr-code-sheet';
 import WebsiteSheet from './sheets/website-sheet';
 import XSheet from './sheets/x-sheet';
 
@@ -17,22 +18,35 @@ interface User {
 
 interface SocialLinksProps {
   user: User;
+  showQRCode?: boolean;
+  username?: string;
+  userImage?: string | null;
 }
 
-export default function SocialLinks({ user }: SocialLinksProps) {
+export default function SocialLinks({ user, showQRCode, username, userImage }: SocialLinksProps) {
   const [activeSheet, setActiveSheet] = useState<string | null>(null);
 
-  // Check if user has any social links
-  const hasAnyLinks = user.bio_link || user.instagram_handle || user.x_handle || user.nip05;
+  const hasSocialLinks = user.bio_link || user.instagram_handle || user.x_handle || user.nip05;
+  const hasAnyContent = showQRCode || hasSocialLinks;
 
-  if (!hasAnyLinks) {
+  if (!hasAnyContent) {
     return null;
   }
 
   return (
     <>
       <div className='flex w-full flex-wrap justify-center gap-2 rounded-3xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
-        {/* Website */}
+        {showQRCode && username && (
+          <Button
+            size='icon'
+            variant='outline'
+            onClick={() => setActiveSheet('qr')}
+            className='h-12 w-12 rounded-full'
+          >
+            <QrCode className='h-6 w-6 text-gray-600' />
+          </Button>
+        )}
+
         {user.bio_link && (
           <Button
             size='icon'
@@ -44,7 +58,6 @@ export default function SocialLinks({ user }: SocialLinksProps) {
           </Button>
         )}
 
-        {/* Instagram */}
         {user.instagram_handle && (
           <Button
             size='icon'
@@ -56,7 +69,6 @@ export default function SocialLinks({ user }: SocialLinksProps) {
           </Button>
         )}
 
-        {/* X/Twitter */}
         {user.x_handle && (
           <Button
             size='icon'
@@ -70,7 +82,6 @@ export default function SocialLinks({ user }: SocialLinksProps) {
           </Button>
         )}
 
-        {/* Nostr */}
         {user.nip05 && (
           <Button
             size='icon'
@@ -85,7 +96,15 @@ export default function SocialLinks({ user }: SocialLinksProps) {
         )}
       </div>
 
-      {/* Detached Sheets */}
+      {showQRCode && username && (
+        <QRCodeSheet
+          isOpen={activeSheet === 'qr'}
+          onClose={() => setActiveSheet(null)}
+          username={username}
+          userImage={userImage}
+        />
+      )}
+
       <WebsiteSheet
         isOpen={activeSheet === 'website'}
         onClose={() => setActiveSheet(null)}

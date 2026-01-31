@@ -14,7 +14,11 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import apiClient from '@/lib/api/client';
-import { useCancelCohostInvite, useEventCohostInvites } from '@/lib/hooks/use-cohost-invites';
+import {
+  useCancelCohostInvite,
+  useEventCohostInvites,
+  useEventHosts,
+} from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { CohostInvite } from '@/lib/types/api';
@@ -35,9 +39,21 @@ export default function HostsManagementPage() {
   const [inviteToCancel, setInviteToCancel] = useState<CohostInvite | null>(null);
   const [cancellingInviteId, setCancellingInviteId] = useState<string | null>(null);
 
-  const { data: existingEvent, isLoading, error, refetch } = useEventDetails(eventId);
+  const {
+    data: existingEvent,
+    isLoading: eventLoading,
+    error: eventError,
+  } = useEventDetails(eventId);
+  const {
+    data: hosts = [],
+    isLoading: hostsLoading,
+    refetch: refetchHosts,
+  } = useEventHosts(eventId);
   const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
   const cancelInviteMutation = useCancelCohostInvite(eventId);
+
+  const isLoading = eventLoading || hostsLoading;
+  const error = eventError;
 
   const handleCancelInvite = (invite: CohostInvite) => {
     setInviteToCancel(invite);
@@ -69,7 +85,7 @@ export default function HostsManagementPage() {
     try {
       await apiClient.delete(`/v1/events/${eventId}/hosts`, { data: { hostId } });
       toast.success('Cohost removed');
-      refetch();
+      refetchHosts();
     } catch (err: any) {
       toast.error(err?.response?.data?.message || 'Failed to remove cohost');
     } finally {
@@ -133,7 +149,6 @@ export default function HostsManagementPage() {
     );
   }
 
-  const hosts = existingEvent.hosts || [];
   const creatorId = existingEvent.creator_user_id;
 
   return (

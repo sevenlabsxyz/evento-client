@@ -2,7 +2,6 @@
 
 import BiographySheet from '@/components/profile-edit/biography-sheet';
 import InterestsSheet from '@/components/profile-edit/interests-sheet';
-import LightningAddressSheet from '@/components/profile-edit/lightning-address-sheet';
 import NameSheet from '@/components/profile-edit/name-sheet';
 import NostrSheet from '@/components/profile-edit/nostr-sheet';
 import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
@@ -24,7 +23,6 @@ import {
   MessageSquare,
   Type,
   User,
-  Zap,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -51,7 +49,7 @@ export default function EditProfilePage() {
   const bio_link = useProfileFormStore((state) => state.bio_link);
   const x_handle = useProfileFormStore((state) => state.x_handle);
   const instagram_handle = useProfileFormStore((state) => state.instagram_handle);
-  const ln_address = useProfileFormStore((state) => state.ln_address);
+
   const nip05 = useProfileFormStore((state) => state.nip05);
 
   // Get the setter methods directly
@@ -62,7 +60,7 @@ export default function EditProfilePage() {
   const setBioLink = useProfileFormStore((state) => state.setBioLink);
   const setXHandle = useProfileFormStore((state) => state.setXHandle);
   const setInstagramHandle = useProfileFormStore((state) => state.setInstagramHandle);
-  const setLnAddress = useProfileFormStore((state) => state.setLnAddress);
+
   const setNip05 = useProfileFormStore((state) => state.setNip05);
 
   // Sheet states
@@ -71,7 +69,7 @@ export default function EditProfilePage() {
   const [showProfileImageSheet, setShowProfileImageSheet] = useState(false);
   const [showSocialLinksSheet, setShowSocialLinksSheet] = useState(false);
   const [showBiographySheet, setShowBiographySheet] = useState(false);
-  const [showLightningSheet, setShowLightningSheet] = useState(false);
+
   const [showNostrSheet, setShowNostrSheet] = useState(false);
   const [showInterestsSheet, setShowInterestsSheet] = useState(false);
   const [showPromptsSheet, setShowPromptsSheet] = useState(false);
@@ -162,18 +160,6 @@ export default function EditProfilePage() {
               <div className='flex-1'>
                 <Skeleton className='mb-2 h-4 w-24' />
                 <Skeleton className='h-3 w-56' />
-              </div>
-              <Skeleton className='h-5 w-5 rounded-md' />
-            </div>
-          </div>
-
-          {/* Bitcoin Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            <div className='flex w-full items-center gap-4'>
-              <Skeleton className='h-12 w-12 rounded-xl' />
-              <div className='flex-1'>
-                <Skeleton className='mb-2 h-4 w-20' />
-                <Skeleton className='h-3 w-40' />
               </div>
               <Skeleton className='h-5 w-5 rounded-md' />
             </div>
@@ -352,23 +338,6 @@ export default function EditProfilePage() {
             </button>
           </div>
 
-          {/* Bitcoin Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            <button
-              onClick={() => setShowLightningSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100'>
-                <Zap className='h-6 w-6 text-orange-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Bitcoin</h3>
-                <p className='text-sm text-gray-500'>{ln_address || 'Add Lightning address'}</p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
           {/* Nostr Module */}
           <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
@@ -438,13 +407,6 @@ export default function EditProfilePage() {
       <InterestsSheet isOpen={showInterestsSheet} onClose={() => setShowInterestsSheet(false)} />
 
       <PromptsSheet isOpen={showPromptsSheet} onClose={() => setShowPromptsSheet(false)} />
-
-      <LightningAddressSheet
-        isOpen={showLightningSheet}
-        onClose={() => setShowLightningSheet(false)}
-        onSave={setLnAddress}
-        currentAddress={ln_address}
-      />
 
       <NostrSheet
         isOpen={showNostrSheet}
