@@ -1,13 +1,17 @@
 'use client';
 
+import { AddToAppleWalletButton } from '@/components/ticketing/add-to-apple-wallet-button';
 import { Button } from '@/components/ui/button';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { isAppleWalletSupported, useAddToAppleWallet } from '@/lib/hooks/use-apple-wallet';
 import { useTicketDetail } from '@/lib/hooks/use-my-tickets';
 import { formatEventDate } from '@/lib/utils/date';
+import { toast } from '@/lib/utils/toast';
 import { Calendar, CheckCircle, Clock, ExternalLink, MapPin, Ticket } from 'lucide-react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface TicketDetailSheetProps {
   ticketId: string | null;
@@ -17,6 +21,32 @@ interface TicketDetailSheetProps {
 
 export function TicketDetailSheet({ ticketId, open, onOpenChange }: TicketDetailSheetProps) {
   const { data: ticket, isLoading } = useTicketDetail(ticketId, { enabled: open && !!ticketId });
+  const addToWallet = useAddToAppleWallet();
+  const [showWalletButton, setShowWalletButton] = useState(false);
+
+  // Check if Apple Wallet is supported on client side
+  useEffect(() => {
+    setShowWalletButton(isAppleWalletSupported());
+  }, []);
+
+  const handleAddToWallet = () => {
+    if (!ticket || !ticketId) return;
+
+    addToWallet.mutate(
+      {
+        ticketId,
+        eventTitle: ticket.event.title,
+      },
+      {
+        onSuccess: () => {
+          toast.success('Ticket pass downloaded successfully');
+        },
+        onError: (error) => {
+          toast.error(error.message || 'Failed to generate Apple Wallet pass');
+        },
+      }
+    );
+  };
 
   if (isLoading || !ticket) {
     return (
@@ -45,6 +75,15 @@ export function TicketDetailSheet({ ticketId, open, onOpenChange }: TicketDetail
         <div className='flex justify-center'>
           <EventoQRCode value={ticket.check_in_token} size={250} />
         </div>
+
+        {/* Add to Apple Wallet Button */}
+        {showWalletButton && (
+          <AddToAppleWalletButton
+            onClick={handleAddToWallet}
+            isLoading={addToWallet.isPending}
+            disabled={!ticket || !ticketId}
+          />
+        )}
 
         {/* Status Badge */}
         {isCheckedIn && (
