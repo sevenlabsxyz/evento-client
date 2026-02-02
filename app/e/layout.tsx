@@ -1,19 +1,17 @@
 'use client';
 
-import { TopBar } from '@/components/top-bar';
+import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
-import { useTopBar } from '@/lib/stores/topbar-store';
 import { Loader2 } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function EventoLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isOverlaid, applyRouteConfig } = useTopBar();
-  const pathname = usePathname();
   const { hasAccess: hasBetaAccess, isLoading: isBetaLoading } = useBetaAccess();
 
   // Initialize wallet (singleton - manages Zustand state)
@@ -21,11 +19,6 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
 
   // Set up global Breez SDK event listener (runs once per session when connected)
   useWalletEventListener();
-
-  // Simply apply any existing route configuration
-  useEffect(() => {
-    applyRouteConfig(pathname);
-  }, [pathname, applyRouteConfig]);
 
   // Redirect to beta gate if no beta access
   useEffect(() => {
@@ -45,8 +38,16 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
 
   return (
     <StreamChatProvider>
-      <TopBar />
-      <div className={`${isOverlaid ? '' : 'pt-16 md:pt-2'} md:ml-[280px]`}>{children}</div>
+      <SidebarProvider
+        style={
+          {
+            '--sidebar-width': '16rem',
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar />
+        <SidebarInset>{children}</SidebarInset>
+      </SidebarProvider>
     </StreamChatProvider>
   );
 }

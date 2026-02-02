@@ -11,6 +11,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import apiClient from '@/lib/api/client';
@@ -23,7 +24,6 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { CohostInvite } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { Button } from '@/components/ui/button';
 import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -150,11 +150,7 @@ export default function HostsManagementPage() {
         <div className='space-y-4 p-4'>
           {/* Invite Cohost Button */}
           <div className='flex justify-center'>
-            <Button
-              onClick={handleAddCoHost}
-              variant='outline'
-              className='gap-2'
-            >
+            <Button onClick={handleAddCoHost} variant='outline' className='gap-2'>
               <UserPlus className='h-4 w-4' />
               Invite Cohost
             </Button>

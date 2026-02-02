@@ -1,5 +1,7 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
+import { MobileHeader } from '@/components/dashboard/mobile-header';
 import { CohostInvitesSection } from '@/components/hub/cohost-invites-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
@@ -9,54 +11,19 @@ import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
-import { useUserProfile } from '@/lib/hooks/use-user-profile';
-import { useTopBar } from '@/lib/stores/topbar-store';
 import { MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 
 export default function HubPage() {
   const router = useRouter();
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
-  const { user } = useUserProfile();
-  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
-
-  // Set TopBar content
-  useEffect(() => {
-    const pathname = '/e/hub'; // This component is always used for hub
-
-    // Apply any existing configuration for this route
-    applyRouteConfig(pathname);
-
-    // Set configuration for this specific route
-    setTopBarForRoute(pathname, {
-      title: 'Evento Hub',
-      subtitle: '',
-      leftMode: 'menu',
-      showAvatar: true,
-      centerMode: 'title',
-      buttons: [
-        {
-          id: 'chat',
-          icon: MessageCircle,
-          onClick: () => router.push('/e/messages'),
-          label: 'Chat',
-        },
-      ],
-      badge: undefined,
-    });
-
-    // Cleanup on unmount
-    return () => {
-      clearRoute(pathname);
-    };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-24 pt-4 md:max-w-sm'>
+      <div className='flex min-h-screen flex-col bg-white'>
+        <MobileHeader title='Evento Hub' />
+        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-24 pt-4 md:max-w-4xl'>
           {/* Welcome text */}
           <div className='mb-4'>
             <Skeleton className='h-5 w-48' />
@@ -84,6 +51,12 @@ export default function HubPage() {
 
   return (
     <>
+      <MobileHeader
+        title='Evento Hub'
+        rightContent={
+          <CircledIconButton icon={MessageCircle} onClick={() => router.push('/e/messages')} />
+        }
+      />
       <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-4xl'>
         <CohostInvitesSection />
         <MyEventsSection />
