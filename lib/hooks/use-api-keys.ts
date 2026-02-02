@@ -1,16 +1,22 @@
 import apiClient from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
+import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { ApiKey, CreateApiKeyRequest, CreateApiKeyResponse } from '../types/api-key.types';
-
-const API_KEYS_QUERY_KEY = ['api', 'keys'] as const;
 const MAX_API_KEYS = 10;
 
 export function useApiKeys() {
   return useQuery({
-    queryKey: API_KEYS_QUERY_KEY,
+    queryKey: queryKeys.apiKeys(),
     queryFn: async (): Promise<ApiKey[]> => {
       const response = await apiClient.get('/v1/api-keys');
-      return response.data.keys || [];
+      
+      // Validate response data
+      if (!response?.data?.keys || !Array.isArray(response.data.keys)) {
+        throw new Error('Invalid API response format');
+      }
+      
+      return response.data.keys;
     },
     staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
@@ -26,7 +32,11 @@ export function useCreateApiKey() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: API_KEYS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: queryKeys.apiKeys() });
+      toast.success('API key created successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to create API key');
     },
   });
 }
@@ -39,7 +49,11 @@ export function useRevokeApiKey() {
       await apiClient.delete(`/v1/api-keys/${keyId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: API_KEYS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: queryKeys.apiKeys() });
+      toast.success('API key revoked successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.message || 'Failed to revoke API key');
     },
   });
 }
