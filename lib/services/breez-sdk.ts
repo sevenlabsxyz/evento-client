@@ -386,10 +386,38 @@ export class BreezSDKService {
 
             // Payment not found or not completed yet, poll again
             setTimeout(checkPayment, POLL_INTERVAL);
-          } catch (error) {
-            // On error, continue polling (network might be temporarily unavailable)
-            if (DEBUG_BREEZ) console.log('Error checking payment, will retry:', error);
-            setTimeout(checkPayment, POLL_INTERVAL);
+          } catch (error: any) {
+            // Distinguish between transient and permanent errors
+            const isTransientError = error?.message?.includes?.('network') ||
+              error?.message?.includes?.('connection') ||
+              error?.message?.includes?.('timeout') ||
+              error?.message?.includes?.('temporarily') ||
+              error?.code === 'NETWORK_ERROR' ||
+              error?.code === 'TIMEOUT';
+
+            const isPermanentError = error?.message?.includes?.('invalid') ||
+              error?.message?.includes?.('unauthorized') ||
+              error?.message?.includes?.('disconnected') ||
+              error?.message?.includes?.('API key') ||
+              error?.code === 'INVALID_API_KEY' ||
+              error?.code === 'SDK_DISCONNECTED';
+
+            if (isPermanentError) {
+              // Fail fast on permanent errors
+              if (DEBUG_BREEZ) console.log('Permanent error detected, failing immediately:', error);
+              reject(error);
+              return;
+            }
+
+            if (isTransientError || !isPermanentError) {
+              // Continue polling on transient or unknown errors
+              if (DEBUG_BREEZ) console.log('Transient error, will retry:', error);
+              setTimeout(checkPayment, POLL_INTERVAL);
+            } else {
+              // Unknown error type - be conservative and retry
+              if (DEBUG_BREEZ) console.log('Unknown error type, will retry:', error);
+              setTimeout(checkPayment, POLL_INTERVAL);
+            }
           }
         };
 
