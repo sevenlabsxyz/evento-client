@@ -1,5 +1,6 @@
 'use client';
 
+import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
 import BiographySheet from '@/components/profile-edit/biography-sheet';
 import InterestsSheet from '@/components/profile-edit/interests-sheet';
 import NameSheet from '@/components/profile-edit/name-sheet';
@@ -10,11 +11,13 @@ import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useUserBadges } from '@/lib/hooks/use-badges';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   AtSign,
+  Award,
   Camera,
   ChevronRight,
   Hash,
@@ -36,6 +39,10 @@ export default function EditProfilePage() {
 
   // Get user data
   const { user, isLoading } = useUserProfile();
+
+  // Get user badges
+  const { data: userBadges = [] } = useUserBadges();
+  const displayedBadgesCount = userBadges.filter((b) => b.display_order !== null).length;
 
   // Form store - use stable selector functions to prevent rerenders
   // Get just the methods from the store
@@ -73,6 +80,7 @@ export default function EditProfilePage() {
   const [showNostrSheet, setShowNostrSheet] = useState(false);
   const [showInterestsSheet, setShowInterestsSheet] = useState(false);
   const [showPromptsSheet, setShowPromptsSheet] = useState(false);
+  const [showBadgesSheet, setShowBadgesSheet] = useState(false);
 
   // Set TopBar content
   useEffect(() => {
@@ -321,6 +329,27 @@ export default function EditProfilePage() {
             </button>
           </div>
 
+          {/* Badges Module */}
+          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            <button
+              onClick={() => setShowBadgesSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100'>
+                <Award className='h-6 w-6 text-amber-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Badges</h3>
+                <p className='text-sm text-gray-500'>
+                  {displayedBadgesCount > 0
+                    ? `${displayedBadgesCount} badge${displayedBadgesCount !== 1 ? 's' : ''} on display`
+                    : 'Showcase your achievements'}
+                </p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
           {/* Prompts Module */}
           <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             <button
@@ -414,6 +443,8 @@ export default function EditProfilePage() {
         onSave={setNip05}
         currentNip05={nip05}
       />
+
+      <BadgesManagementSheet isOpen={showBadgesSheet} onClose={() => setShowBadgesSheet(false)} />
     </>
   );
 }
