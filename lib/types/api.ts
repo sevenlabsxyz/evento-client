@@ -559,6 +559,18 @@ export interface RegistrationSubmission {
   };
 }
 
+export interface RegistrationAnswer {
+  question_id: string;
+  question_label: string;
+  question_type: RegistrationQuestionType;
+  answer: string;
+}
+
+export interface RegistrationSubmissionDetail extends RegistrationSubmission {
+  denial_reason?: string;
+  answers: RegistrationAnswer[];
+}
+
 export interface RegistrationSubmissionsResponse {
   registrations: RegistrationSubmission[];
   total: number;
