@@ -18,6 +18,7 @@ import {
   LightningAddressInfo,
   LnurlPayRequest,
   LnurlPayResponse,
+  MaxFee,
   Network,
   Payment,
   PrepareLnurlPayRequest,
@@ -33,8 +34,6 @@ import {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
-  WaitForPaymentRequest,
-  WaitForPaymentResponse,
 } from '@breeztech/breez-sdk-spark';
 
 // Set to true to enable verbose logging
@@ -152,7 +151,7 @@ export class BreezSDKService {
       config.lnurlDomain = 'evento.cash';
       // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
       // Auto-claims if fee is ≤ 1 sat/vbyte
-      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 1 };
+      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 1 } as MaxFee;
 
       // Storage directory - using browser's IndexedDB
       const storageDir = './.breez-data';
@@ -294,7 +293,7 @@ export class BreezSDKService {
       const response = await this.sdk.receivePayment(request);
       return {
         paymentRequest: response.paymentRequest,
-        feeSats: response.feeSats,
+        feeSats: Number(response.fee),
       };
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.CREATING_INVOICE);
@@ -351,20 +350,80 @@ export class BreezSDKService {
   /**
    * Wait for a specific payment to complete
    * Used to track when an invoice is paid
+   * Implemented using polling since SDK 0.7.x removed waitForPayment
    */
   async waitForPayment(paymentRequest: string): Promise<Payment> {
     if (!this.sdk) throw new Error('SDK not connected');
 
-    try {
-      const request: WaitForPaymentRequest = {
-        identifier: {
-          type: 'paymentRequest',
-          paymentRequest,
-        },
-      };
+    const POLL_INTERVAL = 2000; // 2 seconds
+    const MAX_WAIT_TIME = 3600000; // 1 hour timeout
+    const startTime = Date.now();
+    const normalizedInvoice = paymentRequest.toLowerCase();
 
-      const response: WaitForPaymentResponse = await this.sdk.waitForPayment(request);
-      return response.payment;
+    try {
+      return await new Promise<Payment>((resolve, reject) => {
+        const checkPayment = async () => {
+          // Check timeout
+          if (Date.now() - startTime > MAX_WAIT_TIME) {
+            reject(new Error('Timeout waiting for payment'));
+            return;
+          }
+
+          try {
+            // List recent payments and find one matching the invoice
+            const payments = await this.sdk!.listPayments({});
+            const matchingPayment = payments.payments.find((p) => {
+              if (p.details?.type === 'lightning') {
+                return p.details.invoice?.toLowerCase() === normalizedInvoice;
+              }
+              return false;
+            });
+
+            if (matchingPayment && matchingPayment.status === 'completed') {
+              resolve(matchingPayment);
+              return;
+            }
+
+            // Payment not found or not completed yet, poll again
+            setTimeout(checkPayment, POLL_INTERVAL);
+          } catch (error: any) {
+            // Distinguish between transient and permanent errors
+            const isTransientError = error?.message?.includes?.('network') ||
+              error?.message?.includes?.('connection') ||
+              error?.message?.includes?.('timeout') ||
+              error?.message?.includes?.('temporarily') ||
+              error?.code === 'NETWORK_ERROR' ||
+              error?.code === 'TIMEOUT';
+
+            const isPermanentError = error?.message?.includes?.('invalid') ||
+              error?.message?.includes?.('unauthorized') ||
+              error?.message?.includes?.('disconnected') ||
+              error?.message?.includes?.('API key') ||
+              error?.code === 'INVALID_API_KEY' ||
+              error?.code === 'SDK_DISCONNECTED';
+
+            if (isPermanentError) {
+              // Fail fast on permanent errors
+              if (DEBUG_BREEZ) console.log('Permanent error detected, failing immediately:', error);
+              reject(error);
+              return;
+            }
+
+            if (isTransientError || !isPermanentError) {
+              // Continue polling on transient or unknown errors
+              if (DEBUG_BREEZ) console.log('Transient error, will retry:', error);
+              setTimeout(checkPayment, POLL_INTERVAL);
+            } else {
+              // Unknown error type - be conservative and retry
+              if (DEBUG_BREEZ) console.log('Unknown error type, will retry:', error);
+              setTimeout(checkPayment, POLL_INTERVAL);
+            }
+          }
+        };
+
+        // Start polling
+        checkPayment();
+      });
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.WAITING_FOR_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'wait for payment');
@@ -682,7 +741,7 @@ export class BreezSDKService {
         const payment = (event as any).payment;
         const isIncoming = payment?.paymentType === 'receive';
         const direction = isIncoming ? 'Incoming' : 'Outgoing';
-        const amount = Number(payment?.amount || 0n);
+        const amount = Number(payment?.amount || BigInt(0));
         if (DEBUG_BREEZ) {
           console.log(
             `💰 [BREEZ:PAYMENT_SUCCEEDED] ${timestamp} - ${direction}: ${amount.toLocaleString()} sats`,

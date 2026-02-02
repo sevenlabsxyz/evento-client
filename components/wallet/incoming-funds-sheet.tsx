@@ -187,10 +187,10 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                 <h3 className='font-semibold text-gray-900'>
                                   {formatAmount(deposit.amountSats)} sats
                                 </h3>
-                                {deposit.confirmations > 0 ? (
-                                  <span className='inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700'>
-                                    <CheckCircle2 className='h-3 w-3' />
-                                    {deposit.confirmations} confirms
+                                {deposit.claimError ? (
+                                  <span className='inline-flex items-center gap-1 rounded-full border border-orange-200 bg-orange-50 px-2 py-0.5 text-xs font-medium text-orange-700'>
+                                    <XCircle className='h-3 w-3' />
+                                    Needs action
                                   </span>
                                 ) : (
                                   <span className='inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-700'>
@@ -237,7 +237,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                           </div>
 
                           {/* Error Info */}
-                          {deposit.error && (
+                          {deposit.claimError && (
                             <div className='mt-3 rounded-lg border border-orange-200 bg-orange-50 p-3'>
                               <div className='flex items-start gap-2'>
                                 <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-600' />
@@ -246,11 +246,13 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                     Auto-swap delayed
                                   </p>
                                   <p className='mt-0.5 text-xs text-orange-700'>
-                                    {deposit.error.type === 'depositClaimFeeExceeded'
-                                      ? `Network fee of ${deposit.error.actualFee} sats is too high (waiting for fees below 1 sat/vbyte)`
-                                      : deposit.error.type === 'missingUtxo'
+                                    {deposit.claimError.type === 'depositClaimFeeExceeded'
+                                      ? `Network fee of ${deposit.claimError.actualFee} sats is too high (waiting for fees below 1 sat/vbyte)`
+                                      : deposit.claimError.type === 'missingUtxo'
                                         ? 'Transaction output not found'
-                                        : deposit.error.message || 'Unknown error'}
+                                        : deposit.claimError.type === 'generic'
+                                          ? deposit.claimError.message || 'Unknown error'
+                                          : 'Unknown error'}
                                   </p>
                                 </div>
                               </div>
