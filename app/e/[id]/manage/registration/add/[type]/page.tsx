@@ -1,6 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { useCreateRegistrationQuestion } from '@/lib/hooks/use-create-registration-question';
+import type { RegistrationQuestionType } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
 import {
   ArrowLeft,
   Building,
@@ -10,6 +13,7 @@ import {
   Link,
   Linkedin,
   List,
+  Loader2,
   Phone,
   Square,
   Twitter,
@@ -19,22 +23,8 @@ import {
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-type QuestionType =
-  | 'text'
-  | 'long-text'
-  | 'single-select'
-  | 'multi-select'
-  | 'url'
-  | 'phone'
-  | 'checkbox'
-  | 'instagram'
-  | 'twitter'
-  | 'youtube'
-  | 'linkedin'
-  | 'company';
-
 interface QuestionConfig {
-  type: QuestionType;
+  type: RegistrationQuestionType;
   label: string;
   description: string;
   defaultQuestion: string;
@@ -49,13 +39,15 @@ export default function AddQuestionPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
-  const questionType = params.type as QuestionType;
+  const questionType = params.type as RegistrationQuestionType;
+
+  const createQuestion = useCreateRegistrationQuestion();
 
   const [questionLabel, setQuestionLabel] = useState('');
   const [isRequired, setIsRequired] = useState(false);
   const [options, setOptions] = useState<string[]>(['']);
 
-  const questionConfigs: Record<QuestionType, QuestionConfig> = {
+  const questionConfigs: Record<RegistrationQuestionType, QuestionConfig> = {
     text: {
       type: 'text',
       label: 'Text',
@@ -65,8 +57,8 @@ export default function AddQuestionPage() {
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
     },
-    'long-text': {
-      type: 'long-text',
+    long_text: {
+      type: 'long_text',
       label: 'Long Text',
       description: 'Collect a longer, multi-line answer',
       defaultQuestion: '',
@@ -74,8 +66,8 @@ export default function AddQuestionPage() {
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
     },
-    'single-select': {
-      type: 'single-select',
+    single_select: {
+      type: 'single_select',
       label: 'Single Select',
       description: 'Let guests choose one option from a list',
       defaultQuestion: '',
@@ -84,8 +76,8 @@ export default function AddQuestionPage() {
       iconColor: 'text-blue-600',
       hasOptions: true,
     },
-    'multi-select': {
-      type: 'multi-select',
+    multi_select: {
+      type: 'multi_select',
       label: 'Multi Select',
       description: 'Let guests choose multiple options from a list',
       defaultQuestion: '',
@@ -165,7 +157,7 @@ export default function AddQuestionPage() {
       icon: <Building className='h-6 w-6' />,
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
-      autoNote: "We'll automatically pull this information if they've entered it on Luma before.",
+      autoNote: "We'll automatically pull this information if they've entered it on Evento before.",
     },
   };
 
@@ -175,19 +167,24 @@ export default function AddQuestionPage() {
     if (config?.defaultQuestion) {
       setQuestionLabel(config.defaultQuestion);
     }
-  }, [config]);
+  }, [config?.defaultQuestion]);
 
-  const handleSave = () => {
-    console.log('Saving question:', {
-      type: questionType,
-      label: questionLabel,
-      required: isRequired,
-      options: config?.hasOptions ? options.filter((o) => o.trim()) : undefined,
-    });
+  const handleSave = async () => {
+    const filteredOptions = options.filter((o) => o.trim());
 
-    // In a real app, you would save this to your backend
-    // For now, navigate back to the registration questions page
-    router.push(`/e/event/${eventId}/manage/registration`);
+    try {
+      await createQuestion.mutateAsync({
+        eventId,
+        type: questionType,
+        label: questionLabel.trim(),
+        options: config?.hasOptions ? filteredOptions : undefined,
+        is_required: isRequired,
+      });
+      toast.success('Question created');
+      router.push(`/e/${eventId}/manage/registration`);
+    } catch {
+      toast.error('Failed to create question');
+    }
   };
 
   const handleAddOption = () => {
@@ -239,13 +236,20 @@ export default function AddQuestionPage() {
         <Button
           onClick={handleSave}
           className={`rounded-full px-6 py-2 font-medium transition-all ${
-            isFormValid
+            isFormValid && !createQuestion.isPending
               ? 'bg-black text-white hover:bg-gray-800'
               : 'cursor-not-allowed bg-gray-300 text-gray-500'
           }`}
-          disabled={!isFormValid}
+          disabled={!isFormValid || createQuestion.isPending}
         >
-          Save
+          {createQuestion.isPending ? (
+            <>
+              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              Saving...
+            </>
+          ) : (
+            'Save'
+          )}
         </Button>
       </div>
 

@@ -469,3 +469,118 @@ export interface VerifyEventPasswordResponse {
   success: boolean;
   message: string;
 }
+
+// Registration types
+export type RegistrationQuestionType =
+  | 'text'
+  | 'long_text'
+  | 'single_select'
+  | 'multi_select'
+  | 'url'
+  | 'phone'
+  | 'checkbox'
+  | 'instagram'
+  | 'twitter'
+  | 'youtube'
+  | 'linkedin'
+  | 'company';
+
+export interface RegistrationQuestion {
+  id: string;
+  type: RegistrationQuestionType;
+  label: string;
+  placeholder?: string;
+  options?: string[];
+  is_required: boolean;
+  sort_order: number;
+  is_enabled: boolean;
+}
+
+export type ApprovalMode = 'auto' | 'manual';
+
+export interface RegistrationSettings {
+  registration_required: boolean;
+  approval_mode: ApprovalMode;
+  questions: RegistrationQuestion[];
+}
+
+export type RegistrationStatus = 'pending' | 'approved' | 'denied';
+
+export interface UserRegistration {
+  id: string;
+  event_id: string;
+  email: string;
+  name: string;
+  approval_status: RegistrationStatus;
+  created_at: string;
+  reviewed_at?: string;
+  denial_reason?: string;
+}
+
+export interface MyRegistrationResponse {
+  has_registration: boolean;
+  registration: UserRegistration | null;
+}
+
+export interface SubmitRegistrationRequest {
+  email: string;
+  name: string;
+  answers: Array<{
+    question_id: string;
+    answer: string;
+  }>;
+}
+
+export interface SubmitRegistrationResponse {
+  registration_id: string;
+  status: RegistrationStatus;
+  auto_approved: boolean;
+  rsvp_id?: string;
+  requires_verification?: boolean;
+  email?: string;
+  message: string;
+}
+
+export interface RegistrationSubmission {
+  id: string;
+  user_id: string | null;
+  email: string;
+  name: string;
+  approval_status: RegistrationStatus;
+  created_at: string;
+  reviewed_at?: string;
+  reviewed_by?: string;
+  user_details?: {
+    id: string;
+    username: string;
+    name: string;
+    image: string;
+    verification_status: VerificationStatus;
+  };
+}
+
+export interface RegistrationSubmissionsResponse {
+  registrations: RegistrationSubmission[];
+  total: number;
+  counts: {
+    pending: number;
+    approved: number;
+    denied: number;
+  };
+}
+
+export interface CreateRegistrationQuestionRequest {
+  type: RegistrationQuestionType;
+  label: string;
+  placeholder?: string;
+  options?: string[];
+  is_required?: boolean;
+}
+
+export interface UpdateRegistrationQuestionRequest {
+  label?: string;
+  placeholder?: string;
+  options?: string[];
+  is_required?: boolean;
+  is_enabled?: boolean;
+}
