@@ -355,7 +355,12 @@ export default function EventDetailPageClient() {
               }}
             />
             <div className='px-4'>
-              <EventInfo event={event} currentUserId={user?.id || ''} eventData={eventData} />
+              <EventInfo
+                event={event}
+                currentUserId={user?.id || ''}
+                eventData={eventData}
+                hosts={hostsData}
+              />
             </div>
           </div>
 

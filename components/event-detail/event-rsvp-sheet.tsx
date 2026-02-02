@@ -5,7 +5,7 @@ import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { Event as ApiEvent, RSVPStatus } from '@/lib/types/api';
+import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -42,6 +42,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   const [showPaymentFlow, setShowPaymentFlow] = useState(false);
   const [currentView, setCurrentView] = useState<SheetView>('rsvp-buttons');
+  const [pendingRegistration, setPendingRegistration] = useState<UserRegistration | null>(null);
 
   const currentStatus = rsvpData?.status ?? null;
   const hasExisting = !!rsvpData?.rsvp;
@@ -77,24 +78,30 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const handleSheetOpenChange = (presented: boolean) => {
     if (!presented) {
       onClose();
-      // Reset view on close
-      setTimeout(() => setCurrentView('rsvp-buttons'), 300);
+      // Reset view and pending registration on close
+      setTimeout(() => {
+        setCurrentView('rsvp-buttons');
+        setPendingRegistration(null);
+      }, 300);
     } else {
       setCurrentView(getInitialView());
     }
   };
 
   const handleAction = async (status: RSVPStatus) => {
+    // Check if registration is required FIRST (before auth check)
+    // This allows non-logged-in users to fill the registration form
+    // and complete inline OTP auth during submission
+    if (status === 'yes' && registrationRequired && !hasExistingRegistration) {
+      setCurrentView('registration-form');
+      return;
+    }
+
+    // Auth check for non-registration flows (maybe/no buttons, or already registered)
     if (!isAuthenticated) {
       const redirectUrl = `${pathname}?rsvp=${status}&eventId=${eventId}`;
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
       onClose();
-      return;
-    }
-
-    // Check if registration is required and user hasn't registered yet
-    if (status === 'yes' && registrationRequired && !hasExistingRegistration) {
-      setCurrentView('registration-form');
       return;
     }
 
@@ -148,12 +155,16 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     setShowPaymentFlow(false);
   };
 
-  const handleRegistrationSuccess = (autoApproved: boolean) => {
+  const handleRegistrationSuccess = (autoApproved: boolean, registration?: UserRegistration) => {
     if (autoApproved) {
       // Close sheet, registration was auto-approved and RSVP created
       onClose();
     } else {
-      // Show the pending status
+      // Store the registration data so we can display status immediately
+      // without waiting for the query to refetch
+      if (registration) {
+        setPendingRegistration(registration);
+      }
       setCurrentView('registration-status');
     }
   };
@@ -238,13 +249,16 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
         );
 
       case 'registration-status':
+        // Use existing registration from query, or fall back to pending registration
+        // from form submission (prevents flash while query refetches)
+        const registrationToShow = existingRegistration || pendingRegistration;
         return (
           <>
-            {existingRegistration && (
+            {registrationToShow && (
               <RegistrationStatus
-                registration={existingRegistration}
+                registration={registrationToShow}
                 onShowRsvp={
-                  existingRegistration.approval_status === 'approved'
+                  registrationToShow.approval_status === 'approved'
                     ? () => setCurrentView('rsvp-buttons')
                     : undefined
                 }

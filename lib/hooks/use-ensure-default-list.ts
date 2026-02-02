@@ -35,13 +35,14 @@ export function useEnsureDefaultList() {
           },
           onError: (error) => {
             console.error('Failed to create default list:', error);
-            // Reset flag on error so it can be retried
-            hasAttemptedCreation.current = false;
+            // Don't reset flag on error - this would cause infinite retries
+            // The user can refresh the page to retry if needed
           },
         }
       );
     }
-  }, [lists, isLoading, createListMutation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lists, isLoading]);
 
   return {
     isCreatingDefaultList: createListMutation.isPending,

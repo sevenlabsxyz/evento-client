@@ -11,7 +11,7 @@ import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { Check, DollarSign } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface PaymentMethod {
   enabled: boolean;
@@ -57,6 +57,42 @@ export default function ContributionsManagementPage() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // handleSave must be defined before useEffects that reference it
+  const handleSave = useCallback(async () => {
+    if (!existingEvent) return;
+
+    try {
+      setIsSubmitting(true);
+
+      const updateData = {
+        contrib_cashapp: contributions.paymentMethods.cashApp?.enabled
+          ? contributions.paymentMethods.cashApp.value
+          : '',
+        contrib_venmo: contributions.paymentMethods.venmo?.enabled
+          ? contributions.paymentMethods.venmo.value
+          : '',
+        contrib_paypal: contributions.paymentMethods.paypal?.enabled
+          ? contributions.paymentMethods.paypal.value
+          : '',
+        cost: contributions.suggestedAmount?.amount
+          ? contributions.suggestedAmount.amount.toString()
+          : '',
+      };
+
+      await apiClient.patch(`/v1/events/${eventId}`, updateData);
+
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+
+      toast.success('Contribution settings updated successfully!');
+      router.push(`/e/${eventId}/manage`);
+    } catch (error) {
+      console.error('Failed to save contribution settings:', error);
+      toast.error('Failed to update contribution settings');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [existingEvent, contributions, eventId, queryClient, router]);
 
   // Initialize with existing event data
   useEffect(() => {
@@ -111,7 +147,7 @@ export default function ContributionsManagementPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig]);
+  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig, pathname, handleSave]);
 
   // Conditional returns MUST come after all hooks
   if (isLoading) {
@@ -217,43 +253,6 @@ export default function ContributionsManagementPage() {
         },
       },
     }));
-  };
-
-  const handleSave = async () => {
-    if (!existingEvent) return;
-
-    try {
-      setIsSubmitting(true);
-
-      // Only update contribution-related fields via direct API call
-      const updateData = {
-        contrib_cashapp: contributions.paymentMethods.cashApp?.enabled
-          ? contributions.paymentMethods.cashApp.value
-          : '',
-        contrib_venmo: contributions.paymentMethods.venmo?.enabled
-          ? contributions.paymentMethods.venmo.value
-          : '',
-        contrib_paypal: contributions.paymentMethods.paypal?.enabled
-          ? contributions.paymentMethods.paypal.value
-          : '',
-        cost: contributions.suggestedAmount?.amount
-          ? contributions.suggestedAmount.amount.toString()
-          : '',
-      };
-
-      await apiClient.patch(`/v1/events/${eventId}`, updateData);
-
-      // Invalidate event queries to refetch updated data
-      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
-
-      toast.success('Contribution settings updated successfully!');
-      router.push(`/e/${eventId}/manage`);
-    } catch (error) {
-      console.error('Failed to save contribution settings:', error);
-      toast.error('Failed to update contribution settings');
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const paymentMethods = [

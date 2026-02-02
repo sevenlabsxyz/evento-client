@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDeleteRegistrationQuestion } from '@/lib/hooks/use-delete-registration-question';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
@@ -20,6 +22,7 @@ import {
   Users,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 type QuestionType = RegistrationQuestion['type'];
 
@@ -27,6 +30,17 @@ export default function RegistrationQuestionsPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
+
+  // State for delete confirmation sheet
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    questionId: string | null;
+    questionLabel: string;
+  }>({
+    isOpen: false,
+    questionId: null,
+    questionLabel: '',
+  });
 
   // Get existing event data from API
   const { data: existingEvent, isLoading: isLoadingEvent, error } = useEventDetails(eventId);
@@ -148,16 +162,32 @@ export default function RegistrationQuestionsPage() {
     }
   };
 
-  const handleDeleteQuestion = async (questionId: string) => {
-    if (!confirm('Are you sure you want to delete this question?')) {
-      return;
-    }
+  const handleDeleteClick = (question: RegistrationQuestion) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      questionId: question.id,
+      questionLabel: question.label,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmation.questionId) return;
+
     try {
-      await deleteQuestion.mutateAsync({ eventId, questionId });
+      await deleteQuestion.mutateAsync({
+        eventId,
+        questionId: deleteConfirmation.questionId,
+      });
       toast.success('Question deleted');
     } catch {
       toast.error('Failed to delete question');
+    } finally {
+      setDeleteConfirmation({ isOpen: false, questionId: null, questionLabel: '' });
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmation({ isOpen: false, questionId: null, questionLabel: '' });
   };
 
   const handleEditQuestion = (questionId: string) => {
@@ -379,7 +409,7 @@ export default function RegistrationQuestionsPage() {
 
                     {/* Delete Button */}
                     <button
-                      onClick={() => handleDeleteQuestion(question.id)}
+                      onClick={() => handleDeleteClick(question)}
                       disabled={deleteQuestion.isPending}
                       className='rounded p-1 hover:bg-red-100'
                     >
@@ -417,6 +447,41 @@ export default function RegistrationQuestionsPage() {
           </p>
         </div>
       </div>
+
+      {/* Delete Confirmation Sheet */}
+      <MasterScrollableSheet
+        title='Delete Question'
+        open={deleteConfirmation.isOpen}
+        onOpenChange={(open) => {
+          if (!open) handleCancelDelete();
+        }}
+        footer={
+          <div className='flex gap-3'>
+            <Button variant='outline' className='flex-1' onClick={handleCancelDelete}>
+              Cancel
+            </Button>
+            <Button
+              variant='destructive'
+              className='flex-1'
+              onClick={handleConfirmDelete}
+              disabled={deleteQuestion.isPending}
+            >
+              {deleteQuestion.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </div>
+        }
+      >
+        <div className='p-4 text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+            <Trash2 className='h-8 w-8 text-red-600' />
+          </div>
+          <h3 className='mb-2 text-lg font-semibold'>Delete this question?</h3>
+          <p className='text-gray-600'>
+            &quot;{deleteConfirmation.questionLabel}&quot; will be permanently deleted. This action
+            cannot be undone.
+          </p>
+        </div>
+      </MasterScrollableSheet>
     </div>
   );
 }

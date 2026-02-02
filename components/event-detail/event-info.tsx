@@ -1,28 +1,33 @@
 'use client';
 
+import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
+import { useMyRegistration } from '@/lib/hooks/use-my-registration';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
+import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 import RsvpSheet from './event-rsvp-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
+import { RegistrationStatus } from './registration-status';
 import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
   event: Event;
   currentUserId?: string;
   eventData?: ApiEvent | null;
+  hosts?: EventHost[];
 }
 
-export default function EventInfo({ event, currentUserId = '', eventData }: EventInfoProps) {
+export default function EventInfo({ event, currentUserId = '', eventData, hosts }: EventInfoProps) {
   const router = useRouter();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
@@ -34,6 +39,19 @@ export default function EventInfo({ event, currentUserId = '', eventData }: Even
 
   const { data: savedStatus } = useEventSavedStatus(event.id);
   const isSaved = savedStatus?.is_saved ?? false;
+
+  const { data: registrationSettings } = useRegistrationSettings(event.id);
+  const { data: myRegistration } = useMyRegistration(event.id);
+
+  const registrationRequired = registrationSettings?.registration_required ?? false;
+  const hasPendingRegistration =
+    registrationRequired &&
+    myRegistration?.has_registration &&
+    myRegistration.registration?.approval_status === 'pending';
+  const hasDeniedRegistration =
+    registrationRequired &&
+    myRegistration?.has_registration &&
+    myRegistration.registration?.approval_status === 'denied';
 
   const hasContributions = useMemo(() => {
     if (!eventData) return false;
@@ -64,6 +82,14 @@ export default function EventInfo({ event, currentUserId = '', eventData }: Even
 
   const handleRSVP = () => {
     setShowRsvpSheet(true);
+  };
+
+  const handlePendingClick = () => {
+    toast.info('Your registration is pending host approval');
+  };
+
+  const handleDeniedClick = () => {
+    toast.error('Your registration was not approved. Contact the host for details.');
   };
 
   const handleContact = async () => {
@@ -176,7 +202,11 @@ export default function EventInfo({ event, currentUserId = '', eventData }: Even
     setShowContributionSheet(true);
   };
 
-  const isOwner = event.owner?.id === currentUserId;
+  const isOwnerOrCohost = useMemo(() => {
+    if (!currentUserId) return false;
+    if (event.owner?.id === currentUserId) return true;
+    return hosts?.some((h) => h.user_details?.id === currentUserId) ?? false;
+  }, [currentUserId, event.owner?.id, hosts]);
 
   return (
     <>
@@ -202,42 +232,68 @@ export default function EventInfo({ event, currentUserId = '', eventData }: Even
           </div>
         </div>
 
-        {isOwner ? (
+        {isOwnerOrCohost ? (
           <OwnerEventButtons eventId={event.id} />
         ) : (
-          <div className='grid grid-cols-4 gap-2'>
-            <button
-              onClick={handleRSVP}
-              className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className}`}
-            >
-              <Star className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>{rsvpButton.label}</span>
-            </button>
+          <>
+            <div className='grid grid-cols-4 gap-2'>
+              {hasPendingRegistration ? (
+                <button
+                  onClick={handlePendingClick}
+                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
+                >
+                  <Clock className='mb-1 h-5 w-5' />
+                  <span className='text-xs font-medium'>Pending</span>
+                </button>
+              ) : hasDeniedRegistration ? (
+                <button
+                  onClick={handleDeniedClick}
+                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-100 text-red-700 transition-colors hover:bg-red-200'
+                >
+                  <XCircle className='mb-1 h-5 w-5' />
+                  <span className='text-xs font-medium'>Denied</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleRSVP}
+                  className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className}`}
+                >
+                  <Star className='mb-1 h-5 w-5' />
+                  <span className='text-xs font-medium'>{rsvpButton.label}</span>
+                </button>
+              )}
 
-            <button
-              onClick={handleContact}
-              className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-            >
-              <Mail className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>Contact</span>
-            </button>
+              <button
+                onClick={handleContact}
+                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+              >
+                <Mail className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>Contact</span>
+              </button>
 
-            <button
-              onClick={handleShare}
-              className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-            >
-              <Share className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>Share</span>
-            </button>
+              <button
+                onClick={handleShare}
+                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+              >
+                <Share className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>Share</span>
+              </button>
 
-            <button
-              onClick={() => setShowMoreSheet(true)}
-              className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-            >
-              <MoreHorizontal className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>More</span>
-            </button>
-          </div>
+              <button
+                onClick={() => setShowMoreSheet(true)}
+                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+              >
+                <MoreHorizontal className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>More</span>
+              </button>
+            </div>
+
+            {(hasPendingRegistration || hasDeniedRegistration) && myRegistration?.registration && (
+              <div className='mt-4'>
+                <RegistrationStatus registration={myRegistration.registration} />
+              </div>
+            )}
+          </>
         )}
       </div>
 
