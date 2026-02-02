@@ -309,7 +309,15 @@ export const UserOnboardingFlow = ({
               </>
             ) : (
               <>
-                {step < 5 ? (step >= 4 ? 'Skip' : 'Continue') : 'Complete Setup'}
+                {step < 4
+                  ? 'Continue'
+                  : step === 4
+                    ? selectedInterestIds.length > 0
+                      ? 'Continue'
+                      : 'Skip'
+                    : answeredPrompts.filter((p) => p.answer.length >= 5).length > 0
+                      ? 'Complete Setup'
+                      : 'Skip & Finish'}
                 <ArrowRight className='ml-2 h-4 w-4' />
               </>
             )}
