@@ -18,7 +18,6 @@ import { OnboardingInterests } from './onboarding-interests';
 import { OnboardingName } from './onboarding-name';
 import { OnboardingPrompts } from './onboarding-prompts';
 import { OnboardingUsername } from './onboarding-username';
-import { OnboardingWelcomeCarousel } from './onboarding-welcome-carousel';
 import { StepIndicator } from './step-indicator';
 
 interface UserOnboardingFlowProps {
@@ -175,11 +174,8 @@ export const UserOnboardingFlow = ({
         }
       }
       setStep(5);
-    } else if (step === 5) {
-      // Move to welcome carousel
-      setStep(6);
     } else {
-      // Step 6 - Final step
+      // Step 5 - Final step
       setUpdating(true);
 
       try {
@@ -241,15 +237,23 @@ export const UserOnboardingFlow = ({
 
   return (
     <div className='flex h-full flex-col'>
-      <div className='flex-grow overflow-y-auto px-4 pt-4 md:px-0'>
-        <div className='mb-6 flex flex-col md:px-4'>
-          <StepIndicator currentStep={step} totalSteps={6} />
+      {/* Header with logo and progress */}
+      <div className='flex-shrink-0 px-4 pt-4 md:px-0'>
+        <div className='mb-4 flex items-center justify-between md:justify-center'>
           <Link
             href='/'
-            className='mb-6 flex max-h-[60px] max-w-[60px] flex-col items-center gap-2 rounded-2xl border border-gray-200 p-1.5 font-medium shadow-sm md:mx-auto'
+            className='flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md'
           >
-            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' height='50' width='50' />
+            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' height='28' width='28' />
           </Link>
+          <span className='text-sm text-gray-400 md:hidden'>Step {step} of 5</span>
+        </div>
+        <StepIndicator currentStep={step} totalSteps={5} />
+      </div>
+
+      {/* Content area */}
+      <div className='flex-grow overflow-y-auto px-4 md:px-0'>
+        <div className='py-2 md:px-4'>
           <AnimatePresence mode='wait'>
             {step === 1 && (
               <OnboardingName
@@ -277,16 +281,17 @@ export const UserOnboardingFlow = ({
             )}
             {step === 4 && <OnboardingInterests onInterestsSelected={setSelectedInterestIds} />}
             {step === 5 && <OnboardingPrompts onPromptsAnswered={setAnsweredPrompts} />}
-            {step === 6 && <OnboardingWelcomeCarousel />}
           </AnimatePresence>
         </div>
       </div>
-      <div className='flex flex-col px-4 pb-6 md:px-0'>
-        <div className='flex flex-col gap-2'>
+
+      {/* Footer with buttons */}
+      <div className='flex-shrink-0 border-t border-gray-100 bg-white px-4 pb-6 pt-4 md:border-t-0 md:px-0'>
+        <div className='flex items-center gap-3'>
           {step > 1 && (
             <Button
-              variant='ghost'
-              className='h-[60px] flex-grow'
+              variant='outline'
+              className='h-12 flex-shrink-0 px-6'
               onClick={() => setStep(step - 1)}
             >
               Back
@@ -294,17 +299,17 @@ export const UserOnboardingFlow = ({
           )}
           <Button
             disabled={isSaveButtonDisabled || isUpdating}
-            className='h-[60px] flex-grow bg-red-600'
+            className='h-12 flex-grow bg-red-600 hover:bg-red-700'
             onClick={() => updateUserFn({ name, username, image: uploadedImg })}
           >
             {updating ? (
               <>
                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Loading...
+                Saving...
               </>
             ) : (
               <>
-                {step < 6 ? (step === 4 ? 'Next (or Skip)' : 'Next') : 'Complete Setup'}
+                {step < 5 ? (step >= 4 ? 'Skip' : 'Continue') : 'Complete Setup'}
                 <ArrowRight className='ml-2 h-4 w-4' />
               </>
             )}

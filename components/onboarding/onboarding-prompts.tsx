@@ -6,8 +6,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAllPrompts, useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { Prompt } from '@/lib/types/api';
-import { motion } from 'framer-motion';
-import { ArrowDown, ArrowUp, Eye, EyeOff, MessageSquare, Plus, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowDown, ArrowUp, Eye, EyeOff, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { OnboardingHeader } from './onboarding-header';
 
@@ -132,10 +132,10 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
   return (
     <motion.div
       key='prompts'
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className='w-full'
     >
       <OnboardingHeader
@@ -143,97 +143,108 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
         description='Answer up to 4 prompts (you can skip this step)'
       />
 
-      <div className='mt-6 space-y-4'>
+      <div className='mt-6 space-y-3'>
         {/* Loading state */}
         {isLoadingUserPrompts ? (
           <div className='space-y-3'>
-            {[1, 2].map((i) => (
-              <Skeleton key={i} className='h-32 w-full' />
+            {[1, 2, 3].map((i) => (
+              <div key={i} className='rounded-xl border border-gray-200 bg-white p-3'>
+                <div className='mb-2 flex items-center gap-2'>
+                  <Skeleton className='h-5 w-5 rounded-full' />
+                  <Skeleton className='h-4 w-48' />
+                </div>
+                <Skeleton className='h-3 w-32' />
+              </div>
             ))}
           </div>
         ) : (
           <>
             {/* Answered prompts */}
             {answeredPrompts.length > 0 && (
-              <div className='space-y-3'>
-                <h3 className='text-sm font-semibold text-gray-700'>Your Prompts</h3>
-                {answeredPrompts.map((prompt, index) => (
-                  <div
-                    key={prompt.prompt_id}
-                    className='rounded-xl border border-gray-200 bg-white p-4'
-                  >
-                    <div className='mb-2 flex items-start justify-between'>
-                      <div className='flex items-start gap-2'>
-                        <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600'>
+              <div className='space-y-2'>
+                <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500'>
+                  Your Prompts
+                </h3>
+                <AnimatePresence mode='popLayout'>
+                  {answeredPrompts.map((prompt, index) => (
+                    <motion.div
+                      key={prompt.prompt_id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      transition={{ duration: 0.15 }}
+                      className='mb-2 rounded-xl border border-gray-200 bg-white p-3'
+                    >
+                    <div className='mb-1.5 flex items-start justify-between gap-2'>
+                      <div className='flex min-w-0 flex-1 items-start gap-2'>
+                        <span className='flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-red-100 text-xs font-semibold text-red-600'>
                           {index + 1}
                         </span>
-                        <p className='flex-1 text-sm font-semibold text-gray-900'>
+                        <p className='flex-1 text-sm font-medium text-gray-900'>
                           {prompt.question}
                         </p>
                       </div>
-                      <div className='flex items-center gap-1'>
+                      <div className='flex flex-shrink-0 items-center'>
                         {/* Reorder buttons */}
                         {answeredPrompts.length > 1 && (
                           <>
                             <button
                               onClick={() => handleMoveUp(index)}
                               disabled={index === 0}
-                              className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                              className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
                               title='Move up'
                             >
-                              <ArrowUp className='h-4 w-4 text-gray-600' />
+                              <ArrowUp className='h-3.5 w-3.5 text-gray-500' />
                             </button>
                             <button
                               onClick={() => handleMoveDown(index)}
                               disabled={index === answeredPrompts.length - 1}
-                              className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
+                              className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
                               title='Move down'
                             >
-                              <ArrowDown className='h-4 w-4 text-gray-600' />
+                              <ArrowDown className='h-3.5 w-3.5 text-gray-500' />
                             </button>
                           </>
                         )}
                         <button
                           onClick={() => handleToggleVisibility(prompt.prompt_id)}
-                          className='rounded-lg p-1.5 hover:bg-gray-100'
+                          className='rounded p-1 hover:bg-gray-100'
                           title={prompt.is_visible ? 'Hide from profile' : 'Show on profile'}
                         >
                           {prompt.is_visible ? (
-                            <Eye className='h-4 w-4 text-blue-600' />
+                            <Eye className='h-3.5 w-3.5 text-gray-500' />
                           ) : (
-                            <EyeOff className='h-4 w-4 text-gray-400' />
+                            <EyeOff className='h-3.5 w-3.5 text-gray-400' />
                           )}
                         </button>
                         <button
                           onClick={() => handleRemovePrompt(prompt.prompt_id)}
-                          className='rounded-lg p-1.5 hover:bg-gray-100'
+                          className='rounded p-1 hover:bg-gray-100'
                           title='Remove prompt'
                         >
-                          <X className='h-4 w-4 text-red-600' />
+                          <X className='h-3.5 w-3.5 text-gray-400 hover:text-red-500' />
                         </button>
                       </div>
                     </div>
 
                     {editingPromptId === prompt.prompt_id ? (
-                      <div className='space-y-2'>
+                      <div className='ml-7 space-y-2'>
                         <Textarea
                           value={prompt.answer}
                           onChange={(e) => handleUpdateAnswer(prompt.prompt_id, e.target.value)}
                           placeholder='Share your thoughts...'
-                          className='min-h-[80px] resize-none text-sm'
+                          className='min-h-[60px] resize-none text-sm'
                           maxLength={500}
                           autoFocus
                         />
                         <div className='flex items-center justify-between'>
-                          <div className='flex items-center gap-3 text-xs text-gray-500'>
-                            <span>Min: 5 characters</span>
-                            <span>{prompt.answer.length}/500</span>
-                          </div>
+                          <span className='text-xs text-gray-400'>{prompt.answer.length}/500</span>
                           {prompt.answer.length >= 5 && (
                             <Button
                               size='sm'
                               onClick={() => setEditingPromptId(null)}
-                              className='bg-red-600 hover:bg-red-700'
+                              className='h-7 bg-red-600 px-3 text-xs hover:bg-red-700'
                             >
                               Done
                             </Button>
@@ -241,62 +252,67 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                         </div>
                       </div>
                     ) : (
-                      <div>
+                      <div className='ml-7'>
                         {prompt.answer ? (
-                          <p className='text-sm text-gray-700'>{prompt.answer}</p>
+                          <p className='text-sm text-gray-600'>{prompt.answer}</p>
                         ) : (
-                          <p className='text-sm italic text-gray-400'>No answer yet</p>
+                          <button
+                            onClick={() => setEditingPromptId(prompt.prompt_id)}
+                            className='text-sm text-gray-400 hover:text-gray-600'
+                          >
+                            Tap to add your answer...
+                          </button>
                         )}
-                        <button
-                          onClick={() => setEditingPromptId(prompt.prompt_id)}
-                          className='mt-2 text-xs font-medium text-blue-600 hover:underline'
-                        >
-                          {prompt.answer ? 'Edit answer' : 'Add answer'}
-                        </button>
+                        {prompt.answer && (
+                          <button
+                            onClick={() => setEditingPromptId(prompt.prompt_id)}
+                            className='mt-1 block text-xs font-medium text-red-600 hover:text-red-700'
+                          >
+                            Edit
+                          </button>
+                        )}
                       </div>
                     )}
-                  </div>
-                ))}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
               </div>
             )}
 
             {/* Available prompts */}
             {canAddMore && (
-              <div className='space-y-3'>
-                <h3 className='text-sm font-semibold text-gray-700'>
-                  {answeredPrompts.length > 0 ? 'Add More Prompts' : 'Available Prompts'}
+              <div className='space-y-2'>
+                <h3 className='text-xs font-semibold uppercase tracking-wide text-gray-500'>
+                  {answeredPrompts.length > 0 ? 'Add More' : 'Choose a Prompt'}
                 </h3>
 
                 {isLoadingAvailablePrompts ? (
                   <div className='space-y-2'>
                     {[1, 2, 3].map((i) => (
-                      <Skeleton key={i} className='h-20 w-full' />
+                      <div key={i} className='rounded-xl border border-gray-200 bg-white p-3'>
+                        <div className='flex items-center gap-2'>
+                          <Skeleton className='h-4 w-4 rounded' />
+                          <Skeleton className='h-4 flex-1' />
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : filteredAvailablePrompts && filteredAvailablePrompts.length > 0 ? (
-                  <div className='space-y-2'>
+                  <div className='space-y-1.5'>
                     {filteredAvailablePrompts.slice(0, 5).map((prompt) => (
                       <button
                         key={prompt.id}
                         onClick={() => handleAddPrompt(prompt)}
-                        className='flex w-full items-start gap-3 rounded-xl border border-gray-200 bg-white p-3 text-left transition-colors hover:border-blue-300 hover:bg-blue-50'
+                        className='flex w-full items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2.5 text-left transition-all hover:border-red-200 hover:bg-red-50/50'
                       >
-                        <MessageSquare className='mt-0.5 h-4 w-4 flex-shrink-0 text-blue-600' />
-                        <div className='flex-1'>
-                          <p className='text-sm font-medium text-gray-900'>{prompt.question}</p>
-                          {prompt.placeholder_text && (
-                            <p className='mt-0.5 text-xs text-gray-500'>
-                              {prompt.placeholder_text}
-                            </p>
-                          )}
-                        </div>
-                        <Plus className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-400' />
+                        <Plus className='h-4 w-4 flex-shrink-0 text-gray-400' />
+                        <p className='flex-1 text-sm text-gray-700'>{prompt.question}</p>
                       </button>
                     ))}
                   </div>
                 ) : (
-                  <div className='rounded-xl border border-gray-200 bg-gray-50 p-6 text-center'>
-                    <p className='text-sm text-gray-500'>No more prompts available</p>
+                  <div className='rounded-xl border border-dashed border-gray-200 bg-gray-50/50 p-4 text-center'>
+                    <p className='text-sm text-gray-400'>No more prompts available</p>
                   </div>
                 )}
               </div>
@@ -304,21 +320,22 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
 
             {/* Max prompts message */}
             {!canAddMore && (
-              <div className='rounded-xl border border-yellow-200 bg-yellow-50 p-3'>
-                <p className='text-sm text-yellow-800'>
-                  You&apos;ve reached the maximum of 4 prompts. Remove one to add a different
-                  prompt.
+              <div className='rounded-lg bg-amber-50 p-2.5'>
+                <p className='text-center text-xs text-amber-700'>
+                  Maximum 4 prompts reached. Remove one to add another.
                 </p>
               </div>
             )}
 
             {/* Count indicator */}
-            <div className='text-center'>
-              <p className='text-sm text-gray-500'>
-                {answeredPrompts.length}/4 prompts •{' '}
-                {answeredPrompts.filter((p) => p.answer.length >= 5).length} answered
-              </p>
-            </div>
+            {answeredPrompts.length > 0 && (
+              <div className='pt-1 text-center'>
+                <p className='text-xs text-gray-400'>
+                  {answeredPrompts.filter((p) => p.answer.length >= 5).length} of{' '}
+                  {answeredPrompts.length} answered
+                </p>
+              </div>
+            )}
           </>
         )}
       </div>

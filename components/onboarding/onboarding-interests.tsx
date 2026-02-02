@@ -6,6 +6,7 @@ import { useAllInterests, useUserInterests } from '@/lib/hooks/use-user-interest
 import { Interest } from '@/lib/types/api';
 import { motion } from 'framer-motion';
 import { useMemo, useState } from 'react';
+import { OnboardingHeader } from './onboarding-header';
 
 interface OnboardingInterestsProps {
   onInterestsSelected?: (interestIds: string[]) => void;
@@ -75,19 +76,23 @@ export const OnboardingInterests = ({ onInterestsSelected }: OnboardingInterests
     return (
       <motion.div
         key='interests'
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -10 }}
+        transition={{ duration: 0.2, ease: 'easeOut' }}
         className='w-full'
       >
-        <div className='space-y-4'>
+        <OnboardingHeader
+          title='What are you interested in?'
+          description='Select topics to personalize your feed (you can skip this step)'
+        />
+        <div className='mt-6 space-y-5'>
           {[1, 2, 3].map((i) => (
-            <div key={i} className='space-y-2'>
-              <Skeleton className='h-6 w-32' />
+            <div key={i} className='space-y-2.5'>
+              <Skeleton className='h-5 w-28 rounded' />
               <div className='flex flex-wrap gap-2'>
-                {[1, 2, 3, 4].map((j) => (
-                  <Skeleton key={j} className='h-9 w-24 rounded-full' />
+                {[1, 2, 3, 4, 5].map((j) => (
+                  <Skeleton key={j} className='h-8 w-20 rounded-full' />
                 ))}
               </div>
             </div>
@@ -100,18 +105,25 @@ export const OnboardingInterests = ({ onInterestsSelected }: OnboardingInterests
   return (
     <motion.div
       key='interests'
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
       className='w-full'
     >
-      <InterestsSelector
-        categories={categories}
-        initialSelectedInterests={initialSelectedSlugs}
-        onChange={handleSelectionChange}
-        mainTitle='What are you interested in?'
+      <OnboardingHeader
+        title='What are you interested in?'
+        description='Select topics to personalize your feed (you can skip this step)'
       />
+      <div className='mt-6'>
+        <InterestsSelector
+          categories={categories}
+          initialSelectedInterests={initialSelectedSlugs}
+          onChange={handleSelectionChange}
+          hideTitle
+          contentClassName=''
+        />
+      </div>
     </motion.div>
   );
 };

@@ -20,17 +20,17 @@ export const OnboardingAvatar = ({
   return (
     <motion.div
       key='profile'
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
     >
       <OnboardingHeader
         title='Upload a profile picture'
         description='Help others recognize you at Events.'
       />
 
-      <div className='flex flex-col items-center justify-center py-6 md:py-12'>
+      <div className='mt-8 flex flex-col items-center justify-center'>
         <input
           name='file'
           ref={inputFileRef}
@@ -41,27 +41,28 @@ export const OnboardingAvatar = ({
         />
         <div
           onClick={() => inputFileRef.current?.click()}
-          className='group relative mb-12 rounded-full border'
+          className='group relative cursor-pointer rounded-full'
         >
           {isLoading ? (
-            <div className='absolute bottom-0 left-0 right-0 top-0 z-20 flex cursor-default flex-row items-center justify-center rounded-full bg-black opacity-0 opacity-75'>
-              <Loader2 className='h-12 w-12 animate-spin text-white' />
+            <div className='absolute inset-0 z-20 flex items-center justify-center rounded-full bg-black/60'>
+              <Loader2 className='h-10 w-10 animate-spin text-white' />
             </div>
           ) : (
-            <div className='absolute bottom-0 left-0 right-0 top-0 z-20 flex cursor-pointer flex-row items-center justify-center rounded-full bg-black opacity-0 md:group-hover:opacity-50'>
-              <UploadCloud className='h-12 w-12 text-white' />
+            <div className='absolute inset-0 z-20 flex items-center justify-center rounded-full bg-black/0 transition-all duration-200 md:group-hover:bg-black/40'>
+              <UploadCloud className='h-10 w-10 text-white opacity-0 transition-opacity md:group-hover:opacity-100' />
             </div>
           )}
-          <Avatar className='h-48 w-48 md:h-64 md:w-64'>
+          <Avatar className='h-40 w-40 border-4 border-gray-100 shadow-lg md:h-48 md:w-48'>
             <AvatarImage src={uploadedImg || '/assets/logo/sublogo.svg'} />
             <AvatarFallback className='text-xs'>Loading...</AvatarFallback>
           </Avatar>
-          {isLoading ? null : (
-            <div className='absolute -bottom-2 right-0 z-30 rounded-full border bg-gray-100 p-2 md:bottom-2 md:right-2'>
-              <Camera className='h-6 w-6 text-gray-600' />
+          {!isLoading && (
+            <div className='absolute -bottom-1 -right-1 z-30 rounded-full border-2 border-white bg-red-600 p-2 shadow-md'>
+              <Camera className='h-5 w-5 text-white' />
             </div>
           )}
         </div>
+        <p className='mt-4 text-center text-sm text-gray-500'>Tap to upload</p>
       </div>
     </motion.div>
   );
