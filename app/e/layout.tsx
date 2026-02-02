@@ -56,11 +56,9 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
         }
       >
         <AppSidebar variant='inset' />
-        <SidebarInset>
+        <SidebarInset className='max-h-svh'>
           {!isOverlaid && <SiteHeader />}
-          <div className='flex flex-1 flex-col'>
-            <div className='flex flex-1 flex-col'>{children}</div>
-          </div>
+          <div className='flex-1 overflow-auto'>{children}</div>
         </SidebarInset>
       </SidebarProvider>
     </StreamChatProvider>
