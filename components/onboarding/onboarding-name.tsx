@@ -18,10 +18,10 @@ export const OnboardingName = ({
   return (
     <motion.div
       key='name'
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.2, ease: 'easeInOut' }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.2, ease: 'easeOut' }}
     >
       <OnboardingHeader title='Enter your name' description='Let everyone know what to call you.' />
       <div className='mt-6'>
