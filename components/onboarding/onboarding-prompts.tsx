@@ -251,7 +251,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                             </div>
                           </div>
                           <div className='ml-7'>
-                            <p className='text-sm text-gray-600 line-clamp-2'>{prompt.answer}</p>
+                            <p className='line-clamp-2 text-sm text-gray-600'>{prompt.answer}</p>
                             <button
                               onClick={() => handleEditPrompt(prompt)}
                               className='mt-1 text-xs font-medium text-red-600 hover:text-red-700'
@@ -274,10 +274,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                       {isLoadingAvailablePrompts ? (
                         <div className='space-y-2'>
                           {[1, 2, 3].map((i) => (
-                            <div
-                              key={i}
-                              className='rounded-xl border border-gray-200 bg-white p-3'
-                            >
+                            <div key={i} className='rounded-xl border border-gray-200 bg-white p-3'>
                               <div className='flex items-center gap-2'>
                                 <Skeleton className='h-4 w-4 rounded' />
                                 <Skeleton className='h-4 flex-1' />
