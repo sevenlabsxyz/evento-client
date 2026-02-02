@@ -1,6 +1,8 @@
 'use client';
 
-import { TopBar } from '@/components/top-bar';
+import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { SiteHeader } from '@/components/dashboard/site-header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
@@ -45,8 +47,20 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
 
   return (
     <StreamChatProvider>
-      <TopBar />
-      <div className={`${isOverlaid ? '' : 'pt-16 md:pt-2'} md:ml-[280px]`}>{children}</div>
+      <SidebarProvider
+        style={
+          {
+            '--sidebar-width': '18rem',
+            '--header-height': '3.5rem',
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant='inset' />
+        <SidebarInset className='max-h-svh'>
+          {!isOverlaid && <SiteHeader />}
+          <div className='flex-1 overflow-auto'>{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
     </StreamChatProvider>
   );
 }
