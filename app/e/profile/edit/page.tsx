@@ -114,8 +114,9 @@ export default function EditProfilePage() {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex-1 space-y-4 overflow-y-auto p-4'>
-          {/* Profile Image Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          {/* Profile Info Group: Profile Picture, Username, Name, Bio */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Profile Picture */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -124,10 +125,7 @@ export default function EditProfilePage() {
               </div>
               <Skeleton className='h-5 w-5 rounded-md' />
             </div>
-          </div>
 
-          {/* Basic Info Module */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             {/* Username */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
@@ -147,22 +145,8 @@ export default function EditProfilePage() {
               </div>
               <Skeleton className='h-5 w-5 rounded-md' />
             </div>
-          </div>
 
-          {/* Social Links Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            <div className='flex w-full items-center gap-4'>
-              <Skeleton className='h-12 w-12 rounded-xl' />
-              <div className='flex-1'>
-                <Skeleton className='mb-2 h-4 w-28' />
-                <Skeleton className='h-3 w-48' />
-              </div>
-              <Skeleton className='h-5 w-5 rounded-md' />
-            </div>
-          </div>
-
-          {/* Biography Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Biography */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -173,8 +157,19 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Nostr Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          {/* Social Links Group: Social Links + Nostr */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Social Links */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-28' />
+                <Skeleton className='h-3 w-48' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Nostr */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -185,8 +180,9 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* Interests Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          {/* Personality Group: Interests, Prompts, Badges */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Interests */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
@@ -195,15 +191,23 @@ export default function EditProfilePage() {
               </div>
               <Skeleton className='h-5 w-5 rounded-md' />
             </div>
-          </div>
 
-          {/* Prompts Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Prompts */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='flex-1'>
                 <Skeleton className='mb-2 h-4 w-16' />
                 <Skeleton className='h-3 w-40' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Badges */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-16' />
+                <Skeleton className='h-3 w-36' />
               </div>
               <Skeleton className='h-5 w-5 rounded-md' />
             </div>
@@ -218,8 +222,9 @@ export default function EditProfilePage() {
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         {/* Content */}
         <div className='flex-1 space-y-4 overflow-y-auto p-4'>
-          {/* Profile Image Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          {/* Profile Info Group: Profile Picture, Username, Name, Bio */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Profile Picture */}
             <button
               onClick={() => setShowProfileImageSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -235,10 +240,7 @@ export default function EditProfilePage() {
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
-          </div>
 
-          {/* Basic Info Module */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
             {/* Username */}
             <button
               onClick={() => setShowUsernameSheet(true)}
@@ -268,31 +270,8 @@ export default function EditProfilePage() {
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
-          </div>
 
-          {/* Social Links Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            <button
-              onClick={() => setShowSocialLinksSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
-                <Instagram className='h-6 w-6 text-purple-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Social Links</h3>
-                <p className='text-sm text-gray-500'>
-                  {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
-                    .filter(Boolean)
-                    .join(', ') || 'Add your social profiles'}
-                </p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
-          {/* Biography Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Biography */}
             <button
               onClick={() => setShowBiographySheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -312,8 +291,46 @@ export default function EditProfilePage() {
             </button>
           </div>
 
-          {/* Interests Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          {/* Social Links Group: Social Links + Nostr */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Social Links */}
+            <button
+              onClick={() => setShowSocialLinksSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
+                <Instagram className='h-6 w-6 text-purple-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Social Links</h3>
+                <p className='text-sm text-gray-500'>
+                  {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
+                    .filter(Boolean)
+                    .join(', ') || 'Add your social profiles'}
+                </p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+
+            {/* Nostr */}
+            <button
+              onClick={() => setShowNostrSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
+                <Hash className='h-6 w-6 text-pink-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Nostr</h3>
+                <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
+          {/* Personality Group: Interests, Prompts, Badges */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Interests */}
             <button
               onClick={() => setShowInterestsSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -327,10 +344,23 @@ export default function EditProfilePage() {
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
-          </div>
 
-          {/* Badges Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Prompts */}
+            <button
+              onClick={() => setShowPromptsSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100'>
+                <MessageSquare className='h-6 w-6 text-indigo-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Prompts</h3>
+                <p className='text-sm text-gray-500'>Showcase your personality</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+
+            {/* Badges */}
             <button
               onClick={() => setShowBadgesSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -345,40 +375,6 @@ export default function EditProfilePage() {
                     ? `${displayedBadgesCount} badge${displayedBadgesCount !== 1 ? 's' : ''} on display`
                     : 'Showcase your achievements'}
                 </p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
-          {/* Prompts Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            <button
-              onClick={() => setShowPromptsSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100'>
-                <MessageSquare className='h-6 w-6 text-indigo-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Prompts</h3>
-                <p className='text-sm text-gray-500'>Showcase your personality</p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
-          {/* Nostr Module */}
-          <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            <button
-              onClick={() => setShowNostrSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
-                <Hash className='h-6 w-6 text-pink-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Nostr</h3>
-                <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
