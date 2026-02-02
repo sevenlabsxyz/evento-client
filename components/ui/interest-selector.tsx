@@ -45,7 +45,7 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
   // Display-only mode: gray styling, no checkmark, no interaction
   if (displayOnly) {
     return (
-      <span className='inline-flex items-center whitespace-nowrap rounded-full bg-white px-4 py-2 text-base font-medium text-gray-700 ring-1 ring-inset ring-gray-200 lg:text-sm'>
+      <span className='inline-flex items-center whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-inset ring-gray-200'>
         {text}
       </span>
     );
@@ -72,13 +72,13 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
         mass: 0.5,
         backgroundColor: { duration: 0.1 },
       }}
-      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-4 py-2 text-base font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)]' : 'text-gray-600 ring-[rgba(0,0,0,0.06)]'} `}
+      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)]' : 'text-gray-600 ring-[rgba(0,0,0,0.06)]'} `}
     >
       <motion.div
         className='relative flex items-center'
         animate={{
           width: isSelected ? 'auto' : '100%',
-          paddingRight: isSelected ? '1.5rem' : '0',
+          paddingRight: isSelected ? '1.25rem' : '0',
         }}
         transition={{
           ease: [0.175, 0.885, 0.32, 1.275],
@@ -100,8 +100,8 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
               }}
               className='absolute right-0'
             >
-              <div className='flex h-4 w-4 items-center justify-center rounded-full bg-red-600'>
-                <Check className='h-3 w-3 text-white' strokeWidth={1.5} />
+              <div className='flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600'>
+                <Check className='h-2.5 w-2.5 text-white' strokeWidth={2} />
               </div>
             </motion.span>
           )}
@@ -117,10 +117,10 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
 
 export function TagSection({ title, items, selectedItems, onToggleItem }: TagSectionProps) {
   return (
-    <div className='mb-16'>
-      <h2 className='mb-8 text-left text-2xl font-semibold text-black'>{title}</h2>
+    <div className='mb-6'>
+      <h2 className='mb-3 text-left text-lg font-semibold text-gray-900'>{title}</h2>
       <motion.div
-        className='flex flex-wrap gap-3 overflow-visible'
+        className='flex flex-wrap gap-2 overflow-visible'
         layout
         transition={{
           type: 'spring',
@@ -152,7 +152,7 @@ export function InterestsSelector({
   onChange,
   mainTitle = 'Select your interests.',
   hideTitle = false,
-  className = 'min-h-screen bg-white p-6 pt-20',
+  className = 'bg-white',
   contentClassName = 'mx-auto max-w-[570px]',
 }: InterestsSelectorProps) {
   const [selectedItems, setSelectedItems] = useState<string[]>(initialSelectedInterests);
@@ -169,7 +169,9 @@ export function InterestsSelector({
   return (
     <div className={className}>
       {!hideTitle && (
-        <h1 className='mb-16 text-center text-3xl font-semibold text-black'>{mainTitle}</h1>
+        <h1 className='mb-6 text-left text-2xl font-bold text-gray-900 md:text-center'>
+          {mainTitle}
+        </h1>
       )}
       <div className={contentClassName}>
         {categories.map((category) => (
