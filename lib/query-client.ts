@@ -55,6 +55,7 @@ export const queryKeys = {
   // Authentication
   auth: ['auth'] as const,
   currentUser: () => [...queryKeys.auth, 'currentUser'] as const,
+  apiKeys: () => [...queryKeys.auth, 'apiKeys'] as const,
 
   // Users
   users: ['users'] as const,
