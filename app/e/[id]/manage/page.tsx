@@ -45,9 +45,10 @@ export default function ManageEventPage() {
         showAvatar: true,
         subtitle: '',
         centerMode: 'title',
+        onBackPress: null,
       });
     };
-  }, [setTopBar]);
+  }, [setTopBar, router, eventId]);
 
   const [showCancelModal, setShowCancelModal] = useState(false);
 
