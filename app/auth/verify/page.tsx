@@ -89,14 +89,14 @@ function VerifyContent() {
   // Show loading while no email
   if (!email) {
     return (
-      <div className='flex min-h-screen items-center justify-center'>
+      <div className='flex min-h-[100dvh] items-center justify-center'>
         <Loader2 className='h-8 w-8 animate-spin' />
       </div>
     );
   }
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4'>
+    <div className='flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-gray-50 p-4'>
       <div className='mx-auto -mt-12 mb-2 flex w-full max-w-sm opacity-50 hover:opacity-100'>
         <Button
           variant='link'
@@ -230,7 +230,7 @@ export default function VerifyPage() {
   return (
     <Suspense
       fallback={
-        <div className='flex min-h-screen items-center justify-center'>
+        <div className='flex min-h-[100dvh] items-center justify-center'>
           <Loader2 className='h-8 w-8 animate-spin' />
         </div>
       }
