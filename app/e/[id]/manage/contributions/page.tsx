@@ -1,16 +1,17 @@
 'use client';
 
-import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
-import { Button } from '@/components/ui/button';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
+import { Skeleton } from '@/components/ui/skeleton';
+import apiClient from '@/lib/api/client';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { ArrowLeft, DollarSign } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import { Check, DollarSign } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
 interface PaymentMethod {
   enabled: boolean;
@@ -25,20 +26,21 @@ interface EventContributions {
   };
   paymentMethods: {
     cashApp?: PaymentMethod;
-    bitcoin?: PaymentMethod;
     venmo?: PaymentMethod;
     paypal?: PaymentMethod;
   };
 }
 
 export default function ContributionsManagementPage() {
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
 
   // Get existing event data from API
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
-  const updateEventMutation = useUpdateEvent();
+  const queryClient = useQueryClient();
 
   // State for contributions - MUST be before any conditional returns
   const [contributions, setContributions] = useState<EventContributions>({
@@ -49,13 +51,48 @@ export default function ContributionsManagementPage() {
     },
     paymentMethods: {
       cashApp: { enabled: false, value: '' },
-      bitcoin: { enabled: false, value: '' },
       venmo: { enabled: false, value: '' },
       paypal: { enabled: false, value: '' },
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // handleSave must be defined before useEffects that reference it
+  const handleSave = useCallback(async () => {
+    if (!existingEvent) return;
+
+    try {
+      setIsSubmitting(true);
+
+      const updateData = {
+        contrib_cashapp: contributions.paymentMethods.cashApp?.enabled
+          ? contributions.paymentMethods.cashApp.value
+          : '',
+        contrib_venmo: contributions.paymentMethods.venmo?.enabled
+          ? contributions.paymentMethods.venmo.value
+          : '',
+        contrib_paypal: contributions.paymentMethods.paypal?.enabled
+          ? contributions.paymentMethods.paypal.value
+          : '',
+        cost: contributions.suggestedAmount?.amount
+          ? contributions.suggestedAmount.amount.toString()
+          : '',
+      };
+
+      await apiClient.patch(`/v1/events/${eventId}`, updateData);
+
+      queryClient.invalidateQueries({ queryKey: ['event', eventId] });
+
+      toast.success('Contribution settings updated successfully!');
+      router.push(`/e/${eventId}/manage`);
+    } catch (error) {
+      console.error('Failed to save contribution settings:', error);
+      toast.error('Failed to update contribution settings');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [existingEvent, contributions, eventId, queryClient, router]);
 
   // Initialize with existing event data
   useEffect(() => {
@@ -64,21 +101,16 @@ export default function ContributionsManagementPage() {
         enabled: !!(
           existingEvent.contrib_cashapp ||
           existingEvent.contrib_venmo ||
-          existingEvent.contrib_paypal ||
-          existingEvent.contrib_btclightning
+          existingEvent.contrib_paypal
         ),
         suggestedAmount: {
-          amount: existingEvent.cost ? parseFloat(existingEvent.cost) : 0,
+          amount: existingEvent.cost ?? 0,
           currency: 'USD',
         },
         paymentMethods: {
           cashApp: {
             enabled: !!existingEvent.contrib_cashapp,
             value: existingEvent.contrib_cashapp || '',
-          },
-          bitcoin: {
-            enabled: !!existingEvent.contrib_btclightning,
-            value: existingEvent.contrib_btclightning || '',
           },
           venmo: {
             enabled: !!existingEvent.contrib_venmo,
@@ -93,13 +125,65 @@ export default function ContributionsManagementPage() {
     }
   }, [existingEvent]);
 
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Contributions',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'save-contributions',
+          icon: Check,
+          onClick: () => void handleSave(),
+          label: 'Save',
+          disabled: isSubmitting,
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, clearRoute, isSubmitting, applyRouteConfig, pathname, handleSave]);
+
   // Conditional returns MUST come after all hooks
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Contribution Settings Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-24' />
+                <Skeleton className='h-4 w-40' />
+              </div>
+            </div>
+            <div className='space-y-4'>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-20' />
+                <Skeleton className='h-12 w-full rounded-xl' />
+              </div>
+              <div className='space-y-2'>
+                <Skeleton className='h-4 w-28' />
+                <Skeleton className='h-24 w-full rounded-xl' />
+              </div>
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-32' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-3/4' />
+          </div>
         </div>
       </div>
     );
@@ -171,60 +255,6 @@ export default function ContributionsManagementPage() {
     }));
   };
 
-  const handleSave = async () => {
-    if (!existingEvent) return;
-
-    try {
-      setIsSubmitting(true);
-
-      // Prepare update data
-      const updateData = {
-        id: eventId,
-        contrib_cashapp: contributions.paymentMethods.cashApp?.enabled
-          ? contributions.paymentMethods.cashApp.value
-          : '',
-        contrib_venmo: contributions.paymentMethods.venmo?.enabled
-          ? contributions.paymentMethods.venmo.value
-          : '',
-        contrib_paypal: contributions.paymentMethods.paypal?.enabled
-          ? contributions.paymentMethods.paypal.value
-          : '',
-        contrib_btclightning: contributions.paymentMethods.bitcoin?.enabled
-          ? contributions.paymentMethods.bitcoin.value
-          : '',
-        cost: contributions.suggestedAmount?.amount
-          ? contributions.suggestedAmount.amount.toString()
-          : '',
-        // Include other required fields from existing event
-        title: existingEvent.title,
-        description: existingEvent.description,
-        location: existingEvent.location,
-        timezone: existingEvent.timezone,
-        start_date_day: existingEvent.start_date_day,
-        start_date_month: existingEvent.start_date_month,
-        start_date_year: existingEvent.start_date_year,
-        start_date_hours: existingEvent.start_date_hours,
-        start_date_minutes: existingEvent.start_date_minutes,
-        end_date_day: existingEvent.end_date_day,
-        end_date_month: existingEvent.end_date_month,
-        end_date_year: existingEvent.end_date_year,
-        end_date_hours: existingEvent.end_date_hours,
-        end_date_minutes: existingEvent.end_date_minutes,
-        visibility: existingEvent.visibility,
-        status: existingEvent.status,
-      };
-
-      await updateEventMutation.mutateAsync(updateData);
-      toast.success('Contribution settings updated successfully!');
-      router.back();
-    } catch (error) {
-      console.error('Failed to save contribution settings:', error);
-      toast.error('Failed to update contribution settings');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const paymentMethods = [
     {
       key: 'cashApp' as const,
@@ -234,15 +264,6 @@ export default function ContributionsManagementPage() {
       iconColor: '',
       placeholder: '$username',
       hint: 'Enter as $username',
-    },
-    {
-      key: 'bitcoin' as const,
-      name: 'Bitcoin Lightning',
-      icon: <BitcoinSVGIcon className='h-6 w-6' />,
-      iconBg: 'bg-orange-100',
-      iconColor: '',
-      placeholder: 'username@domain.com',
-      hint: 'Lightning address format',
     },
     {
       key: 'venmo' as const,
@@ -270,23 +291,7 @@ export default function ContributionsManagementPage() {
 
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Contributions</h1>
-        </div>
-        <Button
-          onClick={handleSave}
-          disabled={isSubmitting}
-          className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-        >
-          {isSubmitting ? 'Saving...' : 'Save'}
-        </Button>
-      </div>
-
+      {/* TopBar handles header */}
       {/* Content */}
       <div className='space-y-6 p-4'>
         <div className='text-sm text-gray-500'>
@@ -380,6 +385,15 @@ export default function ContributionsManagementPage() {
             them, the respective app will open on their phone to complete the contribution.
           </p>
         </div>
+
+        {/* Save Button */}
+        <button
+          onClick={() => void handleSave()}
+          disabled={isSubmitting}
+          className='w-full rounded-xl bg-red-500 py-4 text-base font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50'
+        >
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
+        </button>
       </div>
     </div>
   );

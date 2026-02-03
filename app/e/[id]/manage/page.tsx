@@ -1,18 +1,18 @@
 'use client';
 
 import CancelEventModal from '@/components/manage-event/cancel-event-modal';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   DollarSign,
   FileText,
   HelpCircle,
-  Loader2,
+  // Layers,
   Mail,
   MessageCircle,
   Music,
-  Share2,
-  UserCheck,
+  UserPlus,
   Users,
   X,
 } from 'lucide-react';
@@ -31,6 +31,7 @@ export default function ManageEventPage() {
     setTopBar({
       title: 'Manage Event',
       leftMode: 'back',
+      onBackPress: () => router.push(`/e/${eventId}`),
       showAvatar: false,
       subtitle: undefined,
       centerMode: 'title',
@@ -44,9 +45,10 @@ export default function ManageEventPage() {
         showAvatar: true,
         subtitle: '',
         centerMode: 'title',
+        onBackPress: null,
       });
     };
-  }, [setTopBar]);
+  }, [setTopBar, router, eventId]);
 
   const [showCancelModal, setShowCancelModal] = useState(false);
 
@@ -54,7 +56,7 @@ export default function ManageEventPage() {
     {
       id: 'event-details',
       title: 'Event Details',
-      description: 'Name, description, time and location',
+      description: 'Setup event time and location',
       icon: <FileText className='h-6 w-6' />,
       iconBg: 'bg-gray-100',
       iconColor: 'text-gray-600',
@@ -63,30 +65,39 @@ export default function ManageEventPage() {
     {
       id: 'guest-list',
       title: 'Guest List',
-      description: 'View, manage, and check in guests',
+      description: 'View guests and invites',
       icon: <Users className='h-6 w-6' />,
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
       route: `/e/${eventId}/manage/guests`,
     },
     {
-      id: 'email-blast',
-      title: 'Email Blast',
+      id: 'cohosts',
+      title: 'Cohosts',
+      description: 'Invite others to help manage',
+      icon: <UserPlus className='h-6 w-6' />,
+      iconBg: 'bg-purple-100',
+      iconColor: 'text-purple-600',
+      route: `/e/${eventId}/manage/hosts`,
+    },
+    {
+      id: 'email-blasts',
+      title: 'Email Blasts',
       description: 'Send emails to guests',
       icon: <Mail className='h-6 w-6' />,
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
       route: `/e/${eventId}/manage/email-blast`,
     },
-    {
-      id: 'hosts',
-      title: 'Hosts',
-      description: 'Co-hosts & check-in managers',
-      icon: <Share2 className='h-6 w-6' />,
-      iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-600',
-      route: `/e/${eventId}/manage/hosts`,
-    },
+    // {
+    //   id: 'sub-events',
+    //   title: 'Sub Events',
+    //   description: 'Create and manage sub events',
+    //   icon: <Layers className='h-6 w-6' />,
+    //   iconBg: 'bg-teal-100',
+    //   iconColor: 'text-teal-600',
+    //   route: `/e/${eventId}/manage/sub-events`,
+    // },
     {
       id: 'music',
       title: 'Music',
@@ -99,7 +110,7 @@ export default function ManageEventPage() {
     {
       id: 'contributions',
       title: 'Contributions',
-      description: 'Set up payment methods and suggested amounts',
+      description: 'Accept event donations',
       icon: <DollarSign className='h-6 w-6' />,
       iconBg: 'bg-green-100',
       iconColor: 'text-green-600',
@@ -120,15 +131,10 @@ export default function ManageEventPage() {
     router.push(route);
   };
 
-  const handleCheckInGuests = () => {
-    // TODO: Navigate to check-in functionality
-    console.log('Check in guests');
-  };
-
-  const handleOpenEventChat = () => {
-    // TODO: Open event chat functionality
-    console.log('Open event chat');
-  };
+  // const handleOpenEventChat = () => {
+  //   // TODO: Open event chat functionality
+  //   console.log('Open event chat');
+  // };
 
   const handleCancelEvent = () => {
     setShowCancelModal(true);
@@ -136,10 +142,32 @@ export default function ManageEventPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+        <div className='space-y-6 p-4'>
+          {/* Action buttons skeleton */}
+          <div className='flex gap-2'>
+            <Skeleton className='h-16 flex-1 rounded-xl' />
+          </div>
+          {/* Management options skeleton */}
+          <div className='space-y-1'>
+            {Array.from({ length: 7 }).map((_, i) => (
+              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+                <Skeleton className='h-12 w-12 rounded-xl' />
+                <div className='flex-1 space-y-2'>
+                  <Skeleton className='h-4 w-32' />
+                  <Skeleton className='h-3 w-48' />
+                </div>
+                <Skeleton className='h-5 w-5' />
+              </div>
+            ))}
+          </div>
+          {/* Cancel button skeleton */}
+          <div className='pt-6'>
+            <div className='flex items-center gap-3 rounded-xl p-4'>
+              <Skeleton className='h-5 w-5' />
+              <Skeleton className='h-4 w-24' />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -157,37 +185,30 @@ export default function ManageEventPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
       {/* Content */}
       <div className='p-4'>
         {/* Square Action Buttons */}
-        <div className='mb-6 grid grid-cols-2 gap-2'>
-          {/* Check In Guests Button */}
-          <button
+        {/*<div className="mb-6 flex gap-2 [&>*]:flex-1">*/}
+        {/* Check In Guests Button */}
+        {/* <button
             onClick={handleCheckInGuests}
             className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
           >
             <UserCheck className='mb-1 h-5 w-5' />
             <span className='text-xs font-medium'>Check In Guests</span>
-          </button>
+          </button> */}
 
-          {/* Open Event Chat Button */}
-          <button
-            onClick={handleOpenEventChat}
-            className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
-          >
-            <MessageCircle className='mb-1 h-5 w-5' />
-            <span className='text-xs font-medium'>Open Event Chat</span>
-          </button>
-        </div>
+        {/* Open Event Chat Button */}
+        {/*</div>*/}
 
         {/* Management Options */}
-        <div className='space-y-1'>
+        <div className='space-y-2'>
           {managementOptions.map((option) => (
             <button
               key={option.id}
               onClick={() => handleOptionClick(option.route)}
-              className='flex w-full items-center gap-4 rounded-2xl bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+              className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
             >
               <div
                 className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
@@ -216,7 +237,7 @@ export default function ManageEventPage() {
         <div className='pt-6'>
           <button
             onClick={handleCancelEvent}
-            className='flex w-full items-center gap-3 rounded-xl p-4 hover:bg-red-50'
+            className='flex w-full items-center gap-3 rounded-xl bg-gray-50 p-4 hover:bg-red-50'
           >
             <div className='text-red-600'>
               <X className='h-5 w-5' />

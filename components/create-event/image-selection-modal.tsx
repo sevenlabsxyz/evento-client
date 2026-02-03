@@ -2,9 +2,8 @@
 
 import ProgressiveImage from '@/components/ui/progressive-image';
 import { CoverImage, coverImageCategories } from '@/lib/data/cover-images';
-import { useTopBar } from '@/lib/stores/topbar-store';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import GiphyPicker from '../giphy/giphy-picker';
 import CoverUploader from './cover-uploader';
 
@@ -19,16 +18,7 @@ export default function ImageSelectionModal({
   onClose,
   onImageSelect,
 }: ImageSelectionModalProps) {
-  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('featured');
-
-  // Set TopBar content
-  useEffect(() => {
-    setTopBar({
-      title: 'Select Image',
-      subtitle: 'Choose your event photo',
-    });
-  }, [setTopBar]);
 
   const activeCategory = coverImageCategories.find((cat) => cat.id === activeTab);
   const images = activeCategory?.images || [];
@@ -79,7 +69,7 @@ export default function ImageSelectionModal({
       {/* Content Area */}
       <div
         className='flex-1 overflow-y-auto'
-        style={{ height: isGifTab ? '100vh' : 'calc(100vh - 200px)' }} // No need provisioning space for bottom action button if GIF tab is active
+        style={{ height: isGifTab ? '100dvh' : 'calc(100dvh - 200px)' }} // No need provisioning space for bottom action button if GIF tab is active
       >
         <div className='px-4 pb-24'>
           {isGifTab ? (

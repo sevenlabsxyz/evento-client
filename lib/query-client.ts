@@ -55,6 +55,7 @@ export const queryKeys = {
   // Authentication
   auth: ['auth'] as const,
   currentUser: () => [...queryKeys.auth, 'currentUser'] as const,
+  apiKeys: () => [...queryKeys.auth, 'apiKeys'] as const,
 
   // Users
   users: ['users'] as const,
@@ -88,4 +89,36 @@ export const queryKeys = {
   // Notifications
   notifications: ['notifications'] as const,
   userNotifications: () => [...queryKeys.notifications, 'user'] as const,
+
+  // Lists (saved events)
+  lists: ['lists'] as const,
+  userLists: () => [...queryKeys.lists, 'user'] as const,
+  list: (listId: string) => [...queryKeys.lists, listId] as const,
+  listEvents: (listId: string) => [...queryKeys.lists, listId, 'events'] as const,
+  eventSavedStatus: (eventId: string) => [...queryKeys.events, eventId, 'saved'] as const,
+
+  // Event hosts
+  eventHosts: (eventId: string) => [...queryKeys.events, eventId, 'hosts'] as const,
+
+  // Cohost invites
+  cohostInvites: ['cohost-invites'] as const,
+  eventCohostInvites: (eventId: string) => [...queryKeys.cohostInvites, 'event', eventId] as const,
+  myCohostInvites: () => [...queryKeys.cohostInvites, 'user', 'me'] as const,
+
+  // Badges
+  badges: ['badges'] as const,
+  userBadges: () => [...queryKeys.badges, 'user'] as const,
+  publicUserBadges: (userId: string) => [...queryKeys.badges, 'public', userId] as const,
+
+  // Registration
+  registration: ['registration'] as const,
+  registrationSettings: (eventId: string) =>
+    [...queryKeys.registration, 'settings', eventId] as const,
+  myRegistration: (eventId: string) => [...queryKeys.registration, 'my', eventId] as const,
+  registrationSubmissions: (eventId: string) =>
+    [...queryKeys.registration, 'submissions', eventId] as const,
+  registrationQuestions: (eventId: string) =>
+    [...queryKeys.registration, 'questions', eventId] as const,
+  registrationSubmissionDetail: (eventId: string, registrationId: string) =>
+    [...queryKeys.registration, 'submissions', eventId, registrationId] as const,
 } as const;

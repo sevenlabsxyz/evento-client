@@ -1,24 +1,125 @@
 'use client';
 
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { ArrowLeft, Mail, Plus } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import ManageCohostsSheet from '@/components/manage-event/manage-cohosts-sheet';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { UserAvatar } from '@/components/ui/user-avatar';
+import apiClient from '@/lib/api/client';
+import {
+  useCancelCohostInvite,
+  useEventCohostInvites,
+  useEventHosts,
+} from '@/lib/hooks/use-cohost-invites';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { CohostInvite } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
+import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function HostsManagementPage() {
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
   const router = useRouter();
+  const pathname = usePathname();
   const eventId = params.id as string;
 
-  // Get existing event data from API
-  const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
+  const [isInviteSheetOpen, setIsInviteSheetOpen] = useState(false);
+  const [removingHostId, setRemovingHostId] = useState<string | null>(null);
+  const [inviteToCancel, setInviteToCancel] = useState<CohostInvite | null>(null);
+  const [cancellingInviteId, setCancellingInviteId] = useState<string | null>(null);
+
+  const {
+    data: existingEvent,
+    isLoading: eventLoading,
+    error: eventError,
+  } = useEventDetails(eventId);
+  const {
+    data: hosts = [],
+    isLoading: hostsLoading,
+    refetch: refetchHosts,
+  } = useEventHosts(eventId);
+  const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
+  const cancelInviteMutation = useCancelCohostInvite(eventId);
+
+  const isLoading = eventLoading || hostsLoading;
+  const error = eventError;
+
+  const handleCancelInvite = (invite: CohostInvite) => {
+    setInviteToCancel(invite);
+  };
+
+  const confirmCancelInvite = () => {
+    if (inviteToCancel) {
+      setCancellingInviteId(inviteToCancel.id);
+      cancelInviteMutation.mutate(inviteToCancel.id, {
+        onSettled: () => {
+          setCancellingInviteId(null);
+        },
+      });
+      setInviteToCancel(null);
+    }
+  };
+
+  const handleAddCoHost = () => {
+    setIsInviteSheetOpen(true);
+  };
+
+  const handleRemoveHost = async (hostId: string) => {
+    if (removingHostId) return;
+
+    const confirmed = window.confirm('Are you sure you want to remove this cohost?');
+    if (!confirmed) return;
+
+    setRemovingHostId(hostId);
+    try {
+      await apiClient.delete(`/v1/events/${eventId}/hosts`, { data: { hostId } });
+      toast.success('Cohost removed');
+      refetchHosts();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || 'Failed to remove cohost');
+    } finally {
+      setRemovingHostId(null);
+    }
+  };
+
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Hosts',
+      leftMode: 'back',
+      showAvatar: false,
+      subtitle: '',
+      centerMode: 'title',
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-4 p-4'>
+          <div className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+            <Skeleton className='h-12 w-12 rounded-full' />
+            <div className='flex-1 space-y-2'>
+              <Skeleton className='h-5 w-24' />
+              <Skeleton className='h-4 w-32' />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -41,127 +142,163 @@ export default function HostsManagementPage() {
     );
   }
 
-  // Mock data for current user (event creator)
-  const currentUser = {
-    id: 'current-user-id',
-    name: 'Andre Neves',
-    email: 'andrerfneves@protonmail.com',
-    avatar: '/api/placeholder/40/40',
-    role: 'Creator',
-  };
-
-  // Mock co-hosts data (empty for now)
-  const [coHosts, setCoHosts] = useState<any[]>([]);
-
-  const handleAddCoHost = () => {
-    // TODO: Implement add co-host functionality
-    console.log('Add co-host clicked');
-    // This would typically open a modal or navigate to an invite screen
-  };
-
-  const handleInviteCoHost = (email: string) => {
-    // TODO: Implement invite co-host functionality
-    console.log('Inviting co-host:', email);
-  };
+  const creatorId = existingEvent.creator_user_id;
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Hosts</h1>
-        </div>
-        <button onClick={handleAddCoHost} className='rounded-full p-2 hover:bg-gray-100'>
-          <Plus className='h-6 w-6' />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className='space-y-4 p-4'>
-        {/* Event Creator */}
-        <div className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
-          <div className='flex h-12 w-12 items-center justify-center rounded-full bg-green-500'>
-            <span className='text-lg font-semibold text-white'>
-              {currentUser.name
-                .split(' ')
-                .map((n) => n[0])
-                .join('')}
-            </span>
+    <>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-4 p-4'>
+          {/* Invite Cohost Button */}
+          <div className='flex justify-center'>
+            <Button onClick={handleAddCoHost} variant='outline' className='gap-2'>
+              <UserPlus className='h-4 w-4' />
+              Invite Cohost
+            </Button>
           </div>
-          <div className='flex-1'>
-            <div className='flex items-center gap-2'>
-              <h3 className='font-semibold text-gray-900'>{currentUser.name}</h3>
-              <span className='rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-700'>
-                {currentUser.role}
-              </span>
-            </div>
-            <div className='flex items-center gap-1 text-sm text-gray-500'>
-              <Mail className='h-3 w-3' />
-              <span>{currentUser.email}</span>
-            </div>
-          </div>
-        </div>
 
-        {/* Co-hosts Section */}
-        {coHosts.length > 0 ? (
-          <div className='space-y-3'>
-            <h3 className='text-lg font-semibold text-gray-900'>Co-hosts</h3>
-            {coHosts.map((coHost) => (
-              <div
-                key={coHost.id}
-                className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-white p-4'
-              >
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-gray-300'>
-                  <span className='text-lg font-semibold text-gray-600'>
-                    {coHost.name
-                      .split(' ')
-                      .map((n: string) => n[0])
-                      .join('')}
-                  </span>
-                </div>
-                <div className='flex-1'>
-                  <div className='flex items-center gap-2'>
-                    <h3 className='font-semibold text-gray-900'>{coHost.name}</h3>
-                    <span className='rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700'>
-                      Co-host
-                    </span>
+          {hosts.length > 0 ? (
+            <div className='space-y-3'>
+              {hosts.map((host) => {
+                const isCreator = host.id === creatorId;
+                return (
+                  <div
+                    key={host.id}
+                    className={`flex items-center gap-4 rounded-2xl p-4 ${
+                      isCreator ? 'border border-amber-200 bg-amber-50' : 'bg-gray-50'
+                    }`}
+                  >
+                    <UserAvatar
+                      user={{
+                        name: host.name,
+                        username: host.username,
+                        image: host.avatar || host.image,
+                        verification_status: host.verification_status,
+                      }}
+                      size='md'
+                    />
+                    <div className='min-w-0 flex-1'>
+                      <div className='flex items-center gap-2'>
+                        <h3 className='truncate font-semibold text-gray-900'>
+                          {host.name || `@${host.username}`}
+                        </h3>
+                        {isCreator && (
+                          <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
+                            <Crown className='h-3 w-3' />
+                            Creator
+                          </span>
+                        )}
+                      </div>
+                      <p className='text-sm text-gray-500'>@{host.username}</p>
+                    </div>
+                    {!isCreator && (
+                      <button
+                        onClick={() => handleRemoveHost(host.id)}
+                        disabled={removingHostId === host.id}
+                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50'
+                        aria-label={`Remove ${host.name || host.username}`}
+                      >
+                        <Trash2 className='h-4 w-4' />
+                      </button>
+                    )}
                   </div>
-                  <div className='flex items-center gap-1 text-sm text-gray-500'>
-                    <Mail className='h-3 w-3' />
-                    <span>{coHost.email}</span>
-                  </div>
-                </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className='py-12 text-center'>
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
+                <Plus className='h-8 w-8 text-gray-400' />
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className='py-12 text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-              <Plus className='h-8 w-8 text-gray-400' />
+              <h3 className='mb-2 text-lg font-medium text-gray-900'>No Hosts</h3>
+              <p className='mb-6 text-sm text-gray-500'>
+                Add cohosts to help you manage this event
+              </p>
+              <button
+                onClick={handleAddCoHost}
+                className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600'
+              >
+                Add Cohost
+              </button>
             </div>
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No Co-hosts</h3>
-            <p className='mb-6 text-sm text-gray-500'>Add co-hosts to help you manage this event</p>
-            <button
-              onClick={handleAddCoHost}
-              className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600'
-            >
-              Add Co-host
-            </button>
-          </div>
-        )}
+          )}
 
-        {/* Information Section */}
-        <div className='mt-8 rounded-2xl bg-blue-50 p-4'>
-          <h4 className='mb-2 font-medium text-blue-900'>About Co-hosts</h4>
-          <p className='text-sm text-blue-700'>
-            Co-hosts can help you manage your event by checking in guests, managing the guest list,
-            and moderating event discussions.
-          </p>
+          {pendingInvites.length > 0 && (
+            <div className='mt-6'>
+              <h3 className='mb-3 text-sm font-medium text-gray-500'>Pending Invites</h3>
+              <div className='space-y-2'>
+                {pendingInvites.map((invite) => {
+                  const isCancelling = cancellingInviteId === invite.id;
+                  return (
+                    <div
+                      key={invite.id}
+                      className={`flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 transition-opacity ${
+                        isCancelling ? 'opacity-50' : ''
+                      }`}
+                    >
+                      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100'>
+                        {isCancelling ? (
+                          <Loader2 className='h-4 w-4 animate-spin text-amber-600' />
+                        ) : (
+                          <Clock className='h-4 w-4 text-amber-600' />
+                        )}
+                      </div>
+                      <div className='min-w-0 flex-1'>
+                        <p className='truncate text-sm font-medium text-gray-900'>
+                          {invite.invitee?.username
+                            ? `@${invite.invitee.username}`
+                            : invite.invitee_email}
+                        </p>
+                        <p className='text-xs text-gray-500'>
+                          {isCancelling ? 'Cancelling...' : 'Pending cohost invite'}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleCancelInvite(invite)}
+                        disabled={isCancelling || cancelInviteMutation.isPending}
+                        className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50'
+                      >
+                        <X className='h-4 w-4 text-gray-500' />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
-    </div>
+
+      <ManageCohostsSheet
+        eventId={eventId}
+        isOpen={isInviteSheetOpen}
+        onClose={() => setIsInviteSheetOpen(false)}
+      />
+
+      <AlertDialog open={!!inviteToCancel} onOpenChange={() => setInviteToCancel(null)}>
+        <AlertDialogContent className='max-w-sm rounded-2xl'>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Cancel Invite?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to cancel the cohost invitation to{' '}
+              <span className='font-medium text-gray-900'>
+                {inviteToCancel?.invitee?.username
+                  ? `@${inviteToCancel.invitee.username}`
+                  : inviteToCancel?.invitee_email}
+              </span>
+              ? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep Invite</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={confirmCancelInvite}
+              className='bg-red-500 hover:bg-red-600'
+            >
+              Cancel Invite
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

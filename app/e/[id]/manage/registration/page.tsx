@@ -1,48 +1,99 @@
 'use client';
 
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { ArrowLeft, GripVertical, Plus, Settings, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useDeleteRegistrationQuestion } from '@/lib/hooks/use-delete-registration-question';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useRegistrationQuestions } from '@/lib/hooks/use-registration-questions';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
+import { useRegistrationSubmissions } from '@/lib/hooks/use-registration-submissions';
+import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registration-question';
+import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
+import type { ApprovalMode, RegistrationQuestion } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
+import {
+  ArrowLeft,
+  ClipboardList,
+  GripVertical,
+  Plus,
+  Settings,
+  Trash2,
+  Users,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-type QuestionType =
-  | 'text'
-  | 'long-text'
-  | 'single-select'
-  | 'multi-select'
-  | 'url'
-  | 'phone'
-  | 'checkbox'
-  | 'instagram'
-  | 'twitter'
-  | 'youtube'
-  | 'linkedin'
-  | 'company';
-
-interface RegistrationQuestion {
-  id: string;
-  type: QuestionType;
-  label: string;
-  required: boolean;
-  enabled: boolean;
-  options?: string[];
-  order: number;
-}
+type QuestionType = RegistrationQuestion['type'];
 
 export default function RegistrationQuestionsPage() {
   const params = useParams();
   const router = useRouter();
   const eventId = params.id as string;
 
+  // State for delete confirmation sheet
+  const [deleteConfirmation, setDeleteConfirmation] = useState<{
+    isOpen: boolean;
+    questionId: string | null;
+    questionLabel: string;
+  }>({
+    isOpen: false,
+    questionId: null,
+    questionLabel: '',
+  });
+
   // Get existing event data from API
-  const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
+  const { data: existingEvent, isLoading: isLoadingEvent, error } = useEventDetails(eventId);
+
+  // Get registration settings and questions
+  const { data: settings, isLoading: isLoadingSettings } = useRegistrationSettings(eventId);
+  const { data: questions, isLoading: isLoadingQuestions } = useRegistrationQuestions(eventId);
+  const { data: submissionsData } = useRegistrationSubmissions(eventId);
+
+  // Mutations
+  const updateSettings = useUpdateRegistrationSettings();
+  const updateQuestion = useUpdateRegistrationQuestion();
+  const deleteQuestion = useDeleteRegistrationQuestion();
+
+  const isLoading = isLoadingEvent || isLoadingSettings || isLoadingQuestions;
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Registration Settings Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-32' />
+                <Skeleton className='h-4 w-48' />
+              </div>
+            </div>
+            <div className='space-y-4'>
+              {[1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className='flex items-center justify-between rounded-xl border border-gray-200 bg-white p-4'
+                >
+                  <div className='space-y-1'>
+                    <Skeleton className='h-4 w-24' />
+                    <Skeleton className='h-3 w-32' />
+                  </div>
+                  <Skeleton className='h-6 w-12 rounded-full' />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-40' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-2/3' />
+          </div>
         </div>
       </div>
     );
@@ -65,90 +116,125 @@ export default function RegistrationQuestionsPage() {
     );
   }
 
-  // Mock registration questions data (empty for now to show empty state)
-  const [questions, setQuestions] = useState<RegistrationQuestion[]>([]);
+  const registrationRequired = settings?.registration_required ?? false;
+  const approvalMode = settings?.approval_mode ?? 'manual';
+  const questionList = questions ?? [];
+  const pendingCount = submissionsData?.counts?.pending ?? 0;
+
+  const handleToggleRegistrationRequired = async () => {
+    try {
+      await updateSettings.mutateAsync({
+        eventId,
+        registration_required: !registrationRequired,
+      });
+      toast.success(registrationRequired ? 'Registration disabled' : 'Registration enabled');
+    } catch {
+      toast.error('Failed to update registration settings');
+    }
+  };
+
+  const handleApprovalModeChange = async (mode: ApprovalMode) => {
+    try {
+      await updateSettings.mutateAsync({
+        eventId,
+        approval_mode: mode,
+      });
+      toast.success(`Approval mode set to ${mode === 'auto' ? 'automatic' : 'manual'}`);
+    } catch {
+      toast.error('Failed to update approval mode');
+    }
+  };
 
   const handleAddQuestion = () => {
-    router.push(`/e/event/${eventId}/manage/registration/types`);
+    router.push(`/e/${eventId}/manage/registration/types`);
   };
 
-  const handleToggleEnabled = (questionId: string) => {
-    setQuestions((prev) =>
-      prev.map((q) => (q.id === questionId ? { ...q, enabled: !q.enabled } : q))
-    );
+  const handleToggleEnabled = async (questionId: string, currentEnabled: boolean) => {
+    try {
+      await updateQuestion.mutateAsync({
+        eventId,
+        questionId,
+        is_enabled: !currentEnabled,
+      });
+      toast.success(currentEnabled ? 'Question disabled' : 'Question enabled');
+    } catch {
+      toast.error('Failed to update question');
+    }
   };
 
-  const handleDeleteQuestion = (questionId: string) => {
-    setQuestions((prev) => prev.filter((q) => q.id !== questionId));
+  const handleDeleteClick = (question: RegistrationQuestion) => {
+    setDeleteConfirmation({
+      isOpen: true,
+      questionId: question.id,
+      questionLabel: question.label,
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteConfirmation.questionId) return;
+
+    try {
+      await deleteQuestion.mutateAsync({
+        eventId,
+        questionId: deleteConfirmation.questionId,
+      });
+      toast.success('Question deleted');
+    } catch {
+      toast.error('Failed to delete question');
+    } finally {
+      setDeleteConfirmation({ isOpen: false, questionId: null, questionLabel: '' });
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteConfirmation({ isOpen: false, questionId: null, questionLabel: '' });
   };
 
   const handleEditQuestion = (questionId: string) => {
-    const question = questions.find((q) => q.id === questionId);
+    const question = questionList.find((q) => q.id === questionId);
     if (question) {
-      router.push(`/e/event/${eventId}/manage/registration/edit/${question.type}?id=${questionId}`);
+      router.push(`/e/${eventId}/manage/registration/edit/${question.type}?id=${questionId}`);
     }
+  };
+
+  const handleViewSubmissions = () => {
+    router.push(`/e/${eventId}/manage/registration/submissions`);
   };
 
   const getQuestionIcon = (type: QuestionType) => {
-    switch (type) {
-      case 'text':
-        return '📝';
-      case 'long-text':
-        return '📄';
-      case 'single-select':
-        return '📋';
-      case 'multi-select':
-        return '☑️';
-      case 'url':
-        return '🔗';
-      case 'phone':
-        return '📞';
-      case 'checkbox':
-        return '✅';
-      case 'instagram':
-        return '📷';
-      case 'twitter':
-        return '🐦';
-      case 'youtube':
-        return '📺';
-      case 'linkedin':
-        return '💼';
-      case 'company':
-        return '🏢';
-      default:
-        return '❓';
-    }
+    const icons: Record<QuestionType, string> = {
+      text: '📝',
+      long_text: '📄',
+      single_select: '📋',
+      multi_select: '☑️',
+      url: '🔗',
+      phone: '📞',
+      checkbox: '✅',
+      instagram: '📷',
+      twitter: '🐦',
+      youtube: '📺',
+      linkedin: '💼',
+      company: '🏢',
+    };
+    return icons[type] || '❓';
   };
 
   const getQuestionTypeLabel = (type: QuestionType) => {
-    switch (type) {
-      case 'text':
-        return 'Text';
-      case 'long-text':
-        return 'Long Text';
-      case 'single-select':
-        return 'Single Select';
-      case 'multi-select':
-        return 'Multi Select';
-      case 'url':
-        return 'URL';
-      case 'phone':
-        return 'Phone Number';
-      case 'checkbox':
-        return 'Checkbox';
-      case 'instagram':
-        return 'Instagram';
-      case 'twitter':
-        return 'X (Twitter)';
-      case 'youtube':
-        return 'YouTube';
-      case 'linkedin':
-        return 'LinkedIn';
-      case 'company':
-        return 'Company';
-      default:
-        return type;
-    }
+    const labels: Record<QuestionType, string> = {
+      text: 'Text',
+      long_text: 'Long Text',
+      single_select: 'Single Select',
+      multi_select: 'Multi Select',
+      url: 'URL',
+      phone: 'Phone Number',
+      checkbox: 'Checkbox',
+      instagram: 'Instagram',
+      twitter: 'X (Twitter)',
+      youtube: 'YouTube',
+      linkedin: 'LinkedIn',
+      company: 'Company',
+    };
+    return labels[type] || type;
   };
 
   return (
@@ -159,7 +245,7 @@ export default function RegistrationQuestionsPage() {
           <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
             <ArrowLeft className='h-5 w-5' />
           </button>
-          <h1 className='text-xl font-semibold'>Registration Questions</h1>
+          <h1 className='text-xl font-semibold'>Registration</h1>
         </div>
         <button onClick={handleAddQuestion} className='rounded-full p-2 hover:bg-gray-100'>
           <Plus className='h-6 w-6' />
@@ -167,14 +253,105 @@ export default function RegistrationQuestionsPage() {
       </div>
 
       {/* Content */}
-      <div className='p-4'>
-        {questions.length > 0 ? (
+      <div className='space-y-6 p-4'>
+        {/* Registration Toggle */}
+        <div className='rounded-2xl bg-gray-50 p-4'>
+          <div className='flex items-center justify-between'>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
+                <ClipboardList className='h-5 w-5 text-purple-600' />
+              </div>
+              <div>
+                <h3 className='font-medium'>Require Registration</h3>
+                <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
+              </div>
+            </div>
+            <button
+              onClick={handleToggleRegistrationRequired}
+              disabled={updateSettings.isPending}
+              className={`h-6 w-10 rounded-full transition-colors ${
+                registrationRequired ? 'bg-green-500' : 'bg-gray-300'
+              }`}
+            >
+              <div
+                className={`h-4 w-4 rounded-full bg-white transition-transform ${
+                  registrationRequired ? 'translate-x-5' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+
+        {/* Approval Mode (only show if registration is enabled) */}
+        {registrationRequired && (
+          <div className='rounded-2xl bg-gray-50 p-4'>
+            <h3 className='mb-3 font-medium'>Approval Mode</h3>
+            <div className='space-y-2'>
+              <button
+                onClick={() => handleApprovalModeChange('auto')}
+                disabled={updateSettings.isPending}
+                className={`w-full rounded-xl border-2 p-3 text-left transition-colors ${
+                  approvalMode === 'auto'
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                <div className='font-medium'>Automatic Approval</div>
+                <div className='text-sm text-gray-500'>Registrations are approved immediately</div>
+              </button>
+              <button
+                onClick={() => handleApprovalModeChange('manual')}
+                disabled={updateSettings.isPending}
+                className={`w-full rounded-xl border-2 p-3 text-left transition-colors ${
+                  approvalMode === 'manual'
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-200 hover:bg-gray-100'
+                }`}
+              >
+                <div className='font-medium'>Manual Approval</div>
+                <div className='text-sm text-gray-500'>
+                  You review and approve each registration
+                </div>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* View Submissions Button (only show if registration is enabled) */}
+        {registrationRequired && (
+          <button
+            onClick={handleViewSubmissions}
+            className='flex w-full items-center justify-between rounded-2xl bg-blue-50 p-4 hover:bg-blue-100'
+          >
+            <div className='flex items-center gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100'>
+                <Users className='h-5 w-5 text-blue-600' />
+              </div>
+              <div className='text-left'>
+                <h3 className='font-medium'>View Submissions</h3>
+                <p className='text-sm text-gray-500'>
+                  {pendingCount > 0
+                    ? `${pendingCount} pending approval`
+                    : 'Review guest registrations'}
+                </p>
+              </div>
+            </div>
+            {pendingCount > 0 && (
+              <span className='rounded-full bg-red-500 px-2.5 py-1 text-sm font-medium text-white'>
+                {pendingCount}
+              </span>
+            )}
+          </button>
+        )}
+
+        {/* Questions List */}
+        {questionList.length > 0 ? (
           <div className='space-y-3'>
-            <div className='mb-4 text-sm text-gray-500'>
+            <div className='text-sm text-gray-500'>
               Guests will be asked these questions when they register for your event.
             </div>
 
-            {questions.map((question, index) => (
+            {questionList.map((question) => (
               <div key={question.id} className='rounded-2xl bg-gray-50 p-4'>
                 <div className='flex items-start gap-3'>
                   {/* Drag Handle */}
@@ -189,7 +366,7 @@ export default function RegistrationQuestionsPage() {
                       <span className='rounded bg-gray-200 px-2 py-1 text-xs font-medium text-gray-500'>
                         {getQuestionTypeLabel(question.type)}
                       </span>
-                      {question.required && (
+                      {question.is_required && (
                         <span className='rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-600'>
                           Required
                         </span>
@@ -209,14 +386,15 @@ export default function RegistrationQuestionsPage() {
                   <div className='flex items-center gap-2'>
                     {/* Enable/Disable Toggle */}
                     <button
-                      onClick={() => handleToggleEnabled(question.id)}
+                      onClick={() => handleToggleEnabled(question.id, question.is_enabled)}
+                      disabled={updateQuestion.isPending}
                       className={`h-6 w-10 rounded-full transition-colors ${
-                        question.enabled ? 'bg-green-500' : 'bg-gray-300'
+                        question.is_enabled ? 'bg-green-500' : 'bg-gray-300'
                       }`}
                     >
                       <div
                         className={`h-4 w-4 rounded-full bg-white transition-transform ${
-                          question.enabled ? 'translate-x-5' : 'translate-x-1'
+                          question.is_enabled ? 'translate-x-5' : 'translate-x-1'
                         }`}
                       />
                     </button>
@@ -231,7 +409,8 @@ export default function RegistrationQuestionsPage() {
 
                     {/* Delete Button */}
                     <button
-                      onClick={() => handleDeleteQuestion(question.id)}
+                      onClick={() => handleDeleteClick(question)}
+                      disabled={deleteQuestion.isPending}
                       className='rounded p-1 hover:bg-red-100'
                     >
                       <Trash2 className='h-4 w-4 text-red-600' />
@@ -260,7 +439,7 @@ export default function RegistrationQuestionsPage() {
         )}
 
         {/* Information Section */}
-        <div className='mt-8 rounded-2xl bg-blue-50 p-4'>
+        <div className='rounded-2xl bg-blue-50 p-4'>
           <h4 className='mb-2 font-medium text-blue-900'>Registration Questions</h4>
           <p className='text-sm text-blue-700'>
             Use registration questions to collect specific information from your guests. You can
@@ -268,6 +447,41 @@ export default function RegistrationQuestionsPage() {
           </p>
         </div>
       </div>
+
+      {/* Delete Confirmation Sheet */}
+      <MasterScrollableSheet
+        title='Delete Question'
+        open={deleteConfirmation.isOpen}
+        onOpenChange={(open) => {
+          if (!open) handleCancelDelete();
+        }}
+        footer={
+          <div className='flex gap-3'>
+            <Button variant='outline' className='flex-1' onClick={handleCancelDelete}>
+              Cancel
+            </Button>
+            <Button
+              variant='destructive'
+              className='flex-1'
+              onClick={handleConfirmDelete}
+              disabled={deleteQuestion.isPending}
+            >
+              {deleteQuestion.isPending ? 'Deleting...' : 'Delete'}
+            </Button>
+          </div>
+        }
+      >
+        <div className='p-4 text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+            <Trash2 className='h-8 w-8 text-red-600' />
+          </div>
+          <h3 className='mb-2 text-lg font-semibold'>Delete this question?</h3>
+          <p className='text-gray-600'>
+            &quot;{deleteConfirmation.questionLabel}&quot; will be permanently deleted. This action
+            cannot be undone.
+          </p>
+        </div>
+      </MasterScrollableSheet>
     </div>
   );
 }

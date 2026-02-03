@@ -1,12 +1,36 @@
 'use client';
 
-import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
-import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
+import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
+import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
+import { CircledIconButton } from '@/components/circled-icon-button';
+import EventSearchSheet from '@/components/event-search-sheet';
+import FollowersSheet from '@/components/followers-sheet/followers-sheet';
+import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { MasterEventCard } from '@/components/master-event-card';
+import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
+import { UserInterests } from '@/components/profile/user-interests';
+import { UserPrompts } from '@/components/profile/user-prompts';
+import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useAuth } from '@/lib/hooks/useAuth';
+import { ZapSheet } from '@/components/zap/zap-sheet';
+import { usePublicUserBadges } from '@/lib/hooks/use-badges';
+import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
+import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
+import { EventSortBy, type EventTimeframe } from '@/lib/hooks/use-user-events';
+import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useFollowAction,
   useFollowStatus,
@@ -14,21 +38,38 @@ import {
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
-} from '@/lib/hooks/useUserProfile';
+} from '@/lib/hooks/use-user-profile';
+import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
+import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { EventWithUser } from '@/lib/types/api';
+import { UserBadge } from '@/lib/types/badges';
+import { EventHost } from '@/lib/types/event';
+import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
-import { BadgeCheck, MessageCircle, Share, UserMinus, UserPlus, Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
+import {
+  ArrowLeft,
+  BadgeCheck,
+  MessageCircle,
+  Search,
+  Share,
+  UserMinus,
+  UserPlus,
+} from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
-  const { isLoading: isCheckingAuth } = useAuth();
+  const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
   const params = useParams();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
-  const [eventsFilter, setEventsFilter] = useState('attending');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
+  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
@@ -36,6 +77,7 @@ export default function UserProfilePageClient() {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
+  const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
   // Fetch user data from API
   const username = params.username as string;
@@ -44,22 +86,35 @@ export default function UserProfilePageClient() {
     isLoading: isUserLoading,
     error: userError,
   } = useUserByUsername(username);
+
   // Get follow status for this user
   const { data: followStatus, isLoading: isFollowStatusLoading } = useFollowStatus(
     userData?.id || ''
   );
+
   // Consolidated follow/unfollow mutation
   const followActionMutation = useFollowAction();
+
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
   const { data: followers = [] } = useUserFollowers(userData?.id || '');
   const { data: following = [] } = useUserFollowing(userData?.id || '');
+
+  // Get user interests and prompts (only visible prompts for other users)
+  const { data: userInterests = [], isLoading: isLoadingInterests } = useOtherUserInterests(
+    userData?.id
+  );
+  const { data: userPrompts = [], isLoading: isLoadingPrompts } = useOtherUserPrompts(userData?.id);
+
+  // Get user badges (displayed badges only)
+  const { data: userBadges = [] } = usePublicUserBadges(userData?.id);
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
     ? {
         name: userData.name || 'Unknown User',
         username: `@${userData.username}`,
-        avatar: userData.image || '/placeholder.svg?height=80&width=80',
+        image: userData.image || '/placeholder.svg?height=80&width=80',
+        verification_status: userData.verification_status,
         status: userData.bio || '',
         bio: userData.bio || '',
         website: userData.bio_link || '',
@@ -102,8 +157,8 @@ export default function UserProfilePageClient() {
   // Share functionality
   const handleShare = async () => {
     const shareData = {
-      title: `${userProfile?.name} on Evento`,
-      text: `Check out ${userProfile?.name}'s profile on Evento`,
+      title: `${userProfile?.name || 'User'} on Evento`,
+      text: `Check out ${userProfile?.name || 'User'}'s profile on Evento`,
       url: window.location.href,
     };
 
@@ -125,14 +180,13 @@ export default function UserProfilePageClient() {
     }
   };
 
-  // Set TopBar content for overlay mode - moved before conditional returns
+  // Set TopBar content
   useEffect(() => {
     // Only set TopBar if userData is loaded and available
     if (userData && userProfile) {
       setTopBar({
         leftMode: 'menu',
-        title: userProfile.name,
-        subtitle: userProfile.username,
+        title: `${userProfile.name} (${userProfile.username})`,
         buttons: [
           {
             id: 'share',
@@ -141,87 +195,69 @@ export default function UserProfilePageClient() {
             label: 'Share Profile',
           },
         ],
-        showAvatar: false,
-        isOverlaid: true,
       });
     }
 
     return () => {
       setTopBar({
-        leftMode: 'menu',
+        title: '',
         buttons: [],
-        showAvatar: true,
-        isOverlaid: false,
       });
     };
-  }, [userData, userProfile?.name, userProfile?.username, setTopBar]);
+  }, [userProfile?.name, setTopBar]);
+
+  // Fetch pinned event
+  const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
+  const {
+    mutate: updatePinnedEvent,
+    isPending: isUpdatingPinnedEvent,
+    variables: updatePinnedEventVariables,
+  } = useUpdatePinnedEvent();
+
+  // Fetch public events for the viewed user
+  const { data: publicEventsData, isLoading: isLoadingEvents } = usePublicUserEvents({
+    username,
+    enabled: activeTab === 'events',
+  });
 
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full items-center justify-center bg-white md:max-w-sm'>
-        <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <Skeleton variant='profile' />
       </div>
     );
   }
 
-  // Handle user not found
-  if (userError || !userData || !userProfile) {
+  // Handle user not found - check for valid user data (id must exist)
+  if (userError || !userData?.id) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white p-4 md:max-w-sm'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-            <UserMinus className='h-8 w-8 text-gray-400' />
-          </div>
-          <h2 className='mb-2 text-xl font-bold text-gray-900'>User not found</h2>
-          <p className='mb-4 text-gray-500'>
-            The user @{username} doesn't exist or may have been deleted.
-          </p>
-          <Button onClick={() => router.back()} variant='outline'>
-            Go Back
-          </Button>
-        </div>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <Empty className='flex-1'>
+          <EmptyHeader>
+            <EmptyMedia variant='icon'>
+              <UserMinus className='h-6 w-6' />
+            </EmptyMedia>
+            <EmptyTitle>User not found</EmptyTitle>
+            <EmptyDescription>
+              The user @{username} doesn&apos;t exist or may have been deleted.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              onClick={() => router.back()}
+              variant='outline'
+              className='rounded-full bg-gray-50'
+            >
+              <ArrowLeft className='h-4 w-4' />
+              Go Back
+            </Button>
+          </EmptyContent>
+        </Empty>
+        <Navbar />
       </div>
     );
   }
-
-  const attendingEvents = [
-    {
-      id: 1,
-      title: 'Tokyo Skytree Sunset',
-      date: 'Sep 15, 2025',
-      time: '6:30 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 2,
-      title: 'Shibuya Food Tour',
-      date: 'Sep 20, 2025',
-      time: '7:00 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 3,
-      title: 'Kyoto Temple Walk',
-      date: 'Sep 25, 2025',
-      time: '9:00 AM',
-      location: 'Kyoto, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-  ];
-
-  const hostingEvents = [
-    {
-      id: 4,
-      title: 'Photography Meetup',
-      date: 'Sep 18, 2025',
-      time: '2:00 PM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-  ];
 
   const profilePhotos = [
     '/placeholder.svg?height=120&width=120',
@@ -265,14 +301,13 @@ export default function UserProfilePageClient() {
     toast.success('Message feature coming soon!');
   };
 
-  const handleTip = () => {
-    toast.success('Lightning payment coming soon!');
-  };
-
+  // Handle profile photo click for lightbox
   const handleProfilePhotoClick = (index: number) => {
+    toast.info(`Viewing photo ${index + 1}`);
     setSelectedImageIndex(index);
   };
 
+  // Handle avatar click for lightbox
   const handleAvatarClick = () => {
     setSelectedAvatarIndex(0);
   };
@@ -280,13 +315,13 @@ export default function UserProfilePageClient() {
   // Format avatar data for LightboxViewer
   const avatarImages = [
     {
-      id: 'avatar-1',
-      image: userProfile.avatar,
+      id: 'avatar',
+      image: userProfile?.image || '/placeholder.svg?height=80&width=80',
       user_details: {
         id: userData?.id,
-        username: userData?.username,
-        name: userData?.name,
-        image: userProfile.avatar,
+        username: userProfile?.username,
+        name: userProfile?.name,
+        image: userProfile?.image,
         verification_status: userData?.verification_status,
       },
       created_at: new Date().toISOString(),
@@ -305,350 +340,378 @@ export default function UserProfilePageClient() {
     image: photoUrl,
     user_details: {
       id: userData?.id,
-      username: userData?.username,
-      name: userData?.name,
-      image: userProfile.avatar,
+      username: userProfile?.username,
+      name: userProfile?.name,
+      image: userProfile.image,
       verification_status: userData?.verification_status,
     },
     created_at: new Date().toISOString(),
   }));
 
-  const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce(
-      (acc, event) => {
-        const date = event.date;
-        if (!acc[date]) {
-          acc[date] = [];
-        }
-        acc[date].push(event);
-        return acc;
-      },
-      {} as Record<string, typeof events>
-    );
-
-    return Object.entries(grouped).map(([date, events]) => ({
-      date,
-      events,
-      formattedDate: formatDateHeader(date),
-    }));
-  };
-
-  const formatDateHeader = (dateStr: string) => {
-    const date = new Date(dateStr + ', 2025');
-    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    const monthNames = [
-      'JANUARY',
-      'FEBRUARY',
-      'MARCH',
-      'APRIL',
-      'MAY',
-      'JUNE',
-      'JULY',
-      'AUGUST',
-      'SEPTEMBER',
-      'OCTOBER',
-      'NOVEMBER',
-      'DECEMBER',
-    ];
-
-    const dayName = dayNames[date.getDay()];
-    const monthName = monthNames[date.getMonth()];
-    const day = date.getDate();
-
-    return `${dayName}, ${monthName} ${day}`;
-  };
-
   const renderEventsTab = () => {
-    const currentEvents = eventsFilter === 'attending' ? attendingEvents : hostingEvents;
-    const groupedEvents = groupEventsByDate(currentEvents);
+    // Filter events by timeframe (client-side filtering)
+    const today = new Date().toISOString().slice(0, 10);
+    const filteredEvents = (publicEventsData || []).filter((event: EventWithUser) => {
+      const eventDate = event.computed_start_date;
+      if (timeframe === 'future') {
+        return eventDate >= today;
+      } else if (timeframe === 'past') {
+        return eventDate < today;
+      }
+      return true;
+    });
+
+    // Group events by date
+    const groupedEvents = filteredEvents
+      .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
+        const date = event.computed_start_date;
+        const group = groups.find((g) => g.date === date);
+
+        if (group) {
+          group.events.push(event);
+        } else {
+          groups.push({ date, events: [event] });
+        }
+
+        return groups;
+      }, [])
+      .sort(
+        (
+          a: { date: string; events: EventWithUser[] },
+          b: { date: string; events: EventWithUser[] }
+        ) => {
+          if (sortBy === 'date-desc') {
+            return new Date(b.date).getTime() - new Date(a.date).getTime();
+          } else {
+            return new Date(a.date).getTime() - new Date(b.date).getTime();
+          }
+        }
+      );
+
+    const canPinEvent = (event: EventWithUser) => {
+      if (!user) return false;
+
+      // User can pin if they are the event creator
+      if (event.user_details.id === user.id) return true;
+
+      // User can pin if they are a co-host
+      const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
+      return isCoHost;
+    };
+
+    const handlePinEvent = (eventId: string, isPinned: boolean) => {
+      if (isUpdatingPinnedEvent) return;
+
+      updatePinnedEvent(eventId, {
+        onSuccess: () => {
+          toast.success(
+            isPinned ? 'Event unpinned from your profile' : 'Event pinned to your profile'
+          );
+        },
+        onError: () => {
+          toast.error(`Failed to ${isPinned ? 'unpin' : 'pin'} event`);
+        },
+      });
+    };
+
+    const formatDateHeader = (date: string) => {
+      const today = new Date().toISOString().slice(0, 10);
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+
+      if (date === today) return 'Today';
+      if (date === tomorrowStr) return 'Tomorrow';
+
+      return new Date(date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric',
+      });
+    };
 
     return (
       <div className='space-y-4'>
-        {/* Filter Badges */}
-        <div className='flex gap-2'>
-          <button
-            onClick={() => setEventsFilter('attending')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              eventsFilter === 'attending'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Attending
-          </button>
-          <button
-            onClick={() => setEventsFilter('hosting')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              eventsFilter === 'hosting'
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Hosting
-          </button>
-        </div>
-
-        {/* Events List with Date Dividers */}
-        <div className='space-y-6'>
-          {groupedEvents.map((group, groupIndex) => (
-            <div key={group.date}>
-              <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-sm font-medium text-gray-500'>{group.formattedDate}</h2>
-              </div>
-
-              <div className='space-y-4'>
-                {group.events.map((event) => (
-                  <div
-                    key={event.id}
-                    className='-m-2 flex cursor-pointer items-start gap-4 rounded-xl p-2 transition-colors hover:bg-gray-50'
-                    onClick={() => router.push(`/e/event/cosmoprof-2025`)}
-                  >
-                    <img
-                      src={event.image || '/placeholder.svg'}
-                      alt={event.title}
-                      className='h-12 w-12 flex-shrink-0 rounded-xl object-cover'
-                    />
-                    <div className='flex-1'>
-                      <h3 className='text-lg font-semibold transition-colors hover:text-red-600'>
-                        {event.title}
-                      </h3>
-                      <p className='text-gray-500'>{event.location}</p>
-                    </div>
-                    <div className='text-right'>
-                      <span className='text-sm text-gray-600'>{event.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {currentEvents.length === 0 && (
-          <div className='py-8 text-center'>
-            <p className='text-gray-500'>No {eventsFilter} events yet</p>
+        {/* Filter Controls */}
+        <div className='flex items-center justify-between gap-2'>
+          {/* Timeframe Toggle */}
+          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+            <button
+              onClick={() => setTimeframe('future')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'future'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Upcoming
+            </button>
+            <button
+              onClick={() => setTimeframe('past')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'past'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Past
+            </button>
           </div>
-        )}
+
+          <div className='flex items-center gap-2'>
+            {/* Sort Toggle */}
+            <div className='flex items-center rounded-full bg-gray-50 p-1'>
+              <button
+                onClick={() => setSortBy('date-desc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-desc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Latest
+              </button>
+              <button
+                onClick={() => setSortBy('date-asc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-asc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Oldest
+              </button>
+            </div>
+
+            {/* Search Button */}
+            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
+          </div>
+        </div>
+
+        {/* Events List */}
+        <div className='space-y-8'>
+          {isLoadingEvents ? (
+            <div className='space-y-3'>
+              {Array.from({ length: 3 }).map((_, i) => (
+                <Skeleton variant='event-compact-item' key={i} />
+              ))}
+            </div>
+          ) : groupedEvents.length === 0 ? (
+            <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
+              <div className='rounded-full bg-gray-100 p-3'>
+                <MessageCircle className='h-6 w-6 text-gray-400' />
+              </div>
+              <p className='text-sm text-gray-500'>No events found</p>
+            </div>
+          ) : (
+            groupedEvents.map((group) => (
+              <div key={group.date} className='space-y-3'>
+                <h3 className='text-sm font-medium text-gray-500'>
+                  {formatDateHeader(group.date)}
+                </h3>
+                <div className='space-y-3'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* Event Search Sheet */}
+        <EventSearchSheet
+          isOpen={showEventSearchSheet}
+          onClose={() => setShowEventSearchSheet(false)}
+          username={username}
+          isOwnProfile={false}
+        />
       </div>
     );
   };
 
-  const renderAboutTab = () => (
-    <div className='space-y-6'>
-      {/* Bio/Description */}
-      <div>
-        <p className='text-gray-700'>{userProfile.bio}</p>
-      </div>
+  const renderAboutTab = () => {
+    return (
+      <div className='space-y-4'>
+        {/* Social Links */}
+        {userData && (
+          <SocialLinks
+            user={{
+              bio_link: userData.bio_link,
+              instagram_handle: userData.instagram_handle,
+              x_handle: userData.x_handle,
+              nip05: userData.nip05,
+            }}
+            showQRCode={true}
+            username={userData.username}
+            userImage={userData.image}
+          />
+        )}
 
-      {/* Interest Tags */}
-      <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>Interests</h4>
-        <div className='flex flex-wrap gap-2'>
-          {interestTags.map((tag, index) => (
-            <span
-              key={index}
-              className='inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-800'
-            >
-              {tag}
-            </span>
-          ))}
-        </div>
-      </div>
+        {/* User Badges */}
+        {userBadges.length > 0 && (
+          <UserBadgesDisplay
+            badges={userBadges}
+            isOwnProfile={false}
+            onBadgeClick={(badge) => setSelectedBadge(badge)}
+          />
+        )}
 
-      {/* Profile Questions */}
-      <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
-        <div className='space-y-3'>
-          {profileQuestions.map((item, index) => (
-            <div key={index} className='rounded-xl bg-gray-50 p-3'>
-              <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
-              <p className='text-sm text-gray-900'>{item.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+        {/* Bio/Description */}
+        {!userProfile?.bio ? null : (
+          <div>
+            <RowCard title={'Bio'} subtitle={userProfile?.bio} />
+          </div>
+        )}
 
-      {/* Photo Album */}
-      <div>
-        <div className='mb-3 flex items-center justify-between'>
-          <h4 className='font-semibold text-gray-900'>Photos</h4>
-        </div>
-        <div className='grid grid-cols-3 gap-2'>
-          {profilePhotos.map((photo, index) => (
-            <button
-              key={index}
-              onClick={() => handleProfilePhotoClick(index)}
-              className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
-            >
-              <img
-                src={photo || '/placeholder.svg'}
-                alt={`Profile photo ${index + 1}`}
-                className='h-full w-full object-cover'
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+        {/* User Interests */}
+        {!isLoadingInterests && <UserInterests interests={userInterests} />}
 
-  const renderStatsTab = () => (
-    <div className='grid grid-cols-2 gap-4'>
-      <div className='rounded-xl bg-blue-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-blue-600'>{userProfile.stats.countries}</div>
-        <div className='text-sm text-gray-600'>Countries</div>
+        {/* User Prompts (only visible ones) */}
+        {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={false} />}
       </div>
-      <div className='rounded-xl bg-green-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-green-600'>{userProfile.stats.mutuals}</div>
-        <div className='text-sm text-gray-600'>Mutuals</div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto'>
-        {/* Cover Image Section */}
-        <div className='relative'>
-          {/* Banner */}
-          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
+    <div className='min-h-screen bg-white'>
+      <div className='mx-auto max-w-full bg-white md:max-w-md'>
+        <div>
+          {/* Profile Info */}
+          <div>
+            {/* Cover Image Section */}
+            <div className='relative'>
+              {/* Banner */}
+              <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-24 md:bg-none' />
 
-          {/* Profile Picture - Centered & Clickable */}
-          <UserAvatar
-            user={userData}
-            size='lg'
-            onAvatarClick={handleAvatarClick}
-            onVerificationClick={() => setShowVerificationModal(true)}
-            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
-          />
-        </div>
+              {/* Profile Picture - Centered & Clickable */}
+              <UserAvatar
+                user={userProfile}
+                size='lg'
+                onAvatarClick={handleAvatarClick}
+                onVerificationClick={() => setShowVerificationModal(true)}
+                className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
+              />
+            </div>
 
-        {/* Profile Section */}
-        <div className='mb-4 bg-white px-6 pb-2 pt-20'>
-          {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>{userProfile.name}</h2>
-            <p className='text-gray-600'>{userProfile.username}</p>
-          </div>
-
-          {/* Stats - Centered */}
-          <div className='mb-6 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{userProfile.stats.events}</div>
-                <div className='text-sm text-gray-500'>Events</div>
+            {/* Profile Section */}
+            <div className='mb-4 bg-white px-6 pb-2 pt-20'>
+              {/* User Info - Centered */}
+              <div className='mb-6 text-center'>
+                <h2 className='text-2xl font-bold text-gray-900'>
+                  {userProfile?.name || 'Unknown User'}
+                </h2>
+                <p className='text-gray-600'>{userProfile?.username || ''}</p>
               </div>
-              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userProfile.stats.following}</div>
-                <div className='text-sm text-gray-500'>Following</div>
-              </button>
-              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userProfile.stats.followers}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
-              </button>
+
+              {/* Stats - Centered */}
+              <div className='mb-4 flex justify-center'>
+                <div className='grid grid-cols-3 gap-8'>
+                  <div className='text-center'>
+                    <div className='text-xl font-bold text-gray-900'>{eventCount}</div>
+                    <div className='text-sm text-gray-500'>Events</div>
+                  </div>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowingSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                    <div className='text-sm text-gray-500'>Following</div>
+                  </motion.button>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowersSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                    <div className='text-sm text-gray-500'>Followers</div>
+                  </motion.button>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className='-mx-2.5 mb-4 flex gap-2 px-2.5 pt-4'>
+                <div className='flex w-full flex-row gap-4'>
+                  <Button
+                    onClick={handleFollowToggle}
+                    disabled={isFollowStatusLoading || followActionMutation.isPending}
+                    className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
+                      followStatus?.isFollowing
+                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
+                        : 'bg-red-500 text-white hover:bg-red-600'
+                    }`}
+                  >
+                    {followStatus?.isFollowing ? (
+                      <>
+                        <UserMinus className='mr-2 h-4 w-4' />
+                        {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className='mr-2 h-4 w-4' />
+                        {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant='outline'
+                    onClick={handleMessage}
+                    className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
+                  >
+                    <MessageCircle className='h-4 w-4' />
+                    Message
+                  </Button>
+                </div>
+              </div>
+
+              {/* Zap Button */}
+              {userData?.ln_address && (
+                <div className='mb-6'>
+                  <ZapSheet
+                    recipientLightningAddress={userData.ln_address}
+                    recipientName={userData.name || 'Unknown User'}
+                    recipientUsername={userData.username}
+                    recipientAvatar={userData.image}
+                    currentUsername={user?.username}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className='-mx-2.5 mb-6 flex gap-2 px-2.5'>
-            <Button
-              onClick={handleFollowToggle}
-              disabled={isFollowStatusLoading || followActionMutation.isPending}
-              className={`flex-1 rounded-xl px-2.5 ${
-                followStatus?.isFollowing
-                  ? 'bg-gray-100 text-gray-900 hover:bg-gray-200'
-                  : 'bg-red-500 text-white hover:bg-red-600'
-              }`}
-            >
-              {followStatus?.isFollowing ? (
-                <>
-                  <UserMinus className='mr-2 h-4 w-4' />
-                  {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
-                </>
-              ) : (
-                <>
-                  <UserPlus className='mr-2 h-4 w-4' />
-                  {followActionMutation.isPending ? 'Following...' : 'Follow'}
-                </>
-              )}
-            </Button>
-            <Button
-              variant='outline'
-              onClick={handleMessage}
-              className='rounded-xl bg-transparent px-3'
-            >
-              <MessageCircle className='h-4 w-4' />
-              Message
-            </Button>
-            <Button
-              variant='outline'
-              onClick={handleTip}
-              className='group rounded-xl bg-transparent px-3 transition-colors hover:border-orange-300 hover:bg-orange-100 hover:text-orange-700'
-            >
-              <Zap className='h-4 w-4 text-black transition-colors group-hover:text-orange-700' />
-              Tip
-            </Button>
-          </div>
+          {/* Tabs */}
+          <div className='pb-20'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white px-6 lg:px-0'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'about', label: 'About' },
+                  { value: 'events', label: 'Events' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => setActiveTab(v)}
+              />
 
-          {/* Social Links */}
-          {userData && (
-            <SocialLinks
-              user={{
-                bio_link: userData.bio_link,
-                instagram_handle: userData.instagram_handle,
-                x_handle: userData.x_handle,
-                ln_address: userData.ln_address,
-                nip05: userData.nip05,
-              }}
-            />
-          )}
-        </div>
-
-        {/* Tabbed Section */}
-        <div className='mb-4 bg-white'>
-          {/* Tab Headers */}
-          <div className='flex gap-2 px-4 py-3'>
-            <button
-              onClick={() => setActiveTab('about')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                activeTab === 'about'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
-              }`}
-            >
-              About
-            </button>
-            <button
-              onClick={() => setActiveTab('events')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                activeTab === 'events'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
-              }`}
-            >
-              Events
-            </button>
-            <button
-              onClick={() => setActiveTab('stats')}
-              className={`rounded-full border border-gray-200 px-3 py-1.5 text-base font-normal transition-all ${
-                activeTab === 'stats'
-                  ? 'bg-gray-100 text-black'
-                  : 'bg-white text-black hover:bg-gray-50'
-              }`}
-            >
-              Stats
-            </button>
-          </div>
-
-          {/* Tab Content */}
-          <div className='p-4'>
-            {activeTab === 'about' && renderAboutTab()}
-            {activeTab === 'events' && renderEventsTab()}
-            {activeTab === 'stats' && renderStatsTab()}
+              {/* Tab Content */}
+              <div>
+                {activeTab === 'about' && renderAboutTab()}
+                {activeTab === 'events' && renderEventsTab()}
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Bottom Navbar */}
+      <Navbar />
 
       {/* Followers Sheet */}
       <FollowersSheet
@@ -678,7 +741,7 @@ export default function UserProfilePageClient() {
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(userProfile.website, '_blank', 'noopener,noreferrer');
+                window.open(userData?.bio_link || '#', '_blank', 'noopener,noreferrer');
               }}
               className='w-full bg-red-500 text-white hover:bg-red-600'
             >
@@ -746,6 +809,13 @@ export default function UserProfilePageClient() {
         handleDelete={async (photoId: string) => ({ success: false })}
         userId=''
         eventId=''
+      />
+
+      {/* Badge Detail Sheet */}
+      <BadgeDetailSheet
+        badge={selectedBadge}
+        isOpen={!!selectedBadge}
+        onClose={() => setSelectedBadge(null)}
       />
     </div>
   );

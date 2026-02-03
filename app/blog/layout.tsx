@@ -11,7 +11,6 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname();
   const router = useRouter();
 
-  // Set TopBar content
   useEffect(() => {
     const handleShare = async () => {
       if (navigator.share) {
@@ -32,15 +31,13 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       router.back();
     };
 
-    // Check if we're on a blog detail page (has slug)
     const isBlogDetailPage = pathname.startsWith('/blog/') && pathname !== '/blog';
 
     if (isBlogDetailPage) {
-      // Blog detail page - show back button
       setTopBar({
         leftMode: 'back',
         onBackPress: handleBack,
-        centerMode: 'empty',
+        centerMode: 'logo',
         title: '',
         subtitle: '',
         showAvatar: false,
@@ -55,7 +52,6 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
         isOverlaid: false,
       });
     } else {
-      // Blog listing page - show menu
       setTopBar({
         leftMode: 'menu',
         centerMode: 'title',

@@ -1,8 +1,9 @@
 import { LucideIcon } from 'lucide-react';
 import { create } from 'zustand';
+import { VerificationStatus } from '../types/api';
 
 export type LeftMode = 'menu' | 'back';
-export type CenterMode = 'title' | 'empty';
+export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
 
 export interface TopBarButton {
   id: string;
@@ -12,15 +13,34 @@ export interface TopBarButton {
   disabled?: boolean;
 }
 
+export interface TopBarTextButton {
+  id: string;
+  label: string;
+  icon?: LucideIcon;
+  onClick: () => void;
+  disabled?: boolean;
+  variant?: 'default' | 'outline';
+}
+
 interface TopBarConfig {
   leftMode: LeftMode;
   onBackPress: (() => void) | null;
   centerMode: CenterMode;
   title: string;
   subtitle: string;
+  badge?: string;
+  badgePath?: string;
+  onBadgeClick?: () => void;
   buttons: TopBarButton[];
+  textButtons: TopBarTextButton[];
   showAvatar: boolean;
   isOverlaid: boolean;
+  chatPartner?: {
+    name: string;
+    image?: string;
+    username?: string;
+    verification_status?: VerificationStatus;
+  };
 }
 
 interface TopBarState extends TopBarConfig {
@@ -37,8 +57,12 @@ interface TopBarState extends TopBarConfig {
   setTitle: (title: string) => void;
   setSubtitle: (subtitle: string) => void;
   setButtons: (buttons: TopBarButton[]) => void;
+  setTextButtons: (textButtons: TopBarTextButton[]) => void;
   setShowAvatar: (show: boolean) => void;
   setOverlaid: (isOverlaid: boolean) => void;
+  setChatPartner: (
+    partner: { name: string; image?: string; username?: string } | undefined
+  ) => void;
   reset: () => void;
   resetForRoute: (route: string) => void;
   clearRoute: (route: string) => void;
@@ -52,6 +76,7 @@ const initialState: TopBarConfig = {
   title: '',
   subtitle: '',
   buttons: [],
+  textButtons: [],
   showAvatar: true,
   isOverlaid: false,
 };
@@ -69,7 +94,10 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
     // Store configuration for current route
     if (currentRoute) {
       const routeConfigs = new Map(get().routeConfigs);
-      routeConfigs.set(currentRoute, { ...routeConfigs.get(currentRoute), ...config });
+      routeConfigs.set(currentRoute, {
+        ...routeConfigs.get(currentRoute),
+        ...config,
+      });
       set((state) => ({ ...state, ...config, routeConfigs }));
     } else {
       set((state) => ({ ...state, ...config }));
@@ -82,7 +110,12 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
 
     // Only update UI state if this is the current route
     if (get().currentRoute === route) {
-      set((state) => ({ ...state, ...config, routeConfigs, currentRoute: route }));
+      set((state) => ({
+        ...state,
+        ...config,
+        routeConfigs,
+        currentRoute: route,
+      }));
     } else {
       set((state) => ({ ...state, routeConfigs }));
     }
@@ -93,7 +126,12 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
     const routeConfig = routeConfigs.get(route);
 
     if (routeConfig) {
-      set((state) => ({ ...state, ...initialState, ...routeConfig, currentRoute: route }));
+      set((state) => ({
+        ...state,
+        ...initialState,
+        ...routeConfig,
+        currentRoute: route,
+      }));
     } else {
       set((state) => ({ ...state, ...initialState, currentRoute: route }));
     }
@@ -103,10 +141,11 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
     const routeConfigs = new Map(get().routeConfigs);
     routeConfigs.delete(route);
 
-    // If clearing current route, reset to initial state
+    // Only reset state if clearing the current route
     if (get().currentRoute === route) {
       set({ ...initialState, currentRoute: null, routeConfigs });
     } else {
+      // Just update routeConfigs without resetting everything
       set((state) => ({ ...state, routeConfigs }));
     }
   },
@@ -117,15 +156,21 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setTitle: (title) => set({ title }),
   setSubtitle: (subtitle) => set({ subtitle }),
   setButtons: (buttons) => set({ buttons }),
+  setTextButtons: (textButtons) => set({ textButtons }),
   setShowAvatar: (showAvatar) => set({ showAvatar }),
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
+  setChatPartner: (chatPartner) => set({ chatPartner }),
 
   reset: () => set({ ...initialState, currentRoute: null, routeConfigs: new Map() }),
 
   resetForRoute: (route) => {
     const currentRoute = get().currentRoute;
     if (currentRoute === route) {
-      set({ ...initialState, currentRoute: null, routeConfigs: new Map(get().routeConfigs) });
+      set({
+        ...initialState,
+        currentRoute: null,
+        routeConfigs: new Map(get().routeConfigs),
+      });
     }
   },
 }));
@@ -137,9 +182,14 @@ export const useTopBar = () => {
   const centerMode = useTopBarStore((state) => state.centerMode);
   const title = useTopBarStore((state) => state.title);
   const subtitle = useTopBarStore((state) => state.subtitle);
+  const badge = useTopBarStore((state) => state.badge);
+  const badgePath = useTopBarStore((state) => state.badgePath);
+  const onBadgeClick = useTopBarStore((state) => state.onBadgeClick);
   const buttons = useTopBarStore((state) => state.buttons);
+  const textButtons = useTopBarStore((state) => state.textButtons);
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
+  const chatPartner = useTopBarStore((state) => state.chatPartner);
   const currentRoute = useTopBarStore((state) => state.currentRoute);
   const setTopBar = useTopBarStore((state) => state.setTopBar);
   const setTopBarForRoute = useTopBarStore((state) => state.setTopBarForRoute);
@@ -149,8 +199,10 @@ export const useTopBar = () => {
   const setTitle = useTopBarStore((state) => state.setTitle);
   const setSubtitle = useTopBarStore((state) => state.setSubtitle);
   const setButtons = useTopBarStore((state) => state.setButtons);
+  const setTextButtons = useTopBarStore((state) => state.setTextButtons);
   const setShowAvatar = useTopBarStore((state) => state.setShowAvatar);
   const setOverlaid = useTopBarStore((state) => state.setOverlaid);
+  const setChatPartner = useTopBarStore((state) => state.setChatPartner);
   const reset = useTopBarStore((state) => state.reset);
   const resetForRoute = useTopBarStore((state) => state.resetForRoute);
   const clearRoute = useTopBarStore((state) => state.clearRoute);
@@ -162,9 +214,14 @@ export const useTopBar = () => {
     centerMode,
     title,
     subtitle,
+    badge,
+    badgePath,
+    onBadgeClick,
     buttons,
+    textButtons,
     showAvatar,
     isOverlaid,
+    chatPartner,
     currentRoute,
     setTopBar,
     setTopBarForRoute,
@@ -174,8 +231,10 @@ export const useTopBar = () => {
     setTitle,
     setSubtitle,
     setButtons,
+    setTextButtons,
     setShowAvatar,
     setOverlaid,
+    setChatPartner,
     reset,
     resetForRoute,
     clearRoute,

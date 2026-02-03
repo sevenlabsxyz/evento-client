@@ -40,12 +40,14 @@ export const authService = {
     }
 
     console.log('Auth: OTP verification successful for user:', data.user.id);
+    console.log('Auth: User metadata:', data.user.user_metadata);
 
-    // Return user details - we'll get them from the backend later
-    return {
+    // Return minimal user details - actual data will come from backend
+    // Don't populate username/name from email as it causes false positive onboarding checks
+    const userDetails = {
       id: data.user.id,
-      username: data.user.user_metadata?.username || data.user.email?.split('@')[0] || '',
-      name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || '',
+      username: data.user.user_metadata?.username || '',
+      name: data.user.user_metadata?.full_name || '',
       bio: '',
       image: data.user.user_metadata?.avatar_url || '',
       bio_link: '',
@@ -56,6 +58,9 @@ export const authService = {
       verification_status: null,
       verification_date: '',
     };
+
+    console.log('Auth: Returning user details from verifyCode:', userDetails);
+    return userDetails;
   },
 
   /**
@@ -70,13 +75,35 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
+        console.log('Auth: No session found, returning null');
         return null; // No session means not authenticated
       }
 
+      console.log('Auth: Fetching current user from backend');
       const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
 
-      // API returns array, get first user or null
-      const firstUser = (response as any)?.data?.[0] || null;
+      // Handle both response formats (array or object with data property)
+      console.log('Auth: Raw API response:', response);
+
+      let userData: UserDetails[] | null = null;
+
+      // Check if response is an object with data property
+      if (response && typeof response === 'object' && 'data' in response) {
+        console.log('Auth: Response is object with data property');
+        userData = (response as any).data;
+      } else if (Array.isArray(response)) {
+        console.log('Auth: Response is array directly');
+        userData = response;
+      }
+
+      // Handle empty array case explicitly
+      if (!userData || !Array.isArray(userData) || userData.length === 0) {
+        console.log('Auth: No user data found (empty array), returning null');
+        return null;
+      }
+
+      const firstUser = userData[0];
+      console.log('Auth: Returning user:', firstUser);
       return firstUser;
     } catch (error) {
       console.error('Auth: Failed to get current user:', (error as any)?.message || error);

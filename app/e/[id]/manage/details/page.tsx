@@ -5,37 +5,43 @@ import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionModal from '@/components/create-event/image-selection-modal';
-import LocationModal from '@/components/create-event/location-modal';
+import LocationSheet from '@/components/create-event/location-sheet';
+import PasswordProtectionSheet from '@/components/create-event/password-protection-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
-import { Button } from '@/components/ui/button';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
+import { Skeleton } from '@/components/ui/skeleton';
+import { SubmitButton } from '@/components/ui/submit-button';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { apiEventSchema } from '@/lib/schemas/event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
+import { toast } from '@/lib/utils/toast';
 import {
-  ArrowLeft,
   Calendar,
   ChevronRight,
   Edit3,
   Globe,
-  Loader2,
   Lock,
   MapPin,
+  ShieldCheck,
+  ShieldOff,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EditEventDetailsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
   const updateEventMutation = useUpdateEvent();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
 
   // Fetch real event data
   const { data: eventData, isLoading, error } = useEventDetails(eventId);
@@ -53,6 +59,8 @@ export default function EditEventDetailsPage() {
     timezone,
     visibility,
     emoji,
+    passwordProtected,
+    password,
     setTitle,
     setDescription,
     setCoverImage,
@@ -64,6 +72,7 @@ export default function EditEventDetailsPage() {
     setTimezone,
     setVisibility,
     setEmoji,
+    setPasswordProtection,
     populateFromApiEvent,
     getFormData,
     isValid,
@@ -80,6 +89,25 @@ export default function EditEventDetailsPage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
+  const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+
+  // Check if all required fields are filled and there are changes
+  const isFormValid = isValid() && hasChanges();
+
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Event Details',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, pathname, applyRouteConfig, clearRoute]);
 
   // Populate form when event data is loaded
   useEffect(() => {
@@ -128,10 +156,56 @@ export default function EditEventDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='flex items-center gap-2'>
-          <Loader2 className='h-6 w-6 animate-spin' />
-          <span>Loading event details...</span>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+        <div className='space-y-4 p-4'>
+          {/* Cover image skeleton */}
+          <Skeleton className='aspect-video w-full rounded-2xl' />
+
+          {/* Form sections skeleton */}
+          <div className='space-y-4 rounded-2xl bg-gray-50 p-4'>
+            {/* Title section */}
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-2 h-4 w-20' />
+              <div className='flex items-center gap-3'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-6 flex-1' />
+              </div>
+            </div>
+
+            {/* Date & time section */}
+            <div className='space-y-4 rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-4 w-16' />
+                <div className='flex flex-1 gap-2'>
+                  <Skeleton className='h-10 flex-1 rounded-lg' />
+                  <Skeleton className='h-10 w-20 rounded-lg' />
+                </div>
+              </div>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-4 w-16' />
+                <div className='flex flex-1 gap-2'>
+                  <Skeleton className='h-10 flex-1 rounded-lg' />
+                  <Skeleton className='h-10 w-20 rounded-lg' />
+                </div>
+              </div>
+            </div>
+
+            {/* Other sections */}
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className='rounded-2xl bg-white p-4'>
+                <div className='flex items-center gap-4'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <div className='flex-1'>
+                    <Skeleton className='mb-2 h-4 w-16' />
+                    <Skeleton className='h-5 w-32' />
+                  </div>
+                  <Skeleton className='h-4 w-4' />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -163,41 +237,30 @@ export default function EditEventDetailsPage() {
   const handleSaveChanges = async () => {
     try {
       const formData = getFormData();
-      await updateEventMutation.mutateAsync({
-        ...formData,
-        id: eventId,
-      });
-
-      // Navigate back to the manage page on success
-      router.push(`/e/${eventId}/manage`);
+      await updateEventMutation.mutateAsync(
+        {
+          ...formData,
+          id: eventId,
+        },
+        {
+          onSuccess: () => {
+            toast.success('Event updated successfully!');
+            // Navigate back to the manage page on success
+            router.push(`/e/${eventId}/manage`);
+          },
+          onError: () => {
+            toast.error('Failed to update event');
+          },
+        }
+      );
     } catch (error) {
       // Error handling is done in the mutation hook
       console.error('Failed to update event:', error);
     }
   };
 
-  // Check if all required fields are filled and there are changes
-  const isFormValid = isValid() && hasChanges();
-
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Event Details</h1>
-        </div>
-        <Button
-          onClick={handleSaveChanges}
-          className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-          disabled={!isFormValid || updateEventMutation.isPending}
-        >
-          {updateEventMutation.isPending ? 'Saving...' : 'Save'}
-        </Button>
-      </div>
-
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
       {/* Cover Image Selector */}
       <div className='mb-4 px-4'>
         <CoverImageSelector
@@ -342,6 +405,37 @@ export default function EditEventDetailsPage() {
             </div>
           </button>
         </div>
+
+        {/* Password Protection */}
+        <div className='rounded-2xl bg-white p-4'>
+          <button
+            onClick={() => setShowPasswordSheet(true)}
+            className='flex w-full items-center gap-4 text-left'
+          >
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+            >
+              {passwordProtected ? (
+                <ShieldCheck className='h-4 w-4 text-red-600' />
+              ) : (
+                <ShieldOff className='h-4 w-4 text-gray-600' />
+              )}
+            </div>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>
+                Password Protection
+              </label>
+              <div className='flex items-center justify-between'>
+                <span
+                  className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
+                >
+                  {passwordProtected ? 'Protected' : 'Not Protected'}
+                </span>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
 
       {/* Modals */}
@@ -372,26 +466,24 @@ export default function EditEventDetailsPage() {
         isOpen={showStartTimeModal}
         onClose={() => setShowStartTimeModal(false)}
         onTimeSelect={setStartTime}
-        onTimezoneClick={() => {
-          setShowStartTimeModal(false);
-          setShowTimezoneModal(true);
-        }}
         selectedTime={startTime}
         timezone={timezone}
         title='Start Time'
+        onTimezoneSelect={function (timezone: string): void {
+          setTimezone(timezone);
+        }}
       />
 
       <TimePickerSheet
         isOpen={showEndTimeModal}
         onClose={() => setShowEndTimeModal(false)}
         onTimeSelect={setEndTime}
-        onTimezoneClick={() => {
-          setShowEndTimeModal(false);
-          setShowTimezoneModal(true);
-        }}
         selectedTime={endTime}
         timezone={timezone}
         title='End Time'
+        onTimezoneSelect={function (timezone: string): void {
+          setTimezone(timezone);
+        }}
       />
 
       <TimezoneSheet
@@ -401,7 +493,7 @@ export default function EditEventDetailsPage() {
         selectedTimezone={timezone}
       />
 
-      <LocationModal
+      <LocationSheet
         isOpen={showLocationModal}
         onClose={() => setShowLocationModal(false)}
         onLocationSelect={setLocation}
@@ -430,6 +522,28 @@ export default function EditEventDetailsPage() {
         onVisibilitySelect={setVisibility}
         currentVisibility={visibility}
       />
+
+      {/* Password Protection Sheet */}
+      <PasswordProtectionSheet
+        isOpen={showPasswordSheet}
+        onClose={() => setShowPasswordSheet(false)}
+        onSave={setPasswordProtection}
+        isPasswordProtected={passwordProtected}
+        currentPassword={password}
+      />
+
+      {/* Fixed Bottom Button */}
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
+        <div className='mx-auto max-w-full md:max-w-md'>
+          <SubmitButton
+            onClick={handleSaveChanges}
+            disabled={!isFormValid || updateEventMutation.isPending}
+            loading={updateEventMutation.isPending}
+          >
+            Save
+          </SubmitButton>
+        </div>
+      </div>
     </div>
   );
 }

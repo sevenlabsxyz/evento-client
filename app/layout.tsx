@@ -1,4 +1,5 @@
-import { ToastProvider } from '@/components/ui/toast-container';
+import { Toaster } from '@/components/ui/sonner';
+import { Analytics } from '@vercel/analytics/next';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type React from 'react';
@@ -47,7 +48,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className={inter.className}>
         <Providers>
-          <ToastProvider>{children}</ToastProvider>
+          {children}
+          <Toaster />
+          <Analytics />
         </Providers>
       </body>
     </html>

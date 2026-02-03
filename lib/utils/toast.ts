@@ -1,115 +1,31 @@
-'use client';
-import { type ToastType } from '@/lib/contexts/toast-context';
-
-// ================================================================================================
-// Global Toast Manager
-// ================================================================================================
-
-type ToastInstance = {
-  id: string;
-  type: ToastType;
-  title?: string;
-  description: string;
-  duration?: number;
-  onDismiss?: () => void;
-};
-
-class ToastManager {
-  private toasts: ToastInstance[] = [];
-  private listeners: ((toasts: ToastInstance[]) => void)[] = [];
-  private idCounter = 0;
-
-  private notify() {
-    this.listeners.forEach((listener) => listener([...this.toasts]));
-  }
-
-  subscribe(listener: (toasts: ToastInstance[]) => void) {
-    this.listeners.push(listener);
-    return () => {
-      this.listeners = this.listeners.filter((l) => l !== listener);
-    };
-  }
-
-  add(toast: Omit<ToastInstance, 'id'>) {
-    const id = `toast-${this.idCounter++}`;
-    const newToast: ToastInstance = {
-      id,
-      ...toast,
-      duration: toast.duration ?? 5000,
-    };
-
-    this.toasts.push(newToast);
-    this.notify();
-    return id;
-  }
-
-  remove(id: string) {
-    this.toasts = this.toasts.filter((toast) => toast.id !== id);
-    this.notify();
-  }
-
-  clear() {
-    this.toasts = [];
-    this.notify();
-  }
-
-  getToasts() {
-    return [...this.toasts];
-  }
-}
-
-// ================================================================================================
-// Global Instance
-// ================================================================================================
-
-const toastManager = new ToastManager();
-
-// ================================================================================================
-// Toast API Functions
-// ================================================================================================
+import { toast as sonnerToast } from 'sonner';
 
 export const toast = {
   success: (description: string, title?: string, duration?: number) =>
-    toastManager.add({
-      type: 'success',
+    sonnerToast.success(title || 'Success', {
       description,
-      title: title || 'Success',
-      duration,
+      duration: duration ?? 5000,
     }),
 
   error: (description: string, title?: string, duration?: number) =>
-    toastManager.add({
-      type: 'error',
+    sonnerToast.error(title || 'Error', {
       description,
-      title: title || 'Error',
-      duration,
+      duration: duration ?? 5000,
     }),
 
   info: (description: string, title?: string, duration?: number) =>
-    toastManager.add({
-      type: 'info',
+    sonnerToast.info(title || 'Info', {
       description,
-      title: title || 'Info',
-      duration,
+      duration: duration ?? 5000,
     }),
 
   warning: (description: string, title?: string, duration?: number) =>
-    toastManager.add({
-      type: 'warning',
+    sonnerToast.warning(title || 'Warning', {
       description,
-      title: title || 'Warning',
-      duration,
+      duration: duration ?? 5000,
     }),
 
-  custom: (toast: Omit<ToastInstance, 'id'>) => toastManager.add(toast),
+  dismiss: (id?: string | number) => sonnerToast.dismiss(id),
 
-  dismiss: (id: string) => toastManager.remove(id),
-
-  clear: () => toastManager.clear(),
+  clear: () => sonnerToast.dismiss(),
 };
-
-// ================================================================================================
-// React Hook for Global Toast Manager
-// ================================================================================================
-
-export { toastManager };

@@ -1,6 +1,11 @@
 'use client';
 
-import { TopBar } from '@/components/top-bar';
+import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { SiteHeader } from '@/components/dashboard/site-header';
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { useWallet } from '@/lib/hooks/use-wallet';
+import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
+import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -9,15 +14,29 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   const { isOverlaid, applyRouteConfig } = useTopBar();
   const pathname = usePathname();
 
-  // Simply apply any existing route configuration
+  useWallet();
+  useWalletEventListener();
+
   useEffect(() => {
     applyRouteConfig(pathname);
   }, [pathname, applyRouteConfig]);
 
   return (
-    <>
-      <TopBar />
-      <div className={isOverlaid ? '' : 'pt-16'}>{children}</div>
-    </>
+    <StreamChatProvider>
+      <SidebarProvider
+        style={
+          {
+            '--sidebar-width': '18rem',
+            '--header-height': '3.5rem',
+          } as React.CSSProperties
+        }
+      >
+        <AppSidebar variant='inset' />
+        <SidebarInset className='max-h-svh md:max-h-[calc(100svh-1rem)]'>
+          {!isOverlaid && <SiteHeader />}
+          <div className='flex-1 overflow-auto'>{children}</div>
+        </SidebarInset>
+      </SidebarProvider>
+    </StreamChatProvider>
   );
 }

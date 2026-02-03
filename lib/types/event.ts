@@ -5,9 +5,10 @@ export interface EventHost {
   avatar: string;
   title?: string;
   company?: string;
+  verification_status?: string | null;
 }
 
-export type GuestStatus = 'going' | 'invited' | 'not-going' | 'maybe' | 'checked-in';
+export type GuestStatus = 'going' | 'not-going' | 'maybe';
 
 export interface Guest {
   id: string;
@@ -88,6 +89,9 @@ export interface Event {
     name: string;
     username: string;
   };
+
+  // Password protection
+  passwordProtected?: boolean;
 }
 
 export interface EventSummary {
@@ -97,5 +101,4 @@ export interface EventSummary {
   time: string;
   location: string;
   image: string;
-  type?: string;
 }

@@ -15,28 +15,28 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
   const requestId = logger.generateRequestId();
   const startTime = Date.now();
 
+  // Reconstruct the path
+  const path = params.path?.join('/') || '';
+  const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
+
+  // Get query parameters
+  const queryString = request.nextUrl.search;
+  const fullUrl = `${targetUrl}${queryString}`;
+
   try {
-    // Reconstruct the path
-    const path = params.path?.join('/') || '';
-    const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
-
-    // Get query parameters
-    const queryString = request.nextUrl.search;
-    const fullUrl = `${targetUrl}${queryString}`;
-
     // Extract request context for logging
     const userAgent = request.headers.get('user-agent') || undefined;
     const ip =
       request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown';
 
     // Log the incoming request
-    logger.logApiRequest(fullUrl, {
-      requestId,
-      method: request.method,
-      headers: Object.fromEntries(request.headers.entries()),
-      userAgent,
-      ip,
-    });
+    // logger.logApiRequest(fullUrl, {
+    //   requestId,
+    //   method: request.method,
+    //   headers: Object.fromEntries(request.headers.entries()),
+    //   userAgent,
+    //   ip,
+    // });
 
     // Prepare headers
     const headers = new Headers();
@@ -87,15 +87,27 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
           requestBody = textBody;
           options.body = textBody;
         }
+      } else if (
+        contentType?.includes('image/') ||
+        contentType?.includes('application/octet-stream') ||
+        contentType?.includes('multipart/form-data')
+      ) {
+        // Handle binary data (images, files)
+        const arrayBuffer = await request.arrayBuffer();
+        options.body = arrayBuffer;
+        requestBody = `[Binary data: ${arrayBuffer.byteLength} bytes]`;
       } else {
-        // For other content types, forward as-is
+        // For other content types, forward as text
         requestBody = await request.text();
         options.body = requestBody;
       }
 
       // Log request body (will be sanitized by logger)
       if (requestBody) {
-        logger.debug(`Request body for ${fullUrl}`, { requestId, body: requestBody });
+        logger.debug(`Request body for ${fullUrl}`, {
+          requestId,
+          body: requestBody,
+        });
       }
     }
 
@@ -132,14 +144,14 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       bodySize = JSON.stringify(responseData).length;
 
       // Log successful response
-      logger.logApiResponse(fullUrl, {
-        requestId,
-        statusCode: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
-        body: responseData,
-        bodySize,
-        duration,
-      });
+      // logger.logApiResponse(fullUrl, {
+      //   requestId,
+      //   statusCode: response.status,
+      //   headers: Object.fromEntries(response.headers.entries()),
+      //   body: responseData,
+      //   bodySize,
+      //   duration,
+      // });
 
       return NextResponse.json(responseData, {
         status: response.status,
@@ -151,13 +163,13 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       bodySize = responseData.length;
 
       // Log successful response
-      logger.logApiResponse(fullUrl, {
-        requestId,
-        statusCode: response.status,
-        headers: Object.fromEntries(response.headers.entries()),
-        bodySize,
-        duration,
-      });
+      // logger.logApiResponse(fullUrl, {
+      //   requestId,
+      //   statusCode: response.status,
+      //   headers: Object.fromEntries(response.headers.entries()),
+      //   bodySize,
+      //   duration,
+      // });
 
       return new NextResponse(responseData, {
         status: response.status,

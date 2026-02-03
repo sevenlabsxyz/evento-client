@@ -1,20 +1,16 @@
 'use client';
 
+import { EventoIcon } from '@/components/icons/evento';
+import Google from '@/components/icons/google';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/useAuth';
+import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/use-auth';
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Chrome, Loader2, Mail } from 'lucide-react';
+import { AlertCircle, Loader2, Mail } from 'lucide-react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -36,7 +32,7 @@ function LoginContent() {
   });
 
   const onSubmit = (data: LoginFormData) => {
-    reset(); // Clear any previous errors
+    reset();
     sendLoginCode(data.email);
   };
 
@@ -45,7 +41,6 @@ function LoginContent() {
     loginWithGoogle();
   };
 
-  // Show loading while checking auth status
   if (isCheckingAuth) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
@@ -55,14 +50,16 @@ function LoginContent() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-gray-50 p-4'>
-      <Card className='w-full max-w-md'>
+    <div className='flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4'>
+      <Card className='w-full max-w-sm rounded-3xl'>
         <CardHeader className='space-y-1'>
-          <CardTitle className='text-center text-2xl font-bold'>Welcome to Evento</CardTitle>
-          <CardDescription className='text-center'>Sign in to manage your events</CardDescription>
+          <div className='mx-auto flex w-full items-center justify-center'>
+            <EventoIcon className='h-14 w-14' />
+          </div>
+          <CardTitle className='text-center text-xl font-bold'>Welcome to Evento</CardTitle>
+          <CardDescription className='text-center'>Log in or sign up below.</CardDescription>
         </CardHeader>
         <CardContent className='space-y-4'>
-          {/* Error Alert */}
           {error && (
             <Alert variant='destructive'>
               <AlertCircle className='h-4 w-4' />
@@ -72,11 +69,10 @@ function LoginContent() {
             </Alert>
           )}
 
-          {/* Email Login Form */}
           <form onSubmit={handleSubmit(onSubmit)} className='space-y-4'>
             <div className='space-y-2'>
               <label htmlFor='email' className='text-sm font-medium'>
-                Email address
+                Email
               </label>
               <div className='relative'>
                 <Mail className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
@@ -85,14 +81,18 @@ function LoginContent() {
                   id='email'
                   type='email'
                   placeholder='you@example.com'
-                  className='pl-10'
+                  className='bg-gray-50 pl-10'
                   disabled={isLoading || isGoogleLoading}
                 />
               </div>
               {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
             </div>
 
-            <Button type='submit' className='w-full' disabled={isLoading || isGoogleLoading}>
+            <Button
+              type='submit'
+              className='w-full py-6 text-base'
+              disabled={isLoading || isGoogleLoading}
+            >
               {isLoading ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
@@ -108,15 +108,11 @@ function LoginContent() {
             <div className='absolute inset-0 flex items-center'>
               <span className='w-full border-t' />
             </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white px-2 text-gray-500'>Or continue with</span>
-            </div>
           </div>
 
-          {/* Google Login Button */}
           <Button
-            variant='outline'
-            className='w-full'
+            variant='secondary'
+            className='w-full border border-gray-200 py-6 text-base'
             onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
           >
@@ -127,18 +123,26 @@ function LoginContent() {
               </>
             ) : (
               <>
-                <Chrome className='mr-2 h-4 w-4' />
+                <Google className='mr-1 h-5 w-5' />
                 Continue with Google
               </>
             )}
           </Button>
         </CardContent>
-        <CardFooter className='text-center text-sm text-gray-600'>
-          <p className='w-full'>
-            By continuing, you agree to Evento's Terms of Service and Privacy Policy
-          </p>
-        </CardFooter>
       </Card>
+      <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
+        <p>
+          By continuing to use this app, you agree to Evento's{' '}
+          <Link href='/terms' className='underline hover:text-red-600'>
+            Terms of Service
+          </Link>{' '}
+          and{' '}
+          <Link href='/privacy' className='underline hover:text-red-600'>
+            Privacy Policy
+          </Link>
+          .
+        </p>
+      </div>
     </div>
   );
 }

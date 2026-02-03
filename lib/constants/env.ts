@@ -17,8 +17,8 @@ export const Env = {
   SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
 
   // Ghost CMS
-  GHOST_URL: process.env.GHOST_URL || '',
-  GHOST_CONTENT_API_KEY: process.env.GHOST_CONTENT_API_KEY || '',
+  NEXT_PUBLIC_GHOST_URL: process.env.NEXT_PUBLIC_GHOST_URL || '',
+  NEXT_PUBLIC_GHOST_CONTENT_API_KEY: process.env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY || '',
 
   // Giphy
   NEXT_PUBLIC_GIPHY_API_KEY: process.env.NEXT_PUBLIC_GIPHY_API_KEY || '',
@@ -28,6 +28,12 @@ export const Env = {
 
   // OpenWeatherMap
   NEXT_PUBLIC_OPENWEATHERMAP_API_KEY: process.env.NEXT_PUBLIC_OPENWEATHERMAP_API_KEY || '',
+
+  // Stream Chat
+  NEXT_PUBLIC_STREAM_CHAT_API_KEY: process.env.NEXT_PUBLIC_STREAM_CHAT_API_KEY || '',
+
+  // Breez SDK
+  NEXT_PUBLIC_BREEZ_API_KEY: process.env.NEXT_PUBLIC_BREEZ_API_KEY || '',
 } as const;
 
 // Type representing all environment variable keys

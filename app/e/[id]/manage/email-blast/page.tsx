@@ -3,15 +3,16 @@
 import EmailBlastCard from '@/components/manage-event/email-blast-card';
 import EmailBlastDetailModal from '@/components/manage-event/email-blast-detail-modal';
 import EmailBlastSheet from '@/components/manage-event/email-blast-sheet';
-import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/useEmailBlasts';
+import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/use-email-blasts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { Loader2, Mail, Plus } from 'lucide-react';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function EmailBlastPage() {
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const eventId = params.id as string;
   const [showEmailBlastSheet, setShowEmailBlastSheet] = useState(false);
   const [selectedBlast, setSelectedBlast] = useState<any | null>(null);
@@ -23,9 +24,9 @@ export default function EmailBlastPage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
-      title: 'Email Blast',
-      subtitle: 'Send updates to your guests',
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Email Blasts',
       buttons: [
         {
           icon: Plus,
@@ -35,12 +36,13 @@ export default function EmailBlastPage() {
         },
       ],
       leftMode: 'back',
+      showAvatar: false,
     });
 
     return () => {
-      setTopBar({ leftMode: 'menu', buttons: [] });
+      clearRoute(pathname);
     };
-  }, [setTopBar]);
+  }, [setTopBarForRoute, clearRoute, pathname, applyRouteConfig]);
 
   const handleCreateBlast = () => {
     setShowEmailBlastSheet(true);
@@ -54,10 +56,17 @@ export default function EmailBlastPage() {
     <div className='mx-auto mt-2 min-h-screen max-w-full bg-white md:max-w-sm'>
       {/* Content */}
       <div className='p-4'>
+        {/* Create Email Blast Button */}
+        <button
+          onClick={handleCreateBlast}
+          className='mb-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
+        >
+          <Plus className='h-5 w-5' />
+          Create Email Blast
+        </button>
+
         {/* Email Blast History */}
         <div className='space-y-3'>
-          <h2 className='mb-4 text-lg font-semibold text-gray-900'>Recent Email Blasts</h2>
-
           {isLoading ? (
             <div className='py-12 text-center'>
               <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />

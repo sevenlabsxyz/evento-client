@@ -1,16 +1,24 @@
 'use client';
 
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import TravelItinerary from '../../../travel-itinerary';
-import RowCard from '@/components/row-card';
-import { Calendar1, MapPin } from 'lucide-react';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { useEffect } from 'react';
-import { useUserProfile } from '@/lib/hooks/useUserProfile';
+import { CohostInvitesSection } from '@/components/hub/cohost-invites-section';
+import { EventInvitesSection } from '@/components/hub/event-invites-section';
+import { ForYouSection } from '@/components/hub/for-you-section';
+import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
+import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Navbar } from '@/components/navbar';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { MessageCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function HubPage() {
+  const router = useRouter();
   const { isLoading: isCheckingAuth } = useRequireAuth();
+  const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
@@ -23,45 +31,65 @@ export default function HubPage() {
 
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
-      title: 'Hub',
+      title: 'Evento Hub',
       subtitle: '',
       leftMode: 'menu',
       showAvatar: true,
       centerMode: 'title',
-      buttons: [],
+      buttons: [
+        {
+          id: 'chat',
+          icon: MessageCircle,
+          onClick: () => router.push('/e/messages'),
+          label: 'Chat',
+        },
+      ],
+      badge: undefined,
     });
 
     // Cleanup on unmount
     return () => {
       clearRoute(pathname);
     };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
-  if (isCheckingAuth) {
+  if (isCheckingAuth || isCheckingOnboarding) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-24 pt-4 md:max-w-sm'>
+          {/* Welcome text */}
+          <div className='mb-4'>
+            <Skeleton className='h-5 w-48' />
+          </div>
+          {/* Sections */}
+          <div className='flex flex-col gap-4'>
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-3 h-5 w-28' />
+              <Skeleton className='h-16 w-full rounded-lg' />
+            </div>
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-3 h-5 w-36' />
+              <Skeleton className='h-16 w-full rounded-lg' />
+            </div>
+            <div className='rounded-2xl bg-white p-4'>
+              <Skeleton className='mb-3 h-5 w-24' />
+              <Skeleton className='h-24 w-full rounded-lg' />
+            </div>
+          </div>
         </div>
+        <Navbar />
       </div>
     );
   }
 
   return (
     <>
-      <div className='flex flex-col px-4 gap-4 bg-gray-50 h-full w-full'>
-        <div className='text-base text-left pt-4 text-gray-500'>
-          Welcome back @{user?.username},
-        </div>
-        <div className='flex flex-col gap-4'>
-          <RowCard title='Travel Itinerary' icon={<MapPin />} isClickable />
-          <RowCard
-            title='Event Invites'
-            subtitle='View your current invites'
-            icon={<Calendar1 />}
-            isClickable
-          />
-        </div>
+      <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-6xl'>
+        <CohostInvitesSection />
+        <MyEventsSection />
+        <EventInvitesSection />
+        <ForYouSection />
+        <HubBlogGallery />
       </div>
       <Navbar />
     </>

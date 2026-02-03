@@ -1,3 +1,4 @@
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { UserSearchResult } from '@/lib/types/api';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -29,7 +30,7 @@ export const useRecentSearchesStore = create<RecentSearchesState>()(
       clearRecentSearches: () => set({ recentSearches: [] }),
     }),
     {
-      name: 'evento-recent-searches', // Unique name for localStorage
+      name: STORAGE_KEYS.RECENT_SEARCHES,
     }
   )
 );

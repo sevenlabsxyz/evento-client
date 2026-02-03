@@ -11,6 +11,7 @@ const nextConfig = {
     domains: [
       'evento.so',
       'api.evento.so',
+      'blogapi.evento.so',
       'laughing-sunfish.pikapod.net',
       'media.giphy.com',
       'media0.giphy.com',
@@ -19,6 +20,20 @@ const nextConfig = {
       'media3.giphy.com',
       'media4.giphy.com',
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: '/login',
+        destination: '/auth/login',
+        permanent: true,
+      },
+      {
+        source: '/signup',
+        destination: '/auth/login',
+        permanent: true,
+      },
+    ];
   },
 };
 

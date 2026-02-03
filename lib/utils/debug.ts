@@ -2,7 +2,11 @@
  * Debug utilities for logging API responses and data flow
  */
 
+// Set to true to enable debug logging
+const DEBUG_ENABLED = false;
+
 export function debugLog(component: string, message: string, data?: any) {
+  if (!DEBUG_ENABLED) return;
   const separator = '='.repeat(50);
   console.log(`\n${separator}`);
   console.log(`[${component}] ${message}`);
@@ -13,6 +17,7 @@ export function debugLog(component: string, message: string, data?: any) {
 }
 
 export function debugError(component: string, message: string, error: any, context?: any) {
+  if (!DEBUG_ENABLED) return;
   const separator = '!'.repeat(50);
   console.error(`\n${separator}`);
   console.error(`[${component} ERROR] ${message}`);
@@ -27,6 +32,7 @@ export function debugError(component: string, message: string, error: any, conte
 }
 
 export function debugApiResponse(component: string, endpoint: string, response: any) {
+  if (!DEBUG_ENABLED) return;
   const separator = '~'.repeat(50);
   console.log(`\n${separator}`);
   console.log(`[${component}] API Response from ${endpoint}`);

@@ -82,3 +82,24 @@ export function getRelativeTime(isoString: string): string {
     return `${diffDays}d ago`;
   }
 }
+
+/**
+ * Format date header for event grouping
+ * Returns "Today", "Tomorrow", or full date format (e.g., "Wednesday, December 17")
+ * @param date - Date string in YYYY-MM-DD format
+ */
+export function formatDateHeader(date: string): string {
+  const today = new Date().toISOString().slice(0, 10);
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+
+  if (date === today) return 'Today';
+  if (date === tomorrowStr) return 'Tomorrow';
+
+  return new Date(date).toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
+}

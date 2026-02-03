@@ -4,19 +4,21 @@ import { EventCard } from '@/components/event-card';
 import { EventDateGroup } from '@/components/event-date-group';
 import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
+import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { useEventsFeed } from '@/lib/hooks/useEventsFeed';
-import { useUserSearch } from '@/lib/hooks/useSearch';
+import { Skeleton } from '@/components/ui/skeleton';
+import { UserAvatar } from '@/components/ui/user-avatar';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useEventsFeed } from '@/lib/hooks/use-events-feed';
+import { useUserSearch } from '@/lib/hooks/use-search';
 import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useViewModeStore } from '@/lib/stores/view-mode-store';
-import { EventWithUser, UserSearchResult } from '@/lib/types/api';
+import { EventWithUser, UserDetails, UserSearchResult, VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import {
   ArrowDownAZ,
-  BadgeCheck,
   Bookmark,
   Calendar,
   Check,
@@ -45,6 +47,7 @@ export default function FeedPage() {
   const [sortOption, setSortOption] = useState<'date-desc' | 'date-asc'>('date-desc');
   const router = useRouter();
   const pathname = usePathname();
+  const [selectedUser, setSelectedUser] = useState<UserSearchResult | null>(null);
 
   // View mode state from Zustand store
   const { feedViewMode, setFeedViewMode } = useViewModeStore();
@@ -259,9 +262,31 @@ export default function FeedPage() {
   if (isLoading || isCheckingAuth) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+        {/* Header skeleton */}
+        <div className='sticky top-0 z-10 flex items-center justify-between bg-white px-4 py-2 shadow-sm'>
+          <Skeleton className='h-8 w-20 rounded-full' />
+          <div className='flex items-center gap-2'>
+            <Skeleton className='h-8 w-20 rounded-full' />
+            <Skeleton className='h-8 w-20 rounded-full' />
+          </div>
         </div>
+
+        {/* Feed skeleton */}
+        <div className='flex-1 overflow-y-auto pb-20'>
+          <div className='px-4 pt-2'>
+            {/* Show skeletons matching current view mode */}
+            {useViewModeStore.getState().feedViewMode === 'compact' ? (
+              <Skeleton variant='list' />
+            ) : (
+              <div className='grid gap-6'>
+                <Skeleton variant='event-card' />
+                <Skeleton variant='event-card' />
+                <Skeleton variant='event-card' />
+              </div>
+            )}
+          </div>
+        </div>
+
         <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
@@ -367,14 +392,16 @@ export default function FeedPage() {
           </div>
         ) : (
           // Standard card view
-          events.map((event) => (
-            <EventCard
-              key={event.id}
-              event={event}
-              onBookmark={handleBookmark}
-              isBookmarked={bookmarkedEvents.has(event.id)}
-            />
-          ))
+          <div className='grid gap-6 px-4 pt-2'>
+            {events.map((event) => (
+              <EventCard
+                key={event.id}
+                event={event}
+                onBookmark={handleBookmark}
+                isBookmarked={bookmarkedEvents.has(event.id)}
+              />
+            ))}
+          </div>
         )}
       </div>
 
@@ -473,8 +500,9 @@ export default function FeedPage() {
                       <div>
                         {isSearching ? (
                           // Loading state
-                          <div className='flex justify-center py-6'>
-                            <div className='h-6 w-6 animate-spin rounded-full border-b-2 border-red-500'></div>
+                          <div className='py-4'>
+                            <Skeleton className='mb-3 h-4 w-40' />
+                            <Skeleton variant='list' />
                           </div>
                         ) : searchResults.length > 0 ? (
                           // Results
@@ -482,7 +510,7 @@ export default function FeedPage() {
                             <h3 className='mb-4 text-sm font-semibold text-gray-900'>
                               Results for "{searchText}"
                             </h3>
-                            <div className='space-y-3'>
+                            <div className='space-y-2'>
                               {searchResults.map((user) => (
                                 <div
                                   key={user.id}
@@ -490,26 +518,26 @@ export default function FeedPage() {
                                   onClick={() => {
                                     // Add to recent searches when user is clicked
                                     addRecentSearch(user);
-                                    router.push(`/${user.username}`);
+                                    setSelectedUser(user);
                                     setShowSearchSheet(false);
                                   }}
                                 >
-                                  <img
-                                    src={user.image || '/assets/img/evento-sublogo.svg'}
-                                    alt={user.name}
-                                    className='h-12 w-12 rounded-full object-cover'
+                                  <UserAvatar
+                                    user={{
+                                      name: user.name || undefined,
+                                      username: user.username || undefined,
+                                      image: user.image || undefined,
+                                      verification_status:
+                                        (user.verification_status as VerificationStatus) || null,
+                                    }}
+                                    size='sm'
                                   />
                                   <div className='min-w-0 flex-1'>
-                                    <h4 className='truncate font-medium text-gray-900'>
-                                      {user.name}
-                                    </h4>
-                                    <div className='flex items-center gap-1 text-sm text-gray-500'>
-                                      <span className='text-gray-400'>@{user.username}</span>
-                                      {user.verification_status === 'verified' && (
-                                        <span className='ml-1'>
-                                          <BadgeCheck className='h-3 w-3 rounded-full bg-red-600 text-white shadow-sm' />
-                                        </span>
-                                      )}
+                                    <div className='truncate text-sm font-medium'>
+                                      @{user.username}
+                                    </div>
+                                    <div className='truncate text-xs text-gray-500'>
+                                      {user.name || user.username}
                                     </div>
                                   </div>
                                 </div>
@@ -540,32 +568,32 @@ export default function FeedPage() {
                                 </button>
                               )}
                             </div>
-                            <div className='space-y-3'>
+                            <div className='space-y-2'>
                               {recentSearches.map((user) => (
                                 <div
                                   key={user.id}
-                                  className='flex cursor-pointer items-center gap-3 rounded-xl p-3 transition-colors hover:bg-gray-50'
+                                  className='flex cursor-pointer items-center gap-3 rounded-xl p-1 transition-colors hover:bg-gray-50'
                                   onClick={() => {
-                                    router.push(`/${user.username}`);
+                                    setSelectedUser(user);
                                     setShowSearchSheet(false);
                                   }}
                                 >
-                                  <img
-                                    src={user.image || '/assets/img/evento-sublogo.svg'}
-                                    alt={user.name}
-                                    className='h-10 w-10 rounded-full object-cover'
+                                  <UserAvatar
+                                    user={{
+                                      name: user.name || undefined,
+                                      username: user.username || undefined,
+                                      image: user.image || undefined,
+                                      verification_status:
+                                        (user.verification_status as VerificationStatus) || null,
+                                    }}
+                                    size='sm'
                                   />
                                   <div className='min-w-0 flex-1'>
-                                    <h4 className='truncate font-medium text-gray-900'>
-                                      {user.name}
-                                    </h4>
-                                    <div className='flex items-center gap-1 text-sm text-gray-500'>
-                                      <span className='text-gray-400'>@{user.username}</span>
-                                      {user.verification_status === 'verified' && (
-                                        <span className='ml-1'>
-                                          <BadgeCheck className='h-3 w-3 rounded-full bg-red-600 text-white shadow-sm' />
-                                        </span>
-                                      )}
+                                    <div className='truncate text-sm font-medium'>
+                                      @{user.username}
+                                    </div>
+                                    <div className='truncate text-xs text-gray-500'>
+                                      {user.name || user.username}
                                     </div>
                                   </div>
                                 </div>
@@ -627,6 +655,14 @@ export default function FeedPage() {
           </SheetWithDetent.View>
         </SheetWithDetent.Portal>
       </SheetWithDetent.Root>
+
+      {selectedUser && (
+        <QuickProfileSheet
+          isOpen={!!selectedUser}
+          onClose={() => setSelectedUser(null)}
+          user={{ ...selectedUser, bio: '' } as UserDetails}
+        />
+      )}
     </div>
   );
 }

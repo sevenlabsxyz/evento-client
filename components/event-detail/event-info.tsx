@@ -1,56 +1,151 @@
 'use client';
 
+import { EventHost } from '@/lib/hooks/use-event-hosts';
+import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
+import { useMyRegistration } from '@/lib/hooks/use-my-registration';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
+import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { streamChatService } from '@/lib/services/stream-chat';
+import { Event as ApiEvent } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
-import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star } from 'lucide-react';
-import { useState } from 'react';
-import ContactHostSheet from './contact-host-sheet';
+import { getContributionMethods } from '@/lib/utils/event-transform';
+import { toast } from '@/lib/utils/toast';
+import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star, XCircle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { useMemo, useState } from 'react';
+import ContributionPaymentSheet from './contribution-payment-sheet';
+import RsvpSheet from './event-rsvp-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
+import { RegistrationStatus } from './registration-status';
+import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
   event: Event;
   currentUserId?: string;
+  eventData?: ApiEvent | null;
+  hosts?: EventHost[];
 }
 
-export default function EventInfo({ event, currentUserId = 'current-user-id' }: EventInfoProps) {
-  const [showContactSheet, setShowContactSheet] = useState(false);
+export default function EventInfo({ event, currentUserId = '', eventData, hosts }: EventInfoProps) {
+  const router = useRouter();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
+  const [showRsvpSheet, setShowRsvpSheet] = useState(false);
+  const [showSaveSheet, setShowSaveSheet] = useState(false);
+  const [showContributionSheet, setShowContributionSheet] = useState(false);
 
-  const handleRegister = () => {
-    if (event.registrationUrl) {
-      window.open(event.registrationUrl, '_blank');
+  const { data: userRsvp } = useUserRSVP(event.id);
+  const currentStatus = userRsvp?.status ?? null;
+
+  const { data: savedStatus } = useEventSavedStatus(event.id);
+  const isSaved = savedStatus?.is_saved ?? false;
+
+  const { data: registrationSettings } = useRegistrationSettings(event.id);
+  const { data: myRegistration } = useMyRegistration(event.id);
+
+  const registrationRequired = registrationSettings?.registration_required ?? false;
+  const hasPendingRegistration =
+    registrationRequired &&
+    myRegistration?.has_registration &&
+    myRegistration.registration?.approval_status === 'pending';
+  const hasDeniedRegistration =
+    registrationRequired &&
+    myRegistration?.has_registration &&
+    myRegistration.registration?.approval_status === 'denied';
+
+  const hasContributions = useMemo(() => {
+    if (!eventData) return false;
+    return getContributionMethods(eventData).length > 0;
+  }, [eventData]);
+
+  const rsvpButton = useMemo(() => {
+    if (currentStatus === 'yes')
+      return {
+        label: "You're going",
+        className: 'bg-green-600 hover:bg-green-700 text-white',
+      };
+    if (currentStatus === 'maybe')
+      return {
+        label: 'Maybe',
+        className: 'bg-black hover:bg-gray-900 text-white',
+      };
+    if (currentStatus === 'no')
+      return {
+        label: 'Not going',
+        className: 'bg-gray-400 hover:bg-gray-400 text-white',
+      };
+    return {
+      label: 'RSVP',
+      className: 'bg-red-500 hover:bg-red-600 text-white',
+    };
+  }, [currentStatus]);
+
+  const handleRSVP = () => {
+    setShowRsvpSheet(true);
+  };
+
+  const handlePendingClick = () => {
+    toast.info('Your registration is pending host approval');
+  };
+
+  const handleDeniedClick = () => {
+    toast.error('Your registration was not approved. Contact the host for details.');
+  };
+
+  const handleContact = async () => {
+    const primaryHost = event.hosts?.[0];
+    if (!primaryHost) {
+      toast.error('No host available to contact');
+      return;
+    }
+
+    try {
+      const res = await streamChatService.createDirectMessageChannel(primaryHost.id);
+      if (res?.channel?.id) {
+        router.push(`/e/messages/${res.channel.id}`);
+      } else {
+        toast.error('Unable to start chat');
+      }
+    } catch (err: any) {
+      toast.error(err?.message || 'Failed to start chat');
+      console.error('createDirectMessageChannel error', err);
     }
   };
 
-  const handleContact = () => {
-    setShowContactSheet(true);
-  };
-
   const handleShare = async () => {
+    const url = window.location.href;
+
     if (navigator.share) {
       try {
         await navigator.share({
           title: event.title,
           text: event.description,
-          url: window.location.href,
+          url,
         });
-      } catch (error) {
-        console.log('Error sharing:', error);
+        return;
+      } catch (error: any) {
+        if (error?.name === 'AbortError') return;
       }
-    } else {
-      navigator.clipboard.writeText(window.location.href);
+    }
+
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success('Link copied to clipboard!');
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = url;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Link copied to clipboard!');
     }
   };
 
-  const handleSendMessage = (message: string) => {
-    console.log('Sending message:', message);
-    // In a real app, this would send the message to the host via API
-  };
-
   const handleAddToCalendar = () => {
-    // Generate .ics file content
     const formatICSDate = (dateStr: string) => {
-      // Convert ISO date to ICS format: YYYYMMDDTHHMMSSZ
       const date = new Date(dateStr);
       return date
         .toISOString()
@@ -65,10 +160,11 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
         .replace(/;/g, '\\;');
     };
 
-    const location =
-      `${event.location.name}, ${event.location.address || ''}, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
-        .replace(/,\s*,/g, ',')
-        .trim();
+    const location = `${event.location.name}, ${
+      event.location.address || ''
+    }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
+      .replace(/,\s*,/g, ',')
+      .trim();
 
     const icsContent = [
       'BEGIN:VCALENDAR',
@@ -89,7 +185,6 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
       .filter(Boolean)
       .join('\r\n');
 
-    // Create and download .ics file
     const blob = new Blob([icsContent], {
       type: 'text/calendar;charset=utf-8',
     });
@@ -103,19 +198,19 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
     URL.revokeObjectURL(url);
   };
 
-  const handleOpenInSafari = () => {
-    if (event.registrationUrl) {
-      window.open(event.registrationUrl, '_blank');
-    }
+  const handleContribute = () => {
+    setShowContributionSheet(true);
   };
 
-  // Check if current user is the event owner
-  const isOwner = event.owner?.id === currentUserId;
+  const isOwnerOrCohost = useMemo(() => {
+    if (!currentUserId) return false;
+    if (event.owner?.id === currentUserId) return true;
+    return hosts?.some((h) => h.user_details?.id === currentUserId) ?? false;
+  }, [currentUserId, event.owner?.id, hosts]);
 
   return (
     <>
       <div className='space-y-6 py-6'>
-        {/* Date and Time */}
         <div className='space-y-3'>
           <div className='flex items-center gap-3 text-black'>
             <span className='text-2xl font-bold'>{event.title}</span>
@@ -137,60 +232,101 @@ export default function EventInfo({ event, currentUserId = 'current-user-id' }: 
           </div>
         </div>
 
-        {/* Action Buttons - Different for owners vs guests */}
-        {isOwner ? (
+        {isOwnerOrCohost ? (
           <OwnerEventButtons eventId={event.id} />
         ) : (
-          <div className='grid grid-cols-4 gap-2'>
-            <button
-              onClick={handleRegister}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
-            >
-              <Star className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>Register</span>
-            </button>
+          <>
+            <div className='grid grid-cols-4 gap-2'>
+              {hasPendingRegistration ? (
+                <button
+                  onClick={handlePendingClick}
+                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
+                >
+                  <Clock className='mb-1 h-5 w-5' />
+                  <span className='text-xs font-medium'>Pending</span>
+                </button>
+              ) : hasDeniedRegistration ? (
+                <button
+                  onClick={handleDeniedClick}
+                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-100 text-red-700 transition-colors hover:bg-red-200'
+                >
+                  <XCircle className='mb-1 h-5 w-5' />
+                  <span className='text-xs font-medium'>Denied</span>
+                </button>
+              ) : (
+                <button
+                  onClick={handleRSVP}
+                  className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className}`}
+                >
+                  <Star className='mb-1 h-5 w-5' />
+                  <span className='text-xs font-medium'>{rsvpButton.label}</span>
+                </button>
+              )}
 
-            <button
-              onClick={handleContact}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
-            >
-              <Mail className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>Contact</span>
-            </button>
+              <button
+                onClick={handleContact}
+                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+              >
+                <Mail className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>Contact</span>
+              </button>
 
-            <button
-              onClick={handleShare}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
-            >
-              <Share className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>Share</span>
-            </button>
+              <button
+                onClick={handleShare}
+                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+              >
+                <Share className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>Share</span>
+              </button>
 
-            <button
-              onClick={() => setShowMoreSheet(true)}
-              className='flex h-16 flex-col items-center justify-center rounded-xl bg-gray-100 text-gray-700 transition-colors hover:bg-gray-200'
-            >
-              <MoreHorizontal className='mb-1 h-5 w-5' />
-              <span className='text-xs font-medium'>More</span>
-            </button>
-          </div>
+              <button
+                onClick={() => setShowMoreSheet(true)}
+                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+              >
+                <MoreHorizontal className='mb-1 h-5 w-5' />
+                <span className='text-xs font-medium'>More</span>
+              </button>
+            </div>
+
+            {(hasPendingRegistration || hasDeniedRegistration) && myRegistration?.registration && (
+              <div className='mt-4'>
+                <RegistrationStatus registration={myRegistration.registration} />
+              </div>
+            )}
+          </>
         )}
       </div>
 
-      {/* Contact Host Sheet */}
-      <ContactHostSheet
-        isOpen={showContactSheet}
-        onClose={() => setShowContactSheet(false)}
-        onSendMessage={handleSendMessage}
-      />
-
-      {/* More Options Sheet */}
       <MoreOptionsSheet
         isOpen={showMoreSheet}
         onClose={() => setShowMoreSheet(false)}
         onAddToCalendar={handleAddToCalendar}
-        onOpenInSafari={handleOpenInSafari}
+        onSaveEvent={() => setShowSaveSheet(true)}
+        onContribute={handleContribute}
+        isSaved={isSaved}
+        hasContributions={hasContributions}
       />
+
+      <SaveEventSheet
+        isOpen={showSaveSheet}
+        onClose={() => setShowSaveSheet(false)}
+        eventId={event.id}
+      />
+
+      <RsvpSheet
+        eventId={event.id}
+        isOpen={showRsvpSheet}
+        onClose={() => setShowRsvpSheet(false)}
+        eventData={eventData}
+      />
+
+      {eventData && (
+        <ContributionPaymentSheet
+          isOpen={showContributionSheet}
+          onClose={() => setShowContributionSheet(false)}
+          eventData={eventData}
+        />
+      )}
     </>
   );
 }

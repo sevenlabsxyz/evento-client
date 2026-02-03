@@ -1,56 +1,113 @@
 'use client';
 
-import { TagSection } from '@/components/fancy-tag/section';
-import FollowersSheet from '@/components/followers-sheet/FollowersSheet';
-import FollowingSheet from '@/components/followers-sheet/FollowingSheet';
+import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
+import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
+import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
+import { CircledIconButton } from '@/components/circled-icon-button';
+import EventSearchSheet from '@/components/event-search-sheet';
+import FollowersSheet from '@/components/followers-sheet/followers-sheet';
+import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
+import { MasterEventCard } from '@/components/master-event-card';
 import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
+import { UserInterests } from '@/components/profile/user-interests';
+import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import SegmentedTabs from '@/components/ui/segmented-tabs';
+import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
+import { ZapSheet } from '@/components/zap';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useUserBadges } from '@/lib/hooks/use-badges';
+import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
+import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
   useUserFollowers,
   useUserFollowing,
   useUserProfile,
-} from '@/lib/hooks/useUserProfile';
+} from '@/lib/hooks/use-user-profile';
+import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { BadgeCheck, Camera, Edit3, Loader2, Settings, User } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { EventWithUser } from '@/lib/types/api';
+import { UserBadge } from '@/lib/types/badges';
+import { cn } from '@/lib/utils';
+import { formatDateHeader } from '@/lib/utils/date';
+import { motion } from 'framer-motion';
+import {
+  ArrowUpRight,
+  BadgeCheck,
+  Edit3,
+  Loader2,
+  MessageCircle,
+  Search,
+  Settings,
+} from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
-  const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
-  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
-  const [eventsFilter, setEventsFilter] = useState('attending');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
+  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
-  const [showWebsiteModal, setShowWebsiteModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
+  const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
+  const [showZapModal, setShowZapModal] = useState(false);
+  const [showBadgesManagementSheet, setShowBadgesManagementSheet] = useState(false);
+  const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
   // Get user data from API
   const { user, isLoading: isUserLoading } = useUserProfile();
+
+  // Get user interests and prompts
+  const { data: userInterests = [], isLoading: isLoadingInterests } = useUserInterests();
+  const { data: userPrompts = [], isLoading: isLoadingPrompts } = useUserPrompts();
+
+  // Get user badges
+  const { data: userBadges = [] } = useUserBadges();
   const { data: eventCount } = useUserEventCount(user?.id || '');
   const { data: followers } = useUserFollowers(user?.id || '');
   const { data: following } = useUserFollowing(user?.id || '');
 
-  // Set TopBar content and enable overlay mode
-  useEffect(() => {
-    // Apply any existing route configuration first
-    applyRouteConfig(pathname);
+  // Fetch user events with the hook (always show all events - 'upcoming' filter)
+  const {
+    data: userEventsData,
+    isLoading: isLoadingEvents,
+    fetchNextPage,
+    isFetchingNextPage,
+    hasNextPage,
+  } = useUserEvents({
+    filter: 'upcoming',
+    timeframe: timeframe,
+    sortBy: sortBy,
+    limit: 10,
+    enabled: activeTab === 'events',
+  });
 
-    // Set route-specific configuration
-    setTopBarForRoute(pathname, {
-      title: '',
-      subtitle: '',
-      showAvatar: false,
+  // Handle URL parameters for tab state
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'events') {
+      setActiveTab('events');
+    } else {
+      setActiveTab('about');
+    }
+  }, [searchParams]);
+
+  // Set TopBar content
+  useEffect(() => {
+    setTopBar({
+      title: 'Profile',
       leftMode: 'menu',
       buttons: [
         {
@@ -66,16 +123,15 @@ export default function ProfilePage() {
           label: 'Settings',
         },
       ],
-      isOverlaid: true,
     });
-    setOverlaid(true);
 
-    // Cleanup function to clear route config when leaving this page
     return () => {
-      clearRoute(pathname);
-      setOverlaid(false);
+      setTopBar({
+        title: '',
+        buttons: [],
+      });
     };
-  }, [router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid]);
+  }, [router, setTopBar]);
 
   const userStats = {
     events: eventCount || 0,
@@ -93,57 +149,23 @@ export default function ProfilePage() {
     isVerified: user?.verification_status === 'verified',
   };
 
-  const attendingEvents = [
-    {
-      id: 1,
-      title: 'Paris Photography Walk',
-      date: 'Sep 20, 2025',
-      time: '7:00 PM',
-      location: 'Paris, France',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 2,
-      title: 'London Art Gallery Tour',
-      date: 'Oct 2, 2025',
-      time: '2:00 PM',
-      location: 'London, UK',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 3,
-      title: 'Rome Cooking Class',
-      date: 'Sep 20, 2025',
-      time: '6:30 PM',
-      location: 'Rome, Italy',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-  ];
+  const handleAvatarClick = () => {
+    setSelectedAvatarIndex(0);
+  };
 
-  const hostingEvents = [
+  // Format avatar data for LightboxViewer
+  const avatarImages = [
     {
-      id: 4,
-      title: 'Tokyo Food Tour',
-      date: 'Sep 15, 2025',
-      time: '10:00 AM',
-      location: 'Tokyo, Japan',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 5,
-      title: 'Bali Sunrise Hike',
-      date: 'Sep 25, 2025',
-      time: '5:30 AM',
-      location: 'Bali, Indonesia',
-      image: '/placeholder.svg?height=60&width=60',
-    },
-    {
-      id: 6,
-      title: 'NYC Rooftop Party',
-      date: 'Oct 8, 2025',
-      time: '8:00 PM',
-      location: 'New York, USA',
-      image: '/placeholder.svg?height=60&width=60',
+      id: 'avatar-1',
+      image: userData.image || '/assets/img/evento-sublogo.svg',
+      user_details: {
+        id: user?.id,
+        username: user?.username,
+        name: user?.name,
+        image: userData.image,
+        verification_status: user?.verification_status,
+      },
+      created_at: new Date().toISOString(),
     },
   ];
 
@@ -154,60 +176,6 @@ export default function ProfilePage() {
     '/placeholder.svg?height=120&width=120',
     '/placeholder.svg?height=120&width=120',
     '/placeholder.svg?height=120&width=120',
-  ];
-
-  const profileQuestions = [
-    {
-      question: 'My travel style',
-      answer: 'Adventure seeker with a love for local culture',
-    },
-    {
-      question: 'Dream destination',
-      answer: 'New Zealand - for the landscapes and adventure sports',
-    },
-    {
-      question: "Can't travel without",
-      answer: 'My camera and a good playlist',
-    },
-    {
-      question: 'Best travel memory',
-      answer: 'Watching sunrise from Mount Fuji in Japan',
-    },
-  ];
-
-  const interestTags = [
-    'Photography',
-    'Food',
-    'Adventure',
-    'Culture',
-    'Music',
-    'Art',
-    'Nature',
-    'Architecture',
-  ];
-
-  const handleProfilePhotoClick = (index: number) => {
-    setSelectedImageIndex(index);
-  };
-
-  const handleAvatarClick = () => {
-    setSelectedAvatarIndex(0);
-  };
-
-  // Format avatar data for LightboxViewer
-  const avatarImages = [
-    {
-      id: 'avatar-1',
-      image: userData.image,
-      user_details: {
-        id: user?.id,
-        username: user?.username,
-        name: user?.name,
-        image: userData.image,
-        verification_status: user?.verification_status,
-      },
-      created_at: new Date().toISOString(),
-    },
   ];
 
   // Format profile photos for LightboxViewer
@@ -224,283 +192,318 @@ export default function ProfilePage() {
     created_at: new Date().toISOString(),
   }));
 
-  const groupEventsByDate = (events: typeof attendingEvents) => {
-    const grouped = events.reduce(
-      (acc, event) => {
-        const date = event.date;
-        if (!acc[date]) {
-          acc[date] = [];
-        }
-        acc[date].push(event);
-        return acc;
-      },
-      {} as Record<string, typeof events>
-    );
-
-    return Object.entries(grouped).map(([date, events]) => ({
-      date,
-      events,
-      formattedDate: formatDateHeader(date),
-    }));
-  };
-
-  const formatDateHeader = (dateStr: string) => {
-    const date = new Date(dateStr + ', 2025');
-    const dayNames = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-    const monthNames = [
-      'JANUARY',
-      'FEBRUARY',
-      'MARCH',
-      'APRIL',
-      'MAY',
-      'JUNE',
-      'JULY',
-      'AUGUST',
-      'SEPTEMBER',
-      'OCTOBER',
-      'NOVEMBER',
-      'DECEMBER',
-    ];
-
-    const dayName = dayNames[date.getDay()];
-    const monthName = monthNames[date.getMonth()];
-    const day = date.getDate();
-
-    return `${dayName}, ${monthName} ${day}`;
-  };
-
   const renderEventsTab = () => {
-    const currentEvents = eventsFilter === 'attending' ? attendingEvents : hostingEvents;
-    const groupedEvents = groupEventsByDate(currentEvents);
+    // Group events by date
+    const groupedEvents =
+      userEventsData?.pages
+        .flatMap((page) => page.events)
+        .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
+          const date = event.computed_start_date.slice(0, 10); // Extract YYYY-MM-DD
+          const group = groups.find((g) => g.date === date);
+
+          if (group) {
+            group.events.push(event);
+          } else {
+            groups.push({ date, events: [event] });
+          }
+
+          return groups;
+        }, [])
+        .sort(
+          (
+            a: { date: string; events: EventWithUser[] },
+            b: { date: string; events: EventWithUser[] }
+          ) => {
+            if (sortBy === 'date-desc') {
+              return new Date(b.date).getTime() - new Date(a.date).getTime();
+            } else {
+              return new Date(a.date).getTime() - new Date(b.date).getTime();
+            }
+          }
+        ) || [];
 
     return (
       <div className='space-y-4'>
-        {/* Filter Badges */}
-        <div className='flex gap-2'>
-          <button
-            onClick={() => setEventsFilter('attending')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              eventsFilter === 'attending'
-                ? 'bg-blue-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Attending
-          </button>
-          <button
-            onClick={() => setEventsFilter('hosting')}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              eventsFilter === 'hosting'
-                ? 'bg-red-500 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-            }`}
-          >
-            Hosting
-          </button>
-        </div>
-
-        {/* Events List with Date Dividers */}
-        <div className='space-y-6'>
-          {groupedEvents.map((group, groupIndex) => (
-            <div key={group.date}>
-              <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-sm font-medium text-gray-500'>{group.formattedDate}</h2>
-              </div>
-
-              <div className='space-y-4'>
-                {group.events.map((event) => (
-                  <div key={event.id} className='flex items-start gap-4'>
-                    <img
-                      src={event.image || '/placeholder.svg'}
-                      alt={event.title}
-                      className='h-12 w-12 flex-shrink-0 rounded-xl object-cover'
-                    />
-                    <div className='flex-1'>
-                      <h3 className='text-lg font-semibold'>{event.title}</h3>
-                      <p className='text-gray-500'>{event.location}</p>
-                    </div>
-                    <div className='text-right'>
-                      <span className='text-sm text-gray-600'>{event.time}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {currentEvents.length === 0 && (
-          <div className='py-8 text-center'>
-            <p className='text-gray-500'>No {eventsFilter} events yet</p>
+        {/* Filter Controls */}
+        <div className='flex items-center justify-between gap-2'>
+          {/* Timeframe Toggle */}
+          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+            <button
+              onClick={() => setTimeframe('future')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'future'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Upcoming
+            </button>
+            <button
+              onClick={() => setTimeframe('past')}
+              className={cn(
+                'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                timeframe === 'past'
+                  ? 'bg-white text-black shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              )}
+            >
+              Past
+            </button>
           </div>
-        )}
+
+          <div className='flex items-center gap-2'>
+            {/* Sort Toggle */}
+            <div className='flex items-center rounded-full bg-gray-50 p-1'>
+              <button
+                onClick={() => setSortBy('date-desc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-desc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Latest
+              </button>
+              <button
+                onClick={() => setSortBy('date-asc')}
+                className={cn(
+                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                  sortBy === 'date-asc'
+                    ? 'bg-white text-black shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                )}
+              >
+                Oldest
+              </button>
+            </div>
+
+            {/* Search Button */}
+            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
+          </div>
+        </div>
+
+        {/* Events List */}
+        <div className='space-y-8'>
+          {isLoadingEvents ? (
+            <div className='space-y-4'>
+              <Skeleton className='h-5 w-24' />
+              <Skeleton variant='list' className='mt-2' />
+            </div>
+          ) : groupedEvents.length === 0 ? (
+            <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
+              <div className='rounded-full bg-gray-100 p-3'>
+                <MessageCircle className='h-6 w-6 text-gray-400' />
+              </div>
+              <p className='text-sm text-gray-500'>No events found</p>
+            </div>
+          ) : (
+            groupedEvents.map((group) => (
+              <div key={group.date} className='space-y-3'>
+                <h3 className='text-sm font-medium text-gray-500'>
+                  {formatDateHeader(group.date)}
+                </h3>
+                <div className='space-y-3'>
+                  {group.events.map((event) => (
+                    <MasterEventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+
+          {/* Load More Button */}
+          {hasNextPage && (
+            <div className='flex justify-center pt-4'>
+              <Button
+                variant='outline'
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className='w-full'
+              >
+                {isFetchingNextPage ? (
+                  <>
+                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    Loading...
+                  </>
+                ) : (
+                  'Load more'
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        {/* Event Search Sheet */}
+        <EventSearchSheet
+          isOpen={showEventSearchSheet}
+          onClose={() => setShowEventSearchSheet(false)}
+          username={user?.username}
+          isOwnProfile={true}
+        />
       </div>
     );
   };
 
-  const renderAboutTab = () => (
-    <div className='space-y-4'>
-      {/* Social Links */}
-      {user && <SocialLinks user={user} />}
+  const renderAboutTab = () => {
+    const handleProfilePhotoClick = (index: number) => {
+      setSelectedImageIndex(index);
+    };
 
-      {/* Bio/Description */}
-      {!user?.bio ? null : (
-        <div>
-          <RowCard title={'Bio'} subtitle={user?.bio} icon={<User className='h-4 w-4' />} />
-        </div>
-      )}
-
-      {/* Interest Tags */}
-      <div>
-        <div className='flex flex-wrap gap-2'>
-          <TagSection
-            title='Interests'
-            items={interestTags}
-            selectedItems={[]}
-            onToggleItem={() => {}}
+    return (
+      <div className='space-y-4'>
+        {user && (
+          <SocialLinks
+            user={user}
+            showQRCode={true}
+            username={user.username}
+            userImage={user.image}
           />
-        </div>
-      </div>
+        )}
 
-      {/* Profile Questions */}
-      <div>
-        <h4 className='mb-3 font-semibold text-gray-900'>About Me</h4>
-        <div className='space-y-3'>
-          {profileQuestions.map((item, index) => (
-            <div key={index} className='rounded-xl bg-gray-50 p-3'>
-              <p className='mb-1 text-sm font-medium text-gray-700'>{item.question}</p>
-              <p className='text-sm text-gray-900'>{item.answer}</p>
-            </div>
-          ))}
-        </div>
-      </div>
+        {/* User Badges */}
+        {userBadges.length > 0 && (
+          <UserBadgesDisplay
+            badges={userBadges}
+            isOwnProfile={true}
+            onManageClick={() => setShowBadgesManagementSheet(true)}
+            onBadgeClick={(badge) => setSelectedBadge(badge)}
+          />
+        )}
 
-      {/* Photo Album */}
-      <div>
-        <div className='mb-3 flex items-center justify-between'>
-          <h4 className='font-semibold text-gray-900'>Photos</h4>
-          <Button variant='ghost' size='sm' className='text-red-600'>
-            <Camera className='mr-1 h-4 w-4' />
-            Add
-          </Button>
-        </div>
-        <div className='grid grid-cols-3 gap-2'>
-          {profilePhotos.map((photo, index) => (
-            <button
-              key={index}
-              onClick={() => handleProfilePhotoClick(index)}
-              className='aspect-square overflow-hidden rounded-lg bg-gray-100 transition-opacity hover:opacity-90'
-            >
-              <img
-                src={photo || '/assets/img/evento-sublogo.svg'}
-                alt={`Profile photo ${index + 1}`}
-                className='h-full w-full object-cover'
-              />
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+        {/* Bio/Description */}
+        {!user?.bio ? null : (
+          <div>
+            <RowCard title={'Bio'} subtitle={user?.bio} />
+          </div>
+        )}
 
-  const renderStatsTab = () => (
-    <div className='grid grid-cols-2 gap-4'>
-      <div className='rounded-xl bg-blue-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-blue-600'>{userStats.countries}</div>
-        <div className='text-sm text-gray-600'>Countries</div>
+        {/* User Interests */}
+        {!isLoadingInterests && <UserInterests interests={userInterests} />}
+
+        {/* User Prompts */}
+        {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={true} />}
       </div>
-      <div className='rounded-xl bg-green-50 p-4 text-center'>
-        <div className='text-3xl font-bold text-green-600'>{userStats.mutuals}</div>
-        <div className='text-sm text-gray-600'>Mutuals</div>
-      </div>
-    </div>
-  );
+    );
+  };
 
   // Show loading state while fetching user data
   if (isCheckingAuth || isUserLoading || !user) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm'>
-        <Loader2 className='h-8 w-8 animate-spin text-red-500' />
-        <p className='mt-2 text-gray-600'>Loading profile...</p>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex-1 overflow-y-auto bg-gray-50 p-6'>
+          <Skeleton variant='profile' />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-      {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20'>
-        {/* Cover Image Section */}
-        <div className='relative'>
-          {/* Banner */}
-          <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-44' />
+    <div className='min-h-screen bg-white'>
+      <div className='mx-auto max-w-full bg-white md:max-w-md'>
+        <div>
+          {/* Profile Info */}
+          <div>
+            {/* Cover Image Section */}
+            <div className='relative'>
+              {/* Banner */}
+              <div className='h-36 w-full bg-gradient-to-br from-red-400 to-red-600 md:h-24 md:bg-none' />
 
-          {/* Profile Picture - Centered & Clickable */}
-          <UserAvatar
-            user={userData}
-            size='lg'
-            onAvatarClick={handleAvatarClick}
-            onVerificationClick={() => setShowVerificationModal(true)}
-            className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
-          />
-        </div>
+              {/* Profile Picture - Centered & Clickable */}
+              <UserAvatar
+                user={userData}
+                size='lg'
+                onAvatarClick={handleAvatarClick}
+                onVerificationClick={() => setShowVerificationModal(true)}
+                className='absolute -bottom-16 left-1/2 -translate-x-1/2 transform'
+              />
+            </div>
 
-        {/* Profile Section */}
-        <div className='mb-4 bg-white px-4 pb-0 pt-20'>
-          {/* User Info - Centered */}
-          <div className='mb-6 text-center'>
-            <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
-            <p className='text-gray-600'>{userData.username}</p>
-          </div>
-
-          {/* Stats - Centered */}
-          <div className='mb-4 flex justify-center'>
-            <div className='grid grid-cols-3 gap-8'>
-              <div className='text-center'>
-                <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
-                <div className='text-sm text-gray-500'>Events</div>
+            {/* Profile Section */}
+            <div className='mb-4 bg-white px-4 pb-0 pt-20'>
+              {/* User Info - Centered */}
+              <div className='mb-6 text-center'>
+                <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
+                <p className='text-gray-600'>{userData.username}</p>
               </div>
-              <button className='text-center' onClick={() => setShowFollowingSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
-                <div className='text-sm text-gray-500'>Following</div>
-              </button>
-              <button className='text-center' onClick={() => setShowFollowersSheet(true)}>
-                <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
-                <div className='text-sm text-gray-500'>Followers</div>
-              </button>
+
+              {/* Stats - Centered */}
+              <div className='mb-4 flex justify-center'>
+                <div className='grid grid-cols-3 gap-8'>
+                  <div className='text-center'>
+                    <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
+                    <div className='text-sm text-gray-500'>Events</div>
+                  </div>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowingSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
+                    <div className='text-sm text-gray-500'>Following</div>
+                  </motion.button>
+                  <motion.button
+                    className='text-center'
+                    onClick={() => setShowFollowersSheet(true)}
+                    whileTap={{ scale: 0.95 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
+                    <div className='text-sm text-gray-500'>Followers</div>
+                  </motion.button>
+                </div>
+              </div>
+              {/* Zap Button */}
+              {user?.ln_address && (
+                <div>
+                  <ZapSheet
+                    recipientLightningAddress={user.ln_address}
+                    recipientName={user.name || 'You'}
+                    recipientUsername={user.username}
+                    recipientAvatar={user.image}
+                  />
+                </div>
+              )}
+              {/* Edit Profile Button - desktop only */}
+              <div className='mt-2 hidden lg:block'>
+                <Button
+                  variant='ghost'
+                  className='w-full shadow-none'
+                  onClick={() => router.push('/e/profile/edit')}
+                >
+                  Edit Profile
+                  <ArrowUpRight className='h-4 w-4' />
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* Tabbed Section */}
-          <div className='mb-4 w-full bg-white'>
-            {/* Tab Headers */}
-            <div className='mb-2 flex flex-row items-center justify-center gap-2 px-4 py-3'>
-              <button
-                onClick={() => setActiveTab('about')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'about'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                About
-              </button>
-              <button
-                onClick={() => setActiveTab('events')}
-                className={`text- rounded-xl px-4 py-2 text-sm font-normal uppercase transition-all ${
-                  activeTab === 'events'
-                    ? 'bg-gray-100 text-black'
-                    : 'bg-white text-gray-500 hover:bg-gray-50'
-                }`}
-              >
-                Events
-              </button>
-            </div>
-
-            {/* Tab Content */}
-            <div>
-              {activeTab === 'about' && renderAboutTab()}
-              {activeTab === 'events' && renderEventsTab()}
+          {/* Tabs */}
+          <div className='px-4 pb-32'>
+            {/* Tabbed Section */}
+            <div className='mb-4 w-full bg-white'>
+              {/* Tab Headers */}
+              <SegmentedTabs
+                items={[
+                  { value: 'about', label: 'About' },
+                  { value: 'events', label: 'Events' },
+                ]}
+                value={activeTab}
+                onValueChange={(v) => {
+                  if (v === 'about') {
+                    router.push('/e/profile', { scroll: false });
+                  } else {
+                    router.push(`/e/profile?tab=${v}`, { scroll: false });
+                  }
+                }}
+              />
+              {/* Tab Content */}
+              <div>
+                {activeTab === 'about' && renderAboutTab()}
+                {activeTab === 'events' && renderEventsTab()}
+              </div>
             </div>
           </div>
         </div>
@@ -583,6 +586,19 @@ export default function ProfilePage() {
         onClose={() => setShowFollowingSheet(false)}
         userId={user?.id || ''}
         username={user?.username || 'user'}
+      />
+
+      {/* Badges Management Sheet */}
+      <BadgesManagementSheet
+        isOpen={showBadgesManagementSheet}
+        onClose={() => setShowBadgesManagementSheet(false)}
+      />
+
+      {/* Badge Detail Sheet */}
+      <BadgeDetailSheet
+        badge={selectedBadge}
+        isOpen={!!selectedBadge}
+        onClose={() => setSelectedBadge(null)}
       />
     </div>
   );

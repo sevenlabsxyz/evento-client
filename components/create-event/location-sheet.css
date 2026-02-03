@@ -231,3 +231,23 @@
   font-size: 1rem;
   color: rgb(107, 114, 128);
 }
+
+.LocationSheet-loading {
+  /* INNER-LAYOUT */
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.LocationSheet-emptyState {
+  /* INNER-LAYOUT */
+  padding: 1rem 0;
+  text-align: center;
+}
+
+.LocationSheet-locationItem:disabled {
+  /* APPEARANCE */
+  opacity: 0.6;
+  cursor: not-allowed;
+}

@@ -1,5 +1,5 @@
 @import '@silk-hq/components/unlayered-styles';
-@import '../components/ui/silk-toast.css';
+@import 'stream-chat-react/dist/css/v2/index.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,6 +19,25 @@ body {
 
   .animate-shimmer {
     animation: shimmer 1.5s infinite;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 
@@ -69,11 +88,11 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 240 5% 96%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent: 240 4.8% 93%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
@@ -121,4 +140,58 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.prose hr {
+  @apply border-gray-100;
+  @apply my-6;
+}
+
+/* Toast styling */
+[data-rich-colors='true'][data-sonner-toast][data-type='success'] {
+  @apply bg-green-100 !important;
+  @apply rounded-2xl !important;
+  @apply border-green-300 !important;
+  border: 1px solid;
+}
+
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] {
+  @apply bg-red-100 !important;
+  @apply rounded-2xl !important;
+  @apply border-red-300 !important;
+  border: 1px solid;
+}
+
+[data-rich-colors='true'][data-sonner-toast][data-type='info'] {
+  @apply bg-blue-100 !important;
+  @apply rounded-2xl !important;
+  @apply border-blue-300 !important;
+  border: 1px solid;
+}
+
+[data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
+  @apply bg-orange-100 !important;
+  @apply rounded-2xl !important;
+  @apply border-orange-300 !important;
+  border: 1px solid;
+}
+
+[data-sonner-toast][data-styled='true'] [data-title] {
+  @apply text-gray-900 !important;
+  @apply text-base !important;
+}
+
+[data-sonner-toast][data-styled='true'] [data-description] {
+  @apply text-gray-700 !important;
+  @apply text-base !important;
+}
+
+[data-sonner-toast][data-styled='true'] [data-icon] {
+  height: 28px !important;
+  width: 28px !important;
+}
+
+[data-sonner-toast][data-styled='true'] [data-icon] svg {
+  height: 28px !important;
+  width: 28px !important;
 }

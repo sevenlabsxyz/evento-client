@@ -56,8 +56,8 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
                   <Zap className='h-6 w-6 text-yellow-600' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-gray-900'>Bitcoin Lightning</h3>
-                  <p className='text-sm text-gray-500'>Lightning Network address</p>
+                  <h3 className='font-semibold text-gray-900'>{address}</h3>
+                  <p className='text-sm text-gray-500'>Bitcoin Lightning Address</p>
                 </div>
               </div>
 
@@ -65,7 +65,7 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600'>
                   This is a Bitcoin Lightning Network address. You can use it to send instant,
-                  low-fee Bitcoin payments.
+                  low-fee Bitcoin payments globally.
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3'>
                   <p className='break-all font-mono text-sm text-gray-700'>{address}</p>

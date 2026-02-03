@@ -64,31 +64,69 @@ export function isContentEmpty(html: string): boolean {
 
 /**
  * Sanitizes HTML content to remove potentially dangerous elements
- * This is a basic implementation - in production, consider using a library like DOMPurify
+ * Enhanced version with better XSS protection for user-generated content like bios
  */
 export function sanitizeHtmlContent(html: string): string {
   if (!html) return '';
 
-  // Allow only safe HTML tags and attributes
-  const allowedTags = [
-    'p',
-    'br',
-    'strong',
-    'b',
-    'em',
-    'i',
-    'a',
-    'h1',
-    'h2',
-    'h3',
-    'ul',
-    'ol',
-    'li',
-  ];
-  const allowedAttributes = ['href', 'class'];
+  // If we're in browser environment, use DOM methods for better sanitization
+  if (typeof window !== 'undefined') {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
 
-  // This is a simple implementation - in production, use a proper HTML sanitizer
-  return html; // For now, return as-is. Consider adding DOMPurify for production use
+    // Remove all script tags and event handlers
+    const scripts = tempDiv.querySelectorAll('script, link, meta, object, embed, iframe');
+    scripts.forEach((script) => script.remove());
+
+    // Remove all on* event attributes
+    const allElements = tempDiv.querySelectorAll('*');
+    allElements.forEach((element) => {
+      Array.from(element.attributes).forEach((attr) => {
+        if (attr.name.startsWith('on') || attr.value.includes('javascript:')) {
+          element.removeAttribute(attr.name);
+        }
+      });
+    });
+
+    return tempDiv.textContent || tempDiv.innerText || '';
+  }
+
+  // Server-side fallback with enhanced regex protection
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+    .replace(/<[^>]*\son\w+\s*=\s*[^>]*>/gi, '') // Remove event handlers
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframes
+    .replace(/<object\b[^<]*(?:(?!<\/object>)<[^<]*)*<\/object>/gi, '') // Remove objects
+    .replace(/<embed[^>]*>/gi, '') // Remove embeds
+    .replace(/<link[^>]*>/gi, '') // Remove link tags
+    .replace(/<meta[^>]*>/gi, '') // Remove meta tags
+    .replace(/<[^>]*>/g, '') // Remove remaining HTML tags
+    .replace(/&nbsp;/g, ' ') // Replace non-breaking spaces
+    .replace(/&amp;/g, '&') // Replace HTML entities
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .trim();
+}
+
+/**
+ * Sanitizes user bio content specifically for safe display
+ * This should be used for any user-generated content displayed in profiles
+ */
+export function sanitizeUserBio(bio: string): string {
+  if (!bio || typeof bio !== 'string') return '';
+
+  // First sanitize HTML to prevent XSS
+  const sanitized = sanitizeHtmlContent(bio);
+
+  // Additional bio-specific validations
+  const maxLength = 500; // Reasonable limit for bio length
+  const truncated =
+    sanitized.length > maxLength ? sanitized.substring(0, maxLength).trim() + '...' : sanitized;
+
+  return truncated;
 }
 
 /**

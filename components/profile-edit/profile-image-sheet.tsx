@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { useUploadProfileImage } from '@/lib/hooks/useUserProfile';
+import { useUploadProfileImage } from '@/lib/hooks/use-user-profile';
 import { toast } from '@/lib/utils/toast';
 import { Camera, Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -123,6 +123,7 @@ export default function ProfileImageSheet({
                           src='/assets/img/evento-sublogo.svg'
                           alt='Evento'
                           className='h-full w-full p-1'
+                          fill
                         />
                       </AvatarFallback>
                     </Avatar>
@@ -152,7 +153,7 @@ export default function ProfileImageSheet({
                   />
 
                   {/* Save/Cancel Buttons */}
-                  <div className='flex gap-3'>
+                  <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'

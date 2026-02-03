@@ -1,28 +1,42 @@
 'use client';
 
-import { SilkLightbox, SilkLightboxRef } from '@/components/ui/silk-lightbox';
-import { useAuth } from '@/lib/hooks/useAuth';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useEventGallery } from '@/lib/hooks/useEventGallery';
-import { ArrowLeft, Loader2, Plus, Share } from 'lucide-react';
+import { LightboxViewer } from '@/components/lightbox-viewer';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/lib/hooks/use-auth';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useEventGallery } from '@/lib/hooks/use-event-gallery';
+import { getOptimizedImageUrl } from '@/lib/utils/image';
+import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useRef } from 'react';
+import { useState } from 'react';
 
 export default function GalleryPage() {
   const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const eventId = params.id as string;
-  const lightboxRef = useRef<SilkLightboxRef>(null);
   const { data: eventData, isLoading: eventLoading } = useEventDetails(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
 
   if (eventLoading || galleryLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='min-h-screen bg-gray-50'>
+        <div className='mx-auto max-w-full bg-white md:max-w-sm'>
+          <div className='space-y-4 p-6'>
+            {/* Header skeleton */}
+            <div className='flex items-center justify-between'>
+              <Skeleton className='h-8 w-8 rounded-full' />
+              <Skeleton className='h-6 w-32' />
+              <Skeleton className='h-8 w-8 rounded-full' />
+            </div>
+            {/* Gallery grid skeleton */}
+            <div className='grid grid-cols-2 gap-4'>
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className='aspect-square w-full rounded-lg' />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -47,7 +61,7 @@ export default function GalleryPage() {
 
   const galleryImages = galleryData || [];
   const handleImageClick = (index: number) => {
-    lightboxRef.current?.open(index);
+    setSelectedImageIndex(index);
   };
 
   const isOwner = eventData?.user_details?.id === user?.id;
@@ -138,7 +152,7 @@ export default function GalleryPage() {
                 className='aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90'
               >
                 <img
-                  src={image.url}
+                  src={getOptimizedImageUrl(image.url)}
                   alt={`Gallery image ${index + 1}`}
                   className='h-full w-full object-cover'
                 />
@@ -171,10 +185,29 @@ export default function GalleryPage() {
       </div>
 
       {/* Image Lightbox */}
-      <SilkLightbox
-        ref={lightboxRef}
-        images={galleryImages.map((image) => image.url)}
-        eventTitle={eventData.title}
+      <LightboxViewer
+        images={galleryImages.map((image) => ({
+          id: image.id,
+          image: image.url,
+          user_details: image.user_details,
+          created_at: image.created_at,
+        }))}
+        selectedImage={selectedImageIndex}
+        onClose={() => setSelectedImageIndex(null)}
+        onImageChange={(index: number) => setSelectedImageIndex(index)}
+        handleDelete={async (photoId: string) => {
+          try {
+            // TODO: Implement actual delete functionality
+            console.log('Deleting photo:', photoId);
+            // For now, just return success - this will be implemented later
+            return { success: true };
+          } catch (error) {
+            console.error('Error deleting photo:', error);
+            return { success: false };
+          }
+        }}
+        userId={user?.id || ''}
+        eventId={eventId}
       />
     </div>
   );

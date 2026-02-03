@@ -1,79 +1,94 @@
 'use client';
 
-import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { CalendarPlus, ExternalLink } from 'lucide-react';
+import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
+import { toast } from '@/lib/utils/toast';
+import { Bookmark, CalendarPlus, Copy, DollarSign } from 'lucide-react';
 
 interface MoreOptionsSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onAddToCalendar: () => void;
-  onOpenInSafari: () => void;
+  onSaveEvent: () => void;
+  onContribute?: () => void;
+  isSaved?: boolean;
+  hasContributions?: boolean;
 }
 
 export default function MoreOptionsSheet({
   isOpen,
   onClose,
   onAddToCalendar,
-  onOpenInSafari,
+  onSaveEvent,
+  onContribute,
+  isSaved = false,
+  hasContributions = false,
 }: MoreOptionsSheetProps) {
   const handleAddToCalendar = () => {
     onAddToCalendar();
     onClose();
   };
 
-  const handleOpenInSafari = () => {
-    onOpenInSafari();
+  const handleSaveEvent = () => {
+    onSaveEvent();
     onClose();
   };
 
-  return (
-    <DetachedSheet.Root
-      presented={isOpen}
-      onPresentedChange={(presented) => !presented && onClose()}
-    >
-      <DetachedSheet.Portal>
-        <DetachedSheet.View>
-          <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
-            <div className='p-6'>
-              {/* Handle */}
-              <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
-              </div>
+  const handleContribute = () => {
+    onContribute?.();
+    onClose();
+  };
 
-              {/* Title */}
-              <h2 className='mb-6 text-center text-lg font-semibold'>More Options</h2>
+  const handleCopyEventUrl = async () => {
+    onClose();
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('Event URL copied to clipboard');
+    } catch {
+      const textArea = document.createElement('textarea');
+      textArea.value = window.location.href;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-999999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      toast.success('Event URL copied to clipboard');
+    }
+  };
 
-              {/* Options */}
-              <div className='space-y-3'>
-                <button
-                  onClick={handleAddToCalendar}
-                  className='flex w-full items-center gap-4 rounded-xl border border-gray-200 p-4 text-left transition-colors hover:bg-gray-50'
-                >
-                  <CalendarPlus className='h-5 w-5 text-gray-600' />
-                  <span className='font-medium text-gray-900'>Add to Calendar</span>
-                </button>
+  const options: MenuOption[] = [
+    {
+      id: 'save-event',
+      icon: Bookmark,
+      label: isSaved ? 'Manage Saved Lists' : 'Save Event',
+      onClick: handleSaveEvent,
+      variant: 'secondary',
+    },
+    {
+      id: 'add-to-calendar',
+      icon: CalendarPlus,
+      label: 'Add to Calendar',
+      onClick: handleAddToCalendar,
+      variant: 'secondary',
+    },
+    {
+      id: 'copy-event-url',
+      icon: Copy,
+      label: 'Copy Event URL',
+      onClick: handleCopyEventUrl,
+      variant: 'secondary',
+    },
+  ];
 
-                <button
-                  onClick={handleOpenInSafari}
-                  className='flex w-full items-center gap-4 rounded-xl border border-gray-200 p-4 text-left transition-colors hover:bg-gray-50'
-                >
-                  <ExternalLink className='h-5 w-5 text-gray-600' />
-                  <span className='font-medium text-gray-900'>Open in Safari</span>
-                </button>
-              </div>
+  if (hasContributions && onContribute) {
+    options.unshift({
+      id: 'contribute',
+      icon: DollarSign,
+      label: 'Contribute to Event',
+      onClick: handleContribute,
+      variant: 'secondary',
+    });
+  }
 
-              {/* Cancel Button */}
-              <button
-                onClick={onClose}
-                className='mt-6 w-full rounded-xl border border-gray-200 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-50'
-              >
-                Cancel
-              </button>
-            </div>
-          </DetachedSheet.Content>
-        </DetachedSheet.View>
-      </DetachedSheet.Portal>
-    </DetachedSheet.Root>
-  );
+  return <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />;
 }

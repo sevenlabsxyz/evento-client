@@ -1,8 +1,8 @@
 'use client';
 
 import { Switch } from '@/components/ui/switch';
-import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/useEmailBlasts';
-import { getRecipientCount, useRSVPStats } from '@/lib/hooks/useRSVPStats';
+import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/use-email-blasts';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { CreateEmailBlastForm, EmailBlastRecipientFilter } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import Bold from '@tiptap/extension-bold';
@@ -13,9 +13,10 @@ import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import { CalendarClock, Clock, Loader2, Mail, Send, Users } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';
+import { Button } from '../ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface EmailBlastComposeProps {
@@ -86,7 +87,21 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
 
   // API hooks
   const createEmailBlastMutation = useCreateEmailBlastWithCallbacks(eventId);
-  const { data: rsvpStats, isLoading: isLoadingStats } = useRSVPStats(eventId);
+  const { data: rsvps = [], isLoading: isLoadingRSVPs, error: rsvpsError } = useEventRSVPs(eventId);
+
+  useEffect(() => {
+    if (rsvpsError) {
+      toast.error('Failed to fetch RSVP stats');
+    }
+  }, [rsvpsError]);
+
+  // Compute counts locally from RSVPs
+  const counts = useMemo(() => {
+    const all = rsvps?.length || 0;
+    const yes_only = (rsvps || []).filter((r) => r.status === 'yes').length;
+    const maybe = (rsvps || []).filter((r) => r.status === 'maybe').length;
+    return { all, yes_only, maybe };
+  }, [rsvps]);
 
   // Dynamic recipient options based on RSVP stats
   const recipientOptions = [
@@ -94,26 +109,26 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
       value: 'all' as const,
       label: 'All RSVPs',
       description: (count: number) =>
-        `Send to ${!isLoadingStats ? count : ''} guest${
+        `Send to ${!isLoadingRSVPs ? count : ''} guest${
           count === 1 ? '' : 's'
-        } who ha${!isLoadingStats && count !== 1 ? 've' : 's'} RSVPd`,
-      count: getRecipientCount(rsvpStats, 'all'),
+        } who ha${!isLoadingRSVPs && count !== 1 ? 've' : 's'} RSVPd`,
+      count: counts.all,
     },
     {
       value: 'rsvp-yes' as const,
       label: 'RSVP: Yes',
       description: (count: number) =>
-        `Send to ${!isLoadingStats ? count : ''} guest${
+        `Send to ${!isLoadingRSVPs ? count : ''} guest${
           count === 1 ? '' : 's'
         } who confirmed attendance`,
-      count: getRecipientCount(rsvpStats, 'yes_only'),
+      count: counts.yes_only,
     },
     {
       value: 'rsvp-maybe' as const,
       label: 'RSVP: Maybe',
       description: (count: number) =>
-        `Send to ${!isLoadingStats ? count : ''} guest${count === 1 ? '' : 's'} who might attend`,
-      count: getRecipientCount(rsvpStats, 'yes_and_maybe'),
+        `Send to ${!isLoadingRSVPs ? count : ''} guest${count === 1 ? '' : 's'} who might attend`,
+      count: counts.maybe,
     },
   ];
 
@@ -238,7 +253,7 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
           <SelectContent>
             {recipientOptions.map((option) => (
               <SelectItem key={option.value} value={option.value}>
-                {option.label} {!isLoadingStats && `(${option.count})`}
+                {option.label} {!isLoadingRSVPs && `(${option.count})`}
               </SelectItem>
             ))}
           </SelectContent>
@@ -394,19 +409,12 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
       </div>
 
       {/* Actions */}
-      <div className='EmailBlastCompose-actions'>
-        <button
-          onClick={onCancel}
-          className='EmailBlastCompose-button EmailBlastCompose-button--cancel'
-          type='button'
-        >
-          Cancel
-        </button>
-        <button
+      <div className='flex flex-col gap-3'>
+        <Button
           onClick={handleSend}
           disabled={!isValid || isLoading}
-          className='EmailBlastCompose-button EmailBlastCompose-button--send'
-          type='button'
+          type='submit'
+          className='w-full bg-red-600 text-white hover:bg-red-700'
         >
           {isLoading ? (
             <>
@@ -419,7 +427,10 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
               {scheduled ? 'Schedule Email Blast' : 'Send Email Blast'}
             </>
           )}
-        </button>
+        </Button>
+        <Button variant='outline' onClick={onCancel} type='button' className='w-full'>
+          Cancel
+        </Button>
       </div>
 
       {/* Date Picker Modal */}

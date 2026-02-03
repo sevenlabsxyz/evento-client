@@ -19,9 +19,9 @@ import { useParams, useRouter } from 'next/navigation';
 
 type QuestionType =
   | 'text'
-  | 'long-text'
-  | 'single-select'
-  | 'multi-select'
+  | 'long_text'
+  | 'single_select'
+  | 'multi_select'
   | 'url'
   | 'phone'
   | 'checkbox'
@@ -53,21 +53,21 @@ export default function ChooseQuestionTypePage() {
       iconColor: 'text-red-600',
     },
     {
-      key: 'long-text',
+      key: 'long_text',
       label: 'Long Text',
       icon: <FileText className='h-6 w-6' />,
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
     },
     {
-      key: 'single-select',
+      key: 'single_select',
       label: 'Single Select',
       icon: <List className='h-6 w-6' />,
       iconBg: 'bg-blue-100',
       iconColor: 'text-blue-600',
     },
     {
-      key: 'multi-select',
+      key: 'multi_select',
       label: 'Multi Select',
       icon: <CheckSquare className='h-6 w-6' />,
       iconBg: 'bg-blue-100',
@@ -138,7 +138,7 @@ export default function ChooseQuestionTypePage() {
   ];
 
   const handleQuestionTypeSelect = (type: QuestionType) => {
-    router.push(`/e/event/${eventId}/manage/registration/add/${type}`);
+    router.push(`/e/${eventId}/manage/registration/add/${type}`);
   };
 
   const renderQuestionSection = (title: string, questions: QuestionTypeOption[]) => (

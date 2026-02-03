@@ -2,13 +2,14 @@
 
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
-import { Button } from '@/components/ui/button';
-import { useEventDetails } from '@/lib/hooks/useEventDetails';
-import { useUpdateEvent } from '@/lib/hooks/useUpdateEvent';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useUpdateEvent } from '@/lib/hooks/use-update-event';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { ArrowLeft, Trash2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { Check, Trash2 } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface EventMusic {
   spotify?: {
@@ -24,7 +25,9 @@ interface EventMusic {
 }
 
 export default function MusicManagementPage() {
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
 
@@ -39,7 +42,7 @@ export default function MusicManagementPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update musicData when existingEvent loads
-  React.useEffect(() => {
+  useEffect(() => {
     if (existingEvent) {
       setMusicData({
         spotify: existingEvent.spotify_url ? { url: existingEvent.spotify_url } : undefined,
@@ -48,12 +51,72 @@ export default function MusicManagementPage() {
     }
   }, [existingEvent]);
 
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Music',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'save-music',
+          icon: Check,
+          onClick: () => void handleSave(),
+          label: 'Save',
+          disabled: isSubmitting,
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [setTopBarForRoute, applyRouteConfig, clearRoute, isSubmitting]);
+
   if (isLoading) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <div className='mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
-          <p className='text-gray-600'>Loading event details...</p>
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Spotify Section Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-16' />
+                <Skeleton className='h-4 w-32' />
+              </div>
+            </div>
+            <div className='space-y-3'>
+              <Skeleton className='h-12 w-full rounded-xl' />
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Wavlake Section Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-16' />
+                <Skeleton className='h-4 w-28' />
+              </div>
+            </div>
+            <div className='space-y-3'>
+              <Skeleton className='h-12 w-full rounded-xl' />
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-40' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-2/3' />
+          </div>
         </div>
       </div>
     );
@@ -180,9 +243,15 @@ export default function MusicManagementPage() {
         status: existingEvent.status,
       };
 
-      await updateEventMutation.mutateAsync(updateData);
-      toast.success('Music settings updated successfully!');
-      router.back();
+      await updateEventMutation.mutateAsync(updateData, {
+        onSuccess: () => {
+          toast.success('Music settings updated successfully!');
+          router.push(`/e/${eventId}/manage`);
+        },
+        onError: () => {
+          toast.error('Failed to update music settings');
+        },
+      });
     } catch (error) {
       console.error('Failed to save music settings:', error);
       toast.error('Failed to update music settings');
@@ -193,23 +262,6 @@ export default function MusicManagementPage() {
 
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Music</h1>
-        </div>
-        <Button
-          onClick={handleSave}
-          disabled={isSubmitting}
-          className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-        >
-          {isSubmitting ? 'Saving...' : 'Save'}
-        </Button>
-      </div>
-
       {/* Content */}
       <div className='space-y-6 p-4'>
         <div className='text-sm text-gray-500'>
@@ -254,13 +306,13 @@ export default function MusicManagementPage() {
                 placeholder='https://open.spotify.com/track/...'
                 className='w-full rounded-xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500'
               />
-              <Button
+              <button
                 onClick={handleAddSpotify}
                 disabled={!spotifyUrl}
                 className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800'
               >
                 Add Spotify Track
-              </Button>
+              </button>
             </div>
           )}
         </div>
@@ -303,13 +355,13 @@ export default function MusicManagementPage() {
                 placeholder='https://wavlake.com/track/...'
                 className='w-full rounded-xl border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-gray-500'
               />
-              <Button
+              <button
                 onClick={handleAddWavlake}
                 disabled={!wavlakeUrl}
                 className='w-full rounded-xl bg-gray-900 py-3 text-white hover:bg-gray-800'
               >
                 Add Wavlake Track
-              </Button>
+              </button>
             </div>
           )}
         </div>

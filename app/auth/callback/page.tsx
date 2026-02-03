@@ -1,8 +1,10 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
+import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -25,9 +27,9 @@ function AuthCallbackContent() {
         if (accessToken) {
           // OAuth callback with tokens
           // Store tokens and get user info
-          localStorage.setItem('supabase_access_token', accessToken);
+          localStorage.setItem(STORAGE_KEYS.SUPABASE_ACCESS_TOKEN, accessToken);
           if (refreshToken) {
-            localStorage.setItem('supabase_refresh_token', refreshToken);
+            localStorage.setItem(STORAGE_KEYS.SUPABASE_REFRESH_TOKEN, refreshToken);
           }
 
           // Give the tokens a moment to be stored, then get user info
@@ -40,10 +42,17 @@ function AuthCallbackContent() {
             setUser(user);
             setStatus('success');
 
-            // Redirect to original location or home after brief success message
+            // Check if user needs onboarding
+            const needsOnboarding = !isUserOnboarded(user);
+            const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+
+            // Redirect after brief success message
             setTimeout(() => {
-              const redirect = searchParams.get('redirect');
-              router.push(redirect || '/');
+              if (needsOnboarding) {
+                router.push(getOnboardingRedirectUrl(redirectUrl));
+              } else {
+                router.push(redirectUrl);
+              }
             }, 1500);
           } else {
             throw new Error('Failed to get user information');
@@ -56,8 +65,17 @@ function AuthCallbackContent() {
           if (user) {
             setUser(user);
             setStatus('success');
+
+            // Check if user needs onboarding
+            const needsOnboarding = !isUserOnboarded(user);
+            const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+
             setTimeout(() => {
-              router.push('/');
+              if (needsOnboarding) {
+                router.push(getOnboardingRedirectUrl(redirectUrl));
+              } else {
+                router.push(redirectUrl);
+              }
             }, 1500);
           } else {
             throw new Error('No authentication found');

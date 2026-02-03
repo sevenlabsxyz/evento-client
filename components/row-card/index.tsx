@@ -27,10 +27,10 @@ export default function RowCard({
 
   return (
     <Card
-      className={`w-full max-w-md rounded-2xl border border-gray-200 bg-white shadow-sm transition-all duration-200 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98]' : ''} `}
+      className={`w-full max-w-md rounded-3xl border border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 ${isClickable ? 'cursor-pointer hover:shadow-md active:scale-[0.98]' : ''} `}
       onClick={handleClick}
     >
-      <div className='flex items-center gap-4 p-4 py-6'>
+      <div className='flex items-center gap-4 px-6 py-6'>
         {/* Icon */}
         {icon && (
           <div className='flex-shrink-0'>
@@ -40,7 +40,7 @@ export default function RowCard({
 
         {/* Content */}
         <div className='min-w-0 flex-1'>
-          <h3 className='mb-1 text-lg font-semibold leading-4 text-gray-900'>{title}</h3>
+          <h3 className='mb-1 text-lg font-bold leading-4 text-gray-900'>{title}</h3>
           {subtitle && (
             <p className='pt-1.5 text-base leading-4 leading-relaxed text-gray-500'>{subtitle}</p>
           )}

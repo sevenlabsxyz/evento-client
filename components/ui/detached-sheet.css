@@ -5,7 +5,7 @@
   height: calc(var(--silk-100-lvh-dvh-pct) + 60px);
 }
 .DetachedSheet-view.contentPlacement-center {
-  height: 100vh;
+  height: 100dvh;
 }
 
 .DetachedSheet-content {

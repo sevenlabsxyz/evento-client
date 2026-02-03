@@ -1,4 +1,4 @@
-import { Event as ApiEvent } from '@/lib/types/api';
+import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
 import { Event as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
@@ -8,7 +8,7 @@ import { getOptimizedCoverUrl } from '@/lib/utils/image';
  */
 export function transformApiEventToDisplay(
   apiEvent: ApiEvent,
-  hosts: { user_details: any }[] = [],
+  hosts: { user_details: UserDetails }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
   const { date, time, timeWithTz } = formatEventDate(
@@ -17,8 +17,21 @@ export function transformApiEventToDisplay(
   );
   const endDateTime = formatEventDate(apiEvent.computed_end_date, apiEvent.timezone);
 
-  // Parse location string to structured format
-  const location = parseLocationString(apiEvent.location);
+  // Get location from event_locations (new format) or parse legacy location string
+  const eventLoc = (apiEvent as any).event_locations;
+  const location: EventLocation = eventLoc
+    ? {
+        name: eventLoc.name || '',
+        address: eventLoc.address || '',
+        city: eventLoc.city || '',
+        state: eventLoc.state_province || '',
+        country: eventLoc.country || '',
+        coordinates:
+          eventLoc.latitude && eventLoc.longitude
+            ? { lat: Number(eventLoc.latitude), lng: Number(eventLoc.longitude) }
+            : undefined,
+      }
+    : parseLocationString(apiEvent.location);
 
   // Transform hosts
   const transformedHosts: EventHost[] = hosts.map((host) => ({
@@ -28,6 +41,7 @@ export function transformApiEventToDisplay(
     avatar: getOptimizedCoverUrl(host.user_details.image || '', 'feed'),
     title: host.user_details.bio ? 'Host' : undefined,
     company: undefined,
+    verification_status: host.user_details.verification_status,
   }));
 
   // Add creator as first host if not already included and we have user details
@@ -39,6 +53,7 @@ export function transformApiEventToDisplay(
       avatar: getOptimizedCoverUrl(apiEvent.user_details.image || '', 'feed'),
       title: 'Creator',
       company: undefined,
+      verification_status: apiEvent.user_details.verification_status,
     };
 
     if (!transformedHosts.find((h) => h.id === creatorHost.id)) {

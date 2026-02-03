@@ -7,6 +7,7 @@ import CoverImageSelector from '@/components/create-event/cover-image-selector';
 import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventCreatedModal from '@/components/create-event/event-created-modal';
+import { EventCreationOverlay } from '@/components/create-event/event-creation-overlay';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionSheet from '@/components/create-event/image-selection-sheet';
 import InsertElementsSheet from '@/components/create-event/insert-elements-sheet';
@@ -17,9 +18,10 @@ import MoreFormattingSheet from '@/components/create-event/more-formatting-sheet
 import TextStylesSheet from '@/components/create-event/text-styles-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
+import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { useCreateEventWithCallbacks } from '@/lib/hooks/useCreateEvent';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useCreateEventWithCallbacks } from '@/lib/hooks/use-create-event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
@@ -30,12 +32,6 @@ import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-
-type Attachment = {
-  type: string;
-  url?: string;
-  data?: any;
-};
 
 export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -263,16 +259,119 @@ export default function CreatePage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex flex-1 items-center justify-center pb-20'>
-          <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+        {/* Create Page Loading Skeleton */}
+        <div className='flex-1 overflow-y-auto pb-24'>
+          <div className='mb-2 mt-2 px-4'>
+            {/* Cover image selector area */}
+            <Skeleton className='h-40 w-full rounded-2xl' />
+          </div>
+
+          <div className='space-y-4 bg-gray-50 px-4 pt-4'>
+            {/* Title */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='mb-2 h-4 w-24'>
+                <Skeleton className='h-4 w-24' />
+              </div>
+              <div className='flex items-center gap-3'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-6 w-2/3' />
+              </div>
+            </div>
+
+            {/* Date & Time */}
+            <div className='space-y-4 rounded-2xl bg-white p-4'>
+              {[0, 1].map((i) => (
+                <div key={i} className='flex items-center gap-4'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <Skeleton className='h-4 w-16' />
+                  <div className='flex flex-1 gap-2'>
+                    <Skeleton className='h-8 w-full rounded-lg' />
+                    <Skeleton className='h-8 w-24 rounded-lg' />
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Address */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <div className='flex-1'>
+                  <div className='mb-2 h-4 w-20'>
+                    <Skeleton className='h-4 w-20' />
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <Skeleton className='h-5 w-40' />
+                    <Skeleton className='h-4 w-4 rounded' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Visibility */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <div className='flex-1'>
+                  <div className='mb-2 h-4 w-24'>
+                    <Skeleton className='h-4 w-24' />
+                  </div>
+                  <div className='flex items-center justify-between'>
+                    <Skeleton className='h-5 w-20' />
+                    <Skeleton className='h-4 w-4 rounded' />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Capacity */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center justify-between gap-4'>
+                <div className='flex flex-1 items-center gap-4'>
+                  <Skeleton className='h-8 w-8 rounded-lg' />
+                  <div className='flex-1'>
+                    <Skeleton className='mb-1 h-4 w-28' />
+                    <Skeleton className='h-3 w-40' />
+                  </div>
+                </div>
+                <Skeleton className='h-6 w-12 rounded-full' />
+              </div>
+            </div>
+
+            {/* Description */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-start gap-4'>
+                <Skeleton className='mt-1 h-8 w-8 rounded-lg' />
+                <div className='flex-1'>
+                  <Skeleton className='mb-2 h-4 w-24' />
+                  <Skeleton className='h-5 w-3/4' />
+                </div>
+              </div>
+            </div>
+
+            {/* Attachments */}
+            <div className='rounded-2xl bg-white p-4'>
+              <div className='flex items-center gap-4'>
+                <Skeleton className='h-8 w-8 rounded-lg' />
+                <Skeleton className='h-5 w-56' />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:left-[--sidebar-width] md:right-2 md:rounded-b-xl'>
+          <div className='mx-auto max-w-full md:max-w-md'>
+            <Skeleton className='h-10 w-full rounded-xl' />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
       {/* Header */}
 
       {/* Cover Image Selector */}
@@ -284,9 +383,9 @@ export default function CreatePage() {
       </div>
 
       {/* Form Content */}
-      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
+      <div className='flex-1 space-y-4 overflow-y-auto bg-white px-4 pb-32 pt-4'>
         {/* Event Title Module - Moved to top */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='space-y-2'>
             <label className='text-sm font-medium text-gray-500'>Event Title</label>
             <div className='flex items-center gap-3'>
@@ -303,22 +402,22 @@ export default function CreatePage() {
         </div>
 
         {/* Date & Time Module */}
-        <div className='space-y-4 rounded-2xl bg-white p-4'>
+        <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Calendar className='h-4 w-4 text-gray-600' />
             </div>
             <span className='w-12 min-w-10 font-medium text-gray-700'>Starts</span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowStartDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
                 onClick={() => setShowStartTimeModal(true)}
-                className='whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(startTime)}
               </button>
@@ -326,20 +425,20 @@ export default function CreatePage() {
           </div>
 
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 min-w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Calendar className='h-4 w-4 text-gray-600' />
             </div>
             <span className='w-12 min-w-10 font-medium text-gray-700'>Ends</span>
             <div className='flex flex-1 gap-2'>
               <button
                 onClick={() => setShowEndDateModal(true)}
-                className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-2 py-2 text-sm font-medium text-gray-900'
+                className='flex-1 whitespace-nowrap rounded-lg border border-gray-200 bg-white px-2 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
                 onClick={() => setShowEndTimeModal(true)}
-                className='whitespace-nowrap rounded-lg bg-gray-100 px-3 py-2 text-sm text-gray-600'
+                className='whitespace-nowrap rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-600'
               >
                 {formatTimeForDisplay(endTime)}
               </button>
@@ -348,12 +447,12 @@ export default function CreatePage() {
         </div>
 
         {/* Address Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <button
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <MapPin className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -369,12 +468,12 @@ export default function CreatePage() {
         </div>
 
         {/* Event Visibility */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <button
             onClick={() => setShowVisibilitySheet(true)}
             className='flex w-full items-center gap-4 text-left'
           >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               {visibility === 'public' ? (
                 <Globe className='h-4 w-4 text-gray-600' />
               ) : (
@@ -396,9 +495,9 @@ export default function CreatePage() {
         </div>
 
         {/* Capacity Options */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Users className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -437,12 +536,12 @@ export default function CreatePage() {
         </div>
 
         {/* Description Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <button
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
           >
-            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Edit3 className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -462,9 +561,9 @@ export default function CreatePage() {
         </div>
 
         {/* Attachments Module */}
-        <div className='rounded-2xl bg-white p-4'>
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
               <Music className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
@@ -480,8 +579,8 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
-        <div className='mx-auto max-w-full md:max-w-sm'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:left-[--sidebar-width] md:right-2 md:rounded-b-xl'>
+        <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleCreateEvent}
             disabled={!isFormValid || createEventMutation.isPending}
@@ -672,6 +771,9 @@ export default function CreatePage() {
           eventData={createdEventData}
         />
       )}
+
+      {/* Loading Overlay */}
+      <EventCreationOverlay isVisible={createEventMutation.isPending} />
     </div>
   );
 }

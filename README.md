@@ -1,137 +1,149 @@
-# Evento App ([app.evento.so](https://app.evento.so))
+# Evento - Social Events Management Platform
+
+<div align="center">
+
+![Evento Logo](public/assets/pwa/icon@256px.png)
+
+<div>
+Create Events. Connect People. Build Communities.
+</div>
+</div>
 
 ## Overview
 
-**Create Events. Connect People. Build Communities.**
+Evento is a modern, social-first event management platform. It's designed to make event organizing friction-free and fun, whether you're bringing together five friends or five hundred attendees. It features a built-in Bitcoin Lightning wallet allowing for frictionless movement of money between event goers and hosts.
 
-Evento is a social-first event management platform designed to make organizing friction-free and fun. Whether bringing together five friends or five hundred attendees, our platform equips organizers with powerful tools to create meaningful connections.
+### Key Features
 
-The application features a comprehensive suite of capabilities including:
+- 🎉 **Seamless Event Creation** - Intuitive event builder with rich text editing
+- 👥 **Interactive Guest Management** - RSVP tracking, check-ins\*, and guest lists
+- 🎨 **Beautiful UI** - Modern, responsive design with minimalistic branding
+- ⚡ **Bitcoin Wallet** - In-app Bitcoin wallet powered by Breez SDK for Lightning payments
+- 📧 **Email Communications** - Targeted email blasts with scheduling
+- 📍 **Location Services** - Google Maps integration with dynamic location display
+- 🎵 **Music Integration** - Embed playlists from Spotify and Wavlake
+- 📸 **Event Gallery** - Share and react to event photos
+- 💬 **Live Chat** - Real-time messaging for DMs and group chats\*
 
-- **Seamless event creation and management**
-- **Interactive guest list and RSVP tracking**
-- **Targeted email communications with scheduling**
-- **Dynamic location services with map integration**
-- **Payments via multiple channels such as Stripe, PayPal, Lightning Network and Venmo**
-- **Music embedding via Spotify and Wavlake**
-- **Real-time updates and notifications**
-- **Community building tools**
-- **_etc..._**
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18.x or later
-- PNPM package manager
-- Supabase account (for authentication and database)
-- Google Maps API key (for location services)
-- Ghost CMS setup (for blog functionality)
+- **Node.js** 18.x or later
+- **PNPM** package manager
+- **Supabase** account
+- **Google Maps API** key
 
-### Environment Setup
+### Installation
 
-1. Clone this repository
-2. Copy `.env.example` to `.env.local` and fill in the required environment variables
-3. Install dependencies:
+1. **Clone the repository**
+
+    ```bash
+    git clone https://github.com/sevenlabsxyz/evento-client.git
+    cd evento-client
+    ```
+
+2. **Install dependencies**
+
+    ```bash
+    pnpm install
+    ```
+
+3. **Start the development server**
+
+    ```bash
+    pnpm dev
+    ```
+
+4. **Open your browser**
+
+    Navigate to [http://localhost:3000](http://localhost:3000)
+
+## Development
+
+### Available Scripts
 
 ```bash
-pnpm install
-```
-
-4. Start the development server:
-
-```bash
+# Start development server
 pnpm dev
-```
 
-5. Access the application at `http://localhost:3000`
+# Run tests
+pnpm test
 
-## Project Structure
+# Run tests in watch mode
+pnpm test:watch
 
-```
-├── app/             # Next.js 14 App Router pages and API routes
-│   ├── api/         # API routes (primarily for proxying)
-│   ├── blog/        # Blog pages
-│   ├── e/           # Event-specific pages
-├── components/      # React components
-│   ├── event-detail/# Event detail page components
-│   ├── manage-event/# Event management components
-│   ├── shared/      # Shared components
-│   ├── ui/          # UI components (based on shadcn UI)
-├── lib/             # Shared utilities
-│   ├── api/         # API client and utilities
-│   ├── constants/   # Constants including environment variables
-│   ├── hooks/       # Custom React hooks
-│   ├── schemas/     # Zod validation schemas
-│   ├── services/    # Service-specific utilities
-│   ├── stores/      # State management stores
-│   ├── supabase/    # Supabase client setup
-│   ├── types/       # TypeScript type definitions
-│   └── utils/       # Utility functions
-├── public/          # Static assets
-└── styles/          # Global styles
-```
+# Type checking
+pnpm tsc
 
-## Key Technologies
-
-- **Framework**: Next.js 14 with App Router
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **UI Components**: Custom components based on shadcn/ui
-- **State Management**: React Query for server state, React Context/Hooks for local state
-- **Authentication**: Supabase Auth
-- **Database**: Supabase PostgreSQL
-- **Rich Text Editing**: TipTap
-- **Form Validation**: React Hook Form with Zod
-- **API Communication**: Axios
-- **Date Handling**: date-fns
-- **Icons**: Lucide React
-
-## Environment Variables
-
-All environment variables are centralized in `lib/constants/env.ts`. Always use these constants instead of directly accessing `process.env` in your code:
-
-```typescript
-// ❌ Bad
-const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-
-// ✅ Good
-import { Env } from '@/lib/constants/env';
-const apiUrl = Env.NEXT_PUBLIC_API_URL;
-```
-
-## Development Workflow
-
-### Code Formatting and Linting
-
-```bash
-# Run ESLint
+# Lint code
 pnpm lint
-```
 
-### Building for Production
+# Format code
+pnpm format
 
-```bash
+# Build for production
 pnpm build
-```
 
-### Running Production Build
-
-```bash
+# Start production server
 pnpm start
 ```
 
+### Development Workflow
+
+1. **Ensure you're on the dev branch**
+
+    ```bash
+    git checkout dev
+    git pull origin dev
+    ```
+
+2. **Create a new branch** for your feature/fix
+
+    ```bash
+    git checkout -b feature/your-feature-name
+    ```
+
+3. **Make your changes** following our coding standards
+
+4. **Run tests** to ensure everything works
+
+    ```bash
+    pnpm test
+    pnpm tsc
+    ```
+
+5. **Commit your changes** with a descriptive message
+
+    ```bash
+    git commit -m "feat: add new feature"
+    ```
+
+6. **Push and create a Pull Request** to the `dev` branch
+
 ## API Integration
 
-For detailed information about integrating with our APIs:
+The application uses a RESTful API for backend communication. API endpoints are proxied through Next.js API routes for security and CORS handling.
 
-- See `FRONTEND_INTEGRATION_GUIDE.md` for implementing new frontend features
-- See `INTERNAL_API_REFERENCE.md` for internal API documentation
+## Contributing
 
-## Additional Resources
+We love contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a Pull Request.
 
-- **API Docs**: See `EVENTO_API_DOCS.md` for detailed API documentation
+### Quick Contribution Guide
 
-## Support
+1. Fork the repository
+2. Clone and switch to dev branch (`git clone <repo> && cd evento-client && git checkout dev`)
+3. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+4. Commit your changes (`git commit -m 'feat: add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request to the `dev` branch
 
-For questions or assistance, contact the engineering team through our internal channels.
+**Note:** All PRs should target the `dev` branch, not `main`.
+
+## Community
+
+- **Report bugs** by opening an [issue](https://github.com/sevenlabsxyz/evento-client/issues)
+
+## License
+
+This project is licensed under the GNU License - see the [LICENSE](LICENSE) file for details.

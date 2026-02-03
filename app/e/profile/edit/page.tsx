@@ -1,26 +1,31 @@
 'use client';
 
+import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
 import BiographySheet from '@/components/profile-edit/biography-sheet';
-import LightningAddressSheet from '@/components/profile-edit/lightning-address-sheet';
+import InterestsSheet from '@/components/profile-edit/interests-sheet';
 import NameSheet from '@/components/profile-edit/name-sheet';
 import NostrSheet from '@/components/profile-edit/nostr-sheet';
 import ProfileImageSheet from '@/components/profile-edit/profile-image-sheet';
+import PromptsSheet from '@/components/profile-edit/prompts-sheet';
 import SocialLinksSheet from '@/components/profile-edit/social-links-sheet';
 import UsernameSheet from '@/components/profile-edit/username-sheet';
-import { useRequireAuth } from '@/lib/hooks/useAuth';
-import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/useUserProfile';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useUserBadges } from '@/lib/hooks/use-badges';
+import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   AtSign,
+  Award,
   Camera,
   ChevronRight,
   Hash,
+  Heart,
   Instagram,
-  Loader2,
+  MessageSquare,
   Type,
   User,
-  Zap,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -35,6 +40,10 @@ export default function EditProfilePage() {
   // Get user data
   const { user, isLoading } = useUserProfile();
 
+  // Get user badges
+  const { data: userBadges = [] } = useUserBadges();
+  const displayedBadgesCount = userBadges.filter((b) => b.display_order !== null).length;
+
   // Form store - use stable selector functions to prevent rerenders
   // Get just the methods from the store
   const { getFormData, hasChanges, isValid, populateFromUser, reset } = useProfileFormStore();
@@ -47,7 +56,7 @@ export default function EditProfilePage() {
   const bio_link = useProfileFormStore((state) => state.bio_link);
   const x_handle = useProfileFormStore((state) => state.x_handle);
   const instagram_handle = useProfileFormStore((state) => state.instagram_handle);
-  const ln_address = useProfileFormStore((state) => state.ln_address);
+
   const nip05 = useProfileFormStore((state) => state.nip05);
 
   // Get the setter methods directly
@@ -58,7 +67,7 @@ export default function EditProfilePage() {
   const setBioLink = useProfileFormStore((state) => state.setBioLink);
   const setXHandle = useProfileFormStore((state) => state.setXHandle);
   const setInstagramHandle = useProfileFormStore((state) => state.setInstagramHandle);
-  const setLnAddress = useProfileFormStore((state) => state.setLnAddress);
+
   const setNip05 = useProfileFormStore((state) => state.setNip05);
 
   // Sheet states
@@ -67,8 +76,11 @@ export default function EditProfilePage() {
   const [showProfileImageSheet, setShowProfileImageSheet] = useState(false);
   const [showSocialLinksSheet, setShowSocialLinksSheet] = useState(false);
   const [showBiographySheet, setShowBiographySheet] = useState(false);
-  const [showLightningSheet, setShowLightningSheet] = useState(false);
+
   const [showNostrSheet, setShowNostrSheet] = useState(false);
+  const [showInterestsSheet, setShowInterestsSheet] = useState(false);
+  const [showPromptsSheet, setShowPromptsSheet] = useState(false);
+  const [showBadgesSheet, setShowBadgesSheet] = useState(false);
 
   // Set TopBar content
   useEffect(() => {
@@ -100,12 +112,106 @@ export default function EditProfilePage() {
 
   if (isLoading || isCheckingAuth || updateProfileMutation.isPending) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='flex items-center gap-2'>
-          <Loader2 className='h-6 w-6 animate-spin' />
-          <span>
-            {updateProfileMutation.isPending ? 'Saving profile...' : 'Loading profile...'}
-          </span>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='flex-1 space-y-4 overflow-y-auto p-4'>
+          {/* Profile Info Group: Profile Picture, Username, Name, Bio */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Profile Picture */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-32' />
+                <Skeleton className='h-3 w-40' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Username */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-28' />
+                <Skeleton className='h-3 w-36' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Name */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-20' />
+                <Skeleton className='h-3 w-32' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Biography */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-24' />
+                <Skeleton className='h-3 w-56' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Social Links Group: Social Links + Nostr */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Social Links */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-28' />
+                <Skeleton className='h-3 w-48' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Nostr */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-16' />
+                <Skeleton className='h-3 w-36' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
+
+          {/* Personality Group: Interests, Prompts, Badges */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Interests */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-20' />
+                <Skeleton className='h-3 w-32' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Prompts */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-16' />
+                <Skeleton className='h-3 w-40' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+
+            {/* Badges */}
+            <div className='flex w-full items-center gap-4'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='flex-1'>
+                <Skeleton className='mb-2 h-4 w-16' />
+                <Skeleton className='h-3 w-36' />
+              </div>
+              <Skeleton className='h-5 w-5 rounded-md' />
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -115,9 +221,10 @@ export default function EditProfilePage() {
     <>
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         {/* Content */}
-        <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 p-4'>
-          {/* Profile Image Module */}
-          <div className='rounded-2xl bg-white p-4'>
+        <div className='flex-1 space-y-4 overflow-y-auto p-4'>
+          {/* Profile Info Group: Profile Picture, Username, Name, Bio */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Profile Picture */}
             <button
               onClick={() => setShowProfileImageSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -133,10 +240,7 @@ export default function EditProfilePage() {
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
-          </div>
 
-          {/* Basic Info Module */}
-          <div className='space-y-4 rounded-2xl bg-white p-4'>
             {/* Username */}
             <button
               onClick={() => setShowUsernameSheet(true)}
@@ -166,31 +270,8 @@ export default function EditProfilePage() {
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
-          </div>
 
-          {/* Social Links Module */}
-          <div className='rounded-2xl bg-white p-4'>
-            <button
-              onClick={() => setShowSocialLinksSheet(true)}
-              className='flex w-full items-center gap-4 text-left'
-            >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
-                <Instagram className='h-6 w-6 text-purple-600' />
-              </div>
-              <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Social Links</h3>
-                <p className='text-sm text-gray-500'>
-                  {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
-                    .filter(Boolean)
-                    .join(', ') || 'Add your social profiles'}
-                </p>
-              </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
-            </button>
-          </div>
-
-          {/* Biography Module */}
-          <div className='rounded-2xl bg-white p-4'>
+            {/* Biography */}
             <button
               onClick={() => setShowBiographySheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -210,25 +291,28 @@ export default function EditProfilePage() {
             </button>
           </div>
 
-          {/* Bitcoin Module */}
-          <div className='rounded-2xl bg-white p-4'>
+          {/* Social Links Group: Social Links + Nostr */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Social Links */}
             <button
-              onClick={() => setShowLightningSheet(true)}
+              onClick={() => setShowSocialLinksSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-orange-100'>
-                <Zap className='h-6 w-6 text-orange-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
+                <Instagram className='h-6 w-6 text-purple-600' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Bitcoin</h3>
-                <p className='text-sm text-gray-500'>{ln_address || 'Add Lightning address'}</p>
+                <h3 className='font-semibold text-gray-900'>Social Links</h3>
+                <p className='text-sm text-gray-500'>
+                  {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
+                    .filter(Boolean)
+                    .join(', ') || 'Add your social profiles'}
+                </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
-          </div>
 
-          {/* Nostr Module */}
-          <div className='rounded-2xl bg-white p-4'>
+            {/* Nostr */}
             <button
               onClick={() => setShowNostrSheet(true)}
               className='flex w-full items-center gap-4 text-left'
@@ -239,6 +323,58 @@ export default function EditProfilePage() {
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Nostr</h3>
                 <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+          </div>
+
+          {/* Personality Group: Interests, Prompts, Badges */}
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+            {/* Interests */}
+            <button
+              onClick={() => setShowInterestsSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100'>
+                <Heart className='h-6 w-6 text-teal-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Interests</h3>
+                <p className='text-sm text-gray-500'>Share what you love</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+
+            {/* Prompts */}
+            <button
+              onClick={() => setShowPromptsSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100'>
+                <MessageSquare className='h-6 w-6 text-indigo-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Prompts</h3>
+                <p className='text-sm text-gray-500'>Showcase your personality</p>
+              </div>
+              <ChevronRight className='h-5 w-5 text-gray-400' />
+            </button>
+
+            {/* Badges */}
+            <button
+              onClick={() => setShowBadgesSheet(true)}
+              className='flex w-full items-center gap-4 text-left'
+            >
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100'>
+                <Award className='h-6 w-6 text-amber-600' />
+              </div>
+              <div className='flex-1'>
+                <h3 className='font-semibold text-gray-900'>Badges</h3>
+                <p className='text-sm text-gray-500'>
+                  {displayedBadgesCount > 0
+                    ? `${displayedBadgesCount} badge${displayedBadgesCount !== 1 ? 's' : ''} on display`
+                    : 'Showcase your achievements'}
+                </p>
               </div>
               <ChevronRight className='h-5 w-5 text-gray-400' />
             </button>
@@ -293,12 +429,9 @@ export default function EditProfilePage() {
         currentBio={bio}
       />
 
-      <LightningAddressSheet
-        isOpen={showLightningSheet}
-        onClose={() => setShowLightningSheet(false)}
-        onSave={setLnAddress}
-        currentAddress={ln_address}
-      />
+      <InterestsSheet isOpen={showInterestsSheet} onClose={() => setShowInterestsSheet(false)} />
+
+      <PromptsSheet isOpen={showPromptsSheet} onClose={() => setShowPromptsSheet(false)} />
 
       <NostrSheet
         isOpen={showNostrSheet}
@@ -306,6 +439,8 @@ export default function EditProfilePage() {
         onSave={setNip05}
         currentNip05={nip05}
       />
+
+      <BadgesManagementSheet isOpen={showBadgesSheet} onClose={() => setShowBadgesSheet(false)} />
     </>
   );
 }

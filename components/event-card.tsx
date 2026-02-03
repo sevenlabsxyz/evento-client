@@ -1,11 +1,12 @@
 'use client';
 
-import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
+import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
 import { EventWithUser } from '@/lib/types/api';
+import { cn } from '@/lib/utils';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
-import { getOptimizedAvatarUrl, getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
   Bookmark,
@@ -21,60 +22,76 @@ import {
   User,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { UserAvatar } from './ui/user-avatar';
 
 interface EventCardProps {
   event: EventWithUser;
   onBookmark?: (eventId: string) => void;
   isBookmarked?: boolean;
+  className?: string;
+  customMenuOptions?: MenuOption[];
+  onMenuClick?: (eventId: string) => void;
 }
 
-export function EventCard({ event, onBookmark, isBookmarked = false }: EventCardProps) {
+export function EventCard({
+  event,
+  onBookmark,
+  isBookmarked = false,
+  className,
+  customMenuOptions,
+  onMenuClick,
+}: EventCardProps) {
   const router = useRouter();
   const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
   const timeAgo = getRelativeTime(event.created_at);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const getDropdownItems = (eventId: string, userName: string, userUsername: string) => [
+  const getMenuOptions = (eventId: string, userUsername: string) => [
     {
+      id: 'share',
       label: 'Share Event',
-      icon: <Share className='h-4 w-4' />,
-      action: async () => {
+      icon: Share,
+      onClick: async () => {
         const eventUrl = `${window.location.origin}/e/${eventId}`;
-
-        if (navigator.share) {
-          try {
+        try {
+          if (navigator.share) {
             await navigator.share({
               title: event.title,
               text: `Check out this event: ${event.title}`,
               url: eventUrl,
             });
-          } catch (error: any) {
-            // User cancelled the share or an error occurred
-            if (error.name !== 'AbortError') {
-              // Fallback to clipboard copy
-              navigator.clipboard.writeText(eventUrl);
-              toast.success('Link copied to clipboard!');
-            }
+          } else {
+            navigator.clipboard.writeText(eventUrl);
+            toast.success('Link copied to clipboard!');
           }
-        } else {
-          // Fallback for browsers without native share support
-          navigator.clipboard.writeText(eventUrl);
-          toast.success('Link copied to clipboard!');
+        } catch (error: any) {
+          if (error?.name !== 'AbortError') {
+            navigator.clipboard.writeText(eventUrl);
+            toast.success('Link copied to clipboard!');
+          }
+        } finally {
+          setIsMenuOpen(false);
         }
       },
     },
     {
+      id: 'copy',
       label: 'Copy Link',
-      icon: <Copy className='h-4 w-4' />,
-      action: () => {
+      icon: Copy,
+      onClick: () => {
         navigator.clipboard.writeText(`${window.location.origin}/e/${eventId}`);
         toast.success('Link copied to clipboard!');
+        setIsMenuOpen(false);
       },
     },
     {
+      id: 'profile',
       label: 'View Profile',
-      icon: <User className='h-4 w-4' />,
-      action: () => {
+      icon: User,
+      onClick: () => {
         router.push(`/${userUsername}`);
+        setIsMenuOpen(false);
       },
     },
   ];
@@ -84,18 +101,18 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
   };
 
   return (
-    <div className='mb-6 bg-white'>
+    <div className={cn('bg-white', className)}>
       {/* Post Header */}
       <div className='flex items-center justify-between px-4 py-3'>
         <div className='flex items-center gap-3'>
-          <img
-            src={
-              event.user_details.image
-                ? getOptimizedAvatarUrl(event.user_details.image)
-                : '/assets/img/evento-sublogo.svg'
-            }
-            alt={event.user_details.name || event.user_details.username}
-            className='h-10 w-10 rounded-full border border-gray-200 object-cover'
+          <UserAvatar
+            user={{
+              name: event.user_details.name || undefined,
+              username: event.user_details.username || undefined,
+              image: event.user_details.image || undefined,
+              verification_status: event.user_details.verification_status || null,
+            }}
+            size='sm'
           />
           <div>
             <p className='text-sm font-semibold'>
@@ -106,26 +123,39 @@ export function EventCard({ event, onBookmark, isBookmarked = false }: EventCard
             </p>
           </div>
         </div>
-        <ReusableDropdown
-          trigger={
-            <Button variant='ghost' size='icon' className='h-8 w-8 rounded-full bg-gray-100'>
-              <MoreHorizontal className='h-4 w-4' />
-            </Button>
-          }
-          items={getDropdownItems(
-            event.id,
-            event.user_details.name || event.user_details.username,
-            event.user_details.username
+        <div>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='h-8 w-8 rounded-full bg-gray-100'
+            onClick={() => {
+              if (customMenuOptions && onMenuClick) {
+                onMenuClick(event.id);
+              } else {
+                setIsMenuOpen(true);
+              }
+            }}
+          >
+            <MoreHorizontal className='h-4 w-4' />
+          </Button>
+          {!customMenuOptions && isMenuOpen && (
+            <DetachedMenuSheet
+              isOpen={isMenuOpen}
+              onClose={() => setIsMenuOpen(false)}
+              options={getMenuOptions(event.id, event.user_details.username)}
+            />
           )}
-          align='right'
-          width='w-56'
-        />
+        </div>
       </div>
 
       {/* Event Image - Square aspect ratio */}
       <div className='relative'>
         <img
-          src={isGif(event.cover) ? event.cover : getOptimizedCoverUrl(event.cover || '', 'feed')} // For GIFs, use a regular img tag to ensure they play automatically
+          src={
+            event.cover && isGif(event.cover)
+              ? event.cover
+              : getOptimizedCoverUrl(event.cover || '', 'feed')
+          }
           alt={event.title}
           className='mx-auto aspect-square w-[calc(94%)] cursor-pointer rounded-2xl object-cover shadow-md'
           onClick={handleEventClick}
