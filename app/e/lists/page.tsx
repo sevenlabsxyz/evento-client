@@ -1,6 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -12,7 +20,7 @@ import { toast } from '@/lib/utils/toast';
 import { formatDistanceToNow } from 'date-fns';
 import { Bookmark, ChevronRight, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export default function SavedListsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -28,19 +36,32 @@ export default function SavedListsPage() {
   // Ensure default list exists
   useEnsureDefaultList();
 
+  const openCreateModal = useCallback(() => {
+    setShowCreateModal(true);
+  }, []);
+
   // Set TopBar content
   useEffect(() => {
     setTopBar({
-      title: 'Saved Events',
+      title: 'Lists',
+      textButtons: [
+        {
+          id: 'add-list',
+          label: 'Add New',
+          icon: Plus,
+          onClick: openCreateModal,
+        },
+      ],
     });
 
     return () => {
       setTopBar({
         title: '',
         subtitle: '',
+        textButtons: [],
       });
     };
-  }, [setTopBar]);
+  }, [setTopBar, openCreateModal]);
 
   const handleCreateList = async () => {
     const trimmedName = newListName.trim();
@@ -67,7 +88,7 @@ export default function SavedListsPage() {
   };
 
   const handleListClick = (listId: string) => {
-    router.push(`/e/saved/${listId}`);
+    router.push(`/e/lists/${listId}`);
   };
 
   const formatLastUpdated = (dateString: string) => {
@@ -91,18 +112,7 @@ export default function SavedListsPage() {
   return (
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-2xl'>
       {/* Content */}
-      <div className='flex-1 overflow-y-auto pb-20'>
-        {/* Add New List Button */}
-        <div className='px-4 py-4'>
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className='h-12 w-full rounded-full py-3 font-medium text-white hover:bg-red-600'
-          >
-            <Plus className='mr-2 h-5 w-5' />
-            Add New List
-          </Button>
-        </div>
-
+      <div className='flex-1 overflow-y-auto pb-20 pt-4'>
         {/* Loading State */}
         {listsLoading ? (
           <div className='space-y-3 px-4 pb-6'>
@@ -112,23 +122,20 @@ export default function SavedListsPage() {
           </div>
         ) : lists.length === 0 ? (
           /* Empty State */
-          <div className='flex flex-1 items-center justify-center px-4 py-12'>
-            <div className='text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-gray-50'>
-                <Bookmark className='h-8 w-8 text-gray-400' />
-              </div>
-              <h3 className='mb-2 text-lg font-semibold text-gray-900'>No saved lists</h3>
-              <p className='mb-6 text-sm text-gray-500'>
-                Create your first list to start saving events.
-              </p>
-              <Button
-                onClick={() => setShowCreateModal(true)}
-                className='bg-red-500 text-white hover:bg-red-600'
-              >
+          <Empty className='min-h-[60vh]'>
+            <EmptyHeader>
+              <EmptyMedia variant='icon'>
+                <Bookmark className='h-6 w-6' />
+              </EmptyMedia>
+              <EmptyTitle>No saved lists</EmptyTitle>
+              <EmptyDescription>Create your first list to start saving events.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent>
+              <Button onClick={openCreateModal} className='bg-red-500 text-white hover:bg-red-600'>
                 Create List
               </Button>
-            </div>
-          </div>
+            </EmptyContent>
+          </Empty>
         ) : (
           /* Lists */
           <div className='space-y-3 px-4 pb-6'>

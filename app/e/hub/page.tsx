@@ -84,7 +84,7 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-4xl'>
+      <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-6xl'>
         <CohostInvitesSection />
         <MyEventsSection />
         <EventInvitesSection />

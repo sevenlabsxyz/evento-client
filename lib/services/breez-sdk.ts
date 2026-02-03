@@ -388,14 +388,16 @@ export class BreezSDKService {
             setTimeout(checkPayment, POLL_INTERVAL);
           } catch (error: any) {
             // Distinguish between transient and permanent errors
-            const isTransientError = error?.message?.includes?.('network') ||
+            const isTransientError =
+              error?.message?.includes?.('network') ||
               error?.message?.includes?.('connection') ||
               error?.message?.includes?.('timeout') ||
               error?.message?.includes?.('temporarily') ||
               error?.code === 'NETWORK_ERROR' ||
               error?.code === 'TIMEOUT';
 
-            const isPermanentError = error?.message?.includes?.('invalid') ||
+            const isPermanentError =
+              error?.message?.includes?.('invalid') ||
               error?.message?.includes?.('unauthorized') ||
               error?.message?.includes?.('disconnected') ||
               error?.message?.includes?.('API key') ||

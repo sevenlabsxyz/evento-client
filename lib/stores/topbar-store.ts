@@ -13,6 +13,15 @@ export interface TopBarButton {
   disabled?: boolean;
 }
 
+export interface TopBarTextButton {
+  id: string;
+  label: string;
+  icon?: LucideIcon;
+  onClick: () => void;
+  disabled?: boolean;
+  variant?: 'default' | 'outline';
+}
+
 interface TopBarConfig {
   leftMode: LeftMode;
   onBackPress: (() => void) | null;
@@ -23,6 +32,7 @@ interface TopBarConfig {
   badgePath?: string;
   onBadgeClick?: () => void;
   buttons: TopBarButton[];
+  textButtons: TopBarTextButton[];
   showAvatar: boolean;
   isOverlaid: boolean;
   chatPartner?: {
@@ -47,6 +57,7 @@ interface TopBarState extends TopBarConfig {
   setTitle: (title: string) => void;
   setSubtitle: (subtitle: string) => void;
   setButtons: (buttons: TopBarButton[]) => void;
+  setTextButtons: (textButtons: TopBarTextButton[]) => void;
   setShowAvatar: (show: boolean) => void;
   setOverlaid: (isOverlaid: boolean) => void;
   setChatPartner: (
@@ -65,6 +76,7 @@ const initialState: TopBarConfig = {
   title: '',
   subtitle: '',
   buttons: [],
+  textButtons: [],
   showAvatar: true,
   isOverlaid: false,
 };
@@ -144,6 +156,7 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   setTitle: (title) => set({ title }),
   setSubtitle: (subtitle) => set({ subtitle }),
   setButtons: (buttons) => set({ buttons }),
+  setTextButtons: (textButtons) => set({ textButtons }),
   setShowAvatar: (showAvatar) => set({ showAvatar }),
   setOverlaid: (isOverlaid) => set({ isOverlaid }),
   setChatPartner: (chatPartner) => set({ chatPartner }),
@@ -173,6 +186,7 @@ export const useTopBar = () => {
   const badgePath = useTopBarStore((state) => state.badgePath);
   const onBadgeClick = useTopBarStore((state) => state.onBadgeClick);
   const buttons = useTopBarStore((state) => state.buttons);
+  const textButtons = useTopBarStore((state) => state.textButtons);
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
   const chatPartner = useTopBarStore((state) => state.chatPartner);
@@ -185,6 +199,7 @@ export const useTopBar = () => {
   const setTitle = useTopBarStore((state) => state.setTitle);
   const setSubtitle = useTopBarStore((state) => state.setSubtitle);
   const setButtons = useTopBarStore((state) => state.setButtons);
+  const setTextButtons = useTopBarStore((state) => state.setTextButtons);
   const setShowAvatar = useTopBarStore((state) => state.setShowAvatar);
   const setOverlaid = useTopBarStore((state) => state.setOverlaid);
   const setChatPartner = useTopBarStore((state) => state.setChatPartner);
@@ -203,6 +218,7 @@ export const useTopBar = () => {
     badgePath,
     onBadgeClick,
     buttons,
+    textButtons,
     showAvatar,
     isOverlaid,
     chatPartner,
@@ -215,6 +231,7 @@ export const useTopBar = () => {
     setTitle,
     setSubtitle,
     setButtons,
+    setTextButtons,
     setShowAvatar,
     setOverlaid,
     setChatPartner,

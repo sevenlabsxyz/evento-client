@@ -4,8 +4,7 @@
  */
 export const STORAGE_KEYS = {
   // Auth & Session
-  AUTH_STORAGE: 'evento-auth-storage', // Zustand persist
-  BETA_ACCESS: 'evento-beta-access', // Beta gate access
+  AUTH_STORAGE: 'evento-auth-storage',
   SUPABASE_ACCESS_TOKEN: 'supabase_access_token',
   SUPABASE_REFRESH_TOKEN: 'supabase_refresh_token',
 
@@ -27,7 +26,7 @@ export const STORAGE_KEYS = {
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 // Keys that should be preserved across logout
-export const PRESERVED_KEYS: readonly StorageKey[] = [STORAGE_KEYS.BETA_ACCESS];
+export const PRESERVED_KEYS: readonly StorageKey[] = [];
 
 // Keys that indicate wallet usage (for logout warning)
 export const WALLET_INDICATOR_KEYS: readonly StorageKey[] = [

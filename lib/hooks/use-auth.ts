@@ -1,4 +1,3 @@
-import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -86,7 +85,6 @@ export function useAuth() {
       // Clear auth store
       clearAuth();
 
-      // Clear all app storage (except beta access)
       clearAllAppStorage();
 
       // Clear ALL React Query cache to prevent stale data
@@ -248,10 +246,6 @@ export function useGoogleLogin() {
   };
 }
 
-/**
- * Hook to protect routes - redirects to login if not authenticated
- * Also checks for beta access - redirects to beta gate if no access
- */
 export function useRequireAuth(redirectTo = '/auth/login') {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
@@ -259,16 +253,6 @@ export function useRequireAuth(redirectTo = '/auth/login') {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      // Check for beta access from localStorage
-      const hasBetaAccess = localStorage.getItem(STORAGE_KEYS.BETA_ACCESS) === 'granted';
-
-      if (!hasBetaAccess) {
-        // No beta access - redirect to beta gate
-        router.push('/');
-        return;
-      }
-
-      // Has beta access but not authenticated - redirect to login
       router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
     }
   }, [isAuthenticated, isLoading, router, redirectTo, pathname]);

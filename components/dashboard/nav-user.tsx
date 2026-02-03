@@ -1,14 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { CreditCard, LogOut, MoreVertical, Settings, User } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import {
-  CreditCard,
-  LogOut,
-  MoreVertical,
-  Settings,
-  User,
-} from 'lucide-react';
+import { useState } from 'react';
 
 import { LogoutConfirmationSheet } from '@/components/logout-confirmation-sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -107,21 +101,21 @@ export function NavUser() {
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
                 <DropdownMenuItem onClick={() => handleNavigation('/e/profile')}>
-                  <User />
+                  <User className='mr-2 h-4 w-4' />
                   Profile
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleNavigation('/e/wallet')}>
-                  <CreditCard />
+                  <CreditCard className='mr-2 h-4 w-4' />
                   Wallet
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => handleNavigation('/e/settings')}>
-                  <Settings />
+                  <Settings className='mr-2 h-4 w-4' />
                   Settings
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogoutClick} className='text-destructive'>
-                <LogOut />
+                <LogOut className='mr-2 h-4 w-4' />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

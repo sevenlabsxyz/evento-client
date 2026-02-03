@@ -9,8 +9,8 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
   const { channel, displayImage, displayTitle, lastMessage, unread } = props;
 
   const handleClick = () => {
-    // Navigate to the individual chat view
-    router.push(`/e/messages/${channel.id}`);
+    setActiveChannel(channel);
+    router.push(`/e/messages/${channel.id}`, { scroll: false });
   };
 
   const getLastMessagePreview = () => {

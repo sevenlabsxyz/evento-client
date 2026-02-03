@@ -1,9 +1,8 @@
 'use client';
 
 import { TopBar } from '@/components/top-bar';
-import { useBetaAccess } from '@/lib/hooks/use-beta-access';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { Loader2, Share } from 'lucide-react';
+import { Share } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
@@ -11,16 +10,7 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
   const { setTopBar } = useTopBar();
   const pathname = usePathname();
   const router = useRouter();
-  const { hasAccess: hasBetaAccess, isLoading: isBetaLoading } = useBetaAccess();
 
-  // Redirect to beta gate if no beta access
-  useEffect(() => {
-    if (!isBetaLoading && !hasBetaAccess) {
-      router.push('/');
-    }
-  }, [hasBetaAccess, isBetaLoading, router]);
-
-  // Set TopBar content
   useEffect(() => {
     const handleShare = async () => {
       if (navigator.share) {
@@ -41,11 +31,9 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       router.back();
     };
 
-    // Check if we're on a blog detail page (has slug)
     const isBlogDetailPage = pathname.startsWith('/blog/') && pathname !== '/blog';
 
     if (isBlogDetailPage) {
-      // Blog detail page - show back button
       setTopBar({
         leftMode: 'back',
         onBackPress: handleBack,
@@ -64,7 +52,6 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
         isOverlaid: false,
       });
     } else {
-      // Blog listing page - show menu
       setTopBar({
         leftMode: 'menu',
         centerMode: 'title',
@@ -87,15 +74,6 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
       setTopBar({ title: '', subtitle: '', buttons: [] });
     };
   }, [setTopBar, pathname, router]);
-
-  // Show loading while checking beta access
-  if (isBetaLoading || !hasBetaAccess) {
-    return (
-      <div className='flex min-h-screen items-center justify-center'>
-        <Loader2 className='h-8 w-8 animate-spin' />
-      </div>
-    );
-  }
 
   return (
     <>

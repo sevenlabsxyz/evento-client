@@ -361,7 +361,7 @@ export default function CreatePage() {
         </div>
 
         {/* Bottom CTA */}
-        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
+        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:left-[--sidebar-width] md:right-2 md:rounded-b-xl'>
           <div className='mx-auto max-w-full md:max-w-md'>
             <Skeleton className='h-10 w-full rounded-xl' />
           </div>
@@ -579,7 +579,7 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:left-[--sidebar-width] md:right-2 md:rounded-b-xl'>
         <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleCreateEvent}

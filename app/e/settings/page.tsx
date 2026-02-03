@@ -23,7 +23,6 @@ import {
 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import packageJson from '../../../package.json';
 
 export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -115,7 +114,7 @@ export default function SettingsPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+      <div className='flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:px-4'>
         <div className='flex-1 overflow-y-auto bg-white px-0 pt-4'>
           <div>
             {/* GENERAL */}
@@ -197,7 +196,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+    <div className='flex min-h-screen max-w-full flex-col bg-white md:max-w-3xl md:px-4'>
       {/* Content */}
       <div className='flex-1 overflow-y-auto bg-white px-0 pt-4'>
         <div>
@@ -368,13 +367,6 @@ export default function SettingsPage() {
               </div>
             </>
           )}
-
-          {/* Version Info */}
-          <div className='px-4 pb-24 pt-6 text-center'>
-            <p className='text-sm font-semibold text-gray-500 opacity-50'>
-              Version: {packageJson.version}
-            </p>
-          </div>
         </div>
       </div>
 

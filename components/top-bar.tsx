@@ -3,6 +3,7 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -25,6 +26,7 @@ export function TopBar() {
     badgePath,
     onBadgeClick,
     buttons,
+    textButtons,
     showAvatar,
     isOverlaid,
     chatPartner,
@@ -225,6 +227,26 @@ export function TopBar() {
             {centerMode === 'logo' && renderCenterContent()}
           </div>
           <div className='ml-3 flex items-center gap-3'>
+            {textButtons.length > 0 && (
+              <div className='flex gap-2'>
+                {textButtons.map((button) => {
+                  const Icon = button.icon;
+                  return (
+                    <Button
+                      key={button.id}
+                      variant={button.variant || 'default'}
+                      size='sm'
+                      onClick={button.onClick}
+                      disabled={button.disabled}
+                      className='h-8 rounded-full px-3 text-sm font-medium'
+                    >
+                      {Icon && <Icon className='mr-1.5 h-4 w-4' />}
+                      {button.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
             {buttons.length > 0 && (
               <div className='flex gap-3'>
                 {buttons.map((button) => (

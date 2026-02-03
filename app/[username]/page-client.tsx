@@ -180,14 +180,13 @@ export default function UserProfilePageClient() {
     }
   };
 
-  // Set TopBar content for overlay mode - moved before conditional returns
+  // Set TopBar content
   useEffect(() => {
     // Only set TopBar if userData is loaded and available
     if (userData && userProfile) {
       setTopBar({
         leftMode: 'menu',
-        title: userProfile.name,
-        subtitle: `@${userProfile.username}`,
+        title: `${userProfile.name} (${userProfile.username})`,
         buttons: [
           {
             id: 'share',
@@ -196,20 +195,16 @@ export default function UserProfilePageClient() {
             label: 'Share Profile',
           },
         ],
-        showAvatar: false,
-        isOverlaid: true,
       });
     }
 
     return () => {
       setTopBar({
-        leftMode: 'menu',
+        title: '',
         buttons: [],
-        showAvatar: true,
-        isOverlaid: false,
       });
     };
-  }, [userProfile?.name, userProfile?.username, setTopBar]);
+  }, [userProfile?.name, setTopBar]);
 
   // Fetch pinned event
   const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
@@ -583,7 +578,7 @@ export default function UserProfilePageClient() {
   };
 
   return (
-    <div className='min-h-screen bg-white md:ml-[280px]'>
+    <div className='min-h-screen bg-white'>
       <div className='mx-auto max-w-full bg-white md:max-w-md'>
         <div>
           {/* Profile Info */}

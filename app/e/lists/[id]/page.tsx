@@ -45,7 +45,7 @@ export default function SavedListDetailPage() {
     setTopBar({
       title: currentList?.name || 'Loading...',
       leftMode: 'back',
-      onBackPress: () => router.push('/e/saved'),
+      onBackPress: () => router.push('/e/lists'),
       centerMode: 'title',
       showAvatar: false,
       buttons: [
@@ -123,7 +123,7 @@ export default function SavedListDetailPage() {
     try {
       await deleteListMutation.mutateAsync(listId);
       toast.success('List deleted');
-      router.push('/e/saved');
+      router.push('/e/lists');
     } catch (error: any) {
       const errorMsg = error?.message || 'Failed to delete list';
       toast.error(errorMsg);
@@ -148,7 +148,7 @@ export default function SavedListDetailPage() {
           <h2 className='mb-2 text-xl font-bold'>List not found</h2>
           <p className='mb-4 text-gray-600'>This list may have been deleted</p>
           <Button
-            onClick={() => router.push('/e/saved')}
+            onClick={() => router.push('/e/lists')}
             className='bg-red-500 text-white hover:bg-red-600'
           >
             Back to Lists

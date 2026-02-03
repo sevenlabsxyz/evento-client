@@ -34,9 +34,6 @@ export const Env = {
 
   // Breez SDK
   NEXT_PUBLIC_BREEZ_API_KEY: process.env.NEXT_PUBLIC_BREEZ_API_KEY || '',
-
-  // Beta Access
-  NEXT_PUBLIC_BETA_ACCESS_CODE: process.env.NEXT_PUBLIC_BETA_ACCESS_CODE || '',
 } as const;
 
 // Type representing all environment variable keys

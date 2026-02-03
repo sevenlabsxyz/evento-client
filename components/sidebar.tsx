@@ -4,7 +4,7 @@ import { LogoutConfirmationSheet } from '@/components/logout-confirmation-sheet'
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useBetaAccess } from '@/lib/hooks/use-beta-access';
+
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
@@ -33,8 +33,8 @@ const menuSections = [
         icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
-        name: 'Saved Events',
-        path: '/e/saved',
+        name: 'Lists',
+        path: '/e/lists',
         icon: <Star className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
@@ -299,7 +299,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const { logout, isLoggingOut } = useAuth();
   const { user } = useUserProfile();
-  const { hasAccess: hasBetaAccess } = useBetaAccess();
+
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
   // Prefetch priority routes on mount
@@ -310,13 +310,7 @@ export function Sidebar() {
     });
   }, [router]);
 
-  // Don't show sidebar on auth pages, beta gate (root), onboarding, or when no beta access
-  if (
-    pathname?.startsWith('/auth') ||
-    pathname === '/' ||
-    pathname === '/onboarding' ||
-    !hasBetaAccess
-  ) {
+  if (pathname?.startsWith('/auth') || pathname === '/' || pathname === '/onboarding') {
     return null;
   }
 

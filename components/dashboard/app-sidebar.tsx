@@ -1,18 +1,10 @@
 'use client';
 
-import * as React from 'react';
+import { Calendar1, MessageCircle, Plus, Search, Settings, Star, Zap } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import {
-  Calendar1,
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  Star,
-  Zap,
-} from 'lucide-react';
+import * as React from 'react';
 
 import { NavMain } from '@/components/dashboard/nav-main';
 import { NavSecondary } from '@/components/dashboard/nav-secondary';
@@ -36,8 +28,8 @@ const navMain = [
     icon: Calendar1,
   },
   {
-    title: 'Saved Events',
-    url: '/e/saved',
+    title: 'Lists',
+    url: '/e/lists',
     icon: Star,
   },
   {
@@ -81,10 +73,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              className='data-[slot=sidebar-menu-button]:!p-1.5'
-            >
+            <SidebarMenuButton asChild className='data-[slot=sidebar-menu-button]:!p-1.5'>
               <Link href='/e/hub'>
                 <Image
                   src='/assets/img/evento-sublogo.svg'

@@ -45,15 +45,14 @@ import {
   Search,
   Settings,
 } from 'lucide-react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid } = useTopBar();
-  const pathname = usePathname();
+  const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
@@ -105,16 +104,10 @@ export default function ProfilePage() {
     }
   }, [searchParams]);
 
-  // Set TopBar content and enable overlay mode
+  // Set TopBar content
   useEffect(() => {
-    // Apply any existing route configuration first
-    applyRouteConfig(pathname);
-
-    // Set route-specific configuration
-    setTopBarForRoute(pathname, {
-      title: '',
-      subtitle: '',
-      showAvatar: false,
+    setTopBar({
+      title: 'Profile',
       leftMode: 'menu',
       buttons: [
         {
@@ -130,16 +123,15 @@ export default function ProfilePage() {
           label: 'Settings',
         },
       ],
-      isOverlaid: true,
     });
-    setOverlaid(true);
 
-    // Cleanup function to clear route config when leaving this page
     return () => {
-      clearRoute(pathname);
-      setOverlaid(false);
+      setTopBar({
+        title: '',
+        buttons: [],
+      });
     };
-  }, [router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute, setOverlaid]);
+  }, [router, setTopBar]);
 
   const userStats = {
     events: eventCount || 0,

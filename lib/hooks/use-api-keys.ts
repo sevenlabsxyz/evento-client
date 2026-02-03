@@ -10,12 +10,12 @@ export function useApiKeys() {
     queryKey: queryKeys.apiKeys(),
     queryFn: async (): Promise<ApiKey[]> => {
       const response = await apiClient.get('/v1/api-keys');
-      
+
       // Validate response data
       if (!response?.data?.keys || !Array.isArray(response.data.keys)) {
         throw new Error('Invalid API response format');
       }
-      
+
       return response.data.keys;
     },
     staleTime: 5 * 60 * 1000,

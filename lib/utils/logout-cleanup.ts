@@ -9,9 +9,6 @@ export function hasWalletData(): boolean {
   return WALLET_INDICATOR_KEYS.some((key) => localStorage.getItem(key) !== null);
 }
 
-/**
- * Clear all app storage except preserved keys (like beta access)
- */
 export function clearAllAppStorage(): void {
   if (typeof window === 'undefined') return;
 
