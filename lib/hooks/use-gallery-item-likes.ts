@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api/client';
+import { ApiResponse } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -21,7 +22,7 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
     queryFn: async (): Promise<GalleryLikesResponse> => {
       if (!itemId || !eventId) return { likes: 0, has_liked: false };
 
-      const response = await apiClient.get<GalleryLikesResponse>(
+      const response = await apiClient.get<ApiResponse<GalleryLikesResponse>>(
         `/v1/events/${eventId}/gallery/likes?itemId=${itemId}`
       );
 
@@ -47,7 +48,7 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
     mutationFn: async (): Promise<LikeActionResponse> => {
       if (!itemId || !eventId) throw new Error('No gallery item ID or event ID provided');
 
-      const response = await apiClient.post<LikeActionResponse>(
+      const response = await apiClient.post<ApiResponse<LikeActionResponse>>(
         `/v1/events/${eventId}/gallery/likes`,
         {
           itemId,

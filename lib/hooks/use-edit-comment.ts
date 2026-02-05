@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/client';
 import { EventComment } from '@/lib/hooks/use-event-comments';
+import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface EditCommentParams {
@@ -17,10 +18,13 @@ export function useEditComment() {
       message,
       eventId,
     }: EditCommentParams): Promise<EventComment> => {
-      const response = await apiClient.patch<EventComment>(`/v1/events/${eventId}/comments`, {
-        commentId,
-        message,
-      });
+      const response = await apiClient.patch<ApiResponse<EventComment>>(
+        `/v1/events/${eventId}/comments`,
+        {
+          commentId,
+          message,
+        }
+      );
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

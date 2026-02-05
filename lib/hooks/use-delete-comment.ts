@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api/client';
+import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface DeleteCommentParams {
@@ -18,7 +19,7 @@ export function useDeleteComment() {
       commentId,
       eventId,
     }: DeleteCommentParams): Promise<DeleteCommentResponse> => {
-      const response = await apiClient.delete<DeleteCommentResponse>(
+      const response = await apiClient.delete<ApiResponse<DeleteCommentResponse>>(
         `/v1/events/${eventId}/comments/${commentId}`
       );
 
@@ -34,7 +35,7 @@ export function useDeleteComment() {
         await queryClient.invalidateQueries({
           queryKey: ['event', 'comments', eventId],
         });
-        return response.data || { id: commentId };
+        return response.data ?? { id: commentId };
       }
 
       // Fallback

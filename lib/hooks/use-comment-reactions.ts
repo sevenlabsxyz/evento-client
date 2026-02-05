@@ -17,7 +17,7 @@ export function useCommentReactions(commentId: string, eventId: string) {
   const query = useQuery({
     queryKey: ['comment', 'reactions', commentId],
     queryFn: async (): Promise<CommentReactions> => {
-      const response = await apiClient.get<CommentReactions>(
+      const response = await apiClient.get<ApiResponse<CommentReactions>>(
         `/v1/events/${eventId}/comments/${commentId}/reactions`
       );
 
@@ -45,7 +45,13 @@ export function useCommentReactions(commentId: string, eventId: string) {
     }: {
       commentId: string;
       reactionType: ReactionType;
-    }) => {
+    }): Promise<
+      ApiResponse<{
+        action: 'added' | 'removed' | 'updated';
+        has_reacted: boolean;
+        reaction_type?: ReactionType;
+      }>
+    > => {
       const response = await apiClient.post<
         ApiResponse<{
           action: 'added' | 'removed' | 'updated';

@@ -109,12 +109,10 @@ export function useNotificationsFeed(filters: NotificationFilterParams = {}) {
           });
         }
 
-        // Make API request
-        const response = await apiClient.get<NotificationFeedResponse>(
+        const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           `/v1/notifications/feed?${params.toString()}`
         );
 
-        // Transform data for UI
         if (response?.data) {
           const feedResponse = response.data;
           return {
@@ -145,7 +143,7 @@ export function useNotification(messageId: string, enabled: boolean = true) {
     queryKey: ['notifications', 'message', messageId],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationMessage>(
+        const response = await apiClient.get<ApiResponse<NotificationMessage>>(
           `/v1/notifications/messages/${messageId}`
         );
 
@@ -250,7 +248,7 @@ export function useBulkMarkAsSeen() {
 
   return useMutation({
     mutationFn: async (params: NotificationBulkActionParams) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/messages/bulk/seen',
         params
       );
@@ -266,15 +264,12 @@ export function useBulkMarkAsSeen() {
   });
 }
 
-/**
- * Hook to bulk mark notifications as read
- */
 export function useBulkMarkAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: NotificationBulkActionParams) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/messages/bulk/read',
         params
       );
@@ -290,15 +285,12 @@ export function useBulkMarkAsRead() {
   });
 }
 
-/**
- * Hook to mark all notifications as seen
- */
 export function useMarkAllAsSeen() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: MarkAllNotificationsParams = {}) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/mark-all/seen',
         params
       );
@@ -314,15 +306,12 @@ export function useMarkAllAsSeen() {
   });
 }
 
-/**
- * Hook to mark all notifications as read
- */
 export function useMarkAllAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: MarkAllNotificationsParams = {}) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/mark-all/read',
         params
       );
@@ -347,7 +336,7 @@ export function useUnreadCount() {
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationFeedResponse>(
+        const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           '/v1/notifications/feed?page_size=1'
         );
 
