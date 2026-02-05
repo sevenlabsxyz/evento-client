@@ -1,6 +1,7 @@
 'use client';
 
 import { Event } from '@/lib/types/event';
+import DOMPurify from 'dompurify';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 
@@ -49,7 +50,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               (expanded ? '' : ' max-h-56')
             }
             style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-            dangerouslySetInnerHTML={{ __html: event.description }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
           />
 
           {/* Fade-out gradient when collapsed and overflowing */}

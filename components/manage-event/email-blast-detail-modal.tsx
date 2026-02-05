@@ -2,6 +2,7 @@
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { VisuallyHidden } from '@silk-hq/components';
+import DOMPurify from 'dompurify';
 import {
   AlertCircle,
   CalendarClock,
@@ -237,7 +238,7 @@ export default function EmailBlastDetailModal({
                     <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                       <div
                         className='prose prose-sm max-w-none text-gray-700'
-                        dangerouslySetInnerHTML={{ __html: blast.message }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(blast.message) }}
                       />
                     </div>
                   </div>
