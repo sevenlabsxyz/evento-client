@@ -57,10 +57,10 @@ Increase test and type safety coverage with fast, high‑signal tests, while eli
 - UI + auth/registration tests (fast RTL)
 
 ### Definition of Done
-- [ ] No console.log/debug statements left in `lib/hooks/**` (errors only if needed)
-- [ ] Integration tests run via MSW without direct apiClient mocks
-- [ ] Schema tests exist for core Zod schemas (auth, user, event)
-- [ ] UI tests for event creation/onboarding cover critical regressions
+- [x] No console.log/debug statements left in `lib/hooks/**` (errors only if needed)
+- [x] Integration tests run via MSW without direct apiClient mocks
+- [x] Schema tests exist for core Zod schemas (auth, user, event)
+- [x] UI tests for event creation/onboarding cover critical regressions
 
 ### Must Have
 - No E2E tests added
@@ -209,7 +209,7 @@ Critical Path: Task 1 → Task 2 → Task 3 → Task 4
 
   **Commit**: YES (with Task 1)
 
-- [ ] 3. Add schema/DTO validation tests (type safety)
+- [x] 3. Add schema/DTO validation tests (type safety)
 
   **What to do**:
   - Add tests for Zod schemas in `lib/schemas/`:
@@ -252,7 +252,7 @@ Critical Path: Task 1 → Task 2 → Task 3 → Task 4
 
   **Commit**: YES (group with Task 4)
 
-- [ ] 4. Add high‑signal UI + auth/registration tests (fast)
+- [x] 4. Add high‑signal UI + auth/registration tests (fast)
 
   **What to do**:
   - Add RTL tests for **event creation** and **onboarding** components:
@@ -324,7 +324,7 @@ pnpm test --testPathPattern=onboarding|registration|create-event
 ```
 
 ### Final Checklist
-- [ ] Hook debug logs removed
-- [ ] Integration tests standardized on MSW handlers
-- [ ] Schema/DTO tests added and passing
-- [ ] UI + auth/registration tests added and passing
+- [x] Hook debug logs removed
+- [x] Integration tests standardized on MSW handlers
+- [x] Schema/DTO tests added and passing
+- [x] UI + auth/registration tests added and passing

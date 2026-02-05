@@ -4,5 +4,9 @@
   "session_ids": [
     "ses_3d3c3a361ffeejeYkrU9ML047N"
   ],
-  "plan_name": "testing-coverage-improvements"
+  "plan_name": "testing-coverage-improvements",
+  "completed_at": "2026-02-05T08:15:00.000Z",
+  "tasks_completed": 4,
+  "tasks_total": 4,
+  "status": "completed"
 }

@@ -44,12 +44,20 @@ const mockUser: UserDetails = {
   verification_date: '2023-01-01T00:00:00Z',
 };
 
+type MockAuthState = {
+  user: UserDetails | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+};
+
+let mockAuthState: MockAuthState = {
+  user: mockUser,
+  isAuthenticated: true,
+  isLoading: false,
+};
+
 jest.mock('@/lib/hooks/use-auth', () => ({
-  useAuth: () => ({
-    user: mockUser,
-    isAuthenticated: true,
-    isLoading: false,
-  }),
+  useAuth: () => mockAuthState,
 }));
 
 import { apiClient } from '@/lib/api/client';
@@ -67,6 +75,11 @@ describe('useAddComment', () => {
       },
     });
     jest.clearAllMocks();
+    mockAuthState = {
+      user: mockUser,
+      isAuthenticated: true,
+      isLoading: false,
+    };
   });
 
   const createMockComment = (overrides: Partial<EventComment> = {}): EventComment => ({
@@ -409,13 +422,11 @@ describe('useAddComment', () => {
 
     it('does not add optimistic comment when user is not authenticated', async () => {
       // Mock unauthenticated user
-      jest.doMock('@/lib/hooks/use-auth', () => ({
-        useAuth: () => ({
-          user: null,
-          isAuthenticated: false,
-          isLoading: false,
-        }),
-      }));
+      mockAuthState = {
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+      };
 
       const existingComments = [createMockComment({ id: 'existing1' })];
       queryClient.setQueryData(['event', 'comments', 'event1'], existingComments);
