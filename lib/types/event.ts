@@ -3,6 +3,7 @@ export interface EventHost {
   name: string;
   username: string;
   avatar: string;
+  image?: string;
   title?: string;
   company?: string;
   verification_status?: string | null;
