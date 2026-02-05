@@ -1,6 +1,49 @@
-// Jest pre-environment polyfills and env setup
-// Load fetch/Request/Response/Headers for Node test runtime
 import 'whatwg-fetch';
+
+class BroadcastChannelMock {
+  name: string;
+  private static channels: Map<string, Set<BroadcastChannelMock>> = new Map();
+
+  constructor(name: string) {
+    this.name = name;
+    if (!BroadcastChannelMock.channels.has(name)) {
+      BroadcastChannelMock.channels.set(name, new Set());
+    }
+    BroadcastChannelMock.channels.get(name)!.add(this);
+  }
+
+  postMessage(message: any) {
+    const channels = BroadcastChannelMock.channels.get(this.name);
+    if (channels) {
+      channels.forEach((channel) => {
+        if (channel !== this && channel.onmessage) {
+          channel.onmessage({ data: message } as MessageEvent);
+        }
+      });
+    }
+  }
+
+  onmessage: ((event: MessageEvent) => void) | null = null;
+
+  close() {
+    const channels = BroadcastChannelMock.channels.get(this.name);
+    if (channels) {
+      channels.delete(this);
+    }
+  }
+
+  addEventListener(type: string, listener: EventListener) {
+    if (type === 'message') {
+      this.onmessage = listener as any;
+    }
+  }
+
+  removeEventListener() {}
+}
+
+if (typeof globalThis.BroadcastChannel === 'undefined') {
+  (globalThis as any).BroadcastChannel = BroadcastChannelMock;
+}
 
 // Ensure TextEncoder/TextDecoder are available (used by some libs)
 // Node provides these via 'util' in CommonJS

@@ -30,9 +30,6 @@ export function useEnsureDefaultList() {
       createListMutation.mutate(
         { name: 'Saved Events' },
         {
-          onSuccess: () => {
-            console.log('Default list created successfully');
-          },
           onError: (error) => {
             console.error('Failed to create default list:', error);
             // Don't reset flag on error - this would cause infinite retries

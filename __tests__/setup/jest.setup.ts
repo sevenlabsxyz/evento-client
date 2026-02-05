@@ -1,10 +1,8 @@
 import '@testing-library/jest-dom';
 
-// Mock URL.createObjectURL and URL.revokeObjectURL for file handling
 global.URL.createObjectURL = jest.fn(() => 'mock-object-url');
 global.URL.revokeObjectURL = jest.fn();
 
-// Mock the API client directly
 jest.mock('@/lib/api/client', () => {
   const mockApiClient = {
     get: jest.fn(),
@@ -27,11 +25,11 @@ jest.mock('@/lib/api/client', () => {
   };
 });
 
-// Setup default mock responses
 beforeEach(() => {
+
   const { default: mockApiClient } = require('@/lib/api/client');
 
-  // Reset all mocks
+  // Reset all mocks for hook/unit tests
   if (mockApiClient) {
     Object.values(mockApiClient).forEach((mockFn: any) => {
       if (typeof mockFn === 'function' && mockFn.mockReset) {
@@ -40,7 +38,7 @@ beforeEach(() => {
     });
   }
 
-  // Setup default responses
+  // Setup default responses for hook/unit tests
   if (mockApiClient?.get) {
     mockApiClient.get.mockImplementation((url: string) => {
       if (url.includes('/v1/user/check-username')) {
@@ -104,24 +102,7 @@ beforeEach(() => {
         });
       }
 
-      if (url.includes('/v1/events/rsvps') && !url.includes('/current-user')) {
-        return Promise.resolve({
-          success: true,
-          message: 'ok',
-          data: [
-            {
-              id: 'rsvp1',
-              event_id: 'event123',
-              user_id: 'user1',
-              status: 'yes',
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-          ],
-        });
-      }
-
-      if (url.includes('/v1/events/rsvps/current-user')) {
+      if (url.match(/\/v1\/events\/[^/]+\/rsvps\/me$/)) {
         return Promise.resolve({
           success: true,
           message: 'ok',
@@ -130,6 +111,23 @@ beforeEach(() => {
               id: 'rsvp1',
               event_id: 'event123',
               user_id: 'current_user',
+              status: 'yes',
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+
+      if (url.match(/\/v1\/events\/[^/]+\/rsvps$/)) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              id: 'rsvp1',
+              event_id: 'event123',
+              user_id: 'user1',
               status: 'yes',
               created_at: new Date().toISOString(),
               updated_at: new Date().toISOString(),
@@ -151,7 +149,149 @@ beforeEach(() => {
         ]);
       }
 
-      // Removed global mock for /v1/events/details to allow test-specific mocking
+      // Event invites
+      if (url.includes('/v1/events/invites')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              id: 'invite1',
+              event_id: 'event123',
+              user_id: 'user1',
+              status: 'pending',
+              created_at: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+
+      // Event gallery
+      if (url.match(/\/v1\/events\/[^/]+\/gallery$/)) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              id: 'gallery1',
+              event_id: 'event123',
+              url: 'https://example.com/image1.jpg',
+              type: 'image',
+              created_at: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+
+      // Gallery item likes
+      if (url.includes('/gallery/') && url.includes('/likes')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: {
+            likes: 5,
+            hasLiked: false,
+          },
+        });
+      }
+
+      // Comment reactions
+      if (url.includes('/comments/') && url.includes('/reactions')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: {
+            reactions: [],
+            userReactions: [],
+          },
+        });
+      }
+
+      // Email blasts
+      if (url.includes('/email-blasts')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              id: 'blast1',
+              event_id: 'event123',
+              message: 'Test blast',
+              recipient_filter: 'all',
+              sent_at: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+
+      if (url.includes('/v1/user/followers/list')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              follower_id: 'user1',
+              user_details: {
+                id: 'user1',
+                username: 'follower1',
+                name: 'Follower One',
+                image: '',
+                verification_status: '',
+              },
+            },
+          ],
+        });
+      }
+
+      if (url.includes('/v1/user/follows/list')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              followed_id: 'user2',
+              user_details: {
+                id: 'user2',
+                username: 'following1',
+                name: 'Following One',
+                image: '',
+                verification_status: '',
+              },
+            },
+          ],
+        });
+      }
+
+      // User search
+      if (url.includes('/v1/user/search')) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              id: 'user1',
+              username: 'searchuser',
+              name: 'Search User',
+            },
+          ],
+        });
+      }
+
+      // User profile
+      if (url.match(/\/v1\/user\/[^/]+$/)) {
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: {
+            id: 'user1',
+            username: 'testuser',
+            name: 'Test User',
+            bio: 'Test bio',
+            followers_count: 10,
+            following_count: 5,
+          },
+        });
+      }
 
       // Default response
       return Promise.resolve({ success: true, data: {} });
@@ -160,7 +300,7 @@ beforeEach(() => {
 
   if (mockApiClient?.post) {
     mockApiClient.post.mockImplementation((url: string, data: any) => {
-      if (url.includes('/v1/events/create')) {
+      if (url === '/v1/events' || url.includes('/v1/events/create')) {
         return Promise.resolve({
           success: true,
           message: 'ok',
@@ -187,6 +327,74 @@ beforeEach(() => {
               updated_at: new Date().toISOString(),
             },
           ],
+        });
+      }
+
+      if (url.includes('/invites')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Invites sent successfully',
+          data: { sent: data?.invites?.length || 0 },
+        });
+      }
+
+      if (url.includes('/comments')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Comment added',
+          data: [
+            {
+              id: 'comment_new',
+              event_id: data?.event_id,
+              message: data?.message,
+              user_id: 'user1',
+              created_at: new Date().toISOString(),
+            },
+          ],
+        });
+      }
+
+      if (url.includes('/email-blasts')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Email blast created',
+          data: {
+            id: 'blast_new',
+            event_id: 'event123',
+            message: data?.message,
+            recipient_filter: data?.recipientFilter,
+            scheduled_for: data?.scheduledFor,
+          },
+        });
+      }
+
+      if (url.includes('/generate-description')) {
+        return Promise.resolve({
+          description: 'AI generated description for your event.',
+        });
+      }
+
+      if (url === '/v1/user/follow' || url.includes('/follow')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Followed successfully',
+          data: { following: true },
+        });
+      }
+
+      if (url.includes('/reactions')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Reaction added',
+          data: { reaction: data?.reaction },
+        });
+      }
+
+      if (url.includes('/likes')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Like toggled',
+          data: { liked: true },
         });
       }
 
@@ -227,6 +435,36 @@ beforeEach(() => {
         });
       }
 
+      if (url.includes('/comments')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Comment updated',
+          data: {
+            id: data?.commentId || 'comment1',
+            message: data?.message,
+            updated_at: new Date().toISOString(),
+          },
+        });
+      }
+
+      return Promise.resolve({ success: true, data: {} });
+    });
+  }
+
+  if (mockApiClient?.put) {
+    mockApiClient.put.mockImplementation((url: string, data: any) => {
+      if (url.includes('/comments')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Comment updated',
+          data: {
+            id: data?.commentId || 'comment1',
+            message: data?.message,
+            updated_at: new Date().toISOString(),
+          },
+        });
+      }
+
       return Promise.resolve({ success: true, data: {} });
     });
   }
@@ -238,6 +476,30 @@ beforeEach(() => {
           success: true,
           message: 'Event cancelled successfully',
           data: { id: 'event123', status: 'cancelled' },
+        });
+      }
+
+      if (url.includes('/comments')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Comment deleted',
+          data: {},
+        });
+      }
+
+      if (url.includes('/gallery')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Gallery item deleted',
+          data: {},
+        });
+      }
+
+      if (url.includes('/unfollow')) {
+        return Promise.resolve({
+          success: true,
+          message: 'Unfollowed successfully',
+          data: { following: false },
         });
       }
 

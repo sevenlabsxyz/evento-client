@@ -49,7 +49,6 @@ export function useWalletEventListener() {
   useEffect(() => {
     if (!isConnected) return;
 
-    if (DEBUG_WALLET) console.log('Setting up Breez SDK event listener...');
     const unsubscribe = breezSDK.onEvent((event) => {
       // Logging is handled in breez-sdk.ts service layer
 
@@ -80,7 +79,6 @@ export function useWalletEventListener() {
     });
 
     return () => {
-      if (DEBUG_WALLET) console.log('Cleaning up Breez SDK event listener');
       unsubscribe();
     };
   }, [isConnected]); // Only depends on primitive isConnected value
