@@ -92,8 +92,17 @@ export class BreezSDKService {
         console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!');
         console.warn('  → Current:', currentWalletFingerprint);
         console.warn('  → New:', newFingerprint);
-        console.warn('  → Returning existing instance anyway (THIS IS THE BUG)');
-        return sdkInstance;
+        try {
+          if (DEBUG_BREEZ) console.log('🔌 [BREEZ:CONNECT] Disconnecting existing wallet...');
+          await this.disconnect();
+        } catch (error) {
+          if (DEBUG_BREEZ)
+            console.warn(
+              '⚠️ [BREEZ:CONNECT] Failed to disconnect existing wallet, continuing',
+              error
+            );
+        }
+        currentWalletFingerprint = newFingerprint;
       }
     }
 
