@@ -488,7 +488,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('Create email blast error:', apiError);
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });

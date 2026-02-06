@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
 import EventDetailPageClient from './page-client';
@@ -31,7 +32,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     if (error) throw error;
 
     if (!data) {
-      console.log('No event found for ID:', eventId);
+      logger.info('No event found for ID', { eventId });
       return getDefaultMetadata(previousImages);
     }
 
@@ -74,7 +75,9 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
     };
   } catch (error) {
-    console.error('Error fetching event data:', error);
+    logger.error('Error fetching event data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return getDefaultMetadata(previousImages);
   }
 }

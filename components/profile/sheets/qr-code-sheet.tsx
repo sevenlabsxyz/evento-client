@@ -7,6 +7,7 @@ import { useCallback, useMemo, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 
 interface QRCodeSheetProps {
@@ -43,7 +44,9 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
         toast.success('QR Code downloaded!');
       })
       .catch((err) => {
-        console.error('Error downloading QR code:', err);
+        logger.error('Error downloading QR code', {
+          error: err instanceof Error ? err.message : String(err),
+        });
         toast.error('Failed to download QR code');
       });
   }, [username]);

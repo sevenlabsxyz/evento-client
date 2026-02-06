@@ -133,7 +133,7 @@ export default function ManageEventPage() {
 
   // const handleOpenEventChat = () => {
   //   // TODO: Open event chat functionality
-  //   console.log('Open event chat');
+  //   logger.info('Open event chat');
   // };
 
   const handleCancelEvent = () => {

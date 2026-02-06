@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/client';
 import { debugError } from '@/lib/utils/debug';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -35,7 +36,9 @@ export function useCancelEvent() {
     },
 
     onError: (error) => {
-      console.error('Event cancellation error:', error);
+      logger.error('Event cancellation error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

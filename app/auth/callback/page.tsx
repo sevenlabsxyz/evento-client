@@ -5,6 +5,7 @@ import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
+import { logger } from '@/lib/utils/logger';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
@@ -82,7 +83,9 @@ function AuthCallbackContent() {
           }
         }
       } catch (error) {
-        console.error('Auth callback error:', error);
+        logger.error('Auth callback error', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         setError(error instanceof Error ? error.message : 'Authentication failed');
         setStatus('error');
 

@@ -28,6 +28,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -184,7 +185,9 @@ export default function EventDetailPageClient() {
             url: window.location.href,
           });
         } catch (error) {
-          console.log('Error sharing:', error);
+          logger.error('Error sharing', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       } else {
         navigator.clipboard.writeText(window.location.href);

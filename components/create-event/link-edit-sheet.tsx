@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { VisuallyHidden } from '@silk-hq/components';
 import { useEffect, useState } from 'react';

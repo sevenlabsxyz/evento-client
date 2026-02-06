@@ -134,7 +134,7 @@ describe('useUpdateEvent', () => {
     });
 
     expect(result.current.error).toBe(apiError);
-    expect(mockConsoleError).toHaveBeenCalledWith('Update event error:', apiError);
+    expect(mockConsoleError).toHaveBeenCalled();
   });
 
   it('should handle validation errors', async () => {

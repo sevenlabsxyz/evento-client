@@ -1,6 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { UpdateEventData, updateEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface UpdateEventResponse {
@@ -38,7 +39,9 @@ export function useUpdateEvent() {
       queryClient.invalidateQueries({ queryKey: ['events'] });
     },
     onError: (error: any) => {
-      console.error('Update event error:', error);
+      logger.error('Update event error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

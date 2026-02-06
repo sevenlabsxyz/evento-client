@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { useEffect, useState } from 'react';
 
@@ -118,6 +120,7 @@ export default function DatePickerSheet({
     onDateSelect(new Date());
     onClose();
   };
+  void handleClear;
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {

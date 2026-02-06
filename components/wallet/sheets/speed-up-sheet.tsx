@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { type DepositInfo } from '@/lib/services/breez-sdk';
+import { logger } from '@/lib/utils/logger';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Clock, Loader2, Rocket, Settings, Turtle, X } from 'lucide-react';
@@ -66,7 +67,9 @@ export function SpeedUpSheet({
       const data: FeeEstimates = await res.json();
       setFeeEstimates(data);
     } catch (error) {
-      console.error('Failed to fetch fee estimates:', error);
+      logger.error('Failed to fetch fee estimates', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       // Fallback to reasonable defaults
       setFeeEstimates({
         fastestFee: 10,
@@ -111,7 +114,7 @@ export function SpeedUpSheet({
     }
 
     if (feeRate > FEE_RATE_BOUNDS.WARN) {
-      console.warn(`⚠️ High fee rate detected: ${feeRate} sat/vB - verify network conditions`);
+      logger.warn(`⚠️ High fee rate detected: ${feeRate} sat/vB - verify network conditions`);
     }
 
     return Math.ceil(feeRate * ESTIMATED_TX_VSIZE);

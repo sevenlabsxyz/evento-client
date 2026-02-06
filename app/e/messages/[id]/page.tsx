@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/chat-input';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
+import { logger } from '@/lib/utils/logger';
 import data from '@emoji-mart/data';
 import Picker from '@emoji-mart/react';
 import { init } from 'emoji-mart';
@@ -148,7 +149,9 @@ export default function SingleChatPage() {
           setChannelError('Channel not found or you are not a member');
         }
       } catch (error) {
-        console.error('Failed to initialize specific channel:', error);
+        logger.error('Failed to initialize specific channel', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         setChannelError('Failed to load chat channel');
       }
     };
@@ -226,7 +229,9 @@ export default function SingleChatPage() {
             });
           }
         } catch (uploadError) {
-          console.error('Failed to upload file:', uploadError);
+          logger.error('Failed to upload file', {
+            error: uploadError instanceof Error ? uploadError.message : String(uploadError),
+          });
         }
       }
 
@@ -245,7 +250,9 @@ export default function SingleChatPage() {
       setAttachments([]);
       setShowEmojiPicker(false);
     } catch (error) {
-      console.error('Failed to send message:', error);
+      logger.error('Failed to send message', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsSubmitting(false);
     }

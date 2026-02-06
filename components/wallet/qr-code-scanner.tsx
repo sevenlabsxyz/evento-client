@@ -1,6 +1,7 @@
 'use client';
 
 import { Html5Qrcode } from 'html5-qrcode';
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useRef, useState } from 'react';
 
 interface CameraScannerProps {
@@ -46,7 +47,9 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
         isRunning.current = true;
         setIsScanning(true);
       } catch (err) {
-        console.error('Error starting scanner:', err);
+        logger.error('Error starting scanner', {
+          error: err instanceof Error ? err.message : String(err),
+        });
         isRunning.current = false;
       }
     };
@@ -62,7 +65,9 @@ export function CameraScanner({ onScanSuccess }: CameraScannerProps) {
           } catch (err) {
             // Only log if it's not the "not running" error
             if (err instanceof Error && !err.message.includes('not running')) {
-              console.error('Error stopping scanner:', err);
+              logger.error('Error stopping scanner', {
+                error: err.message,
+              });
             }
           }
         }

@@ -6,6 +6,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MiniListItem } from '@/components/ui/mini-list-item';
 import { Modal } from '@/components/ui/modal';
 import { UserDetails } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 
 interface GalleryImageObject {
@@ -75,7 +76,7 @@ const MobileGalleryMenu = React.memo(
           toast.error('Failed to delete photo. Please try again.');
         }
       } catch (error) {
-        console.error('Error deleting photo:', error);
+        logger.error('Error deleting photo', { error });
         toast.error('Failed to delete photo. Please try again.');
       } finally {
         setIsDeleting(false);
@@ -199,7 +200,7 @@ export const LightboxViewer = React.memo(
                   toast.success('Image shared successfully!');
                 } catch (error) {
                   if ((error as Error).name !== 'AbortError') {
-                    console.error('Error sharing:', error);
+                    logger.error('Error sharing image', { error });
                     // Fallback to opening in new tab if sharing fails
                     window.open(imageUrl, '_blank');
                     toast.info('Image opened in new tab');
@@ -229,7 +230,7 @@ export const LightboxViewer = React.memo(
           }
         } catch (error) {
           if ((error as Error).name !== 'AbortError') {
-            console.error('Error handling image:', error);
+            logger.error('Error handling image', { error });
             toast.error('Failed to handle image. Please try again.');
           }
         } finally {

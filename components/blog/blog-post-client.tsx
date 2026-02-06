@@ -4,6 +4,7 @@ import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Scroll } from '@silk-hq/components';
 import { ExternalLink, Share } from 'lucide-react';
@@ -65,7 +66,9 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           .slice(0, 3);
         setRelatedPosts(filtered);
       } catch (err) {
-        console.error('Error fetching related posts:', err);
+        logger.error('Error fetching related posts', {
+          error: err instanceof Error ? err.message : String(err),
+        });
       } finally {
         setIsLoadingRelated(false);
       }
@@ -85,7 +88,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
       try {
         await navigator.share(shareData);
       } catch (error) {
-        console.log('Share cancelled or failed');
+        logger.info('Share cancelled or failed');
       }
     } else {
       // Fallback: Copy to clipboard

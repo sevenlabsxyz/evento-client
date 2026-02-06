@@ -9,6 +9,7 @@ import {
   getBreezErrorMessage,
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
+import { logger } from '@/lib/utils/logger';
 import { Payment, PrepareSendPaymentResponse } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from './use-wallet';
@@ -255,7 +256,9 @@ export function useAmountConverter() {
       setIsConverting(true);
       return await BTCPriceService.satsToUSD(sats);
     } catch (error) {
-      console.error('Failed to convert sats to USD:', error);
+      logger.error('Failed to convert sats to USD', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return 0;
     } finally {
       setIsConverting(false);
@@ -267,7 +270,9 @@ export function useAmountConverter() {
       setIsConverting(true);
       return await BTCPriceService.usdToSats(usd);
     } catch (error) {
-      console.error('Failed to convert USD to sats:', error);
+      logger.error('Failed to convert USD to sats', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return 0;
     } finally {
       setIsConverting(false);

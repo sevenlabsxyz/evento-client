@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { EventDetail } from '@/lib/types/event';
 import { isGif } from '@/lib/utils/image';
+import { logger } from '@/lib/utils/logger';
 import { Camera, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
@@ -78,13 +79,15 @@ export default function EventGallery({ event, onImageClick }: EventGalleryProps)
           url: window.location.href,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        logger.error('Error sharing', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
       // Fallback to copying URL
       navigator.clipboard.writeText(window.location.href);
       // You would typically show a toast notification here
-      console.log('URL copied to clipboard');
+      logger.info('URL copied to clipboard');
     }
   };
 

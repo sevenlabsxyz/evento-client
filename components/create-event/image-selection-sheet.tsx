@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import GiphyPicker from '@/components/giphy/giphy-picker';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import ProgressiveImage from '@/components/ui/progressive-image';

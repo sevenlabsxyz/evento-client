@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Copy, Edit3, Share2, X } from 'lucide-react';
 import { useState } from 'react';
@@ -34,7 +35,9 @@ export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLigh
         });
       } catch (error) {
         // User cancelled or share failed
-        console.error('Share failed:', error);
+        logger.error('Share failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
       // Fallback to copy

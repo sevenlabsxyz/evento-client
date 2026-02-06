@@ -10,6 +10,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { BTCPrice, WalletState } from '@/lib/types/wallet';
+import { logger } from '@/lib/utils/logger';
 import {
   BREEZ_ERROR_CONTEXT,
   getBreezErrorMessage,
@@ -461,7 +462,9 @@ export function useBTCPrice() {
       const btcPrice = await BTCPriceService.fetchPrice();
       setPrice(btcPrice);
     } catch (error) {
-      console.error('Failed to fetch BTC price:', error);
+      logger.error('Failed to fetch BTC price', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setLoading(false);
     }

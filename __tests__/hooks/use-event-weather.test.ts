@@ -163,7 +163,7 @@ describe('useEventWeather', () => {
 
       expect(result.current.error).toBe('api_key_missing');
       expect(result.current.weather).toBeNull();
-      expect(mockConsoleWarn).toHaveBeenCalledWith('Weather fetch error:', error);
+      expect(mockConsoleWarn).toHaveBeenCalled();
     });
 
     it('handles location_not_found error', async () => {

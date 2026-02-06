@@ -21,6 +21,7 @@ import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { debugError, debugLog } from '@/lib/utils/debug';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import {
   Calendar,
@@ -255,7 +256,9 @@ export default function EditEventDetailsPage() {
       );
     } catch (error) {
       // Error handling is done in the mutation hook
-      console.error('Failed to update event:', error);
+      logger.error('Failed to update event', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 

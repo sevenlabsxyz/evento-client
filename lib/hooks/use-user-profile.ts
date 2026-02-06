@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
+import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
@@ -94,7 +95,9 @@ export function useUpdateUserProfile() {
       }
     },
     onError: (error) => {
-      console.error('Profile update failed:', error);
+      logger.error('Profile update failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -131,7 +134,9 @@ export function useUploadProfileImage() {
       }
     },
     onError: (error) => {
-      console.error('Profile image upload failed:', error);
+      logger.error('Profile image upload failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -159,7 +164,9 @@ export function useSearchUsers() {
       return [];
     },
     onError: (error) => {
-      console.error('User search failed:', error);
+      logger.error('User search failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -221,7 +228,9 @@ export function useFollowAction() {
     },
     onError: (error, variables) => {
       const { action } = variables;
-      console.error(`${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`, error);
+      logger.error(`${action === 'follow' ? 'Follow' : 'Unfollow'} failed`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

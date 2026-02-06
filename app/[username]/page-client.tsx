@@ -46,6 +46,7 @@ import { EventWithUser } from '@/lib/types/api';
 import { UserBadge } from '@/lib/types/badges';
 import { EventHost } from '@/lib/types/event';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
@@ -73,7 +74,7 @@ export default function UserProfilePageClient() {
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [showWebsiteModal, setShowWebsiteModal] = useState(false);
-  const [countdown, setCountdown] = useState(3);
+  const [countdown] = useState(3);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
@@ -167,7 +168,7 @@ export default function UserProfilePageClient() {
         await navigator.share(shareData);
       } catch (error) {
         // User cancelled or share failed
-        console.log('Share cancelled or failed');
+        logger.info('Share cancelled or failed');
       }
     } else {
       // Fallback: Copy to clipboard
@@ -213,6 +214,8 @@ export default function UserProfilePageClient() {
     isPending: isUpdatingPinnedEvent,
     variables: updatePinnedEventVariables,
   } = useUpdatePinnedEvent();
+  void pinnedEvent;
+  void updatePinnedEventVariables;
 
   // Fetch public events for the viewed user
   const { data: publicEventsData, isLoading: isLoadingEvents } = usePublicUserEvents({
@@ -286,6 +289,7 @@ export default function UserProfilePageClient() {
       answer: 'Sunrise hot air balloon ride over Cappadocia',
     },
   ];
+  void profileQuestions;
 
   const interestTags = [
     'Photography',
@@ -296,6 +300,7 @@ export default function UserProfilePageClient() {
     'Coffee',
     'Hiking',
   ];
+  void interestTags;
 
   const handleMessage = () => {
     toast.success('Message feature coming soon!');
@@ -306,6 +311,7 @@ export default function UserProfilePageClient() {
     toast.info(`Viewing photo ${index + 1}`);
     setSelectedImageIndex(index);
   };
+  void handleProfilePhotoClick;
 
   // Handle avatar click for lightbox
   const handleAvatarClick = () => {
@@ -331,6 +337,7 @@ export default function UserProfilePageClient() {
   // Placeholder delete function for avatar (should not be used)
   const handleAvatarDelete = async (photoId: string) => {
     // Avatar deletion should typically not be allowed from lightbox
+    void photoId;
     return { success: false };
   };
 
@@ -398,6 +405,7 @@ export default function UserProfilePageClient() {
       const isCoHost = event.hosts?.some((host: EventHost) => host.id === user.id);
       return isCoHost;
     };
+    void canPinEvent;
 
     const handlePinEvent = (eventId: string, isPinned: boolean) => {
       if (isUpdatingPinnedEvent) return;
@@ -413,6 +421,7 @@ export default function UserProfilePageClient() {
         },
       });
     };
+    void handlePinEvent;
 
     const formatDateHeader = (date: string) => {
       const today = new Date().toISOString().slice(0, 10);
@@ -806,7 +815,10 @@ export default function UserProfilePageClient() {
         onClose={() => setSelectedImageIndex(null)}
         onImageChange={setSelectedImageIndex}
         showDropdownMenu={false}
-        handleDelete={async (photoId: string) => ({ success: false })}
+        handleDelete={async (photoId: string) => {
+          void photoId;
+          return { success: false };
+        }}
         userId=''
         eventId=''
       />

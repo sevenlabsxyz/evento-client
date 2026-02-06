@@ -1,6 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { CreateEventData, createEventSchema } from '@/lib/schemas/event';
 import { ApiResponse } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
@@ -37,7 +38,9 @@ export function useCreateEvent() {
       router.push(`/e/${data.id}`);
     },
     onError: (error: any) => {
-      console.error('Create event error:', error);
+      logger.error('Create event error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

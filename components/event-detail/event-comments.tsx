@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventComments } from '@/lib/hooks/use-event-comments';
 import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, MessageCircle, SendHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -51,7 +52,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
         message,
       });
     } catch (error) {
-      console.error('Error adding comment:', error);
+      logger.error('Error adding comment', { error });
 
       // Show detailed error message
       const errorMessage =

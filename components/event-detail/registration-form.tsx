@@ -11,6 +11,7 @@ import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import type { RegistrationQuestion, UserRegistration } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { generateAvailableUsername } from '@/lib/utils/username';
 import { useQueryClient } from '@tanstack/react-query';
@@ -222,7 +223,7 @@ export function RegistrationForm({
             await updateProfile.mutateAsync(updates);
           } catch (error) {
             // Non-critical - continue with registration even if profile update fails
-            console.warn('Failed to update profile, continuing with registration:', error);
+            logger.warn('Failed to update profile, continuing with registration', { error });
           }
         }
       }

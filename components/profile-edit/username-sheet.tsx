@@ -7,6 +7,7 @@ import { useCheckUsername } from '@/lib/hooks/use-check-username';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AtSign, CheckCircle, Loader2, X, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -89,7 +90,7 @@ export default function UsernameSheet({
       // Close sheet
       onClose();
     } catch (error) {
-      console.error('Failed to update username:', error);
+      logger.error('Failed to update username', { error: error instanceof Error ? error.message : String(error) });
       toast.error('Failed to update username');
     }
   };

@@ -5,6 +5,7 @@ import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Key, Loader2, Wallet } from 'lucide-react';
 import { useState } from 'react';
@@ -82,10 +83,12 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
 
           if (isAvailable) {
             await registerAddress(username, `Pay to ${user.name || user.username}`);
-            console.log(`Lightning address registered: ${username}@evento.cash`);
+            logger.info(`Lightning address registered: ${username}@evento.cash`);
           }
         } catch (error) {
-          console.error('Failed to register Lightning address:', error);
+          logger.error('Failed to register Lightning address', {
+            error: error instanceof Error ? error.message : String(error),
+          });
           // Don't fail wallet creation if Lightning address registration fails
         }
       }
@@ -93,7 +96,9 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       toast.success('Wallet created successfully!');
       onComplete(mnemonic);
     } catch (err: any) {
-      console.error('Wallet creation error:', err);
+      logger.error('Wallet creation error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
 
       // Provide helpful error messages
       let errorMessage = err.message || 'Failed to create wallet';

@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { breezSDK, type DepositInfo, type Fee } from '@/lib/services/breez-sdk';
