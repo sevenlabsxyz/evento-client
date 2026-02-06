@@ -9,6 +9,7 @@ import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -108,7 +109,9 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       }
     } catch (err: any) {
       toast.error(err?.message || 'Failed to start chat');
-      console.error('createDirectMessageChannel error', err);
+      logger.error('createDirectMessageChannel error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   };
 

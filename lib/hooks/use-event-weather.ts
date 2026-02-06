@@ -1,5 +1,6 @@
 import { weatherService } from '@/lib/services/weather';
 import { WeatherData, WeatherError, WeatherHookResult } from '@/lib/types/weather';
+import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
 
 interface UseEventWeatherProps {
@@ -54,7 +55,9 @@ export function useEventWeather({
 
       setWeather(weatherData);
     } catch (err) {
-      console.warn('Weather fetch error:', err);
+      logger.warn('Weather fetch error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
 
       // Map error types
       if (err instanceof Error) {

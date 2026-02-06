@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     const lnurlResponse = await fetch(wellKnownUrl);
 
     if (!lnurlResponse.ok) {
-      console.error('Failed to fetch LNURL endpoint:', lnurlResponse.status);
+      logger.error('Failed to fetch LNURL endpoint', { status: lnurlResponse.status });
       return NextResponse.json(
         { error: 'Failed to fetch payment information from lightning address' },
         { status: 500 }
@@ -66,7 +67,7 @@ export async function POST(request: NextRequest) {
     const invoiceResponse = await fetch(callbackUrl.toString());
 
     if (!invoiceResponse.ok) {
-      console.error('Failed to fetch invoice:', invoiceResponse.status);
+      logger.error('Failed to fetch invoice', { status: invoiceResponse.status });
       return NextResponse.json({ error: 'Failed to generate invoice' }, { status: 500 });
     }
 
@@ -95,7 +96,9 @@ export async function POST(request: NextRequest) {
       successAction: invoiceData.successAction || null,
     });
   } catch (error) {
-    console.error('Lightning invoice error:', error);
+    logger.error('Lightning invoice error', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json(
       { error: 'Internal server error while processing lightning payment' },
       { status: 500 }
@@ -123,7 +126,9 @@ function parseMetadata(metadata: string | any[][]): string | null {
 
     return null;
   } catch (error) {
-    console.error('Error parsing metadata:', error);
+    logger.error('Error parsing metadata', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return null;
   }
 }

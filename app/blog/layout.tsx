@@ -2,6 +2,7 @@
 
 import { TopBar } from '@/components/top-bar';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { logger } from '@/lib/utils/logger';
 import { Share } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -20,7 +21,9 @@ export default function BlogLayout({ children }: { children: React.ReactNode }) 
             url: window.location.href,
           });
         } catch (error) {
-          console.log('Error sharing:', error);
+          logger.error('Error sharing', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       } else {
         navigator.clipboard.writeText(window.location.href);

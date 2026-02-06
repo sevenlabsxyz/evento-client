@@ -10,6 +10,7 @@ import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 
 export interface BlogPost {
@@ -54,7 +55,7 @@ export function WalletEducationGallery() {
     const fetchPosts = async () => {
       // Check for required environment variables
       if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-        console.warn('Ghost API configuration missing - cannot fetch educational content');
+        logger.warn('Ghost API configuration missing - cannot fetch educational content');
         setIsLoading(false);
         return;
       }
@@ -65,7 +66,7 @@ export function WalletEducationGallery() {
         );
 
         if (!res.ok) {
-          console.error('Failed to fetch wallet educational posts:', res.status);
+          logger.error('Failed to fetch wallet educational posts', { status: res.status });
           setIsLoading(false);
           return;
         }
@@ -73,7 +74,9 @@ export function WalletEducationGallery() {
         const data = await res.json();
         setPosts(data.posts || []);
       } catch (error) {
-        console.error('Error fetching wallet educational posts:', error);
+        logger.error('Error fetching wallet educational posts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       } finally {
         setIsLoading(false);
       }

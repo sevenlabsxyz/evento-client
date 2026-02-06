@@ -8,6 +8,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
 import { Event } from '@/lib/types/event';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { MessageCircle, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -36,7 +37,9 @@ export default function EventHost({ event }: EventHostProps) {
       }
     } catch (err: any) {
       toast.error(err?.message || 'Failed to start chat');
-      console.error('createDirectMessageChannel error', err);
+      logger.error('createDirectMessageChannel error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   };
 

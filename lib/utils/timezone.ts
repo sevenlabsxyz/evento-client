@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 // Cache for timezone data to avoid repeated fetch calls
 let timezoneCache: any[] | null = null;
 
@@ -15,7 +17,9 @@ async function loadTimezoneData(): Promise<any[]> {
     timezoneCache = data;
     return data;
   } catch (error) {
-    console.error('Failed to load timezone data:', error);
+    logger.error('Failed to load timezone data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return [];
   }
 }
@@ -51,7 +55,9 @@ export async function getTimezoneAbbreviation(timezone: string): Promise<string>
 
     return timezone;
   } catch (error) {
-    console.error('Error getting timezone abbreviation:', error);
+    logger.error('Error getting timezone abbreviation', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return timezone;
   }
 }
@@ -137,7 +143,9 @@ export function formatTimezoneDisplay(timezone: string): string {
 
     return cityName;
   } catch (error) {
-    console.error('Error formatting timezone display:', error);
+    logger.error('Error formatting timezone display', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return timezone;
   }
 }
@@ -220,7 +228,9 @@ export function formatSelectedTimezone(timezone: string): string {
       return offsetPart.value;
     }
   } catch (error) {
-    console.error('Error calculating timezone offset:', error);
+    logger.error('Error calculating timezone offset', {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 
   // Final fallback: return the abbreviation or a cleaned up timezone name

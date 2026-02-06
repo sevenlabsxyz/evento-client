@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 import { UserDetails } from '../types/api';
 
 // Set to true to enable auth debug logging
@@ -9,7 +11,7 @@ const DEBUG_AUTH = false;
  */
 export function isUserOnboarded(user: UserDetails | null): boolean {
   if (!user) {
-    if (DEBUG_AUTH) console.log('isUserOnboarded: No user provided');
+    if (DEBUG_AUTH) logger.debug('isUserOnboarded: No user provided');
     return false;
   }
 
@@ -17,7 +19,7 @@ export function isUserOnboarded(user: UserDetails | null): boolean {
   const hasName = user.name && user.name.trim() !== '';
 
   if (DEBUG_AUTH) {
-    console.log('isUserOnboarded: Checking user:', {
+    logger.debug('isUserOnboarded: Checking user', {
       username: user.username,
       name: user.name,
       hasUsername,

@@ -1,6 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { EventInvite, InviteTarget } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery } from '@tanstack/react-query';
 
@@ -79,7 +80,9 @@ export function useEventInvites(status?: 'pending' | 'responded', enabled: boole
         const response = await apiClient.get<EventInvitesResponse>(`/v1/events/invites${params}`);
         return response.data || [];
       } catch (error) {
-        console.error('Failed to fetch event invites:', error);
+        logger.error('Failed to fetch event invites', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },

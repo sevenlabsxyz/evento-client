@@ -7,6 +7,7 @@ import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { BTCPriceService } from '@/lib/services/btc-price';
+import { logger } from '@/lib/utils/logger';
 import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -66,7 +67,9 @@ export function BitrefillPaymentConfirmationSheet({
           amountUSD,
         });
       } catch (err: any) {
-        console.error('Failed to parse invoice:', err);
+        logger.error('Failed to parse invoice', {
+          error: err instanceof Error ? err.message : String(err),
+        });
         setPaymentError(err.message || 'Failed to parse invoice');
       } finally {
         setIsLoadingInvoice(false);
@@ -98,7 +101,9 @@ export function BitrefillPaymentConfirmationSheet({
       await sendPayment(invoiceDetails.bolt11);
       onConfirm();
     } catch (err: any) {
-      console.error('Payment failed:', err);
+      logger.error('Payment failed', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       setPaymentError(err.message || 'Payment failed');
     }
   }, [invoiceDetails, walletState.hasBackup, sendPayment, onConfirm]);
@@ -113,7 +118,9 @@ export function BitrefillPaymentConfirmationSheet({
       await sendPayment(invoiceDetails.bolt11);
       onConfirm();
     } catch (err: any) {
-      console.error('Payment failed:', err);
+      logger.error('Payment failed', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       setPaymentError(err.message || 'Payment failed');
     }
   }, [invoiceDetails, sendPayment, onConfirm]);

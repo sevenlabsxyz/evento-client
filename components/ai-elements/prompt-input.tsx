@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { cn } from '@/lib/utils';
 import { CornerDownLeft } from 'lucide-react';
 import * as React from 'react';
@@ -8,7 +10,8 @@ export interface PromptInputMessage {
   text: string;
 }
 
-export interface PromptInputProps extends React.HTMLAttributes<HTMLFormElement> {
+export interface PromptInputProps
+  extends Omit<React.HTMLAttributes<HTMLFormElement>, 'onSubmit'> {
   onSubmit: (message: PromptInputMessage) => void;
 }
 
@@ -37,11 +40,10 @@ export const PromptInput = ({ className, onSubmit, children, ...props }: PromptI
 export interface PromptInputTextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
-export const PromptInputTextarea = ({
-  className,
-  onKeyDown,
-  ...props
-}: PromptInputTextareaProps) => {
+export const PromptInputTextarea = React.forwardRef<
+  HTMLTextAreaElement,
+  PromptInputTextareaProps
+>(({ className, onKeyDown, ...props }, ref) => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     onKeyDown?.(e);
 
@@ -56,6 +58,7 @@ export const PromptInputTextarea = ({
 
   return (
     <textarea
+      ref={ref}
       name='message'
       className={cn(
         'flex w-full resize-none bg-transparent px-4 py-3 text-base outline-none placeholder:text-gray-400',
@@ -66,7 +69,8 @@ export const PromptInputTextarea = ({
       {...props}
     />
   );
-};
+});
+PromptInputTextarea.displayName = 'PromptInputTextarea';
 
 export interface PromptInputFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
 

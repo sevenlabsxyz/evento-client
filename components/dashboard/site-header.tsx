@@ -1,6 +1,8 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
@@ -9,10 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 
 export function SiteHeader() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const {
     leftMode,
     onBackPress,
@@ -35,6 +39,20 @@ export function SiteHeader() {
   };
 
   const renderLeftContent = () => {
+    if (!isAuthenticated) {
+      return (
+        <Link href='/' className='flex items-center gap-2'>
+          <Image
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={100}
+            height={24}
+            className='h-6 w-auto'
+          />
+        </Link>
+      );
+    }
+
     if (leftMode === 'back') {
       return (
         <Button variant='ghost' size='icon' onClick={handleBackPress} className='h-8 w-8'>
@@ -48,7 +66,7 @@ export function SiteHeader() {
   };
 
   const renderCenterContent = () => {
-    if (centerMode === 'empty') {
+    if (!isAuthenticated || centerMode === 'empty') {
       return null;
     }
 

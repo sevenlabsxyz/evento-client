@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
@@ -39,8 +40,8 @@ export const authService = {
       throw new Error('No user data returned from verification');
     }
 
-    console.log('Auth: OTP verification successful for user:', data.user.id);
-    console.log('Auth: User metadata:', data.user.user_metadata);
+    logger.info('Auth: OTP verification successful for user', { userId: data.user.id });
+    logger.debug('Auth: User metadata', { metadata: data.user.user_metadata });
 
     // Return minimal user details - actual data will come from backend
     // Don't populate username/name from email as it causes false positive onboarding checks
@@ -59,7 +60,7 @@ export const authService = {
       verification_date: '',
     };
 
-    console.log('Auth: Returning user details from verifyCode:', userDetails);
+    logger.debug('Auth: Returning user details from verifyCode', { userDetails });
     return userDetails;
   },
 
@@ -75,38 +76,40 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        console.log('Auth: No session found, returning null');
+        logger.info('Auth: No session found, returning null');
         return null; // No session means not authenticated
       }
 
-      console.log('Auth: Fetching current user from backend');
+      logger.info('Auth: Fetching current user from backend');
       const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
 
       // Handle both response formats (array or object with data property)
-      console.log('Auth: Raw API response:', response);
+      logger.debug('Auth: Raw API response', { response });
 
       let userData: UserDetails[] | null = null;
 
       // Check if response is an object with data property
       if (response && typeof response === 'object' && 'data' in response) {
-        console.log('Auth: Response is object with data property');
+        logger.debug('Auth: Response is object with data property');
         userData = (response as any).data;
       } else if (Array.isArray(response)) {
-        console.log('Auth: Response is array directly');
+        logger.debug('Auth: Response is array directly');
         userData = response;
       }
 
       // Handle empty array case explicitly
       if (!userData || !Array.isArray(userData) || userData.length === 0) {
-        console.log('Auth: No user data found (empty array), returning null');
+        logger.info('Auth: No user data found (empty array), returning null');
         return null;
       }
 
       const firstUser = userData[0];
-      console.log('Auth: Returning user:', firstUser);
+      logger.info('Auth: Returning user', { userId: firstUser?.id });
       return firstUser;
     } catch (error) {
-      console.error('Auth: Failed to get current user:', (error as any)?.message || error);
+      logger.error('Auth: Failed to get current user', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       // Return null if user not authenticated or error occurs
       return null;
     }
@@ -137,7 +140,9 @@ export const authService = {
     const { error } = await supabase.auth.signOut();
 
     if (error) {
-      console.error('Logout failed:', error);
+      logger.error('Logout failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       // Don't throw here - we want to continue even if logout fails
     }
   },
@@ -169,7 +174,9 @@ export const authService = {
       // Get user from backend
       return await authService.getCurrentUser();
     } catch (error) {
-      console.error('OAuth callback failed:', error);
+      logger.error('OAuth callback failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   },

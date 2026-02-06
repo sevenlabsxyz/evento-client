@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +15,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreateApiKey } from '@/lib/hooks/use-api-keys';
 import { toast } from '@/lib/utils/toast';
+import { motion } from 'framer-motion';
 import { Check, Copy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -22,6 +25,7 @@ interface CreateApiKeyDialogProps {
 }
 
 export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogProps) {
+  const MotionButton = motion(Button);
   const [name, setName] = useState('');
   const [generatedKey, setGeneratedKey] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
@@ -147,7 +151,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     readOnly
                     className='h-10 pr-12 font-mono text-sm'
                   />
-                  <Button
+                  <MotionButton
                     type='button'
                     size='icon'
                     variant='ghost'
@@ -160,7 +164,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     ) : (
                       <Copy className='h-4 w-4' />
                     )}
-                  </Button>
+                  </MotionButton>
                 </div>
               </div>
 

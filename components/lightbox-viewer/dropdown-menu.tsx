@@ -2,6 +2,7 @@
 
 import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -26,7 +27,7 @@ export const GalleryDropdownMenu = ({ photoId, handleDelete }: GalleryDropdownMe
         toast.error('Failed to delete photo. Please try again.');
       }
     } catch (error) {
-      console.error('Error deleting photo:', error);
+      logger.error('Error deleting photo', { error });
       toast.error('Failed to delete photo. Please try again.');
     } finally {
       setIsDeleting(false);

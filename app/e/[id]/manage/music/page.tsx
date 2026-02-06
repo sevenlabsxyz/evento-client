@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Check, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -253,7 +254,9 @@ export default function MusicManagementPage() {
         },
       });
     } catch (error) {
-      console.error('Failed to save music settings:', error);
+      logger.error('Failed to save music settings', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error('Failed to update music settings');
     } finally {
       setIsSubmitting(false);

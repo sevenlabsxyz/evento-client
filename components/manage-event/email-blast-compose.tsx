@@ -4,6 +4,7 @@ import { Switch } from '@/components/ui/switch';
 import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/use-email-blasts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { CreateEmailBlastForm, EmailBlastRecipientFilter } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import Bold from '@tiptap/extension-bold';
 import BulletList from '@tiptap/extension-bullet-list';
@@ -225,7 +226,7 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
         message,
       });
     } catch (error) {
-      console.error('Failed to send email blast:', error);
+      logger.error('Failed to send email blast', { error });
       // Show error toast with specific message
       const errorMessage = error instanceof Error ? error.message : 'Failed to send email blast';
       toast.error(errorMessage);

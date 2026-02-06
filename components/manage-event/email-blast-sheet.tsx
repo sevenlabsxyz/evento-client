@@ -1,6 +1,7 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { logger } from '@/lib/utils/logger';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Clock, Mail } from 'lucide-react';
 import { useState } from 'react';
@@ -23,7 +24,7 @@ export default function EmailBlastSheet({ isOpen, onClose, eventId }: EmailBlast
   };
 
   const handleSendBlast = (data: { recipients: string; subject: string; message: string }) => {
-    console.log('Email blast sent successfully:', data);
+    logger.info('Email blast sent successfully', { data });
     // Switch to history tab to show the new blast
     setActiveTab('history');
     // Don't close the sheet immediately - let user see the history

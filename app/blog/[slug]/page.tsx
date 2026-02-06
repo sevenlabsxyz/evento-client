@@ -1,5 +1,6 @@
 import { BlogPostClient } from '@/components/blog/blog-post-client';
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import GhostContentAPI from '@tryghost/content-api';
 import { AlertTriangle } from 'lucide-react';
 import { notFound } from 'next/navigation';
@@ -45,7 +46,9 @@ const api =
             const data = await response.json();
             return { data };
           } catch (error) {
-            console.error(error);
+            logger.error('Ghost API request failed', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         },
       })
@@ -54,14 +57,16 @@ const api =
 async function getBlogPost(slug: string) {
   // Return null if API is not initialized
   if (!api) {
-    console.warn('Ghost API not initialized - missing environment variables');
+    logger.warn('Ghost API not initialized - missing environment variables');
     return null;
   }
 
   try {
     return await api.posts.read({ slug }, { include: ['tags', 'authors'] });
   } catch (error) {
-    console.error('Error fetching blog post:', error);
+    logger.error('Error fetching blog post', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     // throw new Error('Failed to fetch blog post');
   }
 }
@@ -118,7 +123,9 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       },
     };
   } catch (error) {
-    console.error('Error generating metadata:', error);
+    logger.error('Error generating metadata', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {
       title: 'Blog Post',
       description: 'Unable to load blog post details',

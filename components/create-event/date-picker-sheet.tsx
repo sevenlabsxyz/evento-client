@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { useEffect, useState } from 'react';
 
@@ -77,7 +79,7 @@ export default function DatePickerSheet({
     return days;
   };
 
-  const isSelectedDate = (day: number) => {
+  const isSelectedDate = (day: number | null) => {
     if (!day) return false;
     return (
       currentDate.getDate() === day &&
@@ -86,7 +88,7 @@ export default function DatePickerSheet({
     );
   };
 
-  const isToday = (day: number) => {
+  const isToday = (day: number | null) => {
     if (!day) return false;
     const today = new Date();
     return (
@@ -94,7 +96,7 @@ export default function DatePickerSheet({
     );
   };
 
-  const isReferenceDate = (day: number) => {
+  const isReferenceDate = (day: number | null) => {
     if (!day || !referenceDate) return false;
     return (
       referenceDate.getDate() === day &&
@@ -103,7 +105,7 @@ export default function DatePickerSheet({
     );
   };
 
-  const handleDateClick = (day: number) => {
+  const handleDateClick = (day: number | null) => {
     if (!day) return;
     const newDate = new Date(viewYear, viewMonth, day);
     setCurrentDate(newDate);
@@ -118,6 +120,7 @@ export default function DatePickerSheet({
     onDateSelect(new Date());
     onClose();
   };
+  void handleClear;
 
   const navigateMonth = (direction: 'prev' | 'next') => {
     if (direction === 'prev') {

@@ -4,6 +4,7 @@ import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -28,7 +29,7 @@ export function BlogSection() {
       try {
         // Check for required environment variables
         if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-          console.warn('Ghost API configuration missing');
+          logger.warn('Ghost API configuration missing');
           setError('Blog feature is currently unavailable');
           return;
         }
@@ -45,7 +46,9 @@ export function BlogSection() {
         const data = await res.json();
         setPosts(data.posts || []);
       } catch (err) {
-        console.error('Error fetching blog posts:', err);
+        logger.error('Error fetching blog posts', {
+          error: err instanceof Error ? err.message : String(err),
+        });
         setError('Failed to load blog posts. Please try again later.');
       } finally {
         setIsLoading(false);

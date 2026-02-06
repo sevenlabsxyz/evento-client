@@ -1,4 +1,5 @@
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -203,7 +204,9 @@ export function useVerifyCode() {
           router.push(redirectUrl);
         }
       } catch (error) {
-        console.error('Verify: Failed to check onboarding status:', error);
+        logger.error('Verify: Failed to check onboarding status', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         // On error, set minimal Supabase data as fallback and proceed
         setUser(data);
         const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');

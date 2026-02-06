@@ -1,4 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
+import { logger } from '@/lib/utils/logger';
 import apiClient from '../api/client';
 import { UserSearchResult } from '../types/api';
 import { Event } from '../types/event';
@@ -21,7 +22,9 @@ export function useEventSearch() {
       );
     },
     onError: (error) => {
-      console.error('Event search failed:', error);
+      logger.error('Event search failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -35,7 +38,9 @@ export function useUserSearch() {
       return response.data;
     },
     onError: (error) => {
-      console.error('User search failed:', error);
+      logger.error('User search failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

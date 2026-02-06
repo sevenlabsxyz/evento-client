@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { ApiResponse, Event } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Response type for pinned event
@@ -72,7 +73,9 @@ export function useUpdatePinnedEvent() {
       queryClient.invalidateQueries({ queryKey: ['user'] });
     },
     onError: (error: any) => {
-      console.error('Update pinned event error:', error);
+      logger.error('Update pinned event error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
