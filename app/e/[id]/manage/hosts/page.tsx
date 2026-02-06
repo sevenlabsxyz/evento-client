@@ -171,7 +171,7 @@ export default function HostsManagementPage() {
                       user={{
                         name: host.name ?? undefined,
                         username: host.username,
-                        image: host.image ?? undefined,
+                        image: host.image ?? host.avatar,
                         verification_status: host.verification_status as VerificationStatus,
                       }}
                       size='md'
