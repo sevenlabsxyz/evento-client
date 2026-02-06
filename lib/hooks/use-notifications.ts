@@ -110,7 +110,7 @@ export function useNotificationsFeed(filters: NotificationFilterParams = {}) {
         }
 
         // Make API request
-        const response = await apiClient.get<NotificationFeedResponse>(
+        const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           `/v1/notifications/feed?${params.toString()}`
         );
 
@@ -145,7 +145,7 @@ export function useNotification(messageId: string, enabled: boolean = true) {
     queryKey: ['notifications', 'message', messageId],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationMessage>(
+        const response = await apiClient.get<ApiResponse<NotificationMessage>>(
           `/v1/notifications/messages/${messageId}`
         );
 
@@ -255,7 +255,7 @@ export function useBulkMarkAsSeen() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as seen');
@@ -279,7 +279,7 @@ export function useBulkMarkAsRead() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as read');
@@ -303,7 +303,7 @@ export function useMarkAllAsSeen() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as seen');
@@ -327,7 +327,7 @@ export function useMarkAllAsRead() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as read');
@@ -347,7 +347,7 @@ export function useUnreadCount() {
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationFeedResponse>(
+        const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           '/v1/notifications/feed?page_size=1'
         );
 

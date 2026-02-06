@@ -7,7 +7,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star, XCircle } from 'lucide-react';
@@ -21,7 +21,7 @@ import { RegistrationStatus } from './registration-status';
 import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
-  event: Event;
+  event: EventDetail;
   currentUserId?: string;
   eventData?: ApiEvent | null;
   hosts?: EventHost[];

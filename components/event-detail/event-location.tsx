@@ -1,14 +1,14 @@
 'use client';
 
 import { Env } from '@/lib/constants/env';
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
 import WeatherDetailSheet from './weather-detail-sheet';
 
 interface EventLocationProps {
-  event: Event;
+  event: EventDetail;
   weather?: WeatherData | null;
 }
 

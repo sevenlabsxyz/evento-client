@@ -342,7 +342,7 @@ export default function UserProfilePageClient() {
       id: userData?.id,
       username: userProfile?.username,
       name: userProfile?.name,
-      image: userProfile.image,
+      image: userProfile?.image,
       verification_status: userData?.verification_status,
     },
     created_at: new Date().toISOString(),
@@ -590,7 +590,7 @@ export default function UserProfilePageClient() {
 
               {/* Profile Picture - Centered & Clickable */}
               <UserAvatar
-                user={userProfile}
+                user={userProfile ?? undefined}
                 size='lg'
                 onAvatarClick={handleAvatarClick}
                 onVerificationClick={() => setShowVerificationModal(true)}

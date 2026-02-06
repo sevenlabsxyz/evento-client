@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api/client';
+import { ApiResponse } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -12,6 +13,10 @@ interface LikeActionResponse {
   has_liked: boolean;
 }
 
+const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
+
 export function useGalleryItemLikes(itemId?: string, eventId?: string) {
   const queryClient = useQueryClient();
 
@@ -21,7 +26,7 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
     queryFn: async (): Promise<GalleryLikesResponse> => {
       if (!itemId || !eventId) return { likes: 0, has_liked: false };
 
-      const response = await apiClient.get<GalleryLikesResponse>(
+      const response = await apiClient.get<ApiResponse<GalleryLikesResponse> | GalleryLikesResponse>(
         `/v1/events/${eventId}/gallery/likes?itemId=${itemId}`
       );
 
@@ -31,12 +36,11 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && 'data' in response) {
+      if (isApiResponse<GalleryLikesResponse>(response)) {
         return response.data;
       }
 
-      // Fallback
-      return { likes: 0, has_liked: false };
+      return response;
     },
     enabled: !!itemId && !!eventId,
     staleTime: 1000 * 60, // Cache for 1 minute
@@ -47,7 +51,7 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
     mutationFn: async (): Promise<LikeActionResponse> => {
       if (!itemId || !eventId) throw new Error('No gallery item ID or event ID provided');
 
-      const response = await apiClient.post<LikeActionResponse>(
+      const response = await apiClient.post<ApiResponse<LikeActionResponse> | LikeActionResponse>(
         `/v1/events/${eventId}/gallery/likes`,
         {
           itemId,
@@ -60,11 +64,11 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && 'data' in response) {
+      if (isApiResponse<LikeActionResponse>(response)) {
         return response.data;
       }
 
-      throw new Error('Failed to toggle like');
+      return response;
     },
     onMutate: async () => {
       // Cancel any outgoing refetches to avoid overwriting our optimistic update

@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { isGif } from '@/lib/utils/image';
 import { Camera, Share2 } from 'lucide-react';
 import Image from 'next/image';
@@ -9,7 +9,7 @@ import { useState } from 'react';
 import PhotoUploadSheet from './photo-upload-sheet';
 
 interface EventGalleryProps {
-  event: Event;
+  event: EventDetail;
   currentUserId?: string;
   onImageClick?: (index: number) => void;
 }

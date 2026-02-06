@@ -6,6 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import type { UpdateEventData } from '@/lib/schemas/event';
 import { toast } from '@/lib/utils/toast';
 import { Check, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -220,14 +221,16 @@ export default function MusicManagementPage() {
       setIsSubmitting(true);
 
       // Prepare update data
-      const updateData = {
+      const updateData: UpdateEventData = {
         id: eventId,
         spotify_url: musicData.spotify?.url || '',
         wavlake_url: musicData.wavlake?.url || '',
         // Include other required fields from existing event
         title: existingEvent.title,
         description: existingEvent.description,
-        location: existingEvent.location,
+        location: existingEvent.location
+          ? { type: 'manual_entry' as const, data: { name: existingEvent.location } }
+          : null,
         timezone: existingEvent.timezone,
         start_date_day: existingEvent.start_date_day,
         start_date_month: existingEvent.start_date_month,
@@ -240,7 +243,7 @@ export default function MusicManagementPage() {
         end_date_hours: existingEvent.end_date_hours,
         end_date_minutes: existingEvent.end_date_minutes,
         visibility: existingEvent.visibility,
-        status: existingEvent.status,
+        status: (existingEvent.status === 'draft' ? 'draft' : 'published') as UpdateEventData['status'],
       };
 
       await updateEventMutation.mutateAsync(updateData, {

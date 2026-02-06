@@ -246,8 +246,8 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                     Auto-swap delayed
                                   </p>
                                   <p className='mt-0.5 text-xs text-orange-700'>
-                                    {deposit.claimError.type === 'depositClaimFeeExceeded'
-                                      ? `Network fee of ${deposit.claimError.actualFee} sats is too high (waiting for fees below 1 sat/vbyte)`
+                                    {deposit.claimError.type === 'maxDepositClaimFeeExceeded'
+                                      ? `Network fee of ${deposit.claimError.requiredFeeSats} sats is too high (waiting for fees below 1 sat/vbyte)`
                                       : deposit.claimError.type === 'missingUtxo'
                                         ? 'Transaction output not found'
                                         : deposit.claimError.type === 'generic'

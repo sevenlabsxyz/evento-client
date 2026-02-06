@@ -431,7 +431,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
 
       // Settings
       visibility: state.visibility,
-      status: 'published',
+      status: 'published' as const,
 
       // URLs
       spotify_url: state.spotifyUrl || undefined,

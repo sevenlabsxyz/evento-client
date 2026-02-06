@@ -1,8 +1,8 @@
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { Check, Gift } from 'lucide-react';
 
 interface EventPerksProps {
-  event: Event;
+  event: EventDetail;
 }
 
 export default function EventPerks({ event }: EventPerksProps) {

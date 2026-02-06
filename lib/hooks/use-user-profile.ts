@@ -8,6 +8,10 @@ import { ApiResponse, UserDetails } from '../types/api';
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
 
+const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
+
 /**
  * Hook to fetch and manage user profile data
  */
@@ -75,7 +79,10 @@ export function useUpdateUserProfile() {
         Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
       );
 
-      const response = await apiClient.patch<UserDetails[]>('/v1/user', filteredUpdates);
+      const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
+        '/v1/user',
+        filteredUpdates
+      );
       return response.data?.[0] || null;
     },
     onSuccess: (updatedUser) => {
@@ -104,7 +111,7 @@ export function useUploadProfileImage() {
       const formData = new FormData();
       formData.append('image', file);
 
-      const response = await apiClient.post<UserDetails[]>(
+      const response = await apiClient.post<ApiResponse<UserDetails[]>>(
         '/v1/user/details/image-upload',
         formData,
         {
@@ -136,15 +143,17 @@ export function useUploadProfileImage() {
 export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
+      const response = await apiClient.get<ApiResponse<UserDetails[]> | UserDetails[]>(
         `/v1/user/search?s=${encodeURIComponent(query)}`
       );
 
       // Handle both response formats (array or object with data property)
       if (Array.isArray(response)) {
         return response;
-      } else if (response && typeof response === 'object' && 'data' in response) {
-        return (response as any).data || [];
+      }
+
+      if (isApiResponse<UserDetails[]>(response)) {
+        return response.data || [];
       }
 
       return [];
@@ -165,7 +174,7 @@ export function useFollowStatus(userId: string) {
     queryFn: async () => {
       if (!userId) return { isFollowing: false };
 
-      const response = await apiClient.get<{ isFollowing: boolean }>(
+      const response = await apiClient.get<ApiResponse<{ isFollowing: boolean }>>(
         `/v1/user/follow?id=${userId}`
       );
       return response.data || { isFollowing: false };
@@ -224,9 +233,12 @@ export function useUserFollowers(userId: string) {
   return useQuery({
     queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/followers/list?id=${userId}`);
+      const response = await apiClient.get<ApiResponse<any[]> | any[]>(
+        `/v1/user/followers/list?id=${userId}`
+      );
+      const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = (response.data || []).map((item: any) => ({
+      const transformedData = responseData.map((item: any) => ({
         id: item.user_details?.id || item.follower_id,
         username: item.user_details?.username || '',
         name: item.user_details?.name || '',
@@ -247,9 +259,12 @@ export function useUserFollowing(userId: string) {
   return useQuery({
     queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/follows/list?id=${userId}`);
+      const response = await apiClient.get<ApiResponse<any[]> | any[]>(
+        `/v1/user/follows/list?id=${userId}`
+      );
+      const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = (response.data || []).map((item: any) => ({
+      const transformedData = responseData.map((item: any) => ({
         id: item.user_details?.id || item.followed_id,
         username: item.user_details?.username || '',
         name: item.user_details?.name || '',
@@ -270,8 +285,13 @@ export function useUserEventCount(userId: string) {
   return useQuery({
     queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
-      const response = await apiClient.get<{ count: number }>(`/v1/user/events/count?id=${userId}`);
-      return response.data?.count || 0;
+      const response = await apiClient.get<ApiResponse<{ count: number }> | { count: number }>(
+        `/v1/user/events/count?id=${userId}`
+      );
+      if (isApiResponse<{ count: number }>(response)) {
+        return response.data?.count || 0;
+      }
+      return response.count || 0;
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes

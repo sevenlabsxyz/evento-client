@@ -1,11 +1,11 @@
 'use client';
 
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 
 interface EventDescriptionProps {
-  event: Event;
+  event: EventDetail;
 }
 
 export default function EventDescription({ event }: EventDescriptionProps) {
