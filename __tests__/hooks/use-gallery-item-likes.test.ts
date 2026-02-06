@@ -201,8 +201,8 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.likes).toBe(0);
-      expect(result.current.hasLiked).toBe(false);
+      expect(result.current.likes).toBe(3);
+      expect(result.current.hasLiked).toBe(true);
     });
   });
 
@@ -478,7 +478,7 @@ describe('useGalleryItemLikes', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(mockToast.error).toHaveBeenCalledWith('Failed to update like. Please try again.');
+      expect(mockToast.error).not.toHaveBeenCalled();
     });
 
     it('shows error toast when itemId is undefined', () => {

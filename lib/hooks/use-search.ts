@@ -2,7 +2,7 @@ import { useMutation } from '@tanstack/react-query';
 import { logger } from '@/lib/utils/logger';
 import apiClient from '../api/client';
 import { UserSearchResult } from '../types/api';
-import { Event } from '../types/event';
+import { EventDetail } from '../types/event';
 import { transformApiEventToDisplay } from '../utils/event-transform';
 /**
  * Hook to search for events
@@ -10,7 +10,7 @@ import { transformApiEventToDisplay } from '../utils/event-transform';
  */
 export function useEventSearch() {
   return useMutation({
-    mutationFn: async (query: string): Promise<Event[]> => {
+    mutationFn: async (query: string): Promise<EventDetail[]> => {
       if (!query.trim()) return [];
 
       const response = await apiClient.get(`/v1/event/search?s=${encodeURIComponent(query)}`);

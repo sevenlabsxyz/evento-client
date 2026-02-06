@@ -80,9 +80,10 @@ class WeatherService {
       };
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -105,9 +106,10 @@ class WeatherService {
       return this.transformWeatherData(data, unit);
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -160,9 +162,10 @@ class WeatherService {
       );
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -192,9 +195,10 @@ class WeatherService {
       return this.getCurrentWeather(lat, lon, unit);
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }

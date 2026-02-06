@@ -1,10 +1,10 @@
 'use client';
 
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { useRouter } from 'next/navigation';
 
 interface EventGuestListProps {
-  event: Event;
+  event: EventDetail;
   currentUserId?: string;
 }
 

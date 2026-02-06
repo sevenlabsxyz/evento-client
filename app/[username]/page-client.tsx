@@ -599,7 +599,7 @@ export default function UserProfilePageClient() {
 
               {/* Profile Picture - Centered & Clickable */}
               <UserAvatar
-                user={userProfile}
+                user={userProfile ?? undefined}
                 size='lg'
                 onAvatarClick={handleAvatarClick}
                 onVerificationClick={() => setShowVerificationModal(true)}

@@ -594,7 +594,7 @@ describe('useNotifications', () => {
     });
 
     it('handles failed response', async () => {
-      mockApiClient.put.mockResolvedValue({ data: { success: false } });
+      mockApiClient.put.mockResolvedValue({ success: false });
 
       const { result } = renderHook(() => useBulkMarkAsSeen(), {
         wrapper: createTestWrapper(queryClient),

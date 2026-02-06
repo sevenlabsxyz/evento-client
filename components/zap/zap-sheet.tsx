@@ -187,6 +187,11 @@ export function ZapSheet({
         }
       }
 
+      if (!currentPayRequest) {
+        toast.error('Invalid lightning address');
+        return;
+      }
+
       // Prepare the LNURL payment
       const response = await breezSDK.prepareLnurlPay({
         payRequest: currentPayRequest,
@@ -235,6 +240,11 @@ export function ZapSheet({
           toast.error('Invalid lightning address');
           return;
         }
+      }
+
+      if (!currentPayRequest) {
+        toast.error('Invalid lightning address');
+        return;
       }
 
       // Prepare the LNURL payment

@@ -140,7 +140,7 @@ describe('useCommentReactions', () => {
     });
 
     it('does not fetch when commentId is empty', () => {
-      const { result } = renderHook(() => useCommentReactions(''), {
+      const { result } = renderHook(() => useCommentReactions('', 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 
@@ -149,7 +149,7 @@ describe('useCommentReactions', () => {
     });
 
     it('does not fetch when commentId is undefined', () => {
-      const { result } = renderHook(() => useCommentReactions(undefined as any), {
+      const { result } = renderHook(() => useCommentReactions(undefined as any, 'event1'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
       });
 

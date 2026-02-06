@@ -139,6 +139,12 @@ export interface Event {
   cost: number | null;
   creator_user_id: string;
   hosts: EventHost[];
+  max_capacity?: number | null;
+  show_capacity_count?: boolean;
+  guestListSettings?: {
+    isPublic: boolean;
+    allowPublicRSVP: boolean;
+  };
 
   // Password protection
   password_protected?: boolean;
@@ -176,15 +182,6 @@ export interface Event {
 
   // Relations (populated in some responses)
   user_details?: UserDetails;
-  hosts?: Array<{
-    id: string;
-    name: string;
-    username: string;
-    avatar: string;
-    image?: string;
-    title?: string;
-    company?: string;
-  }>;
 }
 
 // Event Invite

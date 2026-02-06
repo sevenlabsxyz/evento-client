@@ -1,12 +1,12 @@
 'use client';
 
 import { NO_COVER_FALLBACK } from '@/components/event-covers';
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 
 interface SwipeableHeaderProps {
-  event: Event;
+  event: EventDetail;
   onImageClick: (index: number) => void;
 }
 

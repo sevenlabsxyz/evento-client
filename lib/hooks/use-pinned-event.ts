@@ -22,7 +22,7 @@ export function usePinnedEvent(username: string) {
         return null;
       }
       try {
-        const response = await apiClient.get<Event>(
+        const response = await apiClient.get<ApiResponse<Event>>(
           `/v1/user/pinned-event?username=${encodeURIComponent(username)}`
         );
         return response?.data || null;

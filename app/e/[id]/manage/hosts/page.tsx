@@ -22,7 +22,7 @@ import {
 } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { CohostInvite } from '@/lib/types/api';
+import { CohostInvite, VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -169,10 +169,10 @@ export default function HostsManagementPage() {
                   >
                     <UserAvatar
                       user={{
-                        name: host.name,
+                        name: host.name ?? undefined,
                         username: host.username,
-                        image: host.avatar || host.image,
-                        verification_status: host.verification_status,
+                        image: host.image ?? host.avatar,
+                        verification_status: host.verification_status as VerificationStatus,
                       }}
                       size='md'
                     />

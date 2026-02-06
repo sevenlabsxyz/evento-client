@@ -7,6 +7,7 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
   const router = useRouter();
   const { setActiveChannel } = useChatContext();
   const { channel, displayImage, displayTitle, lastMessage, unread } = props;
+  const unreadCount = unread ?? 0;
 
   const handleClick = () => {
     setActiveChannel(channel);
@@ -88,7 +89,9 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
       <div className='str-chat__channel-preview-messenger--main'>
         <div className='str-chat__channel-preview-messenger--name'>
           <span>{displayTitle || 'Unknown Channel'}</span>
-          {unread > 0 && <span className='str-chat__channel-preview-unread-badge'>{unread}</span>}
+          {unreadCount > 0 && (
+            <span className='str-chat__channel-preview-unread-badge'>{unreadCount}</span>
+          )}
         </div>
         <div className='str-chat__channel-preview-messenger--last-message'>
           {getLastMessagePreview()}

@@ -1,5 +1,5 @@
 import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
-import { Event as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
+import { EventDetail as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
 
