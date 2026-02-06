@@ -9,6 +9,7 @@ import {
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import type { Editor } from '@tiptap/core';
+import DOMPurify from 'dompurify';
 import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { LoadingLogo } from '../ui/loading-logo';
@@ -325,7 +326,7 @@ export function AIDescriptionGeneratorSheet({
                           <div className='prose prose-sm max-w-none rounded-md border border-gray-200 bg-white p-4'>
                             <div
                               dangerouslySetInnerHTML={{
-                                __html: generatedContent || '',
+                                __html: DOMPurify.sanitize(generatedContent || ''),
                               }}
                             />
                           </div>

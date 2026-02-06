@@ -1,6 +1,7 @@
 import { apiClient } from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
 import { EventComment } from '@/lib/hooks/use-event-comments';
+import { ApiResponse } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 

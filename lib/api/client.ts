@@ -1,5 +1,4 @@
 import { Env } from '@/lib/constants/env';
-import { logger } from '@/lib/utils/logger';
 import axios, {
   AxiosError,
   AxiosRequestConfig,
@@ -33,7 +32,7 @@ export const apiClient: ApiClient = axios.create({
 // Add request interceptor for logging
 apiClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const requestId = logger.generateRequestId();
+    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
     // Store request ID and start time in config for correlation
     config.metadata = {
@@ -53,7 +52,7 @@ apiClient.interceptors.request.use(
     return config;
   },
   (error: AxiosError) => {
-    logger.logApiError('request_preparation_failed', error);
+    console.error('API request preparation failed:', error);
     return Promise.reject(error);
   }
 );
@@ -94,17 +93,18 @@ apiClient.interceptors.response.use(
       (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
 
     // Log API error with full context
-    logger.logApiError(config?.url || 'unknown', error, {
+    console.error('API Error:', {
+      url: config?.url || 'unknown',
+      error: error.message,
+      stack: error.stack,
       requestId,
       method: config?.method?.toUpperCase(),
       statusCode: error.response?.status,
-      userAgent: navigator?.userAgent,
-      additionalContext: {
-        duration,
-        responseData: error.response?.data,
-        networkError: !error.response,
-        timeout: error.code === 'ECONNABORTED',
-      },
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+      duration,
+      responseData: error.response?.data,
+      networkError: !error.response,
+      timeout: error.code === 'ECONNABORTED',
     });
 
     // Create a standardized error object

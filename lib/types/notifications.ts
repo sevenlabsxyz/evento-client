@@ -3,15 +3,13 @@ export interface NotificationActor {
   object: string;
 }
 
-export interface NotificationRenderedContent {
-  subject?: string;
-  body?: string;
-  plain_text?: string;
-}
-
 export interface NotificationBlock {
   channel_id: string;
-  rendered_content?: NotificationRenderedContent;
+  rendered_content: {
+    subject?: string;
+    body?: string;
+    plain_text?: string;
+  } | null;
   seen_at: string | null;
   read_at: string | null;
   interacted_at: string | null;
@@ -24,44 +22,19 @@ export interface NotificationActivity {
   created_at: string;
 }
 
-export type NotificationStatus = 'unseen' | 'unread' | 'seen' | 'read' | 'archived';
-
 export interface NotificationMessage {
   id: string;
   tenant: string;
-  workflow_key: string | null;
+  workflow_key: string;
   actor: NotificationActor | null;
   recipient: NotificationActor;
-  status: NotificationStatus;
+  status: 'unseen' | 'seen' | 'read' | 'archived';
   blocks: NotificationBlock[];
   activities: NotificationActivity[];
   data: Record<string, unknown>;
   created_at: string;
   updated_at: string;
-  trigger_data?: Record<string, string | number | boolean | null>;
-}
-
-export interface NotificationFeedMeta {
-  total_count: number;
-  unseen_count: number;
-  unread_count: number;
-}
-
-export interface NotificationFeedPageInfo {
-  after: string | null;
-  before: string | null;
-  page_size: number;
-}
-
-export interface NotificationFeedResponse {
-  entries: NotificationMessage[];
-  meta?: NotificationFeedMeta;
-  page_info?: NotificationFeedPageInfo;
-}
-
-export interface NotificationActorSummary {
-  id: string;
-  type: string;
+  trigger_data: Record<string, unknown>;
 }
 
 export interface UINotification {
@@ -69,11 +42,28 @@ export interface UINotification {
   title: string;
   content: string;
   timestamp: string;
-  actor?: NotificationActorSummary;
+  actor?: {
+    id: string;
+    type: string;
+  };
   category: string;
-  status: NotificationStatus;
+  status: string;
   data: Record<string, unknown>;
   original: NotificationMessage;
+}
+
+export interface NotificationFeedResponse {
+  entries: NotificationMessage[];
+  meta: {
+    total_count: number;
+    unseen_count: number;
+    unread_count: number;
+  };
+  page_info: {
+    after: string | null;
+    before: string | null;
+    page_size: number;
+  };
 }
 
 export interface NotificationFilterParams {
@@ -81,10 +71,10 @@ export interface NotificationFilterParams {
   after?: string;
   before?: string;
   archived?: boolean;
-  status?: NotificationStatus;
+  status?: string;
   tenant?: string;
   source?: string;
-  trigger_data?: Record<string, string | number | boolean | null>;
+  trigger_data?: Record<string, unknown>;
 }
 
 export interface NotificationBulkActionParams {
@@ -92,7 +82,8 @@ export interface NotificationBulkActionParams {
 }
 
 export interface MarkAllNotificationsParams {
+  older_than?: string;
+  newer_than?: string;
   before?: string;
-  workflow_keys?: string[];
-  tenant?: string;
+  categories?: string[];
 }

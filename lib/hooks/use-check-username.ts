@@ -39,11 +39,11 @@ export function useCheckUsername() {
       }
 
       try {
-      const response = await apiClient.get<ApiResponse<UsernameCheckResponse>>(
-        `/v1/user/check-username?username=${encodeURIComponent(cleanUsername)}`
-      );
+        const response = await apiClient.get<ApiResponse<UsernameCheckResponse>>(
+          `/v1/user/check-username?username=${encodeURIComponent(cleanUsername)}`
+        );
 
-      return response.data || { available: false };
+        return response.data || { available: false };
       } catch (error: any) {
         // If we get a 404, it means the username is available
         if (error.status === 404) {

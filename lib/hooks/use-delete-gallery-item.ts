@@ -17,7 +17,6 @@ export function useDeleteGalleryItem() {
         `/v1/events/${eventId}/gallery?galleryItemId=${galleryItemId}`
       );
 
-      // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');
       }

@@ -1,6 +1,5 @@
 import { apiClient } from '@/lib/api/client';
-import { ApiResponse } from '@/lib/types/api';
-import { UserDetails } from '@/lib/types/api';
+import { ApiResponse, UserDetails } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
 export interface GalleryItem {

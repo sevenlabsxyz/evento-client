@@ -180,7 +180,6 @@ export interface Event {
   created_at: string;
   updated_at: string;
 
-  // Relations (populated in some responses)
   user_details?: UserDetails;
 }
 

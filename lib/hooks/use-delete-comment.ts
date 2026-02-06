@@ -41,7 +41,7 @@ export function useDeleteComment() {
         await queryClient.invalidateQueries({
           queryKey: ['event', 'comments', eventId],
         });
-        return response.data || { id: commentId };
+        return response.data ?? { id: commentId };
       }
 
       // Fallback
