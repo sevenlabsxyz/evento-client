@@ -39,15 +39,6 @@ export function SiteHeader() {
   };
 
   const renderLeftContent = () => {
-    if (leftMode === 'back') {
-      return (
-        <Button variant='ghost' size='icon' onClick={handleBackPress} className='h-8 w-8'>
-          <ArrowLeft className='h-4 w-4' />
-          <span className='sr-only'>Go back</span>
-        </Button>
-      );
-    }
-
     if (!isAuthenticated) {
       return (
         <Link href='/' className='flex items-center gap-2'>
@@ -62,11 +53,20 @@ export function SiteHeader() {
       );
     }
 
+    if (leftMode === 'back') {
+      return (
+        <Button variant='ghost' size='icon' onClick={handleBackPress} className='h-8 w-8'>
+          <ArrowLeft className='h-4 w-4' />
+          <span className='sr-only'>Go back</span>
+        </Button>
+      );
+    }
+
     return <SidebarTrigger className='-ml-1' />;
   };
 
   const renderCenterContent = () => {
-    if (centerMode === 'empty') {
+    if (!isAuthenticated || centerMode === 'empty') {
       return null;
     }
 
