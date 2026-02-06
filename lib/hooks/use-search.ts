@@ -1,7 +1,8 @@
 import { useMutation } from '@tanstack/react-query';
+import { logger } from '@/lib/utils/logger';
 import apiClient from '../api/client';
 import { UserSearchResult } from '../types/api';
-import { Event } from '../types/event';
+import { EventDetail } from '../types/event';
 import { transformApiEventToDisplay } from '../utils/event-transform';
 /**
  * Hook to search for events
@@ -9,7 +10,7 @@ import { transformApiEventToDisplay } from '../utils/event-transform';
  */
 export function useEventSearch() {
   return useMutation({
-    mutationFn: async (query: string): Promise<Event[]> => {
+    mutationFn: async (query: string): Promise<EventDetail[]> => {
       if (!query.trim()) return [];
 
       const response = await apiClient.get(`/v1/event/search?s=${encodeURIComponent(query)}`);
@@ -21,7 +22,9 @@ export function useEventSearch() {
       );
     },
     onError: (error) => {
-      console.error('Event search failed:', error);
+      logger.error('Event search failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -35,7 +38,9 @@ export function useUserSearch() {
       return response.data;
     },
     onError: (error) => {
-      console.error('User search failed:', error);
+      logger.error('User search failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

@@ -6,6 +6,7 @@ import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { VerificationStatus } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Copy, Loader2 } from 'lucide-react';
@@ -120,7 +121,9 @@ export default function TipSheet({
 
       toast.success('Opening your Lightning wallet...');
     } catch (error) {
-      console.error('Payment error:', error);
+      logger.error('Payment error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error('Failed to create payment. Please try again.');
     } finally {
       setIsLoading(false);
@@ -134,7 +137,9 @@ export default function TipSheet({
       await navigator.clipboard.writeText(invoice);
       toast.success('Invoice copied to clipboard!');
     } catch (error) {
-      console.error('Failed to copy invoice:', error);
+      logger.error('Failed to copy invoice', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error('Failed to copy invoice');
     }
   };

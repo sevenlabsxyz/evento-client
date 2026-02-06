@@ -7,6 +7,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { logger } from '@/lib/utils/logger';
 import { Loader2, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BitrefillPaymentConfirmationSheet } from './bitrefill-payment-confirmation-sheet';
@@ -56,7 +57,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
     const handleMessage = (e: MessageEvent) => {
       // Log ALL messages first (before filtering)
       if (DEBUG_BITREFILL) {
-        console.log('📨 [BITREFILL] Raw message received:', {
+        logger.debug('📨 [BITREFILL] Raw message received', {
           origin: e.origin,
           data: e.data,
           type: typeof e.data,
@@ -64,8 +65,11 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
       }
 
       if (e.origin !== 'https://embed.bitrefill.com') {
-        if (DEBUG_BITREFILL)
-          console.log('⚠️ [BITREFILL] Ignoring message from different origin:', e.origin);
+        if (DEBUG_BITREFILL) {
+          logger.debug('⚠️ [BITREFILL] Ignoring message from different origin', {
+            origin: e.origin,
+          });
+        }
         return;
       }
 
@@ -76,24 +80,33 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
         try {
           data = JSON.parse(data);
         } catch (error) {
-          if (DEBUG_BITREFILL) console.log('⚠️ [BITREFILL] Failed to parse JSON data:', error);
+          if (DEBUG_BITREFILL) {
+            logger.debug('⚠️ [BITREFILL] Failed to parse JSON data', {
+              error: error instanceof Error ? error.message : String(error),
+            });
+          }
           return;
         }
       }
 
       if (!data || typeof data !== 'object') {
-        if (DEBUG_BITREFILL) console.log('⚠️ [BITREFILL] Invalid data format:', data);
+        if (DEBUG_BITREFILL) {
+          logger.debug('⚠️ [BITREFILL] Invalid data format', { data });
+        }
         return;
       }
 
-      if (DEBUG_BITREFILL) console.log('✅ [BITREFILL] Valid event received:', data);
+      if (DEBUG_BITREFILL) {
+        logger.debug('✅ [BITREFILL] Valid event received', { data });
+      }
 
       const { event, invoiceId, paymentUri, status, deliveryStatus: msgDeliveryStatus } = data;
 
       switch (event) {
         case 'invoice_created':
-          if (DEBUG_BITREFILL)
-            console.log('🧾 [BITREFILL] Invoice created:', { invoiceId, paymentUri });
+          if (DEBUG_BITREFILL) {
+            logger.debug('🧾 [BITREFILL] Invoice created', { invoiceId, paymentUri });
+          }
           // Store invoice for when user clicks "open in wallet"
           if (invoiceId && paymentUri) {
             setCurrentInvoice({ invoiceId, paymentUri });
@@ -101,11 +114,12 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'payment_intent':
-          if (DEBUG_BITREFILL)
-            console.log('💳 [BITREFILL] Payment intent (user clicked pay):', {
+          if (DEBUG_BITREFILL) {
+            logger.debug('💳 [BITREFILL] Payment intent (user clicked pay)', {
               invoiceId,
               paymentUri,
             });
+          }
           // User clicked "open in wallet" - show confirmation sheet
           if (invoiceId && paymentUri) {
             setCurrentInvoice({ invoiceId, paymentUri });
@@ -114,7 +128,9 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'invoice_update':
-          if (DEBUG_BITREFILL) console.log('🔄 [BITREFILL] Invoice update:', { status, invoiceId });
+          if (DEBUG_BITREFILL) {
+            logger.debug('🔄 [BITREFILL] Invoice update', { status, invoiceId });
+          }
           // Track status: payment_detected, payment_confirmed, expired, refunded
           if (status === 'payment_confirmed') {
             setPaymentStatus('success');
@@ -125,8 +141,11 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         case 'invoice_complete':
-          if (DEBUG_BITREFILL)
-            console.log('✅ [BITREFILL] Invoice complete:', { deliveryStatus: msgDeliveryStatus });
+          if (DEBUG_BITREFILL) {
+            logger.debug('✅ [BITREFILL] Invoice complete', {
+              deliveryStatus: msgDeliveryStatus,
+            });
+          }
           // Final delivery status
           setDeliveryStatus(msgDeliveryStatus || null);
           setPaymentStatus(msgDeliveryStatus === 'all_error' ? 'error' : 'success');
@@ -136,15 +155,21 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
           break;
 
         default:
-          if (DEBUG_BITREFILL) console.log('❓ [BITREFILL] Unknown event type:', event, data);
+          if (DEBUG_BITREFILL) {
+            logger.debug('❓ [BITREFILL] Unknown event type', { event, data });
+          }
       }
     };
 
     window.addEventListener('message', handleMessage);
-    if (DEBUG_BITREFILL) console.log('🎧 [BITREFILL] Message listener attached');
+    if (DEBUG_BITREFILL) {
+      logger.debug('🎧 [BITREFILL] Message listener attached');
+    }
     return () => {
       window.removeEventListener('message', handleMessage);
-      if (DEBUG_BITREFILL) console.log('🔇 [BITREFILL] Message listener removed');
+      if (DEBUG_BITREFILL) {
+        logger.debug('🔇 [BITREFILL] Message listener removed');
+      }
     };
   }, [refreshBalance]);
 

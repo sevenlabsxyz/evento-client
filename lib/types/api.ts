@@ -139,6 +139,12 @@ export interface Event {
   cost: number | null;
   creator_user_id: string;
   hosts: EventHost[];
+  max_capacity?: number | null;
+  show_capacity_count?: boolean;
+  guestListSettings?: {
+    isPublic: boolean;
+    allowPublicRSVP: boolean;
+  };
 
   // Password protection
   password_protected?: boolean;

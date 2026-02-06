@@ -6,6 +6,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { getOptimizedImageUrl } from '@/lib/utils/image';
+import { logger } from '@/lib/utils/logger';
 import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -77,7 +78,9 @@ export default function GalleryPage() {
           url: galleryUrl,
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        logger.error('Error sharing', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
       // Fallback: copy to clipboard
@@ -96,10 +99,9 @@ export default function GalleryPage() {
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files) {
-        console.log(
-          'Selected files:',
-          Array.from(files).map((f) => f.name)
-        );
+        logger.debug('Selected files', {
+          files: Array.from(files).map((f) => f.name),
+        });
         // TODO: Handle file upload
       }
     };
@@ -198,11 +200,13 @@ export default function GalleryPage() {
         handleDelete={async (photoId: string) => {
           try {
             // TODO: Implement actual delete functionality
-            console.log('Deleting photo:', photoId);
+            logger.info('Deleting photo', { photoId });
             // For now, just return success - this will be implemented later
             return { success: true };
           } catch (error) {
-            console.error('Error deleting photo:', error);
+            logger.error('Error deleting photo', {
+              error: error instanceof Error ? error.message : String(error),
+            });
             return { success: false };
           }
         }}

@@ -12,6 +12,10 @@ export interface CommentReactions {
 
 export type ReactionType = 'like';
 
+const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
+
 export function useCommentReactions(commentId: string, eventId: string) {
   // Query to get current reactions
   const query = useQuery({
@@ -26,11 +30,11 @@ export function useCommentReactions(commentId: string, eventId: string) {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && 'data' in response) {
+      if (isApiResponse<CommentReactions>(response)) {
         return response.data;
       }
 
-      return response as unknown as CommentReactions;
+      return response;
     },
     enabled: !!commentId,
   });
@@ -53,15 +57,24 @@ export function useCommentReactions(commentId: string, eventId: string) {
       }>
     > => {
       const response = await apiClient.post<
-        ApiResponse<{
-          action: 'added' | 'removed' | 'updated';
-          has_reacted: boolean;
-          reaction_type?: ReactionType;
-        }>
+        | ApiResponse<{
+            action: 'added' | 'removed' | 'updated';
+            has_reacted: boolean;
+            reaction_type?: ReactionType;
+          }>
+        | {
+            action: 'added' | 'removed' | 'updated';
+            has_reacted: boolean;
+            reaction_type?: ReactionType;
+          }
       >(`/v1/events/${eventId}/comments/${commentId}/reactions`, { reactionType });
 
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');
+      }
+
+      if (isApiResponse(response)) {
+        return response.data;
       }
 
       return response;

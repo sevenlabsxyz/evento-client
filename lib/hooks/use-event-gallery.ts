@@ -13,11 +13,15 @@ export interface GalleryItem {
   };
 }
 
+const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
+
 export function useEventGallery(eventId: string) {
   return useQuery({
     queryKey: ['event', 'gallery', eventId],
     queryFn: async (): Promise<GalleryItem[]> => {
-      const response = await apiClient.get<ApiResponse<GalleryItem[]>>(
+      const response = await apiClient.get<ApiResponse<GalleryItem[]> | GalleryItem[]>(
         `/v1/events/${eventId}/gallery`
       );
 
@@ -27,12 +31,12 @@ export function useEventGallery(eventId: string) {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && 'data' in response) {
+      if (isApiResponse<GalleryItem[]>(response)) {
         return response.data || [];
       }
 
       // Fallback for direct data response
-      return response as unknown as GalleryItem[];
+      return response;
     },
     enabled: !!eventId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes

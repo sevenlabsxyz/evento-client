@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Constant strings for error contexts
  * Use these instead of string literals to prevent typos
@@ -352,7 +354,7 @@ export function shouldRetryBreezError(error: any): boolean {
 export function logBreezError(error: any, context?: string): void {
   const errorInfo = handleBreezError(error, context);
 
-  console.error(`[Breez SDK Error]${context ? ` (${context})` : ''}`, {
+  logger.error(`[Breez SDK Error]${context ? ` (${context})` : ''}`, {
     userMessage: errorInfo.userMessage,
     originalError: errorInfo.originalError,
     category: errorInfo.category,

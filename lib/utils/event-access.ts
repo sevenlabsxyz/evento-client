@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Utility for managing event password access in localStorage with TTL
  */
@@ -46,7 +48,9 @@ function saveStore(store: EventAccessStore): void {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   } catch (error) {
-    console.error('Failed to save event access store:', error);
+    logger.error('Failed to save event access store', {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
 }
 

@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import {
   MarkAllNotificationsParams,
   NotificationBulkActionParams,
@@ -109,6 +110,7 @@ export function useNotificationsFeed(filters: NotificationFilterParams = {}) {
           });
         }
 
+        // Make API request
         const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           `/v1/notifications/feed?${params.toString()}`
         );
@@ -127,7 +129,9 @@ export function useNotificationsFeed(filters: NotificationFilterParams = {}) {
 
         throw new Error('Invalid response format');
       } catch (error) {
-        console.error('Error fetching notifications feed:', error);
+        logger.error('Error fetching notifications feed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -153,7 +157,9 @@ export function useNotification(messageId: string, enabled: boolean = true) {
 
         throw new Error('Invalid response format');
       } catch (error) {
-        console.error(`Error fetching notification ${messageId}:`, error);
+        logger.error(`Error fetching notification ${messageId}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -253,7 +259,7 @@ export function useBulkMarkAsSeen() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as seen');
@@ -274,7 +280,7 @@ export function useBulkMarkAsRead() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as read');
@@ -295,7 +301,7 @@ export function useMarkAllAsSeen() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as seen');
@@ -316,7 +322,7 @@ export function useMarkAllAsRead() {
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as read');
@@ -349,7 +355,9 @@ export function useUnreadCount() {
 
         return { unread: 0, unseen: 0 };
       } catch (error) {
-        console.error('Error fetching notification count:', error);
+        logger.error('Error fetching notification count', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         return { unread: 0, unseen: 0 };
       }
     },

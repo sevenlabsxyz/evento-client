@@ -15,7 +15,7 @@ export const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         // Don't retry on 4xx errors (client errors)
         if (error && typeof error === 'object' && 'status' in error) {
-          const apiError = error as ApiError;
+          const apiError = error as { status?: number };
           if (apiError.status && apiError.status >= 400 && apiError.status < 500) {
             return false;
           }
@@ -38,7 +38,7 @@ export const queryClient = new QueryClient({
       // Retry mutations once on network errors
       retry: (failureCount, error) => {
         if (error && typeof error === 'object' && 'status' in error) {
-          const apiError = error as ApiError;
+          const apiError = error as { status?: number };
           // Don't retry 4xx errors
           if (apiError.status && apiError.status >= 400 && apiError.status < 500) {
             return false;

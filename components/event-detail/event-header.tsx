@@ -1,8 +1,8 @@
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import Image from 'next/image';
 
 interface EventHeaderProps {
-  event: Event;
+  event: EventDetail;
   onImageClick: () => void;
 }
 
@@ -13,7 +13,7 @@ export default function EventHeader({ event, onImageClick }: EventHeaderProps) {
       onClick={onImageClick}
     >
       {/* Cover Image */}
-      <Image src={event.coverImage} alt={event.title} fill className='object-cover' priority />
+      <Image src={event.coverImages[0]} alt={event.title} fill className='object-cover' priority />
 
       {/* Gradient Overlay */}
       <div className='absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent' />

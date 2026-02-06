@@ -28,6 +28,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -184,7 +185,9 @@ export default function EventDetailPageClient() {
             url: window.location.href,
           });
         } catch (error) {
-          console.log('Error sharing:', error);
+          logger.error('Error sharing', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       } else {
         navigator.clipboard.writeText(window.location.href);
@@ -225,7 +228,7 @@ export default function EventDetailPageClient() {
     if (hasEventAccess(eventId)) return true;
 
     // Check if user is a host or co-host
-    if (user && hostsData.some((host) => host.id === user.id)) return true;
+    if (user && hostsData.some((host) => host.user_details.id === user.id)) return true;
 
     // Check if user is the creator
     if (user && eventData.creator_user_id === user.id) return true;
@@ -251,12 +254,12 @@ export default function EventDetailPageClient() {
       title: eventData.title,
       cover: eventData.cover,
       password_protected: true,
-      hosts: hostsData.map((h) => ({
-        id: h.id,
-        name: h.name,
-        username: h.username,
-        avatar: h.avatar || h.image || '',
-        image: h.image,
+      hosts: hostsData.map((host) => ({
+        id: host.user_details.id,
+        name: host.user_details.name || '',
+        username: host.user_details.username,
+        avatar: host.user_details.image || '',
+        image: host.user_details.image || undefined,
       })),
     };
 

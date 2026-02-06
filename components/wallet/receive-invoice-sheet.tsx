@@ -7,6 +7,7 @@ import { SegmentedTabItem, SegmentedTabs } from '@/components/ui/segmented-tabs'
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
 import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from 'lucide-react';
@@ -46,7 +47,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
     // Only set up listener if we have an active invoice
     if (!activeInvoice) return;
 
-    console.log('Setting up payment listener for invoice:', activeInvoice);
+    logger.info('Setting up payment listener for invoice', { activeInvoice });
 
     const handlePaymentEvent = (event: SdkEvent) => {
       if (event.type === 'paymentSucceeded') {
@@ -54,7 +55,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
 
         // Check if this payment matches our active invoice
         if (payment.details?.type === 'lightning' && payment.details.invoice === activeInvoice) {
-          console.log('Payment received for active invoice!', payment);
+          logger.info('Payment received for active invoice', { payment });
           setShowSuccess(true);
         }
       }
@@ -65,7 +66,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
 
     // Cleanup on unmount or when invoice changes
     return () => {
-      console.log('Cleaning up payment listener');
+      logger.info('Cleaning up payment listener');
       unsubscribe();
     };
   }, [activeInvoice]);
@@ -85,7 +86,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       });
       setBitcoinAddress(receiveResponse.paymentRequest);
     } catch (error: any) {
-      console.error('Failed to generate Bitcoin address:', error);
+      logger.error('Failed to generate Bitcoin address', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error(error.message || 'Failed to generate Bitcoin address');
     } finally {
       setIsGeneratingBitcoin(false);
@@ -116,7 +119,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       setActiveInvoice(String(invoiceData.paymentRequest).toUpperCase()); // Track the active invoice
       setAmountSheetOpen(false); // Close the amount sheet
     } catch (error: any) {
-      console.error('Failed to create invoice:', error);
+      logger.error('Failed to create invoice', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error(error.message || 'Failed to create invoice');
     } finally {
       setIsGenerating(false);
@@ -141,7 +146,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
           text: shareContent,
         });
       } catch (error) {
-        console.error('Share failed:', error);
+        logger.error('Share failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
       // Fallback to copy
@@ -428,7 +435,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                                   text: bitcoinAddress,
                                 });
                               } catch (error) {
-                                console.error('Share failed:', error);
+                                logger.error('Share failed', {
+                                  error: error instanceof Error ? error.message : String(error),
+                                });
                               }
                             } else {
                               try {

@@ -1,14 +1,15 @@
 'use client';
 
 import { Env } from '@/lib/constants/env';
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
+import { logger } from '@/lib/utils/logger';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
 import WeatherDetailSheet from './weather-detail-sheet';
 
 interface EventLocationProps {
-  event: Event;
+  event: EventDetail;
   weather?: WeatherData | null;
 }
 
@@ -42,7 +43,9 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
       setShowMapOptions(false);
       // Could show a toast notification here
     } catch (error) {
-      console.error('Failed to copy address:', error);
+      logger.error('Failed to copy address', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   };
 

@@ -1,6 +1,8 @@
 import { apiClient } from '@/lib/api/client';
+import { ApiResponse } from '@/lib/types/api';
 import { EventComment } from '@/lib/hooks/use-event-comments';
 import { ApiResponse } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface EditCommentParams {
@@ -8,6 +10,10 @@ interface EditCommentParams {
   message: string;
   eventId: string;
 }
+
+const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
 
 export function useEditComment() {
   const queryClient = useQueryClient();
@@ -18,7 +24,7 @@ export function useEditComment() {
       message,
       eventId,
     }: EditCommentParams): Promise<EventComment> => {
-      const response = await apiClient.patch<ApiResponse<EventComment>>(
+      const response = await apiClient.patch<ApiResponse<EventComment> | EventComment>(
         `/v1/events/${eventId}/comments`,
         {
           commentId,
@@ -32,12 +38,12 @@ export function useEditComment() {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && 'data' in response) {
+      if (isApiResponse<EventComment>(response)) {
         return response.data;
       }
 
       // If the API returns the comment directly without wrapping it
-      return response as unknown as EventComment;
+      return response;
     },
     onSuccess: (_, variables) => {
       // Invalidate the comments query to refetch comments
@@ -46,7 +52,9 @@ export function useEditComment() {
       });
     },
     onError: (error) => {
-      console.error('Error editing comment:', error);
+      logger.error('Error editing comment', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

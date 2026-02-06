@@ -11,6 +11,10 @@ interface DeleteCommentResponse {
   id: string;
 }
 
+const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
+
 export function useDeleteComment() {
   const queryClient = useQueryClient();
 
@@ -19,7 +23,9 @@ export function useDeleteComment() {
       commentId,
       eventId,
     }: DeleteCommentParams): Promise<DeleteCommentResponse> => {
-      const response = await apiClient.delete<ApiResponse<DeleteCommentResponse>>(
+      const response = await apiClient.delete<
+        ApiResponse<DeleteCommentResponse> | DeleteCommentResponse
+      >(
         `/v1/events/${eventId}/comments/${commentId}`
       );
 
@@ -29,7 +35,7 @@ export function useDeleteComment() {
       }
 
       // Check if it's the expected API response structure
-      if ('success' in response && 'data' in response) {
+      if (isApiResponse<DeleteCommentResponse>(response)) {
         // We do this here to ensure the UI is updated before we return
         // Invalidate the comments query to refetch comments
         await queryClient.invalidateQueries({
@@ -44,7 +50,7 @@ export function useDeleteComment() {
       await queryClient.invalidateQueries({
         queryKey: ['event', 'comments', eventId],
       });
-      return { id: commentId };
+      return 'id' in response ? response : { id: commentId };
     },
     onSuccess: (_, variables) => {
       // This is not needed as we are invalidating the query in mutationFn

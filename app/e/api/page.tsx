@@ -16,7 +16,7 @@ export default function EventoAPIPage() {
     });
 
     return () => {
-      setTopBar({ rightContent: null });
+      setTopBar({});
     };
   }, [setTopBar]);
 

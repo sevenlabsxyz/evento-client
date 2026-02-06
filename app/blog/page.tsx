@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { AlertTriangle } from 'lucide-react';
 import { Suspense } from 'react';
 import PostPageClient from './page-client';
@@ -24,7 +25,7 @@ const Loading = () => (
 async function getBlogPosts() {
   // Check for required environment variables
   if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-    console.warn('Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set');
+    logger.warn('Ghost API configuration missing - GHOST_URL or GHOST_CONTENT_API_KEY not set');
     return [];
   }
 
@@ -34,7 +35,7 @@ async function getBlogPosts() {
   );
 
   if (!res.ok) {
-    console.log({ res });
+    logger.debug('Blog posts fetch response', { res });
   }
 
   const data = await res.json();

@@ -1,4 +1,5 @@
 import { BTCPrice } from '@/lib/types/wallet';
+import { logger } from '@/lib/utils/logger';
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 let priceCache: BTCPrice | null = null;
@@ -31,7 +32,9 @@ export class BTCPriceService {
       priceCache = price;
       return price;
     } catch (error) {
-      console.error('Failed to fetch BTC price:', error);
+      logger.error('Failed to fetch BTC price', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Return cached price if available, otherwise throw
       if (priceCache) {

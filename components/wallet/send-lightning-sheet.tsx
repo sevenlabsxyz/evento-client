@@ -13,6 +13,7 @@ import {
   getBreezErrorMessage,
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -320,7 +321,7 @@ export function SendLightningSheet({
   };
 
   const handleAmountConfirm = async (amountSats: number) => {
-    console.log('📝 [SEND] handleAmountConfirm called:', {
+    logger.debug('📝 [SEND] handleAmountConfirm called', {
       amountSats,
       parsedInputType: parsedInput?.type,
       commentAllowed,
@@ -389,7 +390,7 @@ export function SendLightningSheet({
   };
 
   const handlePreparePayment = async (amountSats: number) => {
-    console.log('💸 [SEND] handlePreparePayment called:', {
+    logger.debug('💸 [SEND] handlePreparePayment called', {
       amountSats,
       parsedInputType: parsedInput?.type,
     });
@@ -397,7 +398,7 @@ export function SendLightningSheet({
     try {
       if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
         // Prepare LNURL payment
-        console.log('💸 [SEND] Preparing LNURL payment...');
+        logger.debug('💸 [SEND] Preparing LNURL payment...');
         const payRequest =
           parsedInput.type === 'lightningAddress' ? (parsedInput as any).payRequest : parsedInput;
 
@@ -407,13 +408,13 @@ export function SendLightningSheet({
           comment: comment || undefined,
         });
 
-        console.log('✅ [SEND] LNURL payment prepared:', prepareResponse);
+        logger.debug('✅ [SEND] LNURL payment prepared', { prepareResponse });
         setLnurlPrepareResponse(prepareResponse);
       } else if (parsedInput?.type === 'bolt11Invoice') {
         // Prepare BOLT11 payment
-        console.log('💸 [SEND] Preparing BOLT11 payment...');
+        logger.debug('💸 [SEND] Preparing BOLT11 payment...');
         await prepareSend(invoice, amountSats);
-        console.log('✅ [SEND] BOLT11 payment prepared');
+        logger.debug('✅ [SEND] BOLT11 payment prepared');
       } else {
         // Unknown input type - show error
         const errorMsg = `Unknown input type: ${parsedInput?.type}`;

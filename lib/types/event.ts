@@ -9,7 +9,7 @@ export interface EventHost {
   verification_status?: string | null;
 }
 
-export type GuestStatus = 'going' | 'not-going' | 'maybe';
+export type GuestStatus = 'going' | 'not-going' | 'maybe' | 'invited';
 
 export interface Guest {
   id: string;
@@ -48,7 +48,7 @@ export interface EventDetails {
   website?: string;
 }
 
-export interface Event {
+export interface EventDetail {
   id: string;
   title: string;
   subtitle?: string;

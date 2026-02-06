@@ -2,6 +2,7 @@
 
 import { Input } from '@/components/ui/input';
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { IGif } from '@giphy/js-types';
 import { Loader2, Search } from 'lucide-react';
@@ -29,7 +30,9 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
       });
       setGifs(data);
     } catch (error) {
-      console.error('Error fetching trending GIFs:', error);
+      logger.error('Error fetching trending GIFs', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsLoading(false);
     }
@@ -51,7 +54,9 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
         });
         setGifs(data);
       } catch (error) {
-        console.error('Error searching GIFs:', error);
+        logger.error('Error searching GIFs', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       } finally {
         setIsLoading(false);
       }

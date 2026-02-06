@@ -3,6 +3,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { GLOBAL_EXCHANGES, getExchangesForCountry, type Exchange } from '@/lib/constants/exchanges';
 import { detectUserCountry } from '@/lib/utils/geo-detection';
+import { logger } from '@/lib/utils/logger';
 import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -27,7 +28,9 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
         const { regional } = getExchangesForCountry(country);
         setRegionalExchanges(regional);
       } catch (error) {
-        console.error('Failed to detect country:', error);
+        logger.error('Failed to detect country', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         // Fallback to US
         const { regional } = getExchangesForCountry('US');
         setRegionalExchanges(regional);

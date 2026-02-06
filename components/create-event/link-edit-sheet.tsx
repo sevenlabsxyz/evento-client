@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { VisuallyHidden } from '@silk-hq/components';
 import { useEffect, useState } from 'react';
@@ -113,16 +115,13 @@ export function LinkEditSheet({
                     required
                   />
                   {error && <p className='LinkEditSheet-error'>{error}</p>}
-                  {error && <p className='LinkEditSheet-error'>{error}</p>}
                 </div>
 
                 <div className='LinkEditSheet-field'>
                   <label className='LinkEditSheet-label'>Display text (optional)</label>
-                  <label className='LinkEditSheet-label'>Display text (optional)</label>
                   <input
                     type='text'
                     value={field.text}
-                    onChange={(e) => setField({ ...field, text: e.target.value })}
                     onChange={(e) => setField({ ...field, text: e.target.value })}
                     placeholder='Text to display'
                     className='LinkEditSheet-input'
@@ -134,12 +133,6 @@ export function LinkEditSheet({
                     <input
                       type='checkbox'
                       checked={field.openInNewTab}
-                      onChange={() =>
-                        setField({
-                          ...field,
-                          openInNewTab: !field.openInNewTab,
-                        })
-                      }
                       onChange={() =>
                         setField({
                           ...field,

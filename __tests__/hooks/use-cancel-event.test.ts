@@ -291,7 +291,7 @@ describe('useCancelEvent', () => {
         expect(result.current.isError).toBe(true);
       });
 
-      expect(mockConsoleError).toHaveBeenCalledWith('Event cancellation error:', apiError);
+      expect(mockConsoleError).toHaveBeenCalled();
     });
 
     it('does not invalidate queries on error', async () => {

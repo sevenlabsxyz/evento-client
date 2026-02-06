@@ -6,6 +6,7 @@ const DEBUG_WALLET = false;
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletStore } from '@/lib/stores/wallet-store';
+import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useRef } from 'react';
 
 /**
@@ -34,7 +35,9 @@ export function useWalletEventListener() {
         balance,
       }));
     } catch (err: any) {
-      console.error('Failed to refresh balance:', err);
+      logger.error('Failed to refresh balance', {
+        error: err instanceof Error ? err.message : String(err),
+      });
       setError(err.message || 'Failed to refresh balance');
     }
   }, [setWalletState, setError]);

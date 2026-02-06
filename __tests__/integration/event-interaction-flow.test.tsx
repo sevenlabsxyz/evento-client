@@ -92,7 +92,7 @@ describe('Event Interaction Integration Flow', () => {
           id: 'user2',
           username: 'user2',
           name: 'User Two',
-          verification_status: 'unverified',
+      verification_status: 'pending',
           image: 'user2.jpg',
         },
       ],

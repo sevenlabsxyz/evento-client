@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Detect user's country code using various methods
  * Priority: Vercel headers > Browser locale > Default
@@ -17,7 +19,9 @@ export async function getCountryFromVercel(): Promise<CountryCode | null> {
       return data.country || null;
     }
   } catch (error) {
-    console.error('Failed to fetch country from Vercel:', error);
+    logger.error('Failed to fetch country from Vercel', {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
   return null;
 }
@@ -57,7 +61,9 @@ export function getCountryFromBrowser(): CountryCode | null {
       return parts[1].toUpperCase();
     }
   } catch (error) {
-    console.error('Failed to detect country from browser:', error);
+    logger.error('Failed to detect country from browser', {
+      error: error instanceof Error ? error.message : String(error),
+    });
   }
   return null;
 }

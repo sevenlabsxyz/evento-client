@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Globe, Instagram, Loader2, X as XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -123,7 +124,7 @@ export default function SocialLinksSheet({
       // Close sheet
       onClose();
     } catch (error) {
-      console.error('Failed to update social links:', error);
+      logger.error('Failed to update social links', { error: error instanceof Error ? error.message : String(error) });
       toast.error('Failed to update social links');
     }
   };

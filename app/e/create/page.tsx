@@ -27,6 +27,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
@@ -249,7 +250,9 @@ export default function CreatePage() {
       toast.success('Event created successfully!');
     } catch (error: any) {
       // Error handling
-      console.error('Failed to create event:', error);
+      logger.error('Failed to create event', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error(error.message || 'Failed to create event');
     }
   };

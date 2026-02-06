@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
@@ -43,7 +44,9 @@ export function TransactionDetailsSheet({
           setFeesUSD(feesUsd);
         }
       } catch (error) {
-        console.error('Failed to convert amounts:', error);
+        logger.error('Failed to convert amounts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 

@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { ApiResponse, CreateEmailBlastForm, EmailBlast } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 /**
@@ -46,7 +47,9 @@ export function useCreateEmailBlast(eventId: string) {
       queryClient.invalidateQueries({ queryKey: ['emailBlasts', eventId] });
     },
     onError: (error: any) => {
-      console.error('Create email blast error:', error);
+      logger.error('Create email blast error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

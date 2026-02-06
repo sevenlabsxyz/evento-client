@@ -7,6 +7,7 @@ import {
   useGenerateDescription,
 } from '@/lib/hooks/use-generate-description';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/utils/logger';
 import type { Editor } from '@tiptap/core';
 import DOMPurify from 'dompurify';
 import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from 'lucide-react';
@@ -118,7 +119,7 @@ export function AIDescriptionGeneratorSheet({
       // Set the generated content from the API response
       setGeneratedContent(result.description);
     } catch (err) {
-      console.error('Error generating description:', err);
+      logger.error('Error generating description', { error: err });
       setError('Failed to generate description. Please try again.');
     }
   };

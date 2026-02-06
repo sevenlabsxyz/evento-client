@@ -41,7 +41,7 @@ interface UseWaitForPaymentResult {
  * useEffect(() => {
  *   if (isPaid && payment) {
  *     // Show success screen!
- *     console.log('Payment received!', payment);
+ *     logger.info('Payment received!', { payment });
  *   }
  * }, [isPaid, payment]);
  * ```

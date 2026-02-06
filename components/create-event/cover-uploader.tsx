@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2, UploadCloud } from 'lucide-react';
 import { useRef, useState } from 'react';
@@ -80,7 +81,7 @@ export default function CoverUploader({
         throw new Error(result.message || 'Upload failed');
       }
     } catch (error) {
-      console.error('Cover upload error:', error);
+      logger.error('Cover upload error', { error });
       toast.error('Could not upload image. Please try again.');
     } finally {
       setIsLoading(false);
