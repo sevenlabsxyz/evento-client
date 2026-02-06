@@ -10,6 +10,7 @@ import {
   useUserInterests,
 } from '@/lib/hooks/use-user-interests';
 import { Interest } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
@@ -106,7 +107,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
       setSearchQuery('');
       onClose();
     } catch (error) {
-      console.error('Failed to update interests:', error);
+      logger.error('Failed to update interests', { error });
       toast.error('Failed to update interests');
     }
   };

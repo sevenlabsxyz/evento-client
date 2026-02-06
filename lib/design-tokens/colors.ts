@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Design tokens for consistent theming across the application
  */
@@ -67,7 +69,7 @@ export const getDesignToken = (path: string) => {
     if (current && current[key] !== undefined) {
       current = current[key];
     } else {
-      console.warn(`Design token not found: ${path}`);
+      logger.warn('Design token not found', { path });
       return undefined;
     }
   }

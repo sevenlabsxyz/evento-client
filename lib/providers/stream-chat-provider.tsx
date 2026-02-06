@@ -2,6 +2,7 @@
 
 import { useAuth } from '@/lib/hooks/use-auth';
 import { getStreamChatApiKey, streamChatService } from '@/lib/services/stream-chat';
+import { logger } from '@/lib/utils/logger';
 import { useQuery } from '@tanstack/react-query';
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { StreamChat } from 'stream-chat';
@@ -103,7 +104,9 @@ export function StreamChatProvider({ children }: { children: React.ReactNode }) 
         setClient(newClient);
         setConnectionError(null);
       } catch (error) {
-        console.error('Failed to connect to Stream Chat:', error);
+        logger.error('Failed to connect to Stream Chat', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         setConnectionError('Failed to connect to chat service');
       } finally {
         setIsConnecting(false);

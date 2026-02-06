@@ -22,6 +22,7 @@ import {
 } from '@/lib/hooks/use-user-prompts';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { Prompt, UserPrompt } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import {
   AlertTriangle,
@@ -136,7 +137,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
       setView('list');
       setEditingPrompt(null);
     } catch (error: any) {
-      console.error('Failed to save prompt:', error);
+      logger.error('Failed to save prompt', { error });
       if (error?.message?.includes('PROMPT_LIMIT_EXCEEDED')) {
         toast.error('You can only have up to 4 prompts');
       } else {
@@ -159,7 +160,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
       setDeleteConfirmOpen(false);
       setPromptToDelete(null);
     } catch (error) {
-      console.error('Failed to delete prompt:', error);
+      logger.error('Failed to delete prompt', { error });
       toast.error('Failed to delete prompt');
     }
   };
@@ -176,7 +177,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
         userPrompt.is_visible ? 'Prompt hidden from profile' : 'Prompt visible on profile'
       );
     } catch (error) {
-      console.error('Failed to toggle visibility:', error);
+      logger.error('Failed to toggle visibility', { error });
       toast.error('Failed to update visibility');
     }
   };
@@ -196,7 +197,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
       await reorderPromptsMutation.mutateAsync(reorderData);
       toast.success('Prompt order updated');
     } catch (error) {
-      console.error('Failed to reorder prompts:', error);
+      logger.error('Failed to reorder prompts', { error });
       toast.error('Failed to reorder prompts');
     }
   };
@@ -216,7 +217,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
       await reorderPromptsMutation.mutateAsync(reorderData);
       toast.success('Prompt order updated');
     } catch (error) {
-      console.error('Failed to reorder prompts:', error);
+      logger.error('Failed to reorder prompts', { error });
       toast.error('Failed to reorder prompts');
     }
   };

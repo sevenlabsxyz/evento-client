@@ -1,3 +1,5 @@
+import { logger } from '@/lib/utils/logger';
+
 /**
  * Debug utilities for logging API responses and data flow
  */
@@ -8,37 +10,39 @@ const DEBUG_ENABLED = false;
 export function debugLog(component: string, message: string, data?: any) {
   if (!DEBUG_ENABLED) return;
   const separator = '='.repeat(50);
-  console.log(`\n${separator}`);
-  console.log(`[${component}] ${message}`);
+  logger.debug(`\n${separator}`);
+  logger.debug(`[${component}] ${message}`);
   if (data !== undefined) {
-    console.log('Data:', JSON.stringify(data, null, 2));
+    logger.debug('Data', { data });
   }
-  console.log(`${separator}\n`);
+  logger.debug(`${separator}\n`);
 }
 
 export function debugError(component: string, message: string, error: any, context?: any) {
   if (!DEBUG_ENABLED) return;
   const separator = '!'.repeat(50);
-  console.error(`\n${separator}`);
-  console.error(`[${component} ERROR] ${message}`);
-  console.error('Error:', error);
+  logger.error(`\n${separator}`);
+  logger.error(`[${component} ERROR] ${message}`);
+  logger.error('Error', { error });
   if (error?.stack) {
-    console.error('Stack:', error.stack);
+    logger.error('Stack', { stack: error.stack });
   }
   if (context !== undefined) {
-    console.error('Context:', JSON.stringify(context, null, 2));
+    logger.error('Context', { context });
   }
-  console.error(`${separator}\n`);
+  logger.error(`${separator}\n`);
 }
 
 export function debugApiResponse(component: string, endpoint: string, response: any) {
   if (!DEBUG_ENABLED) return;
   const separator = '~'.repeat(50);
-  console.log(`\n${separator}`);
-  console.log(`[${component}] API Response from ${endpoint}`);
-  console.log('Type:', typeof response);
-  console.log('Is Array:', Array.isArray(response));
-  console.log('Keys:', response && typeof response === 'object' ? Object.keys(response) : 'N/A');
-  console.log('Full Response:', JSON.stringify(response, null, 2));
-  console.log(`${separator}\n`);
+  logger.debug(`\n${separator}`);
+  logger.debug(`[${component}] API Response from ${endpoint}`);
+  logger.debug('Type', { type: typeof response });
+  logger.debug('Is Array', { isArray: Array.isArray(response) });
+  logger.debug('Keys', {
+    keys: response && typeof response === 'object' ? Object.keys(response) : 'N/A',
+  });
+  logger.debug('Full Response', { response });
+  logger.debug(`${separator}\n`);
 }

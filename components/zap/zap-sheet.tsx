@@ -3,6 +3,7 @@
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
@@ -196,7 +197,9 @@ export function ZapSheet({
       setPrepareResponse(response);
       setStep('confirm');
     } catch (error: any) {
-      console.error('Failed to prepare zap:', error);
+      logger.error('Failed to prepare zap', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Check for wallet not connected error
       if (
@@ -244,7 +247,9 @@ export function ZapSheet({
       setPrepareResponse(response);
       setStep('confirm');
     } catch (error: any) {
-      console.error('Failed to prepare zap:', error);
+      logger.error('Failed to prepare zap', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Check for wallet not connected error
       if (
@@ -276,7 +281,9 @@ export function ZapSheet({
       setStep('success');
       onSuccess?.(selectedAmount);
     } catch (error: any) {
-      console.error('Failed to send zap:', error);
+      logger.error('Failed to send zap', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Check for wallet not connected error
       if (

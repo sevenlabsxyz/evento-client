@@ -708,7 +708,7 @@ and special characters! @#$%^&*()`;
         }
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error editing comment:', apiError);
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });

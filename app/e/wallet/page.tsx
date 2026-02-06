@@ -35,6 +35,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
@@ -182,15 +183,17 @@ export default function WalletPage() {
             }
           }
 
-          if (isAvailable) {
-            await registerAddress(baseUsername, `Pay to ${user.name || user.username}`);
-            console.log(`Lightning address registered: ${baseUsername}@evento.cash`);
+            if (isAvailable) {
+              await registerAddress(baseUsername, `Pay to ${user.name || user.username}`);
+              logger.info(`Lightning address registered: ${baseUsername}@evento.cash`);
+            }
+          } catch (error) {
+            logger.error('Failed to auto-register Lightning address', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
-        } catch (error) {
-          console.error('Failed to auto-register Lightning address:', error);
         }
-      }
-    };
+      };
 
     registerLightningAddressIfNeeded();
   }, [walletState.isConnected, address, user, checkAvailability, registerAddress]);
@@ -205,7 +208,9 @@ export default function WalletPage() {
         const deposits = await breezSDK.listUnclaimedDeposits();
         setUnclaimedDepositsCount(deposits.length);
       } catch (error) {
-        console.error('Failed to load unclaimed deposits:', error);
+        logger.error('Failed to load unclaimed deposits', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 
@@ -249,7 +254,9 @@ export default function WalletPage() {
         const data = await res.json();
         setOnchainEducationalArticle(data.posts?.[0] || null);
       } catch (error) {
-        console.error('Error fetching onchain educational post:', error);
+        logger.error('Error fetching onchain educational post', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     };
     fetchOnchainEducationalPost();
@@ -292,7 +299,7 @@ export default function WalletPage() {
   };
 
   const handleScanSuccess = async (decodedText: string) => {
-    console.log('QR Code scanned:', decodedText);
+    logger.info('QR Code scanned', { decodedText });
 
     // Strip common URI prefixes (case-insensitive)
     let cleanedData = decodedText.trim();
@@ -558,7 +565,9 @@ export default function WalletPage() {
             const deposits = await breezSDK.listUnclaimedDeposits();
             setUnclaimedDepositsCount(deposits.length);
           } catch (error) {
-            console.error('Failed to refresh unclaimed deposits:', error);
+            logger.error('Failed to refresh unclaimed deposits', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         }}
       />

@@ -3,6 +3,7 @@
 import { Skeleton } from '@/components/ui/skeleton';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useState } from 'react';
 
 interface WalletBalanceDisplayProps {
@@ -28,7 +29,9 @@ export function WalletBalanceDisplay({
           const usd = await BTCPriceService.satsToUSD(walletState.balance);
           setBalanceUSD(usd);
         } catch (error) {
-          console.error('Failed to fetch USD balance:', error);
+          logger.error('Failed to fetch USD balance', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         } finally {
           setIsLoading(false);
         }

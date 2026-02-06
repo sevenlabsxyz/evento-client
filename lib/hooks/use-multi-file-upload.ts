@@ -1,4 +1,5 @@
 import { toast } from '@/lib/utils/toast';
+import { logger } from '@/lib/utils/logger';
 import * as React from 'react';
 import { useCallback, useRef, useState } from 'react';
 
@@ -115,7 +116,9 @@ export function useMultiFileUpload({
           );
         }
       } catch (error) {
-        console.error('Error processing files:', error);
+        logger.error('Error processing files', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         toast.error('Error processing some files');
       }
 

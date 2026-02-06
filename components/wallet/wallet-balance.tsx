@@ -9,6 +9,7 @@ import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
+import { logger } from '@/lib/utils/logger';
 import { motion } from 'framer-motion';
 import {
   ArrowDownLeft,
@@ -55,7 +56,9 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
         const usd = await BTCPriceService.satsToUSD(walletState.balance);
         setBalanceUSD(usd);
       } catch (error) {
-        console.error('Failed to fetch USD price:', error);
+        logger.error('Failed to fetch USD price', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       } finally {
         setIsLoadingPrice(false);
       }
@@ -68,7 +71,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
   useEffect(() => {
     const fetchEducationalPost = async () => {
       if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-        console.warn('Ghost API configuration missing - cannot fetch educational content');
+        logger.warn('Ghost API configuration missing - cannot fetch educational content');
         return;
       }
 
@@ -78,14 +81,16 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
         );
 
         if (!res.ok) {
-          console.error('Failed to fetch educational post:', res.status);
+          logger.error('Failed to fetch educational post', { status: res.status });
           return;
         }
 
         const data = await res.json();
         setEducationalArticle(data.posts?.[0] || null);
       } catch (error) {
-        console.error('Error fetching educational post:', error);
+        logger.error('Error fetching educational post', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 

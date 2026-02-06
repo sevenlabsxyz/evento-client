@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/client';
 import { EventComment } from '@/lib/hooks/use-event-comments';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface EditCommentParams {
@@ -42,7 +43,9 @@ export function useEditComment() {
       });
     },
     onError: (error) => {
-      console.error('Error editing comment:', error);
+      logger.error('Error editing comment', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }

@@ -6,6 +6,7 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { MessageCircle, Search } from 'lucide-react';
@@ -69,7 +70,9 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
       }
     } catch (err: any) {
       toast.error(err?.message || 'Please try again.', 'Failed to start chat');
-      console.error('createDirectMessageChannel error', err);
+      logger.error('createDirectMessageChannel error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   };
 

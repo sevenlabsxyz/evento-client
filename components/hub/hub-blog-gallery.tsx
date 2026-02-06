@@ -11,6 +11,7 @@ import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carouse
 import { Skeleton } from '@/components/ui/skeleton';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 
 export interface BlogPost {
   id: string;
@@ -46,7 +47,7 @@ export function HubBlogGallery() {
     const fetchPosts = async () => {
       // Check for required environment variables
       if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-        console.warn('Ghost API configuration missing - cannot fetch blog content');
+        logger.warn('Ghost API configuration missing - cannot fetch blog content');
         setIsLoading(false);
         return;
       }
@@ -57,7 +58,7 @@ export function HubBlogGallery() {
         );
 
         if (!res.ok) {
-          console.error('Failed to fetch hub blog posts:', res.status);
+          logger.error('Failed to fetch hub blog posts', { status: res.status });
           setIsLoading(false);
           return;
         }
@@ -65,7 +66,9 @@ export function HubBlogGallery() {
         const data = await res.json();
         setPosts(data.posts || []);
       } catch (error) {
-        console.error('Error fetching hub blog posts:', error);
+        logger.error('Error fetching hub blog posts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       } finally {
         setIsLoading(false);
       }

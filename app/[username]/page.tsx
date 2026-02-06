@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import UserProfilePageClient from './page-client';
 
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: any, parent: any) {
     if (error) throw error;
 
     if (!user) {
-      console.log('No user found for username:', username);
+      logger.info('No user found for username', { username });
       return getDefaultMetadata(previousImages);
     }
 
@@ -73,7 +74,9 @@ export async function generateMetadata({ params }: any, parent: any) {
       },
     };
   } catch (error) {
-    console.error('Error fetching user data:', error);
+    logger.error('Error fetching user data', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return getDefaultMetadata(previousImages);
   }
 }
