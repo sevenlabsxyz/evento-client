@@ -3,7 +3,6 @@
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
-import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { BadgeDollarSign, ChevronRight } from 'lucide-react';
@@ -50,10 +49,7 @@ export default function EventContributions({ eventData, eventId }: EventContribu
   const hasContributions = contributionMethods.length > 0;
   const cost = eventData.cost ?? 0;
 
-  const { data: userRsvpData } = useUserRSVP(eventId);
-  const hasRsvpYes = userRsvpData?.status === 'yes';
-
-  if (!hasContributions || hasRsvpYes) {
+  if (!hasContributions) {
     return null;
   }
 
