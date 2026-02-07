@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { logger } from '@/lib/utils/logger';
+import { sanitizeUploadFileName } from '@/lib/utils/file';
+import { Env } from '@/lib/constants/env';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
@@ -110,16 +112,20 @@ export function useUploadProfileImage() {
 
   return useMutation({
     mutationFn: async (file: File) => {
+      // Sanitize the filename for security
+      const safeFilename = sanitizeUploadFileName(file.name);
+      
       // Send raw file bytes directly — the backend streams request.body to Supabase storage
       // (FormData/multipart breaks this because the backend doesn't parse multipart boundaries)
       const response = await fetch(
-        `/api/v1/user/details/image-upload?filename=${encodeURIComponent(file.name)}`,
+        `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
         {
           method: 'POST',
           body: file,
           headers: {
             'Content-Type': file.type || 'application/octet-stream',
           },
+          credentials: 'include', // Include cookies for auth
         }
       );
 

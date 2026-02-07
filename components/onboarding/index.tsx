@@ -6,8 +6,10 @@ import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profi
 import { useAnswerPrompt } from '@/lib/hooks/use-user-prompts';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { sanitizeUploadFileName } from '@/lib/utils/file';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { Env } from '@/lib/constants/env';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -89,15 +91,19 @@ export const UserOnboardingFlow = ({
     const file = inputFileRef.current.files[0];
 
     try {
+      // Sanitize the filename for security
+      const safeFilename = sanitizeUploadFileName(file.name);
+      
       // Set a timeout to handle cases where the upload might hang
       const uploadPromise = fetch(
-        `/api/v1/user/details/image-upload?filename=${encodeURIComponent(file.name)}`,
+        `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
         {
           method: 'POST',
           body: file,
           headers: {
             'Content-Type': file.type || 'application/octet-stream',
           },
+          credentials: 'include', // Include cookies for auth
         }
       );
 
