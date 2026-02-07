@@ -90,10 +90,16 @@ export const UserOnboardingFlow = ({
 
     try {
       // Set a timeout to handle cases where the upload might hang
-      const uploadPromise = fetch(`/api/v1/user/details/image-upload?filename=${file.name}`, {
-        method: 'POST',
-        body: file,
-      });
+      const uploadPromise = fetch(
+        `/api/v1/user/details/image-upload?filename=${encodeURIComponent(file.name)}`,
+        {
+          method: 'POST',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+          },
+        }
+      );
 
       // Create a timeout promise
       const timeoutPromise = new Promise((_, reject) =>

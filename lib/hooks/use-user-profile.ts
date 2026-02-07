@@ -107,31 +107,32 @@ export function useUpdateUserProfile() {
  */
 export function useUploadProfileImage() {
   const queryClient = useQueryClient();
-  const { setUser } = useAuthStore();
 
   return useMutation({
     mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await apiClient.post<ApiResponse<UserDetails[]>>(
-        '/v1/user/details/image-upload',
-        formData,
+      // Send raw file bytes directly — the backend streams request.body to Supabase storage
+      // (FormData/multipart breaks this because the backend doesn't parse multipart boundaries)
+      const response = await fetch(
+        `/api/v1/user/details/image-upload?filename=${encodeURIComponent(file.name)}`,
         {
+          method: 'POST',
+          body: file,
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': file.type || 'application/octet-stream',
           },
         }
       );
-      return response.data?.[0] || null;
-    },
-    onSuccess: (updatedUser) => {
-      if (updatedUser) {
-        // Update the query cache
-        queryClient.setQueryData(USER_PROFILE_QUERY_KEY, updatedUser);
-        // Update the auth store
-        setUser(updatedUser);
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Upload failed' }));
+        throw new Error(error.message || `Upload failed with status ${response.status}`);
       }
+
+      const result = await response.json();
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
     },
     onError: (error) => {
       logger.error('Profile image upload failed', {
