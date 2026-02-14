@@ -1,10 +1,7 @@
 {
-  "active_plan": "/home/an/Code/evento/evento-client/.sisyphus/plans/testing-coverage-improvements.md",
-  "started_at": "2026-02-05T07:21:44.022Z",
-  "session_ids": ["ses_3d3c3a361ffeejeYkrU9ML047N"],
-  "plan_name": "testing-coverage-improvements",
-  "completed_at": "2026-02-05T08:15:00.000Z",
-  "tasks_completed": 4,
-  "tasks_total": 4,
-  "status": "completed"
+  "active_plan": "/Users/andreneves/Code/evento/evento-client/.sisyphus/plans/zap-missing-wallet-email-flow.md",
+  "started_at": "2026-02-14T22:16:07.414Z",
+  "session_ids": ["ses_3a1d69d70ffediwA1V1UH2m0sZ"],
+  "plan_name": "zap-missing-wallet-email-flow",
+  "agent": "atlas"
 }

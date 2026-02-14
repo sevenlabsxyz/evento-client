@@ -96,13 +96,14 @@ export function ZapSheet({
             setPayRequest(parsedPayRequest);
           }
         } catch (error: any) {
-          setOpen(false);
           if (error?.message === 'SDK not connected') {
+            setOpen(false);
             showWalletUnlockToast();
           } else if (error?.message?.toLowerCase().includes('invalid input')) {
             // Lightning address doesn't exist (404 from LNURL endpoint)
-            toast.error('User has not set up Evento Wallet yet.');
+            setStep('no-wallet');
           } else {
+            setOpen(false);
             toast.error('Failed to load payment details. Please try again.');
           }
         }

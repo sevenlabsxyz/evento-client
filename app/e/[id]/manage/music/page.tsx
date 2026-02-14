@@ -11,7 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Check, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface EventMusic {
   spotify?: {
@@ -42,6 +42,21 @@ export default function MusicManagementPage() {
   const [spotifyUrl, setSpotifyUrl] = useState('');
   const [wavlakeUrl, setWavlakeUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const musicDataRef = useRef(musicData);
+  const existingEventRef = useRef(existingEvent);
+  const updateEventMutationRef = useRef(updateEventMutation);
+
+  useEffect(() => {
+    musicDataRef.current = musicData;
+  }, [musicData]);
+
+  useEffect(() => {
+    existingEventRef.current = existingEvent;
+  }, [existingEvent]);
+
+  useEffect(() => {
+    updateEventMutationRef.current = updateEventMutation;
+  }, [updateEventMutation]);
 
   // Update musicData when existingEvent loads
   useEffect(() => {
@@ -52,94 +67,6 @@ export default function MusicManagementPage() {
       });
     }
   }, [existingEvent]);
-
-  // Configure TopBar
-  useEffect(() => {
-    applyRouteConfig(pathname);
-    setTopBarForRoute(pathname, {
-      title: 'Music',
-      leftMode: 'back',
-      centerMode: 'title',
-      showAvatar: false,
-      buttons: [
-        {
-          id: 'save-music',
-          icon: Check,
-          onClick: () => void handleSave(),
-          label: 'Save',
-          disabled: isSubmitting,
-        },
-      ],
-    });
-
-    return () => {
-      clearRoute(pathname);
-    };
-  }, [setTopBarForRoute, applyRouteConfig, clearRoute, isSubmitting]);
-
-  if (isLoading) {
-    return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-        <div className='space-y-6 p-4'>
-          <Skeleton className='h-4 w-3/4' />
-
-          {/* Spotify Section Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
-            <div className='mb-4 flex items-center gap-3'>
-              <Skeleton className='h-12 w-12 rounded-xl' />
-              <div className='space-y-2'>
-                <Skeleton className='h-5 w-16' />
-                <Skeleton className='h-4 w-32' />
-              </div>
-            </div>
-            <div className='space-y-3'>
-              <Skeleton className='h-12 w-full rounded-xl' />
-              <Skeleton className='h-12 w-full rounded-xl' />
-            </div>
-          </div>
-
-          {/* Wavlake Section Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
-            <div className='mb-4 flex items-center gap-3'>
-              <Skeleton className='h-12 w-12 rounded-xl' />
-              <div className='space-y-2'>
-                <Skeleton className='h-5 w-16' />
-                <Skeleton className='h-4 w-28' />
-              </div>
-            </div>
-            <div className='space-y-3'>
-              <Skeleton className='h-12 w-full rounded-xl' />
-              <Skeleton className='h-12 w-full rounded-xl' />
-            </div>
-          </div>
-
-          {/* Information Section Skeleton */}
-          <div className='rounded-2xl bg-blue-50 p-4'>
-            <Skeleton className='mb-2 h-5 w-40' />
-            <Skeleton className='h-4 w-full' />
-            <Skeleton className='mt-1 h-4 w-2/3' />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error || !existingEvent) {
-    return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
-        <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
-          <button
-            onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
-          >
-            Go Back
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   const validateSpotifyUrl = (url: string) => {
     try {
@@ -217,39 +144,46 @@ export default function MusicManagementPage() {
     toast.success('Wavlake track removed! Click Save to update the event.');
   };
 
-  const handleSave = async () => {
+  const handleSave = useCallback(async () => {
+    const currentEvent = existingEventRef.current;
+    const currentMusicData = musicDataRef.current;
+
+    if (!currentEvent) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
       // Prepare update data
       const updateData: UpdateEventData = {
         id: eventId,
-        spotify_url: musicData.spotify?.url || '',
-        wavlake_url: musicData.wavlake?.url || '',
+        spotify_url: currentMusicData.spotify?.url || '',
+        wavlake_url: currentMusicData.wavlake?.url || '',
         // Include other required fields from existing event
-        title: existingEvent.title,
-        description: existingEvent.description,
-        location: existingEvent.location
-          ? { type: 'manual_entry' as const, data: { name: existingEvent.location } }
+        title: currentEvent.title,
+        description: currentEvent.description,
+        location: currentEvent.location
+          ? { type: 'manual_entry' as const, data: { name: currentEvent.location } }
           : null,
-        timezone: existingEvent.timezone,
-        start_date_day: existingEvent.start_date_day,
-        start_date_month: existingEvent.start_date_month,
-        start_date_year: existingEvent.start_date_year,
-        start_date_hours: existingEvent.start_date_hours,
-        start_date_minutes: existingEvent.start_date_minutes,
-        end_date_day: existingEvent.end_date_day,
-        end_date_month: existingEvent.end_date_month,
-        end_date_year: existingEvent.end_date_year,
-        end_date_hours: existingEvent.end_date_hours,
-        end_date_minutes: existingEvent.end_date_minutes,
-        visibility: existingEvent.visibility,
-        status: (existingEvent.status === 'draft'
+        timezone: currentEvent.timezone,
+        start_date_day: currentEvent.start_date_day,
+        start_date_month: currentEvent.start_date_month,
+        start_date_year: currentEvent.start_date_year,
+        start_date_hours: currentEvent.start_date_hours,
+        start_date_minutes: currentEvent.start_date_minutes,
+        end_date_day: currentEvent.end_date_day,
+        end_date_month: currentEvent.end_date_month,
+        end_date_year: currentEvent.end_date_year,
+        end_date_hours: currentEvent.end_date_hours,
+        end_date_minutes: currentEvent.end_date_minutes,
+        visibility: currentEvent.visibility,
+        status: (currentEvent.status === 'draft'
           ? 'draft'
           : 'published') as UpdateEventData['status'],
       };
 
-      await updateEventMutation.mutateAsync(updateData, {
+      await updateEventMutationRef.current.mutateAsync(updateData, {
         onSuccess: () => {
           toast.success('Music settings updated successfully!');
           router.push(`/e/${eventId}/manage`);
@@ -266,7 +200,95 @@ export default function MusicManagementPage() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [eventId, router]);
+
+  // Configure TopBar
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Music',
+      leftMode: 'back',
+      centerMode: 'title',
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'save-music',
+          icon: Check,
+          onClick: () => void handleSave(),
+          label: 'Save',
+          disabled: isSubmitting,
+        },
+      ],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, isSubmitting, handleSave]);
+
+  if (isLoading) {
+    return (
+      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+        <div className='space-y-6 p-4'>
+          <Skeleton className='h-4 w-3/4' />
+
+          {/* Spotify Section Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-16' />
+                <Skeleton className='h-4 w-32' />
+              </div>
+            </div>
+            <div className='space-y-3'>
+              <Skeleton className='h-12 w-full rounded-xl' />
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Wavlake Section Skeleton */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='mb-4 flex items-center gap-3'>
+              <Skeleton className='h-12 w-12 rounded-xl' />
+              <div className='space-y-2'>
+                <Skeleton className='h-5 w-16' />
+                <Skeleton className='h-4 w-28' />
+              </div>
+            </div>
+            <div className='space-y-3'>
+              <Skeleton className='h-12 w-full rounded-xl' />
+              <Skeleton className='h-12 w-full rounded-xl' />
+            </div>
+          </div>
+
+          {/* Information Section Skeleton */}
+          <div className='rounded-2xl bg-blue-50 p-4'>
+            <Skeleton className='mb-2 h-5 w-40' />
+            <Skeleton className='h-4 w-full' />
+            <Skeleton className='mt-1 h-4 w-2/3' />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !existingEvent) {
+    return (
+      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+        <div className='text-center'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
+          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
+          <button
+            onClick={() => router.back()}
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+          >
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
