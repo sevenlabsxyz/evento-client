@@ -150,7 +150,11 @@ export default function HostsManagementPage() {
         <div className='space-y-4 p-4'>
           {/* Invite Cohost Button */}
           <div className='flex justify-center'>
-            <Button onClick={handleAddCoHost} variant='outline' className='gap-2'>
+            <Button
+              onClick={handleAddCoHost}
+              variant='secondary'
+              className='w-full gap-2 rounded-xl sm:w-auto'
+            >
               <UserPlus className='h-4 w-4' />
               Invite Cohost
             </Button>
@@ -171,7 +175,7 @@ export default function HostsManagementPage() {
                       user={{
                         name: host.name ?? undefined,
                         username: host.username,
-                        image: host.image ?? host.avatar,
+                        image: host.image,
                         verification_status: host.verification_status as VerificationStatus,
                       }}
                       size='md'

@@ -73,7 +73,7 @@ export default function ManageEventPage() {
     },
     {
       id: 'registration-questions',
-      title: 'Registration Questions',
+      title: 'Registration',
       description: 'Collect information from guests',
       icon: <HelpCircle className='h-6 w-6' />,
       iconBg: 'bg-purple-100',

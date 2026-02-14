@@ -154,9 +154,9 @@ Critical Path: 1 -> 2 -> 3 -> 4 -> 6
 
 ## TODOs
 
-- [ ]   1. Route all recipient-no-wallet outcomes into the same zap fallback step
+- [x]   1. Route all recipient-no-wallet outcomes into the same zap fallback step
 
-    **What to do**:
+        **What to do**:
     - Update no-wallet decision points in `components/zap/zap-sheet.tsx` so both:
         - empty/falsy `recipientLightningAddress`
         - LNURL parse "invalid input" errors
@@ -215,9 +215,9 @@ Critical Path: 1 -> 2 -> 3 -> 4 -> 6
       Evidence: .sisyphus/evidence/task-1-sdk-disconnected.txt
     ```
 
-- [ ]   2. Expand no-wallet step UI to two-button action model
+- [x]   2. Expand no-wallet step UI to two-button action model
 
-    **What to do**:
+        **What to do**:
     - Update `components/zap/steps/zap-no-wallet-step.tsx` to include:
         - heading/body copy: recipient has no wallet
         - `Close` button
@@ -280,9 +280,9 @@ Critical Path: 1 -> 2 -> 3 -> 4 -> 6
       Evidence: .sisyphus/evidence/task-2-already-notified.png
     ```
 
-- [ ]   3. Implement client notify mutation hook + API contract wiring
+- [x]   3. Implement client notify mutation hook + API contract wiring
 
-    **What to do**:
+        **What to do**:
     - Add new hook in `lib/hooks/` (e.g., `use-notify-wallet-invite.ts`) using existing mutation patterns.
     - Define payload using non-sensitive identifiers only (e.g., recipient username/id).
     - Standardize response states:
@@ -341,9 +341,9 @@ Critical Path: 1 -> 2 -> 3 -> 4 -> 6
       Evidence: .sisyphus/evidence/task-3-notify-dedupe.txt
     ```
 
-- [ ]   4. Wire notify action and state machine into zap flow
+- [x]   4. Wire notify action and state machine into zap flow
 
-    **What to do**:
+        **What to do**:
     - Connect Task 3 hook into `components/zap/zap-sheet.tsx`.
     - Pass recipient context and notify callbacks into `ZapNoWalletStep`.
     - Define post-click behavior:
@@ -405,9 +405,9 @@ Critical Path: 1 -> 2 -> 3 -> 4 -> 6
       Evidence: .sisyphus/evidence/task-4-notify-error.png
     ```
 
-- [ ]   5. Implement backend notify endpoint + Trigger.dev task + two email templates
+- [x]   5. Implement backend notify endpoint + Trigger.dev task + two email templates
 
-    **What to do**:
+        **What to do**:
     - Add/extend backend endpoint for wallet invite notifications (called by client via proxy).
     - Trigger a Trigger.dev task immediately with idempotency key.
     - Configure dedupe to 24h per sender->recipient pair.
@@ -467,9 +467,9 @@ Critical Path: 1 -> 2 -> 3 -> 4 -> 6
       Evidence: .sisyphus/evidence/task-5-backend-dedupe.json
     ```
 
-- [ ]   6. Add tests-after coverage and end-to-end QA evidence
+- [x]   6. Add tests-after coverage and end-to-end QA evidence
 
-    **What to do**:
+        **What to do**:
     - Add/extend tests for:
         - zap invalid-input -> fallback transition
         - no-wallet step actions and states

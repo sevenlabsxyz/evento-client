@@ -1,6 +1,7 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
@@ -45,6 +46,7 @@ export function ZapSheet({
   const [payRequest, setPayRequest] = useState<LnurlPayRequestDetails | null>(null);
 
   const { satsToUSD, usdToSats } = useAmountConverter();
+  const notifyMutation = useNotifyWalletInvite();
 
   const showWalletUnlockToast = () => {
     toast.error('Unlock your Evento Wallet to continue.', 'Error', undefined, {
@@ -61,6 +63,13 @@ export function ZapSheet({
     username: recipientUsername,
     avatar: recipientAvatar,
     lightningAddress: recipientLightningAddress,
+  };
+
+  // Handle notify action
+  const handleNotify = () => {
+    if (recipientUsername) {
+      notifyMutation.mutate({ recipientUsername });
+    }
   };
 
   // Handle open/close state and determine initial step based on wallet
@@ -82,6 +91,7 @@ export function ZapSheet({
       setIsPreparing(false);
       setComment('');
       setPayRequest(null);
+      notifyMutation.reset();
     }
   }, [open, recipientLightningAddress]);
 
@@ -428,7 +438,18 @@ export function ZapSheet({
           />
         );
       case 'no-wallet':
-        return <ZapNoWalletStep onClose={handleClose} />;
+        return (
+          <ZapNoWalletStep
+            onClose={handleClose}
+            onNotify={handleNotify}
+            recipient={recipient}
+            isNotifying={notifyMutation.isPending}
+            notifySuccess={notifyMutation.isSuccess && notifyMutation.data?.status === 'sent'}
+            alreadyNotified={
+              notifyMutation.isSuccess && notifyMutation.data?.status === 'already_notified'
+            }
+          />
+        );
       default:
         return null;
     }

@@ -1,20 +1,40 @@
 import apiClient from '@/lib/api/client';
-import { ApiResponse, CreateEmailBlastForm, EmailBlast } from '@/lib/types/api';
+import { queryKeys } from '@/lib/query-client';
+import {
+  ApiResponse,
+  CreateEmailBlastForm,
+  EmailBlast,
+  UpdateEmailBlastForm,
+} from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+
+interface ApiError {
+  message?: string;
+  status?: number;
+}
+
+const getErrorMessage = (error: unknown, fallbackMessage: string) => {
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string' && message.length > 0) {
+      return message;
+    }
+  }
+
+  return fallbackMessage;
+};
 
 /**
  * Hook to fetch email blasts for a specific event
  */
 export function useEmailBlasts(eventId: string) {
   return useQuery({
-    queryKey: ['emailBlasts', eventId],
+    queryKey: queryKeys.eventEmailBlasts(eventId),
     queryFn: async () => {
-      // API client response interceptor returns ApiResponse directly
       const response = await apiClient.get<ApiResponse<EmailBlast[]>>(
         `/v1/events/${eventId}/email-blasts`
       );
-      // Check if response has the expected structure
       if (response && response.data && Array.isArray(response.data)) {
         return response.data;
       }
@@ -36,19 +56,17 @@ export function useCreateEmailBlast(eventId: string) {
         `/v1/events/${eventId}/email-blasts`,
         data
       );
-      // Check if response has the expected structure
       if (response && response.data) {
         return response.data;
       }
       throw new Error('Failed to create email blast');
     },
     onSuccess: () => {
-      // Invalidate and refetch email blasts
-      queryClient.invalidateQueries({ queryKey: ['emailBlasts', eventId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       logger.error('Create email blast error', {
-        error: error instanceof Error ? error.message : String(error),
+        error: getErrorMessage(error, 'Failed to create email blast'),
       });
     },
   });
@@ -67,18 +85,84 @@ export function useCreateEmailBlastWithCallbacks(eventId: string) {
         `/v1/events/${eventId}/email-blasts`,
         data
       );
-      // Check if response has the expected structure
       if (response && response.data) {
         return response.data;
       }
       throw new Error('Failed to create email blast');
     },
     onSuccess: () => {
-      // Invalidate and refetch email blasts
-      queryClient.invalidateQueries({ queryKey: ['emailBlasts', eventId] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
     },
   });
 }
+
+export function useUpdateEmailBlast(eventId: string, blastId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: UpdateEmailBlastForm) => {
+      const response = await apiClient.patch<ApiResponse<EmailBlast>>(
+        `/v1/events/${eventId}/email-blasts/${blastId}`,
+        data
+      );
+
+      if (response && response.data) {
+        return response.data;
+      }
+
+      throw new Error('Failed to update email blast');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.emailBlast(eventId, blastId) });
+    },
+    onError: (error: unknown) => {
+      logger.error('Update email blast error', {
+        error: getErrorMessage(error, 'Failed to update email blast'),
+      });
+    },
+  });
+}
+
+export function useCancelEmailBlast(eventId: string, blastId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const response = await apiClient.delete<ApiResponse<EmailBlast>>(
+        `/v1/events/${eventId}/email-blasts/${blastId}`
+      );
+
+      if (response && response.data) {
+        return response.data;
+      }
+
+      throw new Error('Failed to cancel email blast');
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.eventEmailBlasts(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.emailBlast(eventId, blastId) });
+    },
+    onError: (error: unknown) => {
+      logger.error('Cancel email blast error', {
+        error: getErrorMessage(error, 'Failed to cancel email blast'),
+      });
+    },
+  });
+}
+
+export const isEmailBlastScheduledMutationRaceError = (error: unknown) => {
+  if (typeof error !== 'object' || error === null) {
+    return false;
+  }
+
+  const apiError = error as ApiError;
+  if (apiError.status !== 400 || !apiError.message) {
+    return false;
+  }
+
+  return /Only scheduled email blasts can be (edited|cancelled)/i.test(apiError.message);
+};
 
 /**
  * Transform API email blast data to UI format
@@ -104,6 +188,10 @@ export function transformEmailBlastForUI(blast: EmailBlast): EmailBlast & {
     all: 'All RSVPs',
     yes_only: 'RSVP: Yes',
     yes_and_maybe: 'RSVP: Yes & Maybe',
+    'rsvp-yes': 'RSVP: Yes',
+    'rsvp-no': 'RSVP: No',
+    'rsvp-maybe': 'RSVP: Maybe',
+    invited: 'Invited',
   };
 
   // Map the API response to our UI structure

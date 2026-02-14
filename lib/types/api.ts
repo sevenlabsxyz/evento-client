@@ -339,8 +339,10 @@ export interface EmailBlast {
   user_id: string;
   message: string;
   recipient_filter: EmailBlastRecipientFilter;
-  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+  status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed' | 'cancelled';
   scheduled_for: string | null;
+  trigger_run_id?: string | null;
+  cancelled_at?: string | null;
   created_at: string;
   updated_at: string;
   subject?: string;
@@ -375,6 +377,12 @@ export interface CreateEmailBlastForm {
   message: string;
   recipientFilter: EmailBlastRecipientFilter;
   scheduledFor?: string | null;
+}
+
+export interface UpdateEmailBlastForm {
+  message?: string;
+  recipientFilter?: EmailBlastRecipientFilter;
+  scheduledFor?: string;
 }
 
 // User List (for saved events)
@@ -432,7 +440,7 @@ export type RSVPStatus = 'yes' | 'no' | 'maybe';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
-export type EmailBlastRecipientFilter = 'all' | 'yes_only' | 'yes_and_maybe';
+export type EmailBlastRecipientFilter = 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited';
 
 // Password-protected event response (minimal data when locked)
 export interface PasswordProtectedEventResponse {

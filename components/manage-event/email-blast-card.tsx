@@ -1,22 +1,12 @@
 'use client';
 
-interface EmailBlast {
-  id: string;
-  subject: string;
-  recipients: string;
-  recipientCount: number;
-  status: string;
-  created_at: string;
-  scheduled_for?: string | null;
-  delivered: number;
-  failed: number;
-  pending: number;
-  message: string;
-}
+import { EmailBlast } from '@/lib/types/api';
+
+type EmailBlastCardData = EmailBlast;
 
 interface EmailBlastCardProps {
-  blast: EmailBlast;
-  onClick: (blast: EmailBlast) => void;
+  blast: EmailBlastCardData;
+  onClick: (blast: EmailBlastCardData) => void;
 }
 
 export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) {
@@ -35,6 +25,7 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
     switch (status) {
       case 'delivered':
       case 'sent':
+      case 'completed':
         return 'text-green-600 bg-green-100';
       case 'pending':
       case 'sending':
@@ -43,8 +34,29 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
         return 'text-blue-600 bg-blue-100';
       case 'failed':
         return 'text-red-600 bg-red-100';
+      case 'cancelled':
+        return 'text-gray-700 bg-gray-200';
       default:
         return 'text-gray-600 bg-gray-100';
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'scheduled':
+        return 'Scheduled';
+      case 'sending':
+        return 'Sending';
+      case 'completed':
+        return 'Completed';
+      case 'failed':
+        return 'Failed';
+      case 'cancelled':
+        return 'Cancelled';
+      case 'draft':
+        return 'Draft';
+      default:
+        return status.charAt(0).toUpperCase() + status.slice(1);
     }
   };
 
@@ -55,13 +67,13 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
     >
       <div className='mb-3 flex items-start justify-between'>
         <div className='flex-1'>
-          <h3 className='mb-1 font-semibold text-gray-900'>{blast.subject}</h3>
-          <p className='text-sm text-gray-500'>To: {blast.recipientCount} recipients</p>
+          <h3 className='mb-1 font-semibold text-gray-900'>{blast.subject || 'No subject'}</h3>
+          <p className='text-sm text-gray-500'>To: {blast.recipientCount ?? 0} recipients</p>
         </div>
         <span
           className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(blast.status)}`}
         >
-          {blast.status === 'scheduled' ? 'Scheduled' : blast.status}
+          {getStatusLabel(blast.status)}
         </span>
       </div>
 
@@ -98,18 +110,18 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
       <div className='mt-3 flex items-center gap-4 border-t border-gray-100 pt-3'>
         <div className='flex items-center gap-1'>
           <div className='h-2 w-2 rounded-full bg-green-500'></div>
-          <span className='text-xs text-gray-600'>{blast.delivered} delivered</span>
+          <span className='text-xs text-gray-600'>{blast.delivered ?? 0} delivered</span>
         </div>
-        {blast.failed > 0 && (
+        {(blast.failed ?? 0) > 0 && (
           <div className='flex items-center gap-1'>
             <div className='h-2 w-2 rounded-full bg-red-500'></div>
-            <span className='text-xs text-gray-600'>{blast.failed} failed</span>
+            <span className='text-xs text-gray-600'>{blast.failed ?? 0} failed</span>
           </div>
         )}
-        {blast.pending > 0 && (
+        {(blast.pending ?? 0) > 0 && (
           <div className='flex items-center gap-1'>
             <div className='h-2 w-2 rounded-full bg-yellow-500'></div>
-            <span className='text-xs text-gray-600'>{blast.pending} pending</span>
+            <span className='text-xs text-gray-600'>{blast.pending ?? 0} pending</span>
           </div>
         )}
       </div>

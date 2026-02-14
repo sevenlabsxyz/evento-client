@@ -66,3 +66,58 @@
 - Toast utility imported from `@/lib/utils/toast` (sonner wrapper)
 - No TypeScript errors in new file (verified with `pnpm tsc`)
 - Pre-existing errors remain in unrelated files (7 total)
+
+## 2026-02-14 Task: Wire useNotifyWalletInvite into ZapSheet
+
+- Modified `components/zap/zap-sheet.tsx` to integrate notify mutation
+- Added import: `import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';`
+- Instantiated hook at line 48: `const notifyMutation = useNotifyWalletInvite();`
+- Created `handleNotify` callback (lines 67-71) that calls `notifyMutation.mutate({ recipientUsername })`
+- Updated `no-wallet` case in `renderStepContent` (lines 438-447) to pass 6 props to `ZapNoWalletStep`:
+    - `onNotify={handleNotify}` — callback to trigger mutation
+    - `recipient={recipient}` — existing RecipientInfo object (line 59)
+    - `isNotifying={notifyMutation.isPending}` — loading state
+    - `notifySuccess={notifyMutation.isSuccess && notifyMutation.data?.status === 'sent'}` — success state
+    - `alreadyNotified={notifyMutation.isSuccess && notifyMutation.data?.status === 'already_notified'}` — already notified state
+- Added `notifyMutation.reset()` to close/reset useEffect (line 85) to clear mutation state when sheet closes
+- No new TypeScript errors introduced (verified with `pnpm tsc`)
+- Pre-existing errors remain in unrelated files (7 total)
+- Notify action is user-initiated (button click) — NOT auto-triggered on step entry
+- Sheet does NOT auto-close after notify success — user must click Close button manually
+
+## 2026-02-14 Task: Add Automated Test Coverage
+
+- Created `__tests__/hooks/use-notify-wallet-invite.test.ts` with 7 test cases:
+    - Success (sent status) — verifies mutation returns `status: 'sent'`
+    - Already notified status — verifies mutation returns `status: 'already_notified'`
+    - Error status — verifies mutation throws error when `success: false`
+    - Correct API payload — verifies `POST /v1/wallet/notify` called with `{ recipientUsername }`
+    - Network errors — verifies mutation handles rejected promises
+    - Custom error messages — verifies error message propagation
+    - Reset mutation state — verifies `reset()` clears mutation to idle state
+- Created `__tests__/components/zap-no-wallet-step.test.tsx` with 13 test cases:
+    - Default render — both buttons visible, generic heading
+    - Personalized heading — uses recipient name when provided
+    - onNotify callback — button click triggers callback
+    - onClose callback — Close button triggers callback
+    - Loading state — shows "Sending..." with spinner, button disabled
+    - Success state — shows "Notified" with check icon, emerald bg, button disabled
+    - Already notified state — shows "Already Notified", button disabled
+    - Disabled when no callback — button disabled when `onNotify` undefined
+    - Description text — renders full explanation text
+    - Zap icon — renders icon container
+    - No callback on disabled — disabled button doesn't trigger callback
+    - Success button styles — emerald bg applied
+    - Default button styles — gray bg applied
+- Test patterns followed from `__tests__/hooks/use-auth.test.ts`:
+    - Used `renderHook`, `act`, `waitFor` from `@testing-library/react`
+    - Used `createTestWrapper(queryClient)` for QueryClientProvider
+    - Created fresh `QueryClient` with `retry: false` for each test
+    - Used `require('@/lib/api/client')` to access globally mocked apiClient
+    - Did NOT re-mock apiClient (already mocked in `jest.setup.ts`)
+- Component tests used `render`, `screen`, `fireEvent` from `@testing-library/react`
+- Unicode character handling: Component uses `\u2019` (right single quotation mark) in heading — tests must match exact character
+- Mutation reset requires `await act(async () => { reset() })` + `await waitFor()` to properly transition to idle state
+- All 20 tests pass: `pnpm test -- __tests__/hooks/use-notify-wallet-invite.test.ts __tests__/components/zap-no-wallet-step.test.tsx --verbose`
+- No new TypeScript errors introduced (verified with `pnpm tsc`)
+- Pre-existing errors remain in unrelated files (7 total)

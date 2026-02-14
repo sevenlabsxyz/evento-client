@@ -120,4 +120,8 @@ export const queryKeys = {
     [...queryKeys.registration, 'questions', eventId] as const,
   registrationSubmissionDetail: (eventId: string, registrationId: string) =>
     [...queryKeys.registration, 'submissions', eventId, registrationId] as const,
+  emailBlasts: ['emailBlasts'] as const,
+  eventEmailBlasts: (eventId: string) => [...queryKeys.emailBlasts, eventId] as const,
+  emailBlast: (eventId: string, blastId: string) =>
+    [...queryKeys.emailBlasts, eventId, blastId] as const,
 } as const;

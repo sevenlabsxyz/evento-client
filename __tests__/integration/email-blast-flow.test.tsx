@@ -143,12 +143,12 @@ describe('Email Blast Integration Flow', () => {
   });
 
   it('should handle different recipient filters', async () => {
-    const recipientFilters = ['all', 'yes_only', 'yes_and_maybe'];
+    const recipientFilters = ['all', 'rsvp-yes', 'rsvp-no', 'rsvp-maybe', 'invited'];
 
     for (const filter of recipientFilters) {
       const mockEmailBlastData = {
         message: `<p>Message for ${filter} recipients</p>`,
-        recipientFilter: filter as 'all' | 'yes_only' | 'yes_and_maybe',
+        recipientFilter: filter as 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited',
         scheduledFor: null,
       };
 
