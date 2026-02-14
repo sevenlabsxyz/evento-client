@@ -2,7 +2,7 @@
 
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
-import { Copy, EyeOff, Image, Link, Mail, MoreHorizontal, Settings, UserPlus } from 'lucide-react';
+import { Copy, Link, Mail, MoreHorizontal, Settings, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -13,7 +13,6 @@ interface OwnerEventButtonsProps {
 
 export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   const router = useRouter();
-  const [hideGuestList, setHideGuestList] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
 
@@ -27,15 +26,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
   const handleEmailBlasts = () => {
     router.push(`/e/${eventId}/manage/email-blast`);
-  };
-
-  const handleGallerySettings = () => {
-    router.push(`/e/${eventId}/gallery`);
-  };
-
-  const handleToggleGuestList = () => {
-    setHideGuestList(!hideGuestList);
-    router.push(`/e/${eventId}/manage/guests`);
   };
 
   const handleEventLink = () => {
@@ -58,10 +48,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       document.body.removeChild(textArea);
       toast.success('Event link copied to clipboard!');
     }
-  };
-
-  const handleCheckInGuests = () => {
-    // TODO: Implement check-in guests functionality
   };
 
   return (
@@ -107,24 +93,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         isOpen={moreOptionsOpen}
         onClose={() => setMoreOptionsOpen(false)}
         options={[
-          {
-            id: 'gallery-settings',
-            label: 'Gallery Settings',
-            icon: Image,
-            onClick: () => {
-              handleGallerySettings();
-              setMoreOptionsOpen(false);
-            },
-          },
-          {
-            id: 'hide-guest-list',
-            label: 'Hide Guest List',
-            icon: EyeOff,
-            onClick: () => {
-              handleToggleGuestList();
-              setMoreOptionsOpen(false);
-            },
-          },
           {
             id: 'event-link',
             label: 'Event Link',
