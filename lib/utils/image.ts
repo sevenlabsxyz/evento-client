@@ -71,6 +71,10 @@ export function getOptimizedCoverUrl(
   size: 'thumbnail' | 'feed' | 'detail' = 'feed'
 ): string {
   const imageSize =
-    size === 'thumbnail' ? ImageSizes.SMALL : size === 'feed' ? ImageSizes.MEDIUM : ImageSizes.LARGE;
+    size === 'thumbnail'
+      ? ImageSizes.SMALL
+      : size === 'feed'
+        ? ImageSizes.MEDIUM
+        : ImageSizes.LARGE;
   return getOptimizedImageUrl(url, imageSize, 80);
 }

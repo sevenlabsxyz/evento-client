@@ -56,7 +56,7 @@ export default function HubPage() {
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-24 pt-4 md:max-w-sm'>
+        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-36 pt-4 md:max-w-sm md:pb-24'>
           {/* Welcome text */}
           <div className='mb-4'>
             <Skeleton className='h-5 w-48' />
@@ -84,7 +84,7 @@ export default function HubPage() {
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-32 pt-4 md:max-w-6xl'>
+      <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:max-w-6xl md:pb-32'>
         <CohostInvitesSection />
         <MyEventsSection />
         <EventInvitesSection />

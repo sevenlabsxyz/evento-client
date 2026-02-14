@@ -5,7 +5,7 @@ import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
-import { BadgeDollarSign, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 
@@ -55,10 +55,9 @@ export default function EventContributions({ eventData, eventId }: EventContribu
 
   return (
     <>
-      <div className='border-b border-gray-100 pb-6'>
+      <div className=''>
         <div className='mb-3 flex items-center gap-2'>
-          <BadgeDollarSign className='h-5 w-5 text-green-600' />
-          <span className='font-semibold text-gray-900'>Contribution</span>
+          <span className='text-lg font-semibold text-gray-900'>Contributions</span>
         </div>
 
         <button

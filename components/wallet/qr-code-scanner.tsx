@@ -1,7 +1,7 @@
 'use client';
 
-import { Html5Qrcode } from 'html5-qrcode';
 import { logger } from '@/lib/utils/logger';
+import { Html5Qrcode } from 'html5-qrcode';
 import { useEffect, useRef, useState } from 'react';
 
 interface CameraScannerProps {

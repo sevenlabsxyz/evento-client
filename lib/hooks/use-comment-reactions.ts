@@ -12,7 +12,7 @@ export interface CommentReactions {
 
 export type ReactionType = 'like';
 
-const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
 

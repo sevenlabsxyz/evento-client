@@ -1,5 +1,5 @@
-import { useMutation } from '@tanstack/react-query';
 import { logger } from '@/lib/utils/logger';
+import { useMutation } from '@tanstack/react-query';
 import apiClient from '../api/client';
 import { UserSearchResult } from '../types/api';
 import { EventDetail } from '../types/event';

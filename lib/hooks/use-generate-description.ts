@@ -1,6 +1,6 @@
 import apiClient from '@/lib/api/client';
-import { useMutation } from '@tanstack/react-query';
 import { logger } from '@/lib/utils/logger';
+import { useMutation } from '@tanstack/react-query';
 
 export interface GenerateDescriptionParams {
   // Required event data

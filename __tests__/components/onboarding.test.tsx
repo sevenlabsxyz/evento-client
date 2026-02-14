@@ -1,7 +1,4 @@
 import { QueryClient } from '@tanstack/react-query';
-import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { createTestWrapper } from '../setup/test-utils';
 
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
@@ -135,9 +132,7 @@ describe('Onboarding Flow Validation', () => {
     it('validates complete username requirements', () => {
       const validateUsername = (username: string) => {
         const alphanumericRegex = /^[a-zA-Z0-9]*$/;
-        return (
-          alphanumericRegex.test(username) && username.length >= 3 && username.length <= 20
-        );
+        return alphanumericRegex.test(username) && username.length >= 3 && username.length <= 20;
       };
 
       expect(validateUsername('validuser123')).toBe(true);
@@ -361,7 +356,12 @@ describe('Onboarding Flow Validation', () => {
       };
 
       const answeredPrompts = [
-        { prompt_id: 'p1', answer: 'This is a long enough answer', is_visible: true, display_order: 0 },
+        {
+          prompt_id: 'p1',
+          answer: 'This is a long enough answer',
+          is_visible: true,
+          display_order: 0,
+        },
       ];
 
       expect(getButtonText(5, [], answeredPrompts)).toBe('Complete Setup');
@@ -405,7 +405,11 @@ describe('Onboarding Flow Validation', () => {
 
   describe('Username availability check', () => {
     it('considers username available when no user exists', () => {
-      const checkAvailability = (existingUser: any, currentUsername: string, inputUsername: string) => {
+      const checkAvailability = (
+        existingUser: any,
+        currentUsername: string,
+        inputUsername: string
+      ) => {
         if (currentUsername === inputUsername) return true;
         return !existingUser?.id;
       };
@@ -415,7 +419,11 @@ describe('Onboarding Flow Validation', () => {
     });
 
     it('considers username taken when user exists', () => {
-      const checkAvailability = (existingUser: any, currentUsername: string, inputUsername: string) => {
+      const checkAvailability = (
+        existingUser: any,
+        currentUsername: string,
+        inputUsername: string
+      ) => {
         if (currentUsername === inputUsername) return true;
         return !existingUser?.id;
       };
@@ -424,7 +432,11 @@ describe('Onboarding Flow Validation', () => {
     });
 
     it('allows user to keep their current username', () => {
-      const checkAvailability = (existingUser: any, currentUsername: string, inputUsername: string) => {
+      const checkAvailability = (
+        existingUser: any,
+        currentUsername: string,
+        inputUsername: string
+      ) => {
         if (currentUsername === inputUsername) return true;
         return !existingUser?.id;
       };

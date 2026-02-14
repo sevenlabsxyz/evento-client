@@ -13,7 +13,7 @@ interface LikeActionResponse {
   has_liked: boolean;
 }
 
-const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
 
@@ -26,9 +26,9 @@ export function useGalleryItemLikes(itemId?: string, eventId?: string) {
     queryFn: async (): Promise<GalleryLikesResponse> => {
       if (!itemId || !eventId) return { likes: 0, has_liked: false };
 
-      const response = await apiClient.get<ApiResponse<GalleryLikesResponse> | GalleryLikesResponse>(
-        `/v1/events/${eventId}/gallery/likes?itemId=${itemId}`
-      );
+      const response = await apiClient.get<
+        ApiResponse<GalleryLikesResponse> | GalleryLikesResponse
+      >(`/v1/events/${eventId}/gallery/likes?itemId=${itemId}`);
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

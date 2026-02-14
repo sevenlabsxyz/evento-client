@@ -1,5 +1,4 @@
 import { apiClient } from '@/lib/api/client';
-import { ApiResponse } from '@/lib/types/api';
 import { EventComment } from '@/lib/hooks/use-event-comments';
 import { ApiResponse } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
@@ -11,7 +10,7 @@ interface EditCommentParams {
   eventId: string;
 }
 
-const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
 

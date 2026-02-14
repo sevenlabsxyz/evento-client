@@ -7,7 +7,7 @@ import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
-import { Event, EventDetail } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { MessageCircle, Zap } from 'lucide-react';

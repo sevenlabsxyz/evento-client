@@ -1,16 +1,16 @@
 import {
-  updateUserProfileSchema,
-  userSearchSchema,
   followUserSchema,
-  userDetailsSchema,
-  validateUpdateUserProfile,
-  validateUserSearch,
-  validateFollowUser,
-  validateUserDetails,
-  safeValidateUserProfile,
-  safeValidateUserSearch,
   safeValidateFollowUser,
   safeValidateUserDetails,
+  safeValidateUserProfile,
+  safeValidateUserSearch,
+  updateUserProfileSchema,
+  userDetailsSchema,
+  userSearchSchema,
+  validateFollowUser,
+  validateUpdateUserProfile,
+  validateUserDetails,
+  validateUserSearch,
 } from '@/lib/schemas/user';
 
 describe('User Schemas', () => {

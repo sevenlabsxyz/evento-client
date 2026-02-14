@@ -1,8 +1,7 @@
 'use client';
 
-import { Event } from '@/lib/types/event';
-import DOMPurify from 'dompurify';
 import { EventDetail } from '@/lib/types/event';
+import DOMPurify from 'dompurify';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 

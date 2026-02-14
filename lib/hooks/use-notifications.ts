@@ -1,6 +1,5 @@
 import apiClient from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
-import { logger } from '@/lib/utils/logger';
 import {
   MarkAllNotificationsParams,
   NotificationBulkActionParams,
@@ -9,6 +8,7 @@ import {
   NotificationMessage,
   UINotification,
 } from '@/lib/types/notifications';
+import { logger } from '@/lib/utils/logger';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNowStrict } from 'date-fns';
 

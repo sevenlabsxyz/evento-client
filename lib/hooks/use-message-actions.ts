@@ -1,6 +1,6 @@
+import { logger } from '@/lib/utils/logger';
 import { useCallback } from 'react';
 import type { Channel as StreamChannel } from 'stream-chat';
-import { logger } from '@/lib/utils/logger';
 
 export const useMessageActions = (channel: StreamChannel | undefined) => {
   const handleFlag = useCallback(

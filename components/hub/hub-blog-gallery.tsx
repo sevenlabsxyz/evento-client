@@ -58,7 +58,9 @@ export function HubBlogGallery() {
         );
 
         if (!res.ok) {
-          logger.error('Failed to fetch hub blog posts', { status: res.status });
+          logger.error('Failed to fetch hub blog posts', {
+            status: res.status,
+          });
           setIsLoading(false);
           return;
         }
@@ -118,7 +120,7 @@ export function HubBlogGallery() {
 
   return (
     <>
-      <div className='space-y-3 pb-8 pt-4'>
+      <div className='md:12 space-y-3 pb-32 pt-4'>
         <div className='flex items-center justify-between'>
           <h2 className='text-xl font-semibold'>Latest from Evento</h2>
           <div className='flex items-center gap-2'>

@@ -1,7 +1,7 @@
+import { logger } from '@/lib/utils/logger';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { StreamChat, User } from 'stream-chat';
-import { logger } from '@/lib/utils/logger';
 import { getStreamChatApiKey, streamChatService } from '../services/stream-chat';
 import { useAuth } from './use-auth';
 

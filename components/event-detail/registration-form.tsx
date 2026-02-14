@@ -207,19 +207,16 @@ export function RegistrationForm({
         if (needsNameUpdate || needsUsername) {
           try {
             const updates: { name?: string; username?: string } = {};
-            
+
             if (needsNameUpdate) {
               updates.name = name.trim();
             }
-            
+
             if (needsUsername) {
-              const generatedUsername = await generateAvailableUsername(
-                email.trim(),
-                name.trim()
-              );
+              const generatedUsername = await generateAvailableUsername(email.trim(), name.trim());
               updates.username = generatedUsername;
             }
-            
+
             await updateProfile.mutateAsync(updates);
           } catch (error) {
             // Non-critical - continue with registration even if profile update fails

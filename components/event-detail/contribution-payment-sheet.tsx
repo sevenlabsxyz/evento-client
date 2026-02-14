@@ -111,9 +111,7 @@ export default function ContributionPaymentSheet({
               </VisuallyHidden.Root>
 
               <div className='mb-6 text-center'>
-                <p className='mb-2 text-sm text-gray-500'>
-                  Support the host with a contribution
-                </p>
+                <p className='mb-2 text-sm text-gray-500'>Support the host with a contribution</p>
                 {suggestedCost > 0 ? (
                   <>
                     {isEditingAmount ? (
@@ -141,9 +139,7 @@ export default function ContributionPaymentSheet({
                         />
                       </div>
                     ) : (
-                      <p className='text-5xl font-bold text-gray-900'>
-                        {formatUSD(customAmount)}
-                      </p>
+                      <p className='text-5xl font-bold text-gray-900'>{formatUSD(customAmount)}</p>
                     )}
                     <button
                       onClick={() => setIsEditingAmount(true)}

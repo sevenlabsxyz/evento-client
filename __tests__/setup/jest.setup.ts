@@ -26,7 +26,6 @@ jest.mock('@/lib/api/client', () => {
 });
 
 beforeEach(() => {
-
   const { default: mockApiClient } = require('@/lib/api/client');
 
   // Reset all mocks for hook/unit tests

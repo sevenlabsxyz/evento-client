@@ -1,11 +1,6 @@
 import { cn } from '@/lib/utils';
 
-type SkeletonVariant =
-  | 'list'
-  | 'profile'
-  | 'event-compact-item'
-  | 'event-details'
-  | 'event-card';
+type SkeletonVariant = 'list' | 'profile' | 'event-compact-item' | 'event-details' | 'event-card';
 
 const skeletonVariants: Record<SkeletonVariant, string> = {
   list: '',

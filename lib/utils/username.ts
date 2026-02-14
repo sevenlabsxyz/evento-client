@@ -111,10 +111,7 @@ export function generateUsernameBase(email: string, name?: string): string[] {
  * - Returns first available username
  * - Throws error if no username found after MAX_GENERATION_ATTEMPTS
  */
-export async function generateAvailableUsername(
-  email: string,
-  name?: string
-): Promise<string> {
+export async function generateAvailableUsername(email: string, name?: string): Promise<string> {
   const candidates = generateUsernameBase(email, name);
 
   if (candidates.length === 0) {
@@ -154,7 +151,5 @@ export async function generateAvailableUsername(
   }
 
   // If we exhausted all candidates and suffixes, throw error
-  throw new Error(
-    `Unable to find available username after ${MAX_GENERATION_ATTEMPTS} attempts`
-  );
+  throw new Error(`Unable to find available username after ${MAX_GENERATION_ATTEMPTS} attempts`);
 }

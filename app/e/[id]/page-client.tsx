@@ -347,7 +347,7 @@ export default function EventDetailPageClient() {
     <div className='min-h-screen bg-white'>
       {/* Main content */}
       <div className='mx-auto max-w-full bg-white md:pt-4 lg:max-w-4xl'>
-        <div className='lg:flex lg:gap-8'>
+        <div className='pt-4 md:pt-0 lg:flex lg:gap-8'>
           {/* Left Column - Image & Quick Actions (sticky on desktop) */}
           <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
             <SwipeableHeader

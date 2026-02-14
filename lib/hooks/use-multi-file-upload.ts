@@ -1,5 +1,5 @@
-import { toast } from '@/lib/utils/toast';
 import { logger } from '@/lib/utils/logger';
+import { toast } from '@/lib/utils/toast';
 import * as React from 'react';
 import { useCallback, useRef, useState } from 'react';
 

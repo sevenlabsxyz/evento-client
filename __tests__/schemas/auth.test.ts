@@ -1,9 +1,9 @@
 import {
-  loginSchema,
-  verifyCodeSchema,
   authSchema,
+  loginSchema,
   updateProfileSchema,
   validationMessages,
+  verifyCodeSchema,
 } from '@/lib/schemas/auth';
 
 describe('Auth Schemas', () => {

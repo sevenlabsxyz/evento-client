@@ -8,6 +8,7 @@ import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
 import { Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';
 import { ZapConfirmStep } from './steps/zap-confirm-step';
@@ -30,6 +31,7 @@ export function ZapSheet({
   onError,
   currentUsername,
 }: ZapSheetProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('amount');
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -43,6 +45,15 @@ export function ZapSheet({
   const [payRequest, setPayRequest] = useState<LnurlPayRequestDetails | null>(null);
 
   const { satsToUSD, usdToSats } = useAmountConverter();
+
+  const showWalletUnlockToast = () => {
+    toast.error('Unlock your Evento Wallet to continue.', 'Error', undefined, {
+      action: {
+        label: 'Unlock',
+        onClick: () => router.push('/e/wallet'),
+      },
+    });
+  };
 
   // Recipient info object for step components
   const recipient: RecipientInfo = {
@@ -87,7 +98,7 @@ export function ZapSheet({
         } catch (error: any) {
           setOpen(false);
           if (error?.message === 'SDK not connected') {
-            toast.error('Unlock your Evento Wallet to continue.');
+            showWalletUnlockToast();
           } else if (error?.message?.toLowerCase().includes('invalid input')) {
             // Lightning address doesn't exist (404 from LNURL endpoint)
             toast.error('User has not set up Evento Wallet yet.');
@@ -213,7 +224,7 @@ export function ZapSheet({
         !breezSDK.isConnected()
       ) {
         setOpen(false);
-        toast.error('Wallet not connected. Please set up your wallet first.');
+        showWalletUnlockToast();
       } else {
         toast.error(error.message || 'Failed to prepare payment');
       }
@@ -268,7 +279,7 @@ export function ZapSheet({
         !breezSDK.isConnected()
       ) {
         setOpen(false);
-        toast.error('Wallet not connected. Please set up your wallet first.');
+        showWalletUnlockToast();
       } else {
         toast.error(error.message || 'Failed to prepare payment');
       }
@@ -302,7 +313,7 @@ export function ZapSheet({
         !breezSDK.isConnected()
       ) {
         setOpen(false);
-        toast.error('Wallet not connected. Please set up your wallet first.');
+        showWalletUnlockToast();
       } else {
         toast.error(error.message || 'Failed to send payment');
       }

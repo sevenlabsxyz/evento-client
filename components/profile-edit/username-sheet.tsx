@@ -90,7 +90,9 @@ export default function UsernameSheet({
       // Close sheet
       onClose();
     } catch (error) {
-      logger.error('Failed to update username', { error: error instanceof Error ? error.message : String(error) });
+      logger.error('Failed to update username', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error('Failed to update username');
     }
   };

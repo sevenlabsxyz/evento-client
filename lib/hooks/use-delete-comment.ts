@@ -11,7 +11,7 @@ interface DeleteCommentResponse {
   id: string;
 }
 
-const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
 
@@ -25,9 +25,7 @@ export function useDeleteComment() {
     }: DeleteCommentParams): Promise<DeleteCommentResponse> => {
       const response = await apiClient.delete<
         ApiResponse<DeleteCommentResponse> | DeleteCommentResponse
-      >(
-        `/v1/events/${eventId}/comments/${commentId}`
-      );
+      >(`/v1/events/${eventId}/comments/${commentId}`);
 
       // Handle the response structure { success, message, data }
       if (!response || typeof response !== 'object') {

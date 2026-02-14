@@ -100,7 +100,7 @@ export class BreezSDKService {
           currentFingerprint: currentWalletFingerprint,
           newFingerprint,
         });
-        
+
         try {
           if (DEBUG_BREEZ) console.info('🔌 [BREEZ:CONNECT] Disconnecting existing wallet...');
           await this.disconnect();
@@ -111,7 +111,7 @@ export class BreezSDKService {
               error
             );
         }
-        
+
         // Continue to create new SDK instance for the new wallet
         currentWalletFingerprint = newFingerprint;
       }
@@ -525,8 +525,7 @@ export class BreezSDKService {
       if (DEBUG_BREEZ)
         console.debug('💸 [BREEZ:SEND_PAYMENT_OPTIONS] Sending payment with options...');
       const response = await this.sdk.sendPayment(request);
-      if (DEBUG_BREEZ)
-        console.debug('✅ [BREEZ:SEND_PAYMENT_OPTIONS] Payment sent successfully');
+      if (DEBUG_BREEZ) console.debug('✅ [BREEZ:SEND_PAYMENT_OPTIONS] Payment sent successfully');
       return response;
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.SENDING_PAYMENT_WITH_OPTIONS);
@@ -560,8 +559,7 @@ export class BreezSDKService {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
-      if (DEBUG_BREEZ)
-        console.debug('💸 [BREEZ:PREPARE_LNURL_PAY] Preparing LNURL payment...');
+      if (DEBUG_BREEZ) console.debug('💸 [BREEZ:PREPARE_LNURL_PAY] Preparing LNURL payment...');
       const response = await this.sdk.prepareLnurlPay(params);
       if (DEBUG_BREEZ) console.debug('✅ [BREEZ:PREPARE_LNURL_PAY] LNURL payment prepared');
       return response;
@@ -756,9 +754,7 @@ export class BreezSDKService {
       };
       await this.sdk.refundDeposit(request);
       if (DEBUG_BREEZ)
-        console.debug(
-          `✅ [BREEZ:REFUND_DEPOSIT] Successfully refunded deposit ${txid}:${vout}`
-        );
+        console.debug(`✅ [BREEZ:REFUND_DEPOSIT] Successfully refunded deposit ${txid}:${vout}`);
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.REFUNDING_DEPOSIT);
       const userMessage = getBreezErrorMessage(error, 'refund deposit');
@@ -859,17 +855,17 @@ export class BreezSDKService {
           this.logBreezEvent(event);
 
           // Notify all registered callbacks
-            this.eventCallbacks.forEach((callback) => {
-              try {
-                callback(event);
-              } catch (error) {
-                console.error('Error in event callback', {
-                  error: error instanceof Error ? error.message : String(error),
-                });
-              }
-            });
-          },
-        };
+          this.eventCallbacks.forEach((callback) => {
+            try {
+              callback(event);
+            } catch (error) {
+              console.error('Error in event callback', {
+                error: error instanceof Error ? error.message : String(error),
+              });
+            }
+          });
+        },
+      };
 
       this.eventListenerId = await this.sdk.addEventListener(eventListener);
       if (DEBUG_BREEZ)

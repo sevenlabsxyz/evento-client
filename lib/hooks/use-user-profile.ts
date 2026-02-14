@@ -1,6 +1,6 @@
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
-import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
@@ -9,7 +9,7 @@ import { ApiResponse, UserDetails } from '../types/api';
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
 
-const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
 

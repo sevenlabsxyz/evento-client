@@ -2,7 +2,7 @@ import { apiClient } from '@/lib/api/client';
 import { ApiResponse } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-const isApiResponse = <T,>(value: unknown): value is ApiResponse<T> => {
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
 
@@ -13,9 +13,7 @@ export function useDeleteGalleryItem() {
     mutationFn: async ({ galleryItemId, eventId }: { galleryItemId: string; eventId: string }) => {
       const response = await apiClient.delete<
         ApiResponse<{ success?: boolean; message?: string } | null> | { id: string }
-      >(
-        `/v1/events/${eventId}/gallery?galleryItemId=${galleryItemId}`
-      );
+      >(`/v1/events/${eventId}/gallery?galleryItemId=${galleryItemId}`);
 
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');
@@ -28,7 +26,12 @@ export function useDeleteGalleryItem() {
         }
 
         const nested = response.data;
-        if (nested && typeof nested === 'object' && 'success' in nested && nested.success === false) {
+        if (
+          nested &&
+          typeof nested === 'object' &&
+          'success' in nested &&
+          nested.success === false
+        ) {
           throw new Error('Failed to delete photo');
         }
       }

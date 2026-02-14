@@ -76,14 +76,11 @@ describe('useSubmitRegistration', () => {
         mutationResult = await result.current.mutateAsync(submitData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/event_123/registration/submit',
-        {
-          email: submitData.email,
-          name: submitData.name,
-          answers: submitData.answers,
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event_123/registration/submit', {
+        email: submitData.email,
+        name: submitData.name,
+        answers: submitData.answers,
+      });
       expect(mutationResult).toEqual(mockResponse.data);
     });
 
@@ -274,14 +271,11 @@ describe('useSubmitRegistration', () => {
         await result.current.mutateAsync(submitData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/event_456/registration/submit',
-        {
-          email: submitData.email,
-          name: submitData.name,
-          answers: submitData.answers,
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event_456/registration/submit', {
+        email: submitData.email,
+        name: submitData.name,
+        answers: submitData.answers,
+      });
     });
 
     it('submits registration with empty answers when not required', async () => {
@@ -308,14 +302,11 @@ describe('useSubmitRegistration', () => {
         await result.current.mutateAsync(submitData);
       });
 
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/events/event_789/registration/submit',
-        {
-          email: submitData.email,
-          name: submitData.name,
-          answers: [],
-        }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event_789/registration/submit', {
+        email: submitData.email,
+        name: submitData.name,
+        answers: [],
+      });
     });
   });
 });

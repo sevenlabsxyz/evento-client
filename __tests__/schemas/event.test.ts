@@ -1,13 +1,12 @@
 import {
-  eventFormSchema,
-  createEventSchema,
-  updateEventSchema,
-  locationObjectSchema,
-  googlePlaceDataSchema,
-  eventLocationSchema,
   apiEventSchema,
+  createEventSchema,
+  eventFormSchema,
+  eventLocationSchema,
+  googlePlaceDataSchema,
+  locationObjectSchema,
+  updateEventSchema,
 } from '@/lib/schemas/event';
-import { z } from 'zod';
 
 describe('Event Schemas', () => {
   describe('googlePlaceDataSchema', () => {

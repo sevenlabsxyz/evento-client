@@ -124,7 +124,9 @@ export default function SocialLinksSheet({
       // Close sheet
       onClose();
     } catch (error) {
-      logger.error('Failed to update social links', { error: error instanceof Error ? error.message : String(error) });
+      logger.error('Failed to update social links', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error('Failed to update social links');
     }
   };

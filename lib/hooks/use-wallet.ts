@@ -10,12 +10,12 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { BTCPrice, WalletState } from '@/lib/types/wallet';
-import { logger } from '@/lib/utils/logger';
 import {
   BREEZ_ERROR_CONTEXT,
   getBreezErrorMessage,
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
+import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useWallet() {

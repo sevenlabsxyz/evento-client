@@ -183,17 +183,17 @@ export default function WalletPage() {
             }
           }
 
-            if (isAvailable) {
-              await registerAddress(baseUsername, `Pay to ${user.name || user.username}`);
-              logger.info(`Lightning address registered: ${baseUsername}@evento.cash`);
-            }
-          } catch (error) {
-            logger.error('Failed to auto-register Lightning address', {
-              error: error instanceof Error ? error.message : String(error),
-            });
+          if (isAvailable) {
+            await registerAddress(baseUsername, `Pay to ${user.name || user.username}`);
+            logger.info(`Lightning address registered: ${baseUsername}@evento.cash`);
           }
+        } catch (error) {
+          logger.error('Failed to auto-register Lightning address', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
-      };
+      }
+    };
 
     registerLightningAddressIfNeeded();
   }, [walletState.isConnected, address, user, checkAvailability, registerAddress]);
