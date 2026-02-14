@@ -10,25 +10,19 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useRegistrationSubmissions } from '@/lib/hooks/use-registration-submissions';
 import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registration-question';
 import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import type { ApprovalMode, RegistrationQuestion } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import {
-  ArrowLeft,
-  ClipboardList,
-  GripVertical,
-  Plus,
-  Settings,
-  Trash2,
-  Users,
-} from 'lucide-react';
+import { ClipboardList, GripVertical, Plus, Settings, Trash2, Users } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 type QuestionType = RegistrationQuestion['type'];
 
 export default function RegistrationQuestionsPage() {
   const params = useParams();
   const router = useRouter();
+  const { setTopBar } = useTopBar();
   const eventId = params.id as string;
 
   // State for delete confirmation sheet
@@ -54,6 +48,41 @@ export default function RegistrationQuestionsPage() {
   const updateSettings = useUpdateRegistrationSettings();
   const updateQuestion = useUpdateRegistrationQuestion();
   const deleteQuestion = useDeleteRegistrationQuestion();
+
+  const handleAddQuestion = useCallback(() => {
+    router.push(`/e/${eventId}/manage/registration/types`);
+  }, [eventId, router]);
+
+  useEffect(() => {
+    setTopBar({
+      title: 'Registration',
+      leftMode: 'back',
+      centerMode: 'title',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
+      showAvatar: false,
+      buttons: [
+        {
+          id: 'add-registration-question',
+          icon: Plus,
+          onClick: handleAddQuestion,
+          label: 'Add question',
+        },
+      ],
+    });
+
+    return () => {
+      setTopBar({
+        title: '',
+        leftMode: 'menu',
+        centerMode: 'title',
+        subtitle: '',
+        onBackPress: null,
+        showAvatar: true,
+        buttons: [],
+        textButtons: [],
+      });
+    };
+  }, [eventId, handleAddQuestion, router, setTopBar]);
 
   const isLoading = isLoadingEvent || isLoadingSettings || isLoadingQuestions;
 
@@ -143,10 +172,6 @@ export default function RegistrationQuestionsPage() {
     } catch {
       toast.error('Failed to update approval mode');
     }
-  };
-
-  const handleAddQuestion = () => {
-    router.push(`/e/${eventId}/manage/registration/types`);
   };
 
   const handleToggleEnabled = async (questionId: string, currentEnabled: boolean) => {
@@ -239,19 +264,6 @@ export default function RegistrationQuestionsPage() {
 
   return (
     <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
-        <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-            <ArrowLeft className='h-5 w-5' />
-          </button>
-          <h1 className='text-xl font-semibold'>Registration</h1>
-        </div>
-        <button onClick={handleAddQuestion} className='rounded-full p-2 hover:bg-gray-100'>
-          <Plus className='h-6 w-6' />
-        </button>
-      </div>
-
       {/* Content */}
       <div className='space-y-6 p-4'>
         {/* Registration Toggle */}
