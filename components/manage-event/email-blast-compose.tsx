@@ -1,6 +1,5 @@
 'use client';
 
-import { Switch } from '@/components/ui/switch';
 import { useCreateEmailBlastWithCallbacks } from '@/lib/hooks/use-email-blasts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { CreateEmailBlastForm, EmailBlastRecipientFilter } from '@/lib/types/api';
@@ -13,20 +12,37 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { CalendarClock, Clock, Loader2, Mail, Send, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Mail,
+  Send,
+  Users,
+} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';
 import { Button } from '../ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 
 interface EmailBlastComposeProps {
+  isOpen: boolean;
   eventId: string;
   onSend: (data: { recipients: string; subject: string; message: string }) => void;
   onCancel: () => void;
 }
 
-export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBlastComposeProps) {
+type ComposeStep = 'details' | 'timing' | 'preview';
+
+export default function EmailBlastCompose({
+  isOpen,
+  eventId,
+  onSend,
+  onCancel,
+}: EmailBlastComposeProps) {
+  const [step, setStep] = useState<ComposeStep>('details');
   const [recipients, setRecipients] = useState<EmailBlastRecipientFilter>('all');
   const [subject, setSubject] = useState('');
   const [editorContent, setEditorContent] = useState('');
@@ -183,10 +199,33 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
     },
   });
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    setStep('details');
+    setRecipients('all');
+    setSubject('');
+    setEditorContent('');
+    setScheduled(false);
+    setScheduledDate('');
+    setScheduledTime('');
+    setTimezone('');
+    setIsDatePickerOpen(false);
+    setIsTimePickerOpen(false);
+    editor?.commands.setContent('');
+  }, [isOpen, editor]);
+
   const selectedOption = recipientOptions.find((option) => option.value === recipients);
 
   const handleSend = async () => {
     if (!editor || !subject.trim()) return;
+
+    if (scheduled && (!scheduledDate || !scheduledTime)) {
+      toast.error('Please choose a date and time to schedule this email blast');
+      return;
+    }
 
     const message = editor.getHTML();
 
@@ -235,203 +274,289 @@ export default function EmailBlastCompose({ eventId, onSend, onCancel }: EmailBl
 
   const isValid = subject.trim() && editorContent.length > 0;
   const isLoading = createEmailBlastMutation.isPending;
+  const canContinueFromTiming = !scheduled || (!!scheduledDate && !!scheduledTime);
+  const plainTextMessage = editor?.getText().trim() || '';
+  const finalActionLabel = scheduled ? 'Schedule Email Blast' : 'Send Email Blast';
+  const scheduleSummary = scheduled
+    ? scheduledDate && scheduledTime
+      ? `Scheduled for ${new Date(`${scheduledDate}T${scheduledTime}`).toLocaleString()}`
+      : 'Scheduled for later (date and time pending)'
+    : 'Will send as soon as possible';
+
+  const isPreviewStep = step === 'preview';
+  const primaryActionLabel = isPreviewStep ? finalActionLabel : 'Next';
+  const primaryActionDisabled =
+    step === 'details'
+      ? !isValid
+      : step === 'timing'
+        ? !canContinueFromTiming
+        : isLoading || !isValid;
+
+  const handlePrimaryAction = () => {
+    if (step === 'details') {
+      setStep('timing');
+      return;
+    }
+
+    if (step === 'timing') {
+      setStep('preview');
+      return;
+    }
+
+    handleSend();
+  };
+
+  const handleSecondaryAction = () => {
+    if (step === 'details') {
+      onCancel();
+      return;
+    }
+
+    if (step === 'timing') {
+      setStep('details');
+      return;
+    }
+
+    setStep('timing');
+  };
+
+  const secondaryActionLabel = step === 'details' ? 'Cancel' : 'Back';
 
   return (
     <div className='EmailBlastCompose-form'>
-      {/* Recipients Field */}
-      <div className='EmailBlastCompose-field'>
-        <label className='EmailBlastCompose-label'>
-          <Users className='mr-2 inline h-4 w-4' />
-          Recipients
-        </label>
-        <Select
-          value={recipients}
-          onValueChange={(value: string) => setRecipients(value as EmailBlastRecipientFilter)}
-        >
-          <SelectTrigger className='EmailBlastCompose-select'>
-            <SelectValue placeholder='Select recipients' />
-          </SelectTrigger>
-          <SelectContent>
-            {recipientOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label} {!isLoadingRSVPs && `(${option.count})`}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {selectedOption && (
-          <div className='EmailBlastCompose-recipientOption'>
-            <div className='EmailBlastCompose-recipientInfo'>
-              <div className='EmailBlastCompose-recipientDescription'>
-                {selectedOption.description(selectedOption.count)}
+      <div className='EmailBlastCompose-stepContent'>
+        {step === 'details' && (
+          <div key='details' className='EmailBlastCompose-step'>
+            <div className='EmailBlastCompose-field'>
+              <label className='EmailBlastCompose-label'>
+                <Users className='mr-2 inline h-4 w-4' />
+                Recipients
+              </label>
+              <select
+                value={recipients}
+                onChange={(e) => setRecipients(e.target.value as EmailBlastRecipientFilter)}
+                className='EmailBlastCompose-select'
+              >
+                {recipientOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label} {!isLoadingRSVPs && `(${option.count})`}
+                  </option>
+                ))}
+              </select>
+              {selectedOption && (
+                <div className='EmailBlastCompose-recipientOption'>
+                  <div className='EmailBlastCompose-recipientInfo'>
+                    <div className='EmailBlastCompose-recipientDescription'>
+                      {selectedOption.description(selectedOption.count)}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className='EmailBlastCompose-field'>
+              <label className='EmailBlastCompose-label'>
+                <Mail className='mr-2 inline h-4 w-4' />
+                Subject
+              </label>
+              <input
+                type='text'
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                placeholder='Enter email subject...'
+                className='EmailBlastCompose-input'
+              />
+            </div>
+
+            <div className='EmailBlastCompose-field'>
+              <label className='EmailBlastCompose-label' htmlFor='message'>
+                Message
+              </label>
+
+              {editor && (
+                <div className='flex items-center gap-2 rounded-t-lg border border-gray-200 bg-gray-50 p-2'>
+                  <button
+                    onClick={() => editor.chain().focus().toggleBold().run()}
+                    className={`rounded p-2 transition-colors hover:bg-gray-200 ${
+                      editor.isActive('bold') ? 'bg-gray-200' : ''
+                    }`}
+                    type='button'
+                  >
+                    <strong>B</strong>
+                  </button>
+                  <button
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
+                    className={`rounded p-2 transition-colors hover:bg-gray-200 ${
+                      editor.isActive('italic') ? 'bg-gray-200' : ''
+                    }`}
+                    type='button'
+                  >
+                    <em>I</em>
+                  </button>
+                  <div className='mx-1 h-6 w-px bg-gray-300' />
+                  <button
+                    onClick={() => {
+                      const url = window.prompt('Enter URL:');
+                      if (url) {
+                        editor.chain().focus().setLink({ href: url }).run();
+                      }
+                    }}
+                    className={`rounded p-2 transition-colors hover:bg-gray-200 ${
+                      editor.isActive('link') ? 'bg-gray-200' : ''
+                    }`}
+                    type='button'
+                  >
+                    🔗
+                  </button>
+                </div>
+              )}
+
+              <div className='EmailBlastCompose-editor border-t-0'>
+                <EditorContent editor={editor} />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 'timing' && (
+          <div key='timing' className='EmailBlastCompose-step'>
+            <div className='EmailBlastCompose-field'>
+              <label className='EmailBlastCompose-label'>Delivery</label>
+              <div className='flex flex-col gap-3'>
+                <button
+                  type='button'
+                  onClick={() => {
+                    setScheduled(false);
+                    setScheduledDate('');
+                    setScheduledTime('');
+                  }}
+                  className={`rounded-lg border px-4 py-3 text-left transition-colors ${
+                    !scheduled
+                      ? 'border-red-500 bg-red-50 text-red-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className='font-medium'>Now</div>
+                  <div className='text-xs text-gray-500'>Send as soon as possible</div>
+                </button>
+                <button
+                  type='button'
+                  onClick={() => setScheduled(true)}
+                  className={`rounded-lg border px-4 py-3 text-left transition-colors ${
+                    scheduled
+                      ? 'border-red-500 bg-red-50 text-red-700'
+                      : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                  }`}
+                >
+                  <div className='font-medium'>Scheduled for later</div>
+                  <div className='text-xs text-gray-500'>Pick date and time</div>
+                </button>
+              </div>
+            </div>
+
+            {scheduled && (
+              <div className='EmailBlastCompose-field'>
+                <div className='mt-1 flex flex-col gap-4'>
+                  <div>
+                    <label className='mb-1 block text-sm font-medium' htmlFor='schedule-date'>
+                      <Clock className='mr-2 inline h-4 w-4' />
+                      Date
+                    </label>
+                    <button
+                      type='button'
+                      onClick={() => setIsDatePickerOpen(true)}
+                      className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
+                    >
+                      {scheduledDate ? formattedDate : 'Select date'}
+                      <CalendarClock className='h-4 w-4 text-gray-400' />
+                    </button>
+                  </div>
+                  <div>
+                    <label className='mb-1 block text-sm font-medium' htmlFor='schedule-time'>
+                      <Clock className='mr-2 inline h-4 w-4' />
+                      Time
+                    </label>
+                    <button
+                      type='button'
+                      onClick={() => setIsTimePickerOpen(true)}
+                      className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
+                    >
+                      {scheduledTime
+                        ? `${getTimeComponents().hour}:${getTimeComponents()
+                            .minute.toString()
+                            .padStart(2, '0')} ${getTimeComponents().period}`
+                        : 'Select time'}
+                      <Clock className='h-4 w-4 text-gray-400' />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {step === 'preview' && (
+          <div key='preview' className='EmailBlastCompose-step'>
+            <div className='rounded-lg border border-blue-200 bg-blue-50 p-4'>
+              <div className='space-y-1 text-sm text-blue-800'>
+                <p>
+                  <strong>Recipients:</strong> {selectedOption?.label} ({selectedOption?.count}{' '}
+                  recipients)
+                </p>
+                <p className='pt-1 text-blue-700'>
+                  <strong>Delivery:</strong> {scheduleSummary}
+                </p>
+              </div>
+            </div>
+
+            <div className='rounded-xl border border-gray-200 bg-white p-4 shadow-sm'>
+              <div className='mb-3 flex items-center justify-between text-xs text-gray-500'>
+                <span>Inbox Preview</span>
+                <CheckCircle2 className='h-4 w-4 text-green-600' />
+              </div>
+              <div className='mb-2 text-sm font-semibold text-gray-900'>From: Evento Host</div>
+              <div className='mb-1 text-sm text-gray-900'>Subject: {subject || 'No subject'}</div>
+              <div className='text-sm text-gray-600'>
+                {plainTextMessage || 'No message content yet'}
               </div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Subject Field */}
-      <div className='EmailBlastCompose-field'>
-        <label className='EmailBlastCompose-label'>
-          <Mail className='mr-2 inline h-4 w-4' />
-          Subject
-        </label>
-        <input
-          type='text'
-          value={subject}
-          onChange={(e) => setSubject(e.target.value)}
-          placeholder='Enter email subject...'
-          className='EmailBlastCompose-input'
-        />
-      </div>
-
-      {/* Message Field */}
-      <div className='EmailBlastCompose-field'>
-        <label className='EmailBlastCompose-label' htmlFor='message'>
-          Message
-        </label>
-
-        {/* Simple Toolbar */}
-        {editor && (
-          <div className='flex items-center gap-2 rounded-t-lg border border-gray-200 bg-gray-50 p-2'>
-            <button
-              onClick={() => editor.chain().focus().toggleBold().run()}
-              className={`rounded p-2 transition-colors hover:bg-gray-200 ${
-                editor.isActive('bold') ? 'bg-gray-200' : ''
-              }`}
-              type='button'
-            >
-              <strong>B</strong>
-            </button>
-            <button
-              onClick={() => editor.chain().focus().toggleItalic().run()}
-              className={`rounded p-2 transition-colors hover:bg-gray-200 ${
-                editor.isActive('italic') ? 'bg-gray-200' : ''
-              }`}
-              type='button'
-            >
-              <em>I</em>
-            </button>
-            <div className='mx-1 h-6 w-px bg-gray-300' />
-            <button
-              onClick={() => {
-                const url = window.prompt('Enter URL:');
-                if (url) {
-                  editor.chain().focus().setLink({ href: url }).run();
-                }
-              }}
-              className={`rounded p-2 transition-colors hover:bg-gray-200 ${
-                editor.isActive('link') ? 'bg-gray-200' : ''
-              }`}
-              type='button'
-            >
-              🔗
-            </button>
-          </div>
-        )}
-
-        <div className='EmailBlastCompose-editor border-t-0'>
-          <EditorContent editor={editor} />
-        </div>
-      </div>
-
-      {/* Scheduling Options */}
-      <div className='EmailBlastCompose-field'>
-        <div className='flex items-center space-x-3'>
-          <Switch id='schedule-toggle' checked={scheduled} onCheckedChange={setScheduled} />
-          <label
-            htmlFor='schedule-toggle'
-            className='EmailBlastCompose-label flex cursor-pointer items-center'
+      <div className='EmailBlastCompose-stickyFooter'>
+        <div className='flex flex-col gap-3'>
+          <Button
+            onClick={handlePrimaryAction}
+            disabled={primaryActionDisabled}
+            type='button'
+            className='h-14 w-full rounded-full bg-red-600 text-base font-semibold text-white hover:bg-red-700'
           >
-            <CalendarClock className='mr-2 inline h-4 w-4' />
-            Schedule for later
-          </label>
+            {isPreviewStep && isLoading ? (
+              <>
+                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
+                {scheduled ? 'Scheduling...' : 'Sending...'}
+              </>
+            ) : (
+              <>
+                {primaryActionLabel}
+                {isPreviewStep ? (
+                  <Send className='ml-2 h-5 w-5' />
+                ) : (
+                  <ArrowRight className='ml-2 h-5 w-5' />
+                )}
+              </>
+            )}
+          </Button>
+          <Button
+            variant='outline'
+            onClick={handleSecondaryAction}
+            type='button'
+            className='h-14 w-full rounded-full border-gray-300 text-base font-semibold'
+          >
+            {secondaryActionLabel}
+          </Button>
         </div>
-
-        {scheduled && (
-          <div className='mt-4 flex flex-col gap-4 sm:flex-row'>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium' htmlFor='schedule-date'>
-                <Clock className='mr-2 inline h-4 w-4' />
-                Date
-              </label>
-              <button
-                type='button'
-                onClick={() => setIsDatePickerOpen(true)}
-                className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
-              >
-                {scheduledDate ? formattedDate : 'Select date'}
-                <CalendarClock className='h-4 w-4 text-gray-400' />
-              </button>
-            </div>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium' htmlFor='schedule-time'>
-                <Clock className='mr-2 inline h-4 w-4' />
-                Time
-              </label>
-              <button
-                type='button'
-                onClick={() => setIsTimePickerOpen(true)}
-                className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
-              >
-                {scheduledTime
-                  ? `${getTimeComponents().hour}:${getTimeComponents()
-                      .minute.toString()
-                      .padStart(2, '0')} ${getTimeComponents().period}`
-                  : 'Select time'}
-                <Clock className='h-4 w-4 text-gray-400' />
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Preview Info */}
-      <div className='rounded-lg border border-blue-200 bg-blue-50 p-4'>
-        <h4 className='mb-2 font-semibold text-blue-900'>Email Preview</h4>
-        <div className='text-sm text-blue-800'>
-          <p>
-            <strong>To:</strong> {selectedOption?.label} ({selectedOption?.count} recipients)
-          </p>
-          <p>
-            <strong>Subject:</strong> {subject || 'No subject'}
-          </p>
-          <p>
-            <strong>Message:</strong>{' '}
-            {editor?.getText() ? `${editor.getText().slice(0, 100)}...` : 'No message'}
-          </p>
-          {scheduled && scheduledDate && scheduledTime && (
-            <p className='mt-2 text-blue-700'>
-              <strong>Scheduled for:</strong>{' '}
-              {new Date(`${scheduledDate}T${scheduledTime}`).toLocaleString()}
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className='flex flex-col gap-3'>
-        <Button
-          onClick={handleSend}
-          disabled={!isValid || isLoading}
-          type='submit'
-          className='w-full bg-red-600 text-white hover:bg-red-700'
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-              {scheduled ? 'Scheduling...' : 'Sending...'}
-            </>
-          ) : (
-            <>
-              <Send className='mr-2 h-4 w-4' />
-              {scheduled ? 'Schedule Email Blast' : 'Send Email Blast'}
-            </>
-          )}
-        </Button>
-        <Button variant='outline' onClick={onCancel} type='button' className='w-full'>
-          Cancel
-        </Button>
       </div>
 
       {/* Date Picker Modal */}

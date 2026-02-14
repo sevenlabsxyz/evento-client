@@ -56,19 +56,17 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
       <div className='mb-3 flex items-start justify-between'>
         <div className='flex-1'>
           <h3 className='mb-1 font-semibold text-gray-900'>{blast.subject}</h3>
-          <p className='text-sm text-gray-500'>
-            To: {blast.recipients} ({blast.recipientCount} recipients)
-          </p>
+          <p className='text-sm text-gray-500'>To: {blast.recipientCount} recipients</p>
         </div>
         <span
           className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(blast.status)}`}
         >
-          {blast.status}
+          {blast.status === 'scheduled' ? 'Scheduled' : blast.status}
         </span>
       </div>
 
-      <div className='flex items-center justify-between text-sm text-gray-500'>
-        <span>
+      <div className='text-sm text-gray-500'>
+        <div>
           {blast.status === 'scheduled' && blast.scheduled_for ? (
             <>
               <span className='flex items-center'>
@@ -92,8 +90,8 @@ export default function EmailBlastCard({ blast, onClick }: EmailBlastCardProps) 
           ) : (
             <>Created: {formatDate(blast.created_at)}</>
           )}
-        </span>
-        <span className='text-xs'>ID: {blast.id.substring(0, 8)}...</span>
+        </div>
+        <div className='mt-1 text-xs'>ID: {blast.id.substring(0, 8)}...</div>
       </div>
 
       {/* Delivery Stats */}

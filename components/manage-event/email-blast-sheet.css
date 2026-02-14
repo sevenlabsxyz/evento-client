@@ -99,7 +99,40 @@
 .EmailBlastCompose-form {
   display: flex;
   flex-direction: column;
+}
+
+.EmailBlastCompose-stepContent {
+  padding-bottom: 12.5rem;
+}
+
+.EmailBlastCompose-step {
+  display: flex;
+  flex-direction: column;
   gap: 24px;
+  animation: EmailBlastComposeFadeIn 180ms ease;
+}
+
+.EmailBlastCompose-stickyFooter {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(100vw, 28rem);
+  bottom: 0;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  border-top: 1px solid #f3f4f6;
+  background: #ffffff;
+  z-index: 60;
+}
+
+@keyframes EmailBlastComposeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .EmailBlastCompose-field {

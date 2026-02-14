@@ -56,15 +56,6 @@ export default function EmailBlastPage() {
     <div className='mx-auto mt-2 min-h-screen max-w-full bg-white md:max-w-sm'>
       {/* Content */}
       <div className='p-4'>
-        {/* Create Email Blast Button */}
-        <button
-          onClick={handleCreateBlast}
-          className='mb-4 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
-        >
-          <Plus className='h-5 w-5' />
-          Create Email Blast
-        </button>
-
         {/* Email Blast History */}
         <div className='space-y-3'>
           {isLoading ? (
@@ -101,8 +92,9 @@ export default function EmailBlastPage() {
               </p>
               <button
                 onClick={handleCreateBlast}
-                className='rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600'
+                className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
               >
+                <Plus className='h-5 w-5' />
                 Create Email Blast
               </button>
             </div>
