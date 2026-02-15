@@ -80,7 +80,7 @@ export interface EventDetail {
     unit: 'C' | 'F';
     condition: string;
   };
-  type: 'conference' | 'networking' | 'workshop' | 'social' | 'business' | 'showcase';
+  category: 'conference' | 'networking' | 'workshop' | 'social' | 'business' | 'showcase';
   tags?: string[];
   isActive: boolean;
   registrationUrl?: string;

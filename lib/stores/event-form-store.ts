@@ -14,6 +14,8 @@ import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { parseLocationString } from '@/lib/utils/location';
 import { create } from 'zustand';
 
+type EventBehaviorType = 'rsvp' | 'registration' | 'ticketed';
+
 interface EventFormState {
   // Initial data for change detection
   initialData: Partial<EventFormData> | null;
@@ -37,6 +39,8 @@ interface EventFormState {
   timezone: string;
 
   // Visibility and settings
+  type: EventBehaviorType;
+  status: 'draft' | 'published';
   visibility: 'public' | 'private';
   hasCapacity: boolean;
   capacity: string;
@@ -68,6 +72,8 @@ interface EventFormState {
   setStartTime: (time: TimeFormat) => void;
   setEndTime: (time: TimeFormat) => void;
   setTimezone: (timezone: string) => void;
+  setType: (type: EventBehaviorType) => void;
+  setStatus: (status: 'draft' | 'published') => void;
   setVisibility: (visibility: 'public' | 'private') => void;
   setHasCapacity: (hasCapacity: boolean) => void;
   setCapacity: (capacity: string) => void;
@@ -125,6 +131,8 @@ const initialState = {
   startTime: defaultDateTime.startTime,
   endTime: defaultDateTime.endTime,
   timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  type: 'rsvp' as EventBehaviorType,
+  status: 'published' as const,
   visibility: 'private' as const,
   hasCapacity: false,
   capacity: '',
@@ -206,6 +214,8 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
     }),
   setEndTime: (endTime) => set({ endTime }),
   setTimezone: (timezone) => set({ timezone }),
+  setType: (type) => set({ type }),
+  setStatus: (status) => set({ status }),
   setVisibility: (visibility) => set({ visibility }),
   setHasCapacity: (hasCapacity) => set({ hasCapacity }),
   setCapacity: (capacity) => set({ capacity }),
@@ -328,6 +338,11 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       });
 
       const formData = {
+        type:
+          event.type === 'registration' || event.type === 'ticketed' || event.type === 'rsvp'
+            ? event.type
+            : 'rsvp',
+        status: (event.status === 'draft' ? 'draft' : 'published') as 'draft' | 'published',
         title: cleanTitle,
         emoji,
         description: event.description || '<p></p>',
@@ -430,8 +445,9 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       end_date_minutes: endTimeApi.minutes,
 
       // Settings
+      type: state.type,
       visibility: state.visibility,
-      status: 'published' as const,
+      status: state.status,
 
       // URLs
       spotify_url: state.spotifyUrl || undefined,
@@ -499,6 +515,8 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       currentData.cover !== state.initialData.cover ||
       currentData.location !== state.initialData.location ||
       currentData.timezone !== state.initialData.timezone ||
+      currentData.type !== state.initialData.type ||
+      currentData.status !== state.initialData.status ||
       currentData.visibility !== state.initialData.visibility ||
       currentData.start_date_day !== state.initialData.start_date_day ||
       currentData.start_date_month !== state.initialData.start_date_month ||

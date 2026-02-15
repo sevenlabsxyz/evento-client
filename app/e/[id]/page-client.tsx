@@ -46,6 +46,7 @@ export default function EventDetailPageClient() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
   const [passwordAccessGranted, setPasswordAccessGranted] = useState(false);
+  const cameFromManage = searchParams.get('from') === 'manage';
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -198,6 +199,7 @@ export default function EventDetailPageClient() {
 
     setTopBarForRoute(pathname, {
       leftMode: 'back',
+      onBackPress: cameFromManage ? () => router.push(isAuthenticated ? '/e/hub' : '/') : null,
       centerMode: 'title',
       title: event?.title || '',
       showAvatar: false,
@@ -215,7 +217,16 @@ export default function EventDetailPageClient() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, event?.title]);
+  }, [
+    pathname,
+    setTopBarForRoute,
+    clearRoute,
+    applyRouteConfig,
+    event?.title,
+    cameFromManage,
+    router,
+    isAuthenticated,
+  ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 

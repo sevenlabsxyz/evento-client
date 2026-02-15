@@ -68,8 +68,9 @@ export const eventFormSchema = z.object({
   end_date_minutes: z.number().min(0).max(59).nullable().optional(),
 
   // Visibility and status
+  type: z.enum(['rsvp', 'registration', 'ticketed']).optional(),
   visibility: z.enum(['public', 'private']).default('private'),
-  status: z.enum(['published', 'draft']).default('published'),
+  status: z.enum(['published', 'draft']).optional(),
 
   // Social media URLs
   spotify_url: z.string().url().optional().or(z.literal('')),
@@ -190,6 +191,7 @@ export const apiEventSchema = z.object({
     .transform((val) => (val !== null ? String(val) : null)),
   computed_start_date: z.string(),
   computed_end_date: z.string(),
+  type: z.enum(['rsvp', 'registration', 'ticketed']).optional(),
 
   // Password protection
   password_protected: z.boolean().optional(),

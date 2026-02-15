@@ -44,7 +44,10 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const { data: registrationSettings } = useRegistrationSettings(event.id);
   const { data: myRegistration } = useMyRegistration(event.id);
 
-  const registrationRequired = registrationSettings?.registration_required ?? false;
+  const registrationRequired =
+    eventData?.type !== undefined
+      ? eventData.type !== 'rsvp'
+      : (registrationSettings?.registration_required ?? false);
   const hasPendingRegistration =
     registrationRequired &&
     myRegistration?.has_registration &&

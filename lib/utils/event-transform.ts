@@ -89,7 +89,7 @@ export function transformApiEventToDisplay(
     },
     capacity: undefined, // Not in current API
     weather: undefined, // Not in current API
-    type: 'social', // Default, API doesn't provide this
+    category: 'social',
     tags: [], // Not in current API
     isActive: apiEvent.status === 'published',
     registrationUrl: undefined, // Not in current API

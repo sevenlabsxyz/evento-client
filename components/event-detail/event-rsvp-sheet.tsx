@@ -53,7 +53,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     return methods.length > 0;
   }, [eventData]);
 
-  const registrationRequired = registrationSettings?.registration_required ?? false;
+  const registrationRequired =
+    eventData?.type !== undefined
+      ? eventData.type !== 'rsvp'
+      : (registrationSettings?.registration_required ?? false);
   const hasExistingRegistration = myRegistration?.has_registration ?? false;
   const existingRegistration = myRegistration?.registration ?? null;
 

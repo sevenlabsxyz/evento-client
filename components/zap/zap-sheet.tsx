@@ -9,7 +9,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { AlertCircle, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';
@@ -88,17 +88,35 @@ export function ZapSheet({
       ? 'Unlock your Evento Wallet to continue.'
       : 'Create your Evento Wallet to continue.';
 
-    toast.error(
-      <div className='flex flex-col gap-3'>
-        <p>{descriptionText}</p>
-        <button
-          type='button'
-          onClick={handleUnlockWallet}
-          className='h-10 w-full rounded-md bg-black px-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800'
-        >
-          {actionLabel}
-        </button>
-      </div>
+    toast.custom(
+      (id) => (
+        <div className='w-full rounded-[28px] border border-red-300 bg-red-50 p-6 shadow-lg'>
+          <div className='flex items-start gap-3'>
+            <div className='mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-600 text-white'>
+              <AlertCircle className='h-4 w-4' />
+            </div>
+            <div className='min-w-0'>
+              <p className='text-base font-semibold leading-none tracking-tight text-slate-900'>
+                Error
+              </p>
+              <p className='mt-3 text-[16px] leading-[1.3] text-slate-700'>{descriptionText}</p>
+            </div>
+          </div>
+          <button
+            type='button'
+            onClick={() => {
+              toast.dismiss(id);
+              handleUnlockWallet();
+            }}
+            className='mt-5 h-12 w-full rounded-full bg-black px-4 text-base font-semibold text-white transition-colors hover:bg-neutral-800'
+          >
+            {actionLabel}
+          </button>
+        </div>
+      ),
+      {
+        unstyled: true,
+      }
     );
   };
 

@@ -69,6 +69,7 @@ export const queryKeys = {
   eventsFeed: () => [...queryKeys.events, 'feed'] as const,
   eventsUser: (userId: string) => [...queryKeys.events, 'user', userId] as const,
   eventsUserMe: () => [...queryKeys.events, 'user', 'me'] as const,
+  eventsUserMeDrafts: () => [...queryKeys.events, 'user', 'me', 'drafts'] as const,
   eventsUserGoing: (userId: string) => [...queryKeys.events, 'user', userId, 'going'] as const,
   eventsUserPast: (userId: string) => [...queryKeys.events, 'user', userId, 'past'] as const,
 

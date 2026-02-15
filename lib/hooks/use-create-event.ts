@@ -34,7 +34,15 @@ export function useCreateEvent() {
       throw new Error('Failed to create event');
     },
     onSuccess: (data) => {
-      // Navigate to the created event
+      if (data.status === 'draft') {
+        const setupRoute =
+          data.type === 'ticketed'
+            ? `/e/${data.id}/manage/tickets`
+            : `/e/${data.id}/manage/registration`;
+        router.push(setupRoute);
+        return;
+      }
+
       router.push(`/e/${data.id}`);
     },
     onError: (error: any) => {

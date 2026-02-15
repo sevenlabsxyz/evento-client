@@ -1,9 +1,13 @@
 'use client';
 
 import CancelEventModal from '@/components/manage-event/cancel-event-modal';
+import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { usePublishEvent } from '@/lib/hooks/use-publish-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
 import {
   DollarSign,
   FileText,
@@ -26,13 +30,14 @@ export default function ManageEventPage() {
   const router = useRouter();
   const eventId = params.id as string;
   const { data: eventDetails, isLoading, error } = useEventDetails(eventId);
+  const publishEvent = usePublishEvent();
 
   // Set TopBar content
   useEffect(() => {
     setTopBar({
       title: 'Manage Event',
       leftMode: 'back',
-      onBackPress: () => router.push(`/e/${eventId}`),
+      onBackPress: () => router.push(`/e/${eventId}?from=manage`),
       showAvatar: false,
       subtitle: undefined,
       centerMode: 'title',
@@ -52,6 +57,8 @@ export default function ManageEventPage() {
   }, [setTopBar, router, eventId]);
 
   const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showPublishSheet, setShowPublishSheet] = useState(false);
+  const showRegistrationOption = eventDetails?.type ? eventDetails.type !== 'rsvp' : true;
 
   const managementOptions = [
     {
@@ -72,15 +79,19 @@ export default function ManageEventPage() {
       iconColor: 'text-blue-600',
       route: `/e/${eventId}/manage/guests`,
     },
-    {
-      id: 'registration-questions',
-      title: 'Registration',
-      description: 'Collect information from guests',
-      icon: <HelpCircle className='h-6 w-6' />,
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-600',
-      route: `/e/${eventId}/manage/registration`,
-    },
+    ...(showRegistrationOption
+      ? [
+          {
+            id: 'registration-questions',
+            title: 'Registration',
+            description: 'Collect information from guests',
+            icon: <HelpCircle className='h-6 w-6' />,
+            iconBg: 'bg-purple-100',
+            iconColor: 'text-purple-600',
+            route: `/e/${eventId}/manage/registration`,
+          },
+        ]
+      : []),
     {
       id: 'cohosts',
       title: 'Cohosts',
@@ -150,6 +161,17 @@ export default function ManageEventPage() {
     setShowCancelModal(true);
   };
 
+  const handlePublishEvent = async () => {
+    try {
+      await publishEvent.mutateAsync(eventId);
+      toast.success('Event published successfully');
+      setShowPublishSheet(false);
+      router.push(`/e/${eventId}`);
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to publish event');
+    }
+  };
+
   if (isLoading) {
     return (
       <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
@@ -213,6 +235,18 @@ export default function ManageEventPage() {
         {/*</div>*/}
 
         {/* Management Options */}
+        {eventDetails?.status === 'draft' && (
+          <div className='mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4'>
+            <p className='text-sm font-medium text-amber-900'>Event currently in draft</p>
+            <p className='mt-1 text-sm text-amber-800'>
+              Publish when you are ready to make it visible in feeds and discovery.
+            </p>
+            <Button className='mt-3 h-11 w-full' onClick={() => setShowPublishSheet(true)}>
+              Publish Event
+            </Button>
+          </div>
+        )}
+
         <div className='space-y-2'>
           {managementOptions.map((option) => (
             <button
@@ -264,6 +298,35 @@ export default function ManageEventPage() {
         eventId={eventId}
         eventTitle={eventDetails?.title}
       />
+
+      <MasterScrollableSheet
+        title='Publish Event'
+        open={showPublishSheet}
+        onOpenChange={setShowPublishSheet}
+        footer={
+          <div className='flex gap-2'>
+            <Button
+              variant='outline'
+              className='h-11 flex-1'
+              onClick={() => setShowPublishSheet(false)}
+              disabled={publishEvent.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              className='h-11 flex-1'
+              onClick={handlePublishEvent}
+              disabled={publishEvent.isPending}
+            >
+              {publishEvent.isPending ? 'Publishing...' : 'Yes, Publish'}
+            </Button>
+          </div>
+        }
+      >
+        <div className='px-4 pb-4 text-sm text-gray-600'>
+          Are you sure you want to publish this event? It will be visible in feeds and discovery.
+        </div>
+      </MasterScrollableSheet>
     </div>
   );
 }

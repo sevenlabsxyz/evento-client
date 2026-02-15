@@ -32,6 +32,11 @@ export const toast = {
       ...options,
     }),
 
+  custom: (
+    content: Parameters<typeof sonnerToast.custom>[0],
+    options?: Parameters<typeof sonnerToast.custom>[1]
+  ) => sonnerToast.custom(content, options),
+
   dismiss: (id?: string | number) => sonnerToast.dismiss(id),
 
   clear: () => sonnerToast.dismiss(),

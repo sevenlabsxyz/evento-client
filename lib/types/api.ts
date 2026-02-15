@@ -134,6 +134,7 @@ export interface Event {
   cover?: string;
   location: string;
   timezone: string;
+  type?: EventBehaviorType;
   status: 'draft' | 'published' | 'cancelled' | 'archived';
   visibility: 'public' | 'private';
   cost: number | null;
@@ -234,7 +235,8 @@ export interface CreateEventForm {
   location: string;
   cover?: string;
   timezone: string;
-  status: 'draft' | 'published';
+  type: EventBehaviorType;
+  status?: 'draft' | 'published';
   visibility: 'public' | 'private';
   cost?: number;
 
@@ -437,6 +439,7 @@ export interface AddEventToListForm {
 
 // Utility types
 export type RSVPStatus = 'yes' | 'no' | 'maybe';
+export type EventBehaviorType = 'rsvp' | 'registration' | 'ticketed';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
