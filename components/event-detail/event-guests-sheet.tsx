@@ -128,9 +128,9 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                       </div>
                     ) : (
                       <div className='space-y-3 px-4 pb-6'>
-                        {listForTab.map((rsvp) => (
+                        {listForTab.map((rsvp, index) => (
                           <button
-                            key={rsvp.id}
+                            key={rsvp.id ?? `${rsvp.user_id ?? 'guest'}-${rsvp.status}-${index}`}
                             onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
                             className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
                           >

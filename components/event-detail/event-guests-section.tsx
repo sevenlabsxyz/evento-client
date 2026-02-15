@@ -128,7 +128,7 @@ export default function EventGuestsSection({
         <div className='flex items-center'>
           {display.map((r, idx) => (
             <button
-              key={r.id}
+              key={r.id ?? `${r.user_id ?? 'guest'}-${r.status}-${idx}`}
               className='relative'
               style={{
                 marginLeft: idx > 0 ? -8 : 0,
