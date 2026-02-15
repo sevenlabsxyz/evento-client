@@ -59,7 +59,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
@@ -70,6 +70,8 @@ export default function UserProfilePageClient() {
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [hasAutoSelectedInitialTab, setHasAutoSelectedInitialTab] = useState(false);
+  const [hasAutoSwitchedToPast, setHasAutoSwitchedToPast] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
@@ -108,6 +110,20 @@ export default function UserProfilePageClient() {
 
   // Get user badges (displayed badges only)
   const { data: userBadges = [] } = usePublicUserBadges(userData?.id);
+
+  const hasAboutContent = useMemo(() => {
+    if (!userData) return false;
+
+    const hasBio = Boolean(userData.bio?.trim());
+    const hasSocialLinks = [
+      userData.bio_link,
+      userData.instagram_handle,
+      userData.x_handle,
+      userData.nip05,
+    ].some((value) => Boolean(value?.trim()));
+
+    return hasBio || hasSocialLinks || userInterests.length > 0 || userPrompts.length > 0;
+  }, [userData, userInterests.length, userPrompts.length]);
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
@@ -222,6 +238,47 @@ export default function UserProfilePageClient() {
     username,
     enabled: activeTab === 'events',
   });
+
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  const upcomingEvents = useMemo(
+    () =>
+      (publicEventsData || []).filter((event: EventWithUser) => event.computed_start_date >= today),
+    [publicEventsData, today]
+  );
+
+  const pastEvents = useMemo(
+    () =>
+      (publicEventsData || []).filter((event: EventWithUser) => event.computed_start_date < today),
+    [publicEventsData, today]
+  );
+
+  useEffect(() => {
+    setActiveTab('about');
+    setTimeframe('future');
+    setHasAutoSelectedInitialTab(false);
+    setHasAutoSwitchedToPast(false);
+  }, [username]);
+
+  useEffect(() => {
+    if (hasAutoSelectedInitialTab || !userData || isLoadingInterests || isLoadingPrompts) {
+      return;
+    }
+
+    setActiveTab(hasAboutContent ? 'about' : 'events');
+    setHasAutoSelectedInitialTab(true);
+  }, [hasAboutContent, hasAutoSelectedInitialTab, isLoadingInterests, isLoadingPrompts, userData]);
+
+  useEffect(() => {
+    if (activeTab !== 'events' || hasAutoSwitchedToPast || isLoadingEvents) {
+      return;
+    }
+
+    if (upcomingEvents.length === 0) {
+      setTimeframe('past');
+      setHasAutoSwitchedToPast(true);
+    }
+  }, [activeTab, hasAutoSwitchedToPast, isLoadingEvents, upcomingEvents.length]);
 
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
@@ -356,20 +413,10 @@ export default function UserProfilePageClient() {
   }));
 
   const renderEventsTab = () => {
-    // Filter events by timeframe (client-side filtering)
-    const today = new Date().toISOString().slice(0, 10);
-    const filteredEvents = (publicEventsData || []).filter((event: EventWithUser) => {
-      const eventDate = event.computed_start_date;
-      if (timeframe === 'future') {
-        return eventDate >= today;
-      } else if (timeframe === 'past') {
-        return eventDate < today;
-      }
-      return true;
-    });
+    const eventsForTimeframe = timeframe === 'future' ? upcomingEvents : pastEvents;
 
     // Group events by date
-    const groupedEvents = filteredEvents
+    const groupedEvents = eventsForTimeframe
       .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
         const date = event.computed_start_date;
         const group = groups.find((g) => g.date === date);
@@ -514,7 +561,9 @@ export default function UserProfilePageClient() {
               <div className='rounded-full bg-gray-100 p-3'>
                 <MessageCircle className='h-6 w-6 text-gray-400' />
               </div>
-              <p className='text-sm text-gray-500'>No events found</p>
+              <p className='text-sm text-gray-500'>
+                {timeframe === 'future' ? 'No upcoming events found' : 'No past events found'}
+              </p>
             </div>
           ) : (
             groupedEvents.map((group) => (
@@ -706,7 +755,10 @@ export default function UserProfilePageClient() {
                   { value: 'events', label: 'Events' },
                 ]}
                 value={activeTab}
-                onValueChange={(v) => setActiveTab(v)}
+                onValueChange={(v) => {
+                  setHasAutoSelectedInitialTab(true);
+                  setActiveTab(v);
+                }}
               />
 
               {/* Tab Content */}

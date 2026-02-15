@@ -11,6 +11,9 @@
     "format": "prettier --config .prettierc.json --write .",
     "format-check": "prettier --config .prettierc.json --check .",
     "test": "jest --config=jest.config.ts --passWithNoTests",
+    "test:e2e:smoke": "playwright test -c playwright.config.ts --project=smoke",
+    "test:e2e:smoke:headed": "playwright test -c playwright.config.ts --project=smoke --headed",
+    "test:e2e:cleanup": "playwright test -c playwright.config.ts --project=smoke --grep @cleanup",
     "test:watch": "jest --config=jest.config.ts --watch",
     "test:ci": "jest --config=jest.config.ts --ci --coverage",
     "tsc": "tsc --noEmit",
@@ -118,6 +121,7 @@
     "zustand": "^5.0.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.8.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
