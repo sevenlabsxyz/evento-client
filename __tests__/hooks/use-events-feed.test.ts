@@ -59,6 +59,7 @@ describe('useEventsFeed', () => {
     visibility: 'public',
     cost: 25.0,
     creator_user_id: 'user123',
+    hosts: [],
     start_date_day: 15,
     start_date_month: 1,
     start_date_year: 2024,

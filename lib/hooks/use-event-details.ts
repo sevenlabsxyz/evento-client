@@ -9,12 +9,7 @@ export function useEventDetails(eventId: string) {
     queryKey: ['event', 'details', eventId],
     queryFn: async (): Promise<Event> => {
       try {
-        console.log('[useEventDetails] ========== FETCH EVENT ==========');
-        console.log('[useEventDetails] Fetching event:', eventId);
-
         const response = await apiClient.get<ApiResponse<Event>>(`/v1/events/${eventId}`);
-
-        console.log('[useEventDetails] Raw API response:', JSON.stringify(response, null, 2));
 
         // Handle the response structure { success, message, data }
         if (!response || typeof response !== 'object') {
@@ -36,22 +31,8 @@ export function useEventDetails(eventId: string) {
           eventData = response;
         }
 
-        console.log('[useEventDetails] Event data extracted:', JSON.stringify(eventData, null, 2));
-        console.log(
-          '[useEventDetails] event_locations:',
-          JSON.stringify((eventData as any).event_locations, null, 2)
-        );
-        console.log('[useEventDetails] location:', (eventData as any).location);
-        console.log('[useEventDetails] location_id:', (eventData as any).location_id);
-
         // Transform the response to ensure correct format
         const transformed = transformApiEventResponse(eventData);
-
-        console.log('[useEventDetails] After transform:', JSON.stringify(transformed, null, 2));
-        console.log(
-          '[useEventDetails] Transformed event_locations:',
-          JSON.stringify((transformed as any)?.event_locations, null, 2)
-        );
 
         if (!transformed) {
           debugError(

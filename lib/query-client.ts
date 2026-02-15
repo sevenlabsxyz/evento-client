@@ -1,5 +1,4 @@
 import { QueryClient } from '@tanstack/react-query';
-import { ApiError } from './types/api';
 
 // Create a query client with default options
 export const queryClient = new QueryClient({
@@ -15,7 +14,7 @@ export const queryClient = new QueryClient({
       retry: (failureCount, error) => {
         // Don't retry on 4xx errors (client errors)
         if (error && typeof error === 'object' && 'status' in error) {
-          const apiError = error as ApiError;
+          const apiError = error as { status?: number };
           if (apiError.status && apiError.status >= 400 && apiError.status < 500) {
             return false;
           }
@@ -38,7 +37,7 @@ export const queryClient = new QueryClient({
       // Retry mutations once on network errors
       retry: (failureCount, error) => {
         if (error && typeof error === 'object' && 'status' in error) {
-          const apiError = error as ApiError;
+          const apiError = error as { status?: number };
           // Don't retry 4xx errors
           if (apiError.status && apiError.status >= 400 && apiError.status < 500) {
             return false;
@@ -70,6 +69,7 @@ export const queryKeys = {
   eventsFeed: () => [...queryKeys.events, 'feed'] as const,
   eventsUser: (userId: string) => [...queryKeys.events, 'user', userId] as const,
   eventsUserMe: () => [...queryKeys.events, 'user', 'me'] as const,
+  eventsUserMeDrafts: () => [...queryKeys.events, 'user', 'me', 'drafts'] as const,
   eventsUserGoing: (userId: string) => [...queryKeys.events, 'user', userId, 'going'] as const,
   eventsUserPast: (userId: string) => [...queryKeys.events, 'user', userId, 'past'] as const,
 
@@ -121,4 +121,8 @@ export const queryKeys = {
     [...queryKeys.registration, 'questions', eventId] as const,
   registrationSubmissionDetail: (eventId: string, registrationId: string) =>
     [...queryKeys.registration, 'submissions', eventId, registrationId] as const,
+  emailBlasts: ['emailBlasts'] as const,
+  eventEmailBlasts: (eventId: string) => [...queryKeys.emailBlasts, eventId] as const,
+  emailBlast: (eventId: string, blastId: string) =>
+    [...queryKeys.emailBlasts, eventId, blastId] as const,
 } as const;

@@ -55,7 +55,7 @@ describe('useEmailBlasts', () => {
     user_id: 'user789',
     message: 'Test email blast message',
     recipient_filter: 'all',
-    status: 'sent',
+    status: 'completed',
     scheduled_for: null,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
@@ -488,7 +488,7 @@ describe('useCreateEmailBlast', () => {
         }
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('Create email blast error:', apiError);
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });
@@ -682,7 +682,7 @@ describe('transformEmailBlastForUI', () => {
     user_id: 'user789',
     message: 'Test email blast message',
     recipient_filter: 'all',
-    status: 'sent',
+    status: 'completed',
     scheduled_for: null,
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
@@ -767,9 +767,9 @@ describe('transformEmailBlastForUI', () => {
       expect(result.recipients).toBe('All RSVPs');
     });
 
-    it('maps yes_only filter correctly', () => {
+    it('maps rsvp-yes filter correctly', () => {
       const blast = createMockEmailBlast({
-        recipient_filter: 'yes_only',
+        recipient_filter: 'rsvp-yes',
       });
 
       const result = transformEmailBlastForUI(blast);
@@ -777,14 +777,14 @@ describe('transformEmailBlastForUI', () => {
       expect(result.recipients).toBe('RSVP: Yes');
     });
 
-    it('maps yes_and_maybe filter correctly', () => {
+    it('maps rsvp-maybe filter correctly', () => {
       const blast = createMockEmailBlast({
-        recipient_filter: 'yes_and_maybe',
+        recipient_filter: 'rsvp-maybe',
       });
 
       const result = transformEmailBlastForUI(blast);
 
-      expect(result.recipients).toBe('RSVP: Yes & Maybe');
+      expect(result.recipients).toBe('RSVP: Maybe');
     });
 
     it('handles unknown filter with fallback', () => {

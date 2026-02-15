@@ -7,8 +7,9 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
-import { Event } from '@/lib/types/event';
+import { EventDetail } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -21,7 +22,7 @@ import { RegistrationStatus } from './registration-status';
 import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
-  event: Event;
+  event: EventDetail;
   currentUserId?: string;
   eventData?: ApiEvent | null;
   hosts?: EventHost[];
@@ -43,7 +44,10 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const { data: registrationSettings } = useRegistrationSettings(event.id);
   const { data: myRegistration } = useMyRegistration(event.id);
 
-  const registrationRequired = registrationSettings?.registration_required ?? false;
+  const registrationRequired =
+    eventData?.type !== undefined
+      ? eventData.type !== 'rsvp'
+      : (registrationSettings?.registration_required ?? false);
   const hasPendingRegistration =
     registrationRequired &&
     myRegistration?.has_registration &&
@@ -108,7 +112,9 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       }
     } catch (err: any) {
       toast.error(err?.message || 'Failed to start chat');
-      console.error('createDirectMessageChannel error', err);
+      logger.error('createDirectMessageChannel error', {
+        error: err instanceof Error ? err.message : String(err),
+      });
     }
   };
 

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
+import { logger } from '@/lib/utils/logger';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -41,7 +42,9 @@ export function TransactionHistory({
           const usd = await BTCPriceService.satsToUSD(amountSats);
           prices[payment.id] = usd;
         } catch (error) {
-          console.error('Failed to fetch USD price:', error);
+          logger.error('Failed to fetch USD price', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       }
 

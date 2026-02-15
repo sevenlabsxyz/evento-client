@@ -1,5 +1,4 @@
 import { Env } from '@/lib/constants/env';
-import { logger } from '@/lib/utils/logger';
 import { NextRequest, NextResponse } from 'next/server';
 
 // Mark this route as dynamic since it uses dynamic parameters
@@ -12,7 +11,7 @@ function errorResponse(message: string, status: number = 500) {
 
 // Proxy handler for all HTTP methods
 async function handler(request: NextRequest, { params }: { params: { path: string[] } }) {
-  const requestId = logger.generateRequestId();
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const startTime = Date.now();
 
   // Reconstruct the path
@@ -102,9 +101,9 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
         options.body = requestBody;
       }
 
-      // Log request body (will be sanitized by logger)
-      if (requestBody) {
-        logger.debug(`Request body for ${fullUrl}`, {
+      // Log request body for debugging
+      if (requestBody && process.env.NODE_ENV === 'development') {
+        console.debug(`Request body for ${fullUrl}:`, {
           requestId,
           body: requestBody,
         });
@@ -180,22 +179,19 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
     const duration = Date.now() - startTime;
 
     // Log comprehensive error information
-    logger.logApiError(
-      fullUrl || 'unknown',
-      error instanceof Error ? error : new Error(String(error)),
-      {
-        requestId,
-        method: request.method,
-        userAgent: request.headers.get('user-agent') || undefined,
-        ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
-        additionalContext: {
-          duration,
-          targetUrl: Env.API_PROXY_TARGET,
-          pathParams: params.path,
-          queryString: request.nextUrl.search,
-        },
-      }
-    );
+    console.error('API Proxy Error:', {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      requestId,
+      method: request.method,
+      url: fullUrl || 'unknown',
+      userAgent: request.headers.get('user-agent') || undefined,
+      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
+      duration,
+      targetUrl: Env.API_PROXY_TARGET,
+      pathParams: params.path,
+      queryString: request.nextUrl.search,
+    });
 
     return errorResponse(
       `Proxy error: ${error instanceof Error ? error.message : 'Unknown error'}`,

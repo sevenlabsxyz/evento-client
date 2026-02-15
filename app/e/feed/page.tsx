@@ -15,6 +15,7 @@ import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useViewModeStore } from '@/lib/stores/view-mode-store';
 import { EventWithUser, UserDetails, UserSearchResult, VerificationStatus } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import {
@@ -99,7 +100,9 @@ export default function FeedPage() {
           addRecentSearch(results[0]);
         }
       } catch (error) {
-        console.error('Search failed:', error);
+        logger.error('Search failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         setSearchResults([]);
       } finally {
         setIsSearching(false);

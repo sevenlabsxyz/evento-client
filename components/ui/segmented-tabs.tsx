@@ -30,7 +30,7 @@ export function SegmentedTabs({
   align = 'center',
   wrapperClassName,
   gapClassName,
-  buttonBaseClassName = 'rounded-full px-5 py-2 text-sm font-semibold transition-colors border border-gray-200',
+  buttonBaseClassName = 'rounded-full px-4 py-2 text-sm font-semibold transition-colors border border-gray-200',
   activeClassName = 'bg-white text-black',
   inactiveClassName = 'bg-transparent text-gray-500 hover:bg-gray-50 border-transparent',
 }: SegmentedTabsProps) {

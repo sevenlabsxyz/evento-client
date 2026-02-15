@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -174,8 +175,6 @@ export function useVerifyCode() {
       return authService.verifyCode(email, code);
     },
     onSuccess: async (data) => {
-      console.log('Verify: Code verification successful, user data:', data);
-
       // Clear email from store
       clearEmail();
 
@@ -184,9 +183,7 @@ export function useVerifyCode() {
 
       // Get the current user data from the backend to check onboarding status
       try {
-        console.log('Verify: Fetching user data to check onboarding status');
         const userData = await authService.getCurrentUser();
-        console.log('Verify: User data received:', userData);
 
         // Set user data - prefer backend data, fallback to Supabase data for new users
         // This ensures isAuthenticated is true even for new users not yet in backend
@@ -194,29 +191,25 @@ export function useVerifyCode() {
 
         // Check if user has completed onboarding
         const isOnboarded = isUserOnboarded(userData);
-        console.log('Verify: User onboarding status:', isOnboarded);
-        console.log('Verify: Username:', userData?.username, 'Name:', userData?.name);
 
         // Get and validate redirect URL from search params
         const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
-        console.log('Verify: Redirect URL:', redirectUrl);
 
         if (!isOnboarded) {
           // User needs onboarding - redirect to onboarding with original redirect
           const onboardingUrl = getOnboardingRedirectUrl(redirectUrl);
-          console.log('Verify: User not onboarded, redirecting to:', onboardingUrl);
           router.push(onboardingUrl);
         } else {
           // User is onboarded - redirect to intended destination
-          console.log('Verify: User is onboarded, redirecting to:', redirectUrl);
           router.push(redirectUrl);
         }
       } catch (error) {
-        console.error('Verify: Failed to check onboarding status:', error);
+        logger.error('Verify: Failed to check onboarding status', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         // On error, set minimal Supabase data as fallback and proceed
         setUser(data);
         const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
-        console.log('Verify: Error occurred, redirecting to default:', redirectUrl);
         router.push(redirectUrl);
       }
     },

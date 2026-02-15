@@ -1,4 +1,5 @@
 import apiClient from '@/lib/api/client';
+import { logger } from '@/lib/utils/logger';
 import { useMutation } from '@tanstack/react-query';
 
 export interface GenerateDescriptionParams {
@@ -48,7 +49,9 @@ export function useGenerateDescription() {
       throw new Error('Failed to generate description');
     },
     onError: (error: any) => {
-      console.error('Generate description error:', error);
+      logger.error('Generate description error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       // Error handling is done in the component
     },
   });

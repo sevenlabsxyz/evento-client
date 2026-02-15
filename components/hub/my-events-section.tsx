@@ -4,6 +4,7 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import { Button } from '@/components/ui/button';
 import { SegmentedTabs } from '@/components/ui/segmented-tabs';
+import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { formatDateHeader } from '@/lib/utils/date';
@@ -11,10 +12,12 @@ import { ArrowRight, Calendar, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
+type MyEventsTab = EventFilterType | 'drafts';
+
 export function MyEventsSection() {
   const { user } = useUserProfile();
-  const [activeTab, setActiveTab] = useState<EventFilterType>('upcoming');
-  const [loadedTabs, setLoadedTabs] = useState<EventFilterType[]>(['upcoming']);
+  const [activeTab, setActiveTab] = useState<MyEventsTab>('upcoming');
+  const [loadedTabs, setLoadedTabs] = useState<MyEventsTab[]>(['upcoming']);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // Only load data for tabs that have been opened (6 events max, future only)
@@ -32,6 +35,11 @@ export function MyEventsSection() {
     enabled: loadedTabs.includes('hosting'),
   });
 
+  const draftsQuery = useMyDraftEvents({
+    limit: 6,
+    enabled: loadedTabs.includes('drafts'),
+  });
+
   // Track when tabs are opened for lazy loading
   useEffect(() => {
     if (!loadedTabs.includes(activeTab)) {
@@ -45,6 +53,8 @@ export function MyEventsSection() {
         return upcomingQuery;
       case 'hosting':
         return hostingQuery;
+      case 'drafts':
+        return draftsQuery;
       default:
         return upcomingQuery;
     }
@@ -88,7 +98,7 @@ export function MyEventsSection() {
           <SegmentedTabs
             align='left'
             value={activeTab}
-            onValueChange={(value) => setActiveTab(value as EventFilterType)}
+            onValueChange={(value) => setActiveTab(value as MyEventsTab)}
             items={[
               {
                 value: 'upcoming',
@@ -97,6 +107,10 @@ export function MyEventsSection() {
               {
                 value: 'hosting',
                 label: 'Hosting',
+              },
+              {
+                value: 'drafts',
+                label: 'Drafts',
               },
             ]}
             wrapperClassName=''
@@ -140,10 +154,12 @@ export function MyEventsSection() {
               <h3 className='mb-2 text-base font-semibold text-gray-900'>
                 {activeTab === 'upcoming' && 'No upcoming events'}
                 {activeTab === 'hosting' && "No events you're hosting"}
+                {activeTab === 'drafts' && 'No draft events'}
               </h3>
               <p className='mb-4 text-sm text-gray-500'>
                 {activeTab === 'upcoming' && 'Create your first event or RSVP to others'}
                 {activeTab === 'hosting' && 'Create an event to get started'}
+                {activeTab === 'drafts' && 'Your draft events will appear here'}
               </p>
             </div>
           ) : (
@@ -176,7 +192,8 @@ export function MyEventsSection() {
             isOpen={isSheetOpen}
             onClose={() => setIsSheetOpen(false)}
             username={user?.username}
-            initialFilter={activeTab}
+            isOwnProfile
+            initialFilter={activeTab === 'drafts' ? 'hosting' : activeTab}
           />
         </div>
       </div>

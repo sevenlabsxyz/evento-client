@@ -8,6 +8,7 @@ import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
 import EventCreatedModal from '@/components/create-event/event-created-modal';
 import { EventCreationOverlay } from '@/components/create-event/event-creation-overlay';
+import EventTypeSheet from '@/components/create-event/event-type-sheet';
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import ImageSelectionSheet from '@/components/create-event/image-selection-sheet';
 import InsertElementsSheet from '@/components/create-event/insert-elements-sheet';
@@ -27,11 +28,23 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-date';
 import { getLocationDisplayName } from '@/lib/utils/location';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+interface CreatedEventModalData {
+  id: string;
+  title: string;
+  date: Date;
+  time: { hour: number; minute: number; period: 'AM' | 'PM' };
+  status: 'draft' | 'published';
+  type: 'rsvp' | 'registration' | 'ticketed';
+  nextRoute: string;
+  ctaLabel: string;
+}
 
 export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -70,6 +83,7 @@ export default function CreatePage() {
     startTime,
     endTime,
     timezone,
+    type,
     visibility,
     hasCapacity,
     capacity,
@@ -86,6 +100,7 @@ export default function CreatePage() {
     setStartTime,
     setEndTime,
     setTimezone,
+    setType,
     setVisibility,
     setHasCapacity,
     setCapacity,
@@ -113,6 +128,7 @@ export default function CreatePage() {
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
+  const [showTypeSheet, setShowTypeSheet] = useState(false);
 
   // Toolbar Sheet States
   const [showTextStylesSheet, setShowTextStylesSheet] = useState(false);
@@ -178,7 +194,7 @@ export default function CreatePage() {
   // Attachment Modal States
   const [showAttachmentModal, setShowAttachmentModal] = useState(false);
   const [showCreatedModal, setShowCreatedModal] = useState(false);
-  const [createdEventData, setCreatedEventData] = useState<any>(null);
+  const [createdEventData, setCreatedEventData] = useState<CreatedEventModalData | null>(null);
 
   const handleImageSelect = (imageUrl: string) => {
     setCoverImage(imageUrl);
@@ -234,7 +250,25 @@ export default function CreatePage() {
 
     try {
       const formData = getFormData();
-      const result = await createEventMutation.mutateAsync(formData);
+      const { status: _status, ...createPayload } = formData;
+      const result = await createEventMutation.mutateAsync(createPayload);
+
+      const createdType = result.type ?? formData.type;
+      const createdStatus = result.status ?? (createdType === 'rsvp' ? 'published' : 'draft');
+
+      const nextRoute =
+        createdStatus === 'draft'
+          ? createdType === 'ticketed'
+            ? `/e/${result.id}/manage/tickets?enableRegistration=1`
+            : `/e/${result.id}/manage/registration?enableRegistration=1`
+          : `/e/${result.id}`;
+
+      const ctaLabel =
+        createdStatus === 'draft'
+          ? createdType === 'ticketed'
+            ? 'Go to Ticket Setup'
+            : 'Go to Registration Setup'
+          : 'View Event Page';
 
       // Prepare data for success modal
       setCreatedEventData({
@@ -242,14 +276,22 @@ export default function CreatePage() {
         title: result.title,
         date: startDate,
         time: startTime,
+        status: createdStatus,
+        type: createdType,
+        nextRoute,
+        ctaLabel,
       });
 
       // Show success modal
       setShowCreatedModal(true);
-      toast.success('Event created successfully!');
+      toast.success(
+        createdStatus === 'draft' ? 'Draft created successfully!' : 'Event created successfully!'
+      );
     } catch (error: any) {
       // Error handling
-      console.error('Failed to create event:', error);
+      logger.error('Failed to create event', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error(error.message || 'Failed to create event');
     }
   };
@@ -460,6 +502,30 @@ export default function CreatePage() {
               <div className='flex items-center justify-between'>
                 <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
                   {location ? getLocationDisplayName(location) : 'Choose address'}
+                </span>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <button
+            onClick={() => setShowTypeSheet(true)}
+            className='flex w-full items-center gap-4 text-left'
+          >
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
+              <Users className='h-4 w-4 text-gray-600' />
+            </div>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Event Type</label>
+              <div className='flex items-center justify-between'>
+                <span className='font-medium text-gray-900'>
+                  {type === 'registration'
+                    ? 'Registration'
+                    : type === 'ticketed'
+                      ? 'Ticketed'
+                      : 'RSVP'}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400' />
               </div>
@@ -758,6 +824,13 @@ export default function CreatePage() {
         onClose={() => setShowVisibilitySheet(false)}
         onVisibilitySelect={setVisibility}
         currentVisibility={visibility}
+      />
+
+      <EventTypeSheet
+        isOpen={showTypeSheet}
+        onClose={() => setShowTypeSheet(false)}
+        onTypeSelect={setType}
+        currentType={type}
       />
 
       {/* Event Created Modal */}

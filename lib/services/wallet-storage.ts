@@ -1,5 +1,6 @@
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { BackupOptions, WalletState } from '@/lib/types/wallet';
+import { logger } from '@/lib/utils/logger';
 import * as bip39 from 'bip39';
 
 export class WalletStorageService {
@@ -52,7 +53,9 @@ export class WalletStorageService {
       // Return as base64 string (looks harmless)
       return btoa(String.fromCharCode(...combined));
     } catch (error) {
-      console.error('Failed to encrypt seed:', error);
+      logger.error('Failed to encrypt seed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw new Error('Failed to encrypt seed phrase');
     }
   }
@@ -77,7 +80,9 @@ export class WalletStorageService {
 
       return new TextDecoder().decode(decryptedData);
     } catch (error) {
-      console.error('Failed to decrypt seed:', error);
+      logger.error('Failed to decrypt seed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw new Error('Invalid password or corrupted backup');
     }
   }
@@ -89,7 +94,9 @@ export class WalletStorageService {
     try {
       localStorage.setItem(STORAGE_KEYS.ENCRYPTED_SEED, encryptedSeed);
     } catch (error) {
-      console.error('Failed to save encrypted seed:', error);
+      logger.error('Failed to save encrypted seed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       throw new Error('Failed to save wallet data');
     }
   }
@@ -101,7 +108,9 @@ export class WalletStorageService {
     try {
       return localStorage.getItem(STORAGE_KEYS.ENCRYPTED_SEED);
     } catch (error) {
-      console.error('Failed to get encrypted seed:', error);
+      logger.error('Failed to get encrypted seed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }
@@ -113,7 +122,9 @@ export class WalletStorageService {
     try {
       localStorage.setItem(STORAGE_KEYS.WALLET_STATE, JSON.stringify(state));
     } catch (error) {
-      console.error('Failed to save wallet state:', error);
+      logger.error('Failed to save wallet state', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -134,7 +145,9 @@ export class WalletStorageService {
 
       return parsed;
     } catch (error) {
-      console.error('Failed to get wallet state:', error);
+      logger.error('Failed to get wallet state', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }
@@ -146,7 +159,9 @@ export class WalletStorageService {
     try {
       localStorage.setItem(STORAGE_KEYS.BACKUP_INFO, JSON.stringify(backup));
     } catch (error) {
-      console.error('Failed to save backup info:', error);
+      logger.error('Failed to save backup info', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -158,7 +173,9 @@ export class WalletStorageService {
       const backup = localStorage.getItem(STORAGE_KEYS.BACKUP_INFO);
       return backup ? JSON.parse(backup) : null;
     } catch (error) {
-      console.error('Failed to get backup info:', error);
+      logger.error('Failed to get backup info', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }
@@ -175,7 +192,9 @@ export class WalletStorageService {
       const dismissed = new Date(dismissedDate).toDateString();
       return today === dismissed;
     } catch (error) {
-      console.error('Failed to check dismissed date:', error);
+      logger.error('Failed to check dismissed date', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return false;
     }
   }
@@ -187,7 +206,9 @@ export class WalletStorageService {
     try {
       localStorage.setItem(STORAGE_KEYS.BACKUP_DISMISSED_DATE, new Date().toISOString());
     } catch (error) {
-      console.error('Failed to dismiss backup:', error);
+      logger.error('Failed to dismiss backup', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -205,7 +226,9 @@ export class WalletStorageService {
       // Always show if not dismissed (we'll check hasBackup in the component)
       return true;
     } catch (error) {
-      console.error('Failed to check backup reminder:', error);
+      logger.error('Failed to check backup reminder', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return false;
     }
   }
@@ -217,7 +240,9 @@ export class WalletStorageService {
     try {
       localStorage.setItem(STORAGE_KEYS.LAST_BACKUP_REMINDER, new Date().toISOString());
     } catch (error) {
-      console.error('Failed to update backup reminder timestamp:', error);
+      logger.error('Failed to update backup reminder timestamp', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -228,7 +253,9 @@ export class WalletStorageService {
     try {
       localStorage.setItem(STORAGE_KEYS.HAS_TRANSACTION, 'true');
     } catch (error) {
-      console.error('Failed to mark transaction:', error);
+      logger.error('Failed to mark transaction', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -239,7 +266,9 @@ export class WalletStorageService {
     try {
       localStorage.removeItem(STORAGE_KEYS.HAS_TRANSACTION);
     } catch (error) {
-      console.error('Failed to clear transaction flag:', error);
+      logger.error('Failed to clear transaction flag', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 
@@ -252,7 +281,9 @@ export class WalletStorageService {
         localStorage.removeItem(key);
       });
     } catch (error) {
-      console.error('Failed to clear wallet data:', error);
+      logger.error('Failed to clear wallet data', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     }
   }
 

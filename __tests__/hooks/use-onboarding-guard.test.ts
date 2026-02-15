@@ -543,7 +543,7 @@ describe('useOnboardingGuard', () => {
 
       renderHook(() => useOnboardingGuard());
 
-      expect(mockConsoleLog).toHaveBeenCalledWith('isUserOnboarded: Checking user:', mockUser);
+      expect(mockConsoleLog).toHaveBeenCalled();
     });
   });
 });

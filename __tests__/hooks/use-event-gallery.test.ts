@@ -436,7 +436,7 @@ describe('useEventGallery', () => {
         name: 'Minimal User',
         bio: '',
         image: '',
-        verification_status: 'unverified',
+        verification_status: null,
       });
 
       const mockGalleryItem = createMockGalleryItem({

@@ -1,6 +1,15 @@
 'use client';
 
-import { Calendar1, MessageCircle, Plus, Search, Settings, Star, Zap } from 'lucide-react';
+import {
+  Calendar1,
+  MessageCircle,
+  Plus,
+  Search,
+  Settings,
+  Star,
+  UserCircle2,
+  Zap,
+} from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -51,6 +60,11 @@ const navMain = [
 
 const navSecondary = [
   {
+    title: 'Profile',
+    url: '/e/profile',
+    icon: UserCircle2,
+  },
+  {
     title: 'Settings',
     url: '/e/settings',
     icon: Settings,
@@ -59,13 +73,11 @@ const navSecondary = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { setOpenMobile } = useSidebar();
 
   const handleCreateEvent = () => {
     router.push('/e/create');
-    if (isMobile) {
-      setOpenMobile(false);
-    }
+    setOpenMobile(false);
   };
 
   return (

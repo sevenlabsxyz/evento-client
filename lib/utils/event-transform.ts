@@ -1,5 +1,5 @@
 import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
-import { Event as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
+import { EventDetail as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
 import { formatEventDate } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
 
@@ -89,7 +89,7 @@ export function transformApiEventToDisplay(
     },
     capacity: undefined, // Not in current API
     weather: undefined, // Not in current API
-    type: 'social', // Default, API doesn't provide this
+    category: 'social',
     tags: [], // Not in current API
     isActive: apiEvent.status === 'published',
     registrationUrl: undefined, // Not in current API

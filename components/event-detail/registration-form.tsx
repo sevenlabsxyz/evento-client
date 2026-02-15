@@ -11,7 +11,9 @@ import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import type { RegistrationQuestion, UserRegistration } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { generateAvailableUsername } from '@/lib/utils/username';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { useState } from 'react';
@@ -193,16 +195,33 @@ export function RegistrationForm({
       // 3. Fetch fresh user data from backend
       const freshUserData = await authService.getCurrentUser();
 
-      // 4. Update the user's name if it's different from what's in their profile
-      // (for new users or users without a name set)
+      // 4. Update the user's name and generate username if needed
+      // (for new users or users without a name/username set)
       // Do this BEFORE updating auth state to avoid re-renders
       const userToUse = freshUserData || userData;
-      if (userToUse && (!userToUse.name || userToUse.name !== name.trim())) {
-        try {
-          await updateProfile.mutateAsync({ name: name.trim() });
-        } catch {
-          // Non-critical - continue with registration even if name update fails
-          console.warn('Failed to update user name, continuing with registration');
+      if (userToUse) {
+        // Check if we need to update name or generate username
+        const needsNameUpdate = !userToUse.name || userToUse.name !== name.trim();
+        const needsUsername = !userToUse.username;
+
+        if (needsNameUpdate || needsUsername) {
+          try {
+            const updates: { name?: string; username?: string } = {};
+
+            if (needsNameUpdate) {
+              updates.name = name.trim();
+            }
+
+            if (needsUsername) {
+              const generatedUsername = await generateAvailableUsername(email.trim(), name.trim());
+              updates.username = generatedUsername;
+            }
+
+            await updateProfile.mutateAsync(updates);
+          } catch (error) {
+            // Non-critical - continue with registration even if profile update fails
+            logger.warn('Failed to update profile, continuing with registration', { error });
+          }
         }
       }
 

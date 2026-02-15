@@ -2,7 +2,7 @@
 
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
-import { Copy, EyeOff, Image, Link, Mail, MoreHorizontal, Settings, UserPlus } from 'lucide-react';
+import { Copy, Link, Mail, MoreHorizontal, Settings, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -13,7 +13,6 @@ interface OwnerEventButtonsProps {
 
 export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   const router = useRouter();
-  const [hideGuestList, setHideGuestList] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [moreOptionsOpen, setMoreOptionsOpen] = useState(false);
 
@@ -27,15 +26,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
   const handleEmailBlasts = () => {
     router.push(`/e/${eventId}/manage/email-blast`);
-  };
-
-  const handleGallerySettings = () => {
-    router.push(`/e/${eventId}/gallery`);
-  };
-
-  const handleToggleGuestList = () => {
-    setHideGuestList(!hideGuestList);
-    router.push(`/e/${eventId}/manage/guests`);
   };
 
   const handleEventLink = () => {
@@ -60,16 +50,12 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
     }
   };
 
-  const handleCheckInGuests = () => {
-    // TODO: Implement check-in guests functionality
-  };
-
   return (
     <div className='grid grid-cols-4 gap-2'>
       {/* Invite Button */}
       <button
         onClick={handleInvite}
-        className='flex h-16 flex-col items-center justify-center rounded-3xl bg-red-500 text-white transition-colors hover:bg-red-600'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-500 text-white transition-colors hover:bg-red-600'
       >
         <UserPlus className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Invite</span>
@@ -78,7 +64,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* Manage Button */}
       <button
         onClick={handleManage}
-        className='flex h-16 flex-col items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
         <Settings className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Manage</span>
@@ -87,7 +73,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* Blasts Button */}
       <button
         onClick={handleEmailBlasts}
-        className='flex h-16 flex-col items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
         <Mail className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Blasts</span>
@@ -96,7 +82,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* More Button */}
       <button
         onClick={() => setMoreOptionsOpen(true)}
-        className='flex h-16 flex-col items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
         <MoreHorizontal className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>More</span>
@@ -107,24 +93,6 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         isOpen={moreOptionsOpen}
         onClose={() => setMoreOptionsOpen(false)}
         options={[
-          {
-            id: 'gallery-settings',
-            label: 'Gallery Settings',
-            icon: Image,
-            onClick: () => {
-              handleGallerySettings();
-              setMoreOptionsOpen(false);
-            },
-          },
-          {
-            id: 'hide-guest-list',
-            label: 'Hide Guest List',
-            icon: EyeOff,
-            onClick: () => {
-              handleToggleGuestList();
-              setMoreOptionsOpen(false);
-            },
-          },
           {
             id: 'event-link',
             label: 'Event Link',

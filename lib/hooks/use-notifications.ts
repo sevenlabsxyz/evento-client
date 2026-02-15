@@ -8,6 +8,7 @@ import {
   NotificationMessage,
   UINotification,
 } from '@/lib/types/notifications';
+import { logger } from '@/lib/utils/logger';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatDistanceToNowStrict } from 'date-fns';
 
@@ -110,11 +111,10 @@ export function useNotificationsFeed(filters: NotificationFilterParams = {}) {
         }
 
         // Make API request
-        const response = await apiClient.get<NotificationFeedResponse>(
+        const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           `/v1/notifications/feed?${params.toString()}`
         );
 
-        // Transform data for UI
         if (response?.data) {
           const feedResponse = response.data;
           return {
@@ -129,7 +129,9 @@ export function useNotificationsFeed(filters: NotificationFilterParams = {}) {
 
         throw new Error('Invalid response format');
       } catch (error) {
-        console.error('Error fetching notifications feed:', error);
+        logger.error('Error fetching notifications feed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -145,7 +147,7 @@ export function useNotification(messageId: string, enabled: boolean = true) {
     queryKey: ['notifications', 'message', messageId],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationMessage>(
+        const response = await apiClient.get<ApiResponse<NotificationMessage>>(
           `/v1/notifications/messages/${messageId}`
         );
 
@@ -155,7 +157,9 @@ export function useNotification(messageId: string, enabled: boolean = true) {
 
         throw new Error('Invalid response format');
       } catch (error) {
-        console.error(`Error fetching notification ${messageId}:`, error);
+        logger.error(`Error fetching notification ${messageId}`, {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -250,12 +254,12 @@ export function useBulkMarkAsSeen() {
 
   return useMutation({
     mutationFn: async (params: NotificationBulkActionParams) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/messages/bulk/seen',
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as seen');
@@ -266,20 +270,17 @@ export function useBulkMarkAsSeen() {
   });
 }
 
-/**
- * Hook to bulk mark notifications as read
- */
 export function useBulkMarkAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: NotificationBulkActionParams) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/messages/bulk/read',
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark notifications as read');
@@ -290,20 +291,17 @@ export function useBulkMarkAsRead() {
   });
 }
 
-/**
- * Hook to mark all notifications as seen
- */
 export function useMarkAllAsSeen() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: MarkAllNotificationsParams = {}) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/mark-all/seen',
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as seen');
@@ -314,20 +312,17 @@ export function useMarkAllAsSeen() {
   });
 }
 
-/**
- * Hook to mark all notifications as read
- */
 export function useMarkAllAsRead() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (params: MarkAllNotificationsParams = {}) => {
-      const response = await apiClient.put<{ success: boolean }>(
+      const response = await apiClient.put<ApiResponse<{ success: boolean }>>(
         '/v1/notifications/mark-all/read',
         params
       );
 
-      if (response?.data?.success !== false) {
+      if (response.success !== false) {
         return response;
       }
       throw new Error('Failed to mark all notifications as read');
@@ -347,7 +342,7 @@ export function useUnreadCount() {
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
       try {
-        const response = await apiClient.get<NotificationFeedResponse>(
+        const response = await apiClient.get<ApiResponse<NotificationFeedResponse>>(
           '/v1/notifications/feed?page_size=1'
         );
 
@@ -360,7 +355,9 @@ export function useUnreadCount() {
 
         return { unread: 0, unseen: 0 };
       } catch (error) {
-        console.error('Error fetching notification count:', error);
+        logger.error('Error fetching notification count', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         return { unread: 0, unseen: 0 };
       }
     },

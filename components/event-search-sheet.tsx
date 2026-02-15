@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
 import {
   EventFilterType,
@@ -12,12 +13,15 @@ import {
   EventTimeframe,
   useUserEvents,
 } from '@/lib/hooks/use-user-events';
-import { useAuth } from '@/lib/stores/auth-store';
 import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
 import debounce from 'lodash.debounce';
 import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+function hasValidEventDate(eventDate: unknown): eventDate is string {
+  return typeof eventDate === 'string' && eventDate.trim().length > 0;
+}
 
 interface EventSearchSheetProps {
   isOpen: boolean;
@@ -26,8 +30,10 @@ interface EventSearchSheetProps {
   onPin?: (eventId: string, isPinned: boolean) => void;
   pinnedEventId?: string;
   isOwnProfile?: boolean;
-  initialFilter?: EventFilterType;
+  initialFilter?: EventFilterType | 'drafts';
 }
+
+type EventSearchFilter = EventFilterType | 'drafts';
 
 export default function EventSearchSheet({
   isOpen,
@@ -40,10 +46,9 @@ export default function EventSearchSheet({
 }: EventSearchSheetProps) {
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState<EventFilterType>(initialFilter ?? 'upcoming');
+  const [filter, setFilter] = useState<EventSearchFilter>(initialFilter ?? 'upcoming');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
-  const { user } = useAuth();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -85,11 +90,17 @@ export default function EventSearchSheet({
   // Fetch events for own profile (with server-side filtering)
   const ownProfileQuery = useUserEvents({
     search: searchQuery,
-    filter,
+    filter: filter === 'drafts' ? 'upcoming' : filter,
     timeframe,
     sortBy,
     limit: 10,
-    enabled: isOpen && isOwnProfile,
+    enabled: isOpen && isOwnProfile && filter !== 'drafts',
+  });
+
+  const ownDraftsQuery = useMyDraftEvents({
+    search: searchQuery,
+    limit: 10,
+    enabled: isOpen && isOwnProfile && filter === 'drafts',
   });
 
   // Fetch events for other user's profile (client-side filtering)
@@ -99,18 +110,19 @@ export default function EventSearchSheet({
   });
 
   // Select the appropriate query data
-  const isLoading = isOwnProfile ? ownProfileQuery.isLoading : otherUserQuery.isLoading;
-  const error = isOwnProfile ? ownProfileQuery.error : otherUserQuery.error;
-  const hasNextPage = isOwnProfile ? ownProfileQuery.hasNextPage : false;
-  const isFetchingNextPage = isOwnProfile ? ownProfileQuery.isFetchingNextPage : false;
-  const fetchNextPage = ownProfileQuery.fetchNextPage;
+  const activeOwnQuery = filter === 'drafts' ? ownDraftsQuery : ownProfileQuery;
+  const isLoading = isOwnProfile ? activeOwnQuery.isLoading : otherUserQuery.isLoading;
+  const error = isOwnProfile ? activeOwnQuery.error : otherUserQuery.error;
+  const hasNextPage = isOwnProfile ? activeOwnQuery.hasNextPage : false;
+  const isFetchingNextPage = isOwnProfile ? activeOwnQuery.isFetchingNextPage : false;
+  const fetchNextPage = activeOwnQuery.fetchNextPage;
 
   // Extract and filter events
   const events = useMemo(() => {
     if (isOwnProfile) {
       // Own profile: events come from paginated data (server already filtered)
-      if (!ownProfileQuery.data) return [];
-      return ownProfileQuery.data.pages.flatMap((page) => page.events);
+      if (!activeOwnQuery.data) return [];
+      return activeOwnQuery.data.pages.flatMap((page) => page.events);
     } else {
       // Other user: events come as array, need client-side filtering
       if (!otherUserQuery.data) return [];
@@ -119,9 +131,13 @@ export default function EventSearchSheet({
       // Filter by timeframe
       const today = new Date().toISOString().slice(0, 10);
       if (timeframe === 'future') {
-        filteredEvents = filteredEvents.filter((e) => e.computed_start_date >= today);
+        filteredEvents = filteredEvents.filter(
+          (e) => hasValidEventDate(e.computed_start_date) && e.computed_start_date >= today
+        );
       } else if (timeframe === 'past') {
-        filteredEvents = filteredEvents.filter((e) => e.computed_start_date < today);
+        filteredEvents = filteredEvents.filter(
+          (e) => hasValidEventDate(e.computed_start_date) && e.computed_start_date < today
+        );
       }
 
       // Filter by search
@@ -135,18 +151,26 @@ export default function EventSearchSheet({
 
       // Sort
       filteredEvents.sort((a, b) => {
-        const dateA = new Date(a.computed_start_date).getTime();
-        const dateB = new Date(b.computed_start_date).getTime();
+        const dateA = hasValidEventDate(a.computed_start_date)
+          ? new Date(a.computed_start_date).getTime()
+          : 0;
+        const dateB = hasValidEventDate(b.computed_start_date)
+          ? new Date(b.computed_start_date).getTime()
+          : 0;
         return sortBy === 'date-desc' ? dateB - dateA : dateA - dateB;
       });
 
       return filteredEvents;
     }
-  }, [isOwnProfile, ownProfileQuery.data, otherUserQuery.data, timeframe, searchQuery, sortBy]);
+  }, [isOwnProfile, activeOwnQuery.data, otherUserQuery.data, timeframe, searchQuery, sortBy]);
 
   // Group events by date
   const groupedEvents = useMemo(() => {
     return events.reduce((groups: { date: string; events: typeof events }[], event) => {
+      if (!hasValidEventDate(event.computed_start_date)) {
+        return groups;
+      }
+
       const date = event.computed_start_date.slice(0, 10); // Extract YYYY-MM-DD
       const group = groups.find((g) => g.date === date);
 
@@ -179,7 +203,7 @@ export default function EventSearchSheet({
   }, [isOpen, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Toggle filter type
-  const handleFilterChange = (newFilter: EventFilterType) => {
+  const handleFilterChange = (newFilter: EventSearchFilter) => {
     setFilter(newFilter);
   };
 
@@ -210,68 +234,71 @@ export default function EventSearchSheet({
                 { value: 'upcoming', label: 'All' },
                 { value: 'attending', label: 'Attending' },
                 { value: 'hosting', label: 'Hosting' },
+                { value: 'drafts', label: 'Drafts' },
               ]}
               value={filter}
-              onValueChange={(v) => handleFilterChange(v as EventFilterType)}
+              onValueChange={(v) => handleFilterChange(v as EventSearchFilter)}
               wrapperClassName='py-0 px-0'
               align='left'
             />
           )}
 
           {/* Timeframe & Sort Toggles */}
-          <div className='flex items-center gap-2'>
-            {/* Timeframe Toggle */}
-            <div className='flex items-center rounded-full bg-gray-50 p-1'>
-              <button
-                onClick={() => setTimeframe('future')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  timeframe === 'future'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Upcoming
-              </button>
-              <button
-                onClick={() => setTimeframe('past')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  timeframe === 'past'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Past
-              </button>
-            </div>
+          {filter !== 'drafts' && (
+            <div className='flex items-center gap-2'>
+              {/* Timeframe Toggle */}
+              <div className='flex items-center rounded-full bg-gray-50 p-1'>
+                <button
+                  onClick={() => setTimeframe('future')}
+                  className={cn(
+                    'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                    timeframe === 'future'
+                      ? 'bg-white text-black shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  Upcoming
+                </button>
+                <button
+                  onClick={() => setTimeframe('past')}
+                  className={cn(
+                    'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                    timeframe === 'past'
+                      ? 'bg-white text-black shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  Past
+                </button>
+              </div>
 
-            {/* Sort Toggle */}
-            <div className='flex items-center rounded-full bg-gray-50 p-1'>
-              <button
-                onClick={() => setSortBy('date-desc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-desc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Latest
-              </button>
-              <button
-                onClick={() => setSortBy('date-asc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-asc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Oldest
-              </button>
+              {/* Sort Toggle */}
+              <div className='flex items-center rounded-full bg-gray-50 p-1'>
+                <button
+                  onClick={() => setSortBy('date-desc')}
+                  className={cn(
+                    'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                    sortBy === 'date-desc'
+                      ? 'bg-white text-black shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  Latest
+                </button>
+                <button
+                  onClick={() => setSortBy('date-asc')}
+                  className={cn(
+                    'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
+                    sortBy === 'date-asc'
+                      ? 'bg-white text-black shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  )}
+                >
+                  Oldest
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       }
       contentClassName='px-4 pb-6 !max-w-[100vw]'

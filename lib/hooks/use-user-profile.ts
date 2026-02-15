@@ -1,3 +1,6 @@
+import { Env } from '@/lib/constants/env';
+import { sanitizeUploadFileName } from '@/lib/utils/file';
+import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { apiClient } from '../api/client';
@@ -7,6 +10,10 @@ import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
 const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
+
+const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
+  return !!value && typeof value === 'object' && 'data' in value;
+};
 
 /**
  * Hook to fetch and manage user profile data
@@ -75,43 +82,9 @@ export function useUpdateUserProfile() {
         Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
       );
 
-      const response = await apiClient.patch<UserDetails[]>('/v1/user', filteredUpdates);
-      return response.data?.[0] || null;
-    },
-    onSuccess: (updatedUser) => {
-      if (updatedUser) {
-        // Update the query cache
-        queryClient.setQueryData(USER_PROFILE_QUERY_KEY, updatedUser);
-        // Update the auth store
-        setUser(updatedUser);
-      }
-    },
-    onError: (error) => {
-      console.error('Profile update failed:', error);
-    },
-  });
-}
-
-/**
- * Hook to upload profile image
- */
-export function useUploadProfileImage() {
-  const queryClient = useQueryClient();
-  const { setUser } = useAuthStore();
-
-  return useMutation({
-    mutationFn: async (file: File) => {
-      const formData = new FormData();
-      formData.append('image', file);
-
-      const response = await apiClient.post<UserDetails[]>(
-        '/v1/user/details/image-upload',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
+      const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
+        '/v1/user',
+        filteredUpdates
       );
       return response.data?.[0] || null;
     },
@@ -124,7 +97,53 @@ export function useUploadProfileImage() {
       }
     },
     onError: (error) => {
-      console.error('Profile image upload failed:', error);
+      logger.error('Profile update failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    },
+  });
+}
+
+/**
+ * Hook to upload profile image
+ */
+export function useUploadProfileImage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (file: File) => {
+      // Sanitize the filename for security
+      const safeFilename = sanitizeUploadFileName(file.name);
+
+      // Send raw file bytes directly — the backend streams request.body to Supabase storage
+      // (FormData/multipart breaks this because the backend doesn't parse multipart boundaries)
+      const response = await fetch(
+        `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
+        {
+          method: 'POST',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+          },
+          credentials: 'include', // Include cookies for auth
+        }
+      );
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Upload failed' }));
+        throw new Error(error.message || `Upload failed with status ${response.status}`);
+      }
+
+      const result = await response.json();
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+    },
+    onError: (error) => {
+      logger.error('Profile image upload failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -136,21 +155,25 @@ export function useUploadProfileImage() {
 export function useSearchUsers() {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.get<UserDetails[] | { data: UserDetails[] }>(
+      const response = await apiClient.get<ApiResponse<UserDetails[]> | UserDetails[]>(
         `/v1/user/search?s=${encodeURIComponent(query)}`
       );
 
       // Handle both response formats (array or object with data property)
       if (Array.isArray(response)) {
         return response;
-      } else if (response && typeof response === 'object' && 'data' in response) {
-        return (response as any).data || [];
+      }
+
+      if (isApiResponse<UserDetails[]>(response)) {
+        return response.data || [];
       }
 
       return [];
     },
     onError: (error) => {
-      console.error('User search failed:', error);
+      logger.error('User search failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -165,7 +188,7 @@ export function useFollowStatus(userId: string) {
     queryFn: async () => {
       if (!userId) return { isFollowing: false };
 
-      const response = await apiClient.get<{ isFollowing: boolean }>(
+      const response = await apiClient.get<ApiResponse<{ isFollowing: boolean }>>(
         `/v1/user/follow?id=${userId}`
       );
       return response.data || { isFollowing: false };
@@ -212,7 +235,9 @@ export function useFollowAction() {
     },
     onError: (error, variables) => {
       const { action } = variables;
-      console.error(`${action === 'follow' ? 'Follow' : 'Unfollow'} failed:`, error);
+      logger.error(`${action === 'follow' ? 'Follow' : 'Unfollow'} failed`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
     },
   });
 }
@@ -224,9 +249,12 @@ export function useUserFollowers(userId: string) {
   return useQuery({
     queryKey: ['user', 'followers', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/followers/list?id=${userId}`);
+      const response = await apiClient.get<ApiResponse<any[]> | any[]>(
+        `/v1/user/followers/list?id=${userId}`
+      );
+      const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = (response.data || []).map((item: any) => ({
+      const transformedData = responseData.map((item: any) => ({
         id: item.user_details?.id || item.follower_id,
         username: item.user_details?.username || '',
         name: item.user_details?.name || '',
@@ -247,9 +275,12 @@ export function useUserFollowing(userId: string) {
   return useQuery({
     queryKey: ['user', 'following', userId],
     queryFn: async () => {
-      const response = await apiClient.get<any[]>(`/v1/user/follows/list?id=${userId}`);
+      const response = await apiClient.get<ApiResponse<any[]> | any[]>(
+        `/v1/user/follows/list?id=${userId}`
+      );
+      const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = (response.data || []).map((item: any) => ({
+      const transformedData = responseData.map((item: any) => ({
         id: item.user_details?.id || item.followed_id,
         username: item.user_details?.username || '',
         name: item.user_details?.name || '',
@@ -270,8 +301,13 @@ export function useUserEventCount(userId: string) {
   return useQuery({
     queryKey: ['user', 'events', 'count', userId],
     queryFn: async () => {
-      const response = await apiClient.get<{ count: number }>(`/v1/user/events/count?id=${userId}`);
-      return response.data?.count || 0;
+      const response = await apiClient.get<ApiResponse<{ count: number }> | { count: number }>(
+        `/v1/user/events/count?id=${userId}`
+      );
+      if (isApiResponse<{ count: number }>(response)) {
+        return response.data?.count || 0;
+      }
+      return response.count || 0;
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes

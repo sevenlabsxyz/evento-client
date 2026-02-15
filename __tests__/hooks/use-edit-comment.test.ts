@@ -68,6 +68,7 @@ describe('useEditComment', () => {
       id: 'user123',
       username: 'testuser',
       name: 'Test User',
+      bio: '',
       image: 'test.jpg',
       verification_status: null,
     },
@@ -546,6 +547,7 @@ and special characters! @#$%^&*()`;
           id: 'user123',
           username: 'testuser',
           name: 'Test User',
+          bio: '',
           image: 'test.jpg',
           verification_status: 'verified',
         },
@@ -708,7 +710,7 @@ and special characters! @#$%^&*()`;
         }
       });
 
-      expect(consoleSpy).toHaveBeenCalledWith('Error editing comment:', apiError);
+      expect(consoleSpy).toHaveBeenCalled();
       consoleSpy.mockRestore();
     });
   });

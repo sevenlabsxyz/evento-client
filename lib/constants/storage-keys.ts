@@ -16,6 +16,7 @@ export const STORAGE_KEYS = {
   HAS_TRANSACTION: 'evento_has_transaction',
   BACKUP_DISMISSED_DATE: 'evento_backup_dismissed_date',
   WALLET_PREFERENCES: 'wallet-preferences', // Zustand persist
+  WALLET_UNLOCK_RETURN_PATH: 'evento_wallet_unlock_return_path',
 
   // User Preferences
   VIEW_MODE: 'evento-view-mode', // Zustand persist

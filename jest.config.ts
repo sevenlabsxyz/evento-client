@@ -7,7 +7,7 @@ const createJestConfig = nextJest({
 const config = {
   testEnvironment: 'jest-environment-jsdom',
   testEnvironmentOptions: {
-    customExportConditions: ['node', ''], // Prioritize 'node' condition, then fallback to default
+    customExportConditions: ['node', ''],
   },
   setupFiles: ['<rootDir>/__tests__/setup/jest.polyfills.ts'],
   setupFilesAfterEnv: ['<rootDir>/__tests__/setup/jest.setup.ts'],

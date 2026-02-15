@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { useState } from 'react';
 
 interface UseGalleryLikesReturn {
@@ -21,7 +22,9 @@ export const useGalleryLikes = (itemId: string): UseGalleryLikesReturn => {
       setHasLiked(!has_liked);
       setLikes(has_liked ? likes - 1 : likes + 1);
     } catch (error) {
-      console.error('Error toggling like:', error);
+      logger.error('Error toggling like', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setIsLoading(false);
     }

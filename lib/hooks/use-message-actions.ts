@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { useCallback } from 'react';
 import type { Channel as StreamChannel } from 'stream-chat';
 
@@ -10,7 +11,9 @@ export const useMessageActions = (channel: StreamChannel | undefined) => {
         const client = channel.getClient();
         await client.flagMessage(messageId);
       } catch (error) {
-        console.error('Failed to flag message:', error);
+        logger.error('Failed to flag message', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -28,7 +31,9 @@ export const useMessageActions = (channel: StreamChannel | undefined) => {
           await client.pinMessage(messageId);
         }
       } catch (error) {
-        console.error('Failed to pin/unpin message:', error);
+        logger.error('Failed to pin/unpin message', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -41,7 +46,9 @@ export const useMessageActions = (channel: StreamChannel | undefined) => {
       try {
         await channel.sendReaction(messageId, { type: emoji });
       } catch (error) {
-        console.error('Failed to send reaction:', error);
+        logger.error('Failed to send reaction', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },
@@ -55,7 +62,9 @@ export const useMessageActions = (channel: StreamChannel | undefined) => {
         // Use the correct method signature for markUnread
         await channel.markUnread({ message_id: messageId });
       } catch (error) {
-        console.error('Failed to mark as unread:', error);
+        logger.error('Failed to mark as unread', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         throw error;
       }
     },

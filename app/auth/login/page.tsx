@@ -43,14 +43,14 @@ function LoginContent() {
 
   if (isCheckingAuth) {
     return (
-      <div className='flex min-h-screen items-center justify-center'>
+      <div className='flex min-h-[100dvh] items-center justify-center'>
         <Loader2 className='h-8 w-8 animate-spin' />
       </div>
     );
   }
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center bg-gray-50 p-4'>
+    <div className='flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-gray-50 p-4'>
       <Card className='w-full max-w-sm rounded-3xl'>
         <CardHeader className='space-y-1'>
           <div className='mx-auto flex w-full items-center justify-center'>
@@ -151,7 +151,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className='flex min-h-screen items-center justify-center'>
+        <div className='flex min-h-[100dvh] items-center justify-center'>
           <Loader2 className='h-8 w-8 animate-spin' />
         </div>
       }

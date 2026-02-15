@@ -15,6 +15,7 @@ import {
   getBreezErrorMessage,
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
+import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
 
 export function useWallet() {
@@ -37,7 +38,6 @@ export function useWallet() {
 
         // Handle inconsistent state: has state but no encrypted seed
         if (!encryptedSeed && savedState?.isInitialized) {
-          console.warn('Inconsistent wallet state detected, clearing...');
           WalletStorageService.clearWalletData();
           setWalletState({
             isInitialized: false,
@@ -269,8 +269,6 @@ export function useWallet() {
   const unlockWallet = useCallback(
     async (password: string): Promise<void> => {
       try {
-        if (DEBUG_WALLET) console.log('🔓 [WALLET:UNLOCK] Starting wallet unlock...');
-
         setLoading(true);
         setError(null);
 
@@ -279,32 +277,17 @@ export function useWallet() {
           throw new Error('No wallet found');
         }
 
-        if (DEBUG_WALLET)
-          console.log('🔓 [WALLET:UNLOCK] Encrypted seed found, attempting decryption...');
-
         // Decrypt seed
         const mnemonic = await WalletStorageService.decryptSeed(encryptedSeed, password);
 
-        // Create fingerprint for logging (first 3 words)
-        const fingerprint = mnemonic.trim().split(/\s+/).slice(0, 3).join(' ');
-        if (DEBUG_WALLET) {
-          console.log('✅ [WALLET:UNLOCK] Seed decrypted successfully');
-          console.log('  → Wallet fingerprint:', fingerprint);
-        }
-
         // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
-        if (DEBUG_WALLET) console.log('✅ [WALLET:UNLOCK] Seed stored in memory');
 
         // Connect to Breez SDK
-        if (DEBUG_WALLET) console.log('🔑 [WALLET:UNLOCK] Connecting to Breez SDK...');
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-        if (DEBUG_WALLET) console.log('✅ [WALLET:UNLOCK] Breez SDK connected');
 
         // Get balance
-        if (DEBUG_WALLET) console.log('💰 [WALLET:UNLOCK] Fetching wallet balance...');
         const balance = await breezSDK.getBalance();
-        if (DEBUG_WALLET) console.log('✅ [WALLET:UNLOCK] Balance fetched:', balance, 'sats');
 
         // Get current saved state
         const savedState = WalletStorageService.getWalletState();
@@ -318,11 +301,6 @@ export function useWallet() {
           lastBackupDate: savedState?.lastBackupDate,
           lightningAddress: savedState?.lightningAddress,
         };
-
-        if (DEBUG_WALLET) {
-          console.log('✅ [WALLET:UNLOCK] Wallet unlocked successfully');
-          console.log('  → Final state:', newState);
-        }
 
         setWalletState(newState);
       } catch (err: any) {
@@ -484,7 +462,9 @@ export function useBTCPrice() {
       const btcPrice = await BTCPriceService.fetchPrice();
       setPrice(btcPrice);
     } catch (error) {
-      console.error('Failed to fetch BTC price:', error);
+      logger.error('Failed to fetch BTC price', {
+        error: error instanceof Error ? error.message : String(error),
+      });
     } finally {
       setLoading(false);
     }

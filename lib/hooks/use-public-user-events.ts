@@ -15,20 +15,32 @@ export interface PublicUserEventsParams {
  */
 export function usePublicUserEvents(params: PublicUserEventsParams) {
   const { username, enabled = true } = params;
+  const usernameOrDefault = username.trim().toLowerCase();
 
   return useQuery<EventWithUser[], Error>({
-    queryKey: ['public-user-events', username],
+    queryKey: ['public-user-events', usernameOrDefault],
     queryFn: async () => {
-      const response = await apiClient.get(`/v1/events/${username}/public`);
+      const response = await apiClient.get(`/v1/users/${usernameOrDefault}/events`);
 
-      // Handle response format: { data: [...events], message: "..." }
-      if (response && response.data) {
+      if (!response?.data) {
+        return [];
+      }
+
+      if (Array.isArray(response.data)) {
         return response.data;
+      }
+
+      if (Array.isArray(response.data.events)) {
+        return response.data.events;
+      }
+
+      if (Array.isArray(response.data.data?.events)) {
+        return response.data.data.events;
       }
 
       return [];
     },
-    enabled: enabled && !!username,
+    enabled: enabled && !!usernameOrDefault,
     staleTime: 5 * 60 * 1000, // 5 minutes cache
     retry: (failureCount, error: any) => {
       // Don't retry on 401 (unauthorized) or 404 (user not found)

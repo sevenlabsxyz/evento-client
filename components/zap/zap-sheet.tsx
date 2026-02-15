@@ -1,12 +1,16 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
+import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { AlertCircle, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';
 import { ZapConfirmStep } from './steps/zap-confirm-step';
@@ -29,6 +33,7 @@ export function ZapSheet({
   onError,
   currentUsername,
 }: ZapSheetProps) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>('amount');
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
@@ -42,6 +47,78 @@ export function ZapSheet({
   const [payRequest, setPayRequest] = useState<LnurlPayRequestDetails | null>(null);
 
   const { satsToUSD, usdToSats } = useAmountConverter();
+  const notifyMutation = useNotifyWalletInvite();
+
+  const hasExistingWallet = () => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    const walletStateRaw = localStorage.getItem(STORAGE_KEYS.WALLET_STATE);
+    const encryptedSeed = localStorage.getItem(STORAGE_KEYS.ENCRYPTED_SEED);
+
+    if (encryptedSeed) {
+      return true;
+    }
+
+    if (!walletStateRaw) {
+      return false;
+    }
+
+    try {
+      const parsedState = JSON.parse(walletStateRaw);
+      return Boolean(parsedState?.isInitialized);
+    } catch {
+      return true;
+    }
+  };
+
+  const handleUnlockWallet = () => {
+    if (typeof window !== 'undefined') {
+      const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      localStorage.setItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH, returnPath);
+    }
+    router.push('/e/wallet');
+  };
+
+  const showWalletUnlockToast = () => {
+    const walletExists = hasExistingWallet();
+    const actionLabel = walletExists ? 'Unlock wallet' : 'Create wallet';
+    const descriptionText = walletExists
+      ? 'Unlock your Evento Wallet to continue.'
+      : 'Create your Evento Wallet to continue.';
+
+    toast.custom(
+      (id) => (
+        <div className='w-full rounded-[28px] border border-red-300 bg-red-50 p-6 shadow-lg'>
+          <div className='flex items-start gap-3'>
+            <div className='mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-red-600 text-white'>
+              <AlertCircle className='h-4 w-4' />
+            </div>
+            <div className='min-w-0'>
+              <p className='text-base font-semibold leading-none tracking-tight text-slate-900'>
+                Error
+              </p>
+              <p className='mt-3 text-[16px] leading-[1.3] text-slate-700'>{descriptionText}</p>
+            </div>
+          </div>
+          <button
+            type='button'
+            onClick={() => {
+              toast.dismiss(id);
+              handleUnlockWallet();
+            }}
+            className='mt-5 h-12 w-full rounded-full bg-black px-4 text-base font-semibold text-white transition-colors hover:bg-neutral-800'
+          >
+            {actionLabel}
+          </button>
+        </div>
+      ),
+      {
+        unstyled: true,
+      }
+    );
+  };
 
   // Recipient info object for step components
   const recipient: RecipientInfo = {
@@ -49,6 +126,13 @@ export function ZapSheet({
     username: recipientUsername,
     avatar: recipientAvatar,
     lightningAddress: recipientLightningAddress,
+  };
+
+  // Handle notify action
+  const handleNotify = () => {
+    if (recipientUsername) {
+      notifyMutation.mutate({ recipientUsername });
+    }
   };
 
   // Handle open/close state and determine initial step based on wallet
@@ -70,6 +154,7 @@ export function ZapSheet({
       setIsPreparing(false);
       setComment('');
       setPayRequest(null);
+      notifyMutation.reset();
     }
   }, [open, recipientLightningAddress]);
 
@@ -84,13 +169,14 @@ export function ZapSheet({
             setPayRequest(parsedPayRequest);
           }
         } catch (error: any) {
-          setOpen(false);
           if (error?.message === 'SDK not connected') {
-            toast.error('Unlock your Evento Wallet to continue.');
+            setOpen(false);
+            showWalletUnlockToast();
           } else if (error?.message?.toLowerCase().includes('invalid input')) {
             // Lightning address doesn't exist (404 from LNURL endpoint)
-            toast.error('User has not set up Evento Wallet yet.');
+            setStep('no-wallet');
           } else {
+            setOpen(false);
             toast.error('Failed to load payment details. Please try again.');
           }
         }
@@ -186,6 +272,11 @@ export function ZapSheet({
         }
       }
 
+      if (!currentPayRequest) {
+        toast.error('Invalid lightning address');
+        return;
+      }
+
       // Prepare the LNURL payment
       const response = await breezSDK.prepareLnurlPay({
         payRequest: currentPayRequest,
@@ -196,7 +287,9 @@ export function ZapSheet({
       setPrepareResponse(response);
       setStep('confirm');
     } catch (error: any) {
-      console.error('Failed to prepare zap:', error);
+      logger.error('Failed to prepare zap', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Check for wallet not connected error
       if (
@@ -205,7 +298,7 @@ export function ZapSheet({
         !breezSDK.isConnected()
       ) {
         setOpen(false);
-        toast.error('Wallet not connected. Please set up your wallet first.');
+        showWalletUnlockToast();
       } else {
         toast.error(error.message || 'Failed to prepare payment');
       }
@@ -234,6 +327,11 @@ export function ZapSheet({
         }
       }
 
+      if (!currentPayRequest) {
+        toast.error('Invalid lightning address');
+        return;
+      }
+
       // Prepare the LNURL payment
       const response = await breezSDK.prepareLnurlPay({
         payRequest: currentPayRequest,
@@ -244,7 +342,9 @@ export function ZapSheet({
       setPrepareResponse(response);
       setStep('confirm');
     } catch (error: any) {
-      console.error('Failed to prepare zap:', error);
+      logger.error('Failed to prepare zap', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Check for wallet not connected error
       if (
@@ -253,7 +353,7 @@ export function ZapSheet({
         !breezSDK.isConnected()
       ) {
         setOpen(false);
-        toast.error('Wallet not connected. Please set up your wallet first.');
+        showWalletUnlockToast();
       } else {
         toast.error(error.message || 'Failed to prepare payment');
       }
@@ -276,7 +376,9 @@ export function ZapSheet({
       setStep('success');
       onSuccess?.(selectedAmount);
     } catch (error: any) {
-      console.error('Failed to send zap:', error);
+      logger.error('Failed to send zap', {
+        error: error instanceof Error ? error.message : String(error),
+      });
 
       // Check for wallet not connected error
       if (
@@ -285,7 +387,7 @@ export function ZapSheet({
         !breezSDK.isConnected()
       ) {
         setOpen(false);
-        toast.error('Wallet not connected. Please set up your wallet first.');
+        showWalletUnlockToast();
       } else {
         toast.error(error.message || 'Failed to send payment');
       }
@@ -399,7 +501,18 @@ export function ZapSheet({
           />
         );
       case 'no-wallet':
-        return <ZapNoWalletStep onClose={handleClose} />;
+        return (
+          <ZapNoWalletStep
+            onClose={handleClose}
+            onNotify={handleNotify}
+            recipient={recipient}
+            isNotifying={notifyMutation.isPending}
+            notifySuccess={notifyMutation.isSuccess && notifyMutation.data?.status === 'sent'}
+            alreadyNotified={
+              notifyMutation.isSuccess && notifyMutation.data?.status === 'already_notified'
+            }
+          />
+        );
       default:
         return null;
     }

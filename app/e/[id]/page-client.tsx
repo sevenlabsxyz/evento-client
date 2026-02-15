@@ -28,6 +28,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -45,6 +46,7 @@ export default function EventDetailPageClient() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
   const [passwordAccessGranted, setPasswordAccessGranted] = useState(false);
+  const cameFromManage = searchParams.get('from') === 'manage';
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -184,7 +186,9 @@ export default function EventDetailPageClient() {
             url: window.location.href,
           });
         } catch (error) {
-          console.log('Error sharing:', error);
+          logger.error('Error sharing', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       } else {
         navigator.clipboard.writeText(window.location.href);
@@ -195,6 +199,7 @@ export default function EventDetailPageClient() {
 
     setTopBarForRoute(pathname, {
       leftMode: 'back',
+      onBackPress: cameFromManage ? () => router.push(isAuthenticated ? '/e/hub' : '/') : null,
       centerMode: 'title',
       title: event?.title || '',
       showAvatar: false,
@@ -212,7 +217,16 @@ export default function EventDetailPageClient() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, event?.title]);
+  }, [
+    pathname,
+    setTopBarForRoute,
+    clearRoute,
+    applyRouteConfig,
+    event?.title,
+    cameFromManage,
+    router,
+    isAuthenticated,
+  ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
@@ -225,7 +239,7 @@ export default function EventDetailPageClient() {
     if (hasEventAccess(eventId)) return true;
 
     // Check if user is a host or co-host
-    if (user && hostsData.some((host) => host.id === user.id)) return true;
+    if (user && hostsData.some((host) => host.user_details.id === user.id)) return true;
 
     // Check if user is the creator
     if (user && eventData.creator_user_id === user.id) return true;
@@ -251,12 +265,12 @@ export default function EventDetailPageClient() {
       title: eventData.title,
       cover: eventData.cover,
       password_protected: true,
-      hosts: hostsData.map((h) => ({
-        id: h.id,
-        name: h.name,
-        username: h.username,
-        avatar: h.avatar || h.image || '',
-        image: h.image,
+      hosts: hostsData.map((host) => ({
+        id: host.user_details.id,
+        name: host.user_details.name || '',
+        username: host.user_details.username,
+        avatar: host.user_details.image || '',
+        image: host.user_details.image || undefined,
       })),
     };
 
@@ -344,7 +358,7 @@ export default function EventDetailPageClient() {
     <div className='min-h-screen bg-white'>
       {/* Main content */}
       <div className='mx-auto max-w-full bg-white md:pt-4 lg:max-w-4xl'>
-        <div className='lg:flex lg:gap-8'>
+        <div className='pt-4 md:pt-0 lg:flex lg:gap-8'>
           {/* Left Column - Image & Quick Actions (sticky on desktop) */}
           <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
             <SwipeableHeader

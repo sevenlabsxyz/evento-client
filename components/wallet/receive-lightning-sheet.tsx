@@ -2,11 +2,12 @@
 
 import { Button } from '@/components/ui/button';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Copy, Edit3, Share2, X } from 'lucide-react';
 import { useState } from 'react';
 import { Drawer } from 'vaul';
-import { ReceiveLightningSheet } from './receive-invoice-sheet';
+import { ReceiveLightningSheet as ReceiveInvoiceSheet } from './receive-invoice-sheet';
 
 interface ReceiveLightningSheetProps {
   lightningAddress: string;
@@ -34,7 +35,9 @@ export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLigh
         });
       } catch (error) {
         // User cancelled or share failed
-        console.error('Share failed:', error);
+        logger.error('Share failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     } else {
       // Fallback to copy
@@ -98,7 +101,7 @@ export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLigh
         <Drawer.Portal>
           <Drawer.Overlay className='fixed inset-0 bg-black/40' />
           <Drawer.Content className='fixed bottom-0 left-0 right-0 mt-24 flex max-h-[95vh] flex-col rounded-t-[10px] bg-white'>
-            <ReceiveLightningSheet onClose={() => setShowInvoiceSheet(false)} />
+            <ReceiveInvoiceSheet open={showInvoiceSheet} onOpenChange={setShowInvoiceSheet} />
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>

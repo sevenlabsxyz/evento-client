@@ -134,11 +134,18 @@ export interface Event {
   cover?: string;
   location: string;
   timezone: string;
+  type?: EventBehaviorType;
   status: 'draft' | 'published' | 'cancelled' | 'archived';
   visibility: 'public' | 'private';
   cost: number | null;
   creator_user_id: string;
   hosts: EventHost[];
+  max_capacity?: number | null;
+  show_capacity_count?: boolean;
+  guestListSettings?: {
+    isPublic: boolean;
+    allowPublicRSVP: boolean;
+  };
 
   // Password protection
   password_protected?: boolean;
@@ -174,17 +181,7 @@ export interface Event {
   created_at: string;
   updated_at: string;
 
-  // Relations (populated in some responses)
   user_details?: UserDetails;
-  hosts?: Array<{
-    id: string;
-    name: string;
-    username: string;
-    avatar: string;
-    image?: string;
-    title?: string;
-    company?: string;
-  }>;
 }
 
 // Event Invite
@@ -238,7 +235,8 @@ export interface CreateEventForm {
   location: string;
   cover?: string;
   timezone: string;
-  status: 'draft' | 'published';
+  type: EventBehaviorType;
+  status?: 'draft' | 'published';
   visibility: 'public' | 'private';
   cost?: number;
 
@@ -343,8 +341,10 @@ export interface EmailBlast {
   user_id: string;
   message: string;
   recipient_filter: EmailBlastRecipientFilter;
-  status: 'draft' | 'scheduled' | 'sending' | 'sent' | 'failed';
+  status: 'draft' | 'scheduled' | 'sending' | 'completed' | 'failed' | 'cancelled';
   scheduled_for: string | null;
+  trigger_run_id?: string | null;
+  cancelled_at?: string | null;
   created_at: string;
   updated_at: string;
   subject?: string;
@@ -379,6 +379,12 @@ export interface CreateEmailBlastForm {
   message: string;
   recipientFilter: EmailBlastRecipientFilter;
   scheduledFor?: string | null;
+}
+
+export interface UpdateEmailBlastForm {
+  message?: string;
+  recipientFilter?: EmailBlastRecipientFilter;
+  scheduledFor?: string;
 }
 
 // User List (for saved events)
@@ -433,10 +439,11 @@ export interface AddEventToListForm {
 
 // Utility types
 export type RSVPStatus = 'yes' | 'no' | 'maybe';
+export type EventBehaviorType = 'rsvp' | 'registration' | 'ticketed';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
-export type EmailBlastRecipientFilter = 'all' | 'yes_only' | 'yes_and_maybe';
+export type EmailBlastRecipientFilter = 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited';
 
 // Password-protected event response (minimal data when locked)
 export interface PasswordProtectedEventResponse {

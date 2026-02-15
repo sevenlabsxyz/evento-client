@@ -27,6 +27,7 @@ import { WalletSetup } from '@/components/wallet/wallet-setup';
 import { WalletUnlock } from '@/components/wallet/wallet-unlock';
 import { WalletWelcome } from '@/components/wallet/wallet-welcome';
 import { Env } from '@/lib/constants/env';
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -35,6 +36,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
@@ -78,6 +80,7 @@ export default function WalletPage() {
   const [showIncomingFundsModal, setShowIncomingFundsModal] = useState(false);
   const [showOnchainEducationalSheet, setShowOnchainEducationalSheet] = useState(false);
   const [onchainEducationalArticle, setOnchainEducationalArticle] = useState<any>(null);
+  const [hasShownUnlockRedirectHint, setHasShownUnlockRedirectHint] = useState(false);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -109,8 +112,6 @@ export default function WalletPage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Wallet',
-      badge: 'Beta',
-      onBadgeClick: () => setShowBetaSheet(true),
       centerMode: 'title',
       showAvatar: false,
       buttons: walletState.isConnected
@@ -163,6 +164,58 @@ export default function WalletPage() {
     }
   }, [isWalletLoading, walletState.isInitialized, walletState.isConnected, walletState.hasBackup]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    if (isWalletLoading) {
+      return;
+    }
+
+    const pendingReturnPath = localStorage.getItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH);
+
+    if (!pendingReturnPath) {
+      return;
+    }
+
+    if (!pendingReturnPath.startsWith('/')) {
+      localStorage.removeItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH);
+      return;
+    }
+
+    if (!walletState.isConnected) {
+      if (!hasShownUnlockRedirectHint) {
+        toast.info(
+          walletState.isInitialized
+            ? "Unlock your wallet and we'll bring you back automatically."
+            : "Create your wallet and we'll bring you back automatically."
+        );
+        setHasShownUnlockRedirectHint(true);
+      }
+      return;
+    }
+
+    localStorage.removeItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH);
+    setHasShownUnlockRedirectHint(false);
+
+    const isWalletRoute =
+      pendingReturnPath === '/e/wallet' ||
+      pendingReturnPath.startsWith('/e/wallet?') ||
+      pendingReturnPath.startsWith('/e/wallet#');
+
+    if (!isWalletRoute) {
+      toast.info('Wallet unlocked. Bringing you back...');
+      router.push(pendingReturnPath);
+    }
+  }, [
+    hasShownUnlockRedirectHint,
+    isWalletLoading,
+    router,
+    walletState.isConnected,
+    walletState.isInitialized,
+  ]);
+
   // Automatically register Lightning address if wallet is connected but no address exists
   useEffect(() => {
     const registerLightningAddressIfNeeded = async () => {
@@ -184,10 +237,12 @@ export default function WalletPage() {
 
           if (isAvailable) {
             await registerAddress(baseUsername, `Pay to ${user.name || user.username}`);
-            console.log(`Lightning address registered: ${baseUsername}@evento.cash`);
+            logger.info(`Lightning address registered: ${baseUsername}@evento.cash`);
           }
         } catch (error) {
-          console.error('Failed to auto-register Lightning address:', error);
+          logger.error('Failed to auto-register Lightning address', {
+            error: error instanceof Error ? error.message : String(error),
+          });
         }
       }
     };
@@ -205,7 +260,9 @@ export default function WalletPage() {
         const deposits = await breezSDK.listUnclaimedDeposits();
         setUnclaimedDepositsCount(deposits.length);
       } catch (error) {
-        console.error('Failed to load unclaimed deposits:', error);
+        logger.error('Failed to load unclaimed deposits', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     };
 
@@ -249,7 +306,9 @@ export default function WalletPage() {
         const data = await res.json();
         setOnchainEducationalArticle(data.posts?.[0] || null);
       } catch (error) {
-        console.error('Error fetching onchain educational post:', error);
+        logger.error('Error fetching onchain educational post', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     };
     fetchOnchainEducationalPost();
@@ -292,7 +351,7 @@ export default function WalletPage() {
   };
 
   const handleScanSuccess = async (decodedText: string) => {
-    console.log('QR Code scanned:', decodedText);
+    logger.info('QR Code scanned', { decodedText });
 
     // Strip common URI prefixes (case-insensitive)
     let cleanedData = decodedText.trim();
@@ -558,7 +617,9 @@ export default function WalletPage() {
             const deposits = await breezSDK.listUnclaimedDeposits();
             setUnclaimedDepositsCount(deposits.length);
           } catch (error) {
-            console.error('Failed to refresh unclaimed deposits:', error);
+            logger.error('Failed to refresh unclaimed deposits', {
+              error: error instanceof Error ? error.message : String(error),
+            });
           }
         }}
       />

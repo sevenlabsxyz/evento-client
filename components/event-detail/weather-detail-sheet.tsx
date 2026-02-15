@@ -2,6 +2,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { WeatherData } from '@/lib/types/weather';
+import { logger } from '@/lib/utils/logger';
 import { Droplets, MoreHorizontal, Sun, Thermometer, Wind } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -49,7 +50,7 @@ export default function WeatherDetailSheet({
     img.onerror = () => {
       setIconError(true);
       setIconLoaded(false);
-      console.log('Weather icon failed to load:', iconUrl);
+      logger.warn('Weather icon failed to load', { iconUrl });
     };
 
     // Clean up

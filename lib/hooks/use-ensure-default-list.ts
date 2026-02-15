@@ -1,5 +1,6 @@
 'use client';
 
+import { logger } from '@/lib/utils/logger';
 import { useEffect, useRef } from 'react';
 import { useCreateList } from './use-create-list';
 import { useUserLists } from './use-user-lists';
@@ -30,11 +31,10 @@ export function useEnsureDefaultList() {
       createListMutation.mutate(
         { name: 'Saved Events' },
         {
-          onSuccess: () => {
-            console.log('Default list created successfully');
-          },
           onError: (error) => {
-            console.error('Failed to create default list:', error);
+            logger.error('Failed to create default list', {
+              error: error instanceof Error ? error.message : String(error),
+            });
             // Don't reset flag on error - this would cause infinite retries
             // The user can refresh the page to retry if needed
           },

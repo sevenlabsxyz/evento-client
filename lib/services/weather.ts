@@ -4,6 +4,7 @@ import {
   OpenWeatherMapResponse,
   WeatherData,
 } from '@/lib/types/weather';
+import { logger } from '@/lib/utils/logger';
 import { Env } from '../constants/env';
 
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5';
@@ -79,9 +80,10 @@ class WeatherService {
       };
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -104,9 +106,10 @@ class WeatherService {
       return this.transformWeatherData(data, unit);
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -159,9 +162,10 @@ class WeatherService {
       );
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -191,9 +195,10 @@ class WeatherService {
       return this.getCurrentWeather(lat, lon, unit);
     } catch (error) {
       if (
-        (error instanceof Error && error.message.startsWith('api_')) ||
-        error.message.startsWith('location_') ||
-        error.message.startsWith('network_')
+        error instanceof Error &&
+        (error.message.startsWith('api_') ||
+          error.message.startsWith('location_') ||
+          error.message.startsWith('network_'))
       ) {
         throw error;
       }
@@ -236,7 +241,9 @@ class WeatherService {
       }
     } catch (error) {
       // Return null for any error to gracefully degrade
-      console.warn('Weather service error:', error);
+      logger.warn('Weather service error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }

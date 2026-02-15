@@ -1,5 +1,7 @@
 'use client';
 
+'use client';
+
 import GiphyPicker from '@/components/giphy/giphy-picker';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import ProgressiveImage from '@/components/ui/progressive-image';
@@ -65,7 +67,7 @@ export default function ImageSelectionSheet({
                 isActive ? 'text-gray-900' : 'text-gray-400'
               }`}
             >
-              <IconComponent className='h-6 w-6' strokeWidth={2.5} />
+              <IconComponent className='h-6 w-6' />
               <span className='text-center text-xs font-medium leading-tight'>{category.name}</span>
               {isActive && (
                 <div className='absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gray-900' />

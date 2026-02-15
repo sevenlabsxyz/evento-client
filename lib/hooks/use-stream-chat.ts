@@ -1,3 +1,4 @@
+import { logger } from '@/lib/utils/logger';
 import { useQuery } from '@tanstack/react-query';
 import { useEffect, useMemo, useState } from 'react';
 import { StreamChat, User } from 'stream-chat';
@@ -52,7 +53,9 @@ export function useStreamChat(options: UseStreamChatOptions = {}) {
       const apiKey = getStreamChatApiKey();
       return StreamChat.getInstance(apiKey);
     } catch (error) {
-      console.error('Failed to create Stream Chat client:', error);
+      logger.error('Failed to create Stream Chat client', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       setConnectionError('Failed to initialize chat client');
       return null;
     }
@@ -85,7 +88,9 @@ export function useStreamChat(options: UseStreamChatOptions = {}) {
           setConnectionError(null);
         }
       } catch (error) {
-        console.error('Failed to connect to Stream Chat:', error);
+        logger.error('Failed to connect to Stream Chat', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         if (!isCancelled) {
           setConnectionError('Failed to connect to chat service');
         }

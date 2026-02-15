@@ -1,6 +1,8 @@
 'use client';
 
 import { ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
@@ -9,10 +11,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 
 export function SiteHeader() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const {
     leftMode,
     onBackPress,
@@ -22,6 +26,7 @@ export function SiteHeader() {
     badge,
     badgePath,
     onBadgeClick,
+    textButtons,
     buttons,
     chatPartner,
   } = useTopBar();
@@ -35,6 +40,20 @@ export function SiteHeader() {
   };
 
   const renderLeftContent = () => {
+    if (!isAuthenticated) {
+      return (
+        <Link href='/' className='flex items-center gap-2'>
+          <Image
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={100}
+            height={24}
+            className='h-6 w-auto'
+          />
+        </Link>
+      );
+    }
+
     if (leftMode === 'back') {
       return (
         <Button variant='ghost' size='icon' onClick={handleBackPress} className='h-8 w-8'>
@@ -48,7 +67,7 @@ export function SiteHeader() {
   };
 
   const renderCenterContent = () => {
-    if (centerMode === 'empty') {
+    if (!isAuthenticated || centerMode === 'empty') {
       return null;
     }
 
@@ -72,9 +91,11 @@ export function SiteHeader() {
     }
 
     if (centerMode === 'title') {
+      const combinedTitle = subtitle ? `${title} ${subtitle}` : title;
+
       return (
-        <div className='flex items-center gap-2'>
-          <h1 className='text-base font-medium'>{title}</h1>
+        <div className='flex min-w-0 flex-1 items-center gap-2'>
+          <h1 className='min-w-0 truncate text-base font-medium'>{combinedTitle}</h1>
           {badge && (
             <Badge
               variant='secondary'
@@ -84,7 +105,6 @@ export function SiteHeader() {
               {badge}
             </Badge>
           )}
-          {subtitle && <span className='text-sm text-muted-foreground'>{subtitle}</span>}
         </div>
       );
     }
@@ -99,6 +119,27 @@ export function SiteHeader() {
         <Separator orientation='vertical' className='mx-2 data-[orientation=vertical]:h-4' />
         {renderCenterContent()}
         <div className='ml-auto flex items-center gap-2'>
+          {textButtons.length > 0 && (
+            <div className='flex gap-2'>
+              {textButtons.map((button) => {
+                const Icon = button.icon;
+
+                return (
+                  <Button
+                    key={button.id}
+                    variant={button.variant || 'default'}
+                    size='sm'
+                    onClick={button.onClick}
+                    disabled={button.disabled}
+                    className='h-8 rounded-full px-3 text-sm font-medium'
+                  >
+                    {Icon && <Icon className='mr-1.5 h-4 w-4' />}
+                    {button.label}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
           {buttons.length > 0 && (
             <div className='flex gap-2'>
               {buttons.map((button) => (

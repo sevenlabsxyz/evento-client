@@ -1,6 +1,6 @@
-import { Event } from '../types/event';
+import { EventDetail } from '../types/event';
 
-export const sampleEvents: Event[] = [
+export const sampleEvents: EventDetail[] = [
   {
     id: 'cosmoprof-2025',
     title: 'COSMOPROF 2025 - K-Beauty Networking',
@@ -11,6 +11,8 @@ export const sampleEvents: Event[] = [
     startTime: '9:00 AM',
     endTime: '5:00 PM',
     timezone: 'PDT',
+    computedStartDate: '2025-07-15T09:00:00.000Z',
+    computedEndDate: '2025-07-16T17:00:00.000Z',
     location: {
       name: 'Mandalay Bay Convention Center',
       address: '3950 S Las Vegas Blvd',
@@ -87,7 +89,7 @@ export const sampleEvents: Event[] = [
       unit: 'C',
       condition: 'Sunny',
     },
-    type: 'networking',
+    category: 'networking',
     tags: ['K-Beauty', 'Networking', 'B2B', 'COSMOPROF'],
     isActive: true,
     registrationUrl: 'https://cosmoprofnorthamerica.com',
@@ -184,6 +186,8 @@ export const sampleEvents: Event[] = [
     startTime: '5:00 PM',
     endTime: '10:00 PM',
     timezone: 'CDT',
+    computedStartDate: '2025-07-15T17:00:00.000Z',
+    computedEndDate: '2025-07-15T22:00:00.000Z',
     location: {
       name: 'International Innovation Center',
       address: '300 S 4th St ste 180',
@@ -260,7 +264,7 @@ export const sampleEvents: Event[] = [
       unit: 'C',
       condition: 'Clear',
     },
-    type: 'showcase',
+    category: 'showcase',
     tags: ['AI', 'Innovation', 'Technology', 'Networking'],
     isActive: true,
     contactEnabled: true,
@@ -329,6 +333,6 @@ export const sampleEvents: Event[] = [
   },
 ];
 
-export const getEventById = (id: string): Event | undefined => {
+export const getEventById = (id: string): EventDetail | undefined => {
   return sampleEvents.find((event) => event.id === id);
 };

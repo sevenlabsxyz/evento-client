@@ -40,7 +40,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     useRegistrationSettings(eventId);
   const { data: myRegistration, isLoading: isLoadingMyRegistration } = useMyRegistration(eventId);
 
-  const [showPaymentFlow, setShowPaymentFlow] = useState(false);
+  const [showContributionSheet, setShowContributionSheet] = useState(false);
   const [currentView, setCurrentView] = useState<SheetView>('rsvp-buttons');
   const [pendingRegistration, setPendingRegistration] = useState<UserRegistration | null>(null);
 
@@ -53,7 +53,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     return methods.length > 0;
   }, [eventData]);
 
-  const registrationRequired = registrationSettings?.registration_required ?? false;
+  const registrationRequired =
+    eventData?.type !== undefined
+      ? eventData.type !== 'rsvp'
+      : (registrationSettings?.registration_required ?? false);
   const hasExistingRegistration = myRegistration?.has_registration ?? false;
   const existingRegistration = myRegistration?.registration ?? null;
 
@@ -121,12 +124,6 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       return;
     }
 
-    if (status === 'yes' && hasContributions && currentStatus !== 'yes') {
-      onClose();
-      setShowPaymentFlow(true);
-      return;
-    }
-
     try {
       await upsert.mutateAsync(
         { eventId, status, hasExisting },
@@ -140,6 +137,11 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
                   : 'You are not going';
             toast.success(msg);
             onClose();
+
+            // After a successful "yes" RSVP, offer the contribution sheet
+            if (status === 'yes' && hasContributions) {
+              setShowContributionSheet(true);
+            }
           },
           onError: () => {
             toast.error('Failed to update RSVP. Please try again.');
@@ -149,10 +151,6 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     } catch {
       toast.error('Failed to update RSVP. Please try again.');
     }
-  };
-
-  const handlePaymentSuccess = () => {
-    setShowPaymentFlow(false);
   };
 
   const handleRegistrationSuccess = (autoApproved: boolean, registration?: UserRegistration) => {
@@ -350,10 +348,9 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
       {eventData && (
         <ContributionPaymentSheet
-          isOpen={showPaymentFlow}
-          onClose={() => setShowPaymentFlow(false)}
+          isOpen={showContributionSheet}
+          onClose={() => setShowContributionSheet(false)}
           eventData={eventData}
-          onSuccess={handlePaymentSuccess}
         />
       )}
     </>

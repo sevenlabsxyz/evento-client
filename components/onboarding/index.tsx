@@ -1,11 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Env } from '@/lib/constants/env';
 import { useReplaceInterests } from '@/lib/hooks/use-user-interests';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useAnswerPrompt } from '@/lib/hooks/use-user-prompts';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { sanitizeUploadFileName } from '@/lib/utils/file';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
 import { ArrowRight, Loader2 } from 'lucide-react';
@@ -88,11 +91,21 @@ export const UserOnboardingFlow = ({
     const file = inputFileRef.current.files[0];
 
     try {
+      // Sanitize the filename for security
+      const safeFilename = sanitizeUploadFileName(file.name);
+
       // Set a timeout to handle cases where the upload might hang
-      const uploadPromise = fetch(`/api/v1/user/details/image-upload?filename=${file.name}`, {
-        method: 'POST',
-        body: file,
-      });
+      const uploadPromise = fetch(
+        `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
+        {
+          method: 'POST',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+          },
+          credentials: 'include', // Include cookies for auth
+        }
+      );
 
       // Create a timeout promise
       const timeoutPromise = new Promise((_, reject) =>
@@ -120,7 +133,9 @@ export const UserOnboardingFlow = ({
       setUploadedImg(`${getCoverImageUrl500x500(res.image)}`);
       toast.success('Image uploaded successfully');
     } catch (error) {
-      console.error('Image upload error:', error);
+      logger.error('Image upload error', {
+        error: error instanceof Error ? error.message : String(error),
+      });
       toast.error('Could not upload image. Please try again or skip this step.');
     } finally {
       setIsLoading(false);
@@ -169,7 +184,9 @@ export const UserOnboardingFlow = ({
         try {
           await replaceInterestsMutation.mutateAsync(selectedInterestIds);
         } catch (error) {
-          console.error('Error saving interests:', error);
+          logger.error('Error saving interests', {
+            error: error instanceof Error ? error.message : String(error),
+          });
           // Continue anyway - interests are optional
         }
       }
@@ -198,7 +215,9 @@ export const UserOnboardingFlow = ({
               });
             }
           } catch (error) {
-            console.error('Error saving prompts:', error);
+            logger.error('Error saving prompts', {
+              error: error instanceof Error ? error.message : String(error),
+            });
             // Continue anyway - prompts are optional
           }
         }
@@ -219,7 +238,9 @@ export const UserOnboardingFlow = ({
           router.push(redirectUrl);
         }, 500);
       } catch (error) {
-        console.error('Error updating user:', error);
+        logger.error('Error updating user', {
+          error: error instanceof Error ? error.message : String(error),
+        });
         toast.error('There was a problem completing your profile setup.');
       } finally {
         setUpdating(false);

@@ -53,14 +53,14 @@ const menuSections = [
         icon: <MessageCircle className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
-        name: 'Settings',
-        path: '/e/settings',
-        icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
-      },
-      {
         name: 'Profile',
         path: '/e/profile',
         icon: <UserCircle className='h-5 w-5' strokeWidth={2.5} />,
+      },
+      {
+        name: 'Settings',
+        path: '/e/settings',
+        icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
       },
     ],
   },

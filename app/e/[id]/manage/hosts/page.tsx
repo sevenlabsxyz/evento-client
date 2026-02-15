@@ -22,7 +22,7 @@ import {
 } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { CohostInvite } from '@/lib/types/api';
+import { CohostInvite, VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -150,7 +150,11 @@ export default function HostsManagementPage() {
         <div className='space-y-4 p-4'>
           {/* Invite Cohost Button */}
           <div className='flex justify-center'>
-            <Button onClick={handleAddCoHost} variant='outline' className='gap-2'>
+            <Button
+              onClick={handleAddCoHost}
+              variant='secondary'
+              className='w-full gap-2 rounded-xl sm:w-auto'
+            >
               <UserPlus className='h-4 w-4' />
               Invite Cohost
             </Button>
@@ -169,10 +173,10 @@ export default function HostsManagementPage() {
                   >
                     <UserAvatar
                       user={{
-                        name: host.name,
+                        name: host.name ?? undefined,
                         username: host.username,
-                        image: host.avatar || host.image,
-                        verification_status: host.verification_status,
+                        image: host.image,
+                        verification_status: host.verification_status as VerificationStatus,
                       }}
                       size='md'
                     />

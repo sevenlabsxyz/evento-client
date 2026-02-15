@@ -2,6 +2,7 @@ import { NumberTicker } from '@/components/ui/number-ticker';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { BTCPriceService } from '@/lib/services/btc-price';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Copy, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -44,7 +45,9 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
         // Initialize with default USD value
         handleUsdChange('10', price.usd);
       } catch (error) {
-        console.error('Failed to fetch BTC price:', error);
+        logger.error('Failed to fetch BTC price', {
+          error: error instanceof Error ? error.message : String(error),
+        });
       } finally {
         setIsLoading(false);
       }

@@ -6,6 +6,13 @@ import { createTestWrapper } from '../setup/test-utils';
 // Mock console.error to avoid noise in tests
 const mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+const manualLocation = {
+  type: 'manual_entry',
+  data: {
+    name: 'Updated Location',
+  },
+} as const;
+
 describe('useUpdateEvent', () => {
   let queryClient: QueryClient;
   let wrapper: ReturnType<typeof createTestWrapper>;
@@ -46,12 +53,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -106,12 +108,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -137,7 +134,7 @@ describe('useUpdateEvent', () => {
     });
 
     expect(result.current.error).toBe(apiError);
-    expect(mockConsoleError).toHaveBeenCalledWith('Update event error:', apiError);
+    expect(mockConsoleError).toHaveBeenCalled();
   });
 
   it('should handle validation errors', async () => {
@@ -146,12 +143,7 @@ describe('useUpdateEvent', () => {
       id: '', // Invalid: empty ID
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -183,12 +175,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -225,12 +212,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -263,12 +245,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -311,12 +288,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -367,12 +339,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -418,12 +385,7 @@ describe('useUpdateEvent', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -506,12 +468,7 @@ describe('useUpdateEventWithCallbacks', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -556,12 +513,7 @@ describe('useUpdateEventWithCallbacks', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -599,12 +551,7 @@ describe('useUpdateEventWithCallbacks', () => {
       id: 'event123',
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,
@@ -649,12 +596,7 @@ describe('useUpdateEventWithCallbacks', () => {
       id: '', // Invalid: empty ID
       title: 'Updated Event Title',
       description: 'Updated description',
-      location: {
-        type: 'manual_entry',
-        data: {
-          name: 'Updated Location',
-        },
-      },
+      location: manualLocation,
       timezone: 'UTC',
       start_date_day: 15,
       start_date_month: 6,

@@ -3,12 +3,13 @@ export interface EventHost {
   name: string;
   username: string;
   avatar: string;
+  image?: string;
   title?: string;
   company?: string;
   verification_status?: string | null;
 }
 
-export type GuestStatus = 'going' | 'not-going' | 'maybe';
+export type GuestStatus = 'going' | 'not-going' | 'maybe' | 'invited';
 
 export interface Guest {
   id: string;
@@ -47,7 +48,7 @@ export interface EventDetails {
   website?: string;
 }
 
-export interface Event {
+export interface EventDetail {
   id: string;
   title: string;
   subtitle?: string;
@@ -79,7 +80,7 @@ export interface Event {
     unit: 'C' | 'F';
     condition: string;
   };
-  type: 'conference' | 'networking' | 'workshop' | 'social' | 'business' | 'showcase';
+  category: 'conference' | 'networking' | 'workshop' | 'social' | 'business' | 'showcase';
   tags?: string[];
   isActive: boolean;
   registrationUrl?: string;

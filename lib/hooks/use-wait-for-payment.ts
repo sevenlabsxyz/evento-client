@@ -41,7 +41,7 @@ interface UseWaitForPaymentResult {
  * useEffect(() => {
  *   if (isPaid && payment) {
  *     // Show success screen!
- *     console.log('Payment received!', payment);
+ *     logger.info('Payment received!', { payment });
  *   }
  * }, [isPaid, payment]);
  * ```
@@ -81,7 +81,6 @@ export function useWaitForPayment(paymentRequest: string | null): UseWaitForPaym
         // Check if component unmounted while waiting
         if (isCancelled) return;
 
-        console.error('Failed to wait for payment:', err);
         setError(err.message || 'Failed to wait for payment');
         setIsPaid(false);
       } finally {
