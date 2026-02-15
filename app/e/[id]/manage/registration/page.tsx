@@ -331,13 +331,13 @@ function SortableQuestionRow({
 
         <div className='flex-1'>
           <div className='mb-2 flex items-center gap-2'>
-            <div
-              className={`flex h-12 w-12 items-center justify-center rounded-xl ${config.iconBg}`}
+            <span
+              className={`whitespace-nowrap rounded px-2 py-1 text-xs font-medium leading-none ${config.iconBg} ${config.iconColor}`}
             >
-              <div className={config.iconColor}>{config.icon}</div>
-            </div>
+              {config.label}
+            </span>
             {question.is_required && (
-              <span className='rounded bg-red-100 px-2 py-1 text-xs font-medium text-red-600'>
+              <span className='whitespace-nowrap rounded bg-red-100 px-2 py-1 text-xs font-medium leading-none text-red-600'>
                 Required
               </span>
             )}
