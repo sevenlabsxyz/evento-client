@@ -3,6 +3,48 @@ import { logger } from '@/lib/utils/logger';
 // Cache for timezone data to avoid repeated fetch calls
 let timezoneCache: any[] | null = null;
 
+function normalizeTimezoneLabel(label: string): string {
+  if (!label) {
+    return '';
+  }
+
+  const trimmedLabel = label.trim();
+
+  if (trimmedLabel.match(/^[+-]\d{1,2}(:\d{2})?$/)) {
+    return `GMT${trimmedLabel}`;
+  }
+
+  const gmtMatch = trimmedLabel.match(/^GMT([+-]\d{1,2})(?::?(\d{2}))?$/i);
+  if (gmtMatch) {
+    const hours = gmtMatch[1];
+    const minutes = gmtMatch[2];
+
+    if (!minutes || minutes === '00') {
+      return `GMT${hours}`;
+    }
+
+    return `GMT${hours}:${minutes}`;
+  }
+
+  return trimmedLabel;
+}
+
+function getIntlTimezoneLabel(timezone: string, style: 'short' | 'shortOffset'): string {
+  try {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: timezone,
+      timeZoneName: style,
+    });
+
+    const parts = formatter.formatToParts(new Date());
+    const timezonePart = parts.find((part) => part.type === 'timeZoneName');
+
+    return timezonePart?.value || '';
+  } catch {
+    return '';
+  }
+}
+
 /**
  * Load timezone data from tz.json file
  */
@@ -41,19 +83,10 @@ export async function getTimezoneAbbreviation(timezone: string): Promise<string>
     const entry = timezoneData.find((tz: any) => tz.utc && tz.utc.includes(timezone));
 
     if (entry && entry.abbr) {
-      return entry.abbr;
+      return normalizeTimezoneLabel(entry.abbr);
     }
 
-    // Fallback: extract abbreviation from timezone string
-    // e.g., "America/Los_Angeles" -> "PST" (simplified)
-    const parts = timezone.split('/');
-    if (parts.length >= 2) {
-      const location = parts[1].replace(/_/g, ' ');
-      // This is a basic fallback - the JSON lookup is preferred
-      return location.substring(0, 3).toUpperCase();
-    }
-
-    return timezone;
+    return getTimezoneAbbreviationSync(timezone);
   } catch (error) {
     logger.error('Error getting timezone abbreviation', {
       error: error instanceof Error ? error.message : String(error),
@@ -91,13 +124,30 @@ export function getTimezoneAbbreviationSync(timezone: string): string {
     'Europe/Rome': 'CET',
     'Europe/Madrid': 'CET',
     'Asia/Tokyo': 'JST',
+    'Asia/Dubai': 'GST',
     'Asia/Shanghai': 'CST',
     'Asia/Kolkata': 'IST',
+    'Africa/Lagos': 'WAT',
     'Australia/Sydney': 'AEDT',
     'Australia/Melbourne': 'AEDT',
   };
 
-  return commonTimezones[timezone] || timezone;
+  const mappedTimezone = commonTimezones[timezone];
+  if (mappedTimezone) {
+    return mappedTimezone;
+  }
+
+  const intlAbbreviation = getIntlTimezoneLabel(timezone, 'short');
+  if (intlAbbreviation && intlAbbreviation !== timezone && !intlAbbreviation.includes('/')) {
+    return normalizeTimezoneLabel(intlAbbreviation);
+  }
+
+  const offsetLabel = getIntlTimezoneLabel(timezone, 'shortOffset');
+  if (offsetLabel) {
+    return normalizeTimezoneLabel(offsetLabel);
+  }
+
+  return timezone;
 }
 
 /**
