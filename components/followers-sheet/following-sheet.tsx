@@ -2,14 +2,17 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { UserAvatar } from '../ui/user-avatar';
+
+const EMPTY_FOLLOWING: UserDetails[] = [];
 
 interface FollowingSheetProps {
   isOpen: boolean;
@@ -22,6 +25,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   const PAGE_SIZE = 50;
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
+  const debouncedSearchText = useDebounce(searchText, 400);
   const [offset, setOffset] = useState(0);
   const [allFollowing, setAllFollowing] = useState<UserDetails[]>([]);
   const [hasMore, setHasMore] = useState(false);
@@ -29,13 +33,14 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
   const {
-    data: followingPage = [],
+    data: followingPage,
     isLoading,
     error,
     isFetching,
   } = useUserFollowing(userId, {
     limit: PAGE_SIZE,
     offset,
+    search: debouncedSearchText,
   });
 
   useEffect(() => {
@@ -47,6 +52,13 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
 
   useEffect(() => {
     if (!isOpen) return;
+    setOffset(0);
+    setAllFollowing([]);
+    setHasMore(false);
+  }, [isOpen, debouncedSearchText]);
+
+  useEffect(() => {
+    if (!isOpen || !followingPage) return;
 
     if (offset === 0) {
       setAllFollowing(followingPage);
@@ -61,16 +73,8 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
     setHasMore(followingPage.length === PAGE_SIZE);
   }, [followingPage, offset, isOpen]);
 
-  // Filter following based on search query
-  const filteredFollowing = useMemo(() => {
-    if (!searchText.trim()) return allFollowing;
-
-    const query = searchText.toLowerCase();
-    return allFollowing.filter(
-      (user) =>
-        user.username?.toLowerCase().includes(query) || user.name?.toLowerCase().includes(query)
-    );
-  }, [allFollowing, searchText]);
+  const filteredFollowing = allFollowing;
+  const currentPageFollowing = followingPage ?? EMPTY_FOLLOWING;
 
   const handleUserClick = useCallback(
     (username: string) => {
@@ -199,7 +203,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                             </div>
                           </div>
                         ))}
-                        {!searchText.trim() && hasMore && (
+                        {hasMore && currentPageFollowing.length > 0 && (
                           <Button
                             variant='outline'
                             onClick={() => setOffset((prev) => prev + PAGE_SIZE)}

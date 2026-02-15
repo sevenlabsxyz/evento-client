@@ -1,6 +1,7 @@
 'use client';
 
 import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
+import { BadgeItem } from '@/components/badges/badge-item';
 import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
 import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
 import { CircledIconButton } from '@/components/circled-icon-button';
@@ -15,6 +16,14 @@ import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -97,8 +106,8 @@ export default function ProfilePage() {
   // Handle URL parameters for tab state
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'events') {
-      setActiveTab('events');
+    if (tab === 'events' || tab === 'badges') {
+      setActiveTab(tab);
     } else {
       setActiveTab('about');
     }
@@ -362,16 +371,6 @@ export default function ProfilePage() {
           />
         )}
 
-        {/* User Badges */}
-        {userBadges.length > 0 && (
-          <UserBadgesDisplay
-            badges={userBadges}
-            isOwnProfile={true}
-            onManageClick={() => setShowBadgesManagementSheet(true)}
-            onBadgeClick={(badge) => setSelectedBadge(badge)}
-          />
-        )}
-
         {/* Bio/Description */}
         {!user?.bio ? null : (
           <div>
@@ -384,6 +383,60 @@ export default function ProfilePage() {
 
         {/* User Prompts */}
         {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={true} />}
+      </div>
+    );
+  };
+
+  const renderBadgesTab = () => {
+    const sortedBadges = [...userBadges].sort(
+      (a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime()
+    );
+    const displayedBadges = userBadges.filter((badge) => badge.display_order !== null);
+
+    return (
+      <div className='space-y-4'>
+        {displayedBadges.length ? (
+          <UserBadgesDisplay
+            badges={userBadges}
+            isOwnProfile={true}
+            onManageClick={() => setShowBadgesManagementSheet(true)}
+            onBadgeClick={(badge) => setSelectedBadge(badge)}
+          />
+        ) : (
+          <Button
+            variant='secondary'
+            className='w-full rounded-full'
+            onClick={() => setShowBadgesManagementSheet(true)}
+          >
+            Pick favorite badges
+          </Button>
+        )}
+        {sortedBadges.length ? (
+          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='grid grid-cols-3 gap-4 sm:grid-cols-4'>
+              {sortedBadges.map((userBadge) => (
+                <BadgeItem
+                  key={userBadge.id}
+                  badge={userBadge.badge}
+                  size='lg'
+                  onClick={() => setSelectedBadge(userBadge)}
+                  className='w-full'
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Empty className='py-8'>
+            <EmptyHeader>
+              <EmptyMedia variant='icon'>
+                <BadgeCheck className='size-5' />
+              </EmptyMedia>
+              <EmptyTitle>No badges yet</EmptyTitle>
+              <EmptyDescription>You have not been awarded any badges yet.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent />
+          </Empty>
+        )}
       </div>
     );
   };
@@ -489,6 +542,7 @@ export default function ProfilePage() {
                 items={[
                   { value: 'about', label: 'About' },
                   { value: 'events', label: 'Events' },
+                  { value: 'badges', label: 'Badges' },
                 ]}
                 value={activeTab}
                 onValueChange={(v) => {
@@ -503,6 +557,7 @@ export default function ProfilePage() {
               <div>
                 {activeTab === 'about' && renderAboutTab()}
                 {activeTab === 'events' && renderEventsTab()}
+                {activeTab === 'badges' && renderBadgesTab()}
               </div>
             </div>
           </div>

@@ -245,25 +245,41 @@ export function useFollowAction() {
 /**
  * Hook to get user's followers
  */
-export function useUserFollowers(userId: string, options?: { limit?: number; offset?: number }) {
+export function useUserFollowers(
+  userId: string,
+  options?: { limit?: number; offset?: number; search?: string }
+) {
   const limit = options?.limit ?? 50;
   const offset = options?.offset ?? 0;
+  const search = options?.search?.trim() ?? '';
 
   return useQuery({
-    queryKey: ['user', 'followers', userId, limit, offset],
+    queryKey: ['user', 'followers', userId, limit, offset, search],
     queryFn: async () => {
+      const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
       const response = await apiClient.get<ApiResponse<any[]> | any[]>(
-        `/v1/user/followers/list?id=${userId}&limit=${limit}&offset=${offset}`
+        `/v1/user/followers/list?id=${userId}&limit=${limit}&offset=${offset}${searchParam}`
       );
       const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = responseData.map((item: any) => ({
-        id: item.user_details?.id || item.follower_id,
-        username: item.user_details?.username || '',
-        name: item.user_details?.name || '',
-        image: item.user_details?.image || '',
-        verification_status: item.user_details?.verification_status || '',
-      }));
+      const transformedData = responseData
+        .map((item: any) => ({
+          ...item,
+          user_details: Array.isArray(item.user_details) ? item.user_details[0] : item.user_details,
+        }))
+        .filter((item: any) => {
+          const username = item.user_details?.username;
+          return (
+            item.user_details?.id && typeof username === 'string' && username.trim().length > 0
+          );
+        })
+        .map((item: any) => ({
+          id: item.user_details.id,
+          username: item.user_details.username || '',
+          name: item.user_details.name || '',
+          image: item.user_details.image || '',
+          verification_status: item.user_details.verification_status || '',
+        }));
       return transformedData as UserDetails[];
     },
     enabled: !!userId,
@@ -274,25 +290,41 @@ export function useUserFollowers(userId: string, options?: { limit?: number; off
 /**
  * Hook to get user's following
  */
-export function useUserFollowing(userId: string, options?: { limit?: number; offset?: number }) {
+export function useUserFollowing(
+  userId: string,
+  options?: { limit?: number; offset?: number; search?: string }
+) {
   const limit = options?.limit ?? 50;
   const offset = options?.offset ?? 0;
+  const search = options?.search?.trim() ?? '';
 
   return useQuery({
-    queryKey: ['user', 'following', userId, limit, offset],
+    queryKey: ['user', 'following', userId, limit, offset, search],
     queryFn: async () => {
+      const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
       const response = await apiClient.get<ApiResponse<any[]> | any[]>(
-        `/v1/user/follows/list?id=${userId}&limit=${limit}&offset=${offset}`
+        `/v1/user/follows/list?id=${userId}&limit=${limit}&offset=${offset}${searchParam}`
       );
       const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = responseData.map((item: any) => ({
-        id: item.user_details?.id || item.followed_id,
-        username: item.user_details?.username || '',
-        name: item.user_details?.name || '',
-        image: item.user_details?.image || '',
-        verification_status: item.user_details?.verification_status || '',
-      }));
+      const transformedData = responseData
+        .map((item: any) => ({
+          ...item,
+          user_details: Array.isArray(item.user_details) ? item.user_details[0] : item.user_details,
+        }))
+        .filter((item: any) => {
+          const username = item.user_details?.username;
+          return (
+            item.user_details?.id && typeof username === 'string' && username.trim().length > 0
+          );
+        })
+        .map((item: any) => ({
+          id: item.user_details.id,
+          username: item.user_details.username || '',
+          name: item.user_details.name || '',
+          image: item.user_details.image || '',
+          verification_status: item.user_details.verification_status || '',
+        }));
       return transformedData as UserDetails[];
     },
     enabled: !!userId,

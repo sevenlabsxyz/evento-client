@@ -1,7 +1,7 @@
 'use client';
 
 import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
-import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
+import { BadgeItem } from '@/components/badges/badge-item';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
@@ -610,15 +610,6 @@ export default function UserProfilePageClient() {
           />
         )}
 
-        {/* User Badges */}
-        {userBadges.length > 0 && (
-          <UserBadgesDisplay
-            badges={userBadges}
-            isOwnProfile={false}
-            onBadgeClick={(badge) => setSelectedBadge(badge)}
-          />
-        )}
-
         {/* Bio/Description */}
         {!userProfile?.bio ? null : (
           <div>
@@ -631,6 +622,43 @@ export default function UserProfilePageClient() {
 
         {/* User Prompts (only visible ones) */}
         {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={false} />}
+      </div>
+    );
+  };
+
+  const renderBadgesTab = () => {
+    const sortedBadges = [...userBadges].sort(
+      (a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime()
+    );
+
+    return (
+      <div className='space-y-4'>
+        {sortedBadges.length ? (
+          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='grid grid-cols-3 gap-4 sm:grid-cols-4'>
+              {sortedBadges.map((userBadge) => (
+                <BadgeItem
+                  key={userBadge.id}
+                  badge={userBadge.badge}
+                  size='lg'
+                  onClick={() => setSelectedBadge(userBadge)}
+                  className='w-full'
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Empty className='py-8'>
+            <EmptyHeader>
+              <EmptyMedia variant='icon'>
+                <BadgeCheck className='size-5' />
+              </EmptyMedia>
+              <EmptyTitle>No badges yet</EmptyTitle>
+              <EmptyDescription>This user has not been awarded any badges yet.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent />
+          </Empty>
+        )}
       </div>
     );
   };
@@ -753,6 +781,7 @@ export default function UserProfilePageClient() {
                 items={[
                   { value: 'about', label: 'About' },
                   { value: 'events', label: 'Events' },
+                  { value: 'badges', label: 'Badges' },
                 ]}
                 value={activeTab}
                 onValueChange={(v) => {
@@ -765,6 +794,7 @@ export default function UserProfilePageClient() {
               <div>
                 {activeTab === 'about' && renderAboutTab()}
                 {activeTab === 'events' && renderEventsTab()}
+                {activeTab === 'badges' && renderBadgesTab()}
               </div>
             </div>
           </div>
