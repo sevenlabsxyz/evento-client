@@ -65,8 +65,9 @@ export default function ProfileImageSheet({
     setIsUploading(true);
     try {
       const result = await uploadMutation.mutateAsync(selectedFile);
-      if (result?.image && onImageUpdate) {
-        onImageUpdate(result.image);
+      const imageUrl = result?.data?.image ?? result?.image;
+      if (imageUrl && onImageUpdate) {
+        onImageUpdate(imageUrl);
       }
       toast.success('Profile image updated');
       onClose();

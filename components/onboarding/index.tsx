@@ -1,11 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Env } from '@/lib/constants/env';
 import { useReplaceInterests } from '@/lib/hooks/use-user-interests';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useAnswerPrompt } from '@/lib/hooks/use-user-prompts';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
+import { sanitizeUploadFileName } from '@/lib/utils/file';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
@@ -89,11 +91,21 @@ export const UserOnboardingFlow = ({
     const file = inputFileRef.current.files[0];
 
     try {
+      // Sanitize the filename for security
+      const safeFilename = sanitizeUploadFileName(file.name);
+
       // Set a timeout to handle cases where the upload might hang
-      const uploadPromise = fetch(`/api/v1/user/details/image-upload?filename=${file.name}`, {
-        method: 'POST',
-        body: file,
-      });
+      const uploadPromise = fetch(
+        `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
+        {
+          method: 'POST',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/octet-stream',
+          },
+          credentials: 'include', // Include cookies for auth
+        }
+      );
 
       // Create a timeout promise
       const timeoutPromise = new Promise((_, reject) =>
