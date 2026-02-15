@@ -7,7 +7,7 @@ import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { UserAvatar } from '../ui/user-avatar';
 
@@ -19,24 +19,58 @@ interface FollowingSheetProps {
 }
 
 export default function FollowingSheet({ isOpen, onClose, userId, username }: FollowingSheetProps) {
+  const PAGE_SIZE = 50;
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
+  const [offset, setOffset] = useState(0);
+  const [allFollowing, setAllFollowing] = useState<UserDetails[]>([]);
+  const [hasMore, setHasMore] = useState(false);
   const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
-  const { data: following, isLoading, error } = useUserFollowing(userId);
+  const {
+    data: followingPage = [],
+    isLoading,
+    error,
+    isFetching,
+  } = useUserFollowing(userId, {
+    limit: PAGE_SIZE,
+    offset,
+  });
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setOffset(0);
+    setAllFollowing([]);
+    setHasMore(false);
+  }, [isOpen, userId]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    if (offset === 0) {
+      setAllFollowing(followingPage);
+    } else if (followingPage.length > 0) {
+      setAllFollowing((prev) => {
+        const seen = new Set(prev.map((item) => item.id));
+        const uniqueNew = followingPage.filter((item) => !seen.has(item.id));
+        return [...prev, ...uniqueNew];
+      });
+    }
+
+    setHasMore(followingPage.length === PAGE_SIZE);
+  }, [followingPage, offset, isOpen]);
 
   // Filter following based on search query
   const filteredFollowing = useMemo(() => {
-    if (!following) return [];
-    if (!searchText.trim()) return following;
+    if (!searchText.trim()) return allFollowing;
 
     const query = searchText.toLowerCase();
-    return following.filter(
+    return allFollowing.filter(
       (user) =>
         user.username?.toLowerCase().includes(query) || user.name?.toLowerCase().includes(query)
     );
-  }, [following, searchText]);
+  }, [allFollowing, searchText]);
 
   const handleUserClick = useCallback(
     (username: string) => {
@@ -87,7 +121,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
               <SheetWithDetent.ScrollRoot asChild>
                 <SheetWithDetent.ScrollView className='min-h-0'>
                   <SheetWithDetent.ScrollContent className='grid gap-5 p-5'>
-                    {isLoading ? (
+                    {isLoading && allFollowing.length === 0 ? (
                       // Loading State
                       Array.from({ length: 3 }).map((_, index) => (
                         <div
@@ -101,7 +135,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                           </div>
                         </div>
                       ))
-                    ) : error ? (
+                    ) : error && allFollowing.length === 0 ? (
                       // Error State
                       <div className='flex items-center justify-center px-4 py-12'>
                         <div className='text-center text-base text-red-500'>
@@ -119,51 +153,63 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                       </div>
                     ) : (
                       // Following List
-                      filteredFollowing.map((user, index) => (
-                        <div
-                          key={user.id || `following-${index}`}
-                          className='grid grid-cols-[1fr_auto] items-center gap-4'
-                        >
-                          <button
-                            onClick={() => handleUserClick(user.username)}
-                            className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
+                      <>
+                        {filteredFollowing.map((user, index) => (
+                          <div
+                            key={user.id || `following-${index}`}
+                            className='grid grid-cols-[1fr_auto] items-center gap-4'
                           >
-                            <UserAvatar
-                              user={{
-                                name: user.name || undefined,
-                                username: user.username || undefined,
-                                image: user.image || undefined,
-                                verification_status: user.verification_status || null,
-                              }}
-                              size='sm'
-                            />
-                            <div className='min-w-0 flex-1'>
-                              <div className='truncate text-sm font-medium'>@{user.username}</div>
-                              <div className='truncate text-xs text-gray-500'>
-                                {user.name || user.username}
-                              </div>
-                            </div>
-                          </button>
-                          <div className='flex gap-2'>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
-                              onClick={() => handleMessageClick(user.id)}
-                            >
-                              <MessageCircle className='h-4 w-4 text-gray-500' />
-                            </Button>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                            <button
                               onClick={() => handleUserClick(user.username)}
+                              className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
                             >
-                              <ArrowRight className='h-4 w-4 text-gray-500' />
-                            </Button>
+                              <UserAvatar
+                                user={{
+                                  name: user.name || undefined,
+                                  username: user.username || undefined,
+                                  image: user.image || undefined,
+                                  verification_status: user.verification_status || null,
+                                }}
+                                size='sm'
+                              />
+                              <div className='min-w-0 flex-1'>
+                                <div className='truncate text-sm font-medium'>@{user.username}</div>
+                                <div className='truncate text-xs text-gray-500'>
+                                  {user.name || user.username}
+                                </div>
+                              </div>
+                            </button>
+                            <div className='flex gap-2'>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                onClick={() => handleMessageClick(user.id)}
+                              >
+                                <MessageCircle className='h-4 w-4 text-gray-500' />
+                              </Button>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                onClick={() => handleUserClick(user.username)}
+                              >
+                                <ArrowRight className='h-4 w-4 text-gray-500' />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        ))}
+                        {!searchText.trim() && hasMore && (
+                          <Button
+                            variant='outline'
+                            onClick={() => setOffset((prev) => prev + PAGE_SIZE)}
+                            disabled={isFetching}
+                            className='w-full'
+                          >
+                            {isFetching ? 'Loading...' : 'Load more'}
+                          </Button>
+                        )}
+                      </>
                     )}
                   </SheetWithDetent.ScrollContent>
                 </SheetWithDetent.ScrollView>

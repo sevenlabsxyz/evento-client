@@ -245,12 +245,15 @@ export function useFollowAction() {
 /**
  * Hook to get user's followers
  */
-export function useUserFollowers(userId: string) {
+export function useUserFollowers(userId: string, options?: { limit?: number; offset?: number }) {
+  const limit = options?.limit ?? 50;
+  const offset = options?.offset ?? 0;
+
   return useQuery({
-    queryKey: ['user', 'followers', userId],
+    queryKey: ['user', 'followers', userId, limit, offset],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<any[]> | any[]>(
-        `/v1/user/followers/list?id=${userId}`
+        `/v1/user/followers/list?id=${userId}&limit=${limit}&offset=${offset}`
       );
       const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
@@ -271,12 +274,15 @@ export function useUserFollowers(userId: string) {
 /**
  * Hook to get user's following
  */
-export function useUserFollowing(userId: string) {
+export function useUserFollowing(userId: string, options?: { limit?: number; offset?: number }) {
+  const limit = options?.limit ?? 50;
+  const offset = options?.offset ?? 0;
+
   return useQuery({
-    queryKey: ['user', 'following', userId],
+    queryKey: ['user', 'following', userId, limit, offset],
     queryFn: async () => {
       const response = await apiClient.get<ApiResponse<any[]> | any[]>(
-        `/v1/user/follows/list?id=${userId}`
+        `/v1/user/follows/list?id=${userId}&limit=${limit}&offset=${offset}`
       );
       const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
@@ -291,6 +297,40 @@ export function useUserFollowing(userId: string) {
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useUserFollowersCount(userId: string) {
+  return useQuery({
+    queryKey: ['user', 'followers', 'count', userId],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<{ count: number }> | { count: number }>(
+        `/v1/user/followers/count?id=${userId}`
+      );
+      if (isApiResponse<{ count: number }>(response)) {
+        return response.data?.count || 0;
+      }
+      return response.count || 0;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useUserFollowingCount(userId: string) {
+  return useQuery({
+    queryKey: ['user', 'following', 'count', userId],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<{ count: number }> | { count: number }>(
+        `/v1/user/follows/count?id=${userId}`
+      );
+      if (isApiResponse<{ count: number }>(response)) {
+        return response.data?.count || 0;
+      }
+      return response.count || 0;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

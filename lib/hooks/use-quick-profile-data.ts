@@ -4,12 +4,16 @@ import {
   useFollowStatus,
   useUserEventCount,
   useUserFollowers,
+  useUserFollowersCount,
   useUserFollowing,
+  useUserFollowingCount,
 } from './use-user-profile';
 
 interface QuickProfileData {
   followStatus: { isFollowing: boolean } | undefined;
   eventCount: number;
+  followersCount: number;
+  followingCount: number;
   followers: any[];
   following: any[];
   isLoading: boolean;
@@ -23,6 +27,8 @@ interface QuickProfileData {
 export function useQuickProfileData(userId: string): QuickProfileData {
   const followStatusQuery = useFollowStatus(userId);
   const eventCountQuery = useUserEventCount(userId);
+  const followersCountQuery = useUserFollowersCount(userId);
+  const followingCountQuery = useUserFollowingCount(userId);
   const followersQuery = useUserFollowers(userId);
   const followingQuery = useUserFollowing(userId);
 
@@ -33,12 +39,16 @@ export function useQuickProfileData(userId: string): QuickProfileData {
   const error =
     followStatusQuery.error ||
     eventCountQuery.error ||
+    followersCountQuery.error ||
+    followingCountQuery.error ||
     followersQuery.error ||
     followingQuery.error;
 
   return {
     followStatus: followStatusQuery.data,
     eventCount: eventCountQuery.data || 0,
+    followersCount: followersCountQuery.data || 0,
+    followingCount: followingCountQuery.data || 0,
     followers: followersQuery.data || [],
     following: followingQuery.data || [],
     isLoading,

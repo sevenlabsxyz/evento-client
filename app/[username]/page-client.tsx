@@ -36,8 +36,8 @@ import {
   useFollowStatus,
   useUserByUsername,
   useUserEventCount,
-  useUserFollowers,
-  useUserFollowing,
+  useUserFollowersCount,
+  useUserFollowingCount,
 } from '@/lib/hooks/use-user-profile';
 import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useAuth } from '@/lib/stores/auth-store';
@@ -99,8 +99,8 @@ export default function UserProfilePageClient() {
   const followActionMutation = useFollowAction();
 
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
-  const { data: followers = [] } = useUserFollowers(userData?.id || '');
-  const { data: following = [] } = useUserFollowing(userData?.id || '');
+  const { data: followersCount = 0 } = useUserFollowersCount(userData?.id || '');
+  const { data: followingCount = 0 } = useUserFollowingCount(userData?.id || '');
 
   // Get user interests and prompts (only visible prompts for other users)
   const { data: userInterests = [], isLoading: isLoadingInterests } = useOtherUserInterests(
@@ -138,8 +138,8 @@ export default function UserProfilePageClient() {
         isVerified: userData.verification_status === 'verified',
         stats: {
           events: eventCount,
-          following: following.length,
-          followers: followers.length,
+          following: followingCount,
+          followers: followersCount,
           countries: 0, // This would need to be calculated from events
           mutuals: 0, // This would need to be calculated
         },
@@ -679,7 +679,7 @@ export default function UserProfilePageClient() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                    <div className='text-xl font-bold text-gray-900'>{followingCount}</div>
                     <div className='text-sm text-gray-500'>Following</div>
                   </motion.button>
                   <motion.button
@@ -688,7 +688,7 @@ export default function UserProfilePageClient() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                    <div className='text-xl font-bold text-gray-900'>{followersCount}</div>
                     <div className='text-sm text-gray-500'>Followers</div>
                   </motion.button>
                 </div>

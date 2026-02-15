@@ -31,9 +31,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
   const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
 
   // Use optimized hook for all profile data
-  const { followStatus, eventCount, followers, following, isLoading } = useQuickProfileData(
-    user.id
-  );
+  const { followStatus, eventCount, followersCount, followingCount, isLoading } =
+    useQuickProfileData(user.id);
   const followActionMutation = useFollowAction();
 
   const handleFollowToggle = useCallback(() => {
@@ -107,8 +106,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
 
                       <ProfileStats
                         eventCount={eventCount}
-                        followingCount={following?.length || 0}
-                        followersCount={followers?.length || 0}
+                        followingCount={followingCount}
+                        followersCount={followersCount}
                       />
 
                       <div className='flex flex-col gap-2'>

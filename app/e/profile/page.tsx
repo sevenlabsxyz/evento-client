@@ -25,8 +25,8 @@ import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
-  useUserFollowers,
-  useUserFollowing,
+  useUserFollowersCount,
+  useUserFollowingCount,
   useUserProfile,
 } from '@/lib/hooks/use-user-profile';
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
@@ -76,8 +76,8 @@ export default function ProfilePage() {
   // Get user badges
   const { data: userBadges = [] } = useUserBadges();
   const { data: eventCount } = useUserEventCount(user?.id || '');
-  const { data: followers } = useUserFollowers(user?.id || '');
-  const { data: following } = useUserFollowing(user?.id || '');
+  const { data: followersCount } = useUserFollowersCount(user?.id || '');
+  const { data: followingCount } = useUserFollowingCount(user?.id || '');
 
   // Fetch user events with the hook (always show all events - 'upcoming' filter)
   const {
@@ -137,8 +137,8 @@ export default function ProfilePage() {
     events: eventCount || 0,
     countries: 8, // This would come from a different API endpoint
     mutuals: 156, // This would come from a different API endpoint
-    following: following?.length || 0,
-    followers: followers?.length || 0,
+    following: followingCount || 0,
+    followers: followersCount || 0,
   };
 
   const userData = {
