@@ -90,9 +90,11 @@ export function SiteHeader() {
     }
 
     if (centerMode === 'title') {
+      const combinedTitle = subtitle ? `${title} ${subtitle}` : title;
+
       return (
-        <div className='flex items-center gap-2'>
-          <h1 className='text-base font-medium'>{title}</h1>
+        <div className='flex min-w-0 flex-1 items-center gap-2'>
+          <h1 className='min-w-0 truncate text-base font-medium'>{combinedTitle}</h1>
           {badge && (
             <Badge
               variant='secondary'
@@ -102,7 +104,6 @@ export function SiteHeader() {
               {badge}
             </Badge>
           )}
-          {subtitle && <span className='text-sm text-muted-foreground'>{subtitle}</span>}
         </div>
       );
     }

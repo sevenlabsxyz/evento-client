@@ -50,9 +50,13 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
 
   const listForTab = activeTab === 'yes' ? yesList : activeTab === 'maybe' ? maybeList : noList;
 
-  const handleViewProfile = (user: UserDetails | undefined) => {
+  const handleViewProfile = (user: UserDetails | undefined, fallbackUserId?: string) => {
     if (!user) return;
-    setSelectedUser(user);
+
+    setSelectedUser({
+      ...user,
+      id: user.id || fallbackUserId || '',
+    });
   };
 
   return (
@@ -127,7 +131,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                         {listForTab.map((rsvp) => (
                           <button
                             key={rsvp.id}
-                            onClick={() => handleViewProfile(rsvp.user_details)}
+                            onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
                             className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
                           >
                             <div className='flex flex-1 items-center gap-3'>
@@ -154,7 +158,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                               icon={ArrowRight}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleViewProfile(rsvp.user_details);
+                                handleViewProfile(rsvp.user_details, rsvp.user_id);
                               }}
                             />
                           </button>
