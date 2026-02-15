@@ -9,6 +9,7 @@ import { usePublishEvent } from '@/lib/hooks/use-publish-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
+  ClipboardList,
   DollarSign,
   FileText,
   HelpCircle,
@@ -67,9 +68,27 @@ export default function ManageEventPage() {
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPublishSheet, setShowPublishSheet] = useState(false);
-  const showRegistrationOption = eventDetails?.type ? eventDetails.type !== 'rsvp' : true;
+  const isRegistrationType =
+    eventDetails?.type === 'registration' || eventDetails?.type === 'ticketed';
+  const showRegistrationOption = isRegistrationType;
+
+  const showSubmissionsOption = isRegistrationType && eventDetails?.status === 'published';
 
   const managementOptions = [
+    ...(showSubmissionsOption
+      ? [
+          {
+            id: 'registration-submissions',
+            title: 'Submissions',
+            description: 'Review pending registrations',
+            icon: <ClipboardList className='h-6 w-6' />,
+            iconBg: 'bg-blue-100',
+            iconColor: 'text-blue-700',
+            route: `/e/${eventId}/manage/registration/submissions`,
+            isPriority: true,
+          },
+        ]
+      : []),
     {
       id: 'event-details',
       title: 'Event Details',
@@ -261,7 +280,11 @@ export default function ManageEventPage() {
             <button
               key={option.id}
               onClick={() => handleOptionClick(option.route)}
-              className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+              className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition-colors ${
+                option.isPriority
+                  ? 'mb-6 border-blue-200 bg-blue-50 hover:bg-blue-100'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+              }`}
             >
               <div
                 className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
