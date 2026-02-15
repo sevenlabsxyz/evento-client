@@ -79,7 +79,7 @@ describe('usePublicUserEvents', () => {
       expect(result.current.isLoading).toBe(false);
     });
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/users/testuser/events');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/users/by-username/testuser/events');
     expect(result.current.data).toEqual(mockResponse.data.events);
   });
 
