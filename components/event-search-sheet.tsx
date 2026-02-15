@@ -19,6 +19,10 @@ import debounce from 'lodash.debounce';
 import { Search } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+function hasValidEventDate(eventDate: unknown): eventDate is string {
+  return typeof eventDate === 'string' && eventDate.trim().length > 0;
+}
+
 interface EventSearchSheetProps {
   isOpen: boolean;
   onClose: () => void;
@@ -127,9 +131,13 @@ export default function EventSearchSheet({
       // Filter by timeframe
       const today = new Date().toISOString().slice(0, 10);
       if (timeframe === 'future') {
-        filteredEvents = filteredEvents.filter((e) => e.computed_start_date >= today);
+        filteredEvents = filteredEvents.filter(
+          (e) => hasValidEventDate(e.computed_start_date) && e.computed_start_date >= today
+        );
       } else if (timeframe === 'past') {
-        filteredEvents = filteredEvents.filter((e) => e.computed_start_date < today);
+        filteredEvents = filteredEvents.filter(
+          (e) => hasValidEventDate(e.computed_start_date) && e.computed_start_date < today
+        );
       }
 
       // Filter by search
@@ -143,8 +151,12 @@ export default function EventSearchSheet({
 
       // Sort
       filteredEvents.sort((a, b) => {
-        const dateA = new Date(a.computed_start_date).getTime();
-        const dateB = new Date(b.computed_start_date).getTime();
+        const dateA = hasValidEventDate(a.computed_start_date)
+          ? new Date(a.computed_start_date).getTime()
+          : 0;
+        const dateB = hasValidEventDate(b.computed_start_date)
+          ? new Date(b.computed_start_date).getTime()
+          : 0;
         return sortBy === 'date-desc' ? dateB - dateA : dateA - dateB;
       });
 
@@ -155,6 +167,10 @@ export default function EventSearchSheet({
   // Group events by date
   const groupedEvents = useMemo(() => {
     return events.reduce((groups: { date: string; events: typeof events }[], event) => {
+      if (!hasValidEventDate(event.computed_start_date)) {
+        return groups;
+      }
+
       const date = event.computed_start_date.slice(0, 10); // Extract YYYY-MM-DD
       const group = groups.find((g) => g.date === date);
 
