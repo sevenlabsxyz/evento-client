@@ -192,6 +192,7 @@ export function MyEventsSection() {
             isOpen={isSheetOpen}
             onClose={() => setIsSheetOpen(false)}
             username={user?.username}
+            isOwnProfile
             initialFilter={activeTab === 'drafts' ? 'hosting' : activeTab}
           />
         </div>

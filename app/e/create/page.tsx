@@ -32,7 +32,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
 import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface CreatedEventModalData {
@@ -48,7 +48,6 @@ interface CreatedEventModalData {
 
 export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
-  const router = useRouter();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
 
@@ -260,8 +259,8 @@ export default function CreatePage() {
       const nextRoute =
         createdStatus === 'draft'
           ? createdType === 'ticketed'
-            ? `/e/${result.id}/manage/tickets`
-            : `/e/${result.id}/manage/registration`
+            ? `/e/${result.id}/manage/tickets?enableRegistration=1`
+            : `/e/${result.id}/manage/registration?enableRegistration=1`
           : `/e/${result.id}`;
 
       const ctaLabel =
@@ -444,30 +443,6 @@ export default function CreatePage() {
           </div>
         </div>
 
-        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-          <button
-            onClick={() => setShowTypeSheet(true)}
-            className='flex w-full items-center gap-4 text-left'
-          >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Users className='h-4 w-4 text-gray-600' />
-            </div>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>Event Type</label>
-              <div className='flex items-center justify-between'>
-                <span className='font-medium text-gray-900'>
-                  {type === 'registration'
-                    ? 'Registration'
-                    : type === 'ticketed'
-                      ? 'Ticketed'
-                      : 'RSVP'}
-                </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
-              </div>
-            </div>
-          </button>
-        </div>
-
         {/* Date & Time Module */}
         <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
           <div className='flex items-center gap-4'>
@@ -527,6 +502,30 @@ export default function CreatePage() {
               <div className='flex items-center justify-between'>
                 <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
                   {location ? getLocationDisplayName(location) : 'Choose address'}
+                </span>
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <button
+            onClick={() => setShowTypeSheet(true)}
+            className='flex w-full items-center gap-4 text-left'
+          >
+            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
+              <Users className='h-4 w-4 text-gray-600' />
+            </div>
+            <div className='flex-1'>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Event Type</label>
+              <div className='flex items-center justify-between'>
+                <span className='font-medium text-gray-900'>
+                  {type === 'registration'
+                    ? 'Registration'
+                    : type === 'ticketed'
+                      ? 'Ticketed'
+                      : 'RSVP'}
                 </span>
                 <ChevronRight className='h-4 w-4 text-gray-400' />
               </div>

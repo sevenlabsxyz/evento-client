@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Check, Clock, X } from 'lucide-react';
+import { ArrowRight, Check, Clock, Loader2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';
@@ -24,6 +24,7 @@ interface EventCreatedModalProps {
 export default function EventCreatedModal({ isOpen, onClose, eventData }: EventCreatedModalProps) {
   const router = useRouter();
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   const isDraft = eventData.status === 'draft';
 
   if (!isOpen) return null;
@@ -43,7 +44,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
   };
 
   const handleViewEvent = () => {
-    onClose();
+    setIsNavigating(true);
     router.push(eventData.nextRoute || `/e/${eventData.id}`);
   };
 
@@ -56,7 +57,11 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
       <div className='fixed inset-0 z-50 bg-white'>
         {/* Close Button */}
         <div className='absolute right-4 top-4'>
-          <button onClick={handleViewEvent} className='rounded-full p-2 hover:bg-gray-100'>
+          <button
+            onClick={onClose}
+            disabled={isNavigating}
+            className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-60'
+          >
             <X className='h-6 w-6 text-gray-400' />
           </button>
         </div>
@@ -96,14 +101,25 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
 
           {/* Actions */}
           <div className='w-full max-w-sm space-y-4'>
-            <Button onClick={handleViewEvent} className='h-14 w-full rounded-full text-lg'>
-              {eventData.ctaLabel || (isDraft ? 'Continue Setup' : 'View Event Page')}
-              <ArrowRight className='ml-2 h-4 w-4' />
+            <Button
+              onClick={handleViewEvent}
+              disabled={isNavigating}
+              className='h-14 w-full rounded-full text-lg'
+            >
+              {isNavigating
+                ? 'Opening...'
+                : eventData.ctaLabel || (isDraft ? 'Continue Setup' : 'View Event Page')}
+              {isNavigating ? (
+                <Loader2 className='ml-2 h-4 w-4 animate-spin' />
+              ) : (
+                <ArrowRight className='ml-2 h-4 w-4' />
+              )}
             </Button>
 
             {!isDraft && (
               <button
                 onClick={handleInviteGuests}
+                disabled={isNavigating}
                 className='w-full py-4 text-lg font-medium text-gray-500'
               >
                 Invite Guests

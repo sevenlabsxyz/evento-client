@@ -26,6 +26,7 @@ export function SiteHeader() {
     badge,
     badgePath,
     onBadgeClick,
+    textButtons,
     buttons,
     chatPartner,
   } = useTopBar();
@@ -118,6 +119,27 @@ export function SiteHeader() {
         <Separator orientation='vertical' className='mx-2 data-[orientation=vertical]:h-4' />
         {renderCenterContent()}
         <div className='ml-auto flex items-center gap-2'>
+          {textButtons.length > 0 && (
+            <div className='flex gap-2'>
+              {textButtons.map((button) => {
+                const Icon = button.icon;
+
+                return (
+                  <Button
+                    key={button.id}
+                    variant={button.variant || 'default'}
+                    size='sm'
+                    onClick={button.onClick}
+                    disabled={button.disabled}
+                    className='h-8 rounded-full px-3 text-sm font-medium'
+                  >
+                    {Icon && <Icon className='mr-1.5 h-4 w-4' />}
+                    {button.label}
+                  </Button>
+                );
+              })}
+            </div>
+          )}
           {buttons.length > 0 && (
             <div className='flex gap-2'>
               {buttons.map((button) => (

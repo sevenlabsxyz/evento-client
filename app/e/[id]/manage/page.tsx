@@ -41,6 +41,14 @@ export default function ManageEventPage() {
       showAvatar: false,
       subtitle: undefined,
       centerMode: 'title',
+      textButtons: [
+        {
+          id: 'view-event',
+          label: 'View ->',
+          variant: 'outline',
+          onClick: () => router.push(`/e/${eventId}?from=manage`),
+        },
+      ],
     });
 
     // Cleanup function to reset topbar state when leaving this page
@@ -52,6 +60,7 @@ export default function ManageEventPage() {
         subtitle: '',
         centerMode: 'title',
         onBackPress: null,
+        textButtons: [],
       });
     };
   }, [setTopBar, router, eventId]);

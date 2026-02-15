@@ -60,8 +60,8 @@ import {
   Type,
   Youtube,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface QuestionTypeOption {
   key: RegistrationQuestionType;
@@ -393,8 +393,10 @@ function SortableQuestionRow({
 export default function RegistrationQuestionsPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { setTopBar } = useTopBar();
   const eventId = params.id as string;
+  const shouldEnableRegistration = searchParams.get('enableRegistration') === '1';
 
   // State for delete confirmation sheet
   const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -434,6 +436,7 @@ export default function RegistrationQuestionsPage() {
   const [isRequiredNewQuestion, setIsRequiredNewQuestion] = useState(false);
   const [questionOptions, setQuestionOptions] = useState<string[]>(['']);
   const [localQuestions, setLocalQuestions] = useState<RegistrationQuestion[]>([]);
+  const hasAutoEnabledRegistration = useRef(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -493,6 +496,45 @@ export default function RegistrationQuestionsPage() {
   useEffect(() => {
     setLocalRegistrationRequired(settings?.registration_required ?? false);
   }, [settings?.registration_required]);
+
+  useEffect(() => {
+    const requiresRegistrationByType =
+      existingEvent?.type === 'registration' || existingEvent?.type === 'ticketed';
+    const requiresRegistration = shouldEnableRegistration || requiresRegistrationByType;
+    const isRegistrationDisabled = !(settings?.registration_required ?? false);
+
+    if (
+      !requiresRegistration ||
+      !isRegistrationDisabled ||
+      isLoadingSettings ||
+      isTogglingRegistration ||
+      hasAutoEnabledRegistration.current
+    ) {
+      return;
+    }
+
+    hasAutoEnabledRegistration.current = true;
+    setLocalRegistrationRequired(true);
+
+    updateSettings
+      .mutateAsync({
+        eventId,
+        registration_required: true,
+      })
+      .catch(() => {
+        hasAutoEnabledRegistration.current = false;
+        setLocalRegistrationRequired(false);
+        toast.error('Failed to enable registration requirement');
+      });
+  }, [
+    eventId,
+    existingEvent?.type,
+    isLoadingSettings,
+    isTogglingRegistration,
+    settings?.registration_required,
+    shouldEnableRegistration,
+    updateSettings,
+  ]);
 
   useEffect(() => {
     if (!selectedQuestionType) return;
