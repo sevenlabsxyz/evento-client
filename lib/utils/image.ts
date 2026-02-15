@@ -19,9 +19,11 @@ export function getOptimizedImageUrl(
     return url;
   }
 
+  const cleanPath = url.startsWith('/') ? url.slice(1) : url;
+
   // For Supabase storage URLs, add transformation parameters
   // Let height auto-adjust to maintain aspect ratio
-  return `https://api.evento.so/storage/v1/object/public/cdn/${url}?width=${size}&quality=${quality}`;
+  return `https://api.evento.so/storage/v1/object/public/cdn/${cleanPath}?width=${size}&quality=${quality}`;
 }
 
 /**

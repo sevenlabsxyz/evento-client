@@ -138,7 +138,7 @@ export function useUploadProfileImage() {
       return result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+      // Cache invalidation is handled by the calling component after persisting the image URL
     },
     onError: (error) => {
       logger.error('Profile image upload failed', {

@@ -444,4 +444,47 @@ describe('Onboarding Flow Validation', () => {
       expect(checkAvailability({ id: 'user_123' }, 'myusername', 'myusername')).toBe(true);
     });
   });
+
+  describe('Upload response parsing', () => {
+    it('extracts image path from wrapped API response', () => {
+      const parseUploadResponse = (res: any) => res.data?.image;
+
+      const apiResponse = {
+        success: true,
+        message: 'Uploaded',
+        data: { image: '/users/usr_123/avatar.jpg' },
+      };
+      expect(parseUploadResponse(apiResponse)).toBe('/users/usr_123/avatar.jpg');
+    });
+
+    it('returns undefined for unwrapped response shape (old bug)', () => {
+      const parseUploadResponse = (res: any) => res.data?.image;
+
+      const unwrappedResponse = { image: '/users/usr_123/avatar.jpg' };
+      expect(parseUploadResponse(unwrappedResponse)).toBeUndefined();
+    });
+
+    it('stores raw relative path, not display URL', () => {
+      const parseUploadResponse = (res: any) => res.data?.image;
+
+      const apiResponse = {
+        success: true,
+        data: { image: '/users/usr_123/avatar.jpg' },
+      };
+      const imagePath = parseUploadResponse(apiResponse);
+
+      expect(imagePath).not.toContain('render/image');
+      expect(imagePath).not.toContain('width=');
+      expect(imagePath).toBe('/users/usr_123/avatar.jpg');
+    });
+
+    it('handles missing data gracefully', () => {
+      const parseUploadResponse = (res: any) => res?.data?.image;
+
+      expect(parseUploadResponse({})).toBeUndefined();
+      expect(parseUploadResponse({ success: false })).toBeUndefined();
+      expect(parseUploadResponse({ data: {} })).toBeUndefined();
+      expect(parseUploadResponse(null)).toBeUndefined();
+    });
+  });
 });

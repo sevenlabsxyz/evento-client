@@ -6,6 +6,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { MiniListItem } from '@/components/ui/mini-list-item';
 import { Modal } from '@/components/ui/modal';
 import { UserDetails } from '@/lib/types/api';
+import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 
@@ -24,7 +25,13 @@ const isGalleryImageObject = (image: GalleryImage): image is GalleryImageObject 
 };
 
 const getImageUrl = (image: GalleryImage): string => {
-  return isGalleryImageObject(image) ? image.image : image;
+  const rawUrl = isGalleryImageObject(image) ? image.image : image;
+
+  if (rawUrl.startsWith('/users/') || rawUrl.startsWith('users/')) {
+    return getOptimizedImageUrl(rawUrl, 1200, 90);
+  }
+
+  return rawUrl;
 };
 
 import {

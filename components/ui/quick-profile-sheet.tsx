@@ -15,9 +15,9 @@ import { useFollowAction } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 interface QuickProfileSheetProps {
   isOpen: boolean;
@@ -28,6 +28,7 @@ interface QuickProfileSheetProps {
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
+  const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
 
   // Use optimized hook for all profile data
   const { followStatus, eventCount, followers, following, isLoading } = useQuickProfileData(
@@ -65,13 +66,23 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
       toast.error('Invalid username format');
       return;
     }
+
+    setIsNavigatingToProfile(true);
     router.push(`/${user.username}`);
-    onClose();
-  }, [router, user.username, onClose]);
+  }, [router, user.username]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsNavigatingToProfile(false);
+    }
+  }, [isOpen]);
 
   return (
     <ErrorBoundary>
-      <SheetWithDetentFull.Root presented={isOpen} onPresentedChange={(p) => !p && onClose()}>
+      <SheetWithDetentFull.Root
+        presented={isOpen}
+        onPresentedChange={(p) => !p && !isNavigatingToProfile && onClose()}
+      >
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
@@ -129,10 +140,20 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                           onClick={handleViewFullProfile}
                           variant={'link'}
                           className='shadow-none'
+                          disabled={isNavigatingToProfile}
                           // className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
                         >
-                          View Full Profile
-                          <ArrowRight className='ml-2 h-4 w-4' />
+                          {isNavigatingToProfile ? (
+                            <>
+                              <Loader2 className='h-4 w-4 animate-spin' />
+                              Opening Profile...
+                            </>
+                          ) : (
+                            <>
+                              View Full Profile
+                              <ArrowRight className='ml-2 h-4 w-4' />
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
