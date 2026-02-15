@@ -1,6 +1,14 @@
-import 'dotenv/config';
+import fs from 'node:fs';
+
+import dotenv from 'dotenv';
 
 import { defineConfig } from '@playwright/test';
+
+if (fs.existsSync('.env.local')) {
+  dotenv.config({ path: '.env.local', quiet: true });
+} else {
+  dotenv.config({ quiet: true });
+}
 
 const baseURL =
   process.env.SMOKE_WEB_BASE_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3003';

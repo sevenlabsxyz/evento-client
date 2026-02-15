@@ -1,4 +1,11 @@
-import { expect, test, type APIRequestContext } from '@playwright/test';
+import fs from 'node:fs/promises';
+
+import {
+  expect,
+  request as playwrightRequest,
+  test,
+  type APIRequestContext,
+} from '@playwright/test';
 
 import { smokeConfig } from '../helpers/smoke-config';
 import {
@@ -105,7 +112,7 @@ async function apiPatch<T>(request: APIRequestContext, path: string, data: unkno
   return body.data as T;
 }
 
-test('core smoke flow for two-user event lifecycle', async ({ browser }) => {
+test('@core core smoke flow for two-user event lifecycle', async () => {
   const runId = `smoke_run_${Date.now()}`;
   const steps: SmokeStep[] = [];
 
@@ -135,17 +142,25 @@ test('core smoke flow for two-user event lifecycle', async ({ browser }) => {
     throw new Error('Configured smoke users do not match smoke_test_state table.');
   }
 
-  const userAContext = await browser.newContext({
-    baseURL: smokeConfig.webBaseUrl,
-    storageState: smokeConfig.userAStatePath,
-  });
-  const userBContext = await browser.newContext({
-    baseURL: smokeConfig.webBaseUrl,
-    storageState: smokeConfig.userBStatePath,
-  });
+  const userAToken = JSON.parse(await fs.readFile(smokeConfig.userAStatePath, 'utf8')) as {
+    accessToken: string;
+  };
+  const userBToken = JSON.parse(await fs.readFile(smokeConfig.userBStatePath, 'utf8')) as {
+    accessToken: string;
+  };
 
-  const userARequest = userAContext.request;
-  const userBRequest = userBContext.request;
+  const userARequest = await playwrightRequest.newContext({
+    baseURL: smokeConfig.webBaseUrl,
+    extraHTTPHeaders: {
+      Authorization: `Bearer ${userAToken.accessToken}`,
+    },
+  });
+  const userBRequest = await playwrightRequest.newContext({
+    baseURL: smokeConfig.webBaseUrl,
+    extraHTTPHeaders: {
+      Authorization: `Bearer ${userBToken.accessToken}`,
+    },
+  });
 
   let userA: UserDetails | null = null;
   let userB: UserDetails | null = null;
@@ -429,7 +444,7 @@ test('core smoke flow for two-user event lifecycle', async ({ browser }) => {
     await updateSmokeState({ last_error: summary });
     throw error;
   } finally {
-    await userAContext.close();
-    await userBContext.close();
+    await userARequest.dispose();
+    await userBRequest.dispose();
   }
 });

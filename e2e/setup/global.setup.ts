@@ -1,11 +1,11 @@
 import fs from 'node:fs/promises';
 
-import { chromium, type FullConfig } from '@playwright/test';
+import type { FullConfig } from '@playwright/test';
 import { createClient } from '@supabase/supabase-js';
 
 import { assertSmokeGuards, smokeConfig } from '../helpers/smoke-config';
 
-async function createMagicLink(email: string): Promise<string> {
+async function createMagicLink(email: string) {
   const admin = createClient(smokeConfig.supabaseUrl, smokeConfig.serviceRoleKey, {
     auth: {
       persistSession: false,
@@ -30,42 +30,75 @@ async function createMagicLink(email: string): Promise<string> {
     throw new Error(`No action_link returned for ${email}`);
   }
 
-  return actionLink;
+  return {
+    actionLink,
+    emailOtp: data.properties?.email_otp || '',
+    hashedToken: data.properties?.hashed_token || '',
+  };
 }
 
-async function loginAndSaveState(
-  email: string,
-  statePath: string,
-  browser: Awaited<ReturnType<typeof chromium.launch>>
-) {
-  const actionLink = await createMagicLink(email);
-  const context = await browser.newContext();
-  const page = await context.newPage();
+async function createAccessToken(email: string): Promise<string> {
+  const { actionLink, emailOtp, hashedToken } = await createMagicLink(email);
+  const url = new URL(actionLink);
+  const token = url.searchParams.get('token') || '';
+  const tokenHash = url.searchParams.get('token_hash') || '';
 
-  await page.goto(actionLink, { waitUntil: 'domcontentloaded' });
-  await page.waitForTimeout(2000);
+  const anon = createClient(smokeConfig.supabaseUrl, smokeConfig.supabaseAnonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
 
-  const userRes = await page.request.get(`${smokeConfig.webBaseUrl}/api/v1/user`);
-  if (!userRes.ok()) {
-    const body = await userRes.text();
-    throw new Error(`Authentication verification failed for ${email}: ${userRes.status()} ${body}`);
+  if (token) {
+    const { data, error } = await anon.auth.verifyOtp({
+      email,
+      token,
+      type: 'email',
+    });
+
+    if (!error && data.session?.access_token) {
+      return data.session.access_token;
+    }
   }
 
-  await context.storageState({ path: statePath });
-  await context.close();
+  if (tokenHash || hashedToken) {
+    const { data, error } = await anon.auth.verifyOtp({
+      token_hash: tokenHash || hashedToken,
+      type: 'magiclink',
+    });
+
+    if (!error && data.session?.access_token) {
+      return data.session.access_token;
+    }
+  }
+
+  if (emailOtp) {
+    const { data, error } = await anon.auth.verifyOtp({
+      email,
+      token: emailOtp,
+      type: 'email',
+    });
+
+    if (!error && data.session?.access_token) {
+      return data.session.access_token;
+    }
+  }
+
+  throw new Error(`Failed to establish auth session for ${email} from generated magic link.`);
+}
+
+async function loginAndSaveState(email: string, statePath: string) {
+  const accessToken = await createAccessToken(email);
+  await fs.writeFile(statePath, JSON.stringify({ accessToken }, null, 2), 'utf8');
 }
 
 async function globalSetup(_config: FullConfig) {
   assertSmokeGuards();
   await fs.mkdir(smokeConfig.authDir, { recursive: true });
 
-  const browser = await chromium.launch({ headless: true });
-  try {
-    await loginAndSaveState(smokeConfig.userAEmail, smokeConfig.userAStatePath, browser);
-    await loginAndSaveState(smokeConfig.userBEmail, smokeConfig.userBStatePath, browser);
-  } finally {
-    await browser.close();
-  }
+  await loginAndSaveState(smokeConfig.userAEmail, smokeConfig.userAStatePath);
+  await loginAndSaveState(smokeConfig.userBEmail, smokeConfig.userBStatePath);
 }
 
 export default globalSetup;
