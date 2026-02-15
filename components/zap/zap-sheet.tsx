@@ -1,6 +1,7 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
@@ -48,13 +49,57 @@ export function ZapSheet({
   const { satsToUSD, usdToSats } = useAmountConverter();
   const notifyMutation = useNotifyWalletInvite();
 
+  const hasExistingWallet = () => {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    const walletStateRaw = localStorage.getItem(STORAGE_KEYS.WALLET_STATE);
+    const encryptedSeed = localStorage.getItem(STORAGE_KEYS.ENCRYPTED_SEED);
+
+    if (encryptedSeed) {
+      return true;
+    }
+
+    if (!walletStateRaw) {
+      return false;
+    }
+
+    try {
+      const parsedState = JSON.parse(walletStateRaw);
+      return Boolean(parsedState?.isInitialized);
+    } catch {
+      return true;
+    }
+  };
+
+  const handleUnlockWallet = () => {
+    if (typeof window !== 'undefined') {
+      const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+      localStorage.setItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH, returnPath);
+    }
+    router.push('/e/wallet');
+  };
+
   const showWalletUnlockToast = () => {
-    toast.error('Unlock your Evento Wallet to continue.', 'Error', undefined, {
-      action: {
-        label: 'Unlock',
-        onClick: () => router.push('/e/wallet'),
-      },
-    });
+    const walletExists = hasExistingWallet();
+    const actionLabel = walletExists ? 'Unlock wallet' : 'Create wallet';
+    const descriptionText = walletExists
+      ? 'Unlock your Evento Wallet to continue.'
+      : 'Create your Evento Wallet to continue.';
+
+    toast.error(
+      <div className='flex flex-col gap-3'>
+        <p>{descriptionText}</p>
+        <button
+          type='button'
+          onClick={handleUnlockWallet}
+          className='h-10 w-full rounded-md bg-black px-3 text-sm font-semibold text-white transition-colors hover:bg-neutral-800'
+        >
+          {actionLabel}
+        </button>
+      </div>
+    );
   };
 
   // Recipient info object for step components
