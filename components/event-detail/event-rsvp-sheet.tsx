@@ -1,6 +1,7 @@
 'use client';
 
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
@@ -33,6 +34,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   // RSVP data
   const { data: rsvpData, isLoading: isLoadingRsvp } = useUserRSVP(eventId);
+  const { data: eventRsvps } = useEventRSVPs(eventId);
   const upsert = useUpsertRSVP();
 
   // Registration data
@@ -61,6 +63,16 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const existingRegistration = myRegistration?.registration ?? null;
 
   const isLoading = isLoadingRsvp || isLoadingSettings || isLoadingMyRegistration;
+  const maxCapacity = eventData?.max_capacity ?? null;
+  const showCapacityCount = Boolean(eventData?.show_capacity_count);
+  const yesRsvpCount = useMemo(
+    () => (eventRsvps ?? []).filter((rsvp) => rsvp.status === 'yes').length,
+    [eventRsvps]
+  );
+  const isEventFull = maxCapacity !== null && yesRsvpCount >= maxCapacity;
+  const spotsRemaining = maxCapacity !== null ? Math.max(0, maxCapacity - yesRsvpCount) : null;
+  const isYesRsvp = currentStatus === 'yes';
+  const shouldDisableYes = isEventFull && !isYesRsvp;
 
   // Determine what to show when sheet opens
   const getInitialView = (): SheetView => {
@@ -92,6 +104,11 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   };
 
   const handleAction = async (status: RSVPStatus) => {
+    if (status === 'yes' && shouldDisableYes) {
+      toast.error('This event has reached its capacity.');
+      return;
+    }
+
     // Check if registration is required FIRST (before auth check)
     // This allows non-logged-in users to fill the registration form
     // and complete inline OTP auth during submission
@@ -286,10 +303,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
             <button
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
-              disabled={isLoading || upsert.isPending}
+              disabled={isLoading || upsert.isPending || shouldDisableYes}
               onClick={() => handleAction('yes')}
             >
-              {renderLabel('yes', buttons[0].label)}
+              {shouldDisableYes ? 'NO SPOTS LEFT' : renderLabel('yes', buttons[0].label)}
             </button>
             <button
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
@@ -312,6 +329,17 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
                 This event requires registration. Clicking "Yes" will open the registration form.
               </p>
             )}
+
+            {showCapacityCount &&
+              maxCapacity !== null &&
+              spotsRemaining !== null &&
+              (!isEventFull || isYesRsvp) && (
+                <p className='text-center text-sm text-gray-500'>
+                  {isEventFull && isYesRsvp
+                    ? 'No more spots left'
+                    : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
+                </p>
+              )}
           </div>
         );
     }

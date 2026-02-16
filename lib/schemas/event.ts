@@ -192,6 +192,8 @@ export const apiEventSchema = z.object({
   computed_start_date: z.string(),
   computed_end_date: z.string(),
   type: z.enum(['rsvp', 'registration', 'ticketed']).optional(),
+  max_capacity: z.number().nullable().optional(),
+  show_capacity_count: z.boolean().optional(),
 
   // Password protection
   password_protected: z.boolean().optional(),

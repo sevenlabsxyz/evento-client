@@ -87,6 +87,7 @@ export default function CreatePage() {
     visibility,
     hasCapacity,
     capacity,
+    showCapacityCount,
     spotifyUrl,
     wavlakeUrl,
     attachments,
@@ -104,6 +105,7 @@ export default function CreatePage() {
     setVisibility,
     setHasCapacity,
     setCapacity,
+    setShowCapacityCount,
     setSpotifyUrl,
     setWavlakeUrl,
     setAttachments,
@@ -562,42 +564,65 @@ export default function CreatePage() {
 
         {/* Capacity Options */}
         <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-          <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Users className='h-4 w-4 text-gray-600' />
+          <div className='space-y-3'>
+            <div className='flex items-center gap-4'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
+                <Users className='h-4 w-4 text-gray-600' />
+              </div>
+              <div className='flex-1'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex flex-col'>
+                    <label className='mb-1 text-sm font-medium text-gray-500'>
+                      {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
+                    </label>
+                    {hasCapacity && capacity && (
+                      <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (hasCapacity) {
+                        // User is trying to turn off capacity
+                        setShowCapacityConfirmationSheet(true);
+                      } else {
+                        // User is trying to turn on capacity
+                        setShowCapacitySettingSheet(true);
+                      }
+                    }}
+                    className={`h-6 w-12 rounded-full transition-colors ${
+                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                        hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
+                      }`}
+                    ></div>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className='flex-1'>
-              <div className='flex items-center justify-between'>
-                <div className='flex flex-col'>
-                  <label className='mb-1 text-sm font-medium text-gray-500'>
-                    {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
-                  </label>
-                  {hasCapacity && capacity && (
-                    <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
-                  )}
+
+            {hasCapacity && (
+              <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+                <div>
+                  <p className='text-sm font-medium text-gray-700'>Show capacity count</p>
+                  <p className='text-xs text-gray-500'>Display spots remaining to guests</p>
                 </div>
                 <button
-                  onClick={() => {
-                    if (hasCapacity) {
-                      // User is trying to turn off capacity
-                      setShowCapacityConfirmationSheet(true);
-                    } else {
-                      // User is trying to turn on capacity
-                      setShowCapacitySettingSheet(true);
-                    }
-                  }}
+                  onClick={() => setShowCapacityCount(!showCapacityCount)}
                   className={`h-6 w-12 rounded-full transition-colors ${
-                    hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300'
                   }`}
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white transition-transform ${
-                      hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
+                      showCapacityCount ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   ></div>
                 </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -759,6 +784,7 @@ export default function CreatePage() {
           onConfirm={() => {
             setHasCapacity(false);
             setCapacity('');
+            setShowCapacityCount(false);
             setShowCapacityConfirmationSheet(false);
           }}
           currentCapacity={capacity}

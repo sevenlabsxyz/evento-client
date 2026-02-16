@@ -1,6 +1,7 @@
 'use client';
 
 import { EventHost } from '@/lib/hooks/use-event-hosts';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
@@ -36,6 +37,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const [showContributionSheet, setShowContributionSheet] = useState(false);
 
   const { data: userRsvp } = useUserRSVP(event.id);
+  const { data: eventRsvps } = useEventRSVPs(event.id);
   const currentStatus = userRsvp?.status ?? null;
 
   const { data: savedStatus } = useEventSavedStatus(event.id);
@@ -62,11 +64,29 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     return getContributionMethods(eventData).length > 0;
   }, [eventData]);
 
+  const maxCapacity = eventData?.max_capacity ?? null;
+  const showCapacityCount = Boolean(eventData?.show_capacity_count);
+  const yesRsvpCount = useMemo(
+    () => (eventRsvps ?? []).filter((rsvp) => rsvp.status === 'yes').length,
+    [eventRsvps]
+  );
+  const isEventFull = maxCapacity !== null && yesRsvpCount >= maxCapacity;
+  const spotsRemaining = maxCapacity !== null ? Math.max(0, maxCapacity - yesRsvpCount) : null;
+  const isYesRsvp = currentStatus === 'yes';
+  const shouldShowCapacityInfo =
+    showCapacityCount && maxCapacity !== null && (!isEventFull || isYesRsvp);
+  const shouldDisableRsvpButton = isEventFull && !isYesRsvp;
+
   const rsvpButton = useMemo(() => {
     if (currentStatus === 'yes')
       return {
         label: "You're going",
         className: 'bg-green-600 hover:bg-green-700 text-white',
+      };
+    if (shouldDisableRsvpButton)
+      return {
+        label: 'NO SPOTS LEFT',
+        className: 'bg-gray-500 text-white',
       };
     if (currentStatus === 'maybe')
       return {
@@ -82,9 +102,10 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       label: 'RSVP',
       className: 'bg-red-500 hover:bg-red-600 text-white',
     };
-  }, [currentStatus]);
+  }, [currentStatus, shouldDisableRsvpButton]);
 
   const handleRSVP = () => {
+    if (shouldDisableRsvpButton) return;
     setShowRsvpSheet(true);
   };
 
@@ -262,7 +283,8 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               ) : (
                 <button
                   onClick={handleRSVP}
-                  className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className}`}
+                  disabled={shouldDisableRsvpButton}
+                  className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
                 >
                   <Star className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>{rsvpButton.label}</span>
@@ -293,6 +315,14 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <span className='text-xs font-medium'>More</span>
               </button>
             </div>
+
+            {shouldShowCapacityInfo && spotsRemaining !== null && (
+              <p className='text-center text-sm text-gray-500'>
+                {isEventFull && isYesRsvp
+                  ? 'No more spots left'
+                  : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
+              </p>
+            )}
 
             {(hasPendingRegistration || hasDeniedRegistration) && myRegistration?.registration && (
               <div className='mt-4'>

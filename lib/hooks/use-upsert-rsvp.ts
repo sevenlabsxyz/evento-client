@@ -23,11 +23,26 @@ export function useUpsertRSVP() {
     mutationFn: async ({ eventId, status, hasExisting }) => {
       const body = { event_id: eventId, status };
       let res: UpsertRSVPResponse;
-      if (hasExisting) {
-        res = await apiClient.patch<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
-      } else {
-        res = await apiClient.post<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
+
+      try {
+        if (hasExisting) {
+          res = await apiClient.patch<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
+        } else {
+          res = await apiClient.post<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
+        }
+      } catch (error: unknown) {
+        const message =
+          typeof error === 'object' && error !== null && 'message' in error
+            ? String((error as { message: string }).message)
+            : 'Failed to update RSVP';
+
+        if (message === 'This event has reached its capacity.') {
+          throw new Error(message);
+        }
+
+        throw new Error('Failed to update RSVP');
       }
+
       if (!res?.success) {
         throw new Error(
           res?.message === 'This event has reached its capacity.'

@@ -1,5 +1,7 @@
 'use client';
 
+import CapacityConfirmationSheet from '@/components/create-event/capacity-confirmation-sheet';
+import CapacitySettingSheet from '@/components/create-event/capacity-setting-sheet';
 import CoverImageSelector from '@/components/create-event/cover-image-selector';
 import DatePickerSheet from '@/components/create-event/date-picker-sheet';
 import DescriptionSheet from '@/components/create-event/description-sheet';
@@ -21,7 +23,7 @@ import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-da
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, ChevronRight, Edit3, MapPin } from 'lucide-react';
+import { Calendar, ChevronRight, Edit3, MapPin, Users } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -49,6 +51,9 @@ export default function EditEventDetailsPage() {
     timezone,
     visibility,
     emoji,
+    hasCapacity,
+    capacity,
+    showCapacityCount,
     setTitle,
     setDescription,
     setCoverImage,
@@ -59,6 +64,9 @@ export default function EditEventDetailsPage() {
     setEndTime,
     setTimezone,
     setEmoji,
+    setHasCapacity,
+    setCapacity,
+    setShowCapacityCount,
     populateFromApiEvent,
     getFormData,
     isValid,
@@ -74,6 +82,8 @@ export default function EditEventDetailsPage() {
   const [showTimezoneModal, setShowTimezoneModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
   const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const [showCapacitySettingSheet, setShowCapacitySettingSheet] = useState(false);
+  const [showCapacityConfirmationSheet, setShowCapacityConfirmationSheet] = useState(false);
 
   // Check if all required fields are filled and there are changes
   const isFormValid = isValid() && hasChanges();
@@ -364,6 +374,67 @@ export default function EditEventDetailsPage() {
             </div>
           </button>
         </div>
+
+        <div className='rounded-2xl bg-white p-4'>
+          <div className='space-y-3'>
+            <div className='flex items-center gap-4'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                <Users className='h-4 w-4 text-gray-600' />
+              </div>
+              <div className='flex-1'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex flex-col'>
+                    <label className='mb-1 text-sm font-medium text-gray-500'>
+                      {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
+                    </label>
+                    {hasCapacity && capacity && (
+                      <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (hasCapacity) {
+                        setShowCapacityConfirmationSheet(true);
+                      } else {
+                        setShowCapacitySettingSheet(true);
+                      }
+                    }}
+                    className={`h-6 w-12 rounded-full transition-colors ${
+                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                        hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
+                      }`}
+                    ></div>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {hasCapacity && (
+              <div className='flex items-center justify-between rounded-xl border border-gray-200 px-3 py-2'>
+                <div>
+                  <p className='text-sm font-medium text-gray-700'>Show capacity count</p>
+                  <p className='text-xs text-gray-500'>Display spots remaining to guests</p>
+                </div>
+                <button
+                  onClick={() => setShowCapacityCount(!showCapacityCount)}
+                  className={`h-6 w-12 rounded-full transition-colors ${
+                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300'
+                  }`}
+                >
+                  <div
+                    className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                      showCapacityCount ? 'translate-x-6' : 'translate-x-0.5'
+                    }`}
+                  ></div>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Modals */}
@@ -441,6 +512,29 @@ export default function EditEventDetailsPage() {
           timezone,
           visibility,
         }}
+      />
+
+      <CapacitySettingSheet
+        isOpen={showCapacitySettingSheet}
+        onClose={() => setShowCapacitySettingSheet(false)}
+        onSave={(nextCapacity) => {
+          setCapacity(nextCapacity);
+          setHasCapacity(true);
+          setShowCapacitySettingSheet(false);
+        }}
+        initialCapacity={capacity}
+      />
+
+      <CapacityConfirmationSheet
+        isOpen={showCapacityConfirmationSheet}
+        onClose={() => setShowCapacityConfirmationSheet(false)}
+        onConfirm={() => {
+          setHasCapacity(false);
+          setCapacity('');
+          setShowCapacityCount(false);
+          setShowCapacityConfirmationSheet(false);
+        }}
+        currentCapacity={capacity}
       />
 
       {/* Fixed Bottom Button */}

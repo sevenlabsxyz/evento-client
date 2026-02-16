@@ -159,6 +159,7 @@ describe('Event Creation Form Validation', () => {
 
       expect(result.current.hasCapacity).toBe(false);
       expect(result.current.capacity).toBe('');
+      expect(result.current.showCapacityCount).toBe(false);
     });
 
     it('enables capacity with a value', () => {
@@ -167,10 +168,12 @@ describe('Event Creation Form Validation', () => {
       act(() => {
         result.current.setHasCapacity(true);
         result.current.setCapacity('100');
+        result.current.setShowCapacityCount(true);
       });
 
       expect(result.current.hasCapacity).toBe(true);
       expect(result.current.capacity).toBe('100');
+      expect(result.current.showCapacityCount).toBe(true);
     });
 
     it('disables capacity', () => {
@@ -312,6 +315,7 @@ describe('Event Creation Form Validation', () => {
         result.current.setVisibility('public');
         result.current.setHasCapacity(true);
         result.current.setCapacity('100');
+        result.current.setShowCapacityCount(true);
         result.current.setEmoji('🎉');
       });
 
@@ -324,6 +328,7 @@ describe('Event Creation Form Validation', () => {
       expect(result.current.visibility).toBe('private');
       expect(result.current.hasCapacity).toBe(false);
       expect(result.current.capacity).toBe('');
+      expect(result.current.showCapacityCount).toBe(false);
       expect(result.current.emoji).toBeNull();
     });
   });
@@ -354,12 +359,14 @@ describe('Event Creation Form Validation', () => {
         result.current.setTitle('Test Event');
         result.current.setHasCapacity(true);
         result.current.setCapacity('50');
+        result.current.setShowCapacityCount(true);
       });
 
       const formData = result.current.getFormData();
 
       expect(formData.settings).toBeDefined();
       expect(formData.settings?.max_capacity).toBe(50);
+      expect(formData.settings?.show_capacity_count).toBe(true);
     });
 
     it('omits capacity settings when disabled', () => {

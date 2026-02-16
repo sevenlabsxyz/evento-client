@@ -30,7 +30,6 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
   const showPrice = event.cost && Number(event.cost) > 0 ? true : false;
   const priceDisplay = showPrice ? `$${Number(event.cost)}` : null;
 
-  // Capacity display (placeholder - needs actual RSVP count data)
   const showCapacity = event.max_capacity && event.show_capacity_count;
 
   // Long press handling
@@ -124,7 +123,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
           <div className='mt-1 flex items-center gap-2'>
             {showCapacity && (
               <span className='rounded-full border border-amber-500 px-2.5 py-0.5 text-xs font-semibold text-amber-600'>
-                Near Capacity
+                Capacity {event.max_capacity}
               </span>
             )}
             {showPrice && priceDisplay && (

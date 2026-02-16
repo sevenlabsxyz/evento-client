@@ -195,7 +195,7 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(result.current.error).toBe(apiError);
+    expect(result.current.error).toEqual(new Error('Failed to update RSVP'));
   });
 
   it('should handle unsuccessful response', async () => {

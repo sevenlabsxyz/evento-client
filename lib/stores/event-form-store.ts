@@ -44,6 +44,7 @@ interface EventFormState {
   visibility: 'public' | 'private';
   hasCapacity: boolean;
   capacity: string;
+  showCapacityCount: boolean;
 
   // Password protection
   passwordProtected: boolean;
@@ -77,6 +78,7 @@ interface EventFormState {
   setVisibility: (visibility: 'public' | 'private') => void;
   setHasCapacity: (hasCapacity: boolean) => void;
   setCapacity: (capacity: string) => void;
+  setShowCapacityCount: (showCapacityCount: boolean) => void;
   setPasswordProtected: (passwordProtected: boolean) => void;
   setPassword: (password: string | null) => void;
   setPasswordProtection: (enabled: boolean, password: string | null) => void;
@@ -136,6 +138,7 @@ const initialState = {
   visibility: 'private' as const,
   hasCapacity: false,
   capacity: '',
+  showCapacityCount: false,
   passwordProtected: false,
   password: null as string | null,
   spotifyUrl: '',
@@ -219,6 +222,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
   setVisibility: (visibility) => set({ visibility }),
   setHasCapacity: (hasCapacity) => set({ hasCapacity }),
   setCapacity: (capacity) => set({ capacity }),
+  setShowCapacityCount: (showCapacityCount) => set({ showCapacityCount }),
   setPasswordProtected: (passwordProtected) => set({ passwordProtected }),
   setPassword: (password) => set({ password }),
   setPasswordProtection: (enabled, password) =>
@@ -354,6 +358,12 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
         endTime,
         timezone: event.timezone,
         visibility: event.visibility as 'public' | 'private',
+        hasCapacity: event.max_capacity !== null && event.max_capacity !== undefined,
+        capacity:
+          event.max_capacity !== null && event.max_capacity !== undefined
+            ? String(event.max_capacity)
+            : '',
+        showCapacityCount: Boolean(event.show_capacity_count),
         passwordProtected: event.password_protected || false,
         password: event.password || null,
         spotifyUrl: event.spotify_url || '',
@@ -470,7 +480,7 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       settings: state.hasCapacity
         ? {
             max_capacity: parseInt(state.capacity) || undefined,
-            show_capacity_count: true,
+            show_capacity_count: state.showCapacityCount,
           }
         : undefined,
     };
@@ -536,7 +546,9 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
       currentData.contrib_btclightning !== state.initialData.contrib_btclightning ||
       currentData.cost !== state.initialData.cost ||
       currentData.password_protected !== state.initialData.password_protected ||
-      currentData.password !== state.initialData.password
+      currentData.password !== state.initialData.password ||
+      currentData.settings?.max_capacity !== state.initialData.settings?.max_capacity ||
+      currentData.settings?.show_capacity_count !== state.initialData.settings?.show_capacity_count
     );
   },
 
