@@ -2,18 +2,27 @@
 
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import PasswordProtectionSheet from '@/components/create-event/password-protection-sheet';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
+import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
 import { apiEventSchema } from '@/lib/schemas/event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
+import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+const DEFAULT_REGISTRATION_VISIBILITY = {
+  hide_location_for_unapproved: true,
+  hide_guest_list_for_unapproved: true,
+  hide_description_for_unapproved: false,
+};
 
 export default function SecurityPrivacyPage() {
   const params = useParams();
@@ -21,9 +30,11 @@ export default function SecurityPrivacyPage() {
   const router = useRouter();
   const eventId = params.id as string;
   const updateEventMutation = useUpdateEvent();
+  const updateRegistrationSettingsMutation = useUpdateRegistrationSettings();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
 
   const { data: eventData, isLoading, error } = useEventDetails(eventId);
+  const { data: registrationSettings } = useRegistrationSettings(eventId);
 
   const {
     visibility,
@@ -39,8 +50,50 @@ export default function SecurityPrivacyPage() {
 
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
   const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+  const [hideLocationForUnapproved, setHideLocationForUnapproved] = useState<boolean>(
+    DEFAULT_REGISTRATION_VISIBILITY.hide_location_for_unapproved
+  );
+  const [hideGuestListForUnapproved, setHideGuestListForUnapproved] = useState<boolean>(
+    DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved
+  );
+  const [hideDescriptionForUnapproved, setHideDescriptionForUnapproved] = useState<boolean>(
+    DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
+  );
 
-  const isFormValid = isValid() && hasChanges();
+  const isRegistrationMode = eventData?.type === 'registration';
+
+  const hasVisibilitySettingsChanges =
+    hideLocationForUnapproved !==
+      (registrationSettings?.hide_location_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_location_for_unapproved) ||
+    hideGuestListForUnapproved !==
+      (registrationSettings?.hide_guest_list_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved) ||
+    hideDescriptionForUnapproved !==
+      (registrationSettings?.hide_description_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved);
+
+  const hasEventChanges = isValid() && hasChanges();
+  const isFormValid = hasEventChanges || (isRegistrationMode && hasVisibilitySettingsChanges);
+
+  useEffect(() => {
+    setHideLocationForUnapproved(
+      registrationSettings?.hide_location_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_location_for_unapproved
+    );
+    setHideGuestListForUnapproved(
+      registrationSettings?.hide_guest_list_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved
+    );
+    setHideDescriptionForUnapproved(
+      registrationSettings?.hide_description_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
+    );
+  }, [
+    registrationSettings?.hide_location_for_unapproved,
+    registrationSettings?.hide_guest_list_for_unapproved,
+    registrationSettings?.hide_description_for_unapproved,
+  ]);
 
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -72,23 +125,27 @@ export default function SecurityPrivacyPage() {
 
   const handleSaveChanges = async () => {
     try {
-      const formData = getFormData();
-      await updateEventMutation.mutateAsync(
-        {
+      if (hasEventChanges) {
+        const formData = getFormData();
+        await updateEventMutation.mutateAsync({
           ...formData,
           id: eventId,
-        },
-        {
-          onSuccess: () => {
-            toast.success('Security settings updated successfully!');
-            router.push(`/e/${eventId}/manage`);
-          },
-          onError: () => {
-            toast.error('Failed to update security settings');
-          },
-        }
-      );
+        });
+      }
+
+      if (isRegistrationMode && hasVisibilitySettingsChanges) {
+        await updateRegistrationSettingsMutation.mutateAsync({
+          eventId,
+          hide_location_for_unapproved: hideLocationForUnapproved,
+          hide_guest_list_for_unapproved: hideGuestListForUnapproved,
+          hide_description_for_unapproved: hideDescriptionForUnapproved,
+        });
+      }
+
+      toast.success('Security settings updated successfully!');
+      router.push(`/e/${eventId}/manage`);
     } catch (saveError) {
+      toast.error('Failed to update security settings');
       logger.error('Failed to update security settings', {
         error: saveError instanceof Error ? saveError.message : String(saveError),
       });
@@ -194,6 +251,49 @@ export default function SecurityPrivacyPage() {
             </div>
           </button>
         </div>
+
+        {isRegistrationMode && (
+          <div className='rounded-2xl bg-white p-4'>
+            <div className='mb-4 flex items-start gap-4'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                <EyeOff className='h-4 w-4 text-gray-600' />
+              </div>
+              <div>
+                <p className='text-sm font-medium text-gray-500'>Registration Visibility</p>
+                <p className='text-sm text-gray-900'>Hide details from unapproved guests</p>
+                <p className='mt-1 text-xs text-gray-500'>
+                  By default, location and guest list are hidden until a registration is approved.
+                </p>
+              </div>
+            </div>
+
+            <div className='space-y-3'>
+              <label className='flex items-start gap-3 rounded-lg border border-gray-200 p-3'>
+                <Checkbox
+                  checked={hideLocationForUnapproved}
+                  onCheckedChange={(checked) => setHideLocationForUnapproved(Boolean(checked))}
+                />
+                <span className='text-sm text-gray-700'>Hide location until approved</span>
+              </label>
+
+              <label className='flex items-start gap-3 rounded-lg border border-gray-200 p-3'>
+                <Checkbox
+                  checked={hideGuestListForUnapproved}
+                  onCheckedChange={(checked) => setHideGuestListForUnapproved(Boolean(checked))}
+                />
+                <span className='text-sm text-gray-700'>Hide guest list until approved</span>
+              </label>
+
+              <label className='flex items-start gap-3 rounded-lg border border-gray-200 p-3'>
+                <Checkbox
+                  checked={hideDescriptionForUnapproved}
+                  onCheckedChange={(checked) => setHideDescriptionForUnapproved(Boolean(checked))}
+                />
+                <span className='text-sm text-gray-700'>Hide description until approved</span>
+              </label>
+            </div>
+          </div>
+        )}
       </div>
 
       <EventVisibilitySheet
@@ -215,8 +315,12 @@ export default function SecurityPrivacyPage() {
         <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleSaveChanges}
-            disabled={!isFormValid || updateEventMutation.isPending}
-            loading={updateEventMutation.isPending}
+            disabled={
+              !isFormValid ||
+              updateEventMutation.isPending ||
+              updateRegistrationSettingsMutation.isPending
+            }
+            loading={updateEventMutation.isPending || updateRegistrationSettingsMutation.isPending}
           >
             Save
           </SubmitButton>

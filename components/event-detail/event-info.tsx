@@ -183,11 +183,13 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         .replace(/;/g, '\\;');
     };
 
-    const location = `${event.location.name}, ${
-      event.location.address || ''
-    }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
-      .replace(/,\s*,/g, ',')
-      .trim();
+    const location = isLocationHidden
+      ? 'Location hidden until registration approval'
+      : `${event.location.name}, ${
+          event.location.address || ''
+        }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
+          .replace(/,\s*,/g, ',')
+          .trim();
 
     const icsContent = [
       'BEGIN:VCALENDAR',
@@ -199,7 +201,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       `DTSTART:${formatICSDate(event.computedStartDate)}`,
       `DTEND:${formatICSDate(event.computedEndDate)}`,
       `SUMMARY:${escapeICS(event.title)}`,
-      `DESCRIPTION:${escapeICS(event.description.replace(/<[^>]*>/g, ''))}`,
+      `DESCRIPTION:${escapeICS(
+        isDescriptionHidden
+          ? 'Description hidden until registration approval'
+          : event.description.replace(/<[^>]*>/g, '')
+      )}`,
       `LOCATION:${escapeICS(location)}`,
       event.registrationUrl ? `URL:${event.registrationUrl}` : '',
       'END:VEVENT',
@@ -231,6 +237,9 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     return hosts?.some((h) => h.user_details?.id === currentUserId) ?? false;
   }, [currentUserId, event.owner?.id, hosts]);
 
+  const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
+  const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
+
   return (
     <>
       <div className='space-y-6 py-6'>
@@ -249,10 +258,12 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               {event.timezone && ` ${event.timezone}`}
             </span>
           </div>
-          <div className='flex items-center gap-3 text-gray-700'>
-            <MapPin className='h-5 w-5 text-gray-400' />
-            <span>{event.location.name}</span>
-          </div>
+          {!isLocationHidden && (
+            <div className='flex items-center gap-3 text-gray-700'>
+              <MapPin className='h-5 w-5 text-gray-400' />
+              <span>{event.location.name}</span>
+            </div>
+          )}
         </div>
 
         {isOwnerOrCohost ? (

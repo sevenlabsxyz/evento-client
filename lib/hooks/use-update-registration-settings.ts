@@ -7,11 +7,17 @@ interface UpdateRegistrationSettingsParams {
   eventId: string;
   registration_required?: boolean;
   approval_mode?: ApprovalMode;
+  hide_location_for_unapproved?: boolean;
+  hide_guest_list_for_unapproved?: boolean;
+  hide_description_for_unapproved?: boolean;
 }
 
 interface UpdateRegistrationSettingsResponse {
   registration_required: boolean;
   approval_mode: ApprovalMode;
+  hide_location_for_unapproved: boolean;
+  hide_guest_list_for_unapproved: boolean;
+  hide_description_for_unapproved: boolean;
 }
 
 export function useUpdateRegistrationSettings() {
@@ -31,6 +37,9 @@ export function useUpdateRegistrationSettings() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: queryKeys.registrationSettings(variables.eventId),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['event', 'details', variables.eventId],
       });
     },
   });

@@ -198,6 +198,7 @@ export const apiEventSchema = z.object({
   // Password protection
   password_protected: z.boolean().optional(),
   password: z.string().nullable().optional(),
+  restricted_fields: z.array(z.enum(['location', 'description', 'guest_list'])).optional(),
 });
 
 export type ApiEvent = z.infer<typeof apiEventSchema>;

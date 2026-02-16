@@ -313,13 +313,20 @@ export default function EventDetailPageClient() {
     <div className='space-y-6'>
       <EventHost event={event} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
-      <EventGuestsSection
-        eventId={eventId}
-        eventCreatorUserId={eventData?.creator_user_id || ''}
-        hosts={hostsData}
-        currentUserId={user?.id || ''}
-      />
-      <EventDescription event={event} />
+      {eventData?.restricted_fields?.length ? (
+        <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900'>
+          Some event details are hidden until your registration is approved.
+        </div>
+      ) : null}
+      {!eventData?.restricted_fields?.includes('guest_list') && (
+        <EventGuestsSection
+          eventId={eventId}
+          eventCreatorUserId={eventData?.creator_user_id || ''}
+          hosts={hostsData}
+          currentUserId={user?.id || ''}
+        />
+      )}
+      {!eventData?.restricted_fields?.includes('description') && <EventDescription event={event} />}
       {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
         <EventSubEvents
           subEvents={subEvents}
@@ -327,7 +334,9 @@ export default function EventDetailPageClient() {
           subEventsError={subEventsError}
         />
       )}
-      <EventLocation event={event} weather={weather} />
+      {!eventData?.restricted_fields?.includes('location') && (
+        <EventLocation event={event} weather={weather} />
+      )}
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (

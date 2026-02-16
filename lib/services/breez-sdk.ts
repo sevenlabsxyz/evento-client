@@ -96,20 +96,23 @@ export class BreezSDKService {
         }
         return sdkInstance;
       } else {
-        console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!', {
-          currentFingerprint: currentWalletFingerprint,
-          newFingerprint,
-        });
+        if (DEBUG_BREEZ) {
+          console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!', {
+            currentFingerprint: currentWalletFingerprint,
+            newFingerprint,
+          });
+        }
 
         try {
           if (DEBUG_BREEZ) console.info('🔌 [BREEZ:CONNECT] Disconnecting existing wallet...');
           await this.disconnect();
         } catch (error) {
-          if (DEBUG_BREEZ)
+          if (DEBUG_BREEZ) {
             console.warn(
               '⚠️ [BREEZ:CONNECT] Failed to disconnect existing wallet, continuing',
               error
             );
+          }
         }
 
         // Continue to create new SDK instance for the new wallet
