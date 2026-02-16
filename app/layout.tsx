@@ -7,12 +7,11 @@ import './globals.css';
 import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
-const defaultUrl = process.env.VERCEL_URL
-  ? `https://${process.env.VERCEL_URL}`
-  : 'http://localhost:3003';
+const appUrl =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3003' : 'https://app.evento.so';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(defaultUrl),
+  metadataBase: new URL(appUrl),
   title: 'Evento - Events made social',
   description: 'Create, manage and oversee events and communities',
   generator: 'v0.dev',
@@ -25,7 +24,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: 'website',
-    url: 'https://evento.so',
+    url: 'https://app.evento.so',
     title: 'Evento - Events made social',
     description: 'Events made social.',
     siteName: 'Evento - Events made social',

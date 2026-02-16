@@ -42,9 +42,16 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
     const title =
       event?.title === 'Untitled Event' ? 'RSVP on Evento Now' : `${event?.title} - Evento`;
-    const descText = event?.description
-      ? (event.description.replace(/<[^>]*>/g, '') || '').slice(0, 250) +
-        (event.description.length > 250 ? '...' : '')
+    const cleanDescription = event?.description
+      ? event.description
+          .replace(/<br\s*\/?>/gi, ' ')
+          .replace(/<\/p>/gi, ' ')
+          .replace(/<[^>]*>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+      : '';
+    const descText = cleanDescription
+      ? cleanDescription.slice(0, 250) + (cleanDescription.length > 250 ? '...' : '')
       : 'Events made social - evento.so';
 
     return {
