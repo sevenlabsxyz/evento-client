@@ -14,6 +14,46 @@ export const contentType = 'image/png';
 const NO_COVER_FALLBACK =
   'https://api.evento.so/storage/v1/render/image/public/cdn/eventos/default-covers/tech/15.webp';
 
+function renderFallbackEventImage(title: string) {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#111827',
+          color: '#f9fafb',
+          padding: '64px',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '44px',
+            fontWeight: 700,
+          }}
+        >
+          Evento
+        </div>
+        <div
+          style={{
+            fontSize: '58px',
+            fontWeight: 700,
+            lineHeight: 1.2,
+          }}
+        >
+          {title}
+        </div>
+      </div>
+    ),
+    {
+      ...size,
+    }
+  );
+}
+
 export default async function Image({ params }: { params: { id: string } }) {
   const supabase = createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
 
@@ -28,8 +68,10 @@ export default async function Image({ params }: { params: { id: string } }) {
       eventId: params.id,
       error: error?.message,
     });
-    return new Response('Error generating image', { status: 500 });
+    return renderFallbackEventImage('Evento Event');
   }
+
+  const eventTitle = event.title || 'Evento Event';
 
   const getProperURL = (url?: string) => {
     if (!url) return NO_COVER_FALLBACK;
@@ -79,7 +121,7 @@ export default async function Image({ params }: { params: { id: string } }) {
         >
           <img
             src={getProperURL(event.cover)}
-            alt={event.title}
+            alt={eventTitle}
             style={{
               width: '450px',
               height: '450px',
@@ -106,7 +148,7 @@ export default async function Image({ params }: { params: { id: string } }) {
             }}
           >
             <img
-              src='https://evento.so/assets/img/evento-logo.svg'
+              src='https://app.evento.so/assets/img/evento-logo.svg'
               alt='Evento'
               style={{
                 width: '250px',
@@ -125,7 +167,7 @@ export default async function Image({ params }: { params: { id: string } }) {
               lineHeight: 1.2,
             }}
           >
-            {event.title}
+            {eventTitle}
           </h1>
 
           <div

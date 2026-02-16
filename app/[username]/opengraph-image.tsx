@@ -13,6 +13,46 @@ export const size = {
 };
 export const contentType = 'image/png';
 
+function renderFallbackProfileImage(username: string) {
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#111827',
+          color: '#f9fafb',
+          padding: '64px',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}
+      >
+        <div
+          style={{
+            fontSize: '44px',
+            fontWeight: 700,
+          }}
+        >
+          Evento
+        </div>
+        <div
+          style={{
+            fontSize: '58px',
+            fontWeight: 700,
+            lineHeight: 1.2,
+          }}
+        >
+          @{username}
+        </div>
+      </div>
+    ),
+    {
+      ...size,
+    }
+  );
+}
+
 export default async function Image({ params }: { params: { username: string } }) {
   const { data: user, error } = await supabase
     .from('user_details')
@@ -25,13 +65,11 @@ export default async function Image({ params }: { params: { username: string } }
       username: params.username,
       error: error?.message,
     });
-    return new Response('Error generating image', { status: 500 });
+    return renderFallbackProfileImage(params.username);
   }
 
   const getProperURL = (url?: string) => {
-    if (!url) {
-      return 'https://api.evento.so/storage/v1/object/public/cdn/default-avatar.png?width=400&height=400';
-    }
+    if (!url) return null;
 
     if (!url.includes('https://')) {
       return `https://api.evento.so/storage/v1/object/public/cdn${url}?width=400&height=400`;
@@ -39,6 +77,8 @@ export default async function Image({ params }: { params: { username: string } }
 
     return url;
   };
+
+  const profileImageUrl = getProperURL(user.image);
 
   return new ImageResponse(
     (
@@ -60,16 +100,35 @@ export default async function Image({ params }: { params: { username: string } }
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
           }}
         >
-          <img
-            src={getProperURL(user.image)}
-            alt={user.username}
-            style={{
-              width: '300px',
-              height: '300px',
-              objectFit: 'cover',
-              borderRadius: '26px',
-            }}
-          />
+          {profileImageUrl ? (
+            <img
+              src={profileImageUrl}
+              alt={user.username}
+              style={{
+                width: '300px',
+                height: '300px',
+                objectFit: 'cover',
+                borderRadius: '26px',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                width: '300px',
+                height: '300px',
+                borderRadius: '26px',
+                backgroundColor: '#111827',
+                color: '#f9fafb',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontSize: '52px',
+                fontWeight: 700,
+              }}
+            >
+              @{user.username.slice(0, 2).toUpperCase()}
+            </div>
+          )}
         </div>
 
         <div
@@ -89,7 +148,7 @@ export default async function Image({ params }: { params: { username: string } }
             }}
           >
             <img
-              src='https://evento.so/assets/img/evento-logo.svg'
+              src='https://app.evento.so/assets/img/evento-logo.svg'
               alt='Evento'
               style={{
                 width: '250px',
