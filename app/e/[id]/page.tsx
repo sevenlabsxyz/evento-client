@@ -18,10 +18,11 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
   // Get the event ID from params
   const eventId = params.id;
+  const eventPath = `/e/${eventId}`;
 
   // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
-  const eventOgImage = `https://evento.so/e/${eventId}/opengraph-image`;
+  const eventOgImage = `${eventPath}/opengraph-image`;
 
   try {
     const { data, error } = await supabase
@@ -52,11 +53,11 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
       keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
       alternates: {
-        canonical: `https://evento.so/p/${event?.id}`,
+        canonical: eventPath,
       },
       description: descText,
       openGraph: {
-        url: `https://evento.so/p/${event?.id}`,
+        url: eventPath,
         locale: 'en_US',
         type: 'website',
         siteName: 'Evento',
@@ -96,10 +97,10 @@ function getDefaultMetadata(previousImages: any[]) {
   return {
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
-    alternates: { canonical: `https://evento.so/` },
+    alternates: { canonical: '/' },
     description: 'Events made social -- evento.so',
     openGraph: {
-      url: `https://evento.so/`,
+      url: '/',
       images: [...previousImages],
     },
   };

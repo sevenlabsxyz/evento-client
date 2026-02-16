@@ -5,7 +5,8 @@ import UserProfilePageClient from './page-client';
 
 export async function generateMetadata({ params }: any, parent: any) {
   const { username } = params;
-  const profileOgImage = `https://evento.so/${username}/opengraph-image`;
+  const profilePath = `/${username}`;
+  const profileOgImage = `${profilePath}/opengraph-image`;
 
   const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -32,23 +33,15 @@ export async function generateMetadata({ params }: any, parent: any) {
       ? `${user.name} (@${user.username}) on Evento`
       : `@${user.username} on Evento`;
 
-    const getProperURL = (url: string) => {
-      if (!url || !url.includes('https')) {
-        return `https://api.evento.so/storage/v1/object/public/cdn${url}?width=400&height=400`;
-      }
-
-      return url;
-    };
-
     return {
       title: { absolute: title },
       keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
       alternates: {
-        canonical: `https://evento.so/${user.username}`,
+        canonical: profilePath,
       },
       description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
       openGraph: {
-        url: `https://evento.so/${user.username}`,
+        url: profilePath,
         locale: 'en_US',
         type: 'profile',
         siteName: 'Evento',
@@ -86,10 +79,10 @@ function getDefaultMetadata(previousImages: any[]) {
   return {
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
-    alternates: { canonical: `https://evento.so/` },
+    alternates: { canonical: '/' },
     description: 'Events made social -- evento.so',
     openGraph: {
-      url: `https://evento.so/`,
+      url: '/',
       images: [...previousImages],
     },
   };

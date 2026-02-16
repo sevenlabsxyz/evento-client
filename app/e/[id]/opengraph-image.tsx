@@ -48,11 +48,11 @@ export default async function Image({ params }: { params: { id: string } }) {
   };
 
   const [fontDataMedium, fontDataSemiBold] = await Promise.all([
-    fetch(new URL('@/public/assets/fonts/WorkSans-Medium.ttf', import.meta.url)).then((res) =>
-      res.arrayBuffer()
+    fetch(new URL('../../../public/assets/fonts/WorkSans-Medium.ttf', import.meta.url)).then(
+      (res) => res.arrayBuffer()
     ),
-    fetch(new URL('@/public/assets/fonts/WorkSans-SemiBold.ttf', import.meta.url)).then((res) =>
-      res.arrayBuffer()
+    fetch(new URL('../../../public/assets/fonts/WorkSans-SemiBold.ttf', import.meta.url)).then(
+      (res) => res.arrayBuffer()
     ),
   ]);
 
