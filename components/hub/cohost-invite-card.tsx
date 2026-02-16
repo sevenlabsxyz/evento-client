@@ -3,10 +3,12 @@
 import { useAcceptCohostInvite, useRejectCohostInvite } from '@/lib/hooks/use-cohost-invites';
 import { CohostInvite } from '@/lib/types/api';
 import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { toast } from '@/lib/utils/toast';
 import { formatDistanceToNow } from 'date-fns';
 import { Check, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface CohostInviteCardProps {
@@ -14,6 +16,7 @@ interface CohostInviteCardProps {
 }
 
 export function CohostInviteCard({ invite }: CohostInviteCardProps) {
+  const router = useRouter();
   const acceptMutation = useAcceptCohostInvite();
   const rejectMutation = useRejectCohostInvite();
   const isPending = acceptMutation.isPending || rejectMutation.isPending;
@@ -26,6 +29,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
       ? event.cover
       : getOptimizedCoverUrl(event.cover, 'thumbnail')
     : null;
+  const eventId = event?.id || invite.event_id;
 
   if (!event) return null;
 
@@ -75,7 +79,14 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
       {invite.status === 'pending' && (
         <div className='mt-4 flex gap-2'>
           <button
-            onClick={() => acceptMutation.mutate(invite.id)}
+            onClick={() =>
+              acceptMutation.mutate(invite.id, {
+                onSuccess: () => {
+                  toast.info('Taking you to this event now', 'Redirecting');
+                  router.push(`/e/${eventId}`);
+                },
+              })
+            }
             disabled={isPending}
             className='flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50'
           >

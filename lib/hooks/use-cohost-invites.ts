@@ -41,12 +41,6 @@ export function useEventHosts(eventId: string, enabled = true) {
   });
 }
 
-interface SendCohostInvitesRequest {
-  eventId: string;
-  invites: CohostInviteTarget[];
-  message?: string;
-}
-
 interface SendCohostInvitesResponse {
   success: boolean;
   message: string;
@@ -127,7 +121,6 @@ export function useAcceptCohostInvite() {
       return res.data;
     },
     onSuccess: (data) => {
-      toast.success('You are now a cohost of this event');
       const eventId = data?.eventId;
 
       queryClient.invalidateQueries({ queryKey: queryKeys.myCohostInvites() });

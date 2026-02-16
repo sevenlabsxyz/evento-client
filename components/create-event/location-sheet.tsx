@@ -122,16 +122,16 @@ export default function LocationSheet({
       headerSecondary={searchHeader}
       contentClassName='pb-safe'
     >
-      <div className='flex flex-col'>
+      <div className='flex min-w-0 flex-col overflow-hidden'>
         {selectedLocation && (
           <button
             onClick={() => handleLocationSelect(selectedLocation)}
-            className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
+            className='flex w-full min-w-0 items-center gap-3 overflow-hidden border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
               <Check className='h-5 w-5 text-red-600' />
             </div>
-            <div className='min-w-0 flex-1'>
+            <div className='min-w-0 flex-1 overflow-hidden'>
               <div className='truncate font-medium text-gray-900'>
                 {selectedLocation.formatted || selectedLocation.name || selectedLocation.city}
               </div>
