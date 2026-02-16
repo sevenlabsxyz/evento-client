@@ -90,7 +90,6 @@ export default function CreatePage() {
     showCapacityCount,
     spotifyUrl,
     wavlakeUrl,
-    attachments,
     emoji,
     setTitle,
     setDescription,
@@ -108,7 +107,6 @@ export default function CreatePage() {
     setShowCapacityCount,
     setSpotifyUrl,
     setWavlakeUrl,
-    setAttachments,
     setEmoji,
     getFormData,
     reset,
@@ -202,47 +200,12 @@ export default function CreatePage() {
     setCoverImage(imageUrl);
   };
 
-  const handleAttachmentType = (type: 'spotify' | 'wavlake' | 'photo' | 'file' | 'link') => {
-    // This will be handled by the AttachmentSheet internally
-    // For now, just handle the file pickers
-    switch (type) {
-      case 'photo':
-        // Trigger native photo picker
-        const photoInput = document.createElement('input');
-        photoInput.type = 'file';
-        photoInput.accept = 'image/*';
-        photoInput.onchange = (e) => {
-          const file = (e.target as HTMLInputElement).files?.[0];
-          if (file) {
-            const newAttachments = [...attachments, { type: 'photo', data: file }];
-            setAttachments(newAttachments);
-          }
-        };
-        photoInput.click();
-        break;
-      case 'file':
-        // Trigger native file picker
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.onchange = (e) => {
-          const file = (e.target as HTMLInputElement).files?.[0];
-          if (file) {
-            const newAttachments = [...attachments, { type: 'file', data: file }];
-            setAttachments(newAttachments);
-          }
-        };
-        fileInput.click();
-        break;
-    }
-  };
-
   const handleSaveAttachment = (type: string, url: string) => {
     if (type === 'spotify') {
       setSpotifyUrl(url);
     } else if (type === 'wavlake') {
       setWavlakeUrl(url);
     }
-    setAttachments([...attachments, { type, url }]);
   };
 
   const handleCreateEvent = async () => {
@@ -662,7 +625,7 @@ export default function CreatePage() {
                 onClick={() => setShowAttachmentModal(true)}
                 className='text-left font-medium text-gray-500'
               >
-                Add Music, Photo, File or Link
+                Add Music
               </button>
             </div>
           </div>
@@ -727,7 +690,6 @@ export default function CreatePage() {
         <AttachmentSheet
           isOpen={showAttachmentModal}
           onClose={() => setShowAttachmentModal(false)}
-          onSelectType={handleAttachmentType}
           onSaveAttachment={handleSaveAttachment}
           spotifyUrl={spotifyUrl}
           wavlakeUrl={wavlakeUrl}

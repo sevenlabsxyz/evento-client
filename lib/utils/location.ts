@@ -148,6 +148,10 @@ export function isValidLocation(location: LocationData): boolean {
  * Gets a short display name for a location (for buttons, etc.)
  */
 export function getLocationDisplayName(location: LocationData): string {
+  if (location.formatted && location.formatted.trim()) {
+    return location.formatted;
+  }
+
   if (location.name && location.name !== location.address) {
     return location.name;
   }

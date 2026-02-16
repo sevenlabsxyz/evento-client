@@ -2,12 +2,12 @@
 
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
-import { Camera, Check, File, Link, X } from 'lucide-react';
+import { Check, X } from 'lucide-react';
 
 interface AttachmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectType: (type: 'spotify' | 'wavlake' | 'photo' | 'file' | 'link') => void;
+  onSelectType: (type: 'spotify' | 'wavlake') => void;
   spotifyUrl?: string;
   wavlakeUrl?: string;
 }
@@ -45,30 +45,6 @@ export default function AttachmentModal({
       filled: hasWavlake,
       disabled: false,
     },
-    {
-      type: 'photo' as const,
-      label: 'Add Photo',
-      icon: <Camera className='h-6 w-6' />,
-      description: 'Select from your photos',
-      filled: false,
-      disabled: true,
-    },
-    {
-      type: 'file' as const,
-      label: 'Add File',
-      icon: <File className='h-6 w-6' />,
-      description: 'Upload a document',
-      filled: false,
-      disabled: true,
-    },
-    {
-      type: 'link' as const,
-      label: 'Add Link',
-      icon: <Link className='h-6 w-6' />,
-      description: 'Add any web link',
-      filled: false,
-      disabled: true,
-    },
   ];
 
   return (
@@ -80,7 +56,7 @@ export default function AttachmentModal({
       <div className='relative mx-2 w-full rounded-3xl bg-white p-6 shadow-2xl md:mx-4 md:max-w-sm'>
         {/* Header */}
         <div className='mb-6 flex items-center justify-between'>
-          <h2 className='text-xl font-semibold'>Add Attachment</h2>
+          <h2 className='text-xl font-semibold'>Add Music</h2>
           <button onClick={onClose} className='rounded-full p-2 hover:bg-gray-100'>
             <X className='h-5 w-5' />
           </button>

@@ -117,6 +117,7 @@ export default function InviteUsersSheet({ eventId, isOpen, onClose }: InviteUse
       >
         {step === 1 ? (
           <Step1SearchUsers
+            eventId={eventId}
             searchText={searchText}
             setSearchText={setSearchText}
             selectedEmails={selectedEmails}

@@ -284,9 +284,11 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
             if (data.status === 'OK' && data.results && data.results.length > 0) {
               const result = data.results[0];
               const addressComponents = parseAddressComponents(result.address_components);
+              const resolvedName =
+                addressComponents.address || result.formatted_address || 'Current Location';
 
               resolve({
-                name: addressComponents.address || 'Current Location',
+                name: resolvedName,
                 address: addressComponents.address || '',
                 city: addressComponents.city || '',
                 state: addressComponents.state,
@@ -294,6 +296,18 @@ export function useGooglePlaces(): UseGooglePlacesReturn {
                 zipCode: addressComponents.zipCode,
                 coordinates: { lat: latitude, lng: longitude },
                 formatted: result.formatted_address,
+                googlePlaceData: {
+                  place_id: result.place_id || `current_location_${latitude}_${longitude}`,
+                  name: resolvedName,
+                  formatted_address: result.formatted_address || '',
+                  address_components: result.address_components || [],
+                  geometry: {
+                    location: {
+                      lat: latitude,
+                      lng: longitude,
+                    },
+                  },
+                },
               });
             } else {
               resolve({

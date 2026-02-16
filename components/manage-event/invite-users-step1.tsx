@@ -5,12 +5,14 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { InviteItem, UserDetails } from '@/lib/types/api';
 import { isValidEmail } from '@/lib/utils/email-validation';
-import { ChevronRight, MailIcon, Search, Upload, Users } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { Check, ChevronRight, Copy, MailIcon, Search, Upload, Users } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface Step1SearchUsersProps {
+  eventId: string;
   searchText: string;
   setSearchText: (text: string) => void;
   selectedEmails: Set<string>;
@@ -21,6 +23,7 @@ interface Step1SearchUsersProps {
 }
 
 export default function Step1SearchUsers({
+  eventId,
   searchText,
   setSearchText,
   selectedEmails,
@@ -32,6 +35,22 @@ export default function Step1SearchUsers({
   // Search - use direct destructuring pattern (same as working search page)
   const { mutate: search, data: searchResults, isPending: isSearching, reset } = useUserSearch();
   const debouncedSearch = useDebounce(searchText, 400);
+  const [inviteLink, setInviteLink] = useState('');
+  const [didCopyLink, setDidCopyLink] = useState(false);
+  const copyTimeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setInviteLink(`${window.location.origin}/e/${eventId}`);
+  }, [eventId]);
+
+  useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Trigger search when debounced value changes
   useEffect(() => {
@@ -51,6 +70,37 @@ export default function Step1SearchUsers({
   const selectedCount = selectedEmails.size + selectedUsers.length;
   const showResults = searchText.trim().length >= MIN_SEARCH_LENGTH;
   const hasResults = searchResults && searchResults.length > 0;
+
+  const handleCopyInviteLink = async () => {
+    if (!inviteLink) return;
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(inviteLink);
+      } else {
+        const textArea = document.createElement('textarea');
+        textArea.value = inviteLink;
+        textArea.style.position = 'fixed';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        document.execCommand('copy');
+        textArea.remove();
+      }
+
+      setDidCopyLink(true);
+      if (copyTimeoutRef.current) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+      copyTimeoutRef.current = window.setTimeout(() => {
+        setDidCopyLink(false);
+      }, 2000);
+    } catch {
+      setDidCopyLink(false);
+    }
+  };
 
   const listToRender = useMemo(() => {
     const q = debouncedSearch.trim();
@@ -127,6 +177,51 @@ export default function Step1SearchUsers({
         >
           <Upload className='h-4 w-4' /> CSV
         </button>
+      </div>
+
+      <div className='mx-4 mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3'>
+        <div className='mb-2 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-amber-800'>
+          If you share this, anyone can see
+        </div>
+        <div className='flex items-center gap-2'>
+          <div className='min-w-0 flex-1'>
+            <p className='text-sm font-medium text-gray-900'>Shared invite link</p>
+            <p className='truncate font-mono text-xs text-gray-600'>
+              {inviteLink || `/e/${eventId}`}
+            </p>
+          </div>
+          <motion.button
+            type='button'
+            onClick={handleCopyInviteLink}
+            whileTap={{ scale: 0.95 }}
+            aria-label={didCopyLink ? 'Invite link copied' : 'Copy invite link'}
+            className='inline-flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-amber-300 bg-white text-gray-700 transition-colors hover:bg-amber-100'
+          >
+            <AnimatePresence mode='wait' initial={false}>
+              {didCopyLink ? (
+                <motion.span
+                  key='check'
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.16 }}
+                >
+                  <Check className='h-4 w-4 text-green-600' />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key='copy'
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.7 }}
+                  transition={{ duration: 0.16 }}
+                >
+                  <Copy className='h-4 w-4' />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
+        </div>
       </div>
 
       {/* Content */}

@@ -1,17 +1,30 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface SpotifySheetProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (url: string) => void;
+  initialUrl?: string;
 }
 
-export default function SpotifySheet({ isOpen, onClose, onSave }: SpotifySheetProps) {
+export default function SpotifySheet({
+  isOpen,
+  onClose,
+  onSave,
+  initialUrl = '',
+}: SpotifySheetProps) {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setUrl(initialUrl);
+      setError('');
+    }
+  }, [isOpen, initialUrl]);
 
   const validateUrl = (inputUrl: string) => {
     try {
