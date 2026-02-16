@@ -13,22 +13,24 @@ import type { RegistrationStatus, RegistrationSubmission } from '@/lib/types/api
 import { toast } from '@/lib/utils/toast';
 import { format } from 'date-fns';
 import { ChevronRight, ClipboardList } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type TabStatus = RegistrationStatus;
 
 export default function RegistrationSubmissionsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const eventId = params.id as string;
 
   const [activeTab, setActiveTab] = useState<TabStatus>('pending');
   const [selectedRegistrationId, setSelectedRegistrationId] = useState<string | null>(null);
 
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
       title: 'Registration Submissions',
       leftMode: 'back',
       centerMode: 'title',
@@ -39,18 +41,9 @@ export default function RegistrationSubmissionsPage() {
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        leftMode: 'menu',
-        centerMode: 'title',
-        subtitle: '',
-        onBackPress: null,
-        showAvatar: true,
-        buttons: [],
-        textButtons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [eventId, router, setTopBar]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   // Get existing event data from API
   const { data: existingEvent, isLoading: isLoadingEvent, error } = useEventDetails(eventId);

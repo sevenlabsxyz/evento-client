@@ -60,7 +60,7 @@ import {
   Type,
   Youtube,
 } from 'lucide-react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface QuestionTypeOption {
@@ -392,9 +392,10 @@ function SortableQuestionRow({
 
 export default function RegistrationQuestionsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const eventId = params.id as string;
   const shouldEnableRegistration = searchParams.get('enableRegistration') === '1';
 
@@ -470,7 +471,8 @@ export default function RegistrationQuestionsPage() {
   }, []);
 
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
       title: 'Registration',
       leftMode: 'back',
       centerMode: 'title',
@@ -480,18 +482,9 @@ export default function RegistrationQuestionsPage() {
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        leftMode: 'menu',
-        centerMode: 'title',
-        subtitle: '',
-        onBackPress: null,
-        showAvatar: true,
-        buttons: [],
-        textButtons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [eventId, router, setTopBar]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   useEffect(() => {
     setLocalRegistrationRequired(settings?.registration_required ?? false);

@@ -144,11 +144,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
     if (navigator.share) {
       try {
-        await navigator.share({
-          title: event.title,
-          text: event.description,
-          url,
-        });
+        await navigator.share({ url });
         return;
       } catch (error: any) {
         if (error?.name === 'AbortError') return;

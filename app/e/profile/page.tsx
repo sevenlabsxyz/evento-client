@@ -62,7 +62,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-  const { setTopBarForRoute, clearRoute } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -115,6 +115,7 @@ export default function ProfilePage() {
 
   // Set TopBar content
   useEffect(() => {
+    applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Profile',
       leftMode: 'menu',
@@ -137,7 +138,7 @@ export default function ProfilePage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [router, setTopBarForRoute, clearRoute, pathname]);
+  }, [router, setTopBarForRoute, applyRouteConfig, clearRoute, pathname]);
 
   const userStats = {
     events: eventCount || 0,

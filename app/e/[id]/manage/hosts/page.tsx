@@ -164,6 +164,9 @@ export default function HostsManagementPage() {
             <div className='space-y-3'>
               {hosts.map((host) => {
                 const isCreator = host.id === creatorId;
+                const hostDisplayName =
+                  host.name || (host.username ? `@${host.username}` : 'Unknown user');
+                const hostHandle = host.username ? `@${host.username}` : 'Unknown username';
                 return (
                   <div
                     key={host.id}
@@ -182,9 +185,7 @@ export default function HostsManagementPage() {
                     />
                     <div className='min-w-0 flex-1'>
                       <div className='flex items-center gap-2'>
-                        <h3 className='truncate font-semibold text-gray-900'>
-                          {host.name || `@${host.username}`}
-                        </h3>
+                        <h3 className='truncate font-semibold text-gray-900'>{hostDisplayName}</h3>
                         {isCreator && (
                           <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
                             <Crown className='h-3 w-3' />
@@ -192,7 +193,7 @@ export default function HostsManagementPage() {
                           </span>
                         )}
                       </div>
-                      <p className='text-sm text-gray-500'>@{host.username}</p>
+                      <p className='text-sm text-gray-500'>{hostHandle}</p>
                     </div>
                     {!isCreator && (
                       <button

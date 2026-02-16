@@ -12,7 +12,6 @@ import {
   ClipboardList,
   DollarSign,
   FileText,
-  HelpCircle,
   // Layers,
   Mail,
   MessageCircle,
@@ -73,8 +72,8 @@ export default function ManageEventPage() {
       ? [
           {
             id: 'registration-submissions',
-            title: 'Submissions',
-            description: 'Review pending registrations',
+            title: 'Registrations',
+            description: 'Review and manage guest registrations',
             icon: <ClipboardList className='h-6 w-6' />,
             iconBg: 'bg-blue-100',
             iconColor: 'text-blue-700',
@@ -105,9 +104,9 @@ export default function ManageEventPage() {
       ? [
           {
             id: 'registration-questions',
-            title: 'Registration',
-            description: 'Collect information from guests',
-            icon: <HelpCircle className='h-6 w-6' />,
+            title: 'Registration Forms',
+            description: 'Create and edit your registration form',
+            icon: <FileText className='h-6 w-6' />,
             iconBg: 'bg-purple-100',
             iconColor: 'text-purple-600',
             route: `/e/${eventId}/manage/registration`,
