@@ -164,9 +164,10 @@ export default function HostsManagementPage() {
             <div className='space-y-3'>
               {hosts.map((host) => {
                 const isCreator = host.id === creatorId;
-                const hostDisplayName =
-                  host.name || (host.username ? `@${host.username}` : 'Unknown user');
-                const hostHandle = host.username ? `@${host.username}` : 'Unknown username';
+                const isIdentityLoading = !host.name && !host.username;
+                const hostDisplayName = host.name || (host.username ? `@${host.username}` : '');
+                const hostHandle = host.username ? `@${host.username}` : '';
+
                 return (
                   <div
                     key={host.id}
@@ -184,18 +185,29 @@ export default function HostsManagementPage() {
                       size='md'
                     />
                     <div className='min-w-0 flex-1'>
-                      <div className='flex items-center gap-2'>
-                        <h3 className='truncate font-semibold text-gray-900'>{hostDisplayName}</h3>
-                        {isCreator && (
-                          <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
-                            <Crown className='h-3 w-3' />
-                            Creator
-                          </span>
-                        )}
-                      </div>
-                      <p className='text-sm text-gray-500'>{hostHandle}</p>
+                      {isIdentityLoading ? (
+                        <div className='space-y-2 py-1'>
+                          <Skeleton className='h-5 w-32' />
+                          <Skeleton className='h-4 w-24' />
+                        </div>
+                      ) : (
+                        <>
+                          <div className='flex items-center gap-2'>
+                            <h3 className='truncate font-semibold text-gray-900'>
+                              {hostDisplayName}
+                            </h3>
+                            {isCreator && (
+                              <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
+                                <Crown className='h-3 w-3' />
+                                Creator
+                              </span>
+                            )}
+                          </div>
+                          <p className='text-sm text-gray-500'>{hostHandle}</p>
+                        </>
+                      )}
                     </div>
-                    {!isCreator && (
+                    {!isCreator && !isIdentityLoading && (
                       <button
                         onClick={() => handleRemoveHost(host.id)}
                         disabled={removingHostId === host.id}
@@ -204,6 +216,9 @@ export default function HostsManagementPage() {
                       >
                         <Trash2 className='h-4 w-4' />
                       </button>
+                    )}
+                    {!isCreator && isIdentityLoading && (
+                      <Skeleton className='h-8 w-8 rounded-full' />
                     )}
                   </div>
                 );

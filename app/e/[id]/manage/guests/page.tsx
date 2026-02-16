@@ -1,23 +1,18 @@
 'use client';
 
 import { exportGuestsCsvAction } from '@/app/actions/export-guests';
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { DetachedSheet } from '@/components/ui/detached-sheet';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
+import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { useRemoveGuest } from '@/lib/hooks/use-remove-guest';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { RSVPStatus, UserDetails } from '@/lib/types/api';
+import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { MoreHorizontal, Search, Users } from 'lucide-react';
+import { Loader2, Search, Share2, Users, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -32,11 +27,13 @@ export default function GuestListPage() {
   const { data: existingEvent, isLoading, error } = useEventDetails(eventId);
   const { data: rsvps } = useEventRSVPs(eventId);
   const guests = rsvps && rsvps.length ? rsvps : [];
+  const creatorId = existingEvent?.creator_user_id;
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
   const [activeTab, setActiveTab] = useState<RSVPStatus>('yes');
   const [searchQuery, setSearchQuery] = useState('');
-  const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [hideGuestList, setHideGuestList] = useState(!existingEvent?.guestListSettings?.isPublic);
+  const [guestToRemove, setGuestToRemove] = useState<EventRSVP | null>(null);
+  const [removingUserId, setRemovingUserId] = useState<string | null>(null);
+  const removeGuest = useRemoveGuest();
 
   // Filter guests based on active tab and search query
   const filteredGuests = useMemo(
@@ -53,6 +50,20 @@ export default function GuestListPage() {
     [guests, activeTab, searchQuery]
   );
 
+  const cohostIds = useMemo(() => {
+    const ids = new Set<string>();
+    (existingEvent?.hosts || []).forEach((host) => {
+      if (host.id) ids.add(host.id);
+    });
+    return ids;
+  }, [existingEvent?.hosts]);
+
+  const getGuestRole = (userId: string) => {
+    if (creatorId && userId === creatorId) return 'creator' as const;
+    if (cohostIds.has(userId)) return 'cohost' as const;
+    return null;
+  };
+
   // Configure TopBar for this route
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -63,10 +74,10 @@ export default function GuestListPage() {
       showAvatar: false,
       buttons: [
         {
-          id: 'more',
-          icon: MoreHorizontal,
-          onClick: () => setShowMoreMenu((v) => !v),
-          label: 'More',
+          id: 'export',
+          icon: Share2,
+          onClick: () => handleExportCSV(),
+          label: 'Export CSV',
         },
       ],
     });
@@ -146,10 +157,6 @@ export default function GuestListPage() {
     setSearchQuery(e.target.value);
   };
 
-  const handleToggleHideGuestList = () => {
-    setHideGuestList(!hideGuestList);
-  };
-
   const handleExportCSV = async () => {
     if (!existingEvent || !guests.length) {
       toast.error('No guest data available to export');
@@ -178,32 +185,49 @@ export default function GuestListPage() {
     }
   };
 
+  const handleOpenRemoveSheet = (guest: EventRSVP) => {
+    setGuestToRemove(guest);
+  };
+
+  const handleCloseRemoveSheet = () => {
+    if (removeGuest.isPending) return;
+    setGuestToRemove(null);
+  };
+
+  const handleConfirmRemoveGuest = async () => {
+    if (!guestToRemove) return;
+
+    setRemovingUserId(guestToRemove.user_id);
+
+    try {
+      await removeGuest.mutateAsync({
+        eventId,
+        userId: guestToRemove.user_id,
+      });
+      toast.success('Guest removed from guest list');
+      setGuestToRemove(null);
+    } catch {
+      toast.error('Failed to remove guest');
+    } finally {
+      setRemovingUserId(null);
+    }
+  };
+
+  const segmentedTabItems = tabs.map((tab) => ({
+    value: tab.key,
+    label: (
+      <>
+        {tab.label}
+        {tab.count > 0 && <span className='ml-1 text-xs opacity-70'>({tab.count})</span>}
+      </>
+    ),
+  }));
+
   return (
     <>
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-        <DropdownMenu open={showMoreMenu} onOpenChange={setShowMoreMenu}>
-          {/* Hidden, fixed-position trigger to anchor the menu near the TopBar ellipsis */}
-          <div className='fixed right-3 top-5 z-50'>
-            <DropdownMenuTrigger asChild>
-              <button aria-label='More' className='m-0 h-0 w-0 p-0 opacity-0' />
-            </DropdownMenuTrigger>
-          </div>
-          <DropdownMenuContent side='bottom' align='end' sideOffset={8} className='min-w-56'>
-            <DropdownMenuItem onClick={handleExportCSV} className='font-medium'>
-              Export CSV
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuCheckboxItem
-              checked={hideGuestList}
-              onCheckedChange={() => handleToggleHideGuestList()}
-            >
-              Hide guest list
-            </DropdownMenuCheckboxItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         {/* Search Bar */}
-        <div className='p-4'>
+        <div className='p-4 pb-0'>
           <div className='relative'>
             <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
             <input
@@ -217,48 +241,73 @@ export default function GuestListPage() {
         </div>
 
         {/* Tabs */}
-        <div className='px-4'>
-          <div className='flex space-x-1 overflow-x-auto pb-2'>
-            {tabs.map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => handleTabChange(tab.key)}
-                className={`flex-shrink-0 rounded-lg px-4 py-2 font-medium transition-colors ${
-                  activeTab === tab.key
-                    ? 'bg-red-500 text-white'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                {tab.label}
-                {tab.count > 0 && <span className='ml-1 text-xs'>({tab.count})</span>}
-              </button>
-            ))}
+        <SegmentedTabs
+          items={segmentedTabItems}
+          value={activeTab}
+          onValueChange={(v) => handleTabChange(v as RSVPStatus)}
+        />
+
+        {activeTab === 'yes' && (
+          <div className='px-4'>
+            <div className='rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700'>
+              Creator and co-hosts cannot be removed from this list. Remove co-host access in Hosts
+              to remove them from the guest list.
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Content */}
         <div className='flex-1 p-4'>
           {filteredGuests.length > 0 ? (
             <div className='space-y-3'>
-              {filteredGuests.map((guest) => (
-                <div key={guest.id} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
-                  <UserAvatar
-                    user={{
-                      name: guest.user_details?.name,
-                      username: guest.user_details?.username,
-                      image: guest.user_details?.image,
-                      verification_status: guest.user_details?.verification_status,
-                    }}
-                    onAvatarClick={() => setSelectedUser(guest?.user_details || null)}
-                    height={48}
-                    width={48}
-                  />
-                  <div className='flex-1'>
-                    <h3 className='font-semibold text-gray-900'>{guest.user_details?.name}</h3>
-                    <p className='text-sm text-gray-500'>{guest.user_details?.username}</p>
+              {filteredGuests.map((guest) => {
+                const guestRole = getGuestRole(guest.user_id);
+
+                return (
+                  <div
+                    key={guest.id}
+                    className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'
+                  >
+                    <UserAvatar
+                      user={{
+                        name: guest.user_details?.name,
+                        username: guest.user_details?.username,
+                        image: guest.user_details?.image,
+                        verification_status: guest.user_details?.verification_status,
+                      }}
+                      onAvatarClick={() => setSelectedUser(guest?.user_details || null)}
+                      height={48}
+                      width={48}
+                    />
+                    <div className='flex-1'>
+                      <h3 className='font-semibold text-gray-900'>{guest.user_details?.name}</h3>
+                      <p className='text-sm text-gray-500'>{guest.user_details?.username}</p>
+                    </div>
+                    {activeTab === 'yes' && !guestRole && (
+                      <button
+                        onClick={() => handleOpenRemoveSheet(guest)}
+                        disabled={removingUserId === guest.user_id}
+                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50'
+                        aria-label={`Remove ${guest.user_details?.name || guest.user_details?.username || 'guest'}`}
+                      >
+                        {removingUserId === guest.user_id ? (
+                          <Loader2 className='h-4 w-4 animate-spin' />
+                        ) : (
+                          <X className='h-4 w-4' />
+                        )}
+                      </button>
+                    )}
+                    {activeTab === 'yes' && guestRole && (
+                      <div className='flex flex-col items-end gap-1'>
+                        <span className='rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
+                          {guestRole === 'creator' ? 'Creator' : 'Co-host'}
+                        </span>
+                        <span className='text-[11px] text-gray-500'>Manage in Hosts</span>
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           ) : (
             <div className='py-16 text-center'>
@@ -276,7 +325,7 @@ export default function GuestListPage() {
         </div>
 
         {/* Summary Footer */}
-        <div className='border-t border-gray-100 bg-gray-50 p-4'>
+        <div className='mt-auto border-t border-gray-100 bg-gray-50 p-4'>
           <div className='flex items-center justify-between text-sm text-gray-600'>
             <span>Total Guests: {guests.length}</span>
             <span>
@@ -294,6 +343,52 @@ export default function GuestListPage() {
           user={selectedUser}
         />
       )}
+
+      <DetachedSheet.Root
+        presented={!!guestToRemove}
+        onPresentedChange={(presented) => !presented && handleCloseRemoveSheet()}
+      >
+        <DetachedSheet.Portal>
+          <DetachedSheet.View>
+            <DetachedSheet.Backdrop />
+            <DetachedSheet.Content>
+              <div className='p-6'>
+                <div className='mb-4 flex justify-center'>
+                  <DetachedSheet.Handle />
+                </div>
+
+                <h2 className='mb-2 text-xl font-semibold text-gray-900'>Remove guest?</h2>
+                <p className='mb-6 text-sm text-gray-600'>
+                  Remove{' '}
+                  <span className='font-medium text-gray-900'>
+                    {guestToRemove?.user_details?.name ||
+                      guestToRemove?.user_details?.username ||
+                      'this user'}
+                  </span>{' '}
+                  from the approved guest list? They will lose guest-list access.
+                </p>
+
+                <div className='flex flex-col gap-3 sm:flex-row'>
+                  <button
+                    onClick={handleCloseRemoveSheet}
+                    disabled={removeGuest.isPending}
+                    className='w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50'
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleConfirmRemoveGuest}
+                    disabled={removeGuest.isPending}
+                    className='w-full rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50'
+                  >
+                    {removeGuest.isPending ? 'Removing...' : 'Remove guest'}
+                  </button>
+                </div>
+              </div>
+            </DetachedSheet.Content>
+          </DetachedSheet.View>
+        </DetachedSheet.Portal>
+      </DetachedSheet.Root>
     </>
   );
 }

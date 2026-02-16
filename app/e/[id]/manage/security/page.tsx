@@ -2,9 +2,9 @@
 
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import PasswordProtectionSheet from '@/components/create-event/password-protection-sheet';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { Switch } from '@/components/ui/switch';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
@@ -195,105 +195,119 @@ export default function SecurityPrivacyPage() {
 
   return (
     <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
-      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
-        <div className='rounded-2xl bg-white p-4'>
-          <button
-            onClick={() => setShowVisibilitySheet(true)}
-            className='flex w-full items-center gap-4 text-left'
-          >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              {visibility === 'public' ? (
-                <Globe className='h-4 w-4 text-gray-600' />
-              ) : (
-                <Lock className='h-4 w-4 text-gray-600' />
-              )}
-            </div>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>
-                Event Visibility
-              </label>
-              <div className='flex items-center justify-between'>
-                <span className='font-medium text-gray-900'>
-                  {visibility === 'public' ? 'Public' : 'Private'}
-                </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
-              </div>
-            </div>
-          </button>
-        </div>
-
-        <div className='rounded-2xl bg-white p-4'>
-          <button
-            onClick={() => setShowPasswordSheet(true)}
-            className='flex w-full items-center gap-4 text-left'
-          >
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
+        {/* Event details */}
+        <div>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+            Event details
+          </h2>
+          <div className='overflow-hidden rounded-2xl bg-white'>
+            <button
+              onClick={() => setShowVisibilitySheet(true)}
+              className='flex w-full items-center gap-4 p-4 text-left'
             >
-              {passwordProtected ? (
-                <ShieldCheck className='h-4 w-4 text-red-600' />
-              ) : (
-                <ShieldOff className='h-4 w-4 text-gray-600' />
-              )}
-            </div>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>
-                Password Protection
-              </label>
-              <div className='flex items-center justify-between'>
-                <span
-                  className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
-                >
-                  {passwordProtected ? 'Protected' : 'Not Protected'}
-                </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                {visibility === 'public' ? (
+                  <Globe className='h-4 w-4 text-gray-600' />
+                ) : (
+                  <Lock className='h-4 w-4 text-gray-600' />
+                )}
               </div>
-            </div>
-          </button>
+              <div className='flex-1'>
+                <label className='mb-1 block text-sm font-medium text-gray-500'>
+                  Event Visibility
+                </label>
+                <div className='flex items-center justify-between'>
+                  <span className='font-medium text-gray-900'>
+                    {visibility === 'public' ? 'Public' : 'Private'}
+                  </span>
+                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                </div>
+              </div>
+            </button>
+
+            {isRegistrationMode && (
+              <>
+                <div className='mx-4 border-t border-gray-100' />
+                <div className='p-4'>
+                  <div className='mb-3 flex items-start gap-4'>
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                      <EyeOff className='h-4 w-4 text-gray-600' />
+                    </div>
+                    <div>
+                      <p className='text-sm font-medium text-gray-900'>Registration Visibility</p>
+                      <p className='mt-0.5 text-xs text-gray-500'>
+                        Hide details from unapproved guests
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='overflow-hidden rounded-xl bg-gray-50'>
+                    <label className='flex items-center justify-between px-4 py-3'>
+                      <span className='text-sm text-gray-700'>Hide location until approved</span>
+                      <Switch
+                        checked={hideLocationForUnapproved}
+                        onCheckedChange={(checked) => setHideLocationForUnapproved(checked)}
+                      />
+                    </label>
+                    <div className='mx-4 border-t border-gray-200/60' />
+                    <label className='flex items-center justify-between px-4 py-3'>
+                      <span className='text-sm text-gray-700'>Hide guest list until approved</span>
+                      <Switch
+                        checked={hideGuestListForUnapproved}
+                        onCheckedChange={(checked) => setHideGuestListForUnapproved(checked)}
+                      />
+                    </label>
+                    <div className='mx-4 border-t border-gray-200/60' />
+                    <label className='flex items-center justify-between px-4 py-3'>
+                      <span className='text-sm text-gray-700'>Hide description until approved</span>
+                      <Switch
+                        checked={hideDescriptionForUnapproved}
+                        onCheckedChange={(checked) => setHideDescriptionForUnapproved(checked)}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        {isRegistrationMode && (
-          <div className='rounded-2xl bg-white p-4'>
-            <div className='mb-4 flex items-start gap-4'>
-              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                <EyeOff className='h-4 w-4 text-gray-600' />
+        {/* Event security */}
+        <div>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+            Event security
+          </h2>
+          <div className='overflow-hidden rounded-2xl bg-white'>
+            <button
+              onClick={() => setShowPasswordSheet(true)}
+              className='flex w-full items-center gap-4 p-4 text-left'
+            >
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+              >
+                {passwordProtected ? (
+                  <ShieldCheck className='h-4 w-4 text-red-600' />
+                ) : (
+                  <ShieldOff className='h-4 w-4 text-gray-600' />
+                )}
               </div>
-              <div>
-                <p className='text-sm font-medium text-gray-500'>Registration Visibility</p>
-                <p className='text-sm text-gray-900'>Hide details from unapproved guests</p>
-                <p className='mt-1 text-xs text-gray-500'>
-                  By default, location and guest list are hidden until a registration is approved.
-                </p>
+              <div className='flex-1'>
+                <label className='mb-1 block text-sm font-medium text-gray-500'>
+                  Password Protection
+                </label>
+                <div className='flex items-center justify-between'>
+                  <span
+                    className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
+                  >
+                    {passwordProtected ? 'Protected' : 'Not Protected'}
+                  </span>
+                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                </div>
               </div>
-            </div>
-
-            <div className='space-y-3'>
-              <label className='flex items-start gap-3 rounded-lg border border-gray-200 p-3'>
-                <Checkbox
-                  checked={hideLocationForUnapproved}
-                  onCheckedChange={(checked) => setHideLocationForUnapproved(Boolean(checked))}
-                />
-                <span className='text-sm text-gray-700'>Hide location until approved</span>
-              </label>
-
-              <label className='flex items-start gap-3 rounded-lg border border-gray-200 p-3'>
-                <Checkbox
-                  checked={hideGuestListForUnapproved}
-                  onCheckedChange={(checked) => setHideGuestListForUnapproved(Boolean(checked))}
-                />
-                <span className='text-sm text-gray-700'>Hide guest list until approved</span>
-              </label>
-
-              <label className='flex items-start gap-3 rounded-lg border border-gray-200 p-3'>
-                <Checkbox
-                  checked={hideDescriptionForUnapproved}
-                  onCheckedChange={(checked) => setHideDescriptionForUnapproved(Boolean(checked))}
-                />
-                <span className='text-sm text-gray-700'>Hide description until approved</span>
-              </label>
-            </div>
+            </button>
           </div>
-        )}
+        </div>
       </div>
 
       <EventVisibilitySheet
