@@ -29,7 +29,7 @@ import { ZapSheet } from '@/components/zap/zap-sheet';
 import { usePublicUserBadges } from '@/lib/hooks/use-badges';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
-import { EventSortBy, type EventTimeframe } from '@/lib/hooks/use-user-events';
+import { type EventTimeframe } from '@/lib/hooks/use-user-events';
 import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useFollowAction,
@@ -69,7 +69,6 @@ export default function UserProfilePageClient() {
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
-  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
   const [hasAutoSelectedInitialTab, setHasAutoSelectedInitialTab] = useState(false);
   const [hasAutoSwitchedToPast, setHasAutoSwitchedToPast] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
@@ -433,13 +432,7 @@ export default function UserProfilePageClient() {
         (
           a: { date: string; events: EventWithUser[] },
           b: { date: string; events: EventWithUser[] }
-        ) => {
-          if (sortBy === 'date-desc') {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
-          } else {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
-          }
-        }
+        ) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
 
     const canPinEvent = (event: EventWithUser) => {
@@ -489,7 +482,7 @@ export default function UserProfilePageClient() {
     return (
       <div className='space-y-4'>
         {/* Filter Controls */}
-        <div className='flex items-center justify-between gap-2'>
+        <div className='flex justify-center'>
           {/* Timeframe Toggle */}
           <div className='flex items-center rounded-full bg-gray-50 p-1'>
             <button
@@ -515,37 +508,11 @@ export default function UserProfilePageClient() {
               Past
             </button>
           </div>
+        </div>
 
-          <div className='flex items-center gap-2'>
-            {/* Sort Toggle */}
-            <div className='flex items-center rounded-full bg-gray-50 p-1'>
-              <button
-                onClick={() => setSortBy('date-desc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-desc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Latest
-              </button>
-              <button
-                onClick={() => setSortBy('date-asc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-asc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Oldest
-              </button>
-            </div>
-
-            {/* Search Button */}
-            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
-          </div>
+        <div className='flex justify-end'>
+          {/* Search Button */}
+          <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
         </div>
 
         {/* Events List */}
@@ -775,7 +742,7 @@ export default function UserProfilePageClient() {
           {/* Tabs */}
           <div className='pb-20'>
             {/* Tabbed Section */}
-            <div className='mb-4 w-full bg-white px-6 lg:px-0'>
+            <div className='mb-4 w-full bg-white px-6 pb-5 md:pb-0 lg:px-0'>
               {/* Tab Headers */}
               <SegmentedTabs
                 items={[
