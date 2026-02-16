@@ -85,8 +85,8 @@ export function ZapSheet({
     const walletExists = hasExistingWallet();
     const actionLabel = walletExists ? 'Unlock wallet' : 'Create wallet';
     const descriptionText = walletExists
-      ? 'Hey, unlock your Evento Wallet to continue.'
-      : 'Hey, create your Evento Wallet and then continue.';
+      ? 'Please unlock your Wallet to continue.'
+      : 'Please create your Wallet to continue.';
 
     toast.custom(
       (id) => (

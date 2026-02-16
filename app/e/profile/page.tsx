@@ -54,14 +54,15 @@ import {
   Search,
   Settings,
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTopBar } = useTopBar();
+  const pathname = usePathname();
+  const { setTopBarForRoute, clearRoute } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
@@ -114,7 +115,7 @@ export default function ProfilePage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    setTopBarForRoute(pathname, {
       title: 'Profile',
       leftMode: 'menu',
       buttons: [
@@ -134,12 +135,9 @@ export default function ProfilePage() {
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        buttons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [router, setTopBar]);
+  }, [router, setTopBarForRoute, clearRoute, pathname]);
 
   const userStats = {
     events: eventCount || 0,
