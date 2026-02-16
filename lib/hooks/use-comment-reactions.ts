@@ -12,6 +12,12 @@ export interface CommentReactions {
 
 export type ReactionType = 'like';
 
+type ReactionMutationResponse = {
+  action: 'added' | 'removed' | 'updated';
+  has_reacted: boolean;
+  reaction_type?: ReactionType;
+};
+
 const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
 };
@@ -49,31 +55,16 @@ export function useCommentReactions(commentId: string, eventId: string) {
     }: {
       commentId: string;
       reactionType: ReactionType;
-    }): Promise<
-      ApiResponse<{
-        action: 'added' | 'removed' | 'updated';
-        has_reacted: boolean;
-        reaction_type?: ReactionType;
-      }>
-    > => {
+    }): Promise<ReactionMutationResponse> => {
       const response = await apiClient.post<
-        | ApiResponse<{
-            action: 'added' | 'removed' | 'updated';
-            has_reacted: boolean;
-            reaction_type?: ReactionType;
-          }>
-        | {
-            action: 'added' | 'removed' | 'updated';
-            has_reacted: boolean;
-            reaction_type?: ReactionType;
-          }
+        ApiResponse<ReactionMutationResponse> | ReactionMutationResponse
       >(`/v1/events/${eventId}/comments/${commentId}/reactions`, { reactionType });
 
       if (!response || typeof response !== 'object') {
         throw new Error('Invalid response format');
       }
 
-      if (isApiResponse(response)) {
+      if (isApiResponse<ReactionMutationResponse>(response)) {
         return response.data;
       }
 

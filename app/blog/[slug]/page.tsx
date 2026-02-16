@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 
 export const revalidate = 30;
 
-const Error = ({ message }: { message: string }) => (
+const ErrorAlert = ({ message }: { message: string }) => (
   <div className='mx-4 rounded-lg border border-red-200 bg-red-50 p-4 text-red-700' role='alert'>
     <div className='mb-1 flex items-center gap-2'>
       <AlertTriangle className='h-5 w-5' />
@@ -81,7 +81,7 @@ export default async function BlogPost({ params }: { params: { slug: string } })
   try {
     post = await getBlogPost(params.slug);
   } catch (error) {
-    return <Error message='Failed to load blog post. Please try again later.' />;
+    return <ErrorAlert message='Failed to load blog post. Please try again later.' />;
   }
 
   if (!post) {
