@@ -18,7 +18,8 @@ export function transformApiEventToDisplay(
   const endDateTime = formatEventDate(apiEvent.computed_end_date, apiEvent.timezone);
 
   // Get location from event_locations (new format) or parse legacy location string
-  const eventLoc = (apiEvent as any).event_locations;
+  const rawEventLoc = (apiEvent as any).event_locations;
+  const eventLoc = Array.isArray(rawEventLoc) ? rawEventLoc[0] : rawEventLoc;
   const location: EventLocation = eventLoc
     ? {
         name: eventLoc.name || '',
@@ -31,7 +32,7 @@ export function transformApiEventToDisplay(
             ? { lat: Number(eventLoc.latitude), lng: Number(eventLoc.longitude) }
             : undefined,
       }
-    : parseLocationString(apiEvent.location);
+    : parseLocationString(apiEvent.location || '');
 
   // Transform hosts
   const transformedHosts: EventHost[] = hosts.map((host) => ({
