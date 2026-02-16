@@ -68,7 +68,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
         <SheetWithDetentFull.Portal>
           <SheetWithDetentFull.View>
             <SheetWithDetentFull.Backdrop />
-            <SheetWithDetentFull.Content className='bg-white'>
+            <SheetWithDetentFull.Content className='flex flex-col bg-white'>
               {/* Header with search */}
               <div className='px-4 pt-2'>
                 <div className='mb-4 flex justify-center'>
@@ -98,76 +98,78 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
               </div>
 
               {/* Scrollable content */}
-              <SheetWithDetentFull.ScrollRoot asChild>
-                <SheetWithDetentFull.ScrollView className='mt-4 max-h-full overflow-y-auto'>
-                  <SheetWithDetentFull.ScrollContent>
-                    {listForTab.length === 0 ? (
-                      <div className='flex flex-col items-center justify-center py-16 text-center'>
-                        <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400'>
-                          <Search className='h-6 w-6' />
+              <div className='min-h-0 flex-1'>
+                <SheetWithDetentFull.ScrollRoot asChild>
+                  <SheetWithDetentFull.ScrollView className='pb-safe mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain'>
+                    <SheetWithDetentFull.ScrollContent>
+                      {listForTab.length === 0 ? (
+                        <div className='flex flex-col items-center justify-center py-16 text-center'>
+                          <div className='mb-4 rounded-2xl bg-gray-100 p-4 text-gray-400'>
+                            <Search className='h-6 w-6' />
+                          </div>
+                          <h3 className='mb-1 text-base font-semibold text-gray-900'>
+                            {searchText.trim()
+                              ? 'No matching guests'
+                              : activeTab === 'yes'
+                                ? 'No guests marked as Going'
+                                : activeTab === 'maybe'
+                                  ? 'No guests marked as Maybe'
+                                  : 'No guests marked as Not Going'}
+                          </h3>
+                          <p className='mb-4 max-w-xs text-sm text-gray-500'>
+                            {searchText.trim()
+                              ? 'Try a different name or username, or clear your search.'
+                              : 'Once guests respond, they will appear here.'}
+                          </p>
+                          {searchText.trim() && (
+                            <Button variant='outline' size='sm' onClick={() => setSearchText('')}>
+                              Clear search
+                            </Button>
+                          )}
                         </div>
-                        <h3 className='mb-1 text-base font-semibold text-gray-900'>
-                          {searchText.trim()
-                            ? 'No matching guests'
-                            : activeTab === 'yes'
-                              ? 'No guests marked as Going'
-                              : activeTab === 'maybe'
-                                ? 'No guests marked as Maybe'
-                                : 'No guests marked as Not Going'}
-                        </h3>
-                        <p className='mb-4 max-w-xs text-sm text-gray-500'>
-                          {searchText.trim()
-                            ? 'Try a different name or username, or clear your search.'
-                            : 'Once guests respond, they will appear here.'}
-                        </p>
-                        {searchText.trim() && (
-                          <Button variant='outline' size='sm' onClick={() => setSearchText('')}>
-                            Clear search
-                          </Button>
-                        )}
-                      </div>
-                    ) : (
-                      <div className='space-y-3 px-4 pb-6'>
-                        {listForTab.map((rsvp, index) => (
-                          <button
-                            key={rsvp.id ?? `${rsvp.user_id ?? 'guest'}-${rsvp.status}-${index}`}
-                            onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
-                            className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
-                          >
-                            <div className='flex flex-1 items-center gap-3'>
-                              <UserAvatar
-                                user={{
-                                  name: rsvp.user_details?.name || undefined,
-                                  username: rsvp.user_details?.username || undefined,
-                                  image: rsvp.user_details?.image || undefined,
-                                  verification_status:
-                                    rsvp.user_details?.verification_status || null,
-                                }}
-                                size='base'
-                              />
-                              <div className='min-w-0 flex-1'>
-                                <div className='truncate font-medium text-gray-900'>
-                                  @{rsvp.user_details?.username || 'guest'}
-                                </div>
-                                <div className='truncate text-sm text-gray-500'>
-                                  {rsvp.user_details?.name || 'Guest'}
+                      ) : (
+                        <div className='space-y-3 px-4 pb-6'>
+                          {listForTab.map((rsvp, index) => (
+                            <button
+                              key={rsvp.id ?? `${rsvp.user_id ?? 'guest'}-${rsvp.status}-${index}`}
+                              onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
+                              className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+                            >
+                              <div className='flex flex-1 items-center gap-3'>
+                                <UserAvatar
+                                  user={{
+                                    name: rsvp.user_details?.name || undefined,
+                                    username: rsvp.user_details?.username || undefined,
+                                    image: rsvp.user_details?.image || undefined,
+                                    verification_status:
+                                      rsvp.user_details?.verification_status || null,
+                                  }}
+                                  size='base'
+                                />
+                                <div className='min-w-0 flex-1'>
+                                  <div className='truncate font-medium text-gray-900'>
+                                    @{rsvp.user_details?.username || 'guest'}
+                                  </div>
+                                  <div className='truncate text-sm text-gray-500'>
+                                    {rsvp.user_details?.name || 'Guest'}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                            <CircledIconButton
-                              icon={ArrowRight}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleViewProfile(rsvp.user_details, rsvp.user_id);
-                              }}
-                            />
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </SheetWithDetentFull.ScrollContent>
-                </SheetWithDetentFull.ScrollView>
-              </SheetWithDetentFull.ScrollRoot>
+                              <CircledIconButton
+                                icon={ArrowRight}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleViewProfile(rsvp.user_details, rsvp.user_id);
+                                }}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </SheetWithDetentFull.ScrollContent>
+                  </SheetWithDetentFull.ScrollView>
+                </SheetWithDetentFull.ScrollRoot>
+              </div>
             </SheetWithDetentFull.Content>
           </SheetWithDetentFull.View>
         </SheetWithDetentFull.Portal>

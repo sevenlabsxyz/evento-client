@@ -30,7 +30,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useUserBadges } from '@/lib/hooks/use-badges';
-import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
+import { EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
@@ -64,7 +64,6 @@ export default function ProfilePage() {
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
-  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -98,7 +97,7 @@ export default function ProfilePage() {
   } = useUserEvents({
     filter: 'upcoming',
     timeframe: timeframe,
-    sortBy: sortBy,
+    sortBy: 'date-desc',
     limit: 10,
     enabled: activeTab === 'events',
   });
@@ -222,19 +221,13 @@ export default function ProfilePage() {
           (
             a: { date: string; events: EventWithUser[] },
             b: { date: string; events: EventWithUser[] }
-          ) => {
-            if (sortBy === 'date-desc') {
-              return new Date(b.date).getTime() - new Date(a.date).getTime();
-            } else {
-              return new Date(a.date).getTime() - new Date(b.date).getTime();
-            }
-          }
+          ) => new Date(b.date).getTime() - new Date(a.date).getTime()
         ) || [];
 
     return (
       <div className='space-y-4'>
         {/* Filter Controls */}
-        <div className='flex items-center justify-between gap-2'>
+        <div className='flex justify-center'>
           {/* Timeframe Toggle */}
           <div className='flex items-center rounded-full bg-gray-50 p-1'>
             <button
@@ -260,37 +253,11 @@ export default function ProfilePage() {
               Past
             </button>
           </div>
+        </div>
 
-          <div className='flex items-center gap-2'>
-            {/* Sort Toggle */}
-            <div className='flex items-center rounded-full bg-gray-50 p-1'>
-              <button
-                onClick={() => setSortBy('date-desc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-desc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Latest
-              </button>
-              <button
-                onClick={() => setSortBy('date-asc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-asc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Oldest
-              </button>
-            </div>
-
-            {/* Search Button */}
-            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
-          </div>
+        <div className='flex justify-end'>
+          {/* Search Button */}
+          <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
         </div>
 
         {/* Events List */}
