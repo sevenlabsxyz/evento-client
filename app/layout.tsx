@@ -7,11 +7,34 @@ import './globals.css';
 import { Providers } from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
+const defaultUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : 'http://localhost:3003';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(defaultUrl),
   title: 'Evento - Events made social',
   description: 'Create, manage and oversee events and communities',
   generator: 'v0.dev',
+  twitter: {
+    title: 'Evento - Events made social',
+    card: 'summary_large_image',
+    site: '@evento',
+    creator: '@evento_so',
+    images: 'https://i.imgur.com/dTclM4m.png',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://evento.so',
+    title: 'Evento - Events made social',
+    description: 'Events made social.',
+    siteName: 'Evento - Events made social',
+    images: [
+      {
+        url: 'https://i.imgur.com/dTclM4m.png',
+      },
+    ],
+  },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,

@@ -21,6 +21,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
   // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
+  const eventOgImage = `https://evento.so/e/${eventId}/opengraph-image`;
 
   try {
     const { data, error } = await supabase
@@ -61,6 +62,14 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         siteName: 'Evento',
         title: title,
         description: descText,
+        images: [
+          {
+            url: eventOgImage,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
       },
       robots: {
         index: true,
@@ -72,6 +81,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         title: title,
         description: descText,
         creator: '@evento_so',
+        images: [eventOgImage],
       },
     };
   } catch (error) {

@@ -5,6 +5,7 @@ import UserProfilePageClient from './page-client';
 
 export async function generateMetadata({ params }: any, parent: any) {
   const { username } = params;
+  const profileOgImage = `https://evento.so/${username}/opengraph-image`;
 
   const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -53,10 +54,10 @@ export async function generateMetadata({ params }: any, parent: any) {
         siteName: 'Evento',
         images: [
           {
-            url: getProperURL(user.image),
-            width: 400,
-            height: 400,
-            alt: `Profile picture of ${user.name || user.username}`,
+            url: profileOgImage,
+            width: 1200,
+            height: 630,
+            alt: `Profile card for ${user.name || user.username}`,
           },
         ],
       },
@@ -70,7 +71,7 @@ export async function generateMetadata({ params }: any, parent: any) {
         title,
         description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
         creator: '@evento_so',
-        images: [getProperURL(user.image)],
+        images: [profileOgImage],
       },
     };
   } catch (error) {
