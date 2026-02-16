@@ -22,12 +22,13 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ManageEventPage() {
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
   const { data: eventDetails, isLoading, error } = useEventDetails(eventId);
@@ -35,7 +36,9 @@ export default function ManageEventPage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+
+    setTopBarForRoute(pathname, {
       title: 'Manage Event',
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}?from=manage`),
@@ -52,19 +55,10 @@ export default function ManageEventPage() {
       ],
     });
 
-    // Cleanup function to reset topbar state when leaving this page
     return () => {
-      setTopBar({
-        title: '',
-        leftMode: 'menu',
-        showAvatar: true,
-        subtitle: '',
-        centerMode: 'title',
-        onBackPress: null,
-        textButtons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar, router, eventId]);
+  }, [setTopBarForRoute, applyRouteConfig, clearRoute, pathname, router, eventId]);
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPublishSheet, setShowPublishSheet] = useState(false);

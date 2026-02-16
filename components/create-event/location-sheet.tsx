@@ -120,9 +120,9 @@ export default function LocationSheet({
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={searchHeader}
-      contentClassName='pb-safe'
+      contentClassName='overflow-x-hidden pb-safe'
     >
-      <div className='flex min-w-0 flex-col overflow-hidden'>
+      <div className='flex w-full min-w-0 flex-col overflow-hidden'>
         {selectedLocation && (
           <button
             onClick={() => handleLocationSelect(selectedLocation)}
