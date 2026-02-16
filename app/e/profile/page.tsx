@@ -152,6 +152,7 @@ export default function ProfilePage() {
     username: user?.username ? `@${user.username}` : '@user',
     status: user?.bio || 'Welcome to Evento',
     image: user?.image,
+    verification_status: user?.verification_status,
     isVerified: user?.verification_status === 'verified',
   };
 

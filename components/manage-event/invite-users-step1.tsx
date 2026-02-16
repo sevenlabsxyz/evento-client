@@ -170,7 +170,7 @@ export default function Step1SearchUsers({
           <input
             className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500'
             type='text'
-            placeholder='Search by @username'
+            placeholder='Email or @username'
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -262,7 +262,7 @@ export default function Step1SearchUsers({
               </div>
             ))}
           </div>
-        ) : !hasResults ? (
+        ) : !hasResults && !isEmailQuery(debouncedSearch.trim()) ? (
           // No results state
           <div className='flex flex-col items-center justify-center py-16 text-center'>
             <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
