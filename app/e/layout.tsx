@@ -8,13 +8,16 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { SESSION_KEYS } from '@/lib/constants/storage-keys';
+import { getSessionValue, markAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { usePathname } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export default function EventoLayout({ children }: { children: React.ReactNode }) {
   const { isOverlaid, applyRouteConfig } = useTopBar();
   const { isAuthenticated } = useAuth();
   const pathname = usePathname();
+  const previousPathRef = useRef<string | null>(null);
 
   useWallet();
   useWalletEventListener();
@@ -22,6 +25,19 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   useEffect(() => {
     applyRouteConfig(pathname);
   }, [pathname, applyRouteConfig]);
+
+  useEffect(() => {
+    if (!getSessionValue(SESSION_KEYS.APP_INITIAL_PATH)) {
+      setInitialAppPath(pathname);
+    }
+
+    const previousPath = previousPathRef.current;
+    if (previousPath && previousPath !== pathname) {
+      markAppNavigated();
+    }
+
+    previousPathRef.current = pathname;
+  }, [pathname]);
 
   return (
     <StreamChatProvider>

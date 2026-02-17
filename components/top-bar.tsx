@@ -93,6 +93,21 @@ export function TopBar() {
       return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
     }
 
+    if (leftMode === 'logo') {
+      return (
+        <div className='flex items-center'>
+          <Image
+            priority
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={80}
+            height={24}
+            className='h-6 w-auto'
+          />
+        </div>
+      );
+    }
+
     return (
       <motion.button
         onClick={handleMenuClick}

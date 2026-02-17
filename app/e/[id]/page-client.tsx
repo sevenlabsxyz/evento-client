@@ -26,6 +26,7 @@ import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
+import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
@@ -178,6 +179,14 @@ export default function EventDetailPageClient() {
 
   // Configure TopBar for event pages
   useEffect(() => {
+    const initialPath = getInitialAppPath();
+    if (!initialPath) {
+      setInitialAppPath(pathname);
+    }
+
+    const resolvedInitialPath = initialPath ?? pathname;
+    const isDirectLanding = resolvedInitialPath === pathname && !hasAppNavigated();
+
     const handleShare = async () => {
       if (navigator.share) {
         try {
@@ -198,7 +207,7 @@ export default function EventDetailPageClient() {
     applyRouteConfig(pathname);
 
     setTopBarForRoute(pathname, {
-      leftMode: 'back',
+      leftMode: isDirectLanding ? 'logo' : 'back',
       onBackPress: cameFromManage ? () => router.push(isAuthenticated ? '/e/hub' : '/') : null,
       centerMode: 'title',
       title: event?.title || '',
