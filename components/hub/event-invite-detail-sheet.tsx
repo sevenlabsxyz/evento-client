@@ -106,7 +106,9 @@ export function EventInviteDetailSheet({
                       <MapPin className='mr-1 h-4 w-4' />
                       <span>{invite.events.location || 'TBD'}</span>
                     </div>
-                    {invite.message && <p className='text-sm text-gray-600'>"{invite.message}"</p>}
+                    {invite.message && (
+                      <p className='text-sm text-gray-600'>&quot;{invite.message}&quot;</p>
+                    )}
                   </div>
 
                   {invite.status === 'pending' && (

@@ -154,7 +154,7 @@ export default function ContributionPaymentSheet({
               </div>
 
               <p className='mb-4 text-center text-sm text-gray-500'>
-                Choose how you'd like to contribute:
+                Choose how you&apos;d like to contribute:
               </p>
 
               <div className='space-y-3'>

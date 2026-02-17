@@ -306,7 +306,9 @@ export default function EventDetailPageClient() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're looking for doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re looking for doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'

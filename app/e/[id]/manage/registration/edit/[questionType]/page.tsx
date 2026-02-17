@@ -222,7 +222,9 @@ export default function EditQuestionPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Question Not Found</h1>
-          <p className='mb-4 text-gray-600'>The question you're trying to edit doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The question you&apos;re trying to edit doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.push(`/e/${eventId}/manage/registration`)}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -241,7 +243,7 @@ export default function EditQuestionPage() {
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Invalid Question Type</h1>
           <p className='mb-4 text-gray-600'>
-            The question type you're trying to edit doesn't exist.
+            The question type you&apos;re trying to edit doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.back()}

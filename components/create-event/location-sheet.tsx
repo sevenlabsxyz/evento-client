@@ -205,7 +205,9 @@ export default function LocationSheet({
                   <Plus className='h-5 w-5 text-red-500' />
                 </div>
                 <div className='min-w-0 flex-1'>
-                  <div className='truncate font-medium text-gray-900'>Add "{searchQuery}"</div>
+                  <div className='truncate font-medium text-gray-900'>
+                    Add &quot;{searchQuery}&quot;
+                  </div>
                   <div className='truncate text-sm text-gray-500'>Use as custom location</div>
                 </div>
               </button>

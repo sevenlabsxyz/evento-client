@@ -145,7 +145,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                     <div className='flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center'>
                       <Camera className='mb-3 h-12 w-12 text-gray-400' />
                       <p className='mb-4 text-sm text-gray-500'>
-                        Select up to {MAX_PHOTOS} photos to upload to this event's gallery
+                        Select up to {MAX_PHOTOS} photos to upload to this event&apos;s gallery
                       </p>
                       <label htmlFor='photo-upload' className='cursor-pointer'>
                         <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600'>

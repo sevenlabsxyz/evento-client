@@ -438,7 +438,7 @@ export function BackupChoiceSheet({
                 className='w-full rounded-full'
                 size='lg'
               >
-                I've Saved My Backup
+                I&apos;ve Saved My Backup
               </Button>
             </div>
           </div>
@@ -595,7 +595,7 @@ export function BackupChoiceSheet({
                 onCheckedChange={(checked: boolean) => setSeedConfirmed(checked)}
               />
               <Label htmlFor='confirm-seed' className='text-sm font-normal'>
-                I've saved my recovery phrase in a safe place
+                I&apos;ve saved my recovery phrase in a safe place
               </Label>
             </div>
           </div>

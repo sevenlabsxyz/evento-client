@@ -115,7 +115,7 @@ function VerifyContent() {
           </div>
           <CardTitle className='text-center text-xl font-bold'>Check your email</CardTitle>
           <CardDescription className='space-y-2 text-center'>
-            <p>We've sent a 6-digit verification code to</p>
+            <p>We&apos;ve sent a 6-digit verification code to</p>
             <p className='flex items-center justify-center gap-2 font-medium text-gray-900'>
               {email}
             </p>
@@ -208,7 +208,7 @@ function VerifyContent() {
       </Card>
       <div className='my-4 space-y-2 text-center'>
         <p className='text-sm text-gray-600'>
-          Didn't receive the code?{' '}
+          Didn&apos;t receive the code?{' '}
           {resendTimer > 0 ? (
             <span className='text-gray-500'>Resend in {resendTimer}s</span>
           ) : (
