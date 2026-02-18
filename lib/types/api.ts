@@ -513,6 +513,8 @@ export interface RegistrationSettings {
   hide_location_for_unapproved: boolean;
   hide_guest_list_for_unapproved: boolean;
   hide_description_for_unapproved: boolean;
+  custom_approval_message_enabled?: boolean;
+  custom_approval_message?: string | null;
   questions: RegistrationQuestion[];
 }
 
