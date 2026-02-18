@@ -498,9 +498,9 @@ export default function RegistrationQuestionsPage() {
   }, [settings?.registration_required]);
 
   useEffect(() => {
-    setCustomApprovalMessageEnabled(settings?.custom_approval_message_enabled ?? false);
-    setCustomApprovalMessage(settings?.custom_approval_message ?? '<p></p>');
-  }, [settings?.custom_approval_message_enabled, settings?.custom_approval_message]);
+    setCustomApprovalMessageEnabled(settings?.custom_rsvp_email_enabled ?? false);
+    setCustomApprovalMessage(settings?.custom_rsvp_email_content ?? '<p></p>');
+  }, [settings?.custom_rsvp_email_enabled, settings?.custom_rsvp_email_content]);
 
   useEffect(() => {
     const requiresRegistrationByType =
@@ -829,7 +829,7 @@ export default function RegistrationQuestionsPage() {
     try {
       await updateSettings.mutateAsync({
         eventId,
-        custom_approval_message_enabled: nextEnabled,
+        custom_rsvp_email_enabled: nextEnabled,
       });
       toast.success(nextEnabled ? 'Custom RSVP message enabled' : 'Custom RSVP message disabled');
     } catch {
@@ -848,8 +848,8 @@ export default function RegistrationQuestionsPage() {
     try {
       await updateSettings.mutateAsync({
         eventId,
-        custom_approval_message_enabled: customApprovalMessageEnabled,
-        custom_approval_message: message,
+        custom_rsvp_email_enabled: customApprovalMessageEnabled,
+        custom_rsvp_email_content: message,
       });
       toast.success('Custom RSVP message saved');
     } catch {

@@ -10,8 +10,8 @@ interface UpdateRegistrationSettingsParams {
   hide_location_for_unapproved?: boolean;
   hide_guest_list_for_unapproved?: boolean;
   hide_description_for_unapproved?: boolean;
-  custom_approval_message_enabled?: boolean;
-  custom_approval_message?: string | null;
+  custom_rsvp_email_enabled?: boolean;
+  custom_rsvp_email_content?: string | null;
 }
 
 interface UpdateRegistrationSettingsResponse {
@@ -20,8 +20,8 @@ interface UpdateRegistrationSettingsResponse {
   hide_location_for_unapproved: boolean;
   hide_guest_list_for_unapproved: boolean;
   hide_description_for_unapproved: boolean;
-  custom_approval_message_enabled?: boolean;
-  custom_approval_message?: string | null;
+  custom_rsvp_email_enabled?: boolean;
+  custom_rsvp_email_content?: string | null;
 }
 
 export function useUpdateRegistrationSettings() {
