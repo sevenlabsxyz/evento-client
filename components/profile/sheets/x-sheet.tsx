@@ -51,7 +51,7 @@ export default function XSheet({ isOpen, onClose, handle }: XSheetProps) {
               {/* Description */}
               <div className='mb-6'>
                 <p className='mb-4 text-gray-600'>
-                  You're about to visit this X (Twitter) profile. This will open in a new tab.
+                  You&apos;re about to visit this X (Twitter) profile. This will open in a new tab.
                 </p>
                 <div className='rounded-lg bg-gray-50 p-3'>
                   <p className='text-sm text-gray-700'>x.com/{handle}</p>

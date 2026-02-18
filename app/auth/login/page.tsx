@@ -132,7 +132,7 @@ function LoginContent() {
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
         <p>
-          By continuing to use this app, you agree to Evento's{' '}
+          By continuing to use this app, you agree to Evento&apos;s{' '}
           <Link href='/terms' className='underline hover:text-red-600'>
             Terms of Service
           </Link>{' '}

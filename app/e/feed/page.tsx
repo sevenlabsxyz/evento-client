@@ -511,7 +511,7 @@ export default function FeedPage() {
                           // Results
                           <div>
                             <h3 className='mb-4 text-sm font-semibold text-gray-900'>
-                              Results for "{searchText}"
+                              Results for &quot;{searchText}&quot;
                             </h3>
                             <div className='space-y-2'>
                               {searchResults.map((user) => (
@@ -550,7 +550,9 @@ export default function FeedPage() {
                         ) : (
                           // No results
                           <div className='py-8 text-center'>
-                            <p className='text-gray-500'>No results found for "{searchText}"</p>
+                            <p className='text-gray-500'>
+                              No results found for &quot;{searchText}&quot;
+                            </p>
                           </div>
                         )}
                       </div>

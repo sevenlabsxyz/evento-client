@@ -113,7 +113,9 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
 
           {/* Invite Message */}
           {invite.message && (
-            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>"{invite.message}"</p>
+            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>
+              &quot;{invite.message}&quot;
+            </p>
           )}
         </div>
 

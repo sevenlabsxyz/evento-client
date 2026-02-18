@@ -154,7 +154,7 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
       </Card>
 
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
-        <p>You've been invited to an evento. Enter the password to access event details.</p>
+        <p>You&apos;ve been invited to an evento. Enter the password to access event details.</p>
       </div>
 
       {/* Contact Host Modal */}

@@ -326,7 +326,8 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             {/* Show registration requirement hint */}
             {registrationRequired && !hasExistingRegistration && (
               <p className='mt-4 text-center text-sm text-gray-500'>
-                This event requires registration. Clicking "Yes" will open the registration form.
+                This event requires registration. Clicking &quot;Yes&quot; will open the
+                registration form.
               </p>
             )}
 

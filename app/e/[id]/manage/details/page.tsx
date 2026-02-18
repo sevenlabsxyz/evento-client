@@ -211,7 +211,8 @@ export default function EditEventDetailsPage() {
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
           <p className='mb-4 text-gray-600'>
-            The event you're trying to edit doesn't exist or you don't have permission.
+            The event you&apos;re trying to edit doesn&apos;t exist or you don&apos;t have
+            permission.
           </p>
           <button
             onClick={() => router.back()}

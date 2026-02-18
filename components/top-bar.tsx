@@ -93,6 +93,21 @@ export function TopBar() {
       return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
     }
 
+    if (leftMode === 'logo') {
+      return (
+        <div className='flex items-center'>
+          <Image
+            priority
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={67}
+            height={20}
+            className='h-5 w-auto'
+          />
+        </div>
+      );
+    }
+
     return (
       <motion.button
         onClick={handleMenuClick}
@@ -217,7 +232,7 @@ export function TopBar() {
         <div
           className={`relative flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div className='flex min-w-0 items-center gap-3'>
+          <div className={`flex min-w-0 items-center ${leftMode === 'logo' ? '' : 'gap-3'}`}>
             {renderLeftContent()}
             {centerMode !== 'logo' && renderCenterContent()}
           </div>

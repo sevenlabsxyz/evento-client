@@ -40,7 +40,7 @@ export function SiteHeader() {
   };
 
   const renderLeftContent = () => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated || leftMode === 'logo') {
       return (
         <Link href='/' className='flex items-center gap-2'>
           <Image

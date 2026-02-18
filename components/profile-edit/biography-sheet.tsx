@@ -116,7 +116,7 @@ export default function BiographySheet({
                   {/* Info text */}
                   <p className='mb-6 text-sm text-gray-500'>
                     Write a short bio to help others get to know you. Share your interests, what
-                    brings you to events, or anything else you'd like people to know.
+                    brings you to events, or anything else you&apos;d like people to know.
                   </p>
 
                   {/* Save/Cancel Buttons */}

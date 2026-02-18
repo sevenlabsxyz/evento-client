@@ -2,7 +2,7 @@ import { LucideIcon } from 'lucide-react';
 import { create } from 'zustand';
 import { VerificationStatus } from '../types/api';
 
-export type LeftMode = 'menu' | 'back';
+export type LeftMode = 'menu' | 'back' | 'logo';
 export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
 
 export interface TopBarButton {

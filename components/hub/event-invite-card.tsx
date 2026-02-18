@@ -75,7 +75,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
             <span className='line-clamp-1'>{invite.events.location || 'TBD'}</span>
           </div>
           {invite.message && (
-            <p className='line-clamp-2 text-sm text-gray-600'>"{invite.message}"</p>
+            <p className='line-clamp-2 text-sm text-gray-600'>&quot;{invite.message}&quot;</p>
           )}
         </div>
 

@@ -96,7 +96,7 @@ export function EventInvitesSheet({
                           <h3 className='mb-1 text-base font-semibold text-gray-900'>
                             No pending invites
                           </h3>
-                          <p className='text-sm text-gray-500'>You're all caught up!</p>
+                          <p className='text-sm text-gray-500'>You&apos;re all caught up!</p>
                         </div>
                       ) : (
                         <div className='space-y-4'>

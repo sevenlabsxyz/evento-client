@@ -117,6 +117,8 @@ const MobileGalleryMenu = React.memo(
   }
 );
 
+MobileGalleryMenu.displayName = 'MobileGalleryMenu';
+
 export const LightboxViewer = React.memo(
   ({
     images,
@@ -490,3 +492,5 @@ export const LightboxViewer = React.memo(
     );
   }
 );
+
+LightboxViewer.displayName = 'LightboxViewer';

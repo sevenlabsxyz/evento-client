@@ -210,7 +210,7 @@ export default function AddQuestionPage() {
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Invalid Question Type</h1>
           <p className='mb-4 text-gray-600'>
-            The question type you're trying to add doesn't exist.
+            The question type you&apos;re trying to add doesn&apos;t exist.
           </p>
           <button
             onClick={() => router.back()}
