@@ -3,12 +3,12 @@
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
 import { SiteHeader } from '@/components/dashboard/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { SESSION_KEYS } from '@/lib/constants/storage-keys';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { SESSION_KEYS } from '@/lib/constants/storage-keys';
 import { getSessionValue, markAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';

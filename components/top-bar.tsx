@@ -232,9 +232,7 @@ export function TopBar() {
         <div
           className={`relative flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div
-            className={`flex min-w-0 items-center ${leftMode === 'logo' ? '' : 'gap-3'}`}
-          >
+          <div className={`flex min-w-0 items-center ${leftMode === 'logo' ? '' : 'gap-3'}`}>
             {renderLeftContent()}
             {centerMode !== 'logo' && renderCenterContent()}
           </div>
