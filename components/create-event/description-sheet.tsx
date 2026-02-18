@@ -30,6 +30,8 @@ interface DescriptionSheetProps {
   onClose: () => void;
   onSave: (content: string) => void;
   initialContent?: string;
+  title?: string;
+  placeholder?: string;
   onOpenTextStylesSheet?: (editor: Editor) => void;
   onOpenMoreFormattingSheet?: (editor: Editor) => void;
   onOpenListsSheet?: (editor: Editor) => void;
@@ -46,6 +48,8 @@ export default function DescriptionSheet({
   onClose,
   onSave,
   initialContent = '',
+  title = 'Edit Description',
+  placeholder = 'Add a description...',
   onOpenTextStylesSheet,
   onOpenMoreFormattingSheet,
   onOpenListsSheet,
@@ -115,7 +119,7 @@ export default function DescriptionSheet({
         },
       }),
       Placeholder.configure({
-        placeholder: 'Add a description...',
+        placeholder,
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
@@ -188,7 +192,7 @@ export default function DescriptionSheet({
                   >
                     Cancel
                   </button>
-                  <h1 className='DescriptionSheet-headerTitle'>Edit Description</h1>
+                  <h1 className='DescriptionSheet-headerTitle'>{title}</h1>
                   <button
                     onClick={handleSave}
                     className='DescriptionSheet-headerButton DescriptionSheet-headerButton--save'
