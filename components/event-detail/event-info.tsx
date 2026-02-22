@@ -248,11 +248,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
             <span className='text-2xl font-bold'>{event.title}</span>
           </div>
           <div className='flex items-center gap-3 text-gray-700'>
-            <Calendar className='h-5 w-5 text-gray-400' />
+            <Calendar className='h-5 w-5 shrink-0 text-gray-400' />
             <span className='font-medium'>{event.date}</span>
           </div>
           <div className='flex items-center gap-3 text-gray-700'>
-            <Clock className='h-5 w-5 text-gray-400' />
+            <Clock className='h-5 w-5 shrink-0 text-gray-400' />
             <span>
               {event.startTime} - {event.endTime}
               {event.timezone && ` ${event.timezone}`}
@@ -260,7 +260,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
           </div>
           {!isLocationHidden && (
             <div className='flex items-center gap-3 text-gray-700'>
-              <MapPin className='h-5 w-5 text-gray-400' />
+              <MapPin className='h-5 w-5 shrink-0 text-gray-400' />
               <span>{event.location.name}</span>
             </div>
           )}
