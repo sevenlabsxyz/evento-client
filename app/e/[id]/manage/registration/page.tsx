@@ -841,9 +841,12 @@ export default function RegistrationQuestionsPage() {
   };
 
   const handleSaveCustomApprovalMessage = async (content: string) => {
+    if (isUpdatingCustomMessage) return;
+
     const message = content.trim() ? content : '<p></p>';
     const previousMessage = customApprovalMessage;
     setCustomApprovalMessage(message);
+    setIsUpdatingCustomMessage(true);
 
     try {
       await updateSettings.mutateAsync({
@@ -852,9 +855,12 @@ export default function RegistrationQuestionsPage() {
         custom_rsvp_email_content: message,
       });
       toast.success('Custom RSVP message saved');
-    } catch {
+    } catch (error) {
       setCustomApprovalMessage(previousMessage);
       toast.error('Failed to save custom RSVP message');
+      throw error; // Re-throw to prevent DescriptionSheet from closing
+    } finally {
+      setIsUpdatingCustomMessage(false);
     }
   };
 

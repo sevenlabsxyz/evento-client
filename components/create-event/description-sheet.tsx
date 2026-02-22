@@ -28,7 +28,7 @@ import { EventData } from './ai-description-generator-sheet';
 interface DescriptionSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (content: string) => void;
+  onSave: (content: string) => void | Promise<void>;
   initialContent?: string;
   title?: string;
   placeholder?: string;
@@ -143,12 +143,17 @@ export default function DescriptionSheet({
     }
   }, [isOpen, initialContent, editor]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editor) {
       const content = editor.getHTML();
-      onSave(content);
+      try {
+        await onSave(content);
+        onClose();
+      } catch (error) {
+        // Don't close the sheet if save fails - keep the user's content
+        console.error('Failed to save content:', error);
+      }
     }
-    onClose();
   };
 
   const handleOpenSheet = (sheet: string) => {
