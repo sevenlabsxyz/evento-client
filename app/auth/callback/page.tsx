@@ -61,6 +61,7 @@ function AuthCallbackContent() {
         } else {
           // No tokens in URL, might be a regular callback
           // Try to get current user (in case session was established)
+          // TODO: On mobile, parse deep link params from Telegram auth when the app returns.
           const user = await authService.getCurrentUser();
 
           if (user) {

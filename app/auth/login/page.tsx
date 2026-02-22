@@ -8,8 +8,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/use-auth';
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
+import { validateRedirectUrl } from '@/lib/utils/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Loader2, Mail } from 'lucide-react';
+import { AlertCircle, Loader2, Mail, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';
@@ -17,11 +18,12 @@ import { useForm } from 'react-hook-form';
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/';
+  const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isTelegramLoading, setIsTelegramLoading] = useState(false);
 
   const {
     register,
@@ -39,6 +41,21 @@ function LoginContent() {
   const handleGoogleLogin = () => {
     setIsGoogleLoading(true);
     loginWithGoogle();
+  };
+
+  const handleTelegramLogin = () => {
+    setIsTelegramLoading(true);
+
+    const callbackUrl = new URL('/auth/callback', window.location.origin);
+    if (redirectUrl && redirectUrl !== '/') {
+      callbackUrl.searchParams.set('redirect', redirectUrl);
+    }
+
+    const telegramUrl = new URL('https://evento.so/auth/telegram/callback');
+    // TODO: Replace with the mobile deep link scheme when deep linking is configured.
+    telegramUrl.searchParams.set('next', callbackUrl.toString());
+
+    window.location.href = telegramUrl.toString();
   };
 
   if (isCheckingAuth) {
@@ -82,7 +99,7 @@ function LoginContent() {
                   type='email'
                   placeholder='you@example.com'
                   className='bg-gray-50 pl-10'
-                  disabled={isLoading || isGoogleLoading}
+                  disabled={isLoading || isGoogleLoading || isTelegramLoading}
                 />
               </div>
               {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
@@ -91,7 +108,7 @@ function LoginContent() {
             <Button
               type='submit'
               className='w-full py-6 text-base'
-              disabled={isLoading || isGoogleLoading}
+              disabled={isLoading || isGoogleLoading || isTelegramLoading}
             >
               {isLoading ? (
                 <>
@@ -108,13 +125,16 @@ function LoginContent() {
             <div className='absolute inset-0 flex items-center'>
               <span className='w-full border-t' />
             </div>
+            <div className='relative flex justify-center text-xs uppercase'>
+              <span className='bg-white px-2 text-muted-foreground'>or</span>
+            </div>
           </div>
 
           <Button
             variant='secondary'
             className='w-full border border-gray-200 py-6 text-base'
             onClick={handleGoogleLogin}
-            disabled={isLoading || isGoogleLoading}
+            disabled={isLoading || isGoogleLoading || isTelegramLoading}
           >
             {isGoogleLoading ? (
               <>
@@ -125,6 +145,33 @@ function LoginContent() {
               <>
                 <Google className='mr-1 h-5 w-5' />
                 Continue with Google
+              </>
+            )}
+          </Button>
+
+          <div className='relative'>
+            <div className='absolute inset-0 flex items-center'>
+              <span className='w-full border-t' />
+            </div>
+            <div className='relative flex justify-center text-xs uppercase'>
+              <span className='bg-white px-2 text-muted-foreground'>or</span>
+            </div>
+          </div>
+
+          <Button
+            className='w-full bg-[#2AABEE] py-6 text-base text-white hover:bg-[#229ED9]'
+            onClick={handleTelegramLogin}
+            disabled={isLoading || isGoogleLoading || isTelegramLoading}
+          >
+            {isTelegramLoading ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Redirecting to Telegram...
+              </>
+            ) : (
+              <>
+                <Send className='mr-2 h-5 w-5' />
+                Continue with Telegram
               </>
             )}
           </Button>
