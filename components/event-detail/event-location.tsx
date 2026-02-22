@@ -23,8 +23,10 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   const fullAddress = (formattedAddress || fallbackAddress).trim();
   const hasCoordinates =
     typeof event.location.coordinates?.lat === 'number' &&
-    typeof event.location.coordinates?.lng === 'number';
-  const isTBDLocation = event.location.name === 'TBD' || fullAddress.length === 0;
+    typeof event.location.coordinates?.lng === 'number' &&
+    Math.abs(event.location.coordinates.lat) <= 90 &&
+    Math.abs(event.location.coordinates.lng) <= 180;
+  const isTBDLocation = event.location.name === 'TBD' || (fullAddress.length === 0 && !hasCoordinates);
   const mapUrl = hasCoordinates
     ? `https://www.google.com/maps/embed/v1/view?key=${
         Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
@@ -36,12 +38,12 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   const handleOpenMaps = (provider: 'apple' | 'google') => {
     const address = hasCoordinates
       ? `${event.location.coordinates?.lat},${event.location.coordinates?.lng}`
-      : encodeURIComponent(fullAddress);
+      : fullAddress;
 
     if (provider === 'apple') {
-      window.open(`http://maps.apple.com/?q=${address}`, '_blank');
+      window.open(`http://maps.apple.com/?q=${hasCoordinates ? address : encodeURIComponent(address)}`, '_blank');
     } else {
-      window.open(`https://maps.google.com/?q=${address}`, '_blank');
+      window.open(`https://maps.google.com/?q=${hasCoordinates ? address : encodeURIComponent(address)}`, '_blank');
     }
 
     setShowMapOptions(false);
