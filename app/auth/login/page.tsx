@@ -10,20 +10,22 @@ import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hook
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Loader2, Mail, Send } from 'lucide-react';
+import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function LoginContent() {
   const searchParams = useSearchParams();
   const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+  const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? '';
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isTelegramLoading, setIsTelegramLoading] = useState(false);
+  const [isTelegramWidgetReady, setIsTelegramWidgetReady] = useState(false);
+  const telegramWidgetContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -43,14 +45,29 @@ function LoginContent() {
     loginWithGoogle();
   };
 
-  const handleTelegramLogin = () => {
-    setIsTelegramLoading(true);
+  useEffect(() => {
+    const container = telegramWidgetContainerRef.current;
+    if (!container || !telegramBotUsername) {
+      return;
+    }
 
-    const telegramUrl = new URL('/auth/telegram/callback', window.location.origin);
-    telegramUrl.searchParams.set('next', redirectUrl || '/');
+    setIsTelegramWidgetReady(false);
+    container.innerHTML = '';
 
-    window.location.href = telegramUrl.toString();
-  };
+    const authUrl = new URL('/api/auth/telegram/callback', window.location.origin);
+    authUrl.searchParams.set('next', redirectUrl || '/');
+
+    const script = document.createElement('script');
+    script.src = 'https://telegram.org/js/telegram-widget.js?22';
+    script.async = true;
+    script.setAttribute('data-telegram-login', telegramBotUsername);
+    script.setAttribute('data-size', 'large');
+    script.setAttribute('data-radius', '12');
+    script.setAttribute('data-request-access', 'write');
+    script.setAttribute('data-auth-url', authUrl.toString());
+    script.onload = () => setIsTelegramWidgetReady(true);
+    container.appendChild(script);
+  }, [redirectUrl, telegramBotUsername]);
 
   if (isCheckingAuth) {
     return (
@@ -93,7 +110,7 @@ function LoginContent() {
                   type='email'
                   placeholder='you@example.com'
                   className='bg-gray-50 pl-10'
-                  disabled={isLoading || isGoogleLoading || isTelegramLoading}
+                  disabled={isLoading || isGoogleLoading}
                 />
               </div>
               {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
@@ -102,7 +119,7 @@ function LoginContent() {
             <Button
               type='submit'
               className='w-full py-6 text-base'
-              disabled={isLoading || isGoogleLoading || isTelegramLoading}
+              disabled={isLoading || isGoogleLoading}
             >
               {isLoading ? (
                 <>
@@ -128,7 +145,7 @@ function LoginContent() {
             variant='secondary'
             className='w-full border border-gray-200 py-6 text-base'
             onClick={handleGoogleLogin}
-            disabled={isLoading || isGoogleLoading || isTelegramLoading}
+            disabled={isLoading || isGoogleLoading}
           >
             {isGoogleLoading ? (
               <>
@@ -143,23 +160,25 @@ function LoginContent() {
             )}
           </Button>
 
-          <Button
-            className='w-full bg-[#2AABEE] py-6 text-base text-white hover:bg-[#229ED9]'
-            onClick={handleTelegramLogin}
-            disabled={isLoading || isGoogleLoading || isTelegramLoading}
-          >
-            {isTelegramLoading ? (
-              <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                Redirecting to Telegram...
-              </>
-            ) : (
-              <>
-                <Send className='mr-2 h-5 w-5' />
-                Continue with Telegram
-              </>
+          <div className='space-y-2'>
+            <div className='flex min-h-[56px] items-center justify-center rounded-xl bg-[#2AABEE]'>
+              {!isTelegramWidgetReady && (
+                <span className='inline-flex items-center gap-2 text-base text-white'>
+                  <Loader2 className='h-4 w-4 animate-spin' />
+                  Loading Telegram...
+                </span>
+              )}
+              <div
+                ref={telegramWidgetContainerRef}
+                className={isTelegramWidgetReady ? 'block' : 'hidden'}
+              />
+            </div>
+            {!telegramBotUsername && (
+              <p className='text-center text-xs text-red-500'>
+                NEXT_PUBLIC_TELEGRAM_BOT_USERNAME is not configured.
+              </p>
             )}
-          </Button>
+          </div>
         </CardContent>
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
