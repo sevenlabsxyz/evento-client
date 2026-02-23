@@ -34,6 +34,7 @@ import {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
+  type FeePolicy,
 } from '@breeztech/breez-sdk-spark';
 
 // Set to true to enable verbose logging
