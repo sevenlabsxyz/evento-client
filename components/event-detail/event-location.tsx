@@ -3,6 +3,7 @@
 import { Env } from '@/lib/constants/env';
 import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
+import { formatEventLocationAddress } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
@@ -17,21 +18,32 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   const [showMapOptions, setShowMapOptions] = useState(false);
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
-  const isTBDLocation = event.location.name === 'TBD';
-  const fullAddress = `${event.location.address}, ${event.location.city}, ${
-    event.location.state || ''
-  } ${event.location.zipCode || ''}`.trim();
-  const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${
-    Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-  }&q=${encodeURIComponent(fullAddress)}&zoom=15&maptype=roadmap`;
+  const formattedAddress = formatEventLocationAddress(event.location);
+  const fallbackAddress = event.location.name || event.location.address;
+  const fullAddress = (formattedAddress || fallbackAddress).trim();
+  const hasCoordinates =
+    typeof event.location.coordinates?.lat === 'number' &&
+    typeof event.location.coordinates?.lng === 'number' &&
+    Math.abs(event.location.coordinates.lat) <= 90 &&
+    Math.abs(event.location.coordinates.lng) <= 180;
+  const isTBDLocation = event.location.name === 'TBD' || (fullAddress.length === 0 && !hasCoordinates);
+  const mapUrl = hasCoordinates
+    ? `https://www.google.com/maps/embed/v1/view?key=${
+        Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      }&center=${event.location.coordinates?.lat},${event.location.coordinates?.lng}&zoom=15&maptype=roadmap`
+    : `https://www.google.com/maps/embed/v1/place?key=${
+        Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      }&q=${encodeURIComponent(fullAddress)}&zoom=15&maptype=roadmap`;
 
   const handleOpenMaps = (provider: 'apple' | 'google') => {
-    const address = encodeURIComponent(fullAddress);
+    const address = hasCoordinates
+      ? `${event.location.coordinates?.lat},${event.location.coordinates?.lng}`
+      : fullAddress;
 
     if (provider === 'apple') {
-      window.open(`http://maps.apple.com/?q=${address}`, '_blank');
+      window.open(`http://maps.apple.com/?q=${hasCoordinates ? address : encodeURIComponent(address)}`, '_blank');
     } else {
-      window.open(`https://maps.google.com/?q=${address}`, '_blank');
+      window.open(`https://maps.google.com/?q=${hasCoordinates ? address : encodeURIComponent(address)}`, '_blank');
     }
 
     setShowMapOptions(false);

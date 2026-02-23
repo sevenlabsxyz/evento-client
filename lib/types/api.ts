@@ -28,6 +28,7 @@ export interface UserDetails {
   ln_address?: string; // Lightning address
   lightning_address?: string; // Lightning address (alternative field name)
   nip05?: string; // Nostr identifier
+  telegram_id?: number | null; // Telegram numeric user ID (null = not linked)
   verification_status: VerificationStatus;
   verification_date?: string;
 }
@@ -513,6 +514,8 @@ export interface RegistrationSettings {
   hide_location_for_unapproved: boolean;
   hide_guest_list_for_unapproved: boolean;
   hide_description_for_unapproved: boolean;
+  custom_rsvp_email_enabled?: boolean;
+  custom_rsvp_email_content?: string | null;
   questions: RegistrationQuestion[];
 }
 

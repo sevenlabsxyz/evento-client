@@ -28,8 +28,10 @@ import { EventData } from './ai-description-generator-sheet';
 interface DescriptionSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (content: string) => void;
+  onSave: (content: string) => void | Promise<void>;
   initialContent?: string;
+  title?: string;
+  placeholder?: string;
   onOpenTextStylesSheet?: (editor: Editor) => void;
   onOpenMoreFormattingSheet?: (editor: Editor) => void;
   onOpenListsSheet?: (editor: Editor) => void;
@@ -46,6 +48,8 @@ export default function DescriptionSheet({
   onClose,
   onSave,
   initialContent = '',
+  title = 'Edit Description',
+  placeholder = 'Add a description...',
   onOpenTextStylesSheet,
   onOpenMoreFormattingSheet,
   onOpenListsSheet,
@@ -115,7 +119,7 @@ export default function DescriptionSheet({
         },
       }),
       Placeholder.configure({
-        placeholder: 'Add a description...',
+        placeholder,
         emptyEditorClass: 'is-editor-empty',
       }),
     ],
@@ -139,12 +143,17 @@ export default function DescriptionSheet({
     }
   }, [isOpen, initialContent, editor]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editor) {
       const content = editor.getHTML();
-      onSave(content);
+      try {
+        await onSave(content);
+        onClose();
+      } catch (error) {
+        // Don't close the sheet if save fails - keep the user's content
+        console.error('Failed to save content:', error);
+      }
     }
-    onClose();
   };
 
   const handleOpenSheet = (sheet: string) => {
@@ -188,7 +197,7 @@ export default function DescriptionSheet({
                   >
                     Cancel
                   </button>
-                  <h1 className='DescriptionSheet-headerTitle'>Edit Description</h1>
+                  <h1 className='DescriptionSheet-headerTitle'>{title}</h1>
                   <button
                     onClick={handleSave}
                     className='DescriptionSheet-headerButton DescriptionSheet-headerButton--save'
