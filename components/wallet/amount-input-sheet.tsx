@@ -42,8 +42,17 @@ export function AmountInputSheet({
     if (!maxAmount || maxAmount <= 0) return;
     setIsSendAll(true);
     setAmount(maxAmount.toString());
-    const usd = await satsToUSD(maxAmount);
-    setAmountUSD(usd.toFixed(2));
+    
+    try {
+      const usd = await satsToUSD(maxAmount);
+      // Check if component is still mounted before updating state
+      if (open) {
+        setAmountUSD(usd.toFixed(2));
+      }
+    } catch (error) {
+      // Silently ignore conversion errors to prevent state updates after unmount
+      console.warn('Currency conversion failed:', error);
+    }
   };
 
   const handleNumberClick = async (num: string) => {
@@ -51,18 +60,26 @@ export function AmountInputSheet({
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue + num;
 
-    if (inputMode === 'sats') {
-      setAmount(newValue);
-      if (Number(newValue) > 0) {
-        const usd = await satsToUSD(Number(newValue));
-        setAmountUSD(usd.toFixed(2));
+    try {
+      if (inputMode === 'sats') {
+        setAmount(newValue);
+        if (Number(newValue) > 0) {
+          const usd = await satsToUSD(Number(newValue));
+          if (open) {
+            setAmountUSD(usd.toFixed(2));
+          }
+        }
+      } else {
+        setAmountUSD(newValue);
+        if (Number(newValue) > 0) {
+          const sats = await usdToSats(Number(newValue));
+          if (open) {
+            setAmount(sats.toString());
+          }
+        }
       }
-    } else {
-      setAmountUSD(newValue);
-      if (Number(newValue) > 0) {
-        const sats = await usdToSats(Number(newValue));
-        setAmount(sats.toString());
-      }
+    } catch (error) {
+      console.warn('Currency conversion failed:', error);
     }
   };
 
@@ -71,22 +88,30 @@ export function AmountInputSheet({
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue.slice(0, -1);
 
-    if (inputMode === 'sats') {
-      setAmount(newValue);
-      if (newValue && Number(newValue) > 0) {
-        const usd = await satsToUSD(Number(newValue));
-        setAmountUSD(usd.toFixed(2));
+    try {
+      if (inputMode === 'sats') {
+        setAmount(newValue);
+        if (newValue && Number(newValue) > 0) {
+          const usd = await satsToUSD(Number(newValue));
+          if (open) {
+            setAmountUSD(usd.toFixed(2));
+          }
+        } else {
+          setAmountUSD('');
+        }
       } else {
-        setAmountUSD('');
+        setAmountUSD(newValue);
+        if (newValue && Number(newValue) > 0) {
+          const sats = await usdToSats(Number(newValue));
+          if (open) {
+            setAmount(sats.toString());
+          }
+        } else {
+          setAmount('');
+        }
       }
-    } else {
-      setAmountUSD(newValue);
-      if (newValue && Number(newValue) > 0) {
-        const sats = await usdToSats(Number(newValue));
-        setAmount(sats.toString());
-      } else {
-        setAmount('');
-      }
+    } catch (error) {
+      console.warn('Currency conversion failed:', error);
     }
   };
 
