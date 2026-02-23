@@ -46,14 +46,8 @@ function LoginContent() {
   const handleTelegramLogin = () => {
     setIsTelegramLoading(true);
 
-    const callbackUrl = new URL('/auth/callback', window.location.origin);
-    if (redirectUrl && redirectUrl !== '/') {
-      callbackUrl.searchParams.set('redirect', redirectUrl);
-    }
-
-    const telegramUrl = new URL('https://evento.so/auth/telegram/callback');
-    // TODO: Replace with the mobile deep link scheme when deep linking is configured.
-    telegramUrl.searchParams.set('next', callbackUrl.toString());
+    const telegramUrl = new URL('/auth/telegram/callback', window.location.origin);
+    telegramUrl.searchParams.set('next', redirectUrl || '/');
 
     window.location.href = telegramUrl.toString();
   };
@@ -148,15 +142,6 @@ function LoginContent() {
               </>
             )}
           </Button>
-
-          <div className='relative'>
-            <div className='absolute inset-0 flex items-center'>
-              <span className='w-full border-t' />
-            </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white px-2 text-muted-foreground'>or</span>
-            </div>
-          </div>
 
           <Button
             className='w-full bg-[#2AABEE] py-6 text-base text-white hover:bg-[#229ED9]'
