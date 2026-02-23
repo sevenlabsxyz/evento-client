@@ -42,7 +42,7 @@ export function AmountInputSheet({
     if (!maxAmount || maxAmount <= 0) return;
     setIsSendAll(true);
     setAmount(maxAmount.toString());
-    
+
     try {
       const usd = await satsToUSD(maxAmount);
       // Check if component is still mounted before updating state

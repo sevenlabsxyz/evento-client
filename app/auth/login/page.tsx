@@ -13,19 +13,16 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 function LoginContent() {
   const searchParams = useSearchParams();
   const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
-  const telegramBotUsername = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? '';
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isTelegramWidgetReady, setIsTelegramWidgetReady] = useState(false);
-  const telegramWidgetContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     register,
@@ -44,30 +41,6 @@ function LoginContent() {
     setIsGoogleLoading(true);
     loginWithGoogle();
   };
-
-  useEffect(() => {
-    const container = telegramWidgetContainerRef.current;
-    if (!container || !telegramBotUsername) {
-      return;
-    }
-
-    setIsTelegramWidgetReady(false);
-    container.innerHTML = '';
-
-    const authUrl = new URL('/api/auth/telegram/callback', window.location.origin);
-    authUrl.searchParams.set('next', redirectUrl || '/');
-
-    const script = document.createElement('script');
-    script.src = 'https://telegram.org/js/telegram-widget.js?22';
-    script.async = true;
-    script.setAttribute('data-telegram-login', telegramBotUsername);
-    script.setAttribute('data-size', 'large');
-    script.setAttribute('data-radius', '12');
-    script.setAttribute('data-request-access', 'write');
-    script.setAttribute('data-auth-url', authUrl.toString());
-    script.onload = () => setIsTelegramWidgetReady(true);
-    container.appendChild(script);
-  }, [redirectUrl, telegramBotUsername]);
 
   if (isCheckingAuth) {
     return (
@@ -160,25 +133,10 @@ function LoginContent() {
             )}
           </Button>
 
-          <div className='space-y-2'>
-            <div className='flex min-h-[56px] items-center justify-center rounded-xl bg-[#2AABEE]'>
-              {!isTelegramWidgetReady && (
-                <span className='inline-flex items-center gap-2 text-base text-white'>
-                  <Loader2 className='h-4 w-4 animate-spin' />
-                  Loading Telegram...
-                </span>
-              )}
-              <div
-                ref={telegramWidgetContainerRef}
-                className={isTelegramWidgetReady ? 'block' : 'hidden'}
-              />
-            </div>
-            {!telegramBotUsername && (
-              <p className='text-center text-xs text-red-500'>
-                NEXT_PUBLIC_TELEGRAM_BOT_USERNAME is not configured.
-              </p>
-            )}
-          </div>
+          {/*
+            Telegram login is intentionally hidden for now because the current flow is not
+            fully functional in production.
+          */}
         </CardContent>
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
