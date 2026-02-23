@@ -3,6 +3,17 @@ import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 
+jest.mock('@/lib/utils/logger', () => ({
+  logger: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    logApiRequest: jest.fn(),
+    logApiResponse: jest.fn(),
+  },
+}));
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),

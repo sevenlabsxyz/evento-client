@@ -188,6 +188,9 @@ importers:
       '@vercel/analytics':
         specifier: ^1.5.0
         version: 1.5.0(next@14.2.16(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
+      '@vercel/speed-insights':
+        specifier: ^1.3.1
+        version: 1.3.1(next@14.2.16(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
       axios:
         specifier: ^1.10.0
         version: 1.10.0
@@ -2408,6 +2411,29 @@ packages:
     peerDependenciesMeta:
       '@remix-run/react':
         optional: true
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+
+  '@vercel/speed-insights@1.3.1':
+    resolution: {integrity: sha512-PbEr7FrMkUrGYvlcLHGkXdCkxnylCWePx7lPxxq36DNdfo9mcUjLOmqOyPDHAOgnfqgGGdmE3XI9L/4+5fr+vQ==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19 || ^19.0.0-rc
+      svelte: '>= 4'
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
       '@sveltejs/kit':
         optional: true
       next:
@@ -8415,6 +8441,11 @@ snapshots:
       next: 14.2.16(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react: 18.3.1
 
+  '@vercel/speed-insights@1.3.1(next@14.2.16(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)':
+    optionalDependencies:
+      next: 14.2.16(@babel/core@7.28.4)(@opentelemetry/api@1.9.0)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 18.3.1
+
   '@virtuoso.dev/react-urx@0.2.13(react@18.3.1)':
     dependencies:
       '@virtuoso.dev/urx': 0.2.13
@@ -9293,7 +9324,7 @@ snapshots:
       eslint: 8.57.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1)
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
       eslint-plugin-jsx-a11y: 6.10.2(eslint@8.57.1)
       eslint-plugin-react: 7.37.5(eslint@8.57.1)
       eslint-plugin-react-hooks: 5.0.0-canary-7118f5dd7-20230705(eslint@8.57.1)
@@ -9323,7 +9354,7 @@ snapshots:
       tinyglobby: 0.2.14
       unrs-resolver: 1.11.1
     optionalDependencies:
-      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1)
+      eslint-plugin-import: 2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1)
     transitivePeerDependencies:
       - supports-color
 
@@ -9338,7 +9369,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(eslint@8.57.1))(eslint@8.57.1))(eslint@8.57.1):
+  eslint-plugin-import@2.32.0(@typescript-eslint/parser@6.21.0(eslint@8.57.1)(typescript@5.8.3))(eslint-import-resolver-typescript@3.10.1)(eslint@8.57.1):
     dependencies:
       '@rtsao/scc': 1.1.0
       array-includes: 3.1.9

@@ -16,36 +16,38 @@ const NO_COVER_FALLBACK =
 
 function renderFallbackEventImage(title: string) {
   return new ImageResponse(
-    <div
-      style={{
-        display: 'flex',
-        width: '100%',
-        height: '100%',
-        backgroundColor: '#111827',
-        color: '#f9fafb',
-        padding: '64px',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-      }}
-    >
+    (
       <div
         style={{
-          fontSize: '44px',
-          fontWeight: 700,
+          display: 'flex',
+          width: '100%',
+          height: '100%',
+          backgroundColor: '#111827',
+          color: '#f9fafb',
+          padding: '64px',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
         }}
       >
-        Evento
+        <div
+          style={{
+            fontSize: '44px',
+            fontWeight: 700,
+          }}
+        >
+          Evento
+        </div>
+        <div
+          style={{
+            fontSize: '58px',
+            fontWeight: 700,
+            lineHeight: 1.2,
+          }}
+        >
+          {title}
+        </div>
       </div>
-      <div
-        style={{
-          fontSize: '58px',
-          fontWeight: 700,
-          lineHeight: 1.2,
-        }}
-      >
-        {title}
-      </div>
-    </div>,
+    ),
     {
       ...size,
     }
@@ -97,96 +99,98 @@ export default async function Image({ params }: { params: { id: string } }) {
   ]);
 
   return new ImageResponse(
-    <div
-      style={{
-        display: 'flex',
-        background: 'white',
-        width: '100%',
-        height: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '40px',
-      }}
-    >
+    (
       <div
         style={{
           display: 'flex',
-          borderRadius: '18px',
-          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-        }}
-      >
-        <img
-          src={getProperURL(event.cover)}
-          alt={eventTitle}
-          style={{
-            width: '450px',
-            height: '450px',
-            objectFit: 'cover',
-            borderRadius: '18px',
-          }}
-        />
-      </div>
-
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'center',
-          width: '50%',
+          background: 'white',
+          width: '100%',
+          height: '100%',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          padding: '40px',
         }}
       >
         <div
           style={{
             display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
+            borderRadius: '18px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
           }}
         >
           <img
-            src='https://app.evento.so/assets/img/evento-logo.svg'
-            alt='Evento'
+            src={getProperURL(event.cover)}
+            alt={eventTitle}
             style={{
-              width: '250px',
-              height: '30px',
+              width: '450px',
+              height: '450px',
+              objectFit: 'cover',
+              borderRadius: '18px',
             }}
           />
         </div>
 
-        <h1
-          style={{
-            marginBottom: '32px',
-            fontFamily: 'Work Sans',
-            fontSize: '36px',
-            fontWeight: 600,
-            color: '#1f2937',
-            lineHeight: 1.2,
-          }}
-        >
-          {eventTitle}
-        </h1>
-
         <div
           style={{
             display: 'flex',
-            marginTop: '32px',
-            padding: '16px 24px',
-            width: '250px',
-            backgroundColor: '#dc2626',
-            color: 'white',
-            fontFamily: 'Work Sans',
-            fontSize: '18px',
-            fontWeight: 500,
-            borderRadius: '12px',
+            flexDirection: 'column',
             justifyContent: 'center',
-            alignItems: 'center',
+            width: '50%',
           }}
         >
-          RSVP NOW
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'flex-start',
+            }}
+          >
+            <img
+              src='https://app.evento.so/assets/img/evento-logo.svg'
+              alt='Evento'
+              style={{
+                width: '250px',
+                height: '30px',
+              }}
+            />
+          </div>
+
+          <h1
+            style={{
+              marginBottom: '32px',
+              fontFamily: 'Work Sans',
+              fontSize: '36px',
+              fontWeight: 600,
+              color: '#1f2937',
+              lineHeight: 1.2,
+            }}
+          >
+            {eventTitle}
+          </h1>
+
+          <div
+            style={{
+              display: 'flex',
+              marginTop: '32px',
+              padding: '16px 24px',
+              width: '250px',
+              backgroundColor: '#dc2626',
+              color: 'white',
+              fontFamily: 'Work Sans',
+              fontSize: '18px',
+              fontWeight: 500,
+              borderRadius: '12px',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            RSVP NOW
+          </div>
         </div>
       </div>
-    </div>,
+    ),
     {
       ...size,
       fonts: [

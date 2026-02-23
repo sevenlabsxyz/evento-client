@@ -36,7 +36,8 @@ export const PromptInput = ({ className, onSubmit, children, ...props }: PromptI
   );
 };
 
-export interface PromptInputTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export interface PromptInputTextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 export const PromptInputTextarea = React.forwardRef<HTMLTextAreaElement, PromptInputTextareaProps>(
   ({ className, onKeyDown, ...props }, ref) => {

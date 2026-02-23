@@ -3,6 +3,17 @@ import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 
+jest.mock('@/lib/utils/logger', () => ({
+  logger: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    logApiRequest: jest.fn(),
+    logApiResponse: jest.fn(),
+  },
+}));
+
 // Mock the API client
 jest.mock('@/lib/api/client', () => {
   const mockApiClient = {
@@ -73,7 +84,7 @@ jest.mock('next/navigation', () => ({
 // Mock auth service
 jest.mock('@/lib/services/auth', () => ({
   authService: {
-    getCurrentUser: jest.fn(),
+    getCurrentUser: jest.fn().mockResolvedValue(null),
     sendLoginCode: jest.fn(),
     verifyCode: jest.fn(),
     logout: jest.fn(),

@@ -21,7 +21,8 @@ const inputGroupVariants = cva(
 );
 
 export interface InputGroupProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof inputGroupVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof inputGroupVariants> {}
 
 const InputGroup = React.forwardRef<HTMLDivElement, InputGroupProps>(
   ({ className, variant, ...props }, ref) => {
@@ -43,7 +44,8 @@ const inputGroupAddonVariants = cva('flex items-center px-3 py-2', {
 });
 
 export interface InputGroupAddonProps
-  extends React.HTMLAttributes<HTMLDivElement>, VariantProps<typeof inputGroupAddonVariants> {}
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof inputGroupAddonVariants> {}
 
 const InputGroupAddon = React.forwardRef<HTMLDivElement, InputGroupAddonProps>(
   ({ className, align, ...props }, ref) => {
@@ -100,8 +102,7 @@ const inputGroupButtonVariants = cva(
 );
 
 export interface InputGroupButtonProps
-  extends
-    React.ButtonHTMLAttributes<HTMLButtonElement>,
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof inputGroupButtonVariants> {}
 
 const InputGroupButton = React.forwardRef<HTMLButtonElement, InputGroupButtonProps>(

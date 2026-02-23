@@ -92,9 +92,9 @@ jest.mock('stream-chat', () => ({
 // Mock the stream chat service
 jest.mock('@/lib/services/stream-chat', () => ({
   streamChatService: {
-    getToken: jest.fn(),
-    syncUser: jest.fn(),
-    getChannels: jest.fn(),
+    getToken: jest.fn().mockResolvedValue({ token: 'test-token' }),
+    syncUser: jest.fn().mockResolvedValue({ id: 'user123' }),
+    getChannels: jest.fn().mockResolvedValue([]),
     createDirectMessageChannel: jest.fn(),
     createChannel: jest.fn(),
     updateChannel: jest.fn(),
@@ -143,6 +143,10 @@ describe('useStreamChat', () => {
 
     // Reset all mocks
     jest.clearAllMocks();
+    const { streamChatService } = require('@/lib/services/stream-chat');
+    streamChatService.getToken.mockResolvedValue({ token: 'test-token' });
+    streamChatService.syncUser.mockResolvedValue({ id: 'user123' });
+    streamChatService.getChannels.mockResolvedValue([]);
     mockStreamChatClient.connectUser.mockClear();
     mockStreamChatClient.disconnectUser.mockClear();
   });
@@ -269,6 +273,8 @@ describe('useStreamChatChannels', () => {
     wrapper = createTestWrapper(queryClient);
 
     jest.clearAllMocks();
+    const { streamChatService } = require('@/lib/services/stream-chat');
+    streamChatService.getChannels.mockResolvedValue([]);
   });
 
   afterEach(() => {
@@ -321,6 +327,10 @@ describe('Integration Tests', () => {
     wrapper = createTestWrapper(queryClient);
 
     jest.clearAllMocks();
+    const { streamChatService } = require('@/lib/services/stream-chat');
+    streamChatService.getToken.mockResolvedValue({ token: 'test-token' });
+    streamChatService.syncUser.mockResolvedValue({ id: 'user123' });
+    streamChatService.getChannels.mockResolvedValue([]);
   });
 
   afterEach(() => {

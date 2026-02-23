@@ -130,7 +130,9 @@ export function TelegramConnectSheet({
                 <div>
                   <h2 className='text-xl font-bold text-gray-900'>Telegram</h2>
                   <p className='text-sm text-gray-500'>
-                    {isConnected ? 'Your Telegram account is connected' : 'Connect your Telegram account'}
+                    {isConnected
+                      ? 'Your Telegram account is connected'
+                      : 'Connect your Telegram account'}
                   </p>
                 </div>
               </div>
@@ -144,7 +146,8 @@ export function TelegramConnectSheet({
                       <div className='flex items-center gap-3 rounded-2xl bg-green-50 p-4'>
                         <CheckCircle className='h-5 w-5 flex-shrink-0 text-green-600' />
                         <p className='text-sm text-green-800'>
-                          Telegram is connected. You can log in with Telegram and receive notifications there.
+                          Telegram is connected. You can log in with Telegram and receive
+                          notifications there.
                         </p>
                       </div>
                       <Button
@@ -169,7 +172,8 @@ export function TelegramConnectSheet({
                   ) : (
                     <div className='space-y-6'>
                       <p className='text-sm text-gray-600'>
-                        Connect Telegram to log in with your Telegram account and receive event notifications via Telegram.
+                        Connect Telegram to log in with your Telegram account and receive event
+                        notifications via Telegram.
                       </p>
                       <div className='flex min-h-[56px] items-center justify-center'>
                         {!widgetLoaded && (
