@@ -10,8 +10,10 @@ import { useEffect, useState } from 'react';
 interface AmountInputSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: (amountSats: number) => void;
+  onConfirm: (amountSats: number, sendAll?: boolean) => void;
   isLoading?: boolean;
+  /** When set, shows a "Max" button that fills in the full available balance */
+  maxAmount?: number;
 }
 
 export function AmountInputSheet({
@@ -19,10 +21,12 @@ export function AmountInputSheet({
   onOpenChange,
   onConfirm,
   isLoading,
+  maxAmount,
 }: AmountInputSheetProps) {
   const [amount, setAmount] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
+  const [isSendAll, setIsSendAll] = useState(false);
   const { satsToUSD, usdToSats } = useAmountConverter();
 
   // Reset amount when sheet closes
@@ -30,10 +34,20 @@ export function AmountInputSheet({
     if (!open) {
       setAmount('');
       setAmountUSD('');
+      setIsSendAll(false);
     }
   }, [open]);
 
+  const handleSendAll = async () => {
+    if (!maxAmount || maxAmount <= 0) return;
+    setIsSendAll(true);
+    setAmount(maxAmount.toString());
+    const usd = await satsToUSD(maxAmount);
+    setAmountUSD(usd.toFixed(2));
+  };
+
   const handleNumberClick = async (num: string) => {
+    setIsSendAll(false);
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue + num;
 
@@ -53,6 +67,7 @@ export function AmountInputSheet({
   };
 
   const handleDelete = async () => {
+    setIsSendAll(false);
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue.slice(0, -1);
 
@@ -81,7 +96,7 @@ export function AmountInputSheet({
 
   const handleConfirm = () => {
     if (amount && Number(amount) > 0) {
-      onConfirm(Number(amount));
+      onConfirm(Number(amount), isSendAll);
       // Don't close the sheet here - parent will close it after async operations complete
     }
   };
@@ -112,6 +127,20 @@ export function AmountInputSheet({
               </span>
             </button>
           </div>
+
+          {/* Send All / Max Button */}
+          {maxAmount != null && maxAmount > 0 && (
+            <button
+              onClick={handleSendAll}
+              className={`w-full rounded-xl border px-4 py-3 text-center text-sm font-medium transition-colors ${
+                isSendAll
+                  ? 'border-gray-900 bg-gray-900 text-white'
+                  : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              Send All ({maxAmount.toLocaleString()} sats)
+            </button>
+          )}
 
           {/* Number Pad */}
           <NumericKeypad

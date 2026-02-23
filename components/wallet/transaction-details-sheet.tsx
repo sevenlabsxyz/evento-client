@@ -127,7 +127,7 @@ export function TransactionDetailsSheet({
   // Get preimage
   const getPreimage = () => {
     if (payment.details?.type === 'lightning') {
-      return payment.details.preimage;
+      return payment.details.htlcDetails?.preimage;
     }
     return null;
   };
@@ -135,7 +135,7 @@ export function TransactionDetailsSheet({
   // Get payment hash
   const getPaymentHash = () => {
     if (payment.details?.type === 'lightning') {
-      return payment.details.paymentHash;
+      return payment.details.htlcDetails?.paymentHash;
     }
     return null;
   };

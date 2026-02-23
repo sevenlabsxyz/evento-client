@@ -34,6 +34,7 @@ import {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
+  type FeePolicy,
 } from '@breeztech/breez-sdk-spark';
 
 // Set to true to enable verbose logging
@@ -499,6 +500,40 @@ export class BreezSDKService {
   }
 
   /**
+   * Prepare a send-all payment (fees deducted from balance)
+   * Uses FeePolicy 'feesIncluded' so the full amount minus fees is sent to the recipient.
+   * Useful for draining the wallet or sending the entire balance to a Bitcoin address.
+   */
+  async prepareSendAll(
+    paymentRequest: string,
+    amountSats: number
+  ): Promise<PrepareSendPaymentResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ) console.debug('⚡ [BREEZ:PREPARE_SEND_ALL] Preparing send-all payment...');
+      const request: PrepareSendPaymentRequest = {
+        paymentRequest,
+        amount: BigInt(amountSats),
+        feePolicy: 'feesIncluded',
+      };
+
+      const response = await this.sdk.prepareSendPayment(request);
+      if (DEBUG_BREEZ) {
+        console.debug('✅ [BREEZ:PREPARE_SEND_ALL] Send-all payment prepared successfully', {
+          amount: Number(response.amount),
+          feePolicy: response.feePolicy,
+        });
+      }
+      return response;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_SEND_PAYMENT);
+      const userMessage = getBreezErrorMessage(error, 'prepare send-all payment');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
    * Send a Lightning payment
    */
   async sendPayment(paymentRequest: string, amountSats?: number): Promise<SendPaymentResponse> {
@@ -896,4 +931,4 @@ export class BreezSDKService {
 export const breezSDK = BreezSDKService.getInstance();
 
 // Re-export types for use in components
-export type { DepositInfo, Fee } from '@breeztech/breez-sdk-spark';
+export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark';
