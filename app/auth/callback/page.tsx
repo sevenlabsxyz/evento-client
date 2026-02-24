@@ -52,9 +52,31 @@ function AuthCallbackContent() {
         const hashRefreshToken = hashParams.get('refresh_token');
 
         if (code) {
-          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-          if (exchangeError) {
-            throw new Error(exchangeError.message);
+          const {
+            data: { session: existingSession },
+          } = await supabase.auth.getSession();
+
+          if (!existingSession) {
+            const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+
+            if (exchangeError) {
+              const isVerifierRace =
+                exchangeError.message.includes('code verifier should be non-empty') ||
+                exchangeError.message.includes(
+                  'both auth code and code verifier should be non-empty'
+                );
+
+              if (!isVerifierRace) {
+                throw new Error(exchangeError.message);
+              }
+
+              logger.warn(
+                'Auth callback exchangeCodeForSession verifier race, continuing with session checks',
+                {
+                  error: exchangeError.message,
+                }
+              );
+            }
           }
         } else {
           const accessToken = searchAccessToken || hashAccessToken;
