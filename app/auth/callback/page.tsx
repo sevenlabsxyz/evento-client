@@ -4,85 +4,105 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
+import { createClient } from '@/lib/supabase/client';
 import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
 import { logger } from '@/lib/utils/logger';
 import { CheckCircle, Loader2, XCircle } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
 function AuthCallbackContent() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { setUser } = useAuthStore();
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const handleAuthCallback = async () => {
+      const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+      const getRedirectUrl = (url: URL, hashParams: URLSearchParams): string => {
+        const candidate =
+          url.searchParams.get('redirect') ||
+          url.searchParams.get('next') ||
+          url.searchParams.get('redirectTo') ||
+          hashParams.get('redirect') ||
+          hashParams.get('next') ||
+          '/';
+
+        return validateRedirectUrl(candidate);
+      };
+
       try {
-        // Check if we have auth tokens in the URL (for OAuth flow)
-        const urlParams = new URLSearchParams(window.location.search);
-        const accessToken = urlParams.get('access_token');
-        const refreshToken = urlParams.get('refresh_token');
+        const callbackUrl = new URL(window.location.href);
+        const hashParams = new URLSearchParams(callbackUrl.hash.replace(/^#/, ''));
+        const redirectUrl = getRedirectUrl(callbackUrl, hashParams);
+        const oauthError = callbackUrl.searchParams.get('error');
+        const oauthErrorDescription = callbackUrl.searchParams.get('error_description');
 
-        if (accessToken) {
-          // OAuth callback with tokens
-          // Store tokens and get user info
-          localStorage.setItem(STORAGE_KEYS.SUPABASE_ACCESS_TOKEN, accessToken);
-          if (refreshToken) {
-            localStorage.setItem(STORAGE_KEYS.SUPABASE_REFRESH_TOKEN, refreshToken);
-          }
+        if (oauthError) {
+          throw new Error(oauthErrorDescription || oauthError);
+        }
 
-          // Give the tokens a moment to be stored, then get user info
-          await new Promise((resolve) => setTimeout(resolve, 100));
+        const supabase = createClient();
+        const code = callbackUrl.searchParams.get('code');
+        const searchAccessToken = callbackUrl.searchParams.get('access_token');
+        const searchRefreshToken = callbackUrl.searchParams.get('refresh_token');
+        const hashAccessToken = hashParams.get('access_token');
+        const hashRefreshToken = hashParams.get('refresh_token');
 
-          // Get user info from your backend (now with tokens in localStorage)
-          const user = await authService.getCurrentUser();
-
-          if (user) {
-            setUser(user);
-            setStatus('success');
-
-            // Check if user needs onboarding
-            const needsOnboarding = !isUserOnboarded(user);
-            const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
-
-            // Redirect after brief success message
-            setTimeout(() => {
-              if (needsOnboarding) {
-                router.push(getOnboardingRedirectUrl(redirectUrl));
-              } else {
-                router.push(redirectUrl);
-              }
-            }, 1500);
-          } else {
-            throw new Error('Failed to get user information');
+        if (code) {
+          const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeError) {
+            throw new Error(exchangeError.message);
           }
         } else {
-          // No tokens in URL, might be a regular callback
-          // Try to get current user (in case session was established)
-          // TODO: On mobile, parse deep link params from Telegram auth when the app returns.
-          const user = await authService.getCurrentUser();
+          const accessToken = searchAccessToken || hashAccessToken;
+          const refreshToken = searchRefreshToken || hashRefreshToken;
 
-          if (user) {
-            setUser(user);
-            setStatus('success');
+          if (accessToken && refreshToken) {
+            localStorage.setItem(STORAGE_KEYS.SUPABASE_ACCESS_TOKEN, accessToken);
+            localStorage.setItem(STORAGE_KEYS.SUPABASE_REFRESH_TOKEN, refreshToken);
 
-            // Check if user needs onboarding
-            const needsOnboarding = !isUserOnboarded(user);
-            const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+            const { error: setSessionError } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
 
-            setTimeout(() => {
-              if (needsOnboarding) {
-                router.push(getOnboardingRedirectUrl(redirectUrl));
-              } else {
-                router.push(redirectUrl);
-              }
-            }, 1500);
-          } else {
-            throw new Error('No authentication found');
+            if (setSessionError) {
+              throw new Error(setSessionError.message);
+            }
           }
         }
+
+        let user = await authService.getCurrentUser();
+
+        if (!user) {
+          for (let attempt = 0; attempt < 3; attempt += 1) {
+            await wait(400);
+            user = await authService.getCurrentUser();
+            if (user) {
+              break;
+            }
+          }
+        }
+
+        if (!user) {
+          throw new Error('No authentication found');
+        }
+
+        setUser(user);
+        setStatus('success');
+
+        const needsOnboarding = !isUserOnboarded(user);
+
+        setTimeout(() => {
+          if (needsOnboarding) {
+            router.push(getOnboardingRedirectUrl(redirectUrl));
+          } else {
+            router.push(redirectUrl);
+          }
+        }, 1200);
       } catch (error) {
         logger.error('Auth callback error', {
           error: error instanceof Error ? error.message : String(error),
@@ -92,7 +112,13 @@ function AuthCallbackContent() {
 
         // Redirect to login after error, preserving the redirect parameter
         setTimeout(() => {
-          const redirect = searchParams.get('redirect');
+          const callbackUrl = new URL(window.location.href);
+          const hashParams = new URLSearchParams(callbackUrl.hash.replace(/^#/, ''));
+          const redirect =
+            callbackUrl.searchParams.get('redirect') ||
+            callbackUrl.searchParams.get('next') ||
+            hashParams.get('redirect') ||
+            hashParams.get('next');
           router.push(
             redirect ? `/auth/login?redirect=${encodeURIComponent(redirect)}` : '/auth/login'
           );
