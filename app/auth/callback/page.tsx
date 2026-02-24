@@ -110,6 +110,44 @@ function AuthCallbackContent() {
         }
 
         if (!user) {
+          const {
+            data: { user: supabaseUser },
+            error: supabaseUserError,
+          } = await supabase.auth.getUser();
+
+          if (supabaseUserError) {
+            throw new Error(supabaseUserError.message);
+          }
+
+          if (supabaseUser) {
+            const metadata = (supabaseUser.user_metadata ?? {}) as Record<string, unknown>;
+            const username = typeof metadata.username === 'string' ? metadata.username : '';
+            const name = typeof metadata.full_name === 'string' ? metadata.full_name : '';
+            const image = typeof metadata.avatar_url === 'string' ? metadata.avatar_url : '';
+
+            setUser({
+              id: supabaseUser.id,
+              username,
+              name,
+              bio: '',
+              image,
+              bio_link: '',
+              x_handle: '',
+              instagram_handle: '',
+              ln_address: '',
+              nip05: '',
+              verification_status: null,
+              verification_date: '',
+            });
+            setStatus('success');
+
+            setTimeout(() => {
+              router.push(getOnboardingRedirectUrl(redirectUrl));
+            }, 1200);
+
+            return;
+          }
+
           throw new Error('No authentication found');
         }
 

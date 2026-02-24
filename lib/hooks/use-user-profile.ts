@@ -92,6 +92,8 @@ export function useUpdateUserProfile() {
       if (updatedUser) {
         // Update the query cache
         queryClient.setQueryData(USER_PROFILE_QUERY_KEY, updatedUser);
+        queryClient.setQueryData(['auth', 'user'], updatedUser);
+        queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
         // Update the auth store
         setUser(updatedUser);
       }
