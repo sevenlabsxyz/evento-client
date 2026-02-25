@@ -20,6 +20,7 @@ import {
   UserPlus,
   Users,
   X,
+  Zap,
 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -139,6 +140,15 @@ export default function ManageEventPage() {
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
       route: `/e/${eventId}/manage/email-blast`,
+    },
+    {
+      id: 'zaps',
+      title: 'Zaps',
+      description: 'Attempt batched zaps for guests',
+      icon: <Zap className='h-6 w-6' />,
+      iconBg: 'bg-yellow-100',
+      iconColor: 'text-yellow-700',
+      route: `/e/${eventId}/manage/zaps`,
     },
     // {
     //   id: 'sub-events',

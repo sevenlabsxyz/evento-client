@@ -125,4 +125,5 @@ export const queryKeys = {
   eventEmailBlasts: (eventId: string) => [...queryKeys.emailBlasts, eventId] as const,
   emailBlast: (eventId: string, blastId: string) =>
     [...queryKeys.emailBlasts, eventId, blastId] as const,
+  eventZaps: (eventId: string) => [...queryKeys.events, eventId, 'zaps'] as const,
 } as const;

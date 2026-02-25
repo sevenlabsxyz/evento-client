@@ -447,6 +447,67 @@ export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
 export type RestrictedEventField = 'location' | 'description' | 'guest_list';
 export type EmailBlastRecipientFilter = 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited';
+export type EventZapRecipientFilter = 'all' | 'yes' | 'no' | 'maybe';
+export type EventZapRunStatus = 'queued' | 'processing' | 'completed' | 'failed' | 'cancelled';
+export type EventZapRecipientStatus = 'pending' | 'attempted' | 'fallback_emailed' | 'failed';
+
+export interface EventZapRun {
+  id: string;
+  event_id: string;
+  host_user_id: string;
+  created_by_user_id: string;
+  recipient_filter: EventZapRecipientFilter;
+  amount_sats: number;
+  status: EventZapRunStatus;
+  total_recipients: number;
+  processed_recipients: number;
+  successful_recipients: number;
+  failed_recipients: number;
+  missing_lightning_recipients: number;
+  missing_account_recipients: number;
+  fallback_emailed_recipients: number;
+  trigger_run_id?: string | null;
+  started_at?: string | null;
+  completed_at?: string | null;
+  failed_reason?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface EventZapRunRecipient {
+  id: string;
+  run_id: string;
+  event_id: string;
+  recipient_status: RSVPStatus | 'invited';
+  recipient_user_id: string | null;
+  recipient_email: string | null;
+  recipient_name: string | null;
+  recipient_username: string | null;
+  recipient_lightning_address: string | null;
+  status: EventZapRecipientStatus;
+  invoice_bolt11?: string | null;
+  invoice_verify_url?: string | null;
+  attempted_at?: string | null;
+  completed_at?: string | null;
+  failure_reason?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateEventZapRunForm {
+  recipientFilter: EventZapRecipientFilter;
+  amountSats: number;
+}
+
+export interface SubmitEventZapRunResultsForm {
+  results: Array<{
+    recipientId: string;
+    status: Exclude<EventZapRecipientStatus, 'pending'>;
+    failureReason?: string;
+    invoiceBolt11?: string;
+    invoiceVerifyUrl?: string;
+  }>;
+}
 
 // Password-protected event response (minimal data when locked)
 export interface PasswordProtectedEventResponse {
