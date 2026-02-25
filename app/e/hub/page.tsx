@@ -87,8 +87,8 @@ export default function HubPage() {
       <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:max-w-6xl md:pb-32'>
         <CohostInvitesSection />
         <MyEventsSection />
-        <EventInvitesSection />
         <ForYouSection />
+        <EventInvitesSection />
         <HubBlogGallery />
       </div>
       <Navbar />
