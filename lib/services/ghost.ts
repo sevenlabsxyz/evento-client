@@ -4,9 +4,27 @@ import { GhostPost, GhostPostsResponse } from '@/lib/types/ghost';
 const GHOST_URL = Env.NEXT_PUBLIC_GHOST_URL;
 const GHOST_KEY = Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY;
 const API_VERSION = 'v5.0';
+const ALLOWED_ENDPOINTS = ['posts', 'pages', 'tags', 'authors'] as const;
+
+type GhostEndpoint = (typeof ALLOWED_ENDPOINTS)[number];
+
+function validateEndpoint(endpoint: string): GhostEndpoint {
+  const normalizedEndpoint = endpoint.trim().replace(/^\/+|\/+$/g, '').toLowerCase();
+
+  if (!ALLOWED_ENDPOINTS.includes(normalizedEndpoint as GhostEndpoint)) {
+    throw new Error(`Invalid Ghost endpoint: ${endpoint}`);
+  }
+
+  return normalizedEndpoint as GhostEndpoint;
+}
 
 function buildUrl(endpoint: string, params: Record<string, string> = {}): string {
-  const url = new URL(`${GHOST_URL}/ghost/api/content/${endpoint}/`);
+  if (!GHOST_URL || !GHOST_KEY) {
+    throw new Error('Ghost API configuration missing - NEXT_PUBLIC_GHOST_URL or key not set');
+  }
+
+  const validatedEndpoint = validateEndpoint(endpoint);
+  const url = new URL(`/ghost/api/content/${validatedEndpoint}/`, GHOST_URL);
   url.searchParams.set('key', GHOST_KEY);
   for (const [key, value] of Object.entries(params)) {
     url.searchParams.set(key, value);
@@ -14,7 +32,7 @@ function buildUrl(endpoint: string, params: Record<string, string> = {}): string
   return url.toString();
 }
 
-async function ghostFetch<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
+async function ghostFetch<T>(endpoint: GhostEndpoint, params: Record<string, string> = {}): Promise<T> {
   const url = buildUrl(endpoint, params);
   const res = await fetch(url, {
     headers: { 'Accept-Version': API_VERSION },
@@ -30,7 +48,7 @@ async function ghostFetch<T>(endpoint: string, params: Record<string, string> = 
 
 export async function getPosts(
   options: {
-    limit?: number;
+    limit?: number | 'all';
     page?: number;
     include?: string;
     filter?: string;

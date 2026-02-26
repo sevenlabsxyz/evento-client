@@ -1,4 +1,52 @@
 /** @type {import('next').NextConfig} */
+function getGhostHostname() {
+  const ghostUrl = process.env.NEXT_PUBLIC_GHOST_URL;
+
+  if (!ghostUrl) {
+    return null;
+  }
+
+  try {
+    return new URL(ghostUrl).hostname;
+  } catch {
+    return null;
+  }
+}
+
+const ghostHostname = getGhostHostname();
+
+const ghostRemotePatterns = [
+  ...(ghostHostname
+    ? [
+        {
+          protocol: 'https',
+          hostname: ghostHostname,
+          pathname: '/content/images/**',
+        },
+      ]
+    : []),
+  {
+    protocol: 'https',
+    hostname: 'blogapi.evento.so',
+    pathname: '/content/images/**',
+  },
+  {
+    protocol: 'https',
+    hostname: 'laughing-sunfish.pikapod.net',
+    pathname: '/content/images/**',
+  },
+  {
+    protocol: 'https',
+    hostname: '**.ghost.io',
+    pathname: '/content/images/**',
+  },
+  {
+    protocol: 'https',
+    hostname: 'static.ghost.org',
+    pathname: '/**',
+  },
+];
+
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -9,6 +57,7 @@ const nextConfig = {
   images: {
     unoptimized: false,
     remotePatterns: [
+      ...ghostRemotePatterns,
       {
         protocol: 'https',
         hostname: 'evento.so',
@@ -17,16 +66,6 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'api.evento.so',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'blogapi.evento.so',
-        pathname: '/**',
-      },
-      {
-        protocol: 'https',
-        hostname: 'laughing-sunfish.pikapod.net',
         pathname: '/**',
       },
       {

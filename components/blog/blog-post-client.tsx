@@ -3,34 +3,28 @@
 import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Env } from '@/lib/constants/env';
+import { useGhostPosts } from '@/lib/hooks/use-ghost-posts';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
+import { GhostPost } from '@/lib/types/ghost';
 import { toast } from '@/lib/utils/toast';
 import { ExternalLink, Share } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import './blog-post.css';
+import { useEffect, useMemo } from 'react';
 import EnhancedBlogContent from './enhanced-blog-content';
 
-interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  feature_image: string;
-  published_at: string;
-  tags: Array<{ name: string }>;
-}
-
 interface BlogPostClientProps {
-  post: any;
+  post: GhostPost;
 }
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
-  const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
-  const [isLoadingRelated, setIsLoadingRelated] = useState(false);
   const { setTopBar } = useTopBar();
+  const { data: relatedCandidatePosts = [], isLoading: isLoadingRelated } = useGhostPosts({ limit: 4 });
+
+  const relatedPosts = useMemo(
+    () => relatedCandidatePosts.filter((candidatePost) => candidatePost.slug !== post.slug).slice(0, 3),
+    [post.slug, relatedCandidatePosts]
+  );
 
   // Set TopBar title to post title
   useEffect(() => {
@@ -49,50 +43,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
     };
   }, [post?.title, setTopBar]);
 
-  // Fetch related blog posts
-  useEffect(() => {
-    if (!post) {
-      return;
-    }
-
-    const fetchRelatedPosts = async () => {
-      try {
-        setIsLoadingRelated(true);
-
-        if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-          return;
-        }
-
-        const res = await fetch(
-          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors&limit=4`,
-          { next: { revalidate: 60 } }
-        );
-
-        if (!res.ok) {
-          throw new Error('Failed to fetch related posts');
-        }
-
-        const data = await res.json();
-        // Filter out the current post and take only 3
-        const filtered = (data.posts || [])
-          .filter((p: BlogPost) => p.slug !== post.slug)
-          .slice(0, 3);
-        setRelatedPosts(filtered);
-      } catch (err) {
-        logger.error('Error fetching related posts', {
-          error: err instanceof Error ? err.message : String(err),
-        });
-      } finally {
-        setIsLoadingRelated(false);
-      }
-    };
-
-    fetchRelatedPosts();
-  }, [post?.slug, post]);
-
-  if (!post) return null;
-
-  const authorName = post.authors && post.authors.length > 0 ? post.authors[0].name : 'Evento Team';
+  const authorName = post.authors?.[0]?.name ?? 'Evento Team';
 
   const publishedDate = new Date(post.published_at || '').toLocaleDateString('en-US', {
     year: 'numeric',
@@ -103,7 +54,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const handleShare = async () => {
     const shareData = {
       title: post.title,
-      text: post.excerpt || `Check out this blog post: ${post.title}`,
+      text: post.excerpt ?? `Check out this blog post: ${post.title}`,
       url: window.location.href,
     };
 
@@ -125,9 +76,9 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   };
 
   return (
-    <article className='BlogPost-article'>
+    <article className='mx-auto grid w-full max-w-[860px]'>
       {post.feature_image ? (
-        <div className='BlogPost-illustration'>
+        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden rounded-xl bg-gray-100'>
           <Image
             src={post.feature_image}
             alt={post.title}
@@ -139,15 +90,24 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           <div className='absolute inset-0 bg-black/30' />
         </div>
       ) : (
-        <div className='BlogPost-illustration' />
+        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden rounded-xl bg-gray-100' />
       )}
-      <div className='BlogPost-articleContent'>
-        <h1 className='BlogPost-title'>{post.title}</h1>
-        {post.excerpt && <h2 className='BlogPost-subtitle'>{post.excerpt}</h2>}
-        <div className='BlogPost-author'>
-          by <span className='BlogPost-authorName'>{authorName}</span> • {publishedDate}
+      <div className='grid w-[min(calc(100%-3rem),800px)] place-content-start justify-self-center py-7 pb-8 lg:py-14'>
+        <h1 className='mb-3 mt-0 text-balance text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-5xl'>
+          {post.title}
+        </h1>
+        {post.excerpt && (
+          <h2 className='m-0 text-balance text-xl font-medium leading-snug text-gray-500 lg:text-2xl'>
+            {post.excerpt}
+          </h2>
+        )}
+        <div className='mt-4 text-sm text-gray-500 lg:mt-6'>
+          by <span className='font-medium text-gray-600'>{authorName}</span> • {publishedDate}
         </div>
-        <EnhancedBlogContent html={post.html || ''} className='BlogPost-articleBody' />
+        <EnhancedBlogContent
+          html={post.html || ''}
+          className='mt-9 max-w-none text-lg leading-relaxed text-gray-800 lg:mt-14 [&_a]:text-red-600 hover:[&_a]:text-red-700 [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-200 [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_code]:rounded [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h3]:mt-8 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-lg [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:pl-8 [&_p]:mb-5 [&_pre]:mb-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-50 [&_pre]:p-4 [&_ul]:mb-5 [&_ul]:pl-8'
+        />
       </div>
 
       {/* CTA Section */}
@@ -192,8 +152,8 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
           {isLoadingRelated ? (
             <div className='grid grid-cols-1 gap-6'>
-              {[...Array(3)].map((_, i) => (
-                <Skeleton key={i} className='h-64 rounded-2xl' />
+              {['related-skeleton-1', 'related-skeleton-2', 'related-skeleton-3'].map((skeletonId) => (
+                <Skeleton key={skeletonId} className='h-64 rounded-2xl' />
               ))}
             </div>
           ) : (
@@ -203,8 +163,8 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                   key={relatedPost.id}
                   slug={relatedPost.slug}
                   title={relatedPost.title}
-                  description={relatedPost.excerpt}
-                  image={relatedPost.feature_image}
+                  description={relatedPost.excerpt ?? ''}
+                  image={relatedPost.feature_image ?? ''}
                   date={relatedPost.published_at}
                   category={relatedPost.tags?.length > 0 ? [relatedPost.tags[0]] : []}
                 />

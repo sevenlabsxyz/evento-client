@@ -3,6 +3,7 @@
 import { Env } from '@/lib/constants/env';
 import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
+import { formatEventLocationAddress } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
@@ -18,9 +19,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   const [showWeatherDetail, setShowWeatherDetail] = useState(false);
 
   const isTBDLocation = event.location.name === 'TBD';
-  const fullAddress = `${event.location.address}, ${event.location.city}, ${
-    event.location.state || ''
-  } ${event.location.zipCode || ''}`.trim();
+  const fullAddress = formatEventLocationAddress(event.location);
   const destination = event.location.coordinates
     ? `${event.location.coordinates.lat},${event.location.coordinates.lng}`
     : fullAddress;

@@ -2,9 +2,22 @@ import { format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export const BlogCard = ({ date, slug, image, title, category, description }: any) => {
+interface BlogCardProps {
+  date: string | null;
+  slug: string;
+  image: string;
+  title: string;
+  category?: Array<{ name: string }>;
+  description: string;
+}
+
+export const BlogCard = ({ date, slug, image, title, description }: BlogCardProps) => {
   // Fallback gradient if no image
   const fallbackGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  const parsedDate = date ? new Date(date) : null;
+  const formattedDate = parsedDate && !Number.isNaN(parsedDate.getTime())
+    ? format(parsedDate, 'EEE, do MMMM yyyy')
+    : 'Date unavailable';
 
   return (
     <Link
@@ -40,7 +53,7 @@ export const BlogCard = ({ date, slug, image, title, category, description }: an
             </span>
           )}*/}
           <time className='text-sm text-gray-500'>
-            {format(new Date(date), 'EEE, do MMMM yyyy')}
+            {formattedDate}
           </time>
         </div>
         <h2 className='m-0 mb-2 line-clamp-3 text-xl font-bold leading-7 text-gray-900 transition-colors duration-200 ease-in-out group-hover:text-red-600'>
