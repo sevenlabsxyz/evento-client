@@ -12,7 +12,18 @@ import { EventDetail } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, Clock, Mail, MapPin, MoreHorizontal, Share, Star, XCircle } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  Globe,
+  Lock,
+  Mail,
+  MapPin,
+  MoreHorizontal,
+  Share,
+  Star,
+  XCircle,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
@@ -246,6 +257,22 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         <div className='space-y-3'>
           <div className='flex items-center gap-3 text-black'>
             <span className='text-2xl font-bold'>{event.title}</span>
+            {eventData?.visibility && (
+              <span
+                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
+                  eventData.visibility === 'public'
+                    ? 'border-green-200 bg-green-50 text-green-700'
+                    : 'border-gray-300 bg-gray-100 text-gray-700'
+                }`}
+              >
+                {eventData.visibility === 'public' ? (
+                  <Globe className='h-3 w-3' />
+                ) : (
+                  <Lock className='h-3 w-3' />
+                )}
+                {eventData.visibility === 'public' ? 'Public' : 'Private'}
+              </span>
+            )}
           </div>
           <div className='flex items-center gap-3 text-gray-700'>
             <Calendar className='h-5 w-5 shrink-0 text-gray-400' />
@@ -273,6 +300,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
             <div className='grid grid-cols-4 gap-2'>
               {hasPendingRegistration ? (
                 <button
+                  type='button'
                   onClick={handlePendingClick}
                   className='flex h-16 flex-col items-center justify-center rounded-2xl bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
                 >
@@ -281,6 +309,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 </button>
               ) : hasDeniedRegistration ? (
                 <button
+                  type='button'
                   onClick={handleDeniedClick}
                   className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-100 text-red-700 transition-colors hover:bg-red-200'
                 >
@@ -289,6 +318,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 </button>
               ) : (
                 <button
+                  type='button'
                   onClick={handleRSVP}
                   disabled={shouldDisableRsvpButton}
                   className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
@@ -299,6 +329,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               )}
 
               <button
+                type='button'
                 onClick={handleContact}
                 className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
               >
@@ -307,6 +338,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               </button>
 
               <button
+                type='button'
                 onClick={handleShare}
                 className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
               >
@@ -315,6 +347,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               </button>
 
               <button
+                type='button'
                 onClick={() => setShowMoreSheet(true)}
                 className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
               >

@@ -24,6 +24,7 @@ export function MyEventsSection() {
   const upcomingQuery = useUserEvents({
     filter: 'upcoming',
     timeframe: 'future',
+    sortBy: 'date-asc',
     limit: 6,
     enabled: loadedTabs.includes('upcoming'),
   });
@@ -31,6 +32,7 @@ export function MyEventsSection() {
   const hostingQuery = useUserEvents({
     filter: 'hosting',
     timeframe: 'future',
+    sortBy: 'date-asc',
     limit: 6,
     enabled: loadedTabs.includes('hosting'),
   });
@@ -45,7 +47,7 @@ export function MyEventsSection() {
     if (!loadedTabs.includes(activeTab)) {
       setLoadedTabs((prev) => [...prev, activeTab]);
     }
-  }, [activeTab]);
+  }, [activeTab, loadedTabs]);
 
   const getCurrentQuery = () => {
     switch (activeTab) {
@@ -123,9 +125,9 @@ export function MyEventsSection() {
           {isLoading ? (
             // Skeleton loading for vertical layout
             <div className='flex flex-col gap-2'>
-              {Array.from({ length: 6 }).map((_, index) => (
+              {Array.from({ length: 6 }, (_, idx) => `ske-${idx}`).map((skeletonKey) => (
                 <div
-                  key={`ske-${index}`}
+                  key={skeletonKey}
                   className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4'
                 >
                   {/* Left content skeleton */}
