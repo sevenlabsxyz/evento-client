@@ -1,7 +1,7 @@
 import { BlogPostClient } from '@/components/blog/blog-post-client';
-import { Env } from '@/lib/constants/env';
+import { ghostService } from '@/lib/services/ghost';
+import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
-import GhostContentAPI from '@tryghost/content-api';
 import { AlertTriangle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -24,59 +24,23 @@ const Loading = () => (
   </div>
 );
 
-// Only initialize the API if environment variables are present
-const api =
-  Env.NEXT_PUBLIC_GHOST_URL && Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY
-    ? new GhostContentAPI({
-        url: Env.NEXT_PUBLIC_GHOST_URL,
-        key: Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY,
-        version: 'v5.0',
-        makeRequest: async ({ url, method, params, headers }: any) => {
-          const apiUrl = new URL(url);
-
-          Object.keys(params).map((key) =>
-            apiUrl.searchParams.set(key, encodeURIComponent(params[key]))
-          );
-
-          try {
-            const response = await fetch(apiUrl.toString(), {
-              method,
-              headers,
-            });
-            const data = await response.json();
-            return { data };
-          } catch (error) {
-            logger.error('Ghost API request failed', {
-              error: error instanceof Error ? error.message : String(error),
-            });
-          }
-        },
-      })
-    : null;
-
-async function getBlogPost(slug: string) {
-  // Return null if API is not initialized
-  if (!api) {
-    logger.warn('Ghost API not initialized - missing environment variables');
-    return null;
-  }
-
+async function getBlogPost(slug: string): Promise<GhostPost | null> {
   try {
-    return await api.posts.read({ slug }, { include: ['tags', 'authors'] });
+    return await ghostService.getPostBySlug(slug);
   } catch (error) {
     logger.error('Error fetching blog post', {
       error: error instanceof Error ? error.message : String(error),
     });
-    // throw new Error('Failed to fetch blog post');
+    return null;
   }
 }
 
-function PostContent({ post }: { post: any }) {
+function PostContent({ post }: { post: GhostPost }) {
   return <BlogPostClient post={post} />;
 }
 
 export default async function BlogPost({ params }: { params: { slug: string } }) {
-  let post;
+  let post: GhostPost | null = null;
 
   try {
     post = await getBlogPost(params.slug);
@@ -98,28 +62,41 @@ export default async function BlogPost({ params }: { params: { slug: string } })
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   try {
     const post = await getBlogPost(params.slug);
-    return {
-      title: post.title,
-      description: post.excerpt,
-      openGraph: {
-        title: post.title,
-        description: post.excerpt,
-        type: 'article',
-        url: `https://evento.so/blog/${params.slug}`,
-        images: [
+
+    if (!post) {
+      return {
+        title: 'Blog Post',
+        description: 'Unable to load blog post details',
+      };
+    }
+
+    const postDescription = post.excerpt ?? 'Read this blog post on Evento.';
+    const postImages = post.feature_image
+      ? [
           {
             url: post.feature_image,
             width: 1200,
             height: 630,
             alt: post.title,
           },
-        ],
+        ]
+      : [];
+
+    return {
+      title: post.title,
+      description: postDescription,
+      openGraph: {
+        title: post.title,
+        description: postDescription,
+        type: 'article',
+        url: `https://evento.so/e/blog/${params.slug}`,
+        images: postImages,
       },
       twitter: {
         card: 'summary_large_image',
         title: post.title,
-        description: post.excerpt,
-        images: [post.feature_image],
+        description: postDescription,
+        images: post.feature_image ? [post.feature_image] : [],
       },
     };
   } catch (error) {
