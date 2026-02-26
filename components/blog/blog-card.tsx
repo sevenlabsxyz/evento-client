@@ -15,9 +15,10 @@ export const BlogCard = ({ date, slug, image, title, description }: BlogCardProp
   // Fallback gradient if no image
   const fallbackGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
   const parsedDate = date ? new Date(date) : null;
-  const formattedDate = parsedDate && !Number.isNaN(parsedDate.getTime())
-    ? format(parsedDate, 'EEE, do MMMM yyyy')
-    : 'Date unavailable';
+  const formattedDate =
+    parsedDate && !Number.isNaN(parsedDate.getTime())
+      ? format(parsedDate, 'EEE, do MMMM yyyy')
+      : 'Date unavailable';
 
   return (
     <Link
@@ -52,9 +53,7 @@ export const BlogCard = ({ date, slug, image, title, description }: BlogCardProp
               {category[0].name}
             </span>
           )}*/}
-          <time className='text-sm text-gray-500'>
-            {formattedDate}
-          </time>
+          <time className='text-sm text-gray-500'>{formattedDate}</time>
         </div>
         <h2 className='m-0 mb-2 line-clamp-3 text-xl font-bold leading-7 text-gray-900 transition-colors duration-200 ease-in-out group-hover:text-red-600'>
           {title}

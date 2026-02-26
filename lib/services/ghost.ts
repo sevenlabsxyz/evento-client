@@ -9,7 +9,10 @@ const ALLOWED_ENDPOINTS = ['posts', 'pages', 'tags', 'authors'] as const;
 type GhostEndpoint = (typeof ALLOWED_ENDPOINTS)[number];
 
 function validateEndpoint(endpoint: string): GhostEndpoint {
-  const normalizedEndpoint = endpoint.trim().replace(/^\/+|\/+$/g, '').toLowerCase();
+  const normalizedEndpoint = endpoint
+    .trim()
+    .replace(/^\/+|\/+$/g, '')
+    .toLowerCase();
 
   if (!ALLOWED_ENDPOINTS.includes(normalizedEndpoint as GhostEndpoint)) {
     throw new Error(`Invalid Ghost endpoint: ${endpoint}`);
@@ -32,7 +35,10 @@ function buildUrl(endpoint: string, params: Record<string, string> = {}): string
   return url.toString();
 }
 
-async function ghostFetch<T>(endpoint: GhostEndpoint, params: Record<string, string> = {}): Promise<T> {
+async function ghostFetch<T>(
+  endpoint: GhostEndpoint,
+  params: Record<string, string> = {}
+): Promise<T> {
   const url = buildUrl(endpoint, params);
   const res = await fetch(url, {
     headers: { 'Accept-Version': API_VERSION },

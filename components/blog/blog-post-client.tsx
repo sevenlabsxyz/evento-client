@@ -5,8 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGhostPosts } from '@/lib/hooks/use-ghost-posts';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { logger } from '@/lib/utils/logger';
 import { GhostPost } from '@/lib/types/ghost';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { ExternalLink, Share } from 'lucide-react';
 import Image from 'next/image';
@@ -19,10 +19,13 @@ interface BlogPostClientProps {
 
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const { setTopBar } = useTopBar();
-  const { data: relatedCandidatePosts = [], isLoading: isLoadingRelated } = useGhostPosts({ limit: 4 });
+  const { data: relatedCandidatePosts = [], isLoading: isLoadingRelated } = useGhostPosts({
+    limit: 4,
+  });
 
   const relatedPosts = useMemo(
-    () => relatedCandidatePosts.filter((candidatePost) => candidatePost.slug !== post.slug).slice(0, 3),
+    () =>
+      relatedCandidatePosts.filter((candidatePost) => candidatePost.slug !== post.slug).slice(0, 3),
     [post.slug, relatedCandidatePosts]
   );
 
@@ -106,7 +109,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
         </div>
         <EnhancedBlogContent
           html={post.html || ''}
-          className='mt-9 max-w-none text-lg leading-relaxed text-gray-800 lg:mt-14 [&_a]:text-red-600 hover:[&_a]:text-red-700 [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-200 [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_code]:rounded [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h1]:mt-8 [&_h1]:mb-4 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h3]:mt-8 [&_h3]:mb-4 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-lg [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:pl-8 [&_p]:mb-5 [&_pre]:mb-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-50 [&_pre]:p-4 [&_ul]:mb-5 [&_ul]:pl-8'
+          className='mt-9 max-w-none text-lg leading-relaxed text-gray-800 lg:mt-14 [&_a]:text-red-600 hover:[&_a]:text-red-700 [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-200 [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_code]:rounded [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h1]:mb-4 [&_h1]:mt-8 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:mb-4 [&_h2]:mt-8 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h3]:mb-4 [&_h3]:mt-8 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-lg [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:pl-8 [&_p]:mb-5 [&_pre]:mb-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-50 [&_pre]:p-4 [&_ul]:mb-5 [&_ul]:pl-8'
         />
       </div>
 
@@ -152,9 +155,11 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
           {isLoadingRelated ? (
             <div className='grid grid-cols-1 gap-6'>
-              {['related-skeleton-1', 'related-skeleton-2', 'related-skeleton-3'].map((skeletonId) => (
-                <Skeleton key={skeletonId} className='h-64 rounded-2xl' />
-              ))}
+              {['related-skeleton-1', 'related-skeleton-2', 'related-skeleton-3'].map(
+                (skeletonId) => (
+                  <Skeleton key={skeletonId} className='h-64 rounded-2xl' />
+                )
+              )}
             </div>
           ) : (
             <div className='grid grid-cols-1 gap-6'>
