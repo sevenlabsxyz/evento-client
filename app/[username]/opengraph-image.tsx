@@ -53,7 +53,8 @@ function renderFallbackProfileImage(username: string) {
   );
 }
 
-export default async function Image({ params }: { params: { username: string } }) {
+export default async function Image(props: { params: Promise<{ username: string }> }) {
+  const params = await props.params;
   const { data: user, error } = await supabase
     .from('user_details')
     .select('image, username')
