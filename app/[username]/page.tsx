@@ -3,7 +3,8 @@ import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import UserProfilePageClient from './page-client';
 
-export async function generateMetadata({ params }: any, parent: any) {
+export async function generateMetadata(props: any, parent: any) {
+  const params = await props.params;
   const { username } = params;
   const profilePath = `/${username}`;
   const profileOgImage = `${profilePath}/opengraph-image`;
