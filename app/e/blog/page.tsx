@@ -30,7 +30,7 @@ async function getBlogPosts() {
   }
 
   const res = await fetch(
-    `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors`,
+    `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&include=tags,authors&filter=tag:blog`,
     { next: { revalidate: 60 } }
   );
 

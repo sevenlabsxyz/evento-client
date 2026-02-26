@@ -4,10 +4,11 @@ import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Scroll } from '@silk-hq/components';
 import { ExternalLink, Share } from 'lucide-react';
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import './blog-post.css';
 import EnhancedBlogContent from './enhanced-blog-content';
@@ -29,6 +30,24 @@ interface BlogPostClientProps {
 const BlogPostClient = ({ post }: BlogPostClientProps) => {
   const [relatedPosts, setRelatedPosts] = useState<BlogPost[]>([]);
   const [isLoadingRelated, setIsLoadingRelated] = useState(false);
+  const { setTopBar } = useTopBar();
+
+  // Set TopBar title to post title
+  useEffect(() => {
+    if (!post?.title) return;
+    setTopBar({
+      leftMode: 'back',
+      centerMode: 'title',
+      title: 'Blog',
+      subtitle: '',
+      showAvatar: false,
+      buttons: [],
+      isOverlaid: false,
+    });
+    return () => {
+      setTopBar({ title: '', subtitle: '', buttons: [] });
+    };
+  }, [post?.title, setTopBar]);
 
   // Fetch related blog posts
   useEffect(() => {
@@ -106,101 +125,95 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   };
 
   return (
-    <div className='min-h-screen bg-gray-50'>
-      <Scroll.Root asChild>
-        <Scroll.View className='BlogPost-scrollView'>
-          <Scroll.Content asChild>
-            <article className='BlogPost-article'>
-              {post.feature_image ? (
-                <div
-                  className='BlogPost-illustration'
-                  style={{
-                    backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url(${post.feature_image})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
+    <article className='BlogPost-article'>
+      {post.feature_image ? (
+        <div className='BlogPost-illustration'>
+          <Image
+            src={post.feature_image}
+            alt={post.title}
+            fill
+            className='object-cover object-center'
+            sizes='(max-width: 860px) 100vw, 860px'
+            priority
+          />
+          <div className='absolute inset-0 bg-black/30' />
+        </div>
+      ) : (
+        <div className='BlogPost-illustration' />
+      )}
+      <div className='BlogPost-articleContent'>
+        <h1 className='BlogPost-title'>{post.title}</h1>
+        {post.excerpt && <h2 className='BlogPost-subtitle'>{post.excerpt}</h2>}
+        <div className='BlogPost-author'>
+          by <span className='BlogPost-authorName'>{authorName}</span> • {publishedDate}
+        </div>
+        <EnhancedBlogContent html={post.html || ''} className='BlogPost-articleBody' />
+      </div>
+
+      {/* CTA Section */}
+      <div className='w-full px-6 py-8'>
+        <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-8 text-white'>
+          <div className='relative z-10 text-center'>
+            <h3 className='mb-3 text-2xl font-bold'>Ready to create your first event?</h3>
+            <p className='mb-6 text-red-100'>
+              Join thousands of event creators who trust Evento to bring their communities together.
+              Start planning your next memorable gathering today.
+            </p>
+            <Button
+              onClick={() =>
+                window.open('https://cal.com/evento/all', '_blank', 'noopener noreferrer')
+              }
+              className='bg-white text-red-600 hover:bg-gray-100'
+            >
+              <ExternalLink className='mr-2 h-4 w-4' />
+              Get in touch
+            </Button>
+          </div>
+          <div className='absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10' />
+          <div className='absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-white/5' />
+        </div>
+      </div>
+
+      {/* Share Button */}
+      <div className='w-full border-t border-gray-200 px-6 py-6'>
+        <Button
+          onClick={handleShare}
+          variant='secondary'
+          className='w-full border border-gray-200 py-6 text-base'
+        >
+          <Share className='mr-2 h-4 w-4' />
+          Share Post
+        </Button>
+      </div>
+
+      {/* Read More Section */}
+      {relatedPosts.length > 0 && (
+        <div className='w-full border-t border-gray-200 px-6 py-8'>
+          <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
+          {isLoadingRelated ? (
+            <div className='grid grid-cols-1 gap-6'>
+              {[...Array(3)].map((_, i) => (
+                <Skeleton key={i} className='h-64 rounded-2xl' />
+              ))}
+            </div>
+          ) : (
+            <div className='grid grid-cols-1 gap-6'>
+              {relatedPosts.map((relatedPost) => (
+                <BlogCard
+                  key={relatedPost.id}
+                  slug={relatedPost.slug}
+                  title={relatedPost.title}
+                  description={relatedPost.excerpt}
+                  image={relatedPost.feature_image}
+                  date={relatedPost.published_at}
+                  category={relatedPost.tags?.length > 0 ? [relatedPost.tags[0]] : []}
                 />
-              ) : (
-                <div className='BlogPost-illustration' />
-              )}
-              <div className='BlogPost-articleContent'>
-                <h1 className='BlogPost-title'>{post.title}</h1>
-                {post.excerpt && <h2 className='BlogPost-subtitle'>{post.excerpt}</h2>}
-                <div className='BlogPost-author'>
-                  by <span className='BlogPost-authorName'>{authorName}</span> • {publishedDate}
-                </div>
-                <EnhancedBlogContent html={post.html || ''} className='BlogPost-articleBody' />
-              </div>
-
-              {/* CTA Section */}
-              <div className='w-full px-6 py-8'>
-                <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-8 text-white'>
-                  <div className='relative z-10 text-center'>
-                    <h3 className='mb-3 text-2xl font-bold'>Ready to create your first event?</h3>
-                    <p className='mb-6 text-red-100'>
-                      Join thousands of event creators who trust Evento to bring their communities
-                      together. Start planning your next memorable gathering today.
-                    </p>
-                    <Button
-                      onClick={() =>
-                        window.open('https://cal.com/evento/all', '_blank', 'noopener noreferrer')
-                      }
-                      className='bg-white text-red-600 hover:bg-gray-100'
-                    >
-                      <ExternalLink className='mr-2 h-4 w-4' />
-                      Get in touch
-                    </Button>
-                  </div>
-                  {/* Decorative background elements */}
-                  <div className='absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10' />
-                  <div className='absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-white/5' />
-                </div>
-              </div>
-
-              {/* Share Button */}
-              <div className='w-full border-t border-gray-200 px-6 py-6'>
-                <Button
-                  onClick={handleShare}
-                  variant='secondary'
-                  className='w-full border border-gray-200 py-6 text-base'
-                >
-                  <Share className='mr-2 h-4 w-4' />
-                  Share Post
-                </Button>
-              </div>
-
-              {/* Read More Section */}
-              {relatedPosts.length > 0 && (
-                <div className='w-full border-t border-gray-200 px-6 py-8'>
-                  <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
-                  {isLoadingRelated ? (
-                    <div className='grid grid-cols-1 gap-6'>
-                      {[...Array(3)].map((_, i) => (
-                        <Skeleton key={i} className='h-64 rounded-2xl' />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className='grid grid-cols-1 gap-6'>
-                      {relatedPosts.map((relatedPost) => (
-                        <BlogCard
-                          key={relatedPost.id}
-                          slug={relatedPost.slug}
-                          title={relatedPost.title}
-                          description={relatedPost.excerpt}
-                          image={relatedPost.feature_image}
-                          date={relatedPost.published_at}
-                          category={relatedPost.tags?.length > 0 ? [relatedPost.tags[0]] : []}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </article>
-          </Scroll.Content>
-        </Scroll.View>
-      </Scroll.Root>
-    </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </article>
   );
 };
 

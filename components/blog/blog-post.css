@@ -24,31 +24,26 @@
   color: #fff;
 }
 
-.BlogPost-scrollView {
-  height: 100%;
-}
-
 .BlogPost-article {
   /* INNER-LAYOUT */
   display: grid;
+  max-width: 860px;
+  margin-inline: auto;
+  width: 100%;
 }
 
 .BlogPost-illustration {
   /* SELF-LAYOUT */
-  width: 100%;
+  position: relative;
+  width: calc(100% - 2rem);
+  margin-inline: 1rem;
+  margin-top: 1rem;
   aspect-ratio: 16 / 9;
 
   /* APPEARANCE */
-  background-image: conic-gradient(
-    from -140deg at 100% 100%,
-    rgba(36, 239, 215, 1),
-    rgba(179, 250, 241, 1) 120deg,
-    rgba(36, 239, 215, 1)
-  );
-  background-origin: border-box;
-  background-size: cover;
-  background-position: center;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background-color: #f3f4f6;
+  border-radius: 0.75rem;
+  overflow: hidden;
 }
 
 .BlogPost-articleContent {

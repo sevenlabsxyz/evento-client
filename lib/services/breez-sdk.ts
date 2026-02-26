@@ -34,7 +34,7 @@ import {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
-} from '@breeztech/breez-sdk-spark';
+} from '@breeztech/breez-sdk-spark/web';
 
 // Set to true to enable verbose logging
 const DEBUG_BREEZ = false;
@@ -137,7 +137,7 @@ export class BreezSDKService {
         if (DEBUG_BREEZ) {
           console.debug('Loading Breez SDK module...');
         }
-        sdkModule = await import('@breeztech/breez-sdk-spark');
+        sdkModule = await import('@breeztech/breez-sdk-spark/web');
 
         // Initialize WASM if there's a default export (initialization function)
         if (sdkModule.default && typeof sdkModule.default === 'function') {
@@ -930,4 +930,4 @@ export class BreezSDKService {
 export const breezSDK = BreezSDKService.getInstance();
 
 // Re-export types for use in components
-export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark';
+export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark/web';

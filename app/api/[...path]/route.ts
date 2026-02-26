@@ -102,7 +102,11 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       }
 
       // Log request body for debugging
-      if (requestBody && process.env.NODE_ENV === 'development') {
+      if (
+        requestBody &&
+        process.env.NODE_ENV === 'development' &&
+        Env.API_PROXY_LOG_BODIES === 'true'
+      ) {
         console.debug(`Request body for ${fullUrl}:`, {
           requestId,
           body: requestBody,
@@ -135,7 +139,7 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
     // Handle different response types
     const contentType = response.headers.get('content-type');
     const duration = Date.now() - startTime;
-    let responseData;
+    let responseData: unknown;
     let bodySize = 0;
 
     if (contentType?.includes('application/json')) {
