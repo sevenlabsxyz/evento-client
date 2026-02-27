@@ -605,7 +605,7 @@ export default function WalletPage() {
       <EarnBitcoinSheet
         open={openDrawers.includes('earn')}
         onOpenChange={(open) => !open && closeDrawer('earn')}
-        lightningAddress={user?.lightning_address || `${user?.username}@evento.cash`}
+        lightningAddress={address?.lightningAddress || `${user?.username}@evento.cash`}
       />
 
       {/* Incoming Onchain Funds Sheet */}
