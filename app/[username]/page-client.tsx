@@ -12,6 +12,7 @@ import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
+import ProfileCampaignCard from '@/components/profile/profile-campaign-card';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
 import {
@@ -736,6 +737,11 @@ export default function UserProfilePageClient() {
                   />
                 </div>
               )}
+
+              {/* Campaign Card — shown between zap button and tabs */}
+              <div className='mb-6'>
+                <ProfileCampaignCard username={username} />
+              </div>
             </div>
           </div>
 
