@@ -17,6 +17,81 @@ type GenerateDescriptionBody = {
   tone: string;
 };
 
+type CreateCampaignBody = {
+  title?: string | null;
+  description?: string | null;
+  goalSats?: number | null;
+  visibility?: 'public' | 'private';
+  status?: 'active' | 'paused' | 'closed';
+};
+
+type UpdateCampaignBody = {
+  title?: string | null;
+  description?: string | null;
+  goal_sats?: number | null;
+  visibility?: 'public' | 'private';
+  status?: 'active' | 'paused' | 'closed';
+};
+
+type CampaignPledgeBody = { amountSats?: number };
+
+const nowIso = () => new Date().toISOString();
+
+const baseEventCampaign = {
+  id: 'cmp_event_1',
+  event_id: 'evt_test123',
+  user_id: 'usr_host_1',
+  scope: 'event',
+  title: 'Fund this event',
+  description: 'Help us cover production costs.',
+  goal_sats: 100000,
+  raised_sats: 21000,
+  pledge_count: 5,
+  visibility: 'public' as const,
+  status: 'active' as const,
+  destination_address: 'host@evento.cash',
+  destination_verify_url: 'https://evento.cash/.well-known/lnurlp/host/verify',
+  created_at: '2026-01-01T00:00:00.000Z',
+  updated_at: '2026-01-01T00:00:00.000Z',
+  progressPercent: 21,
+  isGoalMet: false,
+};
+
+const baseProfileCampaign = {
+  id: 'cmp_profile_1',
+  event_id: null,
+  user_id: 'usr_profile_1',
+  scope: 'profile',
+  title: 'Support my profile campaign',
+  description: 'Back my creator work.',
+  goal_sats: 250000,
+  raised_sats: 50000,
+  pledge_count: 8,
+  visibility: 'public' as const,
+  status: 'active' as const,
+  destination_address: 'alice@evento.cash',
+  destination_verify_url: 'https://evento.cash/.well-known/lnurlp/alice/verify',
+  created_at: '2026-01-01T00:00:00.000Z',
+  updated_at: '2026-01-01T00:00:00.000Z',
+  progressPercent: 20,
+  isGoalMet: false,
+};
+
+const publicCampaignFeed = [
+  {
+    payer_username: 'satsfan',
+    payer_avatar: 'https://example.com/avatar/satsfan.png',
+    amount_sats: 1000,
+    settled_at: '2026-02-28T12:00:00.000Z',
+  },
+  {
+    payer_username: 'anon',
+    payer_avatar: null,
+    amount_sats: 500,
+    settled_at: '2026-02-28T11:00:00.000Z',
+  },
+];
+
 export const handlers: HttpHandler[] = [
   http.post('*/v1/events', async ({ request }) => {
     const body = (await request.json()) as CreateEventBody;
@@ -35,6 +110,180 @@ export const handlers: HttpHandler[] = [
   http.post('*/v1/events/generate-description', async () => {
     return HttpResponse.json({
       description: 'An amazing event with great music and food!',
+    });
+  }),
+
+  http.get('*/v1/events/:eventId/campaign', ({ params }) => {
+    const eventId = params.eventId as string;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign fetched successfully.',
+      data: {
+        ...baseEventCampaign,
+        event_id: eventId,
+      },
+    });
+  }),
+
+  http.post('*/v1/events/:eventId/campaign', async ({ request, params }) => {
+    const eventId = params.eventId as string;
+    const body = (await request.json()) as CreateCampaignBody;
+    const createdAt = nowIso();
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign created successfully.',
+      data: {
+        ...baseEventCampaign,
+        event_id: eventId,
+        title: body.title ?? baseEventCampaign.title,
+        description: body.description ?? baseEventCampaign.description,
+        goal_sats: body.goalSats ?? baseEventCampaign.goal_sats,
+        visibility: body.visibility ?? baseEventCampaign.visibility,
+        status: body.status ?? baseEventCampaign.status,
+        created_at: createdAt,
+        updated_at: createdAt,
+      },
+    });
+  }),
+
+  http.patch('*/v1/events/:eventId/campaign', async ({ request, params }) => {
+    const eventId = params.eventId as string;
+    const body = (await request.json()) as UpdateCampaignBody;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign updated successfully.',
+      data: {
+        ...baseEventCampaign,
+        event_id: eventId,
+        title: body.title ?? baseEventCampaign.title,
+        description: body.description ?? baseEventCampaign.description,
+        goal_sats: body.goal_sats ?? baseEventCampaign.goal_sats,
+        visibility: body.visibility ?? baseEventCampaign.visibility,
+        status: body.status ?? baseEventCampaign.status,
+        updated_at: nowIso(),
+      },
+    });
+  }),
+
+  http.post('*/v1/events/:eventId/campaign/pledges', async ({ request }) => {
+    const body = (await request.json()) as CampaignPledgeBody;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Pledge intent created successfully.',
+      data: {
+        pledgeId: 'plg_event_1',
+        invoice: 'lnbc1000n1peventmock',
+        amountSats: body.amountSats ?? 1000,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      },
+    });
+  }),
+
+  http.get('*/v1/events/:eventId/campaign/feed', () => {
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign feed fetched successfully.',
+      data: publicCampaignFeed,
+    });
+  }),
+
+  http.get('*/v1/users/:username/campaign', ({ params }) => {
+    const username = String(params.username || 'alice').toLowerCase();
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign fetched successfully.',
+      data: {
+        ...baseProfileCampaign,
+        user_id: `usr_${username}`,
+      },
+    });
+  }),
+
+  http.get('*/v1/users/:username/campaign/feed', () => {
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign feed fetched successfully.',
+      data: publicCampaignFeed,
+    });
+  }),
+
+  http.get('*/v1/user/campaign', () => {
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign fetched successfully.',
+      data: baseProfileCampaign,
+    });
+  }),
+
+  http.post('*/v1/user/campaign', async ({ request }) => {
+    const body = (await request.json()) as CreateCampaignBody;
+    const createdAt = nowIso();
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign created successfully.',
+      data: {
+        ...baseProfileCampaign,
+        title: body.title ?? baseProfileCampaign.title,
+        description: body.description ?? baseProfileCampaign.description,
+        goal_sats: body.goalSats ?? baseProfileCampaign.goal_sats,
+        visibility: body.visibility ?? baseProfileCampaign.visibility,
+        status: body.status ?? baseProfileCampaign.status,
+        created_at: createdAt,
+        updated_at: createdAt,
+      },
+    });
+  }),
+
+  http.patch('*/v1/user/campaign', async ({ request }) => {
+    const body = (await request.json()) as UpdateCampaignBody;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Campaign updated successfully.',
+      data: {
+        ...baseProfileCampaign,
+        title: body.title ?? baseProfileCampaign.title,
+        description: body.description ?? baseProfileCampaign.description,
+        goal_sats: body.goal_sats ?? baseProfileCampaign.goal_sats,
+        visibility: body.visibility ?? baseProfileCampaign.visibility,
+        status: body.status ?? baseProfileCampaign.status,
+        updated_at: nowIso(),
+      },
+    });
+  }),
+
+  http.post('*/v1/user/campaign/pledges', async ({ request }) => {
+    const body = (await request.json()) as CampaignPledgeBody;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Pledge intent created successfully.',
+      data: {
+        pledgeId: 'plg_profile_1',
+        invoice: 'lnbc500n1pprofilemock',
+        amountSats: body.amountSats ?? 500,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      },
+    });
+  }),
+
+  http.get('*/v1/campaign-pledges/:pledgeId/status', ({ params }) => {
+    const pledgeId = String(params.pledgeId || 'plg_1');
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Pledge status fetched successfully.',
+      data: {
+        status: pledgeId.includes('expired') ? 'expired' : 'settled',
+        amountSats: 1000,
+        settledAt: pledgeId.includes('expired') ? undefined : '2026-02-28T12:00:00.000Z',
+      },
     });
   }),
 

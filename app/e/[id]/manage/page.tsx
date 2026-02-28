@@ -20,6 +20,7 @@ import {
   UserPlus,
   Users,
   X,
+  Zap,
 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -166,6 +167,15 @@ export default function ManageEventPage() {
       iconBg: 'bg-green-100',
       iconColor: 'text-green-600',
       route: `/e/${eventId}/manage/contributions`,
+    },
+    {
+      id: 'crowdfunding',
+      title: 'Crowdfunding',
+      description: 'Set up a Lightning crowdfunding campaign',
+      icon: <Zap className='h-6 w-6' />,
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600',
+      route: `/e/${eventId}/manage/crowdfunding`,
     },
   ];
 

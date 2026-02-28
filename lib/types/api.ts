@@ -180,10 +180,59 @@ export interface Event {
   contrib_paypal: string;
   contrib_btclightning: string;
 
+  source_type?: 'internal' | 'external';
+  source_url?: string | null;
+  source_platform?: string | null;
+
   created_at: string;
   updated_at: string;
 
   user_details?: UserDetails;
+}
+
+export type CampaignScope = 'event' | 'profile';
+export type CampaignVisibility = 'public' | 'private';
+export type CampaignStatus = 'active' | 'paused' | 'closed';
+export type CampaignPledgeStatus = 'pending' | 'settled' | 'expired' | 'failed';
+
+export interface Campaign {
+  id: string;
+  event_id: string | null;
+  user_id: string;
+  scope: CampaignScope;
+  title: string | null;
+  description: string | null;
+  goal_sats: number | null;
+  raised_sats: number;
+  pledge_count: number;
+  visibility: CampaignVisibility;
+  status: CampaignStatus;
+  destination_address: string;
+  destination_verify_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignPledge {
+  id: string;
+  campaign_id: string;
+  payer_user_id: string | null;
+  amount_sats: number;
+  status: CampaignPledgeStatus;
+  correlation_hash: string;
+  payment_hash: string;
+  verify_url: string;
+  bolt11_invoice: string;
+  preimage: string | null;
+  expires_at: string;
+  settled_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignWithProgress extends Campaign {
+  progressPercent: number;
+  isGoalMet: boolean;
 }
 
 // Event Invite

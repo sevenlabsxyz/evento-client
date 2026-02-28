@@ -178,6 +178,7 @@ export class BreezSDKService {
       config.apiKey = apiKey;
       // Configure LNURL domain for Lightning addresses
       config.lnurlDomain = 'evento.cash';
+      config.supportLnurlVerify = true;
       // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
       // Auto-claims if fee is ≤ 1 sat/vbyte
       config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 1 } as MaxFee;

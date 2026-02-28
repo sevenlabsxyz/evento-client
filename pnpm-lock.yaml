@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@breeztech/breez-sdk-spark':
-        specifier: 0.9.1
-        version: 0.9.1
+        specifier: 0.10.0
+        version: 0.10.0
       '@dnd-kit/core':
         specifier: ^6.3.1
         version: 6.3.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -595,8 +595,8 @@ packages:
   '@braintree/sanitize-url@6.0.4':
     resolution: {integrity: sha512-s3jaWicZd0pkP0jf5ysyHUI/RE7MHos6qlToFcGWXVp+ykHOy77OUMrfbgJ9it2C5bow7OIQwYYaHjk9XlBQ2A==}
 
-  '@breeztech/breez-sdk-spark@0.9.1':
-    resolution: {integrity: sha512-cPyW9WdMewM0q2aDO9ioSVn2ud4FDTXQeE1r4yQMMzjsdFT/WUihuvwKjCwEB+Ot4d3wpQU+WHPcfLwj08Wo4A==}
+  '@breeztech/breez-sdk-spark@0.10.0':
+    resolution: {integrity: sha512-eBsh0oX2B8uGuWfCMmtH3SNXmSkED5du/CiWQKh1Ei1r0LsO6jlVnUmh94j7R5W4siIi7M6CC7ywll3FQ47rYQ==}
     engines: {node: '>=22'}
 
   '@bundled-es-modules/cookie@2.0.1':
@@ -6456,7 +6456,7 @@ snapshots:
 
   '@braintree/sanitize-url@6.0.4': {}
 
-  '@breeztech/breez-sdk-spark@0.9.1':
+  '@breeztech/breez-sdk-spark@0.10.0':
     optionalDependencies:
       better-sqlite3: 12.4.1
 
