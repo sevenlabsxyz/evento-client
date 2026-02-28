@@ -33,22 +33,12 @@ jest.mock('next/navigation', () => ({
   useParams: () => ({ id: 'evt_test123' }),
 }));
 
-const mockApiClient = {
-  get: jest.fn(),
-  post: jest.fn(),
-  patch: jest.fn(),
-  delete: jest.fn(),
+const mockApiClient = require('@/lib/api/client').default as {
+  get: jest.Mock;
+  post: jest.Mock;
+  patch: jest.Mock;
+  delete: jest.Mock;
 };
-
-jest.mock('@/lib/api/client', () => ({
-  __esModule: true,
-  default: {
-    get: (...args: any[]) => mockApiClient.get(...args),
-    post: (...args: any[]) => mockApiClient.post(...args),
-    patch: (...args: any[]) => mockApiClient.patch(...args),
-    delete: (...args: any[]) => mockApiClient.delete(...args),
-  },
-}));
 
 const fakeCampaign: CampaignWithProgress = {
   id: 'cmp_abc123',
@@ -388,6 +378,41 @@ describe('Event Campaign Manage Flow', () => {
       expect(queryResult.current.data).toBeUndefined();
 
       // Create mutation should still succeed when invoked
+      const { result: createResult } = renderHook(
+        () => useCreateEventCampaign('evt_test123'),
+        { wrapper: createWrapper(queryClient) }
+      );
+
+      await act(async () => {
+        createResult.current.mutate({
+          title: 'New campaign',
+          visibility: 'public',
+          status: 'active',
+        });
+      });
+
+      await waitFor(() => expect(createResult.current.isSuccess).toBe(true));
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/evt_test123/campaign', {
+        title: 'New campaign',
+        visibility: 'public',
+        status: 'active',
+      });
+    });
+
+    it('legacy 400 Campaign not found still triggers create mode', async () => {
+      mockApiClient.get.mockRejectedValueOnce({
+        status: 400,
+        message: 'Campaign not found.',
+        success: false,
+      });
+      mockApiClient.post.mockResolvedValueOnce({ data: fakeCampaign });
+
+      const { result: queryResult } = renderHook(() => useEventCampaign('evt_test123'), {
+        wrapper: createWrapper(queryClient),
+      });
+
+      await waitFor(() => expect(queryResult.current.isError).toBe(true));
+
       const { result: createResult } = renderHook(
         () => useCreateEventCampaign('evt_test123'),
         { wrapper: createWrapper(queryClient) }
