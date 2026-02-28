@@ -9,6 +9,7 @@ import {
 } from '@/lib/hooks/use-event-campaign';
 import { campaignFormSchema, type CampaignFormData } from '@/lib/schemas/campaign';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import type { ApiError } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Info, MessageCircle, Zap } from 'lucide-react';
@@ -27,8 +28,20 @@ export default function CrowdfundingManagementPage() {
   const createCampaign = useCreateEventCampaign(eventId);
   const updateCampaign = useUpdateEventCampaign(eventId);
 
-  // Treat 404 as no-campaign (create mode), only show error for non-404 failures
-  const is404 = !!error && typeof error === 'object' && 'status' in error && (error as any).status === 404;
+  const isCampaignMissingError = (value: unknown): value is ApiError => {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+
+    const candidate = value as ApiError;
+    const statusIsNotFound = candidate.status === 404;
+    const statusIsLegacyNotFound =
+      candidate.status === 400 && candidate.message === 'Campaign not found.';
+
+    return statusIsNotFound || statusIsLegacyNotFound;
+  };
+
+  const isMissingCampaign = isCampaignMissingError(error);
   const isUpdate = !!campaign;
   const isMutating = createCampaign.isPending || updateCampaign.isPending;
 
@@ -143,7 +156,7 @@ export default function CrowdfundingManagementPage() {
     );
   }
 
-  if (error && !is404) {
+  if (error && !isMissingCampaign) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
