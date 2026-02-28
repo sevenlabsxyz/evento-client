@@ -180,8 +180,9 @@ export class BreezSDKService {
       config.lnurlDomain = 'evento.cash';
       config.supportLnurlVerify = true;
       // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
-      // Auto-claims if fee is ≤ 1 sat/vbyte
-      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 1 } as MaxFee;
+      // Auto-claims if fee is ≤ 10 sat/vbyte (~2,000 sats for a typical 200 vbyte swap tx)
+      // This covers most normal fee environments; only extreme spikes require manual claiming
+      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 10 } as MaxFee;
 
       // Storage directory - using browser's IndexedDB
       const storageDir = './.breez-data';
@@ -868,7 +869,7 @@ export class BreezSDKService {
             } deposit(s) (${totalAmount.toLocaleString()} sats total)`,
             { deposits }
           );
-          console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Reason: Fee exceeded maxDepositClaimFee');
+          console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Reason: Fee exceeded maxDepositClaimFee (10 sat/vbyte)');
           console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Action required: User must manually claim');
         }
         break;
