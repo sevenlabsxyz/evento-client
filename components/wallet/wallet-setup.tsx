@@ -28,10 +28,18 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   const { checkAvailability, registerAddress } = useLightningAddress();
 
   const handleNumberClick = (num: string) => {
-    if (step === 'create-pin' && pin.length < 6) {
-      setPin(pin + num);
-    } else if (step === 'confirm-pin' && confirmPin.length < 6) {
-      setConfirmPin(confirmPin + num);
+    if (step === 'create-pin' && pin.length < 4) {
+      const newPin = pin + num;
+      setPin(newPin);
+      if (newPin.length === 4) {
+        setTimeout(() => setStep('confirm-pin'), 150);
+      }
+    } else if (step === 'confirm-pin' && confirmPin.length < 4) {
+      const newConfirmPin = confirmPin + num;
+      setConfirmPin(newConfirmPin);
+      if (newConfirmPin.length === 4) {
+        setTimeout(() => handleConfirmAndCreate(newConfirmPin), 150);
+      }
     }
   };
 
@@ -43,16 +51,9 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     }
   };
 
-  const handleCreatePinNext = () => {
-    if (pin.length < 4) {
-      toast.error('PIN must be at least 4 digits');
-      return;
-    }
-    setStep('confirm-pin');
-  };
-
-  const handleConfirmAndCreate = async () => {
-    if (confirmPin !== pin) {
+  const handleConfirmAndCreate = async (confirmPinValue?: string) => {
+    const confirmValue = confirmPinValue ?? confirmPin;
+    if (confirmValue !== pin) {
       toast.error('PINs do not match');
       setConfirmPin('');
       return;
@@ -121,15 +122,15 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     setError(null);
   };
 
-  // Render PIN dots
+  // Render PIN dots (4 digits for new PINs)
   const renderPinDots = (currentPin: string) => (
     <div className='flex justify-center gap-3'>
-      {[0, 1, 2, 3, 4, 5].map((index) => (
+      {[0, 1, 2, 3].map((index) => (
         <div
           key={index}
-          className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+          className='flex h-14 w-14 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
         >
-          {currentPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+          {currentPin.length > index && <div className='h-3.5 w-3.5 rounded-full bg-gray-900' />}
         </div>
       ))}
     </div>
@@ -185,7 +186,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           </div>
           <h2 className='text-2xl font-bold'>Create a PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
-            Set a 4-6 digit PIN to protect your wallet
+            Set a 4-digit PIN to protect your wallet
           </p>
         </div>
 
@@ -210,17 +211,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             </div>
           </div>
 
-          <Button
-            onClick={handleCreatePinNext}
-            className='mt-6 w-full rounded-full'
-            size='lg'
-            disabled={pin.length < 4}
-          >
-            Next
-          </Button>
-
           {onCancel && (
-            <Button onClick={onCancel} variant='ghost' className='w-full'>
+            <Button onClick={onCancel} variant='ghost' className='mt-6 w-full'>
               Cancel
             </Button>
           )}
@@ -249,15 +241,6 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
             onDelete={handleDelete}
             showDecimal={false}
           />
-
-          <Button
-            onClick={handleConfirmAndCreate}
-            className='mt-6 w-full rounded-full'
-            size='lg'
-            disabled={confirmPin.length < 4}
-          >
-            Create Wallet
-          </Button>
 
           <Button
             onClick={() => {

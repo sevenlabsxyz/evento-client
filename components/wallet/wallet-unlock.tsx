@@ -26,7 +26,13 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
 
   const handleNumberClick = (number: string) => {
     if (pin.length < 6) {
-      setPin(pin + number);
+      const newPin = pin + number;
+      setPin(newPin);
+      // Auto-submit when 4 digits entered (covers most users)
+      // Users with legacy 5-6 digit PINs can continue typing and use the button
+      if (newPin.length === 4) {
+        setTimeout(() => handleUnlock(newPin), 150);
+      }
     }
   };
 
@@ -55,8 +61,8 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
     setShowRemoveSheet(true);
   };
 
-  const handleUnlock = async () => {
-    const credential = isPasswordMode ? password : pin;
+  const handleUnlock = async (pinOverride?: string) => {
+    const credential = isPasswordMode ? password : (pinOverride ?? pin);
 
     if (!credential || credential.length < 4) {
       toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
@@ -105,12 +111,12 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
           /* PIN Display Mode - show dots for entered digits */
           <>
             <div className='flex justify-center gap-3'>
-              {[0, 1, 2, 3, 4, 5].map((index) => (
+              {[0, 1, 2, 3].map((index) => (
                 <div
                   key={index}
-                  className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                  className='flex h-14 w-14 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
                 >
-                  {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                  {pin.length > index && <div className='h-3.5 w-3.5 rounded-full bg-gray-900' />}
                 </div>
               ))}
             </div>
