@@ -739,9 +739,7 @@ export default function UserProfilePageClient() {
               )}
 
               {/* Campaign Card — shown between zap button and tabs */}
-              <div className='mb-6'>
-                <ProfileCampaignCard username={username} />
-              </div>
+              <ProfileCampaignCard username={username} className='mb-6' />
             </div>
           </div>
 
