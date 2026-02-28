@@ -171,6 +171,42 @@ describe('Event Campaign Manage Flow', () => {
       });
       expect(result.success).toBe(false);
     });
+
+    it('validates status enum (active/paused)', () => {
+      const result = campaignFormSchema.safeParse({
+        title: 'Status test',
+        visibility: 'public',
+        status: 'active',
+      });
+      expect(result.success).toBe(true);
+
+      const paused = campaignFormSchema.safeParse({
+        title: 'Paused campaign',
+        visibility: 'public',
+        status: 'paused',
+      });
+      expect(paused.success).toBe(true);
+    });
+
+    it('rejects invalid status value', () => {
+      const result = campaignFormSchema.safeParse({
+        title: 'Bad status',
+        visibility: 'public',
+        status: 'closed',
+      });
+      expect(result.success).toBe(false);
+    });
+
+    it('defaults status to active when omitted', () => {
+      const result = campaignFormSchema.safeParse({
+        title: 'No status',
+        visibility: 'public',
+      });
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.status).toBe('active');
+      }
+    });
   });
 
   // ---- Hook: useEventCampaign ----
@@ -330,12 +366,47 @@ describe('Event Campaign Manage Flow', () => {
       );
 
       await act(async () => {
-        createResult.current.mutate({ title: 'New campaign', visibility: 'public' });
+        createResult.current.mutate({ title: 'New campaign', visibility: 'public', status: 'active' });
       });
 
       await waitFor(() => expect(createResult.current.isSuccess).toBe(true));
       expect(mockApiClient.post).toHaveBeenCalled();
       expect(mockApiClient.patch).not.toHaveBeenCalled();
+    });
+
+    it('404 from useEventCampaign triggers create mode (not error screen)', async () => {
+      mockApiClient.get.mockRejectedValueOnce({ status: 404, message: 'Not found', success: false });
+      mockApiClient.post.mockResolvedValueOnce({ data: fakeCampaign });
+
+      const { result: queryResult } = renderHook(() => useEventCampaign('evt_test123'), {
+        wrapper: createWrapper(queryClient),
+      });
+
+      await waitFor(() => expect(queryResult.current.isError).toBe(true));
+
+      // Campaign data is undefined — page should treat this as create mode
+      expect(queryResult.current.data).toBeUndefined();
+
+      // Create mutation should still succeed when invoked
+      const { result: createResult } = renderHook(
+        () => useCreateEventCampaign('evt_test123'),
+        { wrapper: createWrapper(queryClient) }
+      );
+
+      await act(async () => {
+        createResult.current.mutate({
+          title: 'New campaign',
+          visibility: 'public',
+          status: 'active',
+        });
+      });
+
+      await waitFor(() => expect(createResult.current.isSuccess).toBe(true));
+      expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/evt_test123/campaign', {
+        title: 'New campaign',
+        visibility: 'public',
+        status: 'active',
+      });
     });
 
     it('uses update mutation when campaign already exists', async () => {
@@ -354,7 +425,7 @@ describe('Event Campaign Manage Flow', () => {
       );
 
       await act(async () => {
-        updateResult.current.mutate({ title: 'Edited' });
+        updateResult.current.mutate({ title: 'Edited', status: 'paused' });
       });
 
       await waitFor(() => expect(updateResult.current.isSuccess).toBe(true));

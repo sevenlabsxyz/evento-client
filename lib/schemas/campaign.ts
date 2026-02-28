@@ -14,6 +14,7 @@ export const campaignFormSchema = z.object({
     .optional()
     .nullable(),
   visibility: z.enum(['public', 'private']).default('public'),
+  status: z.enum(['active', 'paused']).default('active'),
 });
 
 export type CampaignFormData = z.infer<typeof campaignFormSchema>;

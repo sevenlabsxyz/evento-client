@@ -27,6 +27,8 @@ export default function CrowdfundingManagementPage() {
   const createCampaign = useCreateEventCampaign(eventId);
   const updateCampaign = useUpdateEventCampaign(eventId);
 
+  // Treat 404 as no-campaign (create mode), only show error for non-404 failures
+  const is404 = !!error && typeof error === 'object' && 'status' in error && (error as any).status === 404;
   const isUpdate = !!campaign;
   const isMutating = createCampaign.isPending || updateCampaign.isPending;
 
@@ -37,6 +39,7 @@ export default function CrowdfundingManagementPage() {
       description: '',
       goal_sats: null,
       visibility: 'public',
+      status: 'active',
     },
   });
 
@@ -48,6 +51,7 @@ export default function CrowdfundingManagementPage() {
         description: campaign.description ?? '',
         goal_sats: campaign.goal_sats ?? null,
         visibility: campaign.visibility ?? 'public',
+        status: campaign.status === 'paused' ? 'paused' : 'active',
       });
     }
   }, [campaign, form]);
@@ -60,6 +64,7 @@ export default function CrowdfundingManagementPage() {
           description: data.description || undefined,
           goalSats: data.goal_sats ?? undefined,
           visibility: data.visibility,
+          status: data.status,
         };
 
         if (isUpdate) {
@@ -138,7 +143,7 @@ export default function CrowdfundingManagementPage() {
     );
   }
 
-  if (error) {
+  if (error && !is404) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
@@ -263,6 +268,34 @@ export default function CrowdfundingManagementPage() {
                 {form.watch('visibility') === 'public'
                   ? 'Anyone can view and contribute to this campaign.'
                   : 'Only people with the link can view and contribute.'}
+              </p>
+            </div>
+          </div>
+
+          {/* Status */}
+          <div className='rounded-2xl bg-gray-50 p-6'>
+            <div className='space-y-2'>
+              <label className='text-sm font-medium text-gray-700'>Status</label>
+              <div className='flex gap-3'>
+                {(['active', 'paused'] as const).map((option) => (
+                  <button
+                    key={option}
+                    type='button'
+                    onClick={() => form.setValue('status', option, { shouldValidate: true })}
+                    className={`flex-1 rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
+                      form.watch('status') === option
+                        ? 'border-amber-500 bg-amber-50 text-amber-700'
+                        : 'border-gray-300 bg-white text-gray-600 hover:bg-gray-50'
+                    }`}
+                  >
+                    {option === 'active' ? 'Active' : 'Paused'}
+                  </button>
+                ))}
+              </div>
+              <p className='text-xs text-gray-500'>
+                {form.watch('status') === 'active'
+                  ? 'Campaign is accepting pledges.'
+                  : 'Campaign is paused and not accepting new pledges.'}
               </p>
             </div>
           </div>
