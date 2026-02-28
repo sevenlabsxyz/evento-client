@@ -26,7 +26,6 @@ export interface UserDetails {
   x_handle?: string;
   instagram_handle?: string;
   ln_address?: string; // Lightning address
-  lightning_address?: string; // Lightning address (alternative field name)
   nip05?: string; // Nostr identifier
   telegram_id?: number | null; // Telegram numeric user ID (null = not linked)
   verification_status: VerificationStatus;

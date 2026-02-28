@@ -7,6 +7,7 @@ import { SESSION_KEYS } from '@/lib/constants/storage-keys';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
+import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { getSessionValue, markAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
@@ -21,6 +22,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
 
   useWallet();
   useWalletEventListener();
+  useLightningAddress();
 
   useEffect(() => {
     applyRouteConfig(pathname);
