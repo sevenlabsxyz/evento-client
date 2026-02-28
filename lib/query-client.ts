@@ -73,6 +73,15 @@ export const queryKeys = {
   eventsUserGoing: (userId: string) => [...queryKeys.events, 'user', userId, 'going'] as const,
   eventsUserPast: (userId: string) => [...queryKeys.events, 'user', userId, 'past'] as const,
 
+  campaigns: ['campaigns'] as const,
+  eventCampaign: (eventId: string) => [...queryKeys.campaigns, 'event', eventId] as const,
+  profileCampaign: (username: string) => [...queryKeys.campaigns, 'profile', username] as const,
+  myCampaign: () => [...queryKeys.campaigns, 'me'] as const,
+  campaignFeed: (campaignId: string) => [...queryKeys.campaigns, campaignId, 'feed'] as const,
+
+  pledges: ['pledges'] as const,
+  pledgeStatus: (pledgeId: string) => [...queryKeys.pledges, pledgeId, 'status'] as const,
+
   // RSVPs
   rsvps: ['rsvps'] as const,
   eventRsvps: (eventId: string) => [...queryKeys.rsvps, 'event', eventId] as const,
