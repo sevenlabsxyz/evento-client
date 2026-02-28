@@ -11,10 +11,9 @@ import {
 import { apiClient } from '../api/client';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useWallet } from './use-wallet';
 
 export function useLightningAddress() {
-  const { walletState } = useWallet();
+  const walletState = useWalletStore((state) => state.walletState);
   const lightningAddress = useWalletStore((state) => state.lightningAddress);
   const setLightningAddress = useWalletStore((state) => state.setLightningAddress);
   const [isLoading, setIsLoading] = useState(false);
