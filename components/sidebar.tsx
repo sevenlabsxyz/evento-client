@@ -9,6 +9,7 @@ import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import {
+  BookOpen,
   Calendar1,
   LogOut,
   MessageCircle,
@@ -61,6 +62,11 @@ const menuSections = [
         name: 'Settings',
         path: '/e/settings',
         icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
+      },
+      {
+        name: 'Blog',
+        path: '/e/blog',
+        icon: <BookOpen className='h-5 w-5' strokeWidth={2.5} />,
       },
     ],
   },
