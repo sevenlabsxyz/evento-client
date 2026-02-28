@@ -61,8 +61,8 @@ export default function CrowdfundingManagementPage() {
       try {
         const payload = {
           title: data.title,
-          description: data.description || undefined,
-          goalSats: data.goal_sats ?? undefined,
+          description: data.description ? data.description : null,
+          goalSats: data.goal_sats ?? null,
           visibility: data.visibility,
           status: data.status,
         };

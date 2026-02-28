@@ -16,7 +16,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
 
-type PledgeStep = 'amount' | 'invoice' | 'settled' | 'expired';
+type PledgeStep = 'amount' | 'invoice' | 'settled' | 'expired' | 'failed';
 
 interface CampaignPledgeSheetProps {
   eventId: string;
@@ -79,6 +79,10 @@ export function CampaignPledgeSheet({
 
     if (pledgeStatus.status === 'expired') {
       setStep('expired');
+    }
+
+    if (pledgeStatus.status === 'failed') {
+      setStep('failed');
     }
   }, [pledgeStatus, step, eventId, queryClient, onOpenChange]);
 
@@ -253,11 +257,31 @@ export function CampaignPledgeSheet({
     </div>
   );
 
+  const renderFailedStep = () => (
+    <div className='flex flex-col items-center px-4 pb-6'>
+      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+        <RotateCcw className='h-8 w-8 text-red-500' />
+      </div>
+      <h3 className='mb-1 text-xl font-bold text-gray-900'>Payment failed</h3>
+      <p className='mb-6 text-center text-sm text-gray-600'>
+        We could not confirm this payment. You can try again with a new invoice.
+      </p>
+      <button
+        onClick={handleTryAgain}
+        className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+      >
+        <RotateCcw className='h-4 w-4' />
+        Try again
+      </button>
+    </div>
+  );
+
   const stepContent: Record<PledgeStep, () => React.ReactNode> = {
     amount: renderAmountStep,
     invoice: renderInvoiceStep,
     settled: renderSettledStep,
     expired: renderExpiredStep,
+    failed: renderFailedStep,
   };
 
   const stepTitle: Record<PledgeStep, string> = {
@@ -265,6 +289,7 @@ export function CampaignPledgeSheet({
     invoice: 'Pay Invoice',
     settled: 'Payment Received',
     expired: 'Invoice Expired',
+    failed: 'Payment Failed',
   };
 
   return (

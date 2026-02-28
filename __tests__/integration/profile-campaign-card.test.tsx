@@ -33,22 +33,12 @@ jest.mock('next/navigation', () => ({
   useParams: () => ({ username: 'alice' }),
 }));
 
-const mockApiClient = {
-  get: jest.fn(),
-  post: jest.fn(),
-  patch: jest.fn(),
-  delete: jest.fn(),
+const mockApiClient = require('@/lib/api/client').default as {
+  get: jest.Mock;
+  post: jest.Mock;
+  patch: jest.Mock;
+  delete: jest.Mock;
 };
-
-jest.mock('@/lib/api/client', () => ({
-  __esModule: true,
-  default: {
-    get: (...args: unknown[]) => mockApiClient.get(...args),
-    post: (...args: unknown[]) => mockApiClient.post(...args),
-    patch: (...args: unknown[]) => mockApiClient.patch(...args),
-    delete: (...args: unknown[]) => mockApiClient.delete(...args),
-  },
-}));
 
 const USERNAME = 'alice';
 
@@ -190,7 +180,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        result.current.mutate({ amountSats: 500 });
+        result.current.mutate({ amountSats: 500, username: USERNAME });
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -199,24 +189,20 @@ describe('Profile Campaign Card Integration', () => {
       expect(result.current.data?.pledgeId).toBe('plg_profile789');
       expect(result.current.data?.invoice).toBe('lnbc500n1pprofile...');
       expect(mockApiClient.post).toHaveBeenCalledWith(
-        '/v1/user/campaign/pledges',
+        `/v1/users/${USERNAME}/campaign/pledges`,
         { amountSats: 500 }
       );
     });
 
-    it('does not require eventId for profile-type pledges', async () => {
-      mockApiClient.post.mockResolvedValueOnce({ data: fakePledgeResult });
-
+    it('requires username for profile-type pledges', async () => {
       const { result } = renderHook(() => useCreatePledgeIntent('profile'), {
         wrapper: createWrapper(queryClient),
       });
 
-      await act(async () => {
-        result.current.mutate({ amountSats: 100 });
-      });
-
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(result.current.data?.pledgeId).toBe('plg_profile789');
+      await expect(result.current.mutateAsync({ amountSats: 100 })).rejects.toThrow(
+        'username is required for profile campaign pledges'
+      );
+      expect(mockApiClient.post).not.toHaveBeenCalled();
     });
 
     it('handles API error during pledge creation', async () => {
@@ -231,7 +217,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        result.current.mutate({ amountSats: 1000 });
+        result.current.mutate({ amountSats: 1000, username: USERNAME });
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -319,7 +305,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        pledgeResult.current.mutate({ amountSats: 500 });
+        pledgeResult.current.mutate({ amountSats: 500, username: USERNAME });
       });
 
       await waitFor(() => expect(pledgeResult.current.isSuccess).toBe(true));
@@ -349,7 +335,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        pledgeResult.current.mutate({ amountSats: 100 });
+        pledgeResult.current.mutate({ amountSats: 100, username: USERNAME });
       });
 
       await waitFor(() => expect(pledgeResult.current.isSuccess).toBe(true));
@@ -378,7 +364,7 @@ describe('Profile Campaign Card Integration', () => {
       mockApiClient.post.mockResolvedValueOnce({ data: newPledgeResult });
 
       await act(async () => {
-        pledgeResult.current.mutate({ amountSats: 100 });
+        pledgeResult.current.mutate({ amountSats: 100, username: USERNAME });
       });
 
       await waitFor(() =>

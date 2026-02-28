@@ -90,7 +90,7 @@ export function ProfileCampaignPledgeSheet({
     if (!selectedAmount) return;
 
     createPledge.mutate(
-      { amountSats: selectedAmount },
+      { amountSats: selectedAmount, username },
       {
         onSuccess: (result) => {
           setPledgeId(result.pledgeId);
@@ -102,7 +102,7 @@ export function ProfileCampaignPledgeSheet({
         },
       }
     );
-  }, [selectedAmount, createPledge]);
+  }, [selectedAmount, createPledge, username]);
 
   const handleCopyInvoice = useCallback(async () => {
     if (!invoice) return;
