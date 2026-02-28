@@ -8,17 +8,18 @@ import {
   useUpdateEventCampaign,
 } from '@/lib/hooks/use-event-campaign';
 import { campaignFormSchema, type CampaignFormData } from '@/lib/schemas/campaign';
-import { useTopBar } from '@/lib/stores/topbar-store';
+import { useTopBarStore } from '@/lib/stores/topbar-store';
 import type { ApiError } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Info, MessageCircle, Zap } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 
 export default function CrowdfundingManagementPage() {
-  const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
+  const setTopBarForRoute = useTopBarStore((state) => state.setTopBarForRoute);
+  const applyRouteConfig = useTopBarStore((state) => state.applyRouteConfig);
   const params = useParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -42,6 +43,16 @@ export default function CrowdfundingManagementPage() {
   };
 
   const isMissingCampaign = isCampaignMissingError(error);
+
+  const isMissingDestinationAddressError = (value: unknown): value is ApiError => {
+    if (!value || typeof value !== 'object') {
+      return false;
+    }
+
+    const candidate = value as ApiError;
+    return candidate.status === 422 && candidate.message.includes('destination_address');
+  };
+
   const isUpdate = !!campaign;
   const isMutating = createCampaign.isPending || updateCampaign.isPending;
 
@@ -90,21 +101,40 @@ export default function CrowdfundingManagementPage() {
 
         router.push(`/e/${eventId}/manage`);
       } catch (err: any) {
+        if (isMissingDestinationAddressError(err)) {
+          toast.error(
+            'Set up your wallet Lightning address before creating a campaign.',
+            'Wallet setup required',
+            undefined,
+            {
+              action: {
+                label: 'Open Wallet',
+                onClick: () => router.push('/e/wallet'),
+              },
+            }
+          );
+          return;
+        }
+
         toast.error(err?.message || `Failed to ${isUpdate ? 'update' : 'create'} campaign`);
       }
     },
     [isUpdate, updateCampaign, createCampaign, eventId, router]
   );
 
-  // Memoize topbar save handler to avoid unnecessary re-renders
-  const topBarSaveHandler = useMemo(
-    () => () => void form.handleSubmit(handleSave)(),
-    [form, handleSave]
-  );
+  const submitFromTopBarRef = useRef<() => void>(() => undefined);
 
-  // Configure TopBar
+  useEffect(() => {
+    submitFromTopBarRef.current = () => {
+      void form.handleSubmit(handleSave)();
+    };
+  }, [form, handleSave]);
+
   useEffect(() => {
     applyRouteConfig(pathname);
+  }, [applyRouteConfig, pathname]);
+
+  useEffect(() => {
     setTopBarForRoute(pathname, {
       title: 'Crowdfunding',
       leftMode: 'back',
@@ -114,17 +144,13 @@ export default function CrowdfundingManagementPage() {
         {
           id: 'save-crowdfunding',
           icon: Check,
-          onClick: topBarSaveHandler,
+          onClick: () => submitFromTopBarRef.current(),
           label: 'Save',
           disabled: isMutating,
         },
       ],
     });
-
-    return () => {
-      clearRoute(pathname);
-    };
-  }, [setTopBarForRoute, clearRoute, isMutating, applyRouteConfig, pathname, topBarSaveHandler]);
+  }, [setTopBarForRoute, isMutating, pathname]);
 
   if (isLoading) {
     return (
