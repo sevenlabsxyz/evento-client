@@ -6,6 +6,7 @@ import { cn } from '@/lib/utils';
 import { Zap } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignPledgeSheet } from './campaign-pledge-sheet';
+import { CampaignContributors } from './campaign-contributors';
 
 interface EventCampaignCardProps {
   eventId: string;
@@ -84,6 +85,8 @@ export default function EventCampaignCard({ eventId, className }: EventCampaignC
         <p className='mb-4 text-sm text-gray-500'>
           {campaign.pledge_count} {campaign.pledge_count === 1 ? 'contribution' : 'contributions'}
         </p>
+
+        <CampaignContributors eventId={eventId} />
 
         {/* CTA */}
         <button
