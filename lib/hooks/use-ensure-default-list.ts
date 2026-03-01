@@ -12,7 +12,7 @@ import { useUserLists } from './use-user-lists';
  */
 export function useEnsureDefaultList() {
   const { data: lists = [], isLoading } = useUserLists();
-  const createListMutation = useCreateList();
+  const { mutate, isPending } = useCreateList();
   const hasAttemptedCreation = useRef(false);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function useEnsureDefaultList() {
     if (!hasDefaultList) {
       hasAttemptedCreation.current = true;
 
-      createListMutation.mutate(
+      mutate(
         { name: 'Saved Events' },
         {
           onError: (error) => {
@@ -41,11 +41,10 @@ export function useEnsureDefaultList() {
         }
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lists, isLoading]);
+  }, [lists, isLoading, mutate]);
 
   return {
-    isCreatingDefaultList: createListMutation.isPending,
+    isCreatingDefaultList: isPending,
     hasDefaultList: lists.some((list) => list.is_default),
   };
 }

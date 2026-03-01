@@ -2,7 +2,7 @@ import { Env } from '@/lib/constants/env';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   // Rewrite public /blog and /blog/* to the in-app /e/blog route.

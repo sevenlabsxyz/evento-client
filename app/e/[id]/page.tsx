@@ -6,11 +6,12 @@ import EventDetailPageClient from './page-client';
 
 // Define the types for props and params
 type Props = {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 };
 
-export async function generateMetadata({ params }: Props, parent: ResolvingMetadata) {
+export async function generateMetadata(props: Props, parent: ResolvingMetadata) {
+  const params = await props.params;
   // Initialize Supabase client
   const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY;
