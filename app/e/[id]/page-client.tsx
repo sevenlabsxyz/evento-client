@@ -324,10 +324,8 @@ export default function EventDetailPageClient() {
   const renderDetailsTab = () => (
     <div className='space-y-6'>
       <EventHost event={event} />
-      {/* Campaign card — mobile only (below lg hidden via desktop block above) */}
-      <div className='lg:hidden'>
-        <EventCampaignCard eventId={eventId} />
-      </div>
+      {/* Campaign card */}
+      <EventCampaignCard eventId={eventId} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
       {eventData?.restricted_fields?.length ? (
         <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900'>
@@ -400,10 +398,6 @@ export default function EventDetailPageClient() {
                 eventData={eventData}
                 hosts={hostsData}
               />
-            </div>
-            {/* Campaign card — desktop only (lg breakpoint) */}
-            <div className='hidden px-4 lg:block'>
-              <EventCampaignCard eventId={eventId} />
             </div>
           </div>
 
