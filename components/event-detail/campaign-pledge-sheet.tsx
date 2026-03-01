@@ -7,16 +7,19 @@ import {
   usePledgeStatus,
 } from '@/lib/hooks/use-campaign-pledge';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
+import { useWallet } from '@/lib/hooks/use-wallet';
+import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { CheckCircle2, Copy, Loader2, RotateCcw, Zap } from 'lucide-react';
+import { CheckCircle2, Copy, Loader2, QrCode, RotateCcw, Wallet, Zap } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
 
 type PledgeStep = 'amount' | 'invoice' | 'settled' | 'expired' | 'failed';
+type InvoiceView = 'options' | 'qr';
 
 interface CampaignPledgeSheetProps {
   eventId: string;
@@ -35,6 +38,7 @@ export function CampaignPledgeSheet({
 }: CampaignPledgeSheetProps) {
   const queryClient = useQueryClient();
   const [step, setStep] = useState<PledgeStep>('amount');
+  const [invoiceView, setInvoiceView] = useState<InvoiceView>('options');
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
   const [pledgeId, setPledgeId] = useState<string>('');
   const [invoice, setInvoice] = useState<string>('');
@@ -44,10 +48,15 @@ export function CampaignPledgeSheet({
   const createPledge = useCreatePledgeIntent('event');
   const { data: pledgeStatus } = usePledgeStatus(pledgeId);
   const { data: campaign } = useEventCampaign(eventId);
+  const { walletState } = useWallet();
+  const { sendPayment, isLoading: isWalletPaying } = useSendPayment();
 
   // Reset state when sheet closes
   useEffect(() => {
     if (!open) {
+      setStep('amount');
+      setInvoiceView('options');
+      setSelectedAmount(null);
       setStep('amount');
       setSelectedAmount(null);
       setPledgeId('');
@@ -126,6 +135,7 @@ export function CampaignPledgeSheet({
     setCopied(false);
     hasHandledSettled.current = false;
     createPledge.reset();
+    setInvoiceView('options');
     setStep('amount');
   }, [createPledge]);
 
@@ -186,8 +196,81 @@ export function CampaignPledgeSheet({
     </div>
   );
 
-  const renderInvoiceStep = () => (
+  const handleWalletPay = useCallback(async () => {
+    if (!invoice) return;
+    try {
+      await sendPayment(invoice);
+      // Payment sent — the pledge status poller will advance to 'settled'
+    } catch {
+      toast.error('Payment failed. Try copying the invoice instead.');
+    }
+  }, [invoice, sendPayment]);
+
+  const renderInvoiceOptionsView = () => (
+    <div className='flex flex-col gap-3 px-4 pb-6'>
+      <p className='mb-2 text-center text-sm text-gray-600'>
+        Pay{' '}
+        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
+      </p>
+
+      {/* Pay with Evento wallet */}
+      <button
+        onClick={handleWalletPay}
+        disabled={!walletState.isConnected || isWalletPaying}
+        className={cn(
+          'flex w-full items-center gap-4 rounded-2xl border-2 px-4 py-4 text-left transition-all',
+          walletState.isConnected
+            ? 'border-amber-400 bg-amber-50 hover:bg-amber-100 active:bg-amber-200'
+            : 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50'
+        )}
+      >
+        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100'>
+          {isWalletPaying ? (
+            <Loader2 className='h-5 w-5 animate-spin text-amber-600' />
+          ) : (
+            <Wallet className='h-5 w-5 text-amber-600' />
+          )}
+        </div>
+        <div>
+          <p className='text-sm font-semibold text-gray-900'>
+            {isWalletPaying ? 'Paying…' : 'Pay with Evento wallet'}
+          </p>
+          <p className='text-xs text-gray-500'>
+            {walletState.isConnected ? 'Instant payment from your balance' : 'Wallet not connected'}
+          </p>
+        </div>
+      </button>
+
+      {/* View QR code */}
+      <button
+        onClick={() => setInvoiceView('qr')}
+        className='flex w-full items-center gap-4 rounded-2xl border-2 border-gray-200 bg-white px-4 py-4 text-left transition-all hover:border-gray-300 hover:bg-gray-50'
+      >
+        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100'>
+          <QrCode className='h-5 w-5 text-gray-600' />
+        </div>
+        <div>
+          <p className='text-sm font-semibold text-gray-900'>View QR code</p>
+          <p className='text-xs text-gray-500'>Scan or copy for any Lightning wallet</p>
+        </div>
+      </button>
+
+      {/* Waiting indicator */}
+      <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400'>
+        <Loader2 className='h-4 w-4 animate-spin' />
+        Waiting for payment…
+      </div>
+    </div>
+  );
+
+  const renderInvoiceQRView = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
+      <button
+        onClick={() => setInvoiceView('options')}
+        className='mb-4 flex items-center gap-1 self-start text-sm text-gray-500 hover:text-gray-700'
+      >
+        ← Back
+      </button>
       <p className='mb-4 text-center text-sm text-gray-600'>
         Scan or copy the invoice to pay{' '}
         <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
@@ -223,6 +306,9 @@ export function CampaignPledgeSheet({
       </div>
     </div>
   );
+
+  const renderInvoiceStep = () =>
+    invoiceView === 'options' ? renderInvoiceOptionsView() : renderInvoiceQRView();
 
   const renderSettledStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
