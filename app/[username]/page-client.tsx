@@ -9,10 +9,10 @@ import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
 import { Navbar } from '@/components/navbar';
+import ProfileCampaignCard from '@/components/profile/profile-campaign-card';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
-import ProfileCampaignCard from '@/components/profile/profile-campaign-card';
 import RowCard from '@/components/row-card';
 import { Button } from '@/components/ui/button';
 import {

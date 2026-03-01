@@ -2,10 +2,7 @@
 
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import {
-  useCreatePledgeIntent,
-  usePledgeStatus,
-} from '@/lib/hooks/use-campaign-pledge';
+import { useCreatePledgeIntent, usePledgeStatus } from '@/lib/hooks/use-campaign-pledge';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
@@ -31,11 +28,7 @@ function formatSats(sats: number): string {
   return sats.toLocaleString();
 }
 
-export function CampaignPledgeSheet({
-  eventId,
-  open,
-  onOpenChange,
-}: CampaignPledgeSheetProps) {
+export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPledgeSheetProps) {
   const queryClient = useQueryClient();
   const [step, setStep] = useState<PledgeStep>('amount');
   const [invoiceView, setInvoiceView] = useState<InvoiceView>('options');
@@ -142,9 +135,7 @@ export function CampaignPledgeSheet({
   const renderAmountStep = () => (
     <div className='px-4 pb-6'>
       <p className='mb-6 text-sm text-gray-600'>
-        {campaign?.title
-          ? `Contribute to "${campaign.title}"`
-          : 'Choose an amount to contribute'}
+        {campaign?.title ? `Contribute to "${campaign.title}"` : 'Choose an amount to contribute'}
       </p>
 
       {/* Quick amounts grid */}
@@ -187,9 +178,7 @@ export function CampaignPledgeSheet({
         ) : (
           <>
             <Zap className='h-4 w-4' />
-            {selectedAmount
-              ? `Contribute ${formatSats(selectedAmount)} sats`
-              : 'Select an amount'}
+            {selectedAmount ? `Contribute ${formatSats(selectedAmount)} sats` : 'Select an amount'}
           </>
         )}
       </button>
@@ -209,8 +198,7 @@ export function CampaignPledgeSheet({
   const renderInvoiceOptionsView = () => (
     <div className='flex flex-col gap-3 px-4 pb-6'>
       <p className='mb-2 text-center text-sm text-gray-600'>
-        Pay{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
+        Pay <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
       </p>
 
       {/* Pay with Evento wallet */}
@@ -318,8 +306,8 @@ export function CampaignPledgeSheet({
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Thank you!</h3>
       <p className='text-center text-sm text-gray-600'>
         Your contribution of{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>{' '}
-        has been received.
+        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span> has been
+        received.
       </p>
     </div>
   );
@@ -379,11 +367,7 @@ export function CampaignPledgeSheet({
   };
 
   return (
-    <MasterScrollableSheet
-      title={stepTitle[step]}
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <MasterScrollableSheet title={stepTitle[step]} open={open} onOpenChange={onOpenChange}>
       {stepContent[step]()}
     </MasterScrollableSheet>
   );

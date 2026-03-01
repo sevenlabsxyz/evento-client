@@ -1,8 +1,8 @@
 'use client';
 
+import EventCampaignCard from '@/components/event-detail/event-campaign-card';
 import EventComments from '@/components/event-detail/event-comments';
 import EventContributions from '@/components/event-detail/event-contributions';
-import EventCampaignCard from '@/components/event-detail/event-campaign-card';
 import EventDescription from '@/components/event-detail/event-description';
 import EventGallery from '@/components/event-detail/event-gallery';
 import EventGuestsSection from '@/components/event-detail/event-guests-section';

@@ -115,7 +115,9 @@ export function useCreatePledgeIntent(campaignType: CampaignType) {
 
       if (campaignType === 'profile') {
         if (variables.username) {
-          queryClient.invalidateQueries({ queryKey: queryKeys.profileCampaign(variables.username) });
+          queryClient.invalidateQueries({
+            queryKey: queryKeys.profileCampaign(variables.username),
+          });
         }
         queryClient.invalidateQueries({ queryKey: queryKeys.myCampaign() });
       }

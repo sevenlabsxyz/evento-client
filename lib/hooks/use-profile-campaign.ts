@@ -77,7 +77,10 @@ export async function getMyCampaign(): Promise<CampaignWithProgress> {
 export async function createProfileCampaign(
   input: CreateProfileCampaignInput
 ): Promise<CampaignWithProgress> {
-  const response = await apiClient.post<ApiResponse<CampaignWithProgress>>('/v1/user/campaign', input);
+  const response = await apiClient.post<ApiResponse<CampaignWithProgress>>(
+    '/v1/user/campaign',
+    input
+  );
 
   return response.data;
 }

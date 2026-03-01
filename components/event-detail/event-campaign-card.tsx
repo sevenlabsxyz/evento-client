@@ -5,8 +5,8 @@ import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
 import { cn } from '@/lib/utils';
 import { Zap } from 'lucide-react';
 import { useState } from 'react';
-import { CampaignPledgeSheet } from './campaign-pledge-sheet';
 import { CampaignContributors } from './campaign-contributors';
+import { CampaignPledgeSheet } from './campaign-pledge-sheet';
 
 interface EventCampaignCardProps {
   eventId: string;

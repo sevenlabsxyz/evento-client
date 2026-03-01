@@ -282,10 +282,7 @@ export default function WalletPage() {
         const deposits = (event as any).unclaimedDeposits || [];
         setUnclaimedDepositsCount(deposits.length);
         if (deposits.length > 0) {
-          toast.info(
-            'Tap "Speed It Up" below to claim your funds now.',
-            'Onchain funds received'
-          );
+          toast.info('Tap "Speed It Up" below to claim your funds now.', 'Onchain funds received');
         }
       }
     });

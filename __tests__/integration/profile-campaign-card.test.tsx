@@ -188,10 +188,9 @@ describe('Profile Campaign Card Integration', () => {
       expect(result.current.data).toEqual(fakePledgeResult);
       expect(result.current.data?.pledgeId).toBe('plg_profile789');
       expect(result.current.data?.invoice).toBe('lnbc500n1pprofile...');
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        `/v1/users/${USERNAME}/campaign/pledges`,
-        { amountSats: 500 }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/users/${USERNAME}/campaign/pledges`, {
+        amountSats: 500,
+      });
     });
 
     it('requires username for profile-type pledges', async () => {
@@ -367,9 +366,7 @@ describe('Profile Campaign Card Integration', () => {
         pledgeResult.current.mutate({ amountSats: 100, username: USERNAME });
       });
 
-      await waitFor(() =>
-        expect(pledgeResult.current.data?.pledgeId).toBe('plg_profile_retry001')
-      );
+      await waitFor(() => expect(pledgeResult.current.data?.pledgeId).toBe('plg_profile_retry001'));
     });
   });
 
@@ -377,10 +374,7 @@ describe('Profile Campaign Card Integration', () => {
 
   describe('test-id contract', () => {
     it('ProfileCampaignCard exposes required test ids', () => {
-      const requiredTestIds = [
-        'profile-campaign-card',
-        'profile-campaign-pledge-cta',
-      ];
+      const requiredTestIds = ['profile-campaign-card', 'profile-campaign-pledge-cta'];
 
       requiredTestIds.forEach((id) => {
         expect(typeof id).toBe('string');

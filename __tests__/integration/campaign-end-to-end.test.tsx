@@ -1,3 +1,4 @@
+import apiClient from '@/lib/api/client';
 import {
   CreateCampaignPledgeResult,
   useCreatePledgeIntent,
@@ -34,22 +35,21 @@ jest.mock('next/navigation', () => ({
   useParams: () => ({ id: 'evt_task11', username: 'alice' }),
 }));
 
-const mockApiClient = {
-  get: jest.fn(),
-  post: jest.fn(),
-  patch: jest.fn(),
-  delete: jest.fn(),
-};
+jest.mock('@/lib/api/client', () => {
+  const mock = {
+    get: jest.fn(),
+    post: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  };
+  return { __esModule: true, default: mock, apiClient: mock };
+});
 
-jest.mock('@/lib/api/client', () => ({
-  __esModule: true,
-  default: {
-    get: (...args: unknown[]) => mockApiClient.get(...args),
-    post: (...args: unknown[]) => mockApiClient.post(...args),
-    patch: (...args: unknown[]) => mockApiClient.patch(...args),
-    delete: (...args: unknown[]) => mockApiClient.delete(...args),
-  },
-}));
+const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const EVENT_ID = 'evt_task11';
 const USERNAME = 'alice';
@@ -117,10 +117,12 @@ describe('Campaign end-to-end integration flow', () => {
             title: (payload?.title as string) || baseEventCampaign.title,
             description: (payload?.description as string) || baseEventCampaign.description,
             goal_sats:
-              typeof payload?.goalSats === 'number' ? payload.goalSats : baseEventCampaign.goal_sats,
-            visibility: (payload?.visibility as 'public' | 'private') || baseEventCampaign.visibility,
-            status:
-              (payload?.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
+              typeof payload?.goalSats === 'number'
+                ? payload.goalSats
+                : baseEventCampaign.goal_sats,
+            visibility:
+              (payload?.visibility as 'public' | 'private') || baseEventCampaign.visibility,
+            status: (payload?.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
           },
         });
       }
@@ -153,7 +155,7 @@ describe('Campaign end-to-end integration flow', () => {
         });
       }
 
-      if (url === '/v1/user/campaign/pledges') {
+      if (url === `/v1/users/${USERNAME}/campaign/pledges`) {
         const result: CreateCampaignPledgeResult = {
           pledgeId: 'plg_profile_settled',
           invoice: 'lnbc500n1pprofileflow',
@@ -177,9 +179,9 @@ describe('Campaign end-to-end integration flow', () => {
               typeof payload?.goal_sats === 'number'
                 ? payload.goal_sats
                 : baseEventCampaign.goal_sats,
-            visibility: (payload?.visibility as 'public' | 'private') || baseEventCampaign.visibility,
-            status:
-              (payload?.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
+            visibility:
+              (payload?.visibility as 'public' | 'private') || baseEventCampaign.visibility,
+            status: (payload?.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
           },
         });
       }
@@ -266,6 +268,7 @@ describe('Campaign end-to-end integration flow', () => {
         status: 'active',
       });
     });
+    await waitFor(() => expect(createCampaign.current.isSuccess).toBe(true));
 
     expect(createCampaign.current.data?.id).toBe('cmp_event_task11');
     expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/events/${EVENT_ID}/campaign`, {
@@ -287,6 +290,7 @@ describe('Campaign end-to-end integration flow', () => {
         status: 'paused',
       });
     });
+    await waitFor(() => expect(configureCampaign.current.isSuccess).toBe(true));
 
     expect(configureCampaign.current.data?.status).toBe('paused');
     expect(mockApiClient.patch).toHaveBeenCalledWith(`/v1/events/${EVENT_ID}/campaign`, {
@@ -302,6 +306,7 @@ describe('Campaign end-to-end integration flow', () => {
     await act(async () => {
       await createPledge.current.mutateAsync({ eventId: EVENT_ID, amountSats: 2100 });
     });
+    await waitFor(() => expect(createPledge.current.isSuccess).toBe(true));
 
     expect(createPledge.current.data?.pledgeId).toBe('plg_event_settled');
     expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/events/${EVENT_ID}/campaign/pledges`, {
@@ -347,6 +352,7 @@ describe('Campaign end-to-end integration flow', () => {
         status: 'active',
       });
     });
+    await waitFor(() => expect(createCampaign.current.isSuccess).toBe(true));
 
     expect(createCampaign.current.data?.id).toBe('cmp_profile_task11');
     expect(mockApiClient.post).toHaveBeenCalledWith('/v1/user/campaign', {
@@ -362,11 +368,12 @@ describe('Campaign end-to-end integration flow', () => {
     });
 
     await act(async () => {
-      await createPledge.current.mutateAsync({ amountSats: 500 });
+      await createPledge.current.mutateAsync({ amountSats: 500, username: USERNAME });
     });
+    await waitFor(() => expect(createPledge.current.isSuccess).toBe(true));
 
     expect(createPledge.current.data?.pledgeId).toBe('plg_profile_settled');
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/user/campaign/pledges', {
+    expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/users/${USERNAME}/campaign/pledges`, {
       amountSats: 500,
     });
 

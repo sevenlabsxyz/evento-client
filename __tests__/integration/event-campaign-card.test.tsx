@@ -1,3 +1,4 @@
+import apiClient from '@/lib/api/client';
 import {
   CreateCampaignPledgeResult,
   useCreatePledgeIntent,
@@ -33,22 +34,21 @@ jest.mock('next/navigation', () => ({
   useParams: () => ({ id: 'evt_test123' }),
 }));
 
-const mockApiClient = {
-  get: jest.fn(),
-  post: jest.fn(),
-  patch: jest.fn(),
-  delete: jest.fn(),
-};
+jest.mock('@/lib/api/client', () => {
+  const mock = {
+    get: jest.fn(),
+    post: jest.fn(),
+    patch: jest.fn(),
+    delete: jest.fn(),
+    interceptors: {
+      request: { use: jest.fn() },
+      response: { use: jest.fn() },
+    },
+  };
+  return { __esModule: true, default: mock, apiClient: mock };
+});
 
-jest.mock('@/lib/api/client', () => ({
-  __esModule: true,
-  default: {
-    get: (...args: unknown[]) => mockApiClient.get(...args),
-    post: (...args: unknown[]) => mockApiClient.post(...args),
-    patch: (...args: unknown[]) => mockApiClient.patch(...args),
-    delete: (...args: unknown[]) => mockApiClient.delete(...args),
-  },
-}));
+const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const EVENT_ID = 'evt_test123';
 
@@ -172,10 +172,9 @@ describe('Event Campaign Card Integration', () => {
       expect(result.current.data).toEqual(fakePledgeResult);
       expect(result.current.data?.pledgeId).toBe('plg_xyz789');
       expect(result.current.data?.invoice).toBe('lnbc100n1ptest...');
-      expect(mockApiClient.post).toHaveBeenCalledWith(
-        `/v1/events/${EVENT_ID}/campaign/pledges`,
-        { amountSats: 1000 }
-      );
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/events/${EVENT_ID}/campaign/pledges`, {
+        amountSats: 1000,
+      });
     });
 
     it('requires eventId for event-type pledges', async () => {
@@ -364,9 +363,7 @@ describe('Event Campaign Card Integration', () => {
         pledgeResult.current.mutate({ amountSats: 500, eventId: EVENT_ID });
       });
 
-      await waitFor(() =>
-        expect(pledgeResult.current.data?.pledgeId).toBe('plg_retry001')
-      );
+      await waitFor(() => expect(pledgeResult.current.data?.pledgeId).toBe('plg_retry001'));
     });
   });
 

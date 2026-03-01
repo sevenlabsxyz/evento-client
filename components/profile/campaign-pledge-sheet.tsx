@@ -2,10 +2,7 @@
 
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import {
-  useCreatePledgeIntent,
-  usePledgeStatus,
-} from '@/lib/hooks/use-campaign-pledge';
+import { useCreatePledgeIntent, usePledgeStatus } from '@/lib/hooks/use-campaign-pledge';
 import { useProfileCampaign } from '@/lib/hooks/use-profile-campaign';
 import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
@@ -128,9 +125,7 @@ export function ProfileCampaignPledgeSheet({
   const renderAmountStep = () => (
     <div className='px-4 pb-6'>
       <p className='mb-6 text-sm text-gray-600'>
-        {campaign?.title
-          ? `Contribute to "${campaign.title}"`
-          : 'Choose an amount to contribute'}
+        {campaign?.title ? `Contribute to "${campaign.title}"` : 'Choose an amount to contribute'}
       </p>
 
       {/* Quick amounts grid */}
@@ -173,9 +168,7 @@ export function ProfileCampaignPledgeSheet({
         ) : (
           <>
             <Zap className='h-4 w-4' />
-            {selectedAmount
-              ? `Contribute ${formatSats(selectedAmount)} sats`
-              : 'Select an amount'}
+            {selectedAmount ? `Contribute ${formatSats(selectedAmount)} sats` : 'Select an amount'}
           </>
         )}
       </button>
@@ -228,8 +221,8 @@ export function ProfileCampaignPledgeSheet({
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Thank you!</h3>
       <p className='text-center text-sm text-gray-600'>
         Your contribution of{' '}
-        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>{' '}
-        has been received.
+        <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span> has been
+        received.
       </p>
     </div>
   );
@@ -268,11 +261,7 @@ export function ProfileCampaignPledgeSheet({
   };
 
   return (
-    <MasterScrollableSheet
-      title={stepTitle[step]}
-      open={open}
-      onOpenChange={onOpenChange}
-    >
+    <MasterScrollableSheet title={stepTitle[step]} open={open} onOpenChange={onOpenChange}>
       {stepContent[step]()}
     </MasterScrollableSheet>
   );

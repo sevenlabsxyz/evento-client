@@ -275,10 +275,10 @@ describe('campaign hooks', () => {
     });
 
     await act(async () => {
-      await result.current.mutateAsync({ amountSats: 3000 });
+      await result.current.mutateAsync({ amountSats: 3000, username: 'alice' });
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/user/campaign/pledges', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/users/alice/campaign/pledges', {
       amountSats: 3000,
     });
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({

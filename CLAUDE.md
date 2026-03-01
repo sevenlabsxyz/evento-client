@@ -3,7 +3,9 @@
 This document provides comprehensive context for AI agents working on the Evento web client.
 
 ---
+
 a
+
 ## Tech Stack
 
 | Technology          | Version | Purpose                                |

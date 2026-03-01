@@ -350,13 +350,16 @@ describe('Event Campaign Manage Flow', () => {
 
       await waitFor(() => expect(queryResult.current.isError).toBe(true));
 
-      const { result: createResult } = renderHook(
-        () => useCreateEventCampaign('evt_test123'),
-        { wrapper: createWrapper(queryClient) }
-      );
+      const { result: createResult } = renderHook(() => useCreateEventCampaign('evt_test123'), {
+        wrapper: createWrapper(queryClient),
+      });
 
       await act(async () => {
-        createResult.current.mutate({ title: 'New campaign', visibility: 'public', status: 'active' });
+        createResult.current.mutate({
+          title: 'New campaign',
+          visibility: 'public',
+          status: 'active',
+        });
       });
 
       await waitFor(() => expect(createResult.current.isSuccess).toBe(true));
@@ -365,7 +368,11 @@ describe('Event Campaign Manage Flow', () => {
     });
 
     it('404 from useEventCampaign triggers create mode (not error screen)', async () => {
-      mockApiClient.get.mockRejectedValueOnce({ status: 404, message: 'Not found', success: false });
+      mockApiClient.get.mockRejectedValueOnce({
+        status: 404,
+        message: 'Not found',
+        success: false,
+      });
       mockApiClient.post.mockResolvedValueOnce({ data: fakeCampaign });
 
       const { result: queryResult } = renderHook(() => useEventCampaign('evt_test123'), {
@@ -378,10 +385,9 @@ describe('Event Campaign Manage Flow', () => {
       expect(queryResult.current.data).toBeUndefined();
 
       // Create mutation should still succeed when invoked
-      const { result: createResult } = renderHook(
-        () => useCreateEventCampaign('evt_test123'),
-        { wrapper: createWrapper(queryClient) }
-      );
+      const { result: createResult } = renderHook(() => useCreateEventCampaign('evt_test123'), {
+        wrapper: createWrapper(queryClient),
+      });
 
       await act(async () => {
         createResult.current.mutate({
@@ -413,10 +419,9 @@ describe('Event Campaign Manage Flow', () => {
 
       await waitFor(() => expect(queryResult.current.isError).toBe(true));
 
-      const { result: createResult } = renderHook(
-        () => useCreateEventCampaign('evt_test123'),
-        { wrapper: createWrapper(queryClient) }
-      );
+      const { result: createResult } = renderHook(() => useCreateEventCampaign('evt_test123'), {
+        wrapper: createWrapper(queryClient),
+      });
 
       await act(async () => {
         createResult.current.mutate({
@@ -444,10 +449,9 @@ describe('Event Campaign Manage Flow', () => {
 
       await waitFor(() => expect(queryResult.current.isSuccess).toBe(true));
 
-      const { result: updateResult } = renderHook(
-        () => useUpdateEventCampaign('evt_test123'),
-        { wrapper: createWrapper(queryClient) }
-      );
+      const { result: updateResult } = renderHook(() => useUpdateEventCampaign('evt_test123'), {
+        wrapper: createWrapper(queryClient),
+      });
 
       await act(async () => {
         updateResult.current.mutate({ title: 'Edited', status: 'paused' });

@@ -47,9 +47,7 @@ export default function ProfileCampaignCard({ username, className }: ProfileCamp
           <span
             className={cn(
               'ml-auto rounded-full px-2 py-0.5 text-xs font-medium',
-              isActive
-                ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-gray-100 text-gray-500'
+              isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
             )}
           >
             {isActive ? 'Active' : 'Paused'}

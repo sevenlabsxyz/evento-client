@@ -237,10 +237,7 @@ export default function CrowdfundingManagementPage() {
 
               {/* Description field */}
               <div className='space-y-2'>
-                <label
-                  htmlFor='campaign-description'
-                  className='text-sm font-medium text-gray-700'
-                >
+                <label htmlFor='campaign-description' className='text-sm font-medium text-gray-700'>
                   Description
                 </label>
                 <textarea
@@ -401,11 +398,7 @@ export default function CrowdfundingManagementPage() {
             className='h-12 w-full bg-amber-600 text-base font-semibold text-white hover:bg-amber-700'
             disabled={isMutating}
           >
-            {isMutating
-              ? 'Saving...'
-              : isUpdate
-                ? 'Update Campaign'
-                : 'Create Campaign'}
+            {isMutating ? 'Saving...' : isUpdate ? 'Update Campaign' : 'Create Campaign'}
           </Button>
         </form>
       </div>

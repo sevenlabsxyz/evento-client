@@ -869,7 +869,9 @@ export class BreezSDKService {
             } deposit(s) (${totalAmount.toLocaleString()} sats total)`,
             { deposits }
           );
-          console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Reason: Fee exceeded maxDepositClaimFee (10 sat/vbyte)');
+          console.debug(
+            '⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Reason: Fee exceeded maxDepositClaimFee (10 sat/vbyte)'
+          );
           console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Action required: User must manually claim');
         }
         break;

@@ -2,15 +2,15 @@
 
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { useWalletStore } from '@/lib/stores/wallet-store';
-import { logger } from '@/lib/utils/logger';
 import {
   BREEZ_ERROR_CONTEXT,
   getBreezErrorMessage,
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
-import { apiClient } from '../api/client';
+import { logger } from '@/lib/utils/logger';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { apiClient } from '../api/client';
 
 export function useLightningAddress() {
   const walletState = useWalletStore((state) => state.walletState);

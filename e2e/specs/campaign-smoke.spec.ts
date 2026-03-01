@@ -217,13 +217,17 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
       expect(created.length).toBeGreaterThan(0);
       eventId = created[0].id;
 
-      const campaign = await apiPost<CampaignRecord>(userARequest, `/v1/events/${eventId}/campaign`, {
-        title: 'Smoke campaign title',
-        description: 'Smoke campaign description',
-        goalSats: 5000,
-        visibility: 'public',
-        status: 'active',
-      });
+      const campaign = await apiPost<CampaignRecord>(
+        userARequest,
+        `/v1/events/${eventId}/campaign`,
+        {
+          title: 'Smoke campaign title',
+          description: 'Smoke campaign description',
+          goalSats: 5000,
+          visibility: 'public',
+          status: 'active',
+        }
+      );
 
       expect(campaign.id).toBeTruthy();
       expect(campaign.scope).toBe('event');
@@ -233,11 +237,15 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
     });
 
     await withStep('3) host configures campaign and keeps it active', async () => {
-      const updated = await apiPatch<CampaignRecord>(userARequest, `/v1/events/${eventId}/campaign`, {
-        title: 'Smoke campaign title configured',
-        goal_sats: 7500,
-        status: 'active',
-      });
+      const updated = await apiPatch<CampaignRecord>(
+        userARequest,
+        `/v1/events/${eventId}/campaign`,
+        {
+          title: 'Smoke campaign title configured',
+          goal_sats: 7500,
+          status: 'active',
+        }
+      );
 
       expect(updated.id).toBeTruthy();
       expect(updated.status).toBe('active');
@@ -245,9 +253,13 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
     });
 
     await withStep('4) attendee creates pledge intent for event campaign', async () => {
-      const intent = await apiPost<PledgeIntent>(userBRequest, `/v1/events/${eventId}/campaign/pledges`, {
-        amountSats: 21,
-      });
+      const intent = await apiPost<PledgeIntent>(
+        userBRequest,
+        `/v1/events/${eventId}/campaign/pledges`,
+        {
+          amountSats: 21,
+        }
+      );
 
       expect(intent.pledgeId).toBeTruthy();
       expect(intent.invoice).toBeTruthy();
@@ -285,7 +297,10 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
     });
 
     await withStep('6) public campaign feed returns safe settled-only fields', async () => {
-      const feed = await apiGet<CampaignFeedItem[]>(userBRequest, `/v1/events/${eventId}/campaign/feed`);
+      const feed = await apiGet<CampaignFeedItem[]>(
+        userBRequest,
+        `/v1/events/${eventId}/campaign/feed`
+      );
 
       expect(Array.isArray(feed)).toBeTruthy();
       expect(feed.length).toBeGreaterThan(0);
