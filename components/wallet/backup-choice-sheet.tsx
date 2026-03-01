@@ -73,14 +73,15 @@ export function BackupChoiceSheet({
     onOpenChange(newOpen);
   };
 
-  const handleGetBackup = async () => {
-    if (!pin || pin.length < 4) {
+  const handleGetBackup = async (pinOverride?: string) => {
+    const pinValue = pinOverride ?? pin;
+    if (!pinValue || pinValue.length < 4) {
       toast.error('Please enter your PIN');
       return;
     }
 
     try {
-      const backup = await getEncryptedBackup(pin);
+      const backup = await getEncryptedBackup(pinValue);
       setEncryptedSeed(backup);
       setStep('backup');
     } catch (error: any) {
@@ -143,8 +144,9 @@ export function BackupChoiceSheet({
   };
 
   // Seed phrase handlers
-  const handleSeedPinVerify = async () => {
-    if (!seedPin || seedPin.length < 4) {
+  const handleSeedPinVerify = async (seedPinOverride?: string) => {
+    const seedPinValue = seedPinOverride ?? seedPin;
+    if (!seedPinValue || seedPinValue.length < 4) {
       toast.error('Please enter your PIN');
       return;
     }
@@ -157,7 +159,7 @@ export function BackupChoiceSheet({
         return;
       }
 
-      const decrypted = await WalletStorageService.decryptSeed(encryptedSeedData, seedPin);
+      const decrypted = await WalletStorageService.decryptSeed(encryptedSeedData, seedPinValue);
       setMnemonic(decrypted);
       setStep('seed-view');
     } catch (error: any) {
@@ -303,14 +305,14 @@ export function BackupChoiceSheet({
             </p>
           </div>
 
-          {/* PIN Display - show dots for entered digits */}
+          {/* PIN Display - 4 dots */}
           <div className='flex justify-center gap-3'>
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {[0, 1, 2, 3].map((index) => (
               <div
                 key={index}
-                className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                className='flex h-14 w-14 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
               >
-                {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                {pin.length > index && <div className='h-3.5 w-3.5 rounded-full bg-gray-900' />}
               </div>
             ))}
           </div>
@@ -319,7 +321,12 @@ export function BackupChoiceSheet({
           <NumericKeypad
             onNumberClick={(num) => {
               if (pin.length < 6) {
-                setPin(pin + num);
+                const newPin = pin + num;
+                setPin(newPin);
+                // Auto-submit at 4 digits; legacy 5-6 digit users can use the button
+                if (newPin.length === 4) {
+                  setTimeout(() => handleGetBackup(newPin), 150);
+                }
               }
             }}
             onDelete={() => setPin(pin.slice(0, -1))}
@@ -330,7 +337,7 @@ export function BackupChoiceSheet({
           {/* Buttons */}
           <div className='flex flex-col gap-3'>
             <Button
-              onClick={handleGetBackup}
+              onClick={() => handleGetBackup()}
               className='w-full rounded-full'
               size='lg'
               disabled={pin.length < 4 || isLoading}
@@ -457,14 +464,14 @@ export function BackupChoiceSheet({
             </p>
           </div>
 
-          {/* PIN Display */}
+          {/* PIN Display - 4 dots */}
           <div className='flex justify-center gap-3'>
-            {[0, 1, 2, 3, 4, 5].map((index) => (
+            {[0, 1, 2, 3].map((index) => (
               <div
                 key={index}
-                className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                className='flex h-14 w-14 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
               >
-                {seedPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                {seedPin.length > index && <div className='h-3.5 w-3.5 rounded-full bg-gray-900' />}
               </div>
             ))}
           </div>
@@ -473,7 +480,12 @@ export function BackupChoiceSheet({
           <NumericKeypad
             onNumberClick={(num) => {
               if (seedPin.length < 6) {
-                setSeedPin(seedPin + num);
+                const newSeedPin = seedPin + num;
+                setSeedPin(newSeedPin);
+                // Auto-submit at 4 digits; legacy 5-6 digit users can use the button
+                if (newSeedPin.length === 4) {
+                  setTimeout(() => handleSeedPinVerify(newSeedPin), 150);
+                }
               }
             }}
             onDelete={() => setSeedPin(seedPin.slice(0, -1))}
@@ -484,7 +496,7 @@ export function BackupChoiceSheet({
           {/* Buttons */}
           <div className='flex flex-col gap-3'>
             <Button
-              onClick={handleSeedPinVerify}
+              onClick={() => handleSeedPinVerify()}
               className='w-full rounded-full'
               size='lg'
               disabled={seedPin.length < 4 || isVerifying}
