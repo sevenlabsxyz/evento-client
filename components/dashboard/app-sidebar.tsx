@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BookOpen,
   Calendar1,
   MessageCircle,
   Plus,
@@ -69,8 +70,12 @@ const navSecondary = [
     url: '/e/settings',
     icon: Settings,
   },
+  {
+    title: 'Blog',
+    url: '/e/blog',
+    icon: BookOpen,
+  },
 ];
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const { setOpenMobile } = useSidebar();
