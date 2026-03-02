@@ -4,7 +4,8 @@ import {
   BookOpen,
   Calendar1,
   MessageCircle,
-  PanelLeft,
+  PanelRightClose,
+  PanelRightOpen,
   Plus,
   Search,
   Settings,
@@ -79,7 +80,7 @@ const navSecondary = [
 ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
-  const { setOpenMobile, toggleSidebar } = useSidebar();
+  const { state, setOpenMobile, toggleSidebar } = useSidebar();
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -104,7 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             alt='Evento'
             width={28}
             height={28}
-            className='absolute left-2 top-1/2 size-7 -translate-y-1/2 opacity-0 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-100 dark:invert'
+            className='absolute left-0.5 top-1/2 size-7 -translate-y-1/2 opacity-0 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-100 dark:invert'
           />
         </Link>
         <SidebarMenu>
@@ -123,9 +124,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Toggle Sidebar' onClick={toggleSidebar}>
-              <PanelLeft />
-              <span>Toggle Sidebar</span>
+            <SidebarMenuButton
+              tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
+              onClick={toggleSidebar}
+            >
+              {state === 'expanded' ? <PanelRightOpen /> : <PanelRightClose />}
+              <span>{state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
