@@ -23,9 +23,9 @@ interface EventHostsResponse {
   data: EventHostApiItem[];
 }
 
-export function useEventHosts(eventId: string, enabled = true) {
+export function useEventCohosts(eventId: string, enabled = true) {
   return useQuery({
-    queryKey: queryKeys.eventHosts(eventId),
+    queryKey: queryKeys.eventCohosts(eventId),
     queryFn: async () => {
       const res = await apiClient.get<EventHostsResponse>(`/v1/events/${eventId}/hosts`);
       const hosts = res.data || [];
@@ -130,6 +130,7 @@ export function useAcceptCohostInvite() {
       if (eventId) {
         queryClient.invalidateQueries({ queryKey: queryKeys.event(eventId) });
         queryClient.invalidateQueries({ queryKey: queryKeys.eventHosts(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.eventCohosts(eventId) });
       }
     },
     onError: (err: any) => {

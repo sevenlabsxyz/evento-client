@@ -108,6 +108,7 @@ export const queryKeys = {
 
   // Event hosts
   eventHosts: (eventId: string) => [...queryKeys.events, eventId, 'hosts'] as const,
+  eventCohosts: (eventId: string) => [...queryKeys.events, eventId, 'cohosts'] as const,
 
   // Cohost invites
   cohostInvites: ['cohost-invites'] as const,
