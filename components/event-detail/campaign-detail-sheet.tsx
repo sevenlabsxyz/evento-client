@@ -1,6 +1,5 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Progress } from '@/components/ui/progress';
 import SegmentedTabs from '@/components/ui/segmented-tabs';
@@ -110,14 +109,16 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
         }
         contentClassName='px-4 pb-6 pt-4'
         footer={
-          <button
-            data-testid='campaign-detail-contribute-btn'
-            onClick={() => setPledgeSheetOpen(true)}
-            className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
-          >
-            <Zap className='h-4 w-4' />
-            Contribute
-          </button>
+          <div className='pb-2'>
+            <button
+              data-testid='campaign-detail-contribute-btn'
+              onClick={() => setPledgeSheetOpen(true)}
+              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+            >
+              <Zap className='h-4 w-4' />
+              Contribute
+            </button>
+          </div>
         }
       >
         <div data-testid='campaign-detail-sheet'>
@@ -161,18 +162,6 @@ function DetailsTabContent({
 }) {
   return (
     <div className='space-y-5'>
-      {/* Status badge */}
-      <div className='flex items-center gap-2'>
-        <span className='rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700'>
-          {campaign.status === 'active' ? 'Active' : campaign.status}
-        </span>
-      </div>
-
-      {/* Description */}
-      {campaign.description && (
-        <p className='text-sm leading-relaxed text-gray-600'>{campaign.description}</p>
-      )}
-
       {/* Stats */}
       <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
         <div className='mb-2 flex items-baseline gap-1'>
@@ -204,8 +193,8 @@ function DetailsTabContent({
         </p>
       </div>
 
-      {/* Created date */}
-      <p className='text-xs text-gray-400'>
+      {/* Created date — lower hierarchy */}
+      <p className='text-xs italic tracking-wide text-gray-400'>
         Created{' '}
         {new Date(campaign.created_at).toLocaleDateString('en-US', {
           month: 'long',
@@ -213,6 +202,11 @@ function DetailsTabContent({
           year: 'numeric',
         })}
       </p>
+
+      {/* Description */}
+      {campaign.description && (
+        <p className='text-sm leading-relaxed text-gray-600'>{campaign.description}</p>
+      )}
     </div>
   );
 }
@@ -244,37 +238,30 @@ function ContributorsTabContent({
   }
 
   return (
-    <ul className='space-y-2'>
-      {feed.map((item, idx) => {
-        const initials = item.payer_username ? item.payer_username.slice(0, 2).toUpperCase() : '⚡';
+    <ul className='-mx-1 space-y-2 overflow-y-auto'>
+      {feed.map((item, idx) => (
+        <li key={idx} className='flex items-center gap-3 px-1'>
+          <UserAvatar
+            user={{
+              username: item.payer_username || undefined,
+              image: item.payer_avatar || undefined,
+            }}
+            size='sm'
+          />
 
-        return (
-          <li key={idx} className='flex items-center gap-3'>
-            <Avatar className='h-8 w-8 shrink-0'>
-              {item.payer_avatar && (
-                <AvatarImage src={item.payer_avatar} alt={item.payer_username ?? 'anon'} />
-              )}
-              <AvatarFallback className='bg-amber-100 text-xs text-amber-700'>
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+          <div className='min-w-0 flex-1'>
+            <p className='truncate text-sm font-medium text-gray-900'>
+              {item.payer_username ? `@${item.payer_username}` : 'Anonymous'}
+            </p>
+            {item.settled_at && <p className='text-xs text-gray-400'>{timeAgo(item.settled_at)}</p>}
+          </div>
 
-            <div className='min-w-0 flex-1'>
-              <p className='truncate text-sm font-medium text-gray-900'>
-                {item.payer_username ? `@${item.payer_username}` : 'Anonymous'}
-              </p>
-              {item.settled_at && (
-                <p className='text-xs text-gray-400'>{timeAgo(item.settled_at)}</p>
-              )}
-            </div>
-
-            <div className='flex shrink-0 items-center gap-1 text-sm font-semibold tabular-nums text-amber-600'>
-              <Zap className='h-3.5 w-3.5' />
-              {formatSatsAbbreviated(item.amount_sats)}
-            </div>
-          </li>
-        );
-      })}
+          <div className='flex shrink-0 items-center gap-1 text-sm font-semibold tabular-nums text-amber-600'>
+            <Zap className='h-3.5 w-3.5' />
+            {formatSatsAbbreviated(item.amount_sats)}
+          </div>
+        </li>
+      ))}
     </ul>
   );
 }
