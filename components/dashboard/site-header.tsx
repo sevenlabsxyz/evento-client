@@ -10,7 +10,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger } from '@/components/ui/sidebar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 
@@ -63,7 +62,17 @@ export function SiteHeader() {
       );
     }
 
-    return <SidebarTrigger className='-ml-1' />;
+    return (
+      <Link href='/e/hub' className='flex items-center gap-2'>
+        <Image
+          src='/assets/img/evento-logo.svg'
+          alt='Evento'
+          width={100}
+          height={24}
+          className='h-6 w-auto'
+        />
+      </Link>
+    );
   };
 
   const renderCenterContent = () => {
