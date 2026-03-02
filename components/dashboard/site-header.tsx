@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, CalendarDays } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -136,17 +136,7 @@ export function SiteHeader() {
         />
         {renderCenterContent()}
         <div className='ml-auto flex items-center gap-2'>
-          {isAuthenticated && (
-            <Button
-              variant='ghost'
-              size='icon'
-              onClick={toggleRightSidebar}
-              className='hidden h-7 w-7 lg:flex'
-            >
-              <CalendarDays className='h-4 w-4' />
-              <span className='sr-only'>Toggle calendar sidebar</span>
-            </Button>
-          )}
+          {/* TODO: Re-enable calendar toggle when right sidebar is ready */}
           {textButtons.length > 0 && (
             <div className='flex gap-2'>
               {textButtons.map((button) => {

@@ -55,7 +55,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
         }
       >
         {isAuthenticated && <AppSidebar variant='inset' />}
-        <SidebarInset className='max-h-svh md:max-h-[calc(100svh-1rem)]'>
+        <SidebarInset className='max-h-svh min-w-0 md:max-h-[calc(100svh-1rem)]'>
           {!isOverlaid && <SiteHeader />}
           <div className='flex-1 overflow-auto'>{children}</div>
         </SidebarInset>

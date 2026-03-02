@@ -2,7 +2,6 @@
 
 import {
   Calendar1,
-  CalendarDays,
   MessageCircle,
   PanelRightClose,
   PanelRightOpen,
@@ -18,6 +17,7 @@ import * as React from 'react';
 
 import { NavMain } from '@/components/dashboard/nav-main';
 import { NavUser } from '@/components/dashboard/nav-user';
+import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -90,9 +90,21 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             className='absolute left-0.5 top-1/2 size-7 -translate-y-1/2 opacity-0 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-100 dark:invert'
           />
         </Link>
-        <SidebarMenu>
+        {/* Expanded: full black Button — fades out as sidebar collapses */}
+        <div className='mt-4 px-2 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:h-0 group-data-[collapsible=icon]:overflow-hidden group-data-[collapsible=icon]:opacity-0'>
+          <Button onClick={handleCreateEvent} className='w-full'>
+            <Plus className='h-4 w-4' />
+            Create Event
+          </Button>
+        </div>
+        {/* Collapsed: icon-only dark SidebarMenuButton — fades in as sidebar collapses */}
+        <SidebarMenu className='pointer-events-none h-0 overflow-hidden opacity-0 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-auto group-data-[collapsible=icon]:mt-2 group-data-[collapsible=icon]:h-auto group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:opacity-100'>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Create Event' onClick={handleCreateEvent}>
+            <SidebarMenuButton
+              tooltip='Create Event'
+              onClick={handleCreateEvent}
+              className='bg-black text-white hover:bg-black/90 hover:text-white active:bg-black/80'
+            >
               <Plus />
               <span>Create Event</span>
             </SidebarMenuButton>
@@ -104,16 +116,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip={isCalendarOpen ? 'Hide Calendar' : 'View Calendar'}
-              onClick={toggleCalendar}
-              className='hidden lg:flex'
-            >
-              <CalendarDays />
-              <span>{isCalendarOpen ? 'Hide Calendar' : 'View Calendar'}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {/* TODO: Re-enable calendar toggle when right sidebar is ready */}
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
