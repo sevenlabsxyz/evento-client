@@ -1,7 +1,7 @@
 'use client';
 
 import { RegistrationDetailSheet } from '@/components/manage-event/registration-detail-sheet';
-import { SegmentedTabs } from '@/components/ui/segmented-tabs';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useApproveRegistration } from '@/lib/hooks/use-approve-registration';
@@ -12,7 +12,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationStatus, RegistrationSubmission } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { format } from 'date-fns';
-import { ChevronRight, ClipboardList } from 'lucide-react';
+import { CheckCircle, ChevronRight, ClipboardList, Clock, XCircle } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -182,15 +182,13 @@ export default function RegistrationSubmissionsPage() {
     <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Tabs */}
       <div className='border-b border-gray-100 px-4 py-4'>
-        <SegmentedTabs
-          align='left'
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as TabStatus)}
-          wrapperClassName='mb-0 px-0 py-0'
-          items={tabs.map((tab) => ({
-            value: tab.key,
-            label: tab.count > 0 ? `${tab.label} (${tab.count})` : tab.label,
+        <AnimatedTabs
+          tabs={tabs.map((tab) => ({
+            title: tab.count > 0 ? `${tab.label} (${tab.count})` : tab.label,
+            icon: tab.key === 'pending' ? Clock : tab.key === 'approved' ? CheckCircle : XCircle,
+            onClick: () => setActiveTab(tab.key),
           }))}
+          selected={tabs.findIndex((t) => t.key === activeTab)}
         />
       </div>
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, PanelRight } from 'lucide-react';
+import { ArrowLeft, CalendarDays } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,6 +13,7 @@ import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { cn } from '@/lib/utils';
 
 export function SiteHeader() {
   const router = useRouter();
@@ -43,7 +44,7 @@ export function SiteHeader() {
   const renderLeftContent = () => {
     if (!isAuthenticated || leftMode === 'logo') {
       return (
-        <Link href='/' className='flex items-center gap-2'>
+        <Link href='/' className='flex items-center gap-2 md:hidden'>
           <Image
             src='/assets/img/evento-logo.svg'
             alt='Evento'
@@ -65,7 +66,7 @@ export function SiteHeader() {
     }
 
     return (
-      <Link href='/e/hub' className='flex items-center gap-2'>
+      <Link href='/e/hub' className='flex items-center gap-2 md:hidden'>
         <Image
           src='/assets/img/evento-logo.svg'
           alt='Evento'
@@ -123,11 +124,16 @@ export function SiteHeader() {
     return null;
   };
 
+  const showLeftOnDesktop = leftMode === 'back';
+
   return (
     <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
       <div className='flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
         {renderLeftContent()}
-        <Separator orientation='vertical' className='mx-2 data-[orientation=vertical]:h-4' />
+        <Separator
+          orientation='vertical'
+          className={cn('mx-2 data-[orientation=vertical]:h-4', !showLeftOnDesktop && 'md:hidden')}
+        />
         {renderCenterContent()}
         <div className='ml-auto flex items-center gap-2'>
           {isAuthenticated && (
@@ -137,7 +143,7 @@ export function SiteHeader() {
               onClick={toggleRightSidebar}
               className='hidden h-7 w-7 lg:flex'
             >
-              <PanelRight className='h-4 w-4' />
+              <CalendarDays className='h-4 w-4' />
               <span className='sr-only'>Toggle calendar sidebar</span>
             </Button>
           )}

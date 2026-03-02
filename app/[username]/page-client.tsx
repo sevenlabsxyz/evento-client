@@ -14,6 +14,7 @@ import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -23,7 +24,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
@@ -52,10 +52,13 @@ import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
+  Award,
   BadgeCheck,
+  Calendar,
   MessageCircle,
   Search,
   Share,
+  User,
   UserMinus,
   UserPlus,
 } from 'lucide-react';
@@ -748,17 +751,34 @@ export default function UserProfilePageClient() {
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white px-6 pb-5 md:pb-0 lg:px-0'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'about', label: 'About' },
-                  { value: 'events', label: 'Events' },
-                  { value: 'badges', label: 'Badges' },
+              <AnimatedTabs
+                tabs={[
+                  {
+                    title: 'About',
+                    icon: User,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('about');
+                    },
+                  },
+                  {
+                    title: 'Events',
+                    icon: Calendar,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('events');
+                    },
+                  },
+                  {
+                    title: 'Badges',
+                    icon: Award,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('badges');
+                    },
+                  },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => {
-                  setHasAutoSelectedInitialTab(true);
-                  setActiveTab(v);
-                }}
+                selected={['about', 'events', 'badges'].indexOf(activeTab)}
               />
 
               {/* Tab Content */}

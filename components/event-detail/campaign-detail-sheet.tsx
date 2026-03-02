@@ -1,12 +1,12 @@
 'use client';
 
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Progress } from '@/components/ui/progress';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventCampaignFeed } from '@/lib/hooks/use-campaign-feed';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
-import { Zap } from 'lucide-react';
+import { Info, Users, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignPledgeSheet } from './campaign-pledge-sheet';
 
@@ -96,14 +96,12 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
             </div>
 
             {/* Tabs */}
-            <SegmentedTabs
-              items={[
-                { value: 'details', label: 'Details' },
-                { value: 'contributors', label: 'Contributors' },
+            <AnimatedTabs
+              tabs={[
+                { title: 'Details', icon: Info, onClick: () => setActiveTab('details') },
+                { title: 'Contributors', icon: Users, onClick: () => setActiveTab('contributors') },
               ]}
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v as 'details' | 'contributors')}
-              wrapperClassName='px-0 py-0'
+              selected={['details', 'contributors'].indexOf(activeTab)}
             />
           </div>
         }

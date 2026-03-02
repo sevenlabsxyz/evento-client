@@ -2,13 +2,13 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
-import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { formatDateHeader } from '@/lib/utils/date';
-import { ArrowRight, Calendar, Search } from 'lucide-react';
+import { ArrowRight, Calendar, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
@@ -95,27 +95,15 @@ export function MyEventsSection() {
           <h2 className='text-xl font-semibold'>My Events</h2>
         </div>
 
-        {/* Segmented Tabs */}
+        {/* Animated Tabs */}
         <div className='mt-2 flex items-center justify-between'>
-          <SegmentedTabs
-            align='left'
-            value={activeTab}
-            onValueChange={(value) => setActiveTab(value as MyEventsTab)}
-            items={[
-              {
-                value: 'upcoming',
-                label: 'Upcoming',
-              },
-              {
-                value: 'hosting',
-                label: 'Hosting',
-              },
-              {
-                value: 'drafts',
-                label: 'Drafts',
-              },
+          <AnimatedTabs
+            tabs={[
+              { title: 'Upcoming', icon: Calendar, onClick: () => setActiveTab('upcoming') },
+              { title: 'Hosting', icon: MapPinHouse, onClick: () => setActiveTab('hosting') },
+              { title: 'Drafts', icon: UserRoundPen, onClick: () => setActiveTab('drafts') },
             ]}
-            wrapperClassName=''
+            defaultSelected={0}
           />
           <CircledIconButton icon={Search} onClick={handleViewAll} />
         </div>

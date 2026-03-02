@@ -1,16 +1,14 @@
 'use client';
 
 import {
-  BookOpen,
   Calendar1,
+  CalendarDays,
   MessageCircle,
   PanelRightClose,
   PanelRightOpen,
   Plus,
   Search,
-  Settings,
   Star,
-  UserCircle2,
   Zap,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -19,7 +17,6 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import { NavMain } from '@/components/dashboard/nav-main';
-import { NavSecondary } from '@/components/dashboard/nav-secondary';
 import { NavUser } from '@/components/dashboard/nav-user';
 import {
   Sidebar,
@@ -32,6 +29,7 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 
 const navMain = [
   {
@@ -61,26 +59,10 @@ const navMain = [
   },
 ];
 
-const navSecondary = [
-  {
-    title: 'Profile',
-    url: '/e/profile',
-    icon: UserCircle2,
-  },
-  {
-    title: 'Settings',
-    url: '/e/settings',
-    icon: Settings,
-  },
-  {
-    title: 'Blog',
-    url: '/e/blog',
-    icon: BookOpen,
-  },
-];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const { state, setOpenMobile, toggleSidebar } = useSidebar();
+  const { isOpen: isCalendarOpen, toggle: toggleCalendar } = useRightSidebar();
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -119,10 +101,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavSecondary items={navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={isCalendarOpen ? 'Hide Calendar' : 'View Calendar'}
+              onClick={toggleCalendar}
+              className='hidden lg:flex'
+            >
+              <CalendarDays />
+              <span>{isCalendarOpen ? 'Hide Calendar' : 'View Calendar'}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}

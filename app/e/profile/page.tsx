@@ -15,6 +15,7 @@ import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -24,7 +25,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap';
@@ -47,12 +47,15 @@ import { formatDateHeader } from '@/lib/utils/date';
 import { motion } from 'framer-motion';
 import {
   ArrowUpRight,
+  Award,
   BadgeCheck,
+  Calendar,
   Edit3,
   Loader2,
   MessageCircle,
   Search,
   Settings,
+  User,
 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -231,6 +234,7 @@ export default function ProfilePage() {
           {/* Timeframe Toggle */}
           <div className='flex items-center rounded-full bg-gray-50 p-1'>
             <button
+              type='button'
               onClick={() => setTimeframe('future')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
@@ -242,6 +246,7 @@ export default function ProfilePage() {
               Upcoming
             </button>
             <button
+              type='button'
               onClick={() => setTimeframe('past')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
@@ -505,20 +510,25 @@ export default function ProfilePage() {
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'about', label: 'About' },
-                  { value: 'events', label: 'Events' },
-                  { value: 'badges', label: 'Badges' },
+              <AnimatedTabs
+                tabs={[
+                  {
+                    title: 'About',
+                    icon: User,
+                    onClick: () => router.push('/e/profile', { scroll: false }),
+                  },
+                  {
+                    title: 'Events',
+                    icon: Calendar,
+                    onClick: () => router.push('/e/profile?tab=events', { scroll: false }),
+                  },
+                  {
+                    title: 'Badges',
+                    icon: Award,
+                    onClick: () => router.push('/e/profile?tab=badges', { scroll: false }),
+                  },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => {
-                  if (v === 'about') {
-                    router.push('/e/profile', { scroll: false });
-                  } else {
-                    router.push(`/e/profile?tab=${v}`, { scroll: false });
-                  }
-                }}
+                selected={['about', 'events', 'badges'].indexOf(activeTab)}
               />
               {/* Tab Content */}
               <div>
