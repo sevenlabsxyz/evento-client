@@ -16,7 +16,7 @@ const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
 type PledgeStep = 'amount' | 'invoice' | 'settled' | 'expired';
 
 interface ProfileCampaignPledgeSheetProps {
-  username: string;
+  userId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -26,7 +26,7 @@ function formatSats(sats: number): string {
 }
 
 export function ProfileCampaignPledgeSheet({
-  username,
+  userId,
   open,
   onOpenChange,
 }: ProfileCampaignPledgeSheetProps) {
@@ -40,7 +40,7 @@ export function ProfileCampaignPledgeSheet({
 
   const createPledge = useCreatePledgeIntent('profile');
   const { data: pledgeStatus } = usePledgeStatus(pledgeId);
-  const { data: campaign } = useProfileCampaign(username);
+  const { data: campaign } = useProfileCampaign(userId);
 
   // Reset state when sheet closes
   useEffect(() => {
@@ -64,7 +64,7 @@ export function ProfileCampaignPledgeSheet({
       setStep('settled');
 
       // Invalidate profile campaign data so the card refreshes
-      queryClient.invalidateQueries({ queryKey: queryKeys.profileCampaign(username) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.profileCampaign(userId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.campaigns });
 
       // Auto-close after success display
@@ -77,7 +77,7 @@ export function ProfileCampaignPledgeSheet({
     if (pledgeStatus.status === 'expired') {
       setStep('expired');
     }
-  }, [pledgeStatus, step, username, queryClient, onOpenChange]);
+  }, [pledgeStatus, step, userId, queryClient, onOpenChange]);
 
   const handleSelectAmount = useCallback((amount: number) => {
     setSelectedAmount(amount);
@@ -87,7 +87,7 @@ export function ProfileCampaignPledgeSheet({
     if (!selectedAmount) return;
 
     createPledge.mutate(
-      { amountSats: selectedAmount, username },
+      { amountSats: selectedAmount, userId },
       {
         onSuccess: (result) => {
           setPledgeId(result.pledgeId);
@@ -99,7 +99,7 @@ export function ProfileCampaignPledgeSheet({
         },
       }
     );
-  }, [selectedAmount, createPledge, username]);
+  }, [selectedAmount, createPledge, userId]);
 
   const handleCopyInvoice = useCallback(async () => {
     if (!invoice) return;

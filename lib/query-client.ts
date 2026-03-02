@@ -75,7 +75,7 @@ export const queryKeys = {
 
   campaigns: ['campaigns'] as const,
   eventCampaign: (eventId: string) => [...queryKeys.campaigns, 'event', eventId] as const,
-  profileCampaign: (username: string) => [...queryKeys.campaigns, 'profile', username] as const,
+  profileCampaign: (userId: string) => [...queryKeys.campaigns, 'profile', userId] as const,
   myCampaign: () => [...queryKeys.campaigns, 'me'] as const,
   campaignFeed: (campaignId: string) => [...queryKeys.campaigns, campaignId, 'feed'] as const,
 

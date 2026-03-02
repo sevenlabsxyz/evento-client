@@ -52,7 +52,7 @@ jest.mock('@/lib/api/client', () => {
 const mockApiClient = apiClient as jest.Mocked<typeof apiClient>;
 
 const EVENT_ID = 'evt_task11';
-const USERNAME = 'alice';
+const USER_ID = 'usr_alice';
 const FEED_ALLOWED_KEYS = ['amount_sats', 'payer_avatar', 'payer_username', 'settled_at'];
 const FEED_FORBIDDEN_KEYS = ['payment_hash', 'preimage', 'verify_url', 'bolt11_invoice'];
 
@@ -150,7 +150,7 @@ describe('Campaign end-to-end integration flow', () => {
         });
       }
 
-      if (url === `/v1/users/${USERNAME}/campaign/pledges`) {
+      if (url === `/v1/users/${USER_ID}/campaign/pledges`) {
         const result: CreateCampaignPledgeResult = {
           pledgeId: 'plg_profile_settled',
           invoice: 'lnbc500n1pprofileflow',
@@ -221,7 +221,7 @@ describe('Campaign end-to-end integration flow', () => {
         });
       }
 
-      if (url === `/v1/users/${USERNAME}/campaign/feed`) {
+      if (url === `/v1/users/${USER_ID}/campaign/feed`) {
         return Promise.resolve({
           data: {
             success: true,
@@ -362,12 +362,12 @@ describe('Campaign end-to-end integration flow', () => {
     });
 
     await act(async () => {
-      await createPledge.current.mutateAsync({ amountSats: 500, username: USERNAME });
+      await createPledge.current.mutateAsync({ amountSats: 500, userId: USER_ID });
     });
     await waitFor(() => expect(createPledge.current.isSuccess).toBe(true));
 
     expect(createPledge.current.data?.pledgeId).toBe('plg_profile_settled');
-    expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/users/${USERNAME}/campaign/pledges`, {
+    expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/users/${USER_ID}/campaign/pledges`, {
       amountSats: 500,
     });
 
@@ -382,7 +382,7 @@ describe('Campaign end-to-end integration flow', () => {
     expect(pledgeStatus.current.data?.status).toBe('settled');
     expect(pledgeStatus.current.data?.settledAt).toBe('2026-02-28T12:01:00.000Z');
 
-    const profileFeedResponse = await mockApiClient.get(`/v1/users/${USERNAME}/campaign/feed`);
+    const profileFeedResponse = await mockApiClient.get(`/v1/users/${USER_ID}/campaign/feed`);
     const profileFeed = profileFeedResponse.data.data as Array<Record<string, unknown>>;
 
     expect(Array.isArray(profileFeed)).toBe(true);

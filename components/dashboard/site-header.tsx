@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, PanelRight } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -11,11 +11,13 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 
 export function SiteHeader() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { toggle: toggleRightSidebar } = useRightSidebar();
   const {
     leftMode,
     onBackPress,
@@ -128,6 +130,17 @@ export function SiteHeader() {
         <Separator orientation='vertical' className='mx-2 data-[orientation=vertical]:h-4' />
         {renderCenterContent()}
         <div className='ml-auto flex items-center gap-2'>
+          {isAuthenticated && (
+            <Button
+              variant='ghost'
+              size='icon'
+              onClick={toggleRightSidebar}
+              className='hidden h-7 w-7 lg:flex'
+            >
+              <PanelRight className='h-4 w-4' />
+              <span className='sr-only'>Toggle calendar sidebar</span>
+            </Button>
+          )}
           {textButtons.length > 0 && (
             <div className='flex gap-2'>
               {textButtons.map((button) => {

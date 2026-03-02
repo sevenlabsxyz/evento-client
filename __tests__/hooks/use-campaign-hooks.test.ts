@@ -115,13 +115,13 @@ describe('campaign hooks', () => {
 
     mockApiClient.get.mockResolvedValue({ success: true, message: 'ok', data: campaign });
 
-    const { result } = renderHook(() => useProfileCampaign('alice'), {
+    const { result } = renderHook(() => useProfileCampaign('usr_1'), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
     });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/users/alice/campaign');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/users/usr_1/campaign');
     expect(result.current.data).toEqual(campaign);
   });
 
@@ -275,10 +275,10 @@ describe('campaign hooks', () => {
     });
 
     await act(async () => {
-      await result.current.mutateAsync({ amountSats: 3000, username: 'alice' });
+      await result.current.mutateAsync({ amountSats: 3000, userId: 'usr_alice' });
     });
 
-    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/users/alice/campaign/pledges', {
+    expect(mockApiClient.post).toHaveBeenCalledWith('/v1/users/usr_alice/campaign/pledges', {
       amountSats: 3000,
     });
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({

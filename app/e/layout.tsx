@@ -1,6 +1,7 @@
 'use client';
 
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
+import { SidebarRight } from '@/components/dashboard/sidebar-right';
 import { SiteHeader } from '@/components/dashboard/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { SESSION_KEYS } from '@/lib/constants/storage-keys';
@@ -58,6 +59,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
           {!isOverlaid && <SiteHeader />}
           <div className='flex-1 overflow-auto'>{children}</div>
         </SidebarInset>
+        {isAuthenticated && <SidebarRight />}
       </SidebarProvider>
     </StreamChatProvider>
   );

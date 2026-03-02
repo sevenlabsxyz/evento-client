@@ -40,7 +40,7 @@ const mockApiClient = require('@/lib/api/client').default as {
   delete: jest.Mock;
 };
 
-const USERNAME = 'alice';
+const USER_ID = 'usr_alice1';
 
 const fakeCampaign: CampaignWithProgress = {
   id: 'cmp_profile1',
@@ -99,7 +99,7 @@ describe('Profile Campaign Card Integration', () => {
     it('returns active profile campaign data for the card', async () => {
       mockApiClient.get.mockResolvedValueOnce({ data: fakeCampaign });
 
-      const { result } = renderHook(() => useProfileCampaign(USERNAME), {
+      const { result } = renderHook(() => useProfileCampaign(USER_ID), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -116,7 +116,7 @@ describe('Profile Campaign Card Integration', () => {
     it('returns paused campaign (card renders with disabled CTA)', async () => {
       mockApiClient.get.mockResolvedValueOnce({ data: fakePausedCampaign });
 
-      const { result } = renderHook(() => useProfileCampaign(USERNAME), {
+      const { result } = renderHook(() => useProfileCampaign(USER_ID), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -135,7 +135,7 @@ describe('Profile Campaign Card Integration', () => {
 
       mockApiClient.get.mockResolvedValueOnce({ data: openCampaign });
 
-      const { result } = renderHook(() => useProfileCampaign(USERNAME), {
+      const { result } = renderHook(() => useProfileCampaign(USER_ID), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -152,7 +152,7 @@ describe('Profile Campaign Card Integration', () => {
         success: false,
       });
 
-      const { result } = renderHook(() => useProfileCampaign(USERNAME), {
+      const { result } = renderHook(() => useProfileCampaign(USER_ID), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -160,7 +160,7 @@ describe('Profile Campaign Card Integration', () => {
       expect(result.current.data).toBeUndefined();
     });
 
-    it('does not query when username is empty', () => {
+    it('does not query when userId is empty', () => {
       const { result } = renderHook(() => useProfileCampaign(''), {
         wrapper: createWrapper(queryClient),
       });
@@ -180,7 +180,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        result.current.mutate({ amountSats: 500, username: USERNAME });
+        result.current.mutate({ amountSats: 500, userId: USER_ID });
       });
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -188,18 +188,18 @@ describe('Profile Campaign Card Integration', () => {
       expect(result.current.data).toEqual(fakePledgeResult);
       expect(result.current.data?.pledgeId).toBe('plg_profile789');
       expect(result.current.data?.invoice).toBe('lnbc500n1pprofile...');
-      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/users/${USERNAME}/campaign/pledges`, {
+      expect(mockApiClient.post).toHaveBeenCalledWith(`/v1/users/${USER_ID}/campaign/pledges`, {
         amountSats: 500,
       });
     });
 
-    it('requires username for profile-type pledges', async () => {
+    it('requires userId for profile-type pledges', async () => {
       const { result } = renderHook(() => useCreatePledgeIntent('profile'), {
         wrapper: createWrapper(queryClient),
       });
 
       await expect(result.current.mutateAsync({ amountSats: 100 })).rejects.toThrow(
-        'username is required for profile campaign pledges'
+        'userId is required for profile campaign pledges'
       );
       expect(mockApiClient.post).not.toHaveBeenCalled();
     });
@@ -216,7 +216,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        result.current.mutate({ amountSats: 1000, username: USERNAME });
+        result.current.mutate({ amountSats: 1000, userId: USER_ID });
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true));
@@ -288,7 +288,7 @@ describe('Profile Campaign Card Integration', () => {
       // Step 1: Fetch profile campaign (card renders)
       mockApiClient.get.mockResolvedValueOnce({ data: fakeCampaign });
 
-      const { result: campaignResult } = renderHook(() => useProfileCampaign(USERNAME), {
+      const { result: campaignResult } = renderHook(() => useProfileCampaign(USER_ID), {
         wrapper: createWrapper(queryClient),
       });
 
@@ -304,7 +304,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        pledgeResult.current.mutate({ amountSats: 500, username: USERNAME });
+        pledgeResult.current.mutate({ amountSats: 500, userId: USER_ID });
       });
 
       await waitFor(() => expect(pledgeResult.current.isSuccess).toBe(true));
@@ -334,7 +334,7 @@ describe('Profile Campaign Card Integration', () => {
       });
 
       await act(async () => {
-        pledgeResult.current.mutate({ amountSats: 100, username: USERNAME });
+        pledgeResult.current.mutate({ amountSats: 100, userId: USER_ID });
       });
 
       await waitFor(() => expect(pledgeResult.current.isSuccess).toBe(true));
@@ -363,7 +363,7 @@ describe('Profile Campaign Card Integration', () => {
       mockApiClient.post.mockResolvedValueOnce({ data: newPledgeResult });
 
       await act(async () => {
-        pledgeResult.current.mutate({ amountSats: 100, username: USERNAME });
+        pledgeResult.current.mutate({ amountSats: 100, userId: USER_ID });
       });
 
       await waitFor(() => expect(pledgeResult.current.data?.pledgeId).toBe('plg_profile_retry001'));

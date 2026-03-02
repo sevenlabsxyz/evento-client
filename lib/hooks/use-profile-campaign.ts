@@ -60,9 +60,9 @@ function toUpdatePayload(input: UpdateProfileCampaignInput): UpdateProfileCampai
   return payload;
 }
 
-export async function getProfileCampaign(username: string): Promise<CampaignWithProgress> {
+export async function getProfileCampaign(userId: string): Promise<CampaignWithProgress> {
   const response = await apiClient.get<ApiResponse<CampaignWithProgress>>(
-    `/v1/users/${username}/campaign`
+    `/v1/users/${userId}/campaign`
   );
 
   return response.data;
@@ -96,11 +96,11 @@ export async function updateProfileCampaign(
   return response.data;
 }
 
-export function useProfileCampaign(username: string) {
+export function useProfileCampaign(userId: string) {
   return useQuery({
-    queryKey: queryKeys.profileCampaign(username),
-    queryFn: () => getProfileCampaign(username),
-    enabled: !!username,
+    queryKey: queryKeys.profileCampaign(userId),
+    queryFn: () => getProfileCampaign(userId),
+    enabled: !!userId,
   });
 }
 

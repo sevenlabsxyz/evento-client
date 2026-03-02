@@ -89,22 +89,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild className='data-[slot=sidebar-menu-button]:!p-1.5'>
-              <Link href='/e/hub'>
-                <Image
-                  src='/assets/img/evento-sublogo.svg'
-                  alt='Evento'
-                  width={24}
-                  height={24}
-                  className='!size-6'
-                />
-                <span className='text-base font-semibold'>Evento</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Link href='/e/hub' className='relative flex h-8 items-center p-2'>
+          {/* Full logo — fades out when sidebar collapses */}
+          <Image
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={120}
+            height={17}
+            className='h-auto w-[120px] transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-0 dark:invert'
+          />
+          {/* Sub logo (asterisk) — fades in when sidebar collapses, pinned to left */}
+          <Image
+            src='/assets/img/evento-sublogo.svg'
+            alt='Evento'
+            width={28}
+            height={28}
+            className='absolute left-2 top-1/2 size-7 -translate-y-1/2 opacity-0 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-100 dark:invert'
+          />
+        </Link>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton tooltip='Create Event' onClick={handleCreateEvent}>
