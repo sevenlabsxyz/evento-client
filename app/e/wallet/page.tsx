@@ -466,8 +466,7 @@ export default function WalletPage() {
               )}
 
               {/* Backup Callout - subtle reminder below action buttons */}
-              {true && (
-                // {showBackupReminder && (
+              {showBackupReminder && (
                 <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
               )}
 
