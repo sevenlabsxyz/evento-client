@@ -13,7 +13,7 @@ import { getContributionMethods } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import {
-  Calendar,
+  ArrowUpRight,
   Clock,
   Globe,
   Lock,
@@ -251,10 +251,20 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
   const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
 
+  const startDate = useMemo(() => {
+    if (!event.computedStartDate) return null;
+    const d = new Date(event.computedStartDate);
+    return {
+      monthShort: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
+      day: d.getDate(),
+      fullDate: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+    };
+  }, [event.computedStartDate]);
+
   return (
     <>
       <div className='space-y-6 py-6'>
-        <div className='space-y-3'>
+        <div className='space-y-4'>
           <div className='flex items-center gap-3 text-black'>
             <span className='text-2xl font-bold'>{event.title}</span>
             {eventData?.visibility && (
@@ -274,21 +284,46 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               </span>
             )}
           </div>
-          <div className='flex items-center gap-3 text-gray-700'>
-            <Calendar className='h-5 w-5 shrink-0 text-gray-400' />
-            <span>{event.date}</span>
+
+          {/* Date + Time */}
+          <div className='flex items-center gap-4'>
+            <div className='flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-gray-100'>
+              <span className='text-[10px] font-semibold uppercase leading-none text-gray-500'>
+                {startDate?.monthShort}
+              </span>
+              <span className='text-lg font-bold leading-tight text-gray-900'>
+                {startDate?.day}
+              </span>
+            </div>
+            <div className='flex flex-col'>
+              <span className='font-semibold text-gray-900'>{startDate?.fullDate}</span>
+              <span className='text-sm text-gray-500'>
+                {event.startTime} - {event.endTime}
+                {event.timezone && ` ${event.timezone}`}
+              </span>
+            </div>
           </div>
-          <div className='flex items-center gap-3 text-gray-700'>
-            <Clock className='h-5 w-5 shrink-0 text-gray-400' />
-            <span>
-              {event.startTime} - {event.endTime}
-              {event.timezone && ` ${event.timezone}`}
-            </span>
-          </div>
+
+          {/* Location */}
           {!isLocationHidden && (
-            <div className='flex items-center gap-3 text-gray-700'>
-              <MapPin className='h-5 w-5 shrink-0 text-gray-400' />
-              <span>{event.location.name}</span>
+            <div className='flex items-center gap-4'>
+              <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100'>
+                <MapPin className='h-5 w-5 text-gray-600' />
+              </div>
+              <div className='flex flex-col'>
+                <div className='flex items-center gap-1'>
+                  <span className='font-semibold text-gray-900'>{event.location.name}</span>
+                  {event.location.name !== 'TBD' && (
+                    <ArrowUpRight className='h-3.5 w-3.5 text-gray-400' />
+                  )}
+                </div>
+                {(event.location.city || event.location.state) && (
+                  <span className='text-sm text-gray-500'>
+                    {event.location.city}
+                    {event.location.city && event.location.state && `, ${event.location.state}`}
+                  </span>
+                )}
+              </div>
             </div>
           )}
         </div>

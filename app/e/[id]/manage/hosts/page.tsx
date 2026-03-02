@@ -18,7 +18,7 @@ import apiClient from '@/lib/api/client';
 import {
   useCancelCohostInvite,
   useEventCohostInvites,
-  useEventHosts,
+  useEventCohosts,
 } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -49,7 +49,7 @@ export default function HostsManagementPage() {
     data: hosts = [],
     isLoading: hostsLoading,
     refetch: refetchHosts,
-  } = useEventHosts(eventId);
+  } = useEventCohosts(eventId);
   const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
   const cancelInviteMutation = useCancelCohostInvite(eventId);
 

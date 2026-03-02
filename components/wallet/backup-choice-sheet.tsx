@@ -52,6 +52,12 @@ export function BackupChoiceSheet({
   const [seedCopied, setSeedCopied] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
 
+  // Admin password mode state
+  const [isPasswordMode, setIsPasswordMode] = useState(false);
+  const [password, setPassword] = useState('');
+  const [isSeedPasswordMode, setIsSeedPasswordMode] = useState(false);
+  const [seedPassword, setSeedPassword] = useState('');
+
   const resetState = () => {
     setStep('choice');
     setPin('');
@@ -64,6 +70,11 @@ export function BackupChoiceSheet({
     setShowSeed(false);
     setSeedConfirmed(false);
     setSeedCopied(false);
+    // Reset password mode state
+    setIsPasswordMode(false);
+    setPassword('');
+    setIsSeedPasswordMode(false);
+    setSeedPassword('');
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -73,18 +84,36 @@ export function BackupChoiceSheet({
     onOpenChange(newOpen);
   };
 
+  // Long-press delete handlers for admin password mode
+  const handleLongPressDelete = () => {
+    setIsPasswordMode(true);
+    setPin('');
+  };
+
+  const handleSeedLongPressDelete = () => {
+    setIsSeedPasswordMode(true);
+    setSeedPin('');
+  };
+
   const handleGetBackup = async () => {
-    if (!pin || pin.length < 4) {
-      toast.error('Please enter your PIN');
+    const credential = isPasswordMode ? password : pin;
+
+    if (!credential || credential.length < 4) {
+      toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
       return;
     }
 
     try {
-      const backup = await getEncryptedBackup(pin);
+      const backup = await getEncryptedBackup(credential);
       setEncryptedSeed(backup);
       setStep('backup');
     } catch (error: any) {
-      toast.error(error.message || 'Invalid PIN');
+      toast.error(error.message || (isPasswordMode ? 'Invalid password' : 'Invalid PIN'));
+      if (isPasswordMode) {
+        setPassword('');
+      } else {
+        setPin('');
+      }
     }
   };
 
@@ -144,8 +173,10 @@ export function BackupChoiceSheet({
 
   // Seed phrase handlers
   const handleSeedPinVerify = async () => {
-    if (!seedPin || seedPin.length < 4) {
-      toast.error('Please enter your PIN');
+    const credential = isSeedPasswordMode ? seedPassword : seedPin;
+
+    if (!credential || credential.length < 4) {
+      toast.error(isSeedPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
       return;
     }
 
@@ -157,11 +188,16 @@ export function BackupChoiceSheet({
         return;
       }
 
-      const decrypted = await WalletStorageService.decryptSeed(encryptedSeedData, seedPin);
+      const decrypted = await WalletStorageService.decryptSeed(encryptedSeedData, credential);
       setMnemonic(decrypted);
       setStep('seed-view');
     } catch (error: any) {
-      toast.error('Invalid PIN');
+      toast.error(isSeedPasswordMode ? 'Invalid password' : 'Invalid PIN');
+      if (isSeedPasswordMode) {
+        setSeedPassword('');
+      } else {
+        setSeedPin('');
+      }
       setSeedPin('');
     } finally {
       setIsVerifying(false);
