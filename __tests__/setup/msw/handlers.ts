@@ -273,6 +273,21 @@ export const handlers: HttpHandler[] = [
     });
   }),
 
+  http.post('*/v1/users/:username/campaign/pledges', async ({ request }) => {
+    const body = (await request.json()) as CampaignPledgeBody;
+
+    return HttpResponse.json({
+      success: true,
+      message: 'Pledge intent created successfully.',
+      data: {
+        pledgeId: 'plg_profile_1',
+        invoice: 'lnbc500n1pprofilemock',
+        amountSats: body.amountSats ?? 500,
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      },
+    });
+  }),
+
   http.get('*/v1/campaign-pledges/:pledgeId/status', ({ params }) => {
     const pledgeId = String(params.pledgeId || 'plg_1');
 

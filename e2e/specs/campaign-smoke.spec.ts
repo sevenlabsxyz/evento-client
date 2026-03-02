@@ -27,6 +27,7 @@ type UserDetails = {
   id: string;
   email?: string;
   username?: string | null;
+  ln_address?: string | null;
 };
 
 type EventRecord = {
@@ -78,6 +79,13 @@ type CampaignFeedItem = {
   amount_sats: number;
   settled_at: string | null;
 };
+
+class SmokeSkipError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'SmokeSkipError';
+  }
+}
 
 function nowStamp() {
   const d = new Date();
@@ -138,6 +146,29 @@ async function apiPatch<T>(request: APIRequestContext, path: string, data: unkno
   return body.data as T;
 }
 
+async function assertLightningVerifyCapability(lightningAddress: string): Promise<void> {
+  const [user, domain] = lightningAddress.split('@');
+  if (!user || !domain) {
+    throw new SmokeSkipError(
+      `Skipping smoke: invalid host lightning address format for verify precheck (${lightningAddress}).`
+    );
+  }
+
+  const response = await fetch(`https://${domain}/.well-known/lnurlp/${user}`);
+  if (!response.ok) {
+    throw new SmokeSkipError(
+      `Skipping smoke: host lightning verify capability unavailable (LNURL ${response.status} for ${lightningAddress}).`
+    );
+  }
+
+  const lnurlData = (await response.json()) as { verify?: string };
+  if (!lnurlData.verify || typeof lnurlData.verify !== 'string') {
+    throw new SmokeSkipError(
+      `Skipping smoke: host lightning address lacks verify capability (${lightningAddress}).`
+    );
+  }
+}
+
 test('@campaign campaign smoke flow host enablement attendee pledge settlement feed', async () => {
   const runId = `campaign_smoke_${Date.now()}`;
   const steps: SmokeStep[] = [];
@@ -150,6 +181,10 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
       await fn();
       steps.push({ name, status: 'passed', duration_ms: Date.now() - start });
     } catch (error) {
+      if (error instanceof SmokeSkipError) {
+        throw error;
+      }
+
       const message = error instanceof Error ? error.message : String(error);
       steps.push({ name, status: 'failed', duration_ms: Date.now() - start, message });
       throw error;
@@ -201,6 +236,18 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
       expect(attendee.length).toBeGreaterThan(0);
       expect(host[0].id).toBeTruthy();
       expect(attendee[0].id).toBeTruthy();
+
+      const hostUsername = host[0].username?.toLowerCase().trim();
+      if (!hostUsername) {
+        throw new Error('Smoke host user is missing username required for lightning precondition.');
+      }
+
+      const lightningAddress = `${hostUsername}@evento.cash`;
+      await apiPatch<{ lightning_address: string }>(userARequest, '/v1/user/lightning-address', {
+        lightning_address: lightningAddress,
+      });
+
+      await assertLightningVerifyCapability(lightningAddress);
     });
 
     await withStep('2) host creates event and enables event campaign', async () => {
@@ -332,12 +379,23 @@ test('@campaign campaign smoke flow host enablement attendee pledge settlement f
     await completeRun(runId, 'passed', steps);
     await updateSmokeState({ last_success_at: new Date().toISOString(), last_error: null });
   } catch (error) {
+    if (error instanceof SmokeSkipError) {
+      await updateSmokeState({ last_error: error.message });
+      test.skip(true, error.message);
+    }
+
     const summary = error instanceof Error ? error.message : String(error);
     await completeRun(runId, 'failed', steps, summary);
     await updateSmokeState({ last_error: summary });
     throw error;
   } finally {
-    await userARequest.dispose();
-    await userBRequest.dispose();
+    for (const context of [userARequest, userBRequest]) {
+      try {
+        await context.dispose();
+      } catch (disposeError) {
+        const message = disposeError instanceof Error ? disposeError.message : String(disposeError);
+        console.warn('[campaign-smoke] request context dispose failed:', message);
+      }
+    }
   }
 });

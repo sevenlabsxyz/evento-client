@@ -370,16 +370,21 @@ describe('Event Campaign Card Integration', () => {
   // ---- Data test-id contract ----
 
   describe('test-id contract', () => {
-    it('EventCampaignCard exposes required test ids', () => {
-      // This test documents the data-testid contract that the component must expose.
-      // Verified by the component source code, exercised here as a specification test.
-      const requiredTestIds = [
-        'event-campaign-card',
-        'event-campaign-pledge-cta',
-        'event-campaign-status',
-      ];
+    it('EventCampaignCard (compact) exposes required test ids', () => {
+      // The compact card only exposes the card wrapper. The CTA and status
+      // badge moved into the CampaignDetailSheet.
+      const requiredTestIds = ['event-campaign-card'];
 
-      // Ensure each id is a non-empty string — specification guard
+      requiredTestIds.forEach((id) => {
+        expect(typeof id).toBe('string');
+        expect(id.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('CampaignDetailSheet exposes required test ids', () => {
+      // The detail sheet exposes its wrapper and the contribute button.
+      const requiredTestIds = ['campaign-detail-sheet', 'campaign-detail-contribute-btn'];
+
       requiredTestIds.forEach((id) => {
         expect(typeof id).toBe('string');
         expect(id.length).toBeGreaterThan(0);

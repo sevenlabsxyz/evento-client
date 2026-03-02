@@ -13,8 +13,8 @@ export const campaignFormSchema = z.object({
     .positive('Goal must be a positive number')
     .optional()
     .nullable(),
-  visibility: z.enum(['public', 'private']).default('public'),
-  status: z.enum(['active', 'paused']).default('active'),
+  visibility: z.enum(['public', 'private']),
+  status: z.enum(['active', 'paused']),
 });
 
 export type CampaignFormData = z.infer<typeof campaignFormSchema>;

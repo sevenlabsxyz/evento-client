@@ -3,10 +3,9 @@
 import { Progress } from '@/components/ui/progress';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
 import { cn } from '@/lib/utils';
-import { Zap } from 'lucide-react';
+import { ChevronRight, Zap } from 'lucide-react';
 import { useState } from 'react';
-import { CampaignContributors } from './campaign-contributors';
-import { CampaignPledgeSheet } from './campaign-pledge-sheet';
+import { CampaignDetailSheet } from './campaign-detail-sheet';
 
 interface EventCampaignCardProps {
   eventId: string;
@@ -25,7 +24,7 @@ function formatSats(sats: number): string {
 
 export default function EventCampaignCard({ eventId, className }: EventCampaignCardProps) {
   const { data: campaign, isLoading } = useEventCampaign(eventId);
-  const [pledgeSheetOpen, setPledgeSheetOpen] = useState(false);
+  const [detailSheetOpen, setDetailSheetOpen] = useState(false);
 
   // Only render when campaign exists and is active
   if (isLoading || !campaign || campaign.status !== 'active') {
@@ -36,74 +35,42 @@ export default function EventCampaignCard({ eventId, className }: EventCampaignC
   const progressPercent = hasGoal ? campaign.progressPercent : 0;
 
   return (
-    <>
-      <div data-testid='event-campaign-card' className={cn('', className)}>
-        <div className='mb-3 flex items-center gap-2'>
-          <Zap className='h-4 w-4 text-amber-500' />
-          <span className='text-lg font-semibold text-gray-900'>
-            {campaign.title || 'Crowdfunding'}
-          </span>
-          <span
-            data-testid='event-campaign-status'
-            className='ml-auto rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700'
-          >
-            Active
-          </span>
-        </div>
-
-        {campaign.description && (
-          <p className='mb-3 text-sm leading-relaxed text-gray-600'>{campaign.description}</p>
-        )}
-
-        {/* Raised / Goal stats */}
-        <div className='mb-2 flex items-baseline gap-1'>
-          <span className='text-2xl font-bold tabular-nums text-gray-900'>
-            {formatSats(campaign.raised_sats)}
-          </span>
-          <span className='text-sm text-gray-500'>sats raised</span>
-          {hasGoal && (
-            <>
-              <span className='text-sm text-gray-400'>of</span>
-              <span className='text-sm font-medium text-gray-700'>
-                {formatSats(campaign.goal_sats!)} goal
-              </span>
-            </>
-          )}
-        </div>
-
-        {/* Progress bar — only when goal_sats is set */}
-        {hasGoal && (
-          <div className='mb-3'>
-            <Progress
-              value={Math.min(progressPercent, 100)}
-              className='h-2 bg-gray-100 [&>div]:bg-amber-500'
-            />
+    <div className={cn('', className)}>
+      <button
+        data-testid='event-campaign-card'
+        onClick={() => setDetailSheetOpen(true)}
+        className='flex w-full items-center justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+      >
+        <div className='flex items-center gap-3'>
+          {/* Zap icon in amber circle */}
+          <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100'>
+            <Zap className='h-5 w-5 text-amber-600' />
           </div>
-        )}
+          {/* Text block */}
+          <div className='min-w-0 flex-1 text-left'>
+            <p className='truncate font-medium text-gray-900'>{campaign.title || 'Crowdfunding'}</p>
+            <div className='mt-1 flex items-center gap-2'>
+              {/* Thin progress bar */}
+              {hasGoal && (
+                <Progress
+                  value={Math.min(progressPercent, 100)}
+                  className='h-1 flex-1 bg-gray-200 [&>div]:bg-amber-500'
+                />
+              )}
+              <span className='shrink-0 text-xs text-gray-500'>
+                {formatSats(campaign.raised_sats)} raised
+              </span>
+            </div>
+          </div>
+        </div>
+        <ChevronRight className='h-5 w-5 shrink-0 text-gray-400' />
+      </button>
 
-        {/* Pledge count */}
-        <p className='mb-4 text-sm text-gray-500'>
-          {campaign.pledge_count} {campaign.pledge_count === 1 ? 'contribution' : 'contributions'}
-        </p>
-
-        <CampaignContributors eventId={eventId} />
-
-        {/* CTA */}
-        <button
-          data-testid='event-campaign-pledge-cta'
-          onClick={() => setPledgeSheetOpen(true)}
-          className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
-        >
-          <Zap className='h-4 w-4' />
-          Contribute sats
-        </button>
-      </div>
-
-      <CampaignPledgeSheet
+      <CampaignDetailSheet
         eventId={eventId}
-        open={pledgeSheetOpen}
-        onOpenChange={setPledgeSheetOpen}
+        open={detailSheetOpen}
+        onOpenChange={setDetailSheetOpen}
       />
-    </>
+    </div>
   );
 }

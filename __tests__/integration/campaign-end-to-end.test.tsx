@@ -109,20 +109,19 @@ describe('Campaign end-to-end integration flow', () => {
 
     jest.clearAllMocks();
 
-    mockApiClient.post.mockImplementation((url: string, payload?: Record<string, unknown>) => {
+    mockApiClient.post.mockImplementation((url, payload) => {
+      const body = (payload ?? {}) as Record<string, unknown>;
+
       if (url === `/v1/events/${EVENT_ID}/campaign`) {
         return Promise.resolve({
           data: {
             ...baseEventCampaign,
-            title: (payload?.title as string) || baseEventCampaign.title,
-            description: (payload?.description as string) || baseEventCampaign.description,
+            title: (body.title as string) || baseEventCampaign.title,
+            description: (body.description as string) || baseEventCampaign.description,
             goal_sats:
-              typeof payload?.goalSats === 'number'
-                ? payload.goalSats
-                : baseEventCampaign.goal_sats,
-            visibility:
-              (payload?.visibility as 'public' | 'private') || baseEventCampaign.visibility,
-            status: (payload?.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
+              typeof body.goalSats === 'number' ? body.goalSats : baseEventCampaign.goal_sats,
+            visibility: (body.visibility as 'public' | 'private') || baseEventCampaign.visibility,
+            status: (body.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
           },
         });
       }
@@ -131,7 +130,7 @@ describe('Campaign end-to-end integration flow', () => {
         const result: CreateCampaignPledgeResult = {
           pledgeId: 'plg_event_settled',
           invoice: 'lnbc2100n1peventflow',
-          amountSats: Number(payload?.amountSats || 2100),
+          amountSats: Number(body.amountSats || 2100),
           expiresAt: '2026-02-28T12:10:00.000Z',
         };
         return Promise.resolve({ data: result });
@@ -141,16 +140,12 @@ describe('Campaign end-to-end integration flow', () => {
         return Promise.resolve({
           data: {
             ...baseProfileCampaign,
-            title: (payload?.title as string) || baseProfileCampaign.title,
-            description: (payload?.description as string) || baseProfileCampaign.description,
+            title: (body.title as string) || baseProfileCampaign.title,
+            description: (body.description as string) || baseProfileCampaign.description,
             goal_sats:
-              typeof payload?.goalSats === 'number'
-                ? payload.goalSats
-                : baseProfileCampaign.goal_sats,
-            visibility:
-              (payload?.visibility as 'public' | 'private') || baseProfileCampaign.visibility,
-            status:
-              (payload?.status as 'active' | 'paused' | 'closed') || baseProfileCampaign.status,
+              typeof body.goalSats === 'number' ? body.goalSats : baseProfileCampaign.goal_sats,
+            visibility: (body.visibility as 'public' | 'private') || baseProfileCampaign.visibility,
+            status: (body.status as 'active' | 'paused' | 'closed') || baseProfileCampaign.status,
           },
         });
       }
@@ -159,7 +154,7 @@ describe('Campaign end-to-end integration flow', () => {
         const result: CreateCampaignPledgeResult = {
           pledgeId: 'plg_profile_settled',
           invoice: 'lnbc500n1pprofileflow',
-          amountSats: Number(payload?.amountSats || 500),
+          amountSats: Number(body.amountSats || 500),
           expiresAt: '2026-02-28T12:10:00.000Z',
         };
         return Promise.resolve({ data: result });
@@ -168,20 +163,19 @@ describe('Campaign end-to-end integration flow', () => {
       return Promise.reject(new Error(`Unhandled POST url: ${url}`));
     });
 
-    mockApiClient.patch.mockImplementation((url: string, payload?: Record<string, unknown>) => {
+    mockApiClient.patch.mockImplementation((url, payload) => {
+      const body = (payload ?? {}) as Record<string, unknown>;
+
       if (url === `/v1/events/${EVENT_ID}/campaign`) {
         return Promise.resolve({
           data: {
             ...baseEventCampaign,
-            title: (payload?.title as string) || baseEventCampaign.title,
-            description: (payload?.description as string) || baseEventCampaign.description,
+            title: (body.title as string) || baseEventCampaign.title,
+            description: (body.description as string) || baseEventCampaign.description,
             goal_sats:
-              typeof payload?.goal_sats === 'number'
-                ? payload.goal_sats
-                : baseEventCampaign.goal_sats,
-            visibility:
-              (payload?.visibility as 'public' | 'private') || baseEventCampaign.visibility,
-            status: (payload?.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
+              typeof body.goal_sats === 'number' ? body.goal_sats : baseEventCampaign.goal_sats,
+            visibility: (body.visibility as 'public' | 'private') || baseEventCampaign.visibility,
+            status: (body.status as 'active' | 'paused' | 'closed') || baseEventCampaign.status,
           },
         });
       }
@@ -189,7 +183,7 @@ describe('Campaign end-to-end integration flow', () => {
       return Promise.reject(new Error(`Unhandled PATCH url: ${url}`));
     });
 
-    mockApiClient.get.mockImplementation((url: string) => {
+    mockApiClient.get.mockImplementation((url) => {
       if (url === '/v1/campaign-pledges/plg_event_settled/status') {
         return Promise.resolve({
           data: {

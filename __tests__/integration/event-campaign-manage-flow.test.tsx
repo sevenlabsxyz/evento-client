@@ -88,6 +88,7 @@ describe('Event Campaign Manage Flow', () => {
         description: 'Test description',
         goal_sats: 50000,
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(true);
     });
@@ -96,6 +97,7 @@ describe('Event Campaign Manage Flow', () => {
       const result = campaignFormSchema.safeParse({
         title: '',
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(false);
     });
@@ -104,6 +106,7 @@ describe('Event Campaign Manage Flow', () => {
       const result = campaignFormSchema.safeParse({
         title: 'x'.repeat(201),
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(false);
     });
@@ -112,6 +115,7 @@ describe('Event Campaign Manage Flow', () => {
       const result = campaignFormSchema.safeParse({
         title: 'Title only',
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(true);
       if (result.success) {
@@ -124,6 +128,7 @@ describe('Event Campaign Manage Flow', () => {
         title: 'Open campaign',
         goal_sats: null,
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(true);
     });
@@ -133,6 +138,7 @@ describe('Event Campaign Manage Flow', () => {
         title: 'Bad goal',
         goal_sats: -100,
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(false);
     });
@@ -142,6 +148,7 @@ describe('Event Campaign Manage Flow', () => {
         title: 'Fractional goal',
         goal_sats: 100.5,
         visibility: 'public',
+        status: 'active',
       });
       expect(result.success).toBe(false);
     });
@@ -150,6 +157,7 @@ describe('Event Campaign Manage Flow', () => {
       const result = campaignFormSchema.safeParse({
         title: 'Private campaign',
         visibility: 'private',
+        status: 'active',
       });
       expect(result.success).toBe(true);
     });
@@ -158,6 +166,7 @@ describe('Event Campaign Manage Flow', () => {
       const result = campaignFormSchema.safeParse({
         title: 'Bad vis',
         visibility: 'hidden',
+        status: 'active',
       });
       expect(result.success).toBe(false);
     });
@@ -187,15 +196,12 @@ describe('Event Campaign Manage Flow', () => {
       expect(result.success).toBe(false);
     });
 
-    it('defaults status to active when omitted', () => {
+    it('requires status field', () => {
       const result = campaignFormSchema.safeParse({
         title: 'No status',
         visibility: 'public',
       });
-      expect(result.success).toBe(true);
-      if (result.success) {
-        expect(result.data.status).toBe('active');
-      }
+      expect(result.success).toBe(false);
     });
   });
 
