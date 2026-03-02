@@ -261,6 +261,9 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     };
   }, [event.computedStartDate]);
 
+  const detailModuleBaseClassName =
+    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50';
+
   return (
     <>
       <div className='space-y-6 py-6'>
@@ -287,11 +290,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
           {/* Date + Time */}
           <div className='flex items-center gap-4'>
-            <div className='flex h-12 w-12 shrink-0 flex-col items-center justify-center rounded-xl bg-gray-100'>
-              <span className='text-[10px] font-semibold uppercase leading-none text-gray-500'>
+            <div className={`${detailModuleBaseClassName} flex-col`}>
+              <span className='text-[9px] font-semibold uppercase leading-none text-gray-500'>
                 {startDate?.monthShort}
               </span>
-              <span className='text-lg font-bold leading-tight text-gray-900'>
+              <span className='text-[16px] font-bold leading-tight text-gray-900'>
                 {startDate?.day}
               </span>
             </div>
@@ -307,8 +310,8 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
           {/* Location */}
           {!isLocationHidden && (
             <div className='flex items-center gap-4'>
-              <div className='flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gray-100'>
-                <MapPin className='h-5 w-5 text-gray-600' />
+              <div className={detailModuleBaseClassName}>
+                <MapPin className='h-[18px] w-[18px] text-gray-600' />
               </div>
               <div className='flex flex-col'>
                 <div className='flex items-center gap-1'>
