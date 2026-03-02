@@ -4,6 +4,7 @@ import {
   BookOpen,
   Calendar1,
   MessageCircle,
+  PanelLeft,
   Plus,
   Search,
   Settings,
@@ -19,7 +20,6 @@ import * as React from 'react';
 import { NavMain } from '@/components/dashboard/nav-main';
 import { NavSecondary } from '@/components/dashboard/nav-secondary';
 import { NavUser } from '@/components/dashboard/nav-user';
-import { Button } from '@/components/ui/button';
 import {
   Sidebar,
   SidebarContent,
@@ -28,6 +28,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
 
@@ -78,7 +79,7 @@ const navSecondary = [
 ];
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
-  const { setOpenMobile } = useSidebar();
+  const { setOpenMobile, toggleSidebar } = useSidebar();
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -86,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar collapsible='offcanvas' {...props}>
+    <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -104,16 +105,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <Button onClick={handleCreateEvent} className='mt-2 w-full'>
-          <Plus className='mr-2 h-4 w-4' />
-          Create Event
-        </Button>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip='Create Event' onClick={handleCreateEvent}>
+              <Plus />
+              <span>Create Event</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
         <NavSecondary items={navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip='Toggle Sidebar' onClick={toggleSidebar}>
+              <PanelLeft />
+              <span>Toggle Sidebar</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <SidebarSeparator />
         <NavUser />
       </SidebarFooter>
     </Sidebar>
