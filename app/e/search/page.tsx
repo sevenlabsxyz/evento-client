@@ -48,6 +48,7 @@ export default function SearchPage() {
   useEffect(() => {
     const query = debouncedSearch.trim();
     if (query.length >= MIN_SEARCH_LENGTH) {
+      setHasSubmitted(true);
       search(query);
     } else {
       reset();
@@ -115,12 +116,14 @@ export default function SearchPage() {
                 placeholder='Search for users...'
                 className='min-h-[56px] text-base'
                 autoFocus
+                value={searchText}
+                onChange={handleTopInputChange}
               />
               <PromptInputFooter>
                 <PromptInputTools>
                   <div className='flex items-center gap-2 text-xs text-gray-400'>
                     <Search className='h-3.5 w-3.5' />
-                    <span>Press Enter to search</span>
+                    <span>Search as you type</span>
                   </div>
                 </PromptInputTools>
                 <PromptInputSubmit />
