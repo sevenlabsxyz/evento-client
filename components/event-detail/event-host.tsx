@@ -79,7 +79,9 @@ export default function EventHost({ event }: EventHostProps) {
                     verification_status:
                       host.verification_status as UserDetails['verification_status'],
                   }}
-                  size='md'
+                  size='base'
+                  height={48}
+                  width={48}
                 />
 
                 <div className='text-left'>

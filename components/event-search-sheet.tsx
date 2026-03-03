@@ -1,9 +1,9 @@
 'use client';
 
 import { MasterEventCard } from '@/components/master-event-card';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
@@ -16,7 +16,7 @@ import {
 import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
 import debounce from 'lodash.debounce';
-import { Search } from 'lucide-react';
+import { Calendar, List, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 function hasValidEventDate(eventDate: unknown): eventDate is string {
@@ -229,17 +229,26 @@ export default function EventSearchSheet({
 
           {/* Filter Tabs - only show for own profile */}
           {isOwnProfile && (
-            <SegmentedTabs
-              items={[
-                { value: 'upcoming', label: 'All' },
-                { value: 'attending', label: 'Attending' },
-                { value: 'hosting', label: 'Hosting' },
-                { value: 'drafts', label: 'Drafts' },
+            <AnimatedTabs
+              tabs={[
+                { title: 'All', icon: List, onClick: () => handleFilterChange('upcoming') },
+                {
+                  title: 'Attending',
+                  icon: Calendar,
+                  onClick: () => handleFilterChange('attending'),
+                },
+                {
+                  title: 'Hosting',
+                  icon: MapPinHouse,
+                  onClick: () => handleFilterChange('hosting'),
+                },
+                {
+                  title: 'Drafts',
+                  icon: UserRoundPen,
+                  onClick: () => handleFilterChange('drafts'),
+                },
               ]}
-              value={filter}
-              onValueChange={(v) => handleFilterChange(v as EventSearchFilter)}
-              wrapperClassName='py-0 px-0'
-              align='left'
+              selected={['upcoming', 'attending', 'hosting', 'drafts'].indexOf(filter)}
             />
           )}
 

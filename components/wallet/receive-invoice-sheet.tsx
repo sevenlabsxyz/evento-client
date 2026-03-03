@@ -1,9 +1,9 @@
 'use client';
 
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import { SegmentedTabItem, SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
@@ -11,7 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
 import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
 
 interface ReceiveLightningSheetProps {
@@ -35,12 +35,16 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   const { address, isLoading: isAddressLoading } = useLightningAddress();
   const { satsToUSD } = useAmountConverter();
 
+  const generateLightningAddressQR = useCallback(async (lightningAddress: string) => {
+    setQrCodeData(`lightning:${lightningAddress}`);
+  }, []);
+
   // Generate QR code for lightning address when sheet opens
   useEffect(() => {
     if (open && address?.lightningAddress && !invoiceAmount) {
       generateLightningAddressQR(address.lightningAddress);
     }
-  }, [open, address, invoiceAmount]);
+  }, [open, address, invoiceAmount, generateLightningAddressQR]);
 
   // Set up event listener to detect when active invoice is paid
   useEffect(() => {
@@ -70,10 +74,6 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       unsubscribe();
     };
   }, [activeInvoice]);
-
-  const generateLightningAddressQR = async (lightningAddress: string) => {
-    setQrCodeData(`lightning:${lightningAddress}`);
-  };
 
   const generateBitcoinAddress = async () => {
     if (bitcoinAddress || isGeneratingBitcoin) return; // Don't generate if already exists or loading
@@ -168,31 +168,9 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       const isFirstThree = index < 3;
       const isLastThree = index >= groups.length - 3;
       const isBold = isFirstThree || isLastThree;
-      return { group, isBold };
+      return { key: `${index}-${group}`, group, isBold };
     });
   };
-
-  // Define tab items
-  const tabItems: SegmentedTabItem[] = [
-    {
-      value: 'lightning',
-      label: (
-        <div className='flex items-center justify-center gap-2'>
-          <Zap className='h-4 w-4' />
-          Lightning
-        </div>
-      ),
-    },
-    {
-      value: 'bitcoin',
-      label: (
-        <div className='flex items-center justify-center gap-2'>
-          <Bitcoin className='h-4 w-4' />
-          Onchain
-        </div>
-      ),
-    },
-  ];
 
   return (
     <>
@@ -201,11 +179,13 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
         onOpenChange={onOpenChange}
         title='Receive'
         headerSecondary={
-          <SegmentedTabs
-            wrapperClassName='mb-2 px-4 py-1 flex flex-row items-start !justify-start gap-2'
-            items={tabItems}
-            value={activeTab}
-            onValueChange={(value) => handleTabChange(value as 'lightning' | 'bitcoin')}
+          <AnimatedTabs
+            tabs={[
+              { title: 'Lightning', icon: Zap, onClick: () => handleTabChange('lightning') },
+              { title: 'Onchain', icon: Bitcoin, onClick: () => handleTabChange('bitcoin') },
+            ]}
+            selected={['lightning', 'bitcoin'].indexOf(activeTab)}
+            className='mb-2'
           />
         }
       >
@@ -386,7 +366,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                           <p className='flex-1 break-all font-mono text-base leading-relaxed'>
                             {formatBitcoinAddress(bitcoinAddress).map((item, index) => (
                               <span
-                                key={index}
+                                key={item.key}
                                 className={item.isBold ? 'font-extrabold' : 'font-normal'}
                               >
                                 {item.group}

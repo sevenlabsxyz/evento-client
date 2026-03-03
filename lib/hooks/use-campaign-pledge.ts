@@ -12,7 +12,7 @@ export type CampaignType = 'event' | 'profile';
 
 export interface CreatePledgeIntentInput extends CreateCampaignPledgeInput {
   eventId?: string;
-  username?: string;
+  userId?: string;
 }
 
 export interface CreateCampaignPledgeResult {
@@ -65,11 +65,11 @@ export async function createEventCampaignPledge(
 }
 
 export async function createProfileCampaignPledge(
-  username: string,
+  userId: string,
   input: CreateCampaignPledgeInput
 ): Promise<CreateCampaignPledgeResult> {
   const response = await apiClient.post<ApiResponse<CreateCampaignPledgeResult>>(
-    `/v1/users/${username}/campaign/pledges`,
+    `/v1/users/${userId}/campaign/pledges`,
     input
   );
 
@@ -99,11 +99,11 @@ export function useCreatePledgeIntent(campaignType: CampaignType) {
         return createEventCampaignPledge(input.eventId, { amountSats: input.amountSats });
       }
 
-      if (!input.username) {
-        throw new Error('username is required for profile campaign pledges');
+      if (!input.userId) {
+        throw new Error('userId is required for profile campaign pledges');
       }
 
-      return createProfileCampaignPledge(input.username, { amountSats: input.amountSats });
+      return createProfileCampaignPledge(input.userId, { amountSats: input.amountSats });
     },
     onSuccess: (result, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.pledgeStatus(result.pledgeId) });
@@ -114,9 +114,9 @@ export function useCreatePledgeIntent(campaignType: CampaignType) {
       }
 
       if (campaignType === 'profile') {
-        if (variables.username) {
+        if (variables.userId) {
           queryClient.invalidateQueries({
-            queryKey: queryKeys.profileCampaign(variables.username),
+            queryKey: queryKeys.profileCampaign(variables.userId),
           });
         }
         queryClient.invalidateQueries({ queryKey: queryKeys.myCampaign() });

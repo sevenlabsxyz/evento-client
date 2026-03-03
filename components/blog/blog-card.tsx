@@ -23,7 +23,7 @@ export const BlogCard = ({ date, slug, image, title, description }: BlogCardProp
   return (
     <Link
       href={`/e/blog/${slug}`}
-      className='group block w-full cursor-pointer overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
+      className='group block w-full cursor-pointer overflow-hidden rounded-full border bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
     >
       <div className='relative aspect-video w-full overflow-hidden'>
         {image ? (

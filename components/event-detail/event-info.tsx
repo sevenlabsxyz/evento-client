@@ -1,5 +1,6 @@
 'use client';
 
+import { StatusBadge } from '@/components/ui/status-badge';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
@@ -262,31 +263,22 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   }, [event.computedStartDate]);
 
   const detailModuleBaseClassName =
-    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-xl border border-gray-200 bg-gray-50';
+    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50';
 
   return (
     <>
       <div className='space-y-6 py-6'>
         <div className='space-y-4'>
-          <div className='flex items-center gap-3 text-black'>
-            <span className='text-2xl font-bold'>{event.title}</span>
-            {eventData?.visibility && (
-              <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                  eventData.visibility === 'public'
-                    ? 'border-green-200 bg-green-50 text-green-700'
-                    : 'border-gray-300 bg-gray-100 text-gray-700'
-                }`}
-              >
-                {eventData.visibility === 'public' ? (
-                  <Globe className='h-3 w-3' />
-                ) : (
-                  <Lock className='h-3 w-3' />
-                )}
-                {eventData.visibility === 'public' ? 'Public' : 'Private'}
-              </span>
-            )}
-          </div>
+          {eventData?.visibility && (
+            <div className='flex items-center gap-2'>
+              <StatusBadge
+                status={eventData.visibility === 'public' ? 'success' : 'default'}
+                leftIcon={eventData.visibility === 'public' ? Globe : Lock}
+                leftLabel={eventData.visibility === 'public' ? 'Public' : 'Private'}
+              />
+            </div>
+          )}
+          <span className='text-2xl font-bold text-black'>{event.title}</span>
 
           {/* Date + Time */}
           <div className='flex items-center gap-4'>
@@ -294,7 +286,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               <span className='text-[9px] font-semibold uppercase leading-none text-gray-500'>
                 {startDate?.monthShort}
               </span>
-              <span className='text-[16px] font-bold leading-tight text-gray-900'>
+              <span className='text-[15px] font-bold leading-none text-gray-900'>
                 {startDate?.day}
               </span>
             </div>
@@ -340,7 +332,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <button
                   type='button'
                   onClick={handlePendingClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
+                  className='flex h-16 flex-col items-center justify-center rounded-full bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
                 >
                   <Clock className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>Pending</span>
@@ -349,7 +341,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <button
                   type='button'
                   onClick={handleDeniedClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-100 text-red-700 transition-colors hover:bg-red-200'
+                  className='flex h-16 flex-col items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200'
                 >
                   <XCircle className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>Denied</span>
@@ -359,7 +351,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   type='button'
                   onClick={handleRSVP}
                   disabled={shouldDisableRsvpButton}
-                  className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
+                  className={`flex h-16 flex-col items-center justify-center rounded-full transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
                 >
                   <Star className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>{rsvpButton.label}</span>
@@ -369,7 +361,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               <button
                 type='button'
                 onClick={handleContact}
-                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
               >
                 <Mail className='mb-1 h-5 w-5' />
                 <span className='text-xs font-medium'>Contact</span>
@@ -378,7 +370,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               <button
                 type='button'
                 onClick={handleShare}
-                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
               >
                 <Share className='mb-1 h-5 w-5' />
                 <span className='text-xs font-medium'>Share</span>
@@ -387,7 +379,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               <button
                 type='button'
                 onClick={() => setShowMoreSheet(true)}
-                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
               >
                 <MoreHorizontal className='mb-1 h-5 w-5' />
                 <span className='text-xs font-medium'>More</span>

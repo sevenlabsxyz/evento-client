@@ -2,7 +2,7 @@
 
 import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { BadgeCheck } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 type UserAvatarSize = 'xs' | 'sm' | 'base' | 'md' | 'lg';
@@ -37,6 +37,7 @@ export function UserAvatar({
       avatar: 'h-5 w-5',
       border: 'border-1',
       badge: 'h-2 w-2',
+      badgeIcon: 'h-1 w-1',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-xs',
     },
@@ -44,6 +45,7 @@ export function UserAvatar({
       avatar: 'h-8 w-8',
       border: 'border-2',
       badge: 'h-4 w-4',
+      badgeIcon: 'h-2.5 w-2.5',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-sm',
     },
@@ -51,6 +53,7 @@ export function UserAvatar({
       avatar: 'h-10 w-10',
       border: 'border-2',
       badge: 'h-5 w-5',
+      badgeIcon: 'h-3 w-3',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-base',
     },
@@ -58,6 +61,7 @@ export function UserAvatar({
       avatar: 'h-16 w-16',
       border: 'border-2',
       badge: 'h-6 w-6',
+      badgeIcon: 'h-3.5 w-3.5',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-lg',
     },
@@ -65,6 +69,7 @@ export function UserAvatar({
       avatar: 'h-36 w-36',
       border: 'border-4',
       badge: 'h-8 w-8',
+      badgeIcon: 'h-5 w-5',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-3xl',
     },
@@ -103,9 +108,15 @@ export function UserAvatar({
           onClick={handleVerificationClick}
           className={cn('absolute transition-transform hover:scale-105', sizeConfig.badgePosition)}
         >
-          <BadgeCheck
-            className={cn(sizeConfig.badge, 'rounded-full bg-red-600 text-white shadow-sm')}
-          />
+          <span
+            className={cn(
+              sizeConfig.badge,
+              'border-2',
+              'flex scale-90 items-center justify-center rounded-full border-gray-200 bg-red-600'
+            )}
+          >
+            <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
+          </span>
         </span>
       )}
     </button>

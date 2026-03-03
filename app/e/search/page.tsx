@@ -8,7 +8,6 @@ import {
   PromptInputTools,
   type PromptInputMessage,
 } from '@/components/ai-elements/prompt-input';
-import { Navbar } from '@/components/navbar';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -37,6 +36,7 @@ export default function SearchPage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Search',
+      hideMobileBreadcrumb: true,
       leftMode: 'menu',
       centerMode: 'title',
       showAvatar: false,
@@ -235,8 +235,6 @@ export default function SearchPage() {
           user={selectedUser}
         />
       )}
-
-      <Navbar />
     </>
   );
 }

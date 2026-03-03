@@ -1,12 +1,12 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
-import { ArrowRight, Search } from 'lucide-react';
+import { ArrowRight, Check, CircleHelp, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 
@@ -20,15 +20,6 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
-
-  const tabItems = useMemo(
-    () => [
-      { value: 'yes', label: 'Yes' },
-      { value: 'maybe', label: 'Maybe' },
-      { value: 'no', label: 'No' },
-    ],
-    []
-  );
 
   // Filter by search text first
   const filteredAll = useMemo(() => {
@@ -66,17 +57,21 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
         onOpenChange={onOpenChange}
         headerSecondary={
           <div className='space-y-3 px-4 pb-2'>
-            <SegmentedTabs
-              items={tabItems}
-              value={activeTab}
-              onValueChange={(v) => setActiveTab(v as typeof activeTab)}
-              wrapperClassName='px-0 py-0'
+            <AnimatedTabs
+              expanded
+              className='w-full [&>button]:flex-1 [&>button]:justify-center'
+              tabs={[
+                { title: 'Yes', icon: Check, onClick: () => setActiveTab('yes') },
+                { title: 'Maybe', icon: CircleHelp, onClick: () => setActiveTab('maybe') },
+                { title: 'No', icon: X, onClick: () => setActiveTab('no') },
+              ]}
+              selected={['yes', 'maybe', 'no'].indexOf(activeTab)}
             />
 
             <div className='relative'>
               <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
               <input
-                className='w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
+                className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
                 placeholder='Search guests'
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
@@ -115,6 +110,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
           <div className='space-y-3'>
             {listForTab.map((rsvp, index) => (
               <button
+                type='button'
                 key={rsvp.id ?? `${rsvp.user_id ?? 'guest'}-${rsvp.status}-${index}`}
                 onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
                 className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'

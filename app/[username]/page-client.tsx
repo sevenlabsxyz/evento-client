@@ -2,18 +2,19 @@
 
 import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
 import { BadgeItem } from '@/components/badges/badge-item';
+import { BottomTabBar } from '@/components/bottom-tab-bar';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
-import { Navbar } from '@/components/navbar';
 import ProfileCampaignCard from '@/components/profile/profile-campaign-card';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -23,7 +24,6 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
@@ -52,10 +52,13 @@ import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
+  Award,
   BadgeCheck,
+  Calendar,
   MessageCircle,
   Search,
   Share,
+  User,
   UserMinus,
   UserPlus,
 } from 'lucide-react';
@@ -314,7 +317,7 @@ export default function UserProfilePageClient() {
             </Button>
           </EmptyContent>
         </Empty>
-        <Navbar />
+        <BottomTabBar />
       </div>
     );
   }
@@ -726,7 +729,7 @@ export default function UserProfilePageClient() {
               </div>
 
               {/* Zap Button */}
-              {userData?.ln_address && (
+              {userData?.ln_address && userData?.id !== user?.id && (
                 <div className='mb-6'>
                   <ZapSheet
                     recipientLightningAddress={userData.ln_address}
@@ -739,7 +742,7 @@ export default function UserProfilePageClient() {
               )}
 
               {/* Campaign Card — shown between zap button and tabs */}
-              <ProfileCampaignCard username={username} className='mb-6' />
+              <ProfileCampaignCard userId={userData?.id || ''} className='mb-6' />
             </div>
           </div>
 
@@ -748,17 +751,36 @@ export default function UserProfilePageClient() {
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white px-6 pb-5 md:pb-0 lg:px-0'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'about', label: 'About' },
-                  { value: 'events', label: 'Events' },
-                  { value: 'badges', label: 'Badges' },
+              <AnimatedTabs
+                expanded
+                className='mx-auto'
+                tabs={[
+                  {
+                    title: 'About',
+                    icon: User,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('about');
+                    },
+                  },
+                  {
+                    title: 'Events',
+                    icon: Calendar,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('events');
+                    },
+                  },
+                  {
+                    title: 'Badges',
+                    icon: Award,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('badges');
+                    },
+                  },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => {
-                  setHasAutoSelectedInitialTab(true);
-                  setActiveTab(v);
-                }}
+                selected={['about', 'events', 'badges'].indexOf(activeTab)}
               />
 
               {/* Tab Content */}
@@ -773,7 +795,7 @@ export default function UserProfilePageClient() {
       </div>
 
       {/* Bottom Navbar */}
-      <Navbar />
+      <BottomTabBar />
 
       {/* Followers Sheet */}
       <FollowersSheet

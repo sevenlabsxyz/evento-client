@@ -15,7 +15,7 @@ import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
@@ -32,7 +32,7 @@ import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Share } from 'lucide-react';
+import { Image, Info, MessageSquare, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -213,6 +213,7 @@ export default function EventDetailPageClient() {
       centerMode: 'title',
       title: event?.title || '',
       showAvatar: false,
+      hideMobileBreadcrumb: true,
       buttons: [
         {
           id: 'share',
@@ -406,14 +407,19 @@ export default function EventDetailPageClient() {
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'details', label: 'Details' },
-                  { value: 'comments', label: 'Comments' },
-                  { value: 'gallery', label: 'Gallery' },
+              <AnimatedTabs
+                expanded
+                className='mx-auto'
+                tabs={[
+                  { title: 'Details', icon: Info, onClick: () => handleTabChange('details') },
+                  {
+                    title: 'Comments',
+                    icon: MessageSquare,
+                    onClick: () => handleTabChange('comments'),
+                  },
+                  { title: 'Gallery', icon: Image, onClick: () => handleTabChange('gallery') },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => handleTabChange(v)}
+                selected={['details', 'comments', 'gallery'].indexOf(activeTab)}
               />
 
               {/* Tab Content */}

@@ -191,20 +191,20 @@ export const handlers: HttpHandler[] = [
     });
   }),
 
-  http.get('*/v1/users/:username/campaign', ({ params }) => {
-    const username = String(params.username || 'alice').toLowerCase();
+  http.get('*/v1/users/:userId/campaign', ({ params }) => {
+    const userId = String(params.userId || 'usr_alice');
 
     return HttpResponse.json({
       success: true,
       message: 'Campaign fetched successfully.',
       data: {
         ...baseProfileCampaign,
-        user_id: `usr_${username}`,
+        user_id: userId,
       },
     });
   }),
 
-  http.get('*/v1/users/:username/campaign/feed', () => {
+  http.get('*/v1/users/:userId/campaign/feed', () => {
     return HttpResponse.json({
       success: true,
       message: 'Campaign feed fetched successfully.',
@@ -273,7 +273,7 @@ export const handlers: HttpHandler[] = [
     });
   }),
 
-  http.post('*/v1/users/:username/campaign/pledges', async ({ request }) => {
+  http.post('*/v1/users/:userId/campaign/pledges', async ({ request }) => {
     const body = (await request.json()) as CampaignPledgeBody;
 
     return HttpResponse.json({

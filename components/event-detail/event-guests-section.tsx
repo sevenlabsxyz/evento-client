@@ -95,7 +95,7 @@ export default function EventGuestsSection({
       const url = typeof window !== 'undefined' ? `${window.location.origin}/e/${eventId}` : '';
       if (navigator.share) {
         try {
-          await navigator.share({ title: 'Check out this event', url });
+          await navigator.share({ url });
         } catch (e) {
           // ignore
         }
@@ -144,7 +144,7 @@ export default function EventGuestsSection({
                   name: r.user_details?.name || undefined,
                   username: r.user_details?.username || undefined,
                   image: r.user_details?.image || undefined,
-                  verification_status: r.user_details?.verification_status || null,
+                  verification_status: undefined,
                 }}
                 size='base'
               />

@@ -1,9 +1,9 @@
 'use client';
 
 import { exportGuestsCsvAction } from '@/app/actions/export-guests';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
-import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
@@ -12,7 +12,7 @@ import { useRemoveGuest } from '@/lib/hooks/use-remove-guest';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, Search, Share2, Users, X } from 'lucide-react';
+import { CheckCircle, CircleHelp, Loader2, Search, Share2, Users, X, XCircle } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -141,16 +141,6 @@ export default function GuestListPage() {
   const getGuestCount = (status: RSVPStatus) =>
     guests.filter((guest) => guest.status === status).length;
 
-  const tabs = [
-    { key: 'yes' as const, label: 'Going', count: getGuestCount('yes') },
-    {
-      key: 'no' as const,
-      label: 'Not Going',
-      count: getGuestCount('no'),
-    },
-    { key: 'maybe' as const, label: 'Maybe', count: getGuestCount('maybe') },
-  ];
-
   const handleTabChange = (tab: RSVPStatus) => {
     setActiveTab(tab);
   };
@@ -215,16 +205,6 @@ export default function GuestListPage() {
     }
   };
 
-  const segmentedTabItems = tabs.map((tab) => ({
-    value: tab.key,
-    label: (
-      <>
-        {tab.label}
-        {tab.count > 0 && <span className='ml-1 text-xs opacity-70'>({tab.count})</span>}
-      </>
-    ),
-  }));
-
   return (
     <>
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
@@ -243,10 +223,25 @@ export default function GuestListPage() {
         </div>
 
         {/* Tabs */}
-        <SegmentedTabs
-          items={segmentedTabItems}
-          value={activeTab}
-          onValueChange={(v) => handleTabChange(v as RSVPStatus)}
+        <AnimatedTabs
+          tabs={[
+            {
+              title: `Going (${getGuestCount('yes')})`,
+              icon: CheckCircle,
+              onClick: () => handleTabChange('yes'),
+            },
+            {
+              title: `Not Going (${getGuestCount('no')})`,
+              icon: XCircle,
+              onClick: () => handleTabChange('no'),
+            },
+            {
+              title: `Maybe (${getGuestCount('maybe')})`,
+              icon: CircleHelp,
+              onClick: () => handleTabChange('maybe'),
+            },
+          ]}
+          selected={['yes', 'no', 'maybe'].indexOf(activeTab)}
         />
 
         {activeTab === 'yes' && (

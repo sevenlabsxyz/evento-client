@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { ProfileCampaignPledgeSheet } from './campaign-pledge-sheet';
 
 interface ProfileCampaignCardProps {
-  username: string;
+  userId: string;
   className?: string;
 }
 
@@ -22,8 +22,8 @@ function formatSats(sats: number): string {
   return sats.toLocaleString();
 }
 
-export default function ProfileCampaignCard({ username, className }: ProfileCampaignCardProps) {
-  const { data: campaign, isLoading } = useProfileCampaign(username);
+export default function ProfileCampaignCard({ userId, className }: ProfileCampaignCardProps) {
+  const { data: campaign, isLoading } = useProfileCampaign(userId);
   const [pledgeSheetOpen, setPledgeSheetOpen] = useState(false);
 
   // Only render when campaign exists and is active or paused
@@ -108,7 +108,7 @@ export default function ProfileCampaignCard({ username, className }: ProfileCamp
       </div>
 
       <ProfileCampaignPledgeSheet
-        username={username}
+        userId={userId}
         open={pledgeSheetOpen}
         onOpenChange={setPledgeSheetOpen}
       />

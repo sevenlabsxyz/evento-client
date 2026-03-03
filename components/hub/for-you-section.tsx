@@ -1,12 +1,12 @@
 'use client';
 
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import { SegmentedTabs } from '@/components/ui/segmented-tabs';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
 import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
 import { EventWithUser } from '@/lib/types/api';
 import { formatDateHeader } from '@/lib/utils/date';
-import { Calendar, Users } from 'lucide-react';
+import { Calendar, Compass, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
@@ -84,21 +84,13 @@ export function ForYouSection() {
       </div>
 
       {/* Segmented Tabs */}
-      <SegmentedTabs
-        align='left'
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as ForYouTabType)}
-        items={[
-          {
-            value: 'discover',
-            label: 'Discover',
-          },
-          {
-            value: 'following',
-            label: 'Following',
-          },
+      <AnimatedTabs
+        tabs={[
+          { title: 'Discover', icon: Compass, onClick: () => setActiveTab('discover') },
+          { title: 'Following', icon: Users, onClick: () => setActiveTab('following') },
         ]}
-        wrapperClassName='mt-2'
+        selected={['discover', 'following'].indexOf(activeTab)}
+        className='mt-2'
       />
 
       {/* Content */}
