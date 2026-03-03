@@ -116,7 +116,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          {/* TODO: Re-enable calendar toggle when right sidebar is ready */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}
+              onClick={toggleCalendar}
+            >
+              {isCalendarOpen ? <PanelRightClose /> : <PanelRightOpen />}
+              <span>{isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}

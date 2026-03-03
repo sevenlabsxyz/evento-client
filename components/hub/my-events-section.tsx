@@ -4,6 +4,7 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
@@ -15,6 +16,7 @@ import { MasterEventCard } from '../master-event-card';
 type MyEventsTab = EventFilterType | 'drafts';
 
 export function MyEventsSection() {
+  const isMobile = useIsMobile();
   const { user } = useUserProfile();
   const [activeTab, setActiveTab] = useState<MyEventsTab>('upcoming');
   const [loadedTabs, setLoadedTabs] = useState<MyEventsTab[]>(['upcoming']);
@@ -98,6 +100,7 @@ export function MyEventsSection() {
         {/* Animated Tabs */}
         <div className='mt-2 flex items-center justify-between'>
           <AnimatedTabs
+            expanded={!isMobile}
             tabs={[
               { title: 'Upcoming', icon: Calendar, onClick: () => setActiveTab('upcoming') },
               { title: 'Hosting', icon: MapPinHouse, onClick: () => setActiveTab('hosting') },
