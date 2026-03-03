@@ -29,7 +29,6 @@ import {
   SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 
 const navMain = [
   {
@@ -62,7 +61,6 @@ const navMain = [
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
   const { state, setOpenMobile, toggleSidebar } = useSidebar();
-  const { isOpen: isCalendarOpen, toggle: toggleCalendar } = useRightSidebar();
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -116,15 +114,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip={isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}
-              onClick={toggleCalendar}
-            >
-              {isCalendarOpen ? <PanelRightClose /> : <PanelRightOpen />}
-              <span>{isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}

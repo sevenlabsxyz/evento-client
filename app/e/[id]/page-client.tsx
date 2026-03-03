@@ -1,5 +1,6 @@
 'use client';
 
+import EventBasicInfo from '@/components/event-detail/event-basic-info';
 import EventCampaignCard from '@/components/event-detail/event-campaign-card';
 import EventComments from '@/components/event-detail/event-comments';
 import EventContributions from '@/components/event-detail/event-contributions';
@@ -17,6 +18,7 @@ import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
+import { StatusBadge } from '@/components/ui/status-badge';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
@@ -25,14 +27,24 @@ import { useEventWeather } from '@/lib/hooks/use-event-weather';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { useTopBar } from '@/lib/stores/topbar-store';
+import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
+import { TopBarButton, useTopBar } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Image, Info, MessageSquare, Share } from 'lucide-react';
+import {
+  Globe,
+  Image,
+  Info,
+  Lock,
+  MessageSquare,
+  PanelRightClose,
+  PanelRightOpen,
+  Share,
+} from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -42,6 +54,13 @@ export default function EventDetailPageClient() {
   const pathname = usePathname();
   const eventId = params.id as string;
   const { user, isAuthenticated } = useAuth();
+  const {
+    isOpen: isRightSidebarOpen,
+    panel: rightSidebarPanel,
+    manageEventContext,
+    close: closeRightSidebar,
+    openManageEventMenu,
+  } = useRightSidebar();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
@@ -58,6 +77,7 @@ export default function EventDetailPageClient() {
   } = useUserRSVP(eventId);
   const upsertRsvp = useUpsertRSVP();
   const hasProcessedPendingRsvpRef = useRef(false);
+  const initializedHostSidebarEventIdRef = useRef<string | null>(null);
 
   // Handle tab changes and update URL
   const handleTabChange = (tab: string) => {
@@ -147,6 +167,7 @@ export default function EventDetailPageClient() {
     router,
     upsertRsvp.isPending,
     upsertRsvp.isSuccess,
+    upsertRsvp.mutate,
     isUserRsvpLoading,
     isUserRsvpFetching,
     userRsvpData,
@@ -166,6 +187,30 @@ export default function EventDetailPageClient() {
   const event = useMemo(() => {
     return eventData ? transformApiEventToDisplay(eventData, hostsData, galleryData) : null;
   }, [eventData, hostsData, galleryData]);
+
+  const isEventHost = useMemo(() => {
+    if (!user) return false;
+    if (eventData?.creator_user_id === user.id) return true;
+
+    return hostsData.some((host) => host.user_details.id === user.id);
+  }, [user, eventData?.creator_user_id, hostsData]);
+
+  const isManageSidebarOpenForCurrentEvent =
+    isRightSidebarOpen &&
+    rightSidebarPanel === 'manage-event-menu' &&
+    manageEventContext?.eventId === eventId;
+
+  useEffect(() => {
+    if (!isEventHost) return;
+    if (initializedHostSidebarEventIdRef.current === eventId) return;
+
+    openManageEventMenu({
+      eventId,
+      eventType: eventData?.type,
+      eventStatus: eventData?.status,
+    });
+    initializedHostSidebarEventIdRef.current = eventId;
+  }, [isEventHost, eventId, eventData?.type, eventData?.status, openManageEventMenu]);
 
   // Fetch weather data for the event
   const { weather, loading: weatherLoading } = useEventWeather({
@@ -205,6 +250,39 @@ export default function EventDetailPageClient() {
       }
     };
 
+    const handleManageSidebarToggle = async () => {
+      if (isManageSidebarOpenForCurrentEvent) {
+        closeRightSidebar();
+        return;
+      }
+
+      openManageEventMenu({
+        eventId,
+        eventType: eventData?.type,
+        eventStatus: eventData?.status,
+      });
+    };
+
+    const topBarButtons: TopBarButton[] = [
+      {
+        id: 'share',
+        icon: Share,
+        onClick: () => {
+          void handleShare();
+        },
+        label: 'Share',
+      },
+    ];
+
+    if (isEventHost) {
+      topBarButtons.push({
+        id: 'manage-sidebar',
+        icon: isManageSidebarOpenForCurrentEvent ? PanelRightClose : PanelRightOpen,
+        onClick: handleManageSidebarToggle,
+        label: isManageSidebarOpenForCurrentEvent ? 'Hide Manage Menu' : 'Show Manage Menu',
+      });
+    }
+
     applyRouteConfig(pathname);
 
     setTopBarForRoute(pathname, {
@@ -214,14 +292,7 @@ export default function EventDetailPageClient() {
       title: event?.title || '',
       showAvatar: false,
       hideMobileBreadcrumb: true,
-      buttons: [
-        {
-          id: 'share',
-          icon: Share,
-          onClick: handleShare,
-          label: 'Share',
-        },
-      ],
+      buttons: topBarButtons,
       isOverlaid: false,
     });
 
@@ -237,6 +308,13 @@ export default function EventDetailPageClient() {
     cameFromManage,
     router,
     isAuthenticated,
+    isEventHost,
+    isManageSidebarOpenForCurrentEvent,
+    closeRightSidebar,
+    openManageEventMenu,
+    eventId,
+    eventData?.type,
+    eventData?.status,
   ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
@@ -312,6 +390,7 @@ export default function EventDetailPageClient() {
             The event you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
+            type='button'
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
@@ -333,14 +412,6 @@ export default function EventDetailPageClient() {
           Some event details are hidden until your registration is approved.
         </div>
       ) : null}
-      {!eventData?.restricted_fields?.includes('guest_list') && (
-        <EventGuestsSection
-          eventId={eventId}
-          eventCreatorUserId={eventData?.creator_user_id || ''}
-          hosts={hostsData}
-          currentUserId={user?.id || ''}
-        />
-      )}
       {!eventData?.restricted_fields?.includes('description') && <EventDescription event={event} />}
       {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
         <EventSubEvents
@@ -384,7 +455,7 @@ export default function EventDetailPageClient() {
       <div className='mx-auto max-w-full bg-white md:pt-4 lg:max-w-4xl'>
         <div className='pt-4 md:pt-0 lg:flex lg:gap-8'>
           {/* Left Column - Image & Quick Actions (sticky on desktop) */}
-          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+          <div className='lg:sticky lg:top-4 lg:w-1/2 lg:self-start'>
             <SwipeableHeader
               event={event}
               onImageClick={(index) => {
@@ -392,18 +463,57 @@ export default function EventDetailPageClient() {
                 setSelectedImageIndex(index);
               }}
             />
-            <div className='px-4'>
+            <div className='mx-auto w-[94%] lg:w-[85%]'>
+              {eventData?.visibility && (
+                <div className='mt-3 flex items-center'>
+                  <StatusBadge
+                    status={eventData.visibility === 'public' ? 'success' : 'default'}
+                    leftIcon={eventData.visibility === 'public' ? Globe : Lock}
+                    leftLabel={eventData.visibility === 'public' ? 'Public' : 'Private'}
+                  />
+                </div>
+              )}
+
+              {isEventHost && (
+                <button
+                  type='button'
+                  onClick={() =>
+                    openManageEventMenu({
+                      eventId,
+                      eventType: eventData?.type,
+                      eventStatus: eventData?.status,
+                    })
+                  }
+                  className='mt-3 hidden h-11 w-full items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-sm font-semibold text-gray-800 transition-colors hover:bg-gray-100 lg:flex'
+                >
+                  Manage Event
+                </button>
+              )}
+
               <EventInfo
                 event={event}
                 currentUserId={user?.id || ''}
                 eventData={eventData}
                 hosts={hostsData}
               />
+
+              {!eventData?.restricted_fields?.includes('guest_list') && (
+                <EventGuestsSection
+                  eventId={eventId}
+                  eventCreatorUserId={eventData?.creator_user_id || ''}
+                  hosts={hostsData}
+                  currentUserId={user?.id || ''}
+                />
+              )}
             </div>
           </div>
 
           {/* Right Column - Tabs */}
           <div className='pb-20 lg:w-1/2'>
+            <div className='px-4'>
+              <EventBasicInfo event={event} eventData={eventData} />
+            </div>
+
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}

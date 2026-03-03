@@ -60,7 +60,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
   };
 
   return (
-    <div className='relative mx-auto aspect-square w-[94%] overflow-hidden rounded-3xl shadow-md'>
+    <div className='relative mx-auto aspect-square w-[94%] overflow-hidden rounded-3xl shadow-md lg:w-[85%]'>
       {/* Image Container */}
       <div
         ref={containerRef}
@@ -68,7 +68,6 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
         onTouchStart={onTouchStart}
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
-        onClick={handleImageClick}
       >
         <Image
           src={images[currentIndex]}
@@ -79,12 +78,20 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
           unoptimized={images[currentIndex]?.endsWith('.gif')} // Optimizing GIFs may impact performance
         />
 
+        <button
+          type='button'
+          aria-label='Open cover image'
+          onClick={handleImageClick}
+          className='absolute inset-0 z-10'
+        />
+
         {/* Dot Indicators */}
         {hasMultipleImages && (
-          <div className='absolute bottom-16 left-1/2 flex -translate-x-1/2 transform gap-2'>
-            {images.map((_, index) => (
+          <div className='absolute bottom-16 left-1/2 z-20 flex -translate-x-1/2 transform gap-2'>
+            {images.map((image, index) => (
               <button
-                key={index}
+                key={image}
+                type='button'
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentIndex(index);

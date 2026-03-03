@@ -51,9 +51,10 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
   };
 
   return (
-    <div className='grid grid-cols-4 gap-2'>
+    <div className='grid grid-cols-4 gap-2 lg:grid-cols-3'>
       {/* Invite Button */}
       <button
+        type='button'
         onClick={handleInvite}
         className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-500 text-white transition-colors hover:bg-red-600'
       >
@@ -63,8 +64,9 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
       {/* Manage Button */}
       <button
+        type='button'
         onClick={handleManage}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 lg:hidden'
       >
         <Settings className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Manage</span>
@@ -72,6 +74,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
       {/* Blasts Button */}
       <button
+        type='button'
         onClick={handleEmailBlasts}
         className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
@@ -81,6 +84,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
 
       {/* More Button */}
       <button
+        type='button'
         onClick={() => setMoreOptionsOpen(true)}
         className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
