@@ -27,9 +27,10 @@ interface AnimatedTabsProps {
   defaultSelected?: number;
   selected?: number | null;
   onChange?: (index: number | null) => void;
+  expanded?: boolean;
 }
 
-const buttonVariants = {
+const collapsedButtonVariants = {
   initial: {
     gap: 0,
     paddingLeft: '.5rem',
@@ -40,6 +41,19 @@ const buttonVariants = {
     paddingLeft: isSelected ? '1rem' : '.5rem',
     paddingRight: isSelected ? '1rem' : '.5rem',
   }),
+};
+
+const expandedButtonVariants = {
+  initial: {
+    gap: '.5rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+  },
+  animate: {
+    gap: '.5rem',
+    paddingLeft: '1rem',
+    paddingRight: '1rem',
+  },
 };
 
 const spanVariants = {
@@ -57,6 +71,7 @@ export function AnimatedTabs({
   defaultSelected,
   selected: controlledSelected,
   onChange,
+  expanded = false,
 }: AnimatedTabsProps) {
   const [internalSelected, setInternalSelected] = React.useState<number | null>(
     defaultSelected ?? null
@@ -75,7 +90,7 @@ export function AnimatedTabs({
   return (
     <div
       className={cn(
-        'flex w-fit items-center gap-2 rounded-2xl border bg-background p-1 shadow-sm',
+        'flex w-fit items-center gap-2 rounded-full border bg-background p-1 shadow-sm',
         className
       )}
     >
@@ -88,7 +103,7 @@ export function AnimatedTabs({
         return (
           <motion.button
             key={tab.title}
-            variants={buttonVariants}
+            variants={expanded ? expandedButtonVariants : collapsedButtonVariants}
             initial={false}
             animate='animate'
             custom={selected === index}
@@ -105,20 +120,24 @@ export function AnimatedTabs({
             )}
           >
             <Icon size={20} />
-            <AnimatePresence initial={false}>
-              {selected === index && (
-                <motion.span
-                  variants={spanVariants}
-                  initial='initial'
-                  animate='animate'
-                  exit='exit'
-                  transition={transition}
-                  className='overflow-hidden whitespace-nowrap'
-                >
-                  {tab.title}
-                </motion.span>
-              )}
-            </AnimatePresence>
+            {expanded ? (
+              <span className='whitespace-nowrap'>{tab.title}</span>
+            ) : (
+              <AnimatePresence initial={false}>
+                {selected === index && (
+                  <motion.span
+                    variants={spanVariants}
+                    initial='initial'
+                    animate='animate'
+                    exit='exit'
+                    transition={transition}
+                    className='overflow-hidden whitespace-nowrap'
+                  >
+                    {tab.title}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            )}
           </motion.button>
         );
       })}

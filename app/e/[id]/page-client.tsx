@@ -213,6 +213,7 @@ export default function EventDetailPageClient() {
       centerMode: 'title',
       title: event?.title || '',
       showAvatar: false,
+      hideMobileBreadcrumb: true,
       buttons: [
         {
           id: 'share',
@@ -407,6 +408,8 @@ export default function EventDetailPageClient() {
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
               <AnimatedTabs
+                expanded
+                className='mx-auto'
                 tabs={[
                   { title: 'Details', icon: Info, onClick: () => handleTabChange('details') },
                   {

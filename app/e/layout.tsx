@@ -1,5 +1,6 @@
 'use client';
 
+import { BottomTabBar } from '@/components/bottom-tab-bar';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
 import { SidebarRight } from '@/components/dashboard/sidebar-right';
 import { SiteHeader } from '@/components/dashboard/site-header';
@@ -58,6 +59,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
         <SidebarInset className='max-h-svh min-w-0 md:max-h-[calc(100svh-1rem)]'>
           {!isOverlaid && <SiteHeader />}
           <div className='flex-1 overflow-auto'>{children}</div>
+          <BottomTabBar />
         </SidebarInset>
         {isAuthenticated && <SidebarRight />}
       </SidebarProvider>

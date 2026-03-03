@@ -58,6 +58,7 @@ export default function CreatePage() {
     setTopBarForRoute(pathname, {
       leftMode: 'back',
       title: 'Create Event',
+      hideMobileBreadcrumb: true,
       subtitle: undefined,
       showAvatar: true,
       centerMode: 'title',

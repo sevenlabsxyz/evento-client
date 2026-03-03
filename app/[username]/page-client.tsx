@@ -2,13 +2,13 @@
 
 import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
 import { BadgeItem } from '@/components/badges/badge-item';
+import { BottomTabBar } from '@/components/bottom-tab-bar';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
-import { Navbar } from '@/components/navbar';
 import ProfileCampaignCard from '@/components/profile/profile-campaign-card';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
@@ -317,7 +317,7 @@ export default function UserProfilePageClient() {
             </Button>
           </EmptyContent>
         </Empty>
-        <Navbar />
+        <BottomTabBar />
       </div>
     );
   }
@@ -729,7 +729,7 @@ export default function UserProfilePageClient() {
               </div>
 
               {/* Zap Button */}
-              {userData?.ln_address && (
+              {userData?.ln_address && userData?.id !== user?.id && (
                 <div className='mb-6'>
                   <ZapSheet
                     recipientLightningAddress={userData.ln_address}
@@ -752,6 +752,8 @@ export default function UserProfilePageClient() {
             <div className='mb-4 w-full bg-white px-6 pb-5 md:pb-0 lg:px-0'>
               {/* Tab Headers */}
               <AnimatedTabs
+                expanded
+                className='mx-auto'
                 tabs={[
                   {
                     title: 'About',
@@ -793,7 +795,7 @@ export default function UserProfilePageClient() {
       </div>
 
       {/* Bottom Navbar */}
-      <Navbar />
+      <BottomTabBar />
 
       {/* Followers Sheet */}
       <FollowersSheet

@@ -90,7 +90,7 @@ export function ZapSheet({
 
     toast.custom(
       (id) => (
-        <div className='w-full rounded-[28px] border border-blue-200 bg-blue-50 p-6 shadow-lg'>
+        <div className='w-full border border-blue-200 bg-blue-50 p-6 shadow-lg rounded-[28px]'>
           <div className='flex items-start gap-3'>
             <div className='mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white'>
               <Info className='h-4 w-4' />

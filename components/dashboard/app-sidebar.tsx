@@ -103,7 +103,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <SidebarMenuButton
               tooltip='Create Event'
               onClick={handleCreateEvent}
-              className='bg-black text-white hover:bg-black/90 hover:text-white active:bg-black/80'
+              className='rounded-full bg-black text-white hover:bg-black/90 hover:text-white active:bg-black/80 group-data-[collapsible=icon]:!rounded-full'
             >
               <Plus />
               <span>Create Event</span>

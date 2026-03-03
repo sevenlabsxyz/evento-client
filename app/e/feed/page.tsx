@@ -2,7 +2,6 @@
 
 import { EventCard } from '@/components/event-card';
 import { EventDateGroup } from '@/components/event-date-group';
-import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
@@ -289,8 +288,6 @@ export default function FeedPage() {
             )}
           </div>
         </div>
-
-        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
   }
@@ -448,9 +445,6 @@ export default function FeedPage() {
           </div>
         </div>
       )}
-
-      {/* Bottom Navbar */}
-      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* Search Sheet */}
       <SheetWithDetent.Root

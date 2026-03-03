@@ -1,6 +1,5 @@
 'use client';
 
-import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { BackupCallout } from '@/components/wallet/backup-callout';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
@@ -112,6 +111,7 @@ export default function WalletPage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Wallet',
+      hideMobileBreadcrumb: true,
       centerMode: 'title',
       showAvatar: false,
       buttons: walletState.isConnected
@@ -386,7 +386,6 @@ export default function WalletPage() {
     return (
       <>
         <WalletWelcome onSetup={() => setStep('setup')} onRestore={() => setStep('restore')} />
-        <Navbar />
       </>
     );
   }
@@ -398,7 +397,6 @@ export default function WalletPage() {
         <div className='mx-auto max-w-sm pb-28 pt-4'>
           <WalletSetup onComplete={handleSetupComplete} onCancel={() => setStep('welcome')} />
         </div>
-        <Navbar />
       </>
     );
   }
@@ -410,7 +408,6 @@ export default function WalletPage() {
         <div className='mx-auto max-w-sm pb-28 pt-4'>
           <WalletRestore onComplete={handleRestoreComplete} onCancel={() => setStep('welcome')} />
         </div>
-        <Navbar />
       </>
     );
   }
@@ -426,7 +423,6 @@ export default function WalletPage() {
             onCancel={handleBackupSkip}
           />
         </div>
-        <Navbar />
       </>
     );
   }
@@ -444,7 +440,6 @@ export default function WalletPage() {
           <WalletUnlock />
         </div>
         <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
-        <Navbar />
       </>
     );
   }
@@ -639,9 +634,6 @@ export default function WalletPage() {
         open={showOnchainEducationalSheet}
         onOpenChange={setShowOnchainEducationalSheet}
       />
-
-      {/* Bottom Navigation */}
-      <Navbar />
     </div>
   );
 }

@@ -146,7 +146,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
           alt={event.title}
           width={96}
           height={96}
-          className='h-24 w-24 rounded-xl border border-gray-200 object-cover'
+          className='h-24 w-24 rounded-3xl border border-gray-200 object-cover'
         />
       </div>
     </button>

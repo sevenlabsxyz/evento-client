@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -19,6 +20,7 @@ export function SiteHeader() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { toggle: toggleRightSidebar } = useRightSidebar();
+  const { toggleSidebar } = useSidebar();
   const {
     leftMode,
     onBackPress,
@@ -31,6 +33,7 @@ export function SiteHeader() {
     textButtons,
     buttons,
     chatPartner,
+    hideMobileBreadcrumb,
   } = useTopBar();
 
   const handleBackPress = () => {
@@ -48,33 +51,31 @@ export function SiteHeader() {
           <Image
             src='/assets/img/evento-logo.svg'
             alt='Evento'
-            width={100}
-            height={24}
-            className='h-6 w-auto'
+            width={80}
+            height={20}
+            className='h-5 w-auto'
           />
         </Link>
       );
     }
 
     if (leftMode === 'back') {
-      return (
-        <Button variant='ghost' size='icon' onClick={handleBackPress} className='h-8 w-8'>
-          <ArrowLeft className='h-4 w-4' />
-          <span className='sr-only'>Go back</span>
-        </Button>
-      );
+      return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
     }
 
     return (
-      <Link href='/e/hub' className='flex items-center gap-2 md:hidden'>
-        <Image
-          src='/assets/img/evento-logo.svg'
-          alt='Evento'
-          width={100}
-          height={24}
-          className='h-6 w-auto'
-        />
-      </Link>
+      <div className='flex items-center gap-2 md:hidden'>
+        <CircledIconButton icon={Menu} onClick={toggleSidebar} />
+        <Link href='/e/hub' className='flex items-center'>
+          <Image
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={80}
+            height={20}
+            className='h-5 w-auto'
+          />
+        </Link>
+      </div>
     );
   };
 
@@ -128,13 +129,26 @@ export function SiteHeader() {
 
   return (
     <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
-      <div className='flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
+      <div className='relative flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
         {renderLeftContent()}
         <Separator
           orientation='vertical'
-          className={cn('mx-2 data-[orientation=vertical]:h-4', !showLeftOnDesktop && 'md:hidden')}
+          className={cn(
+            'mx-2 data-[orientation=vertical]:h-4',
+            !showLeftOnDesktop && 'md:hidden',
+            hideMobileBreadcrumb && 'hidden md:block',
+            leftMode === 'back' && 'hidden'
+          )}
         />
-        {renderCenterContent()}
+        <div className={cn(hideMobileBreadcrumb && 'hidden md:flex md:min-w-0 md:flex-1')}>
+          {renderCenterContent()}
+        </div>
+        {/* Centered sublogo on mobile when breadcrumb is hidden */}
+        {hideMobileBreadcrumb && (
+          <div className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'>
+            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={28} height={28} />
+          </div>
+        )}
         <div className='ml-auto flex items-center gap-2'>
           {/* TODO: Re-enable calendar toggle when right sidebar is ready */}
           {textButtons.length > 0 && (

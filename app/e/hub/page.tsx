@@ -5,7 +5,6 @@ import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
-import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
@@ -32,6 +31,7 @@ export default function HubPage() {
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
       title: 'Evento Hub',
+      hideMobileBreadcrumb: true,
       subtitle: '',
       leftMode: 'menu',
       showAvatar: true,
@@ -77,7 +77,6 @@ export default function HubPage() {
             </div>
           </div>
         </div>
-        <Navbar />
       </div>
     );
   }
@@ -91,7 +90,6 @@ export default function HubPage() {
         <EventInvitesSection />
         <HubBlogGallery />
       </div>
-      <Navbar />
     </>
   );
 }

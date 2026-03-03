@@ -10,7 +10,6 @@ import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
-import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
@@ -27,7 +26,6 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { ZapSheet } from '@/components/zap';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useUserBadges } from '@/lib/hooks/use-badges';
 import { EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
@@ -74,7 +72,6 @@ export default function ProfilePage() {
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
-  const [showZapModal, setShowZapModal] = useState(false);
   const [showBadgesManagementSheet, setShowBadgesManagementSheet] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
@@ -121,6 +118,7 @@ export default function ProfilePage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Profile',
+      hideMobileBreadcrumb: true,
       leftMode: 'menu',
       buttons: [
         {
@@ -480,17 +478,6 @@ export default function ProfilePage() {
                   </motion.button>
                 </div>
               </div>
-              {/* Zap Button */}
-              {user?.ln_address && (
-                <div>
-                  <ZapSheet
-                    recipientLightningAddress={user.ln_address}
-                    recipientName={user.name || 'You'}
-                    recipientUsername={user.username}
-                    recipientAvatar={user.image}
-                  />
-                </div>
-              )}
               {/* Edit Profile Button - desktop only */}
               <div className='mt-2 hidden lg:block'>
                 <Button
@@ -511,6 +498,8 @@ export default function ProfilePage() {
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
               <AnimatedTabs
+                expanded
+                className='mx-auto'
                 tabs={[
                   {
                     title: 'About',
@@ -600,9 +589,6 @@ export default function ProfilePage() {
         userId={user?.id || ''}
         eventId=''
       />
-
-      {/* Bottom Navbar */}
-      <Navbar />
 
       {/* Followers Sheet */}
       <FollowersSheet
