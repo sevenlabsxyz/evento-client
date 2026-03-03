@@ -95,7 +95,7 @@ export default function EventGuestsSection({
       const url = typeof window !== 'undefined' ? `${window.location.origin}/e/${eventId}` : '';
       if (navigator.share) {
         try {
-          await navigator.share({ title: 'Check out this event', url });
+          await navigator.share({ url });
         } catch (e) {
           // ignore
         }

@@ -1,5 +1,6 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -15,6 +16,13 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { cn } from '@/lib/utils';
+
+const fadeConfig = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.15 },
+};
 
 export function SiteHeader() {
   const router = useRouter();
@@ -126,60 +134,91 @@ export function SiteHeader() {
   };
 
   const showLeftOnDesktop = leftMode === 'back';
+  const leftKey = `${leftMode}-${isAuthenticated}`;
+  const centerKey = `${centerMode}-${title}-${subtitle}`;
+  const rightKey =
+    [...textButtons.map((b) => b.id), ...buttons.map((b) => b.id)].join('-') || 'empty';
 
   return (
     <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
       <div className='relative flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
-        {renderLeftContent()}
+        {/* Left section */}
+        <AnimatePresence mode='wait'>
+          <motion.div key={leftKey} {...fadeConfig}>
+            {renderLeftContent()}
+          </motion.div>
+        </AnimatePresence>
+
         <Separator
           orientation='vertical'
           className={cn(
             'mx-2 data-[orientation=vertical]:h-4',
             !showLeftOnDesktop && 'md:hidden',
-            hideMobileBreadcrumb && 'hidden md:block',
+            hideMobileBreadcrumb && 'hidden',
             leftMode === 'back' && 'hidden'
           )}
         />
-        <div className={cn(hideMobileBreadcrumb && 'hidden md:flex md:min-w-0 md:flex-1')}>
-          {renderCenterContent()}
-        </div>
-        {/* Centered sublogo on mobile when breadcrumb is hidden */}
-        {hideMobileBreadcrumb && (
-          <div className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'>
-            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={28} height={28} />
-          </div>
-        )}
-        <div className='ml-auto flex items-center gap-2'>
-          {/* TODO: Re-enable calendar toggle when right sidebar is ready */}
-          {textButtons.length > 0 && (
-            <div className='flex gap-2'>
-              {textButtons.map((button) => {
-                const Icon = button.icon;
 
-                return (
-                  <Button
-                    key={button.id}
-                    variant={button.variant || 'default'}
-                    size='sm'
-                    onClick={button.onClick}
-                    disabled={button.disabled}
-                    className='h-8 rounded-full px-3 text-sm font-medium'
-                  >
-                    {Icon && <Icon className='mr-1.5 h-4 w-4' />}
-                    {button.label}
-                  </Button>
-                );
-              })}
-            </div>
+        {/* Center section */}
+        <AnimatePresence mode='wait'>
+          <motion.div
+            key={centerKey}
+            className={cn(
+              'min-w-0 flex-1',
+              hideMobileBreadcrumb && 'hidden md:flex md:min-w-0 md:flex-1'
+            )}
+            {...fadeConfig}
+          >
+            {renderCenterContent()}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Centered sublogo on mobile when breadcrumb is hidden */}
+        <AnimatePresence>
+          {hideMobileBreadcrumb && (
+            <motion.div
+              key='sublogo'
+              className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'
+              {...fadeConfig}
+            >
+              <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={28} height={28} />
+            </motion.div>
           )}
-          {buttons.length > 0 && (
-            <div className='flex gap-2'>
-              {buttons.map((button) => (
-                <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
-              ))}
-            </div>
-          )}
-        </div>
+        </AnimatePresence>
+
+        {/* Right section */}
+        <AnimatePresence mode='wait'>
+          <motion.div key={rightKey} className='ml-auto flex items-center gap-2' {...fadeConfig}>
+            {textButtons.length > 0 && (
+              <div className='flex gap-2'>
+                {textButtons.map((button) => {
+                  const Icon = button.icon;
+
+                  return (
+                    <Button
+                      key={button.id}
+                      variant={button.variant || 'default'}
+                      size='sm'
+                      onClick={button.onClick}
+                      disabled={button.disabled}
+                      className='h-8 rounded-full px-3 text-sm font-medium'
+                    >
+                      {Icon && <Icon className='mr-1.5 h-4 w-4' />}
+                      {button.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
+            {buttons.length > 0 && (
+              <div className='flex gap-2'>
+                {buttons.map((button) => (
+                  <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </header>
   );

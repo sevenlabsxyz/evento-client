@@ -58,6 +58,8 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
         headerSecondary={
           <div className='space-y-3 px-4 pb-2'>
             <AnimatedTabs
+              expanded
+              className='w-full [&>button]:flex-1 [&>button]:justify-center'
               tabs={[
                 { title: 'Yes', icon: Check, onClick: () => setActiveTab('yes') },
                 { title: 'Maybe', icon: CircleHelp, onClick: () => setActiveTab('maybe') },
@@ -69,7 +71,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
             <div className='relative'>
               <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
               <input
-                className='w-full rounded-xl border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
+                className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
                 placeholder='Search guests'
                 value={searchText}
                 onChange={(e) => setSearchText(e.target.value)}
