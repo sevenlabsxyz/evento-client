@@ -1,5 +1,6 @@
 'use client';
 
+import { StatusBadge } from '@/components/ui/status-badge';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
@@ -271,20 +272,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
           <div className='flex items-center gap-3 text-black'>
             <span className='text-2xl font-bold'>{event.title}</span>
             {eventData?.visibility && (
-              <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                  eventData.visibility === 'public'
-                    ? 'border-green-200 bg-green-50 text-green-700'
-                    : 'border-gray-300 bg-gray-100 text-gray-700'
-                }`}
-              >
-                {eventData.visibility === 'public' ? (
-                  <Globe className='h-3 w-3' />
-                ) : (
-                  <Lock className='h-3 w-3' />
-                )}
-                {eventData.visibility === 'public' ? 'Public' : 'Private'}
-              </span>
+              <StatusBadge
+                status={eventData.visibility === 'public' ? 'success' : 'default'}
+                leftIcon={eventData.visibility === 'public' ? Globe : Lock}
+                leftLabel={eventData.visibility === 'public' ? 'Public' : 'Private'}
+              />
             )}
           </div>
 
