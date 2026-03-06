@@ -11,9 +11,7 @@ import {
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import { logger } from '@/lib/utils/logger';
-import data from '@emoji-mart/data';
-import Picker from '@emoji-mart/react';
-import { init } from 'emoji-mart';
+import EmojiPicker, { type EmojiClickData, Theme } from 'emoji-picker-react';
 import type { ChannelFilters, MessageResponse, Channel as StreamChannel } from 'stream-chat';
 import { Channel, Window } from 'stream-chat-react';
 
@@ -29,9 +27,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useMessageActions } from '@/lib/hooks/use-message-actions';
 import { MessageList } from 'stream-chat-react';
 import '../chat-layout.css';
-import '../stream-chat.d.ts';
-
-init({ data });
 
 export default function SingleChatPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -196,8 +191,8 @@ export default function SingleChatPage() {
     applyRouteConfig,
     channel,
     client?.user?.id,
-    pinnedMessages,
     router,
+    setTopBarForRoute,
     setBackHandler,
     clearRoute,
   ]);
@@ -258,8 +253,8 @@ export default function SingleChatPage() {
     }
   };
 
-  const handleEmojiSelect = (emoji: any) => {
-    setInputValue((prev) => prev + emoji.native);
+  const handleEmojiSelect = (emoji: EmojiClickData) => {
+    setInputValue((prev) => prev + emoji.emoji);
     inputRef.current?.focus();
   };
 
@@ -361,6 +356,7 @@ export default function SingleChatPage() {
               viewBox='0 0 24 24'
               stroke='currentColor'
             >
+              <title>Chat connection error</title>
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
@@ -391,6 +387,7 @@ export default function SingleChatPage() {
               viewBox='0 0 24 24'
               stroke='currentColor'
             >
+              <title>Chat loading error</title>
               <path
                 strokeLinecap='round'
                 strokeLinejoin='round'
@@ -437,13 +434,12 @@ export default function SingleChatPage() {
         <div className='relative border-t bg-white p-4'>
           {showEmojiPicker && (
             <div className='absolute bottom-full left-4 z-50 mb-2'>
-              <Picker
-                data={data}
-                onEmojiSelect={handleEmojiSelect}
-                theme='light'
-                searchPosition='none'
-                previewPosition='none'
-                skinTonePosition='none'
+              <EmojiPicker
+                onEmojiClick={handleEmojiSelect}
+                theme={Theme.LIGHT}
+                searchDisabled
+                skinTonesDisabled
+                previewConfig={{ showPreview: false }}
               />
             </div>
           )}

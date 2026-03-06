@@ -7,7 +7,7 @@ import { OnboardingHeader } from './onboarding-header';
 interface OnboardingAvatarProps {
   uploadedImg: string;
   isLoading: boolean;
-  inputFileRef: RefObject<HTMLInputElement>;
+  inputFileRef: RefObject<HTMLInputElement | null>;
   onFileChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 

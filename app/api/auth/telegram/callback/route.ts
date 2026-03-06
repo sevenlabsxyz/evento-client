@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
   if (upstreamResponse.status >= 300 && upstreamResponse.status < 400) {
     const location = upstreamResponse.headers.get('location');
     if (location) {
-      return NextResponse.redirect(new URL(location, apiOrigin), 302);
+      return NextResponse.redirect(new URL(location, apiOrigin), { status: 302 });
     }
   }
 

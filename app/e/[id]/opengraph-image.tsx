@@ -54,7 +54,8 @@ function renderFallbackEventImage(title: string) {
   );
 }
 
-export default async function Image({ params }: { params: { id: string } }) {
+export default async function Image(props: { params: Promise<{ id: string }> }) {
+  const params = await props.params;
   const supabase = createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
 
   const { data: event, error } = await supabase

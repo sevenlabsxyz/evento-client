@@ -10,12 +10,13 @@ function errorResponse(message: string, status: number = 500) {
 }
 
 // Proxy handler for all HTTP methods
-async function handler(request: NextRequest, { params }: { params: { path: string[] } }) {
+async function handler(request: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+  const resolvedParams = await params;
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   const startTime = Date.now();
 
   // Reconstruct the path
-  const path = params.path?.join('/') || '';
+  const path = resolvedParams.path?.join('/') || '';
   const targetUrl = `${Env.API_PROXY_TARGET}/${path}`;
 
   // Get query parameters
@@ -192,7 +193,7 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unknown',
       duration,
       targetUrl: Env.API_PROXY_TARGET,
-      pathParams: params.path,
+      pathParams: resolvedParams.path,
       queryString: request.nextUrl.search,
     });
 
