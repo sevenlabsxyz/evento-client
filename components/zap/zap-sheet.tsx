@@ -22,6 +22,43 @@ import type { LnurlPayRequestDetails, RecipientInfo, Step, ZapSheetProps } from 
 
 const DEFAULT_QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
 
+/** Get a BOLT11 invoice for a lightning address via server-side API */
+async function getInvoiceViaServer(address: string, amountSats: number): Promise<string> {
+  const response = await fetch('/api/v1/lightning/invoice', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lightningAddress: address, amountSats }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to get invoice');
+  }
+
+  const data = await response.json();
+  if (!data.invoice) {
+    throw new Error('No invoice received from lightning address');
+  }
+
+  return data.invoice;
+}
+
+/** Resolve a lightning address via server-side API */
+async function resolveAddressViaServer(address: string) {
+  const response = await fetch('/api/v1/lightning/resolve', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lightningAddress: address }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to resolve lightning address');
+  }
+
+  return response.json();
+}
+
 export function ZapSheet({
   recipientLightningAddress,
   recipientName,
@@ -45,6 +82,7 @@ export function ZapSheet({
   const [isPreparing, setIsPreparing] = useState(false);
   const [comment, setComment] = useState('');
   const [payRequest, setPayRequest] = useState<LnurlPayRequestDetails | null>(null);
+  const [isFallbackMode, setIsFallbackMode] = useState(false);
 
   const { satsToUSD, usdToSats } = useAmountConverter();
   const notifyMutation = useNotifyWalletInvite();
@@ -154,6 +192,7 @@ export function ZapSheet({
       setIsPreparing(false);
       setComment('');
       setPayRequest(null);
+      setIsFallbackMode(false);
       notifyMutation.reset();
     }
   }, [open, recipientLightningAddress]);
@@ -161,7 +200,7 @@ export function ZapSheet({
   // Parse lightning address when sheet opens to get payRequest details (for commentAllowed)
   useEffect(() => {
     const parseAddress = async () => {
-      if (open && recipientLightningAddress && !payRequest) {
+      if (open && recipientLightningAddress && !payRequest && !isFallbackMode) {
         try {
           const parsed = await breezSDK.parseInput(recipientLightningAddress);
           if (parsed.type === 'lightningAddress') {
@@ -176,14 +215,34 @@ export function ZapSheet({
             // Lightning address doesn't exist (404 from LNURL endpoint)
             setStep('no-wallet');
           } else {
-            setOpen(false);
-            toast.error('Failed to load payment details. Please try again.');
+            // SDK failed to parse - try server-side resolution as fallback
+            logger.debug('Zap: SDK parseInput failed, trying server-side fallback', {
+              address: recipientLightningAddress,
+              error: error?.message,
+            });
+
+            try {
+              const resolved = await resolveAddressViaServer(recipientLightningAddress);
+              // Create a minimal payRequest-like object from server response
+              setPayRequest({
+                commentAllowed: resolved.commentAllowed || 0,
+                minSendable: resolved.minSendable || 1000,
+                maxSendable: resolved.maxSendable || 1000000000000,
+              } as LnurlPayRequestDetails);
+              setIsFallbackMode(true);
+            } catch (fallbackError: any) {
+              logger.error('Zap: Server-side fallback also failed', {
+                error: fallbackError?.message,
+              });
+              setOpen(false);
+              toast.error('Failed to load payment details. Please try again.');
+            }
           }
         }
       }
     };
     parseAddress();
-  }, [open, recipientLightningAddress, payRequest]);
+  }, [open, recipientLightningAddress, payRequest, isFallbackMode]);
 
   // Convert selected amount to USD when it changes
   useEffect(() => {
@@ -259,6 +318,15 @@ export function ZapSheet({
     setIsPreparing(true);
 
     try {
+      if (isFallbackMode) {
+        // Fallback: get BOLT11 invoice from server, prepare via SDK BOLT11 flow
+        const bolt11 = await getInvoiceViaServer(recipientLightningAddress, amountSats);
+        const response = await breezSDK.preparePayment(bolt11);
+        setPrepareResponse({ ...response, _fallbackBolt11: bolt11 });
+        setStep('confirm');
+        return;
+      }
+
       // Use cached payRequest if available, otherwise parse
       let currentPayRequest = payRequest;
       if (!currentPayRequest) {
@@ -278,14 +346,28 @@ export function ZapSheet({
       }
 
       // Prepare the LNURL payment
-      const response = await breezSDK.prepareLnurlPay({
-        payRequest: currentPayRequest,
-        amountSats,
-        comment: comment || undefined,
-      });
+      try {
+        const response = await breezSDK.prepareLnurlPay({
+          payRequest: currentPayRequest,
+          amountSats,
+          comment: comment || undefined,
+          validateSuccessActionUrl: false,
+        });
 
-      setPrepareResponse(response);
-      setStep('confirm');
+        setPrepareResponse(response);
+        setStep('confirm');
+      } catch (lnurlError: any) {
+        // LNURL prepare failed - try server-side fallback
+        logger.debug('Zap: prepareLnurlPay failed, trying server-side fallback', {
+          error: lnurlError?.message,
+        });
+
+        const bolt11 = await getInvoiceViaServer(recipientLightningAddress, amountSats);
+        const response = await breezSDK.preparePayment(bolt11);
+        setPrepareResponse({ ...response, _fallbackBolt11: bolt11 });
+        setIsFallbackMode(true);
+        setStep('confirm');
+      }
     } catch (error: any) {
       logger.error('Failed to prepare zap', {
         error: error instanceof Error ? error.message : String(error),
@@ -314,6 +396,15 @@ export function ZapSheet({
     setIsPreparing(true);
 
     try {
+      if (isFallbackMode) {
+        // Fallback: get BOLT11 invoice from server, prepare via SDK BOLT11 flow
+        const bolt11 = await getInvoiceViaServer(recipientLightningAddress, selectedAmount);
+        const response = await breezSDK.preparePayment(bolt11);
+        setPrepareResponse({ ...response, _fallbackBolt11: bolt11 });
+        setStep('confirm');
+        return;
+      }
+
       // Use cached payRequest if available, otherwise parse
       let currentPayRequest = payRequest;
       if (!currentPayRequest) {
@@ -333,14 +424,28 @@ export function ZapSheet({
       }
 
       // Prepare the LNURL payment
-      const response = await breezSDK.prepareLnurlPay({
-        payRequest: currentPayRequest,
-        amountSats: selectedAmount,
-        comment: comment || undefined,
-      });
+      try {
+        const response = await breezSDK.prepareLnurlPay({
+          payRequest: currentPayRequest,
+          amountSats: selectedAmount,
+          comment: comment || undefined,
+          validateSuccessActionUrl: false,
+        });
 
-      setPrepareResponse(response);
-      setStep('confirm');
+        setPrepareResponse(response);
+        setStep('confirm');
+      } catch (lnurlError: any) {
+        // LNURL prepare failed - try server-side fallback
+        logger.debug('Zap: prepareLnurlPay failed, trying server-side fallback', {
+          error: lnurlError?.message,
+        });
+
+        const bolt11 = await getInvoiceViaServer(recipientLightningAddress, selectedAmount);
+        const response = await breezSDK.preparePayment(bolt11);
+        setPrepareResponse({ ...response, _fallbackBolt11: bolt11 });
+        setIsFallbackMode(true);
+        setStep('confirm');
+      }
     } catch (error: any) {
       logger.error('Failed to prepare zap', {
         error: error instanceof Error ? error.message : String(error),
@@ -369,9 +474,14 @@ export function ZapSheet({
     setStep('sending');
 
     try {
-      await breezSDK.lnurlPay({
-        prepareResponse,
-      });
+      if (isFallbackMode && prepareResponse._fallbackBolt11) {
+        // Fallback: send using BOLT11 invoice via SDK
+        await breezSDK.sendPayment(prepareResponse._fallbackBolt11);
+      } else {
+        await breezSDK.lnurlPay({
+          prepareResponse,
+        });
+      }
 
       setStep('success');
       onSuccess?.(selectedAmount);

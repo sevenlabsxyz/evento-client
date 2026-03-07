@@ -21,8 +21,7 @@ const statusBadgeVariants = cva(
 );
 
 interface StatusBadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof statusBadgeVariants> {
+  extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof statusBadgeVariants> {
   leftIcon?: LucideIcon;
   rightIcon?: LucideIcon;
   leftLabel: string;

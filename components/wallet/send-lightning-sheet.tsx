@@ -60,6 +60,10 @@ export function SendLightningSheet({
   const [minSendable, setMinSendable] = useState<number>(1);
   const [maxSendable, setMaxSendable] = useState<number>(1000000000);
 
+  // Server-side LNURL fallback state (used when Breez SDK cannot resolve certain lightning addresses)
+  const [fallbackBolt11, setFallbackBolt11] = useState<string | null>(null);
+  const [isFallbackMode, setIsFallbackMode] = useState(false);
+
   // Bitcoin on-chain payment state
   const [paymentType, setPaymentType] = useState<'lightning' | 'bitcoin'>('lightning');
   const [bitcoinFeeSpeed, setBitcoinFeeSpeed] = useState<'fast' | 'medium' | 'slow'>('medium');
@@ -90,11 +94,56 @@ export function SendLightningSheet({
     setCommentAllowed(0);
     setMinSendable(1);
     setMaxSendable(1000000000);
+    // Reset fallback state
+    setFallbackBolt11(null);
+    setIsFallbackMode(false);
     // Reset Bitcoin state
     setPaymentType('lightning');
     setBitcoinFeeSpeed('medium');
     setBitcoinPrepareResponse(null);
     setSendAll(false);
+  };
+
+  /** Check if input looks like a lightning address (user@domain format) */
+  const isLightningAddressFormat = (input: string): boolean => {
+    return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(input.trim());
+  };
+
+  /** Resolve a lightning address via server-side API (fallback for SDK failures) */
+  const resolveAddressViaServer = async (address: string) => {
+    const response = await fetch('/api/v1/lightning/resolve', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lightningAddress: address }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to resolve lightning address');
+    }
+
+    return response.json();
+  };
+
+  /** Get a BOLT11 invoice for a lightning address via server-side API */
+  const getInvoiceViaServer = async (address: string, amountSats: number): Promise<string> => {
+    const response = await fetch('/api/v1/lightning/invoice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lightningAddress: address, amountSats }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || 'Failed to get invoice');
+    }
+
+    const data = await response.json();
+    if (!data.invoice) {
+      throw new Error('No invoice received from lightning address');
+    }
+
+    return data.invoice;
   };
 
   // Populate invoice field when scanned data is provided
@@ -314,6 +363,39 @@ export function SendLightningSheet({
 
       setIsValidating(false);
     } catch (error: any) {
+      // If parseInput fails but input looks like a lightning address, try server-side resolution
+      const trimmedInput = invoice.trim();
+      if (isLightningAddressFormat(trimmedInput)) {
+        logger.debug(
+          '💸 [SEND] SDK parseInput failed for lightning address, trying server-side fallback',
+          {
+            address: trimmedInput,
+            error: error?.message,
+          }
+        );
+
+        try {
+          const resolved = await resolveAddressViaServer(trimmedInput);
+
+          // Set LNURL constraints from server response
+          setCommentAllowed(resolved.commentAllowed || 0);
+          setMinSendable(Math.floor(Number(resolved.minSendable || 1000) / 1000));
+          setMaxSendable(Math.floor(Number(resolved.maxSendable || 1000000000000) / 1000));
+
+          // Mark as fallback mode so prepare/send uses server-side invoice
+          setIsFallbackMode(true);
+          setIsLightningInvoice(false);
+          setStep('amount');
+          setIsValidating(false);
+          return;
+        } catch (fallbackError: any) {
+          logger.error('💸 [SEND] Server-side fallback also failed', {
+            error: fallbackError?.message,
+          });
+          // Fall through to show original error
+        }
+      }
+
       logBreezError(error, BREEZ_ERROR_CONTEXT.PARSING_PAYMENT_INPUT);
       setParsedInput(null);
       setIsValidating(false);
@@ -334,7 +416,11 @@ export function SendLightningSheet({
     setSendAll(!!sendAll);
 
     // Validate amount against LNURL constraints
-    if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
+    if (
+      isFallbackMode ||
+      parsedInput?.type === 'lightningAddress' ||
+      parsedInput?.type === 'lnurlPay'
+    ) {
       if (amountSats < minSendable) {
         toast.error(`Minimum amount is ${minSendable} sats`);
         return;
@@ -398,23 +484,52 @@ export function SendLightningSheet({
     logger.debug('💸 [SEND] handlePreparePayment called', {
       amountSats,
       parsedInputType: parsedInput?.type,
+      isFallbackMode,
     });
 
     try {
-      if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
-        // Prepare LNURL payment
+      if (isFallbackMode) {
+        // Fallback mode: get BOLT11 invoice from server and prepare via SDK
+        logger.debug('💸 [SEND] Using server-side fallback to get invoice...');
+        const bolt11 = await getInvoiceViaServer(invoice.trim(), amountSats);
+        setFallbackBolt11(bolt11);
+
+        // Prepare the BOLT11 payment through the SDK
+        await prepareSend(bolt11, undefined);
+        logger.debug('✅ [SEND] Fallback BOLT11 payment prepared');
+      } else if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
+        // Prepare LNURL payment via SDK
         logger.debug('💸 [SEND] Preparing LNURL payment...');
         const payRequest =
           parsedInput.type === 'lightningAddress' ? (parsedInput as any).payRequest : parsedInput;
 
-        const prepareResponse = await breezSDK.prepareLnurlPay({
-          payRequest,
-          amountSats,
-          comment: comment || undefined,
-        });
+        try {
+          const prepareResponse = await breezSDK.prepareLnurlPay({
+            payRequest,
+            amountSats,
+            comment: comment || undefined,
+            validateSuccessActionUrl: false,
+          });
 
-        logger.debug('✅ [SEND] LNURL payment prepared', { prepareResponse });
-        setLnurlPrepareResponse(prepareResponse);
+          logger.debug('✅ [SEND] LNURL payment prepared', { prepareResponse });
+          setLnurlPrepareResponse(prepareResponse);
+        } catch (lnurlError: any) {
+          // LNURL prepare failed - try server-side fallback for lightning addresses
+          if (isLightningAddressFormat(invoice.trim())) {
+            logger.debug('💸 [SEND] prepareLnurlPay failed, trying server-side fallback', {
+              error: lnurlError?.message,
+            });
+
+            const bolt11 = await getInvoiceViaServer(invoice.trim(), amountSats);
+            setFallbackBolt11(bolt11);
+            setIsFallbackMode(true);
+
+            await prepareSend(bolt11, undefined);
+            logger.debug('✅ [SEND] Fallback BOLT11 payment prepared after LNURL failure');
+          } else {
+            throw lnurlError;
+          }
+        }
       } else if (parsedInput?.type === 'bolt11Invoice') {
         // Prepare BOLT11 payment
         logger.debug('💸 [SEND] Preparing BOLT11 payment...');
@@ -476,6 +591,9 @@ export function SendLightningSheet({
             confirmationSpeed: bitcoinFeeSpeed,
           },
         });
+      } else if (isFallbackMode && fallbackBolt11) {
+        // Fallback mode: send using the server-resolved BOLT11 invoice
+        await sendPayment(fallbackBolt11, undefined);
       } else if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
         // Send LNURL payment
         if (!lnurlPrepareResponse) {
@@ -491,7 +609,7 @@ export function SendLightningSheet({
       }
 
       // Save Lightning address to recent addresses
-      if (parsedInput?.type === 'lightningAddress') {
+      if (parsedInput?.type === 'lightningAddress' || isFallbackMode) {
         addRecentAddress(invoice.trim());
       }
 
@@ -562,7 +680,7 @@ export function SendLightningSheet({
             )}
 
             {/* Show destination for Lightning address payments */}
-            {parsedInput?.type === 'lightningAddress' && (
+            {(parsedInput?.type === 'lightningAddress' || isFallbackMode) && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <p className='mb-1 text-xs text-muted-foreground'>Sending to</p>
                 <p className='text-sm font-medium'>{invoice}</p>
@@ -570,7 +688,7 @@ export function SendLightningSheet({
             )}
 
             {/* Show invoice description for Lightning invoices, or comment for Lightning addresses */}
-            {(isLightningInvoice ? invoiceDescription : comment) && (
+            {(isLightningInvoice ? invoiceDescription : isFallbackMode ? '' : comment) && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <p className='mb-1 text-xs text-muted-foreground'>
                   {isLightningInvoice ? 'Description' : 'Comment'}
