@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
+import { queryKeys } from '@/lib/query-client';
 import { EventInvite, InviteTarget } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
@@ -73,7 +74,7 @@ interface EventInvitesResponse {
 // Hook to fetch event invites
 export function useEventInvites(status?: 'pending' | 'responded', enabled: boolean = true) {
   return useQuery({
-    queryKey: ['event-invites', status],
+    queryKey: queryKeys.eventInvites(status),
     queryFn: async () => {
       try {
         const params = status ? `?status=${status}` : '';

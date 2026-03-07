@@ -20,8 +20,8 @@ export const queryClient = new QueryClient({
           }
         }
 
-        // Retry up to 3 times for other errors
-        return failureCount < 3;
+        // Retry once for faster failure (was 3, caused long hangs)
+        return failureCount < 1;
       },
 
       // Retry delay: exponential backoff
@@ -135,6 +135,11 @@ export const queryKeys = {
   eventEmailBlasts: (eventId: string) => [...queryKeys.emailBlasts, eventId] as const,
   emailBlast: (eventId: string, blastId: string) =>
     [...queryKeys.emailBlasts, eventId, blastId] as const,
+
+  // Hub-specific queries
+  followingEvents: () => ['following-events'] as const,
+  forYouEvents: () => ['for-you-events'] as const,
+  eventInvites: (status?: string) => ['event-invites', status] as const,
 
   // Blog (Ghost CMS)
   blog: ['blog'] as const,

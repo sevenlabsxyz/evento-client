@@ -7,6 +7,7 @@ import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useHubPrefetch } from '@/lib/hooks/use-hub-prefetch';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -20,6 +21,9 @@ export default function HubPage() {
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { user } = useUserProfile();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
+
+  // Prefetch all hub data in parallel immediately
+  useHubPrefetch();
 
   // Set TopBar content
   useEffect(() => {

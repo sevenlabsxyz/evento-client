@@ -54,6 +54,7 @@ export function ForYouSection() {
   const discoverEvents = discoverQuery.data || [];
   const events = activeTab === 'discover' ? discoverEvents : followingEvents;
   const isLoading = currentQuery.isLoading;
+  const isError = currentQuery.isError;
 
   // Discover shows up to 3, Following shows up to 3
   const displayLimit = 3;
@@ -124,6 +125,16 @@ export function ForYouSection() {
                 <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200' />
               </div>
             ))}
+          </div>
+        ) : isError ? (
+          <div className='flex flex-col items-center justify-center py-12 text-center'>
+            <p className='mb-2 text-sm text-gray-500'>Couldn&apos;t load events</p>
+            <button
+              onClick={() => currentQuery.refetch()}
+              className='text-sm font-medium text-primary underline'
+            >
+              Tap to retry
+            </button>
           </div>
         ) : events.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-12 text-center'>
