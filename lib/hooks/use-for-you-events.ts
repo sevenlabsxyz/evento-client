@@ -1,6 +1,7 @@
 'use client';
 
 import apiClient from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { useQuery } from '@tanstack/react-query';
 import { EventWithUser } from '../types/api';
 
@@ -24,7 +25,7 @@ export function useForYouEvents(params: ForYouEventsParams = {}) {
   const { enabled = true } = params;
 
   return useQuery<ForYouEvent[], Error>({
-    queryKey: ['for-you-events'],
+    queryKey: queryKeys.forYouEvents(),
     queryFn: async () => {
       const response = await apiClient.get('/v1/events/for-you');
 
@@ -42,11 +43,12 @@ export function useForYouEvents(params: ForYouEventsParams = {}) {
     enabled,
     staleTime: 5 * 60 * 1000, // 5 minutes cache
     retry: (failureCount, error: any) => {
-      // Don't retry on 401 (unauthorized)
-      if (error?.response?.status === 401) {
+      // Don't retry on 4xx errors
+      const status = error?.status || error?.response?.status;
+      if (status && status >= 400 && status < 500) {
         return false;
       }
-      return failureCount < 3; // Retry up to 3 times for other errors
+      return failureCount < 1; // Retry once for faster failure
     },
   });
 }

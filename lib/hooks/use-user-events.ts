@@ -95,11 +95,12 @@ export function useUserEvents(params: UserEventsParams) {
       return undefined;
     },
     retry: (failureCount, error: any) => {
-      // Don't retry on 401 (unauthorized)
-      if (error?.response?.status === 401) {
+      // Don't retry on 4xx errors
+      const status = error?.status || error?.response?.status;
+      if (status && status >= 400 && status < 500) {
         return false;
       }
-      return failureCount < 3; // Retry up to 3 times for other errors
+      return failureCount < 1; // Retry once for faster failure
     },
     initialPageParam: 1,
   });

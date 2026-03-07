@@ -8,8 +8,8 @@ import { authService } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { ApiResponse, UserDetails } from '../types/api';
 
-// Query keys
-const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
+// Reuse the same query key as useAuth to avoid duplicate fetches for the same endpoint
+const USER_PROFILE_QUERY_KEY = ['auth', 'user'] as const;
 
 const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
@@ -90,10 +90,9 @@ export function useUpdateUserProfile() {
     },
     onSuccess: (updatedUser) => {
       if (updatedUser) {
-        // Update the query cache
+        // Update the query cache (shared key with useAuth)
         queryClient.setQueryData(USER_PROFILE_QUERY_KEY, updatedUser);
-        queryClient.setQueryData(['auth', 'user'], updatedUser);
-        queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+        queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
         // Update the auth store
         setUser(updatedUser);
       }

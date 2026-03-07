@@ -11,7 +11,8 @@ import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carouse
 import { Skeleton } from '@/components/ui/skeleton';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { Env } from '@/lib/constants/env';
-import { logger } from '@/lib/utils/logger';
+import { queryKeys } from '@/lib/query-client';
+import { useQuery } from '@tanstack/react-query';
 
 export interface BlogPost {
   id: string;
@@ -34,50 +35,34 @@ export interface BlogPost {
 }
 
 export function HubBlogGallery() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
 
-  // Fetch blog posts from Ghost API
-  useEffect(() => {
-    const fetchPosts = async () => {
-      // Check for required environment variables
-      if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-        logger.warn('Ghost API configuration missing - cannot fetch blog content');
-        setIsLoading(false);
-        return;
+  const hasGhostConfig = !!Env.NEXT_PUBLIC_GHOST_URL && !!Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY;
+
+  // Use React Query for blog posts - cached, retried, and deduped automatically
+  const { data: posts = [], isLoading } = useQuery<BlogPost[]>({
+    queryKey: queryKeys.blogPosts({ limit: 10, filter: 'tag:hub' }),
+    queryFn: async () => {
+      const res = await fetch(
+        `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&filter=tag:hub&include=tags,authors&limit=10`
+      );
+
+      if (!res.ok) {
+        throw new Error(`Ghost API error: ${res.status}`);
       }
 
-      try {
-        const res = await fetch(
-          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&filter=tag:hub&include=tags,authors&limit=10`
-        );
-
-        if (!res.ok) {
-          logger.error('Failed to fetch hub blog posts', {
-            status: res.status,
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-        setPosts(data.posts || []);
-      } catch (error) {
-        logger.error('Error fetching hub blog posts', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
+      const data = await res.json();
+      return data.posts || [];
+    },
+    enabled: hasGhostConfig,
+    staleTime: 30 * 60 * 1000, // 30 minutes - blog content changes infrequently
+    gcTime: 60 * 60 * 1000, // 1 hour
+    retry: 1,
+  });
 
   // Carousel navigation handlers
   useEffect(() => {
