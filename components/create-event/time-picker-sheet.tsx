@@ -2,7 +2,7 @@
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { formatSelectedTimezone } from '@/lib/utils/timezone';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import TimezoneSheet from './timezone-sheet';
 
 interface TimePickerSheetProps {
@@ -64,16 +64,51 @@ export default function TimePickerSheet({
     formatValue?: (value: any) => string;
   }) => {
     const wheelRef = useRef<HTMLDivElement>(null);
+    const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isUserScrolling = useRef(false);
+    const ITEM_HEIGHT = 44;
+    const CONTAINER_HEIGHT = 176;
 
+    // Scroll to the selected value (only when not user-scrolling)
     useEffect(() => {
-      if (wheelRef.current) {
+      if (wheelRef.current && !isUserScrolling.current) {
         const selectedIndex = values.indexOf(selectedValue);
-        const itemHeight = 44; // Height of each item
-        const containerHeight = 176; // h-44 = 176px
-        const scrollTop = selectedIndex * itemHeight - containerHeight / 2 + itemHeight / 2;
-        wheelRef.current.scrollTop = Math.max(0, scrollTop);
+        const scrollTop = selectedIndex * ITEM_HEIGHT - CONTAINER_HEIGHT / 2 + ITEM_HEIGHT / 2;
+        wheelRef.current.scrollTo({ top: Math.max(0, scrollTop), behavior: 'auto' });
       }
     }, [selectedValue, values]);
+
+    // Detect which item is centered after scrolling settles
+    const handleScroll = useCallback(() => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      isUserScrolling.current = true;
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        if (!wheelRef.current) return;
+        isUserScrolling.current = false;
+
+        const scrollTop = wheelRef.current.scrollTop;
+        // The top padding is h-22 (88px), so the first item starts at 88px.
+        // The center of the viewport is at scrollTop + CONTAINER_HEIGHT / 2.
+        // The center of item[i] is at 88 + i * ITEM_HEIGHT + ITEM_HEIGHT / 2.
+        const centerOffset = scrollTop + CONTAINER_HEIGHT / 2;
+        const index = Math.round((centerOffset - 88 - ITEM_HEIGHT / 2) / ITEM_HEIGHT);
+        const clampedIndex = Math.max(0, Math.min(values.length - 1, index));
+
+        if (values[clampedIndex] !== selectedValue) {
+          onValueChange(values[clampedIndex]);
+        }
+      }, 80);
+    }, [values, selectedValue, onValueChange]);
+
+    // Clean up timeout on unmount
+    useEffect(() => {
+      return () => {
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      };
+    }, []);
 
     return (
       <div className='relative h-44 overflow-hidden'>
@@ -87,9 +122,11 @@ export default function TimePickerSheet({
         <div
           ref={wheelRef}
           className='scrollbar-hide h-full overflow-y-auto'
-          style={{ scrollSnapType: 'y mandatory' }}
-          onTouchStart={(e) => e.stopPropagation()}
-          onTouchMove={(e) => e.stopPropagation()}
+          style={{
+            scrollSnapType: 'y mandatory',
+            WebkitOverflowScrolling: 'touch',
+          }}
+          onScroll={handleScroll}
           onWheel={(e) => e.stopPropagation()}
         >
           {/* Padding top */}
@@ -228,6 +265,8 @@ export default function TimePickerSheet({
               .scrollbar-hide {
                 -ms-overflow-style: none;
                 scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
               }
               .scrollbar-hide::-webkit-scrollbar {
                 display: none;
