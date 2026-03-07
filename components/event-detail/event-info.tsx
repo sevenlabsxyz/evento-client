@@ -253,14 +253,20 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
 
   const startDate = useMemo(() => {
-    if (!event.computedStartDate) return null;
-    const d = new Date(event.computedStartDate);
+    const monthShort = event.monthShort ?? '';
+    const day = event.dayOfMonth ?? '';
+    const fullDate = event.longDate ?? event.date;
+
+    if (!monthShort && !day && !fullDate) {
+      return null;
+    }
+
     return {
-      monthShort: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-      day: d.getDate(),
-      fullDate: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+      monthShort,
+      day,
+      fullDate,
     };
-  }, [event.computedStartDate]);
+  }, [event.monthShort, event.dayOfMonth, event.longDate, event.date]);
 
   const detailModuleBaseClassName =
     'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50';

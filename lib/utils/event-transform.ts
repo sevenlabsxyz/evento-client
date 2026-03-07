@@ -1,7 +1,8 @@
 import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
 import { EventDetail as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
+import { getTimezoneAbbreviationSync } from '@/lib/utils/timezone';
 
 /**
  * Transform API event data to display format
@@ -11,11 +12,24 @@ export function transformApiEventToDisplay(
   hosts: { user_details: UserDetails }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
-  const { date, time, timeWithTz } = formatEventDate(
-    apiEvent.computed_start_date,
-    apiEvent.timezone
-  );
-  const endDateTime = formatEventDate(apiEvent.computed_end_date, apiEvent.timezone);
+  const startDateTime = formatEventDateFromParts({
+    year: apiEvent.start_date_year,
+    month: apiEvent.start_date_month,
+    day: apiEvent.start_date_day,
+    hours: apiEvent.start_date_hours,
+    minutes: apiEvent.start_date_minutes,
+    timezone: apiEvent.timezone,
+    fallbackIso: apiEvent.computed_start_date,
+  });
+  const endDateTime = formatEventDateFromParts({
+    year: apiEvent.end_date_year,
+    month: apiEvent.end_date_month,
+    day: apiEvent.end_date_day,
+    hours: apiEvent.end_date_hours,
+    minutes: apiEvent.end_date_minutes,
+    timezone: apiEvent.timezone,
+    fallbackIso: apiEvent.computed_end_date,
+  });
 
   // Get location from event_locations (new format) or parse legacy location string
   const rawEventLoc = (apiEvent as any).event_locations;
@@ -68,12 +82,15 @@ export function transformApiEventToDisplay(
     subtitle:
       location.city && location.state ? `${location.city}, ${location.state}` : location.name,
     description: apiEvent.description || '',
-    date: date,
-    startTime: time,
+    date: startDateTime.date,
+    startTime: startDateTime.time,
     endTime: endDateTime.time,
-    timezone: timeWithTz.split(' ').pop(), // Extract timezone abbreviation
+    timezone: getTimezoneAbbreviationSync(apiEvent.timezone),
     computedStartDate: apiEvent.computed_start_date,
     computedEndDate: apiEvent.computed_end_date,
+    monthShort: startDateTime.monthShort,
+    dayOfMonth: startDateTime.dayOfMonth,
+    longDate: startDateTime.longDate,
     location: location,
     coverImages: apiEvent.cover ? [getOptimizedCoverUrl(apiEvent.cover, 'detail')] : [],
     galleryImages: galleryItems.map((item) => getOptimizedCoverUrl(item.url, 'detail')),
