@@ -1,10 +1,10 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Menu } from 'lucide-react';
+import { ArrowLeft, Menu, PanelRightClose, PanelRightOpen } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -26,9 +26,16 @@ const fadeConfig = {
 
 export function SiteHeader() {
   const router = useRouter();
+  const pathname = usePathname();
   const { isAuthenticated } = useAuth();
-  const { toggle: toggleRightSidebar } = useRightSidebar();
   const { toggleSidebar } = useSidebar();
+  const {
+    isOpen: isRightSidebarOpen,
+    panel: rightSidebarPanel,
+    manageEventContext,
+    close: closeRightSidebar,
+    openManageEventMenu,
+  } = useRightSidebar();
   const {
     leftMode,
     onBackPress,
@@ -44,7 +51,55 @@ export function SiteHeader() {
     hideMobileBreadcrumb,
   } = useTopBar();
 
+  const manageRouteMatch = pathname.match(/^\/e\/([^/]+)\/manage(?:\/.*)?$/);
+  const manageEventIdFromPath = manageRouteMatch?.[1] ?? null;
+  const isOnManageRoute = !!manageEventIdFromPath;
+  const isManageSidebarOpenForCurrentEvent =
+    isOnManageRoute &&
+    isRightSidebarOpen &&
+    rightSidebarPanel === 'manage-event-menu' &&
+    manageEventContext?.eventId === manageEventIdFromPath;
+
+  const handleManageSidebarToggle = () => {
+    if (!manageEventIdFromPath) return;
+
+    if (isManageSidebarOpenForCurrentEvent) {
+      closeRightSidebar();
+      return;
+    }
+
+    openManageEventMenu({
+      eventId: manageEventIdFromPath,
+      eventType:
+        manageEventContext?.eventId === manageEventIdFromPath
+          ? (manageEventContext.eventType ?? undefined)
+          : undefined,
+      eventStatus:
+        manageEventContext?.eventId === manageEventIdFromPath
+          ? (manageEventContext.eventStatus ?? undefined)
+          : undefined,
+    });
+  };
+
+  const rightButtons =
+    isOnManageRoute && isAuthenticated
+      ? [
+          ...buttons,
+          {
+            id: 'manage-sidebar-mobile',
+            icon: isManageSidebarOpenForCurrentEvent ? PanelRightClose : PanelRightOpen,
+            onClick: handleManageSidebarToggle,
+            label: isManageSidebarOpenForCurrentEvent ? 'Hide Manage Menu' : 'Show Manage Menu',
+          },
+        ]
+      : buttons;
+
   const handleBackPress = () => {
+    if (manageEventIdFromPath) {
+      router.push(`/e/${manageEventIdFromPath}?from=manage`);
+      return;
+    }
+
     if (onBackPress) {
       onBackPress();
     } else {
@@ -52,8 +107,10 @@ export function SiteHeader() {
     }
   };
 
+  const showsMainLogoOnMobileLeft = !isAuthenticated || leftMode === 'logo';
+
   const renderLeftContent = () => {
-    if (!isAuthenticated || leftMode === 'logo') {
+    if (showsMainLogoOnMobileLeft) {
       return (
         <Link href='/' className='flex items-center gap-2 md:hidden'>
           <Image
@@ -137,7 +194,7 @@ export function SiteHeader() {
   const leftKey = `${leftMode}-${isAuthenticated}`;
   const centerKey = `${centerMode}-${title}-${subtitle}`;
   const rightKey =
-    [...textButtons.map((b) => b.id), ...buttons.map((b) => b.id)].join('-') || 'empty';
+    [...textButtons.map((b) => b.id), ...rightButtons.map((b) => b.id)].join('-') || 'empty';
 
   return (
     <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
@@ -175,7 +232,7 @@ export function SiteHeader() {
 
         {/* Centered sublogo on mobile when breadcrumb is hidden */}
         <AnimatePresence>
-          {hideMobileBreadcrumb && (
+          {hideMobileBreadcrumb && !showsMainLogoOnMobileLeft && (
             <motion.div
               key='sublogo'
               className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'
@@ -210,19 +267,17 @@ export function SiteHeader() {
                 })}
               </div>
             )}
-            {buttons.length > 0 && (
+            {rightButtons.length > 0 && (
               <div className='flex gap-2'>
-                {buttons.map((button) => (
-                  <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
+                {rightButtons.map((button) => (
+                  <CircledIconButton
+                    key={button.id}
+                    icon={button.icon}
+                    onClick={button.onClick}
+                    className={button.id === 'manage-sidebar-mobile' ? 'md:hidden' : undefined}
+                  />
                 ))}
               </div>
-            )}
-            {isAuthenticated && (
-              <CircledIconButton
-                icon={Calendar}
-                onClick={toggleRightSidebar}
-                className='hidden lg:flex'
-              />
             )}
           </motion.div>
         </AnimatePresence>

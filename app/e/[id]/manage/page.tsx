@@ -4,26 +4,16 @@ import CancelEventModal from '@/components/manage-event/cancel-event-modal';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { getManageEventOptions } from '@/lib/constants/manage-event-options';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { usePublishEvent } from '@/lib/hooks/use-publish-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import {
-  ClipboardList,
-  DollarSign,
-  FileText,
-  // Layers,
-  Mail,
-  MessageCircle,
-  Music,
-  Shield,
-  UserPlus,
-  Users,
-  X,
-  Zap,
-} from 'lucide-react';
+import { ChevronRight, MessageCircle, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+const skeletonRows = ['one', 'two', 'three', 'four', 'five', 'six', 'seven'];
 
 export default function ManageEventPage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
@@ -62,122 +52,11 @@ export default function ManageEventPage() {
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPublishSheet, setShowPublishSheet] = useState(false);
-  const isRegistrationType =
-    eventDetails?.type === 'registration' || eventDetails?.type === 'ticketed';
-  const showRegistrationOption = isRegistrationType;
-
-  const showSubmissionsOption = isRegistrationType && eventDetails?.status === 'published';
-
-  const managementOptions = [
-    ...(showSubmissionsOption
-      ? [
-          {
-            id: 'registration-submissions',
-            title: 'Registrations',
-            description: 'Review and manage guest registrations',
-            icon: <ClipboardList className='h-6 w-6' />,
-            iconBg: 'bg-blue-100',
-            iconColor: 'text-blue-700',
-            route: `/e/${eventId}/manage/registration/submissions`,
-            isPriority: true,
-          },
-        ]
-      : []),
-    {
-      id: 'event-details',
-      title: 'Event Details',
-      description: 'Setup event time and location',
-      icon: <FileText className='h-6 w-6' />,
-      iconBg: 'bg-gray-100',
-      iconColor: 'text-gray-600',
-      route: `/e/${eventId}/manage/details`,
-    },
-    {
-      id: 'guest-list',
-      title: 'Guest List',
-      description: 'View guests and invites',
-      icon: <Users className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      route: `/e/${eventId}/manage/guests`,
-    },
-    ...(showRegistrationOption
-      ? [
-          {
-            id: 'registration-questions',
-            title: 'Registration Forms',
-            description: 'Create and edit your registration form',
-            icon: <FileText className='h-6 w-6' />,
-            iconBg: 'bg-purple-100',
-            iconColor: 'text-purple-600',
-            route: `/e/${eventId}/manage/registration`,
-          },
-        ]
-      : []),
-    {
-      id: 'cohosts',
-      title: 'Cohosts',
-      description: 'Invite others to help manage',
-      icon: <UserPlus className='h-6 w-6' />,
-      iconBg: 'bg-orange-100',
-      iconColor: 'text-orange-600',
-      route: `/e/${eventId}/manage/hosts`,
-    },
-    {
-      id: 'security-privacy',
-      title: 'Security & Privacy',
-      description: 'Visibility and password settings',
-      icon: <Shield className='h-6 w-6' />,
-      iconBg: 'bg-sky-100',
-      iconColor: 'text-sky-600',
-      route: `/e/${eventId}/manage/security`,
-    },
-    {
-      id: 'email-blasts',
-      title: 'Email Blasts',
-      description: 'Send emails to guests',
-      icon: <Mail className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
-      route: `/e/${eventId}/manage/email-blast`,
-    },
-    // {
-    //   id: 'sub-events',
-    //   title: 'Sub Events',
-    //   description: 'Create and manage sub events',
-    //   icon: <Layers className='h-6 w-6' />,
-    //   iconBg: 'bg-teal-100',
-    //   iconColor: 'text-teal-600',
-    //   route: `/e/${eventId}/manage/sub-events`,
-    // },
-    {
-      id: 'music',
-      title: 'Music',
-      description: 'Add Spotify and Wavlake tracks',
-      icon: <Music className='h-6 w-6' />,
-      iconBg: 'bg-indigo-100',
-      iconColor: 'text-indigo-600',
-      route: `/e/${eventId}/manage/music`,
-    },
-    {
-      id: 'contributions',
-      title: 'Contributions',
-      description: 'Accept event donations',
-      icon: <DollarSign className='h-6 w-6' />,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-600',
-      route: `/e/${eventId}/manage/contributions`,
-    },
-    {
-      id: 'crowdfunding',
-      title: 'Crowdfunding',
-      description: 'Set up a Lightning crowdfunding campaign',
-      icon: <Zap className='h-6 w-6' />,
-      iconBg: 'bg-amber-100',
-      iconColor: 'text-amber-600',
-      route: `/e/${eventId}/manage/crowdfunding`,
-    },
-  ];
+  const managementOptions = getManageEventOptions({
+    eventId,
+    eventType: eventDetails?.type,
+    eventStatus: eventDetails?.status,
+  });
 
   const handleOptionClick = (route: string) => {
     router.push(route);
@@ -213,8 +92,8 @@ export default function ManageEventPage() {
           </div>
           {/* Management options skeleton */}
           <div className='space-y-1'>
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+            {skeletonRows.map((row) => (
+              <div key={row} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
                 <Skeleton className='h-12 w-12 rounded-xl' />
                 <div className='flex-1 space-y-2'>
                   <Skeleton className='h-4 w-32' />
@@ -279,42 +158,43 @@ export default function ManageEventPage() {
         )}
 
         <div className='space-y-2'>
-          {managementOptions.map((option) => (
-            <button
-              key={option.id}
-              onClick={() => handleOptionClick(option.route)}
-              className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition-colors ${
-                option.isPriority
-                  ? 'mb-6 border-blue-200 bg-blue-50 hover:bg-blue-100'
-                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
-              }`}
-            >
-              <div
-                className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
+          {managementOptions.map((option) => {
+            const Icon = option.icon;
+
+            return (
+              <button
+                type='button'
+                key={option.id}
+                onClick={() => handleOptionClick(option.route)}
+                className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition-colors ${
+                  option.isPriority
+                    ? 'mb-6 border-blue-200 bg-blue-50 hover:bg-blue-100'
+                    : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+                }`}
               >
-                <div className={option.iconColor}>{option.icon}</div>
-              </div>
-              <div className='flex-1 text-left'>
-                <h3 className='font-semibold text-gray-900'>{option.title}</h3>
-                <p className='text-sm text-gray-500'>{option.description}</p>
-              </div>
-              <div className='text-gray-400'>
-                <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path
-                    strokeLinecap='round'
-                    strokeLinejoin='round'
-                    strokeWidth={2}
-                    d='m9 18 6-6-6-6'
-                  />
-                </svg>
-              </div>
-            </button>
-          ))}
+                <div
+                  className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
+                >
+                  <div className={option.iconColor}>
+                    <Icon className='h-6 w-6' />
+                  </div>
+                </div>
+                <div className='flex-1 text-left'>
+                  <h3 className='font-semibold text-gray-900'>{option.title}</h3>
+                  <p className='text-sm text-gray-500'>{option.description}</p>
+                </div>
+                <div className='text-gray-400'>
+                  <ChevronRight className='h-5 w-5' />
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Cancel Event */}
         <div className='pt-6'>
           <button
+            type='button'
             onClick={handleCancelEvent}
             className='flex w-full items-center gap-3 rounded-xl bg-gray-50 p-4 hover:bg-red-50'
           >
