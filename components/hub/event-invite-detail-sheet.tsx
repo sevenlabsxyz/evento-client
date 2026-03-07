@@ -2,7 +2,7 @@
 
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { VisuallyHidden } from '@silk-hq/components';
 import { Check, Eye, MapPin, Users, X } from 'lucide-react';
@@ -29,9 +29,15 @@ export function EventInviteDetailSheet({
 
   if (!invite) return null;
 
-  const { date: eventDate, timeWithTz: eventTime } = formatEventDate(
-    invite.events.computed_start_date
-  );
+  const { date: eventDate, timeWithTz: eventTime } = formatEventDateFromParts({
+    year: invite.events.start_date_year,
+    month: invite.events.start_date_month,
+    day: invite.events.start_date_day,
+    hours: invite.events.start_date_hours,
+    minutes: invite.events.start_date_minutes,
+    timezone: invite.events.timezone,
+    fallbackIso: invite.events.computed_start_date,
+  });
 
   const event = transformApiEventToDisplay(invite.events, [], []);
 
