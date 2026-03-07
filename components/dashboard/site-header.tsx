@@ -107,8 +107,10 @@ export function SiteHeader() {
     }
   };
 
+  const showsMainLogoOnMobileLeft = !isAuthenticated || leftMode === 'logo';
+
   const renderLeftContent = () => {
-    if (!isAuthenticated || leftMode === 'logo') {
+    if (showsMainLogoOnMobileLeft) {
       return (
         <Link href='/' className='flex items-center gap-2 md:hidden'>
           <Image
@@ -230,7 +232,7 @@ export function SiteHeader() {
 
         {/* Centered sublogo on mobile when breadcrumb is hidden */}
         <AnimatePresence>
-          {hideMobileBreadcrumb && leftMode !== 'logo' && (
+          {hideMobileBreadcrumb && !showsMainLogoOnMobileLeft && (
             <motion.div
               key='sublogo'
               className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'
