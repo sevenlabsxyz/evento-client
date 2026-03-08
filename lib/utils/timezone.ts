@@ -1,7 +1,16 @@
 import { logger } from '@/lib/utils/logger';
 
+interface TimezoneEntry {
+  value: string;
+  abbr: string;
+  offset: number;
+  isdst: boolean;
+  text: string;
+  utc: string[];
+}
+
 // Cache for timezone data to avoid repeated fetch calls
-let timezoneCache: any[] | null = null;
+let timezoneCache: TimezoneEntry[] | null = null;
 
 function normalizeTimezoneLabel(label: string): string {
   if (!label) {
@@ -48,16 +57,22 @@ function getIntlTimezoneLabel(timezone: string, style: 'short' | 'shortOffset'):
 /**
  * Load timezone data from tz.json file
  */
-async function loadTimezoneData(): Promise<any[]> {
+async function loadTimezoneData(): Promise<TimezoneEntry[]> {
   if (timezoneCache) {
     return timezoneCache;
   }
 
   try {
     const response = await fetch('/assets/tz/tz.json');
-    const data = await response.json();
+    const data: unknown = await response.json();
+
+    if (!Array.isArray(data)) {
+      logger.error('Timezone data payload was not an array');
+      return [];
+    }
+
     timezoneCache = data;
-    return data;
+    return data as TimezoneEntry[];
   } catch (error) {
     logger.error('Failed to load timezone data', {
       error: error instanceof Error ? error.message : String(error),
@@ -80,7 +95,7 @@ export async function getTimezoneAbbreviation(timezone: string): Promise<string>
     const timezoneData = await loadTimezoneData();
 
     // Find timezone entry where utc array contains the timezone
-    const entry = timezoneData.find((tz: any) => tz.utc && tz.utc.includes(timezone));
+    const entry = timezoneData.find((tz) => tz.utc.includes(timezone));
 
     if (entry && entry.abbr) {
       return normalizeTimezoneLabel(entry.abbr);
