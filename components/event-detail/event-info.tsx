@@ -7,28 +7,26 @@ import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
-import { logger } from '@/lib/utils/logger';
+import { formatEventLocationAddress } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import {
   ArrowUpRight,
   Clock,
   Globe,
   Lock,
-  Mail,
   MapPin,
   MoreHorizontal,
   Share,
   Star,
   XCircle,
 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 import RsvpSheet from './event-rsvp-sheet';
+import { LocationActionsSheet } from './location-actions-sheet';
 import MoreOptionsSheet from './more-options-sheet';
 import OwnerEventButtons from './owner-event-buttons';
 import { RegistrationStatus } from './registration-status';
@@ -42,11 +40,11 @@ interface EventInfoProps {
 }
 
 export default function EventInfo({ event, currentUserId = '', eventData, hosts }: EventInfoProps) {
-  const router = useRouter();
   const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const [showContributionSheet, setShowContributionSheet] = useState(false);
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
 
   const { data: userRsvp } = useUserRSVP(event.id);
   const { data: eventRsvps } = useEventRSVPs(event.id);
@@ -127,28 +125,6 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
   const handleDeniedClick = () => {
     toast.error('Your registration was not approved. Contact the host for details.');
-  };
-
-  const handleContact = async () => {
-    const primaryHost = event.hosts?.[0];
-    if (!primaryHost) {
-      toast.error('No host available to contact');
-      return;
-    }
-
-    try {
-      const res = await streamChatService.createDirectMessageChannel(primaryHost.id);
-      if (res?.channel?.id) {
-        router.push(`/e/messages/${res.channel.id}`);
-      } else {
-        toast.error('Unable to start chat');
-      }
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to start chat');
-      logger.error('createDirectMessageChannel error', {
-        error: err instanceof Error ? err.message : String(err),
-      });
-    }
   };
 
   const handleShare = async () => {
@@ -251,6 +227,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
   const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
   const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
+  const isTBDLocation = event.location.name === 'TBD';
+  const fullAddress = formatEventLocationAddress(event.location);
+  const destination = event.location.coordinates
+    ? `${event.location.coordinates.lat},${event.location.coordinates.lng}`
+    : fullAddress;
 
   const startDate = useMemo(() => {
     const monthShort = event.monthShort ?? '';
@@ -276,7 +257,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       <div className='space-y-6 py-6'>
         <div className='space-y-4'>
           {eventData?.visibility && (
-            <div className='flex items-center gap-2'>
+            <div className='mb-2 flex items-center gap-2'>
               <StatusBadge
                 status={eventData.visibility === 'public' ? 'success' : 'default'}
                 leftIcon={eventData.visibility === 'public' ? Globe : Lock}
@@ -307,15 +288,23 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
           {/* Location */}
           {!isLocationHidden && (
-            <div className='flex items-center gap-4'>
+            <button
+              type='button'
+              onClick={() => !isTBDLocation && setShowLocationSheet(true)}
+              className='group flex w-full items-center gap-4 text-left'
+            >
               <div className={detailModuleBaseClassName}>
                 <MapPin className='h-[18px] w-[18px] text-gray-600' />
               </div>
               <div className='flex flex-col'>
                 <div className='flex items-center gap-1'>
-                  <span className='font-semibold text-gray-900'>{event.location.name}</span>
+                  <span
+                    className={`font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900 group-hover:underline'}`}
+                  >
+                    {event.location.name}
+                  </span>
                   {event.location.name !== 'TBD' && (
-                    <ArrowUpRight className='h-3.5 w-3.5 text-gray-400' />
+                    <ArrowUpRight className='h-3.5 w-3.5 text-gray-400 transition-colors group-hover:text-gray-600' />
                   )}
                 </div>
                 {(event.location.city || event.location.state) && (
@@ -325,7 +314,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   </span>
                 )}
               </div>
-            </div>
+            </button>
           )}
         </div>
 
@@ -333,7 +322,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
           <OwnerEventButtons eventId={event.id} />
         ) : (
           <>
-            <div className='grid grid-cols-4 gap-2'>
+            <div className='grid grid-cols-3 gap-2'>
               {hasPendingRegistration ? (
                 <button
                   type='button'
@@ -363,15 +352,6 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   <span className='text-xs font-medium'>{rsvpButton.label}</span>
                 </button>
               )}
-
-              <button
-                type='button'
-                onClick={handleContact}
-                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <Mail className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>Contact</span>
-              </button>
 
               <button
                 type='button'
@@ -431,6 +411,15 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         onClose={() => setShowRsvpSheet(false)}
         eventData={eventData}
       />
+
+      {!isLocationHidden && !isTBDLocation && (
+        <LocationActionsSheet
+          open={showLocationSheet}
+          onOpenChange={setShowLocationSheet}
+          fullAddress={fullAddress}
+          destination={destination}
+        />
+      )}
 
       {eventData && (
         <ContributionPaymentSheet
