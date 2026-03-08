@@ -1,7 +1,7 @@
 'use client';
 
 import { EventWithUser } from '@/lib/types/api';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
 import { Calendar, Clock, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -30,7 +30,15 @@ export function EventCompactItem({
   onMenuClick,
 }: EventCompactItemProps) {
   const router = useRouter();
-  const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
+  const { date, timeWithTz } = formatEventDateFromParts({
+    year: event.start_date_year,
+    month: event.start_date_month,
+    day: event.start_date_day,
+    hours: event.start_date_hours,
+    minutes: event.start_date_minutes,
+    timezone: event.timezone,
+    fallbackIso: event.computed_start_date,
+  });
 
   const handleEventClick = () => {
     router.push(`/e/${event.id}`);

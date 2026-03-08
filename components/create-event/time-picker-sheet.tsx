@@ -190,6 +190,109 @@ export default function TimePickerSheet({
     onClose();
   };
 
+  // Scroll wheel component
+  const ScrollWheel = ({
+    values,
+    selectedValue,
+    onValueChange,
+    formatValue,
+  }: {
+    values: (number | string)[];
+    selectedValue: number | string;
+    onValueChange: (value: any) => void;
+    formatValue?: (value: any) => string;
+  }) => {
+    const wheelRef = useRef<HTMLDivElement>(null);
+    const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isUserScrolling = useRef(false);
+    const ITEM_HEIGHT = 44;
+    const CONTAINER_HEIGHT = 176;
+
+    // Scroll to the selected value (only when not user-scrolling)
+    useEffect(() => {
+      if (wheelRef.current && !isUserScrolling.current) {
+        const selectedIndex = values.indexOf(selectedValue);
+        const scrollTop = selectedIndex * ITEM_HEIGHT - CONTAINER_HEIGHT / 2 + ITEM_HEIGHT / 2;
+        wheelRef.current.scrollTo({ top: Math.max(0, scrollTop), behavior: 'auto' });
+      }
+    }, [selectedValue, values]);
+
+    // Detect which item is centered after scrolling settles
+    const handleScroll = useCallback(() => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+      isUserScrolling.current = true;
+
+      scrollTimeoutRef.current = setTimeout(() => {
+        if (!wheelRef.current) return;
+        isUserScrolling.current = false;
+
+        const scrollTop = wheelRef.current.scrollTop;
+        // The top padding is h-22 (88px), so the first item starts at 88px.
+        // The center of the viewport is at scrollTop + CONTAINER_HEIGHT / 2.
+        // The center of item[i] is at 88 + i * ITEM_HEIGHT + ITEM_HEIGHT / 2.
+        const centerOffset = scrollTop + CONTAINER_HEIGHT / 2;
+        const index = Math.round((centerOffset - 88 - ITEM_HEIGHT / 2) / ITEM_HEIGHT);
+        const clampedIndex = Math.max(0, Math.min(values.length - 1, index));
+
+        if (values[clampedIndex] !== selectedValue) {
+          onValueChange(values[clampedIndex]);
+        }
+      }, 80);
+    }, [values, selectedValue, onValueChange]);
+
+    // Clean up timeout on unmount
+    useEffect(() => {
+      return () => {
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      };
+    }, []);
+
+    return (
+      <div className='relative h-44 overflow-hidden'>
+        {/* Gradient overlays */}
+        <div className='pointer-events-none absolute left-0 right-0 top-0 z-10 h-11 bg-gradient-to-b from-white to-transparent' />
+        <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-11 bg-gradient-to-t from-white to-transparent' />
+
+        {/* Selection indicator */}
+        <div className='-mt-5.5 pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-11 border-b border-t border-transparent' />
+
+        <div
+          ref={wheelRef}
+          className='scrollbar-hide h-full overflow-y-auto'
+          style={{
+            scrollSnapType: 'y mandatory',
+            WebkitOverflowScrolling: 'touch',
+          }}
+          onScroll={handleScroll}
+          onWheel={(e) => e.stopPropagation()}
+        >
+          {/* Padding top */}
+          <div className='h-22' />
+
+          {values.map((value, index) => (
+            <button
+              key={index}
+              onClick={() => onValueChange(value)}
+              className={`flex h-11 w-full items-center justify-center rounded-lg text-lg font-medium transition-colors ${
+                selectedValue === value
+                  ? 'border border-gray-200 bg-gray-100 text-gray-900'
+                  : 'text-gray-400 hover:text-gray-500'
+              } `}
+              style={{ scrollSnapAlign: 'center' }}
+            >
+              {formatValue ? formatValue(value) : value}
+            </button>
+          ))}
+
+          {/* Padding bottom */}
+          <div className='h-22' />
+        </div>
+      </div>
+    );
+  };
+
   const [showTimezoneSheet, setShowTimezoneSheet] = useState(false);
 
   return (

@@ -13,6 +13,7 @@ import { EventPasswordGate } from '@/components/event-detail/event-password-gate
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
 import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
+import SaveEventSheet from '@/components/event-detail/save-event-sheet';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
@@ -32,7 +33,7 @@ import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Image, Info, MessageSquare, Share } from 'lucide-react';
+import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -45,6 +46,7 @@ export default function EventDetailPageClient() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [showSaveSheet, setShowSaveSheet] = useState(false);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
   const [passwordAccessGranted, setPasswordAccessGranted] = useState(false);
@@ -147,6 +149,7 @@ export default function EventDetailPageClient() {
     router,
     upsertRsvp.isPending,
     upsertRsvp.isSuccess,
+    upsertRsvp.mutate,
     isUserRsvpLoading,
     isUserRsvpFetching,
     userRsvpData,
@@ -177,6 +180,12 @@ export default function EventDetailPageClient() {
     eventDate: event?.computedStartDate || '',
     enabled: !!event?.location.city && !!event?.location.country && !!event?.computedStartDate,
   });
+
+  const isOwnerOrCohost = useMemo(() => {
+    if (!user?.id) return false;
+    if (eventData?.creator_user_id === user.id) return true;
+    return hostsData.some((host) => host.user_details?.id === user.id);
+  }, [eventData?.creator_user_id, hostsData, user?.id]);
 
   // Configure TopBar for event pages
   useEffect(() => {
@@ -221,6 +230,16 @@ export default function EventDetailPageClient() {
           onClick: handleShare,
           label: 'Share',
         },
+        ...(!isOwnerOrCohost
+          ? [
+              {
+                id: 'save-event',
+                icon: Bookmark,
+                onClick: () => setShowSaveSheet(true),
+                label: 'Save Event',
+              },
+            ]
+          : []),
       ],
       isOverlaid: false,
     });
@@ -234,6 +253,7 @@ export default function EventDetailPageClient() {
     clearRoute,
     applyRouteConfig,
     event?.title,
+    isOwnerOrCohost,
     cameFromManage,
     router,
     isAuthenticated,
@@ -312,6 +332,7 @@ export default function EventDetailPageClient() {
             The event you&apos;re looking for doesn&apos;t exist.
           </p>
           <button
+            type='button'
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
@@ -446,6 +467,14 @@ export default function EventDetailPageClient() {
         userId={user?.id || ''}
         eventId={event.id}
       />
+
+      {!isOwnerOrCohost && (
+        <SaveEventSheet
+          isOpen={showSaveSheet}
+          onClose={() => setShowSaveSheet(false)}
+          eventId={event.id}
+        />
+      )}
     </div>
   );
 }

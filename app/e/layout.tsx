@@ -2,7 +2,7 @@
 
 import { BottomTabBar } from '@/components/bottom-tab-bar';
 import { AppSidebar } from '@/components/dashboard/app-sidebar';
-import { SidebarRight } from '@/components/dashboard/sidebar-right';
+// import { SidebarRight } from '@/components/dashboard/sidebar-right';
 import { SiteHeader } from '@/components/dashboard/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { SESSION_KEYS } from '@/lib/constants/storage-keys';
@@ -61,7 +61,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
           <div className='flex-1 overflow-auto'>{children}</div>
           <BottomTabBar />
         </SidebarInset>
-        {isAuthenticated && <SidebarRight />}
+        {/* {isAuthenticated && <SidebarRight />} */}
       </SidebarProvider>
     </StreamChatProvider>
   );
