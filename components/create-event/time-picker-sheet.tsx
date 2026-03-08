@@ -10,6 +10,7 @@ const WHEEL_CONTAINER_HEIGHT = 176;
 const WHEEL_VERTICAL_PADDING = (WHEEL_CONTAINER_HEIGHT - WHEEL_ITEM_HEIGHT) / 2;
 
 interface ScrollWheelProps<T extends number | string> {
+  label: string;
   values: T[];
   selectedValue: T;
   onValueChange: (value: T) => void;
@@ -17,6 +18,7 @@ interface ScrollWheelProps<T extends number | string> {
 }
 
 function ScrollWheel<T extends number | string>({
+  label,
   values,
   selectedValue,
   onValueChange,
@@ -104,6 +106,9 @@ function ScrollWheel<T extends number | string>({
       <div
         ref={wheelRef}
         className='scrollbar-hide h-full overflow-y-auto'
+        role='listbox'
+        aria-label={label}
+        aria-orientation='vertical'
         style={{
           scrollSnapType: 'y mandatory',
           WebkitOverflowScrolling: 'touch',
@@ -119,6 +124,9 @@ function ScrollWheel<T extends number | string>({
           <button
             key={String(value)}
             type='button'
+            role='option'
+            aria-selected={selectedValue === value}
+            aria-label={`${label} ${formatValue ? formatValue(value) : value}`}
             onClick={() => {
               onValueChange(value);
               scrollToValue(value, 'smooth');
@@ -191,6 +199,8 @@ export default function TimePickerSheet({
   };
 
   const [showTimezoneSheet, setShowTimezoneSheet] = useState(false);
+  const formattedHour = hour.toString().padStart(2, '0');
+  const formattedMinute = minute.toString().padStart(2, '0');
 
   return (
     <DetachedSheet.Root
@@ -215,10 +225,8 @@ export default function TimePickerSheet({
                   </button>
                   <div className='text-center'>
                     <h2 className='text-lg font-semibold'>{title}</h2>
-                    <p className='whitespace-pre-line text-sm text-gray-500'>
-                      {`${hour.toString().padStart(2, '0')}:${minute
-                        .toString()
-                        .padStart(2, '0')} ${period}`}
+                    <p className='whitespace-pre-line text-sm text-gray-500' aria-live='polite'>
+                      {formattedHour}:{formattedMinute} {period}
                     </p>
                   </div>
                   <button
@@ -237,6 +245,7 @@ export default function TimePickerSheet({
                   {/* Hour Wheel */}
                   <div className='text-center'>
                     <ScrollWheel
+                      label='Select hour'
                       values={hours}
                       selectedValue={hour}
                       onValueChange={setHour}
@@ -247,6 +256,7 @@ export default function TimePickerSheet({
                   {/* Minute Wheel */}
                   <div className='text-center'>
                     <ScrollWheel
+                      label='Select minutes'
                       values={minutes}
                       selectedValue={minute}
                       onValueChange={setMinute}
@@ -258,6 +268,7 @@ export default function TimePickerSheet({
                   <div className='flex h-44 flex-col items-center justify-center gap-2'>
                     <button
                       type='button'
+                      aria-pressed={period === 'AM'}
                       onClick={() => setPeriod('AM')}
                       className={`h-10 w-16 rounded-lg border text-lg font-medium transition-colors ${
                         period === 'AM'
@@ -269,6 +280,7 @@ export default function TimePickerSheet({
                     </button>
                     <button
                       type='button'
+                      aria-pressed={period === 'PM'}
                       onClick={() => setPeriod('PM')}
                       className={`h-10 w-16 rounded-lg border text-lg font-medium transition-colors ${
                         period === 'PM'
