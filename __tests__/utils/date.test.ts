@@ -64,4 +64,43 @@ describe('formatEventDateFromParts', () => {
     expect(formatted.time).toBe('10:00 AM');
     expect(formatted.timeWithTz).toBe('10:00 AM PT');
   });
+
+  it('falls back to computed timestamp formatting when time parts are missing', () => {
+    const formatted = formatEventDateFromParts({
+      year: 2026,
+      month: 4,
+      day: 26,
+      hours: null,
+      minutes: null,
+      timezone: 'America/Los_Angeles',
+      fallbackIso: '2026-04-26T17:00:00.000Z',
+    });
+
+    expect(formatted.date).toBe('Apr 26, 2026');
+    expect(formatted.time).toBe('10:00 AM');
+    expect(formatted.timeWithTz).toBe('10:00 AM PT');
+  });
+
+  it('formats boundary time values correctly from valid parts', () => {
+    const midnight = formatEventDateFromParts({
+      year: 2026,
+      month: 4,
+      day: 26,
+      hours: 0,
+      minutes: 0,
+      timezone: 'America/Los_Angeles',
+    });
+
+    const endOfDay = formatEventDateFromParts({
+      year: 2026,
+      month: 4,
+      day: 26,
+      hours: 23,
+      minutes: 59,
+      timezone: 'America/Los_Angeles',
+    });
+
+    expect(midnight.time).toBe('12:00 AM');
+    expect(endOfDay.time).toBe('11:59 PM');
+  });
 });

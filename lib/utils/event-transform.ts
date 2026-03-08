@@ -4,6 +4,19 @@ import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
 import { getTimezoneAbbreviationSync } from '@/lib/utils/timezone';
 
+function normalizeDatePart(value: unknown, min: number, max: number): number | undefined {
+  if (!Number.isInteger(value)) {
+    return undefined;
+  }
+
+  const numericValue = value as number;
+  if (numericValue < min || numericValue > max) {
+    return undefined;
+  }
+
+  return numericValue;
+}
+
 /**
  * Transform API event data to display format
  */
@@ -12,21 +25,33 @@ export function transformApiEventToDisplay(
   hosts: { user_details: UserDetails }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
+  const normalizedStartYear = normalizeDatePart(apiEvent.start_date_year, 1, 9999);
+  const normalizedStartMonth = normalizeDatePart(apiEvent.start_date_month, 1, 12);
+  const normalizedStartDay = normalizeDatePart(apiEvent.start_date_day, 1, 31);
+  const normalizedStartHours = normalizeDatePart(apiEvent.start_date_hours, 0, 23);
+  const normalizedStartMinutes = normalizeDatePart(apiEvent.start_date_minutes, 0, 59);
+
+  const normalizedEndYear = normalizeDatePart(apiEvent.end_date_year, 1, 9999);
+  const normalizedEndMonth = normalizeDatePart(apiEvent.end_date_month, 1, 12);
+  const normalizedEndDay = normalizeDatePart(apiEvent.end_date_day, 1, 31);
+  const normalizedEndHours = normalizeDatePart(apiEvent.end_date_hours, 0, 23);
+  const normalizedEndMinutes = normalizeDatePart(apiEvent.end_date_minutes, 0, 59);
+
   const startDateTime = formatEventDateFromParts({
-    year: apiEvent.start_date_year,
-    month: apiEvent.start_date_month,
-    day: apiEvent.start_date_day,
-    hours: apiEvent.start_date_hours,
-    minutes: apiEvent.start_date_minutes,
+    year: normalizedStartYear,
+    month: normalizedStartMonth,
+    day: normalizedStartDay,
+    hours: normalizedStartHours,
+    minutes: normalizedStartMinutes,
     timezone: apiEvent.timezone,
     fallbackIso: apiEvent.computed_start_date,
   });
   const endDateTime = formatEventDateFromParts({
-    year: apiEvent.end_date_year,
-    month: apiEvent.end_date_month,
-    day: apiEvent.end_date_day,
-    hours: apiEvent.end_date_hours,
-    minutes: apiEvent.end_date_minutes,
+    year: normalizedEndYear,
+    month: normalizedEndMonth,
+    day: normalizedEndDay,
+    hours: normalizedEndHours,
+    minutes: normalizedEndMinutes,
     timezone: apiEvent.timezone,
     fallbackIso: apiEvent.computed_end_date,
   });

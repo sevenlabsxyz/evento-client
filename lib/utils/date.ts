@@ -32,6 +32,13 @@ const EMPTY_EVENT_DATE_DISPLAY: EventDateDisplay = {
   longDate: '',
 };
 
+const MIN_HOUR = 0;
+const MAX_HOUR = 23;
+const MIN_MINUTE = 0;
+const MAX_MINUTE = 59;
+const DATE_PARTS_CACHE_LIMIT = 200;
+const datePartsDisplayCache = new Map<string, EventDateDisplay>();
+
 function getIntlTimeZoneOptions(timezone?: string): Intl.DateTimeFormatOptions {
   if (!timezone) {
     return {};
@@ -162,10 +169,10 @@ function formatTimeFromParts(hours?: number | null, minutes?: number | null): st
     minutes === undefined ||
     !Number.isInteger(hours) ||
     !Number.isInteger(minutes) ||
-    hours < 0 ||
-    hours > 23 ||
-    minutes < 0 ||
-    minutes > 59
+    hours < MIN_HOUR ||
+    hours > MAX_HOUR ||
+    minutes < MIN_MINUTE ||
+    minutes > MAX_MINUTE
   ) {
     return '';
   }
@@ -185,9 +192,17 @@ export function formatEventDateFromParts({
   timezone,
   fallbackIso,
 }: EventDatePartsInput): EventDateDisplay {
+  const cacheKey = `${year ?? 'n'}|${month ?? 'n'}|${day ?? 'n'}|${hours ?? 'n'}|${minutes ?? 'n'}|${timezone ?? ''}|${fallbackIso ?? ''}`;
+  const cached = datePartsDisplayCache.get(cacheKey);
+  if (cached) {
+    return { ...cached };
+  }
+
   if (!isValidDateParts(year, month, day)) {
     if (fallbackIso) {
-      return formatEventDate(fallbackIso, timezone);
+      const fallbackDisplay = formatEventDate(fallbackIso, timezone);
+      datePartsDisplayCache.set(cacheKey, fallbackDisplay);
+      return { ...fallbackDisplay };
     }
 
     return EMPTY_EVENT_DATE_DISPLAY;
@@ -195,9 +210,15 @@ export function formatEventDateFromParts({
 
   const localDate = new Date(year as number, (month as number) - 1, day as number);
   const formattedTime = formatTimeFromParts(hours, minutes);
+  if (!formattedTime && fallbackIso) {
+    const fallbackDisplay = formatEventDate(fallbackIso, timezone);
+    datePartsDisplayCache.set(cacheKey, fallbackDisplay);
+    return { ...fallbackDisplay };
+  }
+
   const timezoneAbbreviation = timezone ? getTimezoneAbbreviationSync(timezone) : '';
 
-  return {
+  const display = {
     date: localDate.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
@@ -229,6 +250,16 @@ export function formatEventDateFromParts({
       day: 'numeric',
     }),
   };
+
+  datePartsDisplayCache.set(cacheKey, display);
+  if (datePartsDisplayCache.size > DATE_PARTS_CACHE_LIMIT) {
+    const oldestKey = datePartsDisplayCache.keys().next().value;
+    if (oldestKey) {
+      datePartsDisplayCache.delete(oldestKey);
+    }
+  }
+
+  return { ...display };
 }
 
 /**

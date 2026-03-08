@@ -10,6 +10,7 @@ import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { getContributionMethods } from '@/lib/utils/event-transform';
+import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
 import { formatEventLocationAddress } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import {
@@ -156,14 +157,6 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   };
 
   const handleAddToCalendar = () => {
-    const formatICSDate = (dateStr: string) => {
-      const date = new Date(dateStr);
-      return date
-        .toISOString()
-        .replace(/[-:]/g, '')
-        .replace(/\.\d{3}/, '');
-    };
-
     const escapeICS = (text: string) => {
       return text
         .replace(/[\n\r]/g, '\\n')
@@ -186,8 +179,24 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       'BEGIN:VEVENT',
       `UID:${event.id}@evento.so`,
       `DTSTAMP:${formatICSDate(new Date().toISOString())}`,
-      `DTSTART:${formatICSDate(event.computedStartDate)}`,
-      `DTEND:${formatICSDate(event.computedEndDate)}`,
+      `DTSTART${formatICSDateFromParts({
+        year: eventData?.start_date_year,
+        month: eventData?.start_date_month,
+        day: eventData?.start_date_day,
+        hours: eventData?.start_date_hours,
+        minutes: eventData?.start_date_minutes,
+        timezone: event.timezone,
+        fallbackIso: event.computedStartDate,
+      })}`,
+      `DTEND${formatICSDateFromParts({
+        year: eventData?.end_date_year,
+        month: eventData?.end_date_month,
+        day: eventData?.end_date_day,
+        hours: eventData?.end_date_hours,
+        minutes: eventData?.end_date_minutes,
+        timezone: event.timezone,
+        fallbackIso: event.computedEndDate,
+      })}`,
       `SUMMARY:${escapeICS(event.title)}`,
       `DESCRIPTION:${escapeICS(
         isDescriptionHidden
