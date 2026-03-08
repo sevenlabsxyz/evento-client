@@ -76,8 +76,8 @@ export function ForYouSection() {
   const limitedEvents = events.slice(0, displayLimit);
   const groupedEvents = groupEventsByDate(limitedEvents);
 
-  // Group all following events for the sheet
-  const groupedFollowingEvents = groupEventsByDate(followingEvents);
+  const groupedSheetEvents = groupEventsByDate(events);
+  const sheetTitle = activeTab === 'following' ? 'Follow Feed' : 'Discover Feed';
 
   return (
     <div className='flex flex-col'>
@@ -102,9 +102,9 @@ export function ForYouSection() {
         {isLoading ? (
           // Skeleton loading for MasterEventCard layout
           <div className='flex flex-col gap-2'>
-            {Array.from({ length: 4 }).map((_, i) => (
+            {['ske-a', 'ske-b', 'ske-c', 'ske-d'].map((skeletonKey) => (
               <div
-                key={`ske-${i}`}
+                key={skeletonKey}
                 className='flex items-start gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4'
               >
                 {/* Left content skeleton */}
@@ -169,12 +169,12 @@ export function ForYouSection() {
 
       {/* Follow Feed Sheet */}
       <MasterScrollableSheet
-        title='Follow Feed'
+        title={sheetTitle}
         open={showFollowFeedSheet}
         onOpenChange={setShowFollowFeedSheet}
       >
         <div className='flex flex-col gap-4 px-4 pb-8'>
-          {groupedFollowingEvents.map((group) => (
+          {groupedSheetEvents.map((group) => (
             <div key={group.date} className='space-y-2'>
               <h3 className='text-sm font-medium text-gray-500'>{formatDateHeader(group.date)}</h3>
               <div className='flex flex-col gap-2'>
