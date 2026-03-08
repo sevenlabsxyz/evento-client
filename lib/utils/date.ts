@@ -218,16 +218,13 @@ export function formatEventDateFromParts({
   }
 
   if (!hasValidTimeParts(hours, minutes) && fallbackIso) {
-    return formatEventDate(fallbackIso, timezone);
-  }
-
-  const localDate = new Date(year as number, (month as number) - 1, day as number);
-  const formattedTime = formatTimeFromParts(hours, minutes);
-  if (!formattedTime && fallbackIso) {
     const fallbackDisplay = formatEventDate(fallbackIso, timezone);
     datePartsDisplayCache.set(cacheKey, fallbackDisplay);
     return { ...fallbackDisplay };
   }
+
+  const localDate = new Date(year as number, (month as number) - 1, day as number);
+  const formattedTime = formatTimeFromParts(hours, minutes);
 
   const timezoneAbbreviation = timezone ? getTimezoneAbbreviationSync(timezone) : '';
 
