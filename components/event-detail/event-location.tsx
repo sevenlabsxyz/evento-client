@@ -4,9 +4,9 @@ import { Env } from '@/lib/constants/env';
 import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
 import { formatEventLocationAddress } from '@/lib/utils/location';
-import { logger } from '@/lib/utils/logger';
 import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
+import { LocationActionsSheet } from './location-actions-sheet';
 import WeatherDetailSheet from './weather-detail-sheet';
 
 interface EventLocationProps {
@@ -28,28 +28,6 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
   const mapUrl = `https://www.google.com/maps/embed/v1/place?key=${
     Env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
   }&q=${encodeURIComponent(fullAddress)}&zoom=15&maptype=roadmap`;
-
-  const handleOpenMaps = (provider: 'apple' | 'google') => {
-    if (provider === 'apple') {
-      window.open(`https://maps.apple.com/?daddr=${encodedDestination}&dirflg=d`, '_blank');
-    } else {
-      window.open(googleMapsDirectionsUrl, '_blank');
-    }
-
-    setShowMapOptions(false);
-  };
-
-  const handleCopyAddress = async () => {
-    try {
-      await navigator.clipboard.writeText(fullAddress);
-      setShowMapOptions(false);
-      // Could show a toast notification here
-    } catch (error) {
-      logger.error('Failed to copy address', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    }
-  };
 
   return (
     <>
@@ -108,7 +86,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             ></iframe>
 
             <button
-              onClick={() => handleOpenMaps('google')}
+              onClick={() => window.open(googleMapsDirectionsUrl, '_blank', 'noopener,noreferrer')}
               className='absolute inset-0 z-10 cursor-pointer bg-transparent'
               aria-label={`Open directions to ${event.location.name} in Google Maps`}
               type='button'
@@ -138,47 +116,13 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
         )}
       </div>
 
-      {/* Map Options Modal - Only show if not TBD */}
-      {showMapOptions && !isTBDLocation && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-sm rounded-2xl bg-white p-6'>
-            <h3 className='mb-4 text-center text-lg font-semibold'>Open in Maps</h3>
-
-            <div className='space-y-3'>
-              <button
-                onClick={() => handleOpenMaps('apple')}
-                className='w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50'
-                type='button'
-              >
-                Open in Apple Maps
-              </button>
-
-              <button
-                onClick={() => handleOpenMaps('google')}
-                className='w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50'
-                type='button'
-              >
-                Open in Google Maps
-              </button>
-
-              <button
-                onClick={handleCopyAddress}
-                className='w-full rounded-lg border border-gray-300 p-3 text-left transition-colors hover:bg-gray-50'
-                type='button'
-              >
-                Copy Address
-              </button>
-            </div>
-
-            <button
-              onClick={() => setShowMapOptions(false)}
-              className='mt-4 w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-50'
-              type='button'
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+      {!isTBDLocation && (
+        <LocationActionsSheet
+          open={showMapOptions}
+          onOpenChange={setShowMapOptions}
+          fullAddress={fullAddress}
+          destination={destination}
+        />
       )}
 
       {/* Weather Detail Sheet */}

@@ -57,6 +57,9 @@ export interface EventDetail {
   startTime: string;
   endTime: string;
   timezone?: string;
+  monthShort?: string;
+  dayOfMonth?: string;
+  longDate?: string;
   computedStartDate: string;
   computedEndDate: string;
   location: EventLocation;

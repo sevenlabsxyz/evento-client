@@ -2,7 +2,7 @@
 
 import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { MapPin } from 'lucide-react';
 import Image from 'next/image';
@@ -21,10 +21,15 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
   const router = useRouter();
 
   // Get event time with timezone
-  const { timeWithTz: eventTimeWithTz } = formatEventDate(
-    event.computed_start_date,
-    event.timezone
-  );
+  const { timeWithTz: eventTimeWithTz } = formatEventDateFromParts({
+    year: event.start_date_year,
+    month: event.start_date_month,
+    day: event.start_date_day,
+    hours: event.start_date_hours,
+    minutes: event.start_date_minutes,
+    timezone: event.timezone,
+    fallbackIso: event.computed_start_date,
+  });
 
   // Price display
   const showPrice = event.cost && Number(event.cost) > 0 ? true : false;

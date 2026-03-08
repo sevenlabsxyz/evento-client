@@ -1,7 +1,21 @@
 import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
 import { EventDetail as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getOptimizedCoverUrl } from '@/lib/utils/image';
+import { getTimezoneAbbreviationSync } from '@/lib/utils/timezone';
+
+function normalizeDatePart(value: unknown, min: number, max: number): number | undefined {
+  if (!Number.isInteger(value)) {
+    return undefined;
+  }
+
+  const numericValue = value as number;
+  if (numericValue < min || numericValue > max) {
+    return undefined;
+  }
+
+  return numericValue;
+}
 
 /**
  * Transform API event data to display format
@@ -11,11 +25,36 @@ export function transformApiEventToDisplay(
   hosts: { user_details: UserDetails }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
-  const { date, time, timeWithTz } = formatEventDate(
-    apiEvent.computed_start_date,
-    apiEvent.timezone
-  );
-  const endDateTime = formatEventDate(apiEvent.computed_end_date, apiEvent.timezone);
+  const normalizedStartYear = normalizeDatePart(apiEvent.start_date_year, 1, 9999);
+  const normalizedStartMonth = normalizeDatePart(apiEvent.start_date_month, 1, 12);
+  const normalizedStartDay = normalizeDatePart(apiEvent.start_date_day, 1, 31);
+  const normalizedStartHours = normalizeDatePart(apiEvent.start_date_hours, 0, 23);
+  const normalizedStartMinutes = normalizeDatePart(apiEvent.start_date_minutes, 0, 59);
+
+  const normalizedEndYear = normalizeDatePart(apiEvent.end_date_year, 1, 9999);
+  const normalizedEndMonth = normalizeDatePart(apiEvent.end_date_month, 1, 12);
+  const normalizedEndDay = normalizeDatePart(apiEvent.end_date_day, 1, 31);
+  const normalizedEndHours = normalizeDatePart(apiEvent.end_date_hours, 0, 23);
+  const normalizedEndMinutes = normalizeDatePart(apiEvent.end_date_minutes, 0, 59);
+
+  const startDateTime = formatEventDateFromParts({
+    year: normalizedStartYear,
+    month: normalizedStartMonth,
+    day: normalizedStartDay,
+    hours: normalizedStartHours,
+    minutes: normalizedStartMinutes,
+    timezone: apiEvent.timezone,
+    fallbackIso: apiEvent.computed_start_date,
+  });
+  const endDateTime = formatEventDateFromParts({
+    year: normalizedEndYear,
+    month: normalizedEndMonth,
+    day: normalizedEndDay,
+    hours: normalizedEndHours,
+    minutes: normalizedEndMinutes,
+    timezone: apiEvent.timezone,
+    fallbackIso: apiEvent.computed_end_date,
+  });
 
   // Get location from event_locations (new format) or parse legacy location string
   const rawEventLoc = (apiEvent as any).event_locations;
@@ -68,12 +107,15 @@ export function transformApiEventToDisplay(
     subtitle:
       location.city && location.state ? `${location.city}, ${location.state}` : location.name,
     description: apiEvent.description || '',
-    date: date,
-    startTime: time,
+    date: startDateTime.date,
+    startTime: startDateTime.time,
     endTime: endDateTime.time,
-    timezone: timeWithTz.split(' ').pop(), // Extract timezone abbreviation
+    timezone: getTimezoneAbbreviationSync(apiEvent.timezone),
     computedStartDate: apiEvent.computed_start_date,
     computedEndDate: apiEvent.computed_end_date,
+    monthShort: startDateTime.monthShort,
+    dayOfMonth: startDateTime.dayOfMonth,
+    longDate: startDateTime.longDate,
     location: location,
     coverImages: apiEvent.cover ? [getOptimizedCoverUrl(apiEvent.cover, 'detail')] : [],
     galleryImages: galleryItems.map((item) => getOptimizedCoverUrl(item.url, 'detail')),

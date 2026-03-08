@@ -3,36 +3,21 @@
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
-import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
-import { getContributionMethods } from '@/lib/utils/event-transform';
-import { logger } from '@/lib/utils/logger';
+import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
+import { formatEventLocationAddress } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import {
-  ArrowUpRight,
-  Clock,
-  Globe,
-  Lock,
-  Mail,
-  MapPin,
-  MoreHorizontal,
-  Share,
-  Star,
-  XCircle,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import ContributionPaymentSheet from './contribution-payment-sheet';
+import { DateTimeActionsSheet } from './date-time-actions-sheet';
 import RsvpSheet from './event-rsvp-sheet';
-import MoreOptionsSheet from './more-options-sheet';
+import { LocationActionsSheet } from './location-actions-sheet';
 import OwnerEventButtons from './owner-event-buttons';
 import { RegistrationStatus } from './registration-status';
-import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
   event: EventDetail;
@@ -42,18 +27,13 @@ interface EventInfoProps {
 }
 
 export default function EventInfo({ event, currentUserId = '', eventData, hosts }: EventInfoProps) {
-  const router = useRouter();
-  const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
-  const [showSaveSheet, setShowSaveSheet] = useState(false);
-  const [showContributionSheet, setShowContributionSheet] = useState(false);
+  const [showDateTimeSheet, setShowDateTimeSheet] = useState(false);
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
 
   const { data: userRsvp } = useUserRSVP(event.id);
   const { data: eventRsvps } = useEventRSVPs(event.id);
   const currentStatus = userRsvp?.status ?? null;
-
-  const { data: savedStatus } = useEventSavedStatus(event.id);
-  const isSaved = savedStatus?.is_saved ?? false;
 
   const { data: registrationSettings } = useRegistrationSettings(event.id);
   const { data: myRegistration } = useMyRegistration(event.id);
@@ -70,11 +50,6 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     registrationRequired &&
     myRegistration?.has_registration &&
     myRegistration.registration?.approval_status === 'denied';
-
-  const hasContributions = useMemo(() => {
-    if (!eventData) return false;
-    return getContributionMethods(eventData).length > 0;
-  }, [eventData]);
 
   const maxCapacity = eventData?.max_capacity ?? null;
   const showCapacityCount = Boolean(eventData?.show_capacity_count);
@@ -129,65 +104,27 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     toast.error('Your registration was not approved. Contact the host for details.');
   };
 
-  const handleContact = async () => {
-    const primaryHost = event.hosts?.[0];
-    if (!primaryHost) {
-      toast.error('No host available to contact');
+  const copyText = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
       return;
-    }
-
-    try {
-      const res = await streamChatService.createDirectMessageChannel(primaryHost.id);
-      if (res?.channel?.id) {
-        router.push(`/e/messages/${res.channel.id}`);
-      } else {
-        toast.error('Unable to start chat');
-      }
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to start chat');
-      logger.error('createDirectMessageChannel error', {
-        error: err instanceof Error ? err.message : String(err),
-      });
-    }
-  };
-
-  const handleShare = async () => {
-    const url = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ url });
-        return;
-      } catch (error: any) {
-        if (error?.name === 'AbortError') return;
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
     } catch {
       const textArea = document.createElement('textarea');
-      textArea.value = url;
+      textArea.value = value;
       textArea.style.position = 'fixed';
       textArea.style.left = '-999999px';
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      const copied = document.execCommand('copy');
       document.body.removeChild(textArea);
-      toast.success('Link copied to clipboard!');
+
+      if (!copied) {
+        throw new Error('Copy command failed');
+      }
     }
   };
 
   const handleAddToCalendar = () => {
-    const formatICSDate = (dateStr: string) => {
-      const date = new Date(dateStr);
-      return date
-        .toISOString()
-        .replace(/[-:]/g, '')
-        .replace(/\.\d{3}/, '');
-    };
-
     const escapeICS = (text: string) => {
       return text
         .replace(/[\n\r]/g, '\\n')
@@ -210,8 +147,24 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       'BEGIN:VEVENT',
       `UID:${event.id}@evento.so`,
       `DTSTAMP:${formatICSDate(new Date().toISOString())}`,
-      `DTSTART:${formatICSDate(event.computedStartDate)}`,
-      `DTEND:${formatICSDate(event.computedEndDate)}`,
+      `DTSTART${formatICSDateFromParts({
+        year: eventData?.start_date_year,
+        month: eventData?.start_date_month,
+        day: eventData?.start_date_day,
+        hours: eventData?.start_date_hours,
+        minutes: eventData?.start_date_minutes,
+        timezone: event.timezone,
+        fallbackIso: event.computedStartDate,
+      })}`,
+      `DTEND${formatICSDateFromParts({
+        year: eventData?.end_date_year,
+        month: eventData?.end_date_month,
+        day: eventData?.end_date_day,
+        hours: eventData?.end_date_hours,
+        minutes: eventData?.end_date_minutes,
+        timezone: event.timezone,
+        fallbackIso: event.computedEndDate,
+      })}`,
       `SUMMARY:${escapeICS(event.title)}`,
       `DESCRIPTION:${escapeICS(
         isDescriptionHidden
@@ -239,8 +192,13 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     URL.revokeObjectURL(url);
   };
 
-  const handleContribute = () => {
-    setShowContributionSheet(true);
+  const handleCopyDateTime = async () => {
+    try {
+      await copyText(dateTimeText);
+      toast.success('Date and time copied');
+    } catch {
+      toast.error('Failed to copy date and time');
+    }
   };
 
   const isOwnerOrCohost = useMemo(() => {
@@ -251,16 +209,30 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
 
   const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
   const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
+  const isTBDLocation = event.location.name === 'TBD';
+  const fullAddress = formatEventLocationAddress(event.location);
+  const destination = event.location.coordinates
+    ? `${event.location.coordinates.lat},${event.location.coordinates.lng}`
+    : fullAddress;
 
   const startDate = useMemo(() => {
-    if (!event.computedStartDate) return null;
-    const d = new Date(event.computedStartDate);
+    const monthShort = event.monthShort ?? '';
+    const day = event.dayOfMonth ?? '';
+    const fullDate = event.longDate ?? event.date;
+
+    if (!monthShort && !day && !fullDate) {
+      return null;
+    }
+
     return {
-      monthShort: d.toLocaleDateString('en-US', { month: 'short' }).toUpperCase(),
-      day: d.getDate(),
-      fullDate: d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+      monthShort,
+      day,
+      fullDate,
     };
-  }, [event.computedStartDate]);
+  }, [event.monthShort, event.dayOfMonth, event.longDate, event.date]);
+
+  const dateTimeSubtitle = `${event.startTime} - ${event.endTime}${event.timezone ? ` ${event.timezone}` : ''}`;
+  const dateTimeText = [startDate?.fullDate, dateTimeSubtitle].filter(Boolean).join('\n');
 
   const detailModuleBaseClassName =
     'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50';
@@ -270,7 +242,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       <div className='space-y-6 py-6'>
         <div className='space-y-4'>
           {eventData?.visibility && (
-            <div className='flex items-center gap-2'>
+            <div className='mb-2 flex items-center gap-2'>
               <StatusBadge
                 status={eventData.visibility === 'public' ? 'success' : 'default'}
                 leftIcon={eventData.visibility === 'public' ? Globe : Lock}
@@ -281,7 +253,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
           <span className='text-2xl font-bold text-black'>{event.title}</span>
 
           {/* Date + Time */}
-          <div className='flex items-center gap-4'>
+          <button
+            type='button'
+            onClick={() => setShowDateTimeSheet(true)}
+            className='group flex w-full items-center gap-4 text-left'
+          >
             <div className={`${detailModuleBaseClassName} flex-col`}>
               <span className='text-[9px] font-semibold uppercase leading-none text-gray-500'>
                 {startDate?.monthShort}
@@ -290,36 +266,46 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 {startDate?.day}
               </span>
             </div>
-            <div className='flex flex-col'>
-              <span className='font-semibold text-gray-900'>{startDate?.fullDate}</span>
-              <span className='text-sm text-gray-500'>
-                {event.startTime} - {event.endTime}
-                {event.timezone && ` ${event.timezone}`}
-              </span>
+            <div className='min-w-0 flex-1'>
+              <div className='flex flex-col'>
+                <span className='font-semibold text-gray-900 group-hover:underline'>
+                  {startDate?.fullDate}
+                </span>
+                <span className='text-sm text-gray-500'>{dateTimeSubtitle}</span>
+              </div>
             </div>
-          </div>
+            <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+          </button>
 
           {/* Location */}
           {!isLocationHidden && (
-            <div className='flex items-center gap-4'>
+            <button
+              type='button'
+              onClick={() => !isTBDLocation && setShowLocationSheet(true)}
+              className='group flex w-full items-center gap-4 text-left'
+            >
               <div className={detailModuleBaseClassName}>
                 <MapPin className='h-[18px] w-[18px] text-gray-600' />
               </div>
-              <div className='flex flex-col'>
-                <div className='flex items-center gap-1'>
-                  <span className='font-semibold text-gray-900'>{event.location.name}</span>
-                  {event.location.name !== 'TBD' && (
-                    <ArrowUpRight className='h-3.5 w-3.5 text-gray-400' />
+              <div className='min-w-0 flex-1'>
+                <div className='flex flex-col'>
+                  <span
+                    className={`font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900 group-hover:underline'}`}
+                  >
+                    {event.location.name}
+                  </span>
+                  {(event.location.city || event.location.state) && (
+                    <span className='text-sm text-gray-500'>
+                      {event.location.city}
+                      {event.location.city && event.location.state && `, ${event.location.state}`}
+                    </span>
                   )}
                 </div>
-                {(event.location.city || event.location.state) && (
-                  <span className='text-sm text-gray-500'>
-                    {event.location.city}
-                    {event.location.city && event.location.state && `, ${event.location.state}`}
-                  </span>
-                )}
               </div>
-            </div>
+              {!isTBDLocation && (
+                <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+              )}
+            </button>
           )}
         </div>
 
@@ -327,7 +313,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
           <OwnerEventButtons eventId={event.id} />
         ) : (
           <>
-            <div className='grid grid-cols-4 gap-2'>
+            <div className='grid grid-cols-1 gap-2'>
               {hasPendingRegistration ? (
                 <button
                   type='button'
@@ -357,33 +343,6 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   <span className='text-xs font-medium'>{rsvpButton.label}</span>
                 </button>
               )}
-
-              <button
-                type='button'
-                onClick={handleContact}
-                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <Mail className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>Contact</span>
-              </button>
-
-              <button
-                type='button'
-                onClick={handleShare}
-                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <Share className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>Share</span>
-              </button>
-
-              <button
-                type='button'
-                onClick={() => setShowMoreSheet(true)}
-                className='flex h-16 flex-col items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <MoreHorizontal className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>More</span>
-              </button>
             </div>
 
             {shouldShowCapacityInfo && spotsRemaining !== null && (
@@ -403,20 +362,12 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         )}
       </div>
 
-      <MoreOptionsSheet
-        isOpen={showMoreSheet}
-        onClose={() => setShowMoreSheet(false)}
+      <DateTimeActionsSheet
+        open={showDateTimeSheet}
+        onOpenChange={setShowDateTimeSheet}
+        dateTimeText={dateTimeText}
         onAddToCalendar={handleAddToCalendar}
-        onSaveEvent={() => setShowSaveSheet(true)}
-        onContribute={handleContribute}
-        isSaved={isSaved}
-        hasContributions={hasContributions}
-      />
-
-      <SaveEventSheet
-        isOpen={showSaveSheet}
-        onClose={() => setShowSaveSheet(false)}
-        eventId={event.id}
+        onCopyDateTime={handleCopyDateTime}
       />
 
       <RsvpSheet
@@ -426,11 +377,12 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         eventData={eventData}
       />
 
-      {eventData && (
-        <ContributionPaymentSheet
-          isOpen={showContributionSheet}
-          onClose={() => setShowContributionSheet(false)}
-          eventData={eventData}
+      {!isLocationHidden && !isTBDLocation && (
+        <LocationActionsSheet
+          open={showLocationSheet}
+          onOpenChange={setShowLocationSheet}
+          fullAddress={fullAddress}
+          destination={destination}
         />
       )}
     </>
