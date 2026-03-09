@@ -76,15 +76,17 @@ export function SiteHeader() {
     return (
       <div className='flex items-center gap-2 md:hidden'>
         <CircledIconButton icon={Menu} onClick={toggleSidebar} />
-        <Link href='/e/hub' className='flex items-center'>
-          <Image
-            src='/assets/img/evento-logo.svg'
-            alt='Evento'
-            width={80}
-            height={20}
-            className='h-5 w-auto'
-          />
-        </Link>
+        {!hideMobileBreadcrumb && (
+          <Link href='/e/hub' className='flex items-center'>
+            <Image
+              src='/assets/img/evento-logo.svg'
+              alt='Evento'
+              width={80}
+              height={20}
+              className='h-5 w-auto'
+            />
+          </Link>
+        )}
       </div>
     );
   };
