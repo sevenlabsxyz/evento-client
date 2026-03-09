@@ -8,7 +8,7 @@ import TimezoneSheet from './timezone-sheet';
 const WHEEL_ITEM_HEIGHT = 44;
 const WHEEL_CONTAINER_HEIGHT = 176;
 const WHEEL_VERTICAL_PADDING = (WHEEL_CONTAINER_HEIGHT - WHEEL_ITEM_HEIGHT) / 2;
-const WHEEL_TOP_PADDING = 88; // h-22 in Tailwind (5.5rem = 88px)
+const PROGRAMMATIC_SCROLL_LOCK_MS = 140;
 
 interface ScrollWheelProps<T extends number | string> {
   values: T[];
@@ -25,50 +25,74 @@ function ScrollWheel<T extends number | string>({
 }: ScrollWheelProps<T>) {
   const wheelRef = useRef<HTMLDivElement>(null);
   const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isUserScrolling = useRef(false);
+  const programmaticScrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isProgrammaticScroll = useRef(false);
 
-  // Scroll to the selected value when it changes (only when not user-scrolling)
-  useEffect(() => {
-    if (wheelRef.current && !isUserScrolling.current) {
-      const selectedIndex = values.indexOf(selectedValue);
-      if (selectedIndex >= 0) {
-        // Use the working scroll calculation from the duplicate version
-        const scrollTop = selectedIndex * WHEEL_ITEM_HEIGHT - WHEEL_CONTAINER_HEIGHT / 2 + WHEEL_ITEM_HEIGHT / 2;
-        wheelRef.current.scrollTo({ top: Math.max(0, scrollTop), behavior: 'auto' });
+  const scrollToValue = useCallback(
+    (value: T) => {
+      if (!wheelRef.current) {
+        return;
       }
-    }
-  }, [selectedValue, values]);
+
+      const selectedIndex = values.indexOf(value);
+      if (selectedIndex < 0) {
+        return;
+      }
+
+      if (programmaticScrollTimeoutRef.current) {
+        clearTimeout(programmaticScrollTimeoutRef.current);
+      }
+
+      isProgrammaticScroll.current = true;
+      wheelRef.current.scrollTo({
+        top: selectedIndex * WHEEL_ITEM_HEIGHT,
+        behavior: 'auto',
+      });
+
+      programmaticScrollTimeoutRef.current = setTimeout(() => {
+        isProgrammaticScroll.current = false;
+      }, PROGRAMMATIC_SCROLL_LOCK_MS);
+    },
+    [values]
+  );
+
+  useEffect(() => {
+    scrollToValue(selectedValue);
+  }, [scrollToValue, selectedValue]);
 
   const handleScroll = useCallback(() => {
-    if (!wheelRef.current) {
+    if (!wheelRef.current || isProgrammaticScroll.current) {
       return;
     }
 
     if (scrollTimeoutRef.current) {
       clearTimeout(scrollTimeoutRef.current);
     }
-    isUserScrolling.current = true;
 
     scrollTimeoutRef.current = setTimeout(() => {
       if (!wheelRef.current) return;
-      isUserScrolling.current = false;
 
       const scrollTop = wheelRef.current.scrollTop;
-      // Use the working center calculation with the constant instead of magic number
-      const centerOffset = scrollTop + WHEEL_CONTAINER_HEIGHT / 2;
-      const index = Math.round((centerOffset - WHEEL_TOP_PADDING - WHEEL_ITEM_HEIGHT / 2) / WHEEL_ITEM_HEIGHT);
+      const index = Math.round(scrollTop / WHEEL_ITEM_HEIGHT);
       const clampedIndex = Math.max(0, Math.min(values.length - 1, index));
+      const nextValue = values[clampedIndex];
 
-      if (values[clampedIndex] !== selectedValue) {
-        onValueChange(values[clampedIndex]);
+      scrollToValue(nextValue);
+
+      if (nextValue !== selectedValue) {
+        onValueChange(nextValue);
       }
     }, 80);
-  }, [values, selectedValue, onValueChange]);
+  }, [values, selectedValue, onValueChange, scrollToValue]);
 
   useEffect(() => {
     return () => {
       if (scrollTimeoutRef.current) {
         clearTimeout(scrollTimeoutRef.current);
+      }
+
+      if (programmaticScrollTimeoutRef.current) {
+        clearTimeout(programmaticScrollTimeoutRef.current);
       }
     };
   }, []);
@@ -95,7 +119,7 @@ function ScrollWheel<T extends number | string>({
         onWheel={(event) => event.stopPropagation()}
       >
         {/* Padding top */}
-        <div className='h-22' />
+        <div style={{ height: WHEEL_VERTICAL_PADDING }} />
 
         {values.map((value) => (
           <button
@@ -118,7 +142,7 @@ function ScrollWheel<T extends number | string>({
         ))}
 
         {/* Padding bottom */}
-        <div className='h-22' />
+        <div style={{ height: WHEEL_VERTICAL_PADDING }} />
       </div>
     </div>
   );
@@ -171,7 +195,6 @@ export default function TimePickerSheet({
     onTimeSelect({ hour: 9, minute: 45, period: 'AM' });
     onClose();
   };
-
 
   const [showTimezoneSheet, setShowTimezoneSheet] = useState(false);
 
