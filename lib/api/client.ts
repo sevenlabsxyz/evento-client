@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { useAuthStore } from '@/lib/stores/auth-store';
 import axios, {
   AxiosError,
   AxiosRequestConfig,
@@ -113,6 +114,12 @@ apiClient.interceptors.response.use(
       status: error.response?.status,
       success: false,
     };
+
+    // Global 401 handler: clear auth state when any API call returns unauthorized.
+    // This catches expired sessions regardless of which hook made the request.
+    if (error.response?.status === 401) {
+      useAuthStore.getState().clearAuth();
+    }
 
     return Promise.reject(apiError);
   }

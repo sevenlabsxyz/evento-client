@@ -71,7 +71,9 @@ export const useAuthStore = create<AuthState>()(
       // Rehydrate the store on app start
       onRehydrateStorage: () => (state) => {
         if (state) {
-          // Ensure isAuthenticated matches user state
+          // Ensure isAuthenticated matches user state on rehydration.
+          // Note: isAuthenticated here is optimistic (from cache). The useAuth()
+          // query will validate the session and call clearAuth() if it's expired.
           state.isAuthenticated = !!state.user;
           state.isLoading = false;
         }

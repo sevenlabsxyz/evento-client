@@ -37,8 +37,8 @@ export function useAuth() {
       }
       return failureCount < 2;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchOnWindowFocus: false,
+    staleTime: 1 * 60 * 1000, // 1 minute - revalidate session more frequently
+    refetchOnWindowFocus: true, // Re-check auth when user returns to the tab
   });
 
   // Sync user data with store
@@ -47,9 +47,12 @@ export function useAuth() {
       setUser(userData);
     } else if (authError) {
       // Clear auth on 401 errors
-      // Cast through `unknown` first to avoid the direct `Error` → `ApiError` assertion warning
       const apiError = authError as unknown as ApiError;
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      if (
+        apiError.status === 401 ||
+        apiError.message?.includes('401') ||
+        apiError.message?.includes('Unauthorized')
+      ) {
         clearAuth();
       }
     }
