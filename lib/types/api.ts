@@ -126,6 +126,21 @@ export interface UserSearchResult {
   image: string;
 }
 
+export interface ApiEventLocation {
+  id: string;
+  name: string | null;
+  address: string | null;
+  city: string | null;
+  state_province: string | null;
+  country: string | null;
+  country_code?: string | null;
+  postal_code?: string | null;
+  latitude: number | string | null;
+  longitude: number | string | null;
+  location_type?: string | null;
+  is_verified?: boolean | null;
+}
+
 // Event - complete event information
 export interface Event {
   id: string;
@@ -133,6 +148,7 @@ export interface Event {
   description: string;
   cover?: string;
   location: string;
+  event_locations?: ApiEventLocation | null;
   timezone: string;
   type?: EventBehaviorType;
   status: 'draft' | 'published' | 'cancelled' | 'archived';

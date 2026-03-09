@@ -1,3 +1,4 @@
+import { logger } from './logger';
 import { getTimezoneAbbreviationSync } from './timezone';
 
 interface EventDateDisplay {
@@ -47,7 +48,11 @@ function getIntlTimeZoneOptions(timezone?: string): Intl.DateTimeFormatOptions {
   try {
     new Intl.DateTimeFormat('en-US', { timeZone: timezone }).format(new Date());
     return { timeZone: timezone };
-  } catch {
+  } catch (error) {
+    logger.warn('Invalid timezone provided for date formatting', {
+      timezone,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return {};
   }
 }
@@ -183,6 +188,10 @@ function formatTimeFromParts(hours?: number | null, minutes?: number | null): st
   return `${hour12}:${minutes.toString().padStart(2, '0')} ${period}`;
 }
 
+function hasValidTimeParts(hours?: number | null, minutes?: number | null): boolean {
+  return formatTimeFromParts(hours, minutes) !== '';
+}
+
 export function formatEventDateFromParts({
   year,
   month,
@@ -208,13 +217,14 @@ export function formatEventDateFromParts({
     return EMPTY_EVENT_DATE_DISPLAY;
   }
 
-  const localDate = new Date(year as number, (month as number) - 1, day as number);
-  const formattedTime = formatTimeFromParts(hours, minutes);
-  if (!formattedTime && fallbackIso) {
+  if (!hasValidTimeParts(hours, minutes) && fallbackIso) {
     const fallbackDisplay = formatEventDate(fallbackIso, timezone);
     datePartsDisplayCache.set(cacheKey, fallbackDisplay);
     return { ...fallbackDisplay };
   }
+
+  const localDate = new Date(year as number, (month as number) - 1, day as number);
+  const formattedTime = formatTimeFromParts(hours, minutes);
 
   const timezoneAbbreviation = timezone ? getTimezoneAbbreviationSync(timezone) : '';
 

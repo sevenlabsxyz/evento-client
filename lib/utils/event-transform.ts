@@ -57,8 +57,7 @@ export function transformApiEventToDisplay(
   });
 
   // Get location from event_locations (new format) or parse legacy location string
-  const rawEventLoc = (apiEvent as any).event_locations;
-  const eventLoc = Array.isArray(rawEventLoc) ? rawEventLoc[0] : rawEventLoc;
+  const eventLoc = apiEvent.event_locations;
   const location: EventLocation = eventLoc
     ? {
         name: eventLoc.name || '',
@@ -67,7 +66,10 @@ export function transformApiEventToDisplay(
         state: eventLoc.state_province || '',
         country: eventLoc.country || '',
         coordinates:
-          eventLoc.latitude && eventLoc.longitude
+          eventLoc.latitude !== null &&
+          eventLoc.latitude !== undefined &&
+          eventLoc.longitude !== null &&
+          eventLoc.longitude !== undefined
             ? { lat: Number(eventLoc.latitude), lng: Number(eventLoc.longitude) }
             : undefined,
       }
