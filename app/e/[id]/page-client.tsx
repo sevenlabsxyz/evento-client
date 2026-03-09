@@ -129,8 +129,8 @@ export default function EventDetailPageClient() {
           const newUrl = newParams.toString() ? `${pathname}?${newParams.toString()}` : pathname;
           router.replace(newUrl, { scroll: false });
         },
-        onError: () => {
-          toast.error('Failed to update RSVP. Please try again.');
+        onError: (error: Error) => {
+          toast.error(error.message || 'Failed to update RSVP. Please try again.');
 
           // Clean up URL params even on error
           const newParams = new URLSearchParams(searchParams);

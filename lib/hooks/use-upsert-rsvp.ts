@@ -36,19 +36,13 @@ export function useUpsertRSVP() {
             ? String((error as { message: string }).message)
             : 'Failed to update RSVP';
 
-        if (message === 'This event has reached its capacity.') {
-          throw new Error(message);
-        }
-
-        throw new Error('Failed to update RSVP');
+        console.error('[RSVP] API error:', { eventId, status, hasExisting, error });
+        throw new Error(message || 'Failed to update RSVP');
       }
 
       if (!res?.success) {
-        throw new Error(
-          res?.message === 'This event has reached its capacity.'
-            ? res?.message
-            : 'Failed to update RSVP'
-        );
+        console.error('[RSVP] Unsuccessful response:', { eventId, status, hasExisting, res });
+        throw new Error(res?.message || 'Failed to update RSVP');
       }
       const arr = res?.data ?? [];
       return Array.isArray(arr) && arr.length > 0 ? (arr[0] as EventRSVP) : null;
