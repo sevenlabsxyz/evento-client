@@ -160,13 +160,14 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               setShowContributionSheet(true);
             }
           },
-          onError: () => {
-            toast.error('Failed to update RSVP. Please try again.');
+          onError: (error: Error) => {
+            toast.error(error.message || 'Failed to update RSVP. Please try again.');
           },
         }
       );
-    } catch {
-      toast.error('Failed to update RSVP. Please try again.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
+      toast.error(message);
     }
   };
 
