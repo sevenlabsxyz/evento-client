@@ -520,7 +520,7 @@ export default function ProfilePage() {
                 selected={['about', 'events', 'badges'].indexOf(activeTab)}
               />
               {/* Tab Content */}
-              <div>
+              <div className='mt-4'>
                 {activeTab === 'about' && renderAboutTab()}
                 {activeTab === 'events' && renderEventsTab()}
                 {activeTab === 'badges' && renderBadgesTab()}

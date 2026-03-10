@@ -784,7 +784,7 @@ export default function UserProfilePageClient() {
               />
 
               {/* Tab Content */}
-              <div>
+              <div className='mt-4'>
                 {activeTab === 'about' && renderAboutTab()}
                 {activeTab === 'events' && renderEventsTab()}
                 {activeTab === 'badges' && renderBadgesTab()}
