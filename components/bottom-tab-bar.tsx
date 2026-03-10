@@ -14,13 +14,13 @@ import * as React from 'react';
 const buttonVariants = {
   initial: {
     gap: 0,
-    paddingLeft: '.5rem',
-    paddingRight: '.5rem',
+    paddingLeft: '.75rem',
+    paddingRight: '.75rem',
   },
   animate: (isSelected: boolean) => ({
     gap: isSelected ? '.5rem' : 0,
-    paddingLeft: isSelected ? '1rem' : '.5rem',
-    paddingRight: isSelected ? '1rem' : '.5rem',
+    paddingLeft: isSelected ? '1.25rem' : '.75rem',
+    paddingRight: isSelected ? '1.25rem' : '.75rem',
   }),
 };
 
@@ -96,7 +96,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
   return (
     <div
       className={cn('fixed bottom-0 left-0 right-0 z-50 flex justify-center md:hidden', className)}
-      style={{ paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 8px)' }}
+      style={{ paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 12px) + 4px)' }}
     >
       <AnimatePresence>
         {!hidden && (
@@ -107,7 +107,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
             animate='visible'
             exit='exit'
             transition={barTransition}
-            className='mx-3 mb-1 flex w-fit items-center gap-2 rounded-full border border-border/40 bg-foreground p-1 shadow-lg'
+            className='mx-3 mb-1 flex w-fit items-center gap-2 rounded-full border border-border/40 bg-foreground p-1.5 shadow-lg'
           >
             {NAV_ITEMS.map((tab, index) => {
               const isSelected = selected === index;
@@ -120,9 +120,9 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     onClick={() => router.push(tab.path)}
                     whileTap={{ scale: 0.92 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                    className='relative flex items-center justify-center rounded-xl bg-primary-foreground px-4 py-2 text-foreground shadow-sm'
+                    className='relative flex items-center justify-center rounded-xl bg-primary-foreground px-5 py-2.5 text-foreground shadow-sm'
                   >
-                    <Plus size={20} strokeWidth={2.5} />
+                    <Plus size={24} strokeWidth={2.5} />
                   </motion.button>
                 );
               }
@@ -139,13 +139,13 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     onClick={() => router.push(tab.path)}
                     transition={transition}
                     className={cn(
-                      'relative flex items-center rounded-xl px-2 py-1.5 text-sm font-medium transition-colors duration-300',
+                      'relative flex items-center rounded-xl px-3 py-2 text-base font-medium transition-colors duration-300',
                       isSelected
                         ? 'bg-muted-foreground/20 text-primary-foreground'
                         : 'text-muted-foreground hover:text-primary-foreground/80'
                     )}
                   >
-                    <Avatar className='h-6 w-6'>
+                    <Avatar className='h-7 w-7'>
                       <AvatarImage src={user?.image} alt={user?.name || 'Me'} />
                       <AvatarFallback className='bg-muted'>
                         <Image
@@ -187,13 +187,13 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                   onClick={() => router.push(tab.path)}
                   transition={transition}
                   className={cn(
-                    'relative flex items-center rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-300',
+                    'relative flex items-center rounded-xl py-2.5 text-base font-medium transition-colors duration-300',
                     isSelected
                       ? 'bg-muted-foreground/20 text-primary-foreground'
                       : 'text-muted-foreground hover:text-primary-foreground/80'
                   )}
                 >
-                  <Icon size={20} />
+                  <Icon size={24} />
                   <AnimatePresence initial={false}>
                     {isSelected && (
                       <motion.span
