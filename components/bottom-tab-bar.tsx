@@ -96,7 +96,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
   return (
     <div
       className={cn('fixed bottom-0 left-0 right-0 z-50 flex justify-center md:hidden', className)}
-      style={{ paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 12px) + 4px)' }}
+      style={{ paddingBottom: 'calc(max(env(safe-area-inset-bottom, 0px), 12px) + 16px)' }}
     >
       <AnimatePresence>
         {!hidden && (
