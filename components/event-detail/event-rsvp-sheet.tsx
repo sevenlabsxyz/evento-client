@@ -12,13 +12,14 @@ import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { DetachedSheet } from '../ui/detached-sheet';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 import { RegistrationForm } from './registration-form';
 import { RegistrationStatus } from './registration-status';
 
 type SheetView = 'rsvp-buttons' | 'registration-form' | 'registration-status';
+type RsvpPhase = 'idle' | 'fading-out' | 'loading' | 'success';
 
 interface RsvpSheetProps {
   eventId: string;
@@ -45,6 +46,9 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const [showContributionSheet, setShowContributionSheet] = useState(false);
   const [currentView, setCurrentView] = useState<SheetView>('rsvp-buttons');
   const [pendingRegistration, setPendingRegistration] = useState<UserRegistration | null>(null);
+  const [rsvpPhase, setRsvpPhase] = useState<RsvpPhase>('idle');
+  const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(null);
+  const pendingCloseRef = useRef<{ status: RSVPStatus; hasContributions: boolean } | null>(null);
 
   const currentStatus = rsvpData?.status ?? null;
   const hasExisting = !!rsvpData?.rsvp;
@@ -97,11 +101,45 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       setTimeout(() => {
         setCurrentView('rsvp-buttons');
         setPendingRegistration(null);
+        setRsvpPhase('idle');
+        setSelectedStatus(null);
+        pendingCloseRef.current = null;
       }, 300);
     } else {
       setCurrentView(getInitialView());
     }
   };
+
+  const closeAfterSuccess = useCallback(
+    (status: RSVPStatus) => {
+      const msg =
+        status === 'yes'
+          ? "You're going"
+          : status === 'maybe'
+            ? 'Marked as maybe'
+            : 'You are not going';
+      toast.success(msg);
+      onClose();
+
+      if (status === 'yes' && hasContributions) {
+        setShowContributionSheet(true);
+      }
+    },
+    [hasContributions, onClose]
+  );
+
+  // Handle phase transitions after success
+  useEffect(() => {
+    if (rsvpPhase === 'success') {
+      const timer = setTimeout(() => {
+        if (pendingCloseRef.current) {
+          closeAfterSuccess(pendingCloseRef.current.status);
+          pendingCloseRef.current = null;
+        }
+      }, 900);
+      return () => clearTimeout(timer);
+    }
+  }, [rsvpPhase, closeAfterSuccess]);
 
   const handleAction = async (status: RSVPStatus) => {
     if (status === 'yes' && shouldDisableYes) {
@@ -141,34 +179,37 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       return;
     }
 
-    try {
-      await upsert.mutateAsync(
-        { eventId, status, hasExisting },
-        {
-          onSuccess: () => {
-            const msg =
-              status === 'yes'
-                ? "You're going"
-                : status === 'maybe'
-                  ? 'Marked as maybe'
-                  : 'You are not going';
-            toast.success(msg);
-            onClose();
+    // Start the transition: fade out buttons, then show loading
+    setSelectedStatus(status);
+    setRsvpPhase('fading-out');
 
-            // After a successful "yes" RSVP, offer the contribution sheet
-            if (status === 'yes' && hasContributions) {
-              setShowContributionSheet(true);
-            }
-          },
-          onError: (error: Error) => {
-            toast.error(error.message || 'Failed to update RSVP. Please try again.');
-          },
-        }
-      );
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
-      toast.error(message);
-    }
+    // After fade-out completes, start the API call with loading state
+    setTimeout(async () => {
+      setRsvpPhase('loading');
+
+      try {
+        await upsert.mutateAsync(
+          { eventId, status, hasExisting },
+          {
+            onSuccess: () => {
+              pendingCloseRef.current = { status, hasContributions };
+              setRsvpPhase('success');
+            },
+            onError: (error: Error) => {
+              toast.error(error.message || 'Failed to update RSVP. Please try again.');
+              setRsvpPhase('idle');
+              setSelectedStatus(null);
+            },
+          }
+        );
+      } catch (error) {
+        const message =
+          error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
+        toast.error(message);
+        setRsvpPhase('idle');
+        setSelectedStatus(null);
+      }
+    }, 300);
   };
 
   const handleRegistrationSuccess = (autoApproved: boolean, registration?: UserRegistration) => {
@@ -215,14 +256,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     [currentStatus]
   );
 
-  const renderLabel = (s: RSVPStatus, label: string) => {
-    if (upsert.isPending) {
-      return (
-        <span className='inline-flex items-center gap-2'>
-          <Loader2 className='h-4 w-4 animate-spin' /> Updating...
-        </span>
-      );
-    }
+  const renderButtonLabel = (s: RSVPStatus, label: string) => {
     if (currentStatus === s) {
       return (
         <span className='inline-flex items-center gap-2'>
@@ -231,6 +265,100 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       );
     }
     return label;
+  };
+
+  const rsvpStatusLabel =
+    selectedStatus === 'yes'
+      ? "You're going"
+      : selectedStatus === 'maybe'
+        ? 'Marked as maybe'
+        : 'Not going';
+
+  const renderRsvpButtons = () => {
+    const isBusy = rsvpPhase !== 'idle';
+
+    return (
+      <div className='relative'>
+        {/* Buttons layer - fades out when a selection is made */}
+        <div
+          className={`transition-opacity duration-300 ${
+            rsvpPhase !== 'idle' ? 'pointer-events-none opacity-0' : 'opacity-100'
+          }`}
+        >
+          <div className='space-y-3'>
+            {registrationRequired &&
+              hasExistingRegistration &&
+              existingRegistration?.approval_status === 'approved' && (
+                <div className='mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700'>
+                  Your registration has been approved. Update your attendance below.
+                </div>
+              )}
+
+            <button
+              className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
+              disabled={isLoading || isBusy || shouldDisableYes}
+              onClick={() => handleAction('yes')}
+            >
+              {shouldDisableYes ? 'NO SPOTS LEFT' : renderButtonLabel('yes', buttons[0].label)}
+            </button>
+            <button
+              className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
+              disabled={isLoading || isBusy}
+              onClick={() => handleAction('maybe')}
+            >
+              {renderButtonLabel('maybe', buttons[1].label)}
+            </button>
+            <button
+              className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[2].classes}`}
+              disabled={isLoading || isBusy}
+              onClick={() => handleAction('no')}
+            >
+              {renderButtonLabel('no', buttons[2].label)}
+            </button>
+
+            {registrationRequired && !hasExistingRegistration && (
+              <p className='mt-4 text-center text-sm text-gray-500'>
+                This event requires registration. Clicking &quot;Yes&quot; will open the
+                registration form.
+              </p>
+            )}
+
+            {showCapacityCount &&
+              maxCapacity !== null &&
+              spotsRemaining !== null &&
+              (!isEventFull || isYesRsvp) && (
+                <p className='text-center text-sm text-gray-500'>
+                  {isEventFull && isYesRsvp
+                    ? 'No more spots left'
+                    : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
+                </p>
+              )}
+          </div>
+        </div>
+
+        {/* Loading state - fades in after buttons fade out */}
+        {(rsvpPhase === 'loading' || rsvpPhase === 'fading-out') && (
+          <div
+            className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-300 ${
+              rsvpPhase === 'loading' ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
+            <p className='mt-3 text-sm font-medium text-gray-500'>Updating RSVP...</p>
+          </div>
+        )}
+
+        {/* Success state - fades in after loading */}
+        {rsvpPhase === 'success' && (
+          <div className='absolute inset-0 flex animate-in fade-in duration-400 flex-col items-center justify-center'>
+            <div className='flex h-14 w-14 items-center justify-center rounded-full bg-green-100'>
+              <Check className='h-7 w-7 text-green-600' strokeWidth={3} />
+            </div>
+            <p className='mt-3 text-sm font-medium text-gray-700'>{rsvpStatusLabel}</p>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const renderContent = () => {
@@ -291,59 +419,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
       case 'rsvp-buttons':
       default:
-        return (
-          <div className='space-y-3'>
-            {/* Show info if registration required but user already approved */}
-            {registrationRequired &&
-              hasExistingRegistration &&
-              existingRegistration?.approval_status === 'approved' && (
-                <div className='mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700'>
-                  Your registration has been approved. Update your attendance below.
-                </div>
-              )}
-
-            <button
-              className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
-              disabled={isLoading || upsert.isPending || shouldDisableYes}
-              onClick={() => handleAction('yes')}
-            >
-              {shouldDisableYes ? 'NO SPOTS LEFT' : renderLabel('yes', buttons[0].label)}
-            </button>
-            <button
-              className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
-              disabled={isLoading || upsert.isPending}
-              onClick={() => handleAction('maybe')}
-            >
-              {renderLabel('maybe', buttons[1].label)}
-            </button>
-            <button
-              className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[2].classes}`}
-              disabled={isLoading || upsert.isPending}
-              onClick={() => handleAction('no')}
-            >
-              {renderLabel('no', buttons[2].label)}
-            </button>
-
-            {/* Show registration requirement hint */}
-            {registrationRequired && !hasExistingRegistration && (
-              <p className='mt-4 text-center text-sm text-gray-500'>
-                This event requires registration. Clicking &quot;Yes&quot; will open the
-                registration form.
-              </p>
-            )}
-
-            {showCapacityCount &&
-              maxCapacity !== null &&
-              spotsRemaining !== null &&
-              (!isEventFull || isYesRsvp) && (
-                <p className='text-center text-sm text-gray-500'>
-                  {isEventFull && isYesRsvp
-                    ? 'No more spots left'
-                    : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
-                </p>
-              )}
-          </div>
-        );
+        return renderRsvpButtons();
     }
   };
 
