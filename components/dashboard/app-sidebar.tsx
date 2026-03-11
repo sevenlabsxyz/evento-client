@@ -61,7 +61,7 @@ const navMain = [
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
-  const { state, setOpenMobile, toggleSidebar } = useSidebar();
+  const { state, setOpenMobile, toggleSidebar, isMobile } = useSidebar();
   // const { isOpen: isCalendarOpen, toggle: toggleCalendar } = useRightSidebar();
 
   const handleCreateEvent = () => {
@@ -125,15 +125,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <span>{isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}</span>
             </SidebarMenuButton>
           </SidebarMenuItem> */}
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
-              onClick={toggleSidebar}
-            >
-              {state === 'expanded' ? <PanelRightOpen /> : <PanelRightClose />}
-              <span>{state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {!isMobile && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
+                onClick={toggleSidebar}
+              >
+                {state === 'expanded' ? <PanelRightOpen /> : <PanelRightClose />}
+                <span>{state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
         <SidebarSeparator />
         <NavUser />
