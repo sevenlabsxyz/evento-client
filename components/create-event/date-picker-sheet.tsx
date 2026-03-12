@@ -218,7 +218,7 @@ export default function DatePickerSheet({
                       key={index}
                       onClick={() => handleDateClick(day)}
                       disabled={!day}
-                      className={`flex h-10 w-10 items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? 'invisible' : ''} ${
+                      className={`flex h-10 w-full items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? 'invisible' : ''} ${
                         isSelectedDate(day)
                           ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
                           : isReferenceDate(day)
