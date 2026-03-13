@@ -110,7 +110,7 @@ export default function EditProfilePage() {
     }
   }, [user, populateFromUser]);
 
-  if (isLoading || isCheckingAuth || updateProfileMutation.isPending) {
+  if (isLoading || isCheckingAuth || updateProfileMutation.isPending || !user) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         <div className='flex-1 space-y-4 overflow-y-auto p-4'>

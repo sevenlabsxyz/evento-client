@@ -79,7 +79,7 @@ export function useUpdateUserProfile() {
     mutationFn: async (updates: Partial<UserDetails>) => {
       // Only send the fields that are being updated
       const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
+        Object.entries(updates).filter(([_, value]) => value !== undefined && value !== null)
       );
 
       const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
