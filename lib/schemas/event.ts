@@ -110,9 +110,9 @@ export type CreateEventData = z.infer<typeof createEventSchema>;
 
 /**
  * Schema for updating an event (PATCH)
- * Includes ID and excludes settings
+ * Includes ID and settings for capacity management
  */
-export const updateEventSchema = eventFormSchema.omit({ settings: true }).extend({
+export const updateEventSchema = eventFormSchema.extend({
   id: z.string().min(1, 'Event ID is required'),
 });
 
