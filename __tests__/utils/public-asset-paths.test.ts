@@ -27,13 +27,13 @@ describe('shouldBypassUsernameRoute', () => {
   it('bypasses explicit public asset paths', () => {
     expect(shouldBypassUsernameRoute('robots.txt')).toBe(true);
     expect(shouldBypassUsernameRoute('favicon.ico')).toBe(true);
-    expect(shouldBypassUsernameRoute('custom-icon.webp')).toBe(true);
   });
 
   it('bypasses invalid username shapes and reserved segments', () => {
     expect(shouldBypassUsernameRoute('')).toBe(true);
     expect(shouldBypassUsernameRoute('.hidden')).toBe(true);
     expect(shouldBypassUsernameRoute('alex.ai')).toBe(true);
+    expect(shouldBypassUsernameRoute('custom-icon.webp')).toBe(true);
     expect(shouldBypassUsernameRoute('user_name')).toBe(true);
     expect(shouldBypassUsernameRoute('api')).toBe(true);
   });
