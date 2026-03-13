@@ -95,6 +95,7 @@ export default function EditEventDetailsPage() {
       title: 'Event Details',
       leftMode: 'back',
       centerMode: 'title',
+      hideMobileBreadcrumb: true,
       showAvatar: false,
     });
 
