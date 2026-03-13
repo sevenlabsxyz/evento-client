@@ -1,5 +1,5 @@
 import { Env } from '@/lib/constants/env';
-import { isPublicAssetPathSegment } from '@/lib/utils/public-asset-paths';
+import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ImageResponse } from 'next/og';
@@ -56,7 +56,7 @@ function renderFallbackProfileImage(username: string) {
 }
 
 export default async function Image({ params }: { params: { username: string } }) {
-  if (isPublicAssetPathSegment(params.username)) {
+  if (shouldBypassUsernameRoute(params.username)) {
     notFound();
   }
 

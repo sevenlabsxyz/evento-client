@@ -1,4 +1,6 @@
-const FILE_LIKE_SEGMENT_PATTERN = /\.[a-z0-9]+$/i;
+const USERNAME_SEGMENT_PATTERN = /^[a-z0-9]{3,20}$/i;
+
+const RESERVED_USERNAME_SEGMENTS = new Set(['api', 'auth', 'blog', 'e', 'event']);
 
 const RESERVED_PUBLIC_ASSET_SEGMENTS = new Set([
   'ads.txt',
@@ -22,12 +24,23 @@ const RESERVED_PUBLIC_ASSET_SEGMENTS = new Set([
 export function isPublicAssetPathSegment(segment: string): boolean {
   const normalizedSegment = segment.trim().toLowerCase();
 
-  if (!normalizedSegment || normalizedSegment.startsWith('.')) {
+  return RESERVED_PUBLIC_ASSET_SEGMENTS.has(normalizedSegment);
+}
+
+export function shouldBypassUsernameRoute(segment: string): boolean {
+  const normalizedSegment = segment.trim().toLowerCase();
+
+  if (!normalizedSegment) {
     return true;
   }
 
-  return (
-    RESERVED_PUBLIC_ASSET_SEGMENTS.has(normalizedSegment) ||
-    FILE_LIKE_SEGMENT_PATTERN.test(normalizedSegment)
-  );
+  if (isPublicAssetPathSegment(normalizedSegment)) {
+    return true;
+  }
+
+  if (RESERVED_USERNAME_SEGMENTS.has(normalizedSegment)) {
+    return true;
+  }
+
+  return !USERNAME_SEGMENT_PATTERN.test(normalizedSegment);
 }

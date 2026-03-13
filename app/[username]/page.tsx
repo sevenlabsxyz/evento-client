@@ -1,5 +1,5 @@
 import { Env } from '@/lib/constants/env';
-import { isPublicAssetPathSegment } from '@/lib/utils/public-asset-paths';
+import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import type { Metadata, ResolvingMetadata } from 'next';
@@ -18,7 +18,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const { username } = params;
 
-  if (isPublicAssetPathSegment(username)) {
+  if (shouldBypassUsernameRoute(username)) {
     notFound();
   }
 
@@ -108,7 +108,7 @@ function getDefaultMetadata(previousImages: any[]) {
 export const dynamic = 'force-dynamic';
 
 export default function Page({ params }: UsernamePageProps) {
-  if (isPublicAssetPathSegment(params.username)) {
+  if (shouldBypassUsernameRoute(params.username)) {
     notFound();
   }
 
