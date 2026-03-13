@@ -22,6 +22,18 @@ interface EventDatePartsInput {
   fallbackIso?: string;
 }
 
+interface EventDateRangeInput {
+  start: EventDatePartsInput;
+  end: EventDatePartsInput;
+}
+
+interface EventDateRangeDisplay {
+  startDate: EventDateDisplay;
+  endDate: EventDateDisplay;
+  displayDate: string;
+  isMultiDay: boolean;
+}
+
 const EMPTY_EVENT_DATE_DISPLAY: EventDateDisplay = {
   date: '',
   time: '',
@@ -192,6 +204,24 @@ function hasValidTimeParts(hours?: number | null, minutes?: number | null): bool
   return formatTimeFromParts(hours, minutes) !== '';
 }
 
+function areSameCalendarDay(start: EventDatePartsInput, end: EventDatePartsInput): boolean {
+  if (
+    isValidDateParts(start.year, start.month, start.day) &&
+    isValidDateParts(end.year, end.month, end.day)
+  ) {
+    return start.year === end.year && start.month === end.month && start.day === end.day;
+  }
+
+  const startDisplay = formatEventDateFromParts(start);
+  const endDisplay = formatEventDateFromParts(end);
+
+  if (!startDisplay.date || !endDisplay.date) {
+    return true;
+  }
+
+  return startDisplay.date === endDisplay.date;
+}
+
 export function formatEventDateFromParts({
   year,
   month,
@@ -270,6 +300,28 @@ export function formatEventDateFromParts({
   }
 
   return { ...display };
+}
+
+export function formatEventDateRangeFromParts({
+  start,
+  end,
+}: EventDateRangeInput): EventDateRangeDisplay {
+  const startDate = formatEventDateFromParts(start);
+  const endDate = formatEventDateFromParts(end);
+  const isMultiDay = !areSameCalendarDay(start, end);
+
+  const startLabel = startDate.longDate || startDate.date;
+  const endLabel = endDate.longDate || endDate.date;
+
+  return {
+    startDate,
+    endDate,
+    displayDate:
+      isMultiDay && startLabel && endLabel
+        ? `${startLabel} - ${endLabel}`
+        : startLabel || endLabel || '',
+    isMultiDay,
+  };
 }
 
 /**
