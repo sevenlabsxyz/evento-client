@@ -9,6 +9,38 @@ interface EnhancedBlogContentProps {
   className?: string;
 }
 
+function generateBlurDataURL(url: string): string {
+  // For external images
+  if (url.startsWith('http')) {
+    // Try to generate a tiny version for Evento images on supported domains
+    if (
+      url.includes('evento.so') ||
+      url.includes('laughing-sunfish.pikapod.net') ||
+      url.includes('blogapi.evento.so')
+    ) {
+      // Add blur parameters - create a tiny 10px version for blurry placeholder
+      if (url.includes('?')) {
+        return `${url}&width=10&quality=30`;
+      }
+      return `${url}?width=10&quality=30`;
+    }
+
+    // For external images we don't have control over, use generic blur
+    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
+  }
+
+  // For internal/relative images
+  if (url.startsWith('/')) {
+    // For Supabase storage URLs
+    if (url.includes('/storage/v1/')) {
+      return `${url}?width=10&quality=30`;
+    }
+  }
+
+  // Default fallback blur
+  return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
+}
+
 /**
  * Component that enhances blog content by replacing standard img tags
  * with optimized Next.js Image components
@@ -54,7 +86,6 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
           // For GIFs, use standard img tag to preserve animation
           if (isGif(src)) {
             return (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 key={key}
                 src={src}
@@ -107,42 +138,6 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
 
     setProcessedContent(processedNodes);
   }, [html]);
-
-  /**
-   * Generate a blur data URL for images
-   * Provides a tiny version of the image or a placeholder
-   */
-  function generateBlurDataURL(url: string): string {
-    // For external images
-    if (url.startsWith('http')) {
-      // Try to generate a tiny version for Evento images on supported domains
-      if (
-        url.includes('evento.so') ||
-        url.includes('laughing-sunfish.pikapod.net') ||
-        url.includes('blogapi.evento.so')
-      ) {
-        // Add blur parameters - create a tiny 10px version for blurry placeholder
-        if (url.includes('?')) {
-          return `${url}&width=10&quality=30`;
-        }
-        return `${url}?width=10&quality=30`;
-      }
-
-      // For external images we don't have control over, use generic blur
-      return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
-    }
-
-    // For internal/relative images
-    if (url.startsWith('/')) {
-      // For Supabase storage URLs
-      if (url.includes('/storage/v1/')) {
-        return `${url}?width=10&quality=30`;
-      }
-    }
-
-    // Default fallback blur
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
-  }
 
   return <div className={`max-w-full overflow-hidden ${className || ''}`}>{processedContent}</div>;
 }
