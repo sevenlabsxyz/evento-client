@@ -8,6 +8,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
+import { formatEventDateRangeFromParts } from '@/lib/utils/date';
 import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
 import { formatEventLocationAddress } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
@@ -215,10 +216,49 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     ? `${event.location.coordinates.lat},${event.location.coordinates.lng}`
     : fullAddress;
 
+  const dateRange = useMemo(
+    () =>
+      formatEventDateRangeFromParts({
+        start: {
+          year: eventData?.start_date_year,
+          month: eventData?.start_date_month,
+          day: eventData?.start_date_day,
+          hours: eventData?.start_date_hours,
+          minutes: eventData?.start_date_minutes,
+          timezone: eventData?.timezone,
+          fallbackIso: event.computedStartDate,
+        },
+        end: {
+          year: eventData?.end_date_year,
+          month: eventData?.end_date_month,
+          day: eventData?.end_date_day,
+          hours: eventData?.end_date_hours,
+          minutes: eventData?.end_date_minutes,
+          timezone: eventData?.timezone,
+          fallbackIso: event.computedEndDate,
+        },
+      }),
+    [
+      event.computedEndDate,
+      event.computedStartDate,
+      eventData?.end_date_day,
+      eventData?.end_date_hours,
+      eventData?.end_date_minutes,
+      eventData?.end_date_month,
+      eventData?.end_date_year,
+      eventData?.start_date_day,
+      eventData?.start_date_hours,
+      eventData?.start_date_minutes,
+      eventData?.start_date_month,
+      eventData?.start_date_year,
+      eventData?.timezone,
+    ]
+  );
+
   const startDate = useMemo(() => {
-    const monthShort = event.monthShort ?? '';
-    const day = event.dayOfMonth ?? '';
-    const fullDate = event.longDate ?? event.date;
+    const monthShort = dateRange.startDate.monthShort || event.monthShort || '';
+    const day = dateRange.startDate.dayOfMonth || event.dayOfMonth || '';
+    const fullDate = dateRange.displayDate || event.longDate || event.date;
 
     if (!monthShort && !day && !fullDate) {
       return null;
@@ -229,9 +269,19 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       day,
       fullDate,
     };
-  }, [event.monthShort, event.dayOfMonth, event.longDate, event.date]);
+  }, [
+    dateRange.displayDate,
+    dateRange.startDate.dayOfMonth,
+    dateRange.startDate.monthShort,
+    event.date,
+    event.dayOfMonth,
+    event.longDate,
+    event.monthShort,
+  ]);
 
-  const dateTimeSubtitle = `${event.startTime} - ${event.endTime}${event.timezone ? ` ${event.timezone}` : ''}`;
+  const startTime = dateRange.startDate.time || event.startTime;
+  const endTime = dateRange.endDate.time || event.endTime;
+  const dateTimeSubtitle = `${startTime} - ${endTime}${event.timezone ? ` ${event.timezone}` : ''}`;
   const dateTimeText = [startDate?.fullDate, dateTimeSubtitle].filter(Boolean).join('\n');
 
   const detailModuleBaseClassName =

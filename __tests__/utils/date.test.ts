@@ -1,4 +1,8 @@
-import { formatEventDate, formatEventDateFromParts } from '@/lib/utils/date';
+import {
+  formatEventDate,
+  formatEventDateFromParts,
+  formatEventDateRangeFromParts,
+} from '@/lib/utils/date';
 
 describe('formatEventDate', () => {
   it('formats event date/time using the provided event timezone', () => {
@@ -102,5 +106,57 @@ describe('formatEventDateFromParts', () => {
 
     expect(midnight.time).toBe('12:00 AM');
     expect(endOfDay.time).toBe('11:59 PM');
+  });
+});
+
+describe('formatEventDateRangeFromParts', () => {
+  it('returns a single display date for same-day events', () => {
+    const formatted = formatEventDateRangeFromParts({
+      start: {
+        year: 2026,
+        month: 4,
+        day: 27,
+        hours: 13,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+      end: {
+        year: 2026,
+        month: 4,
+        day: 27,
+        hours: 17,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+    });
+
+    expect(formatted.isMultiDay).toBe(false);
+    expect(formatted.displayDate).toBe('Monday, April 27');
+  });
+
+  it('returns a date range for multi-day events', () => {
+    const formatted = formatEventDateRangeFromParts({
+      start: {
+        year: 2026,
+        month: 4,
+        day: 27,
+        hours: 13,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+      end: {
+        year: 2026,
+        month: 4,
+        day: 29,
+        hours: 17,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+    });
+
+    expect(formatted.isMultiDay).toBe(true);
+    expect(formatted.displayDate).toBe('Monday, April 27 - Wednesday, April 29');
+    expect(formatted.startDate.monthShort).toBe('APR');
+    expect(formatted.startDate.dayOfMonth).toBe('27');
   });
 });
