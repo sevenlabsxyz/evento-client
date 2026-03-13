@@ -34,6 +34,13 @@ interface EventDateRangeDisplay {
   isMultiDay: boolean;
 }
 
+interface EventDateRangeParts {
+  day: string;
+  month: string;
+  weekdayShort: string;
+  year: string;
+}
+
 const EMPTY_EVENT_DATE_DISPLAY: EventDateDisplay = {
   date: '',
   time: '',
@@ -152,6 +159,88 @@ export function formatEventDate(isoString: string, timezone?: string) {
     dayOfMonth,
     longDate,
   };
+}
+
+function getEventDateRangeParts(date: Date, timezone?: string): EventDateRangeParts {
+  const timeZoneOptions = getIntlTimeZoneOptions(timezone);
+
+  return {
+    day: date.toLocaleDateString('en-US', {
+      day: 'numeric',
+      ...timeZoneOptions,
+    }),
+    month: date.toLocaleDateString('en-US', {
+      month: 'long',
+      ...timeZoneOptions,
+    }),
+    weekdayShort: date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      ...timeZoneOptions,
+    }),
+    year: date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      ...timeZoneOptions,
+    }),
+  };
+}
+
+export function formatEventDateRange(startIso: string, endIso: string, timezone?: string): string {
+  if (!startIso) {
+    return '';
+  }
+
+  if (!endIso) {
+    return formatEventDate(startIso, timezone).longDate;
+  }
+
+  const startDate = new Date(startIso);
+  const endDate = new Date(endIso);
+
+  if (Number.isNaN(startDate.getTime())) {
+    return '';
+  }
+
+  if (Number.isNaN(endDate.getTime())) {
+    return formatEventDate(startIso, timezone).longDate;
+  }
+
+  const startParts = getEventDateRangeParts(startDate, timezone);
+  const endParts = getEventDateRangeParts(endDate, timezone);
+  const isSameDay =
+    startParts.year === endParts.year &&
+    startParts.month === endParts.month &&
+    startParts.day === endParts.day;
+
+  if (isSameDay) {
+    return formatEventDate(startIso, timezone).longDate;
+  }
+
+  const isSameMonth = startParts.year === endParts.year && startParts.month === endParts.month;
+  const endLabel = isSameMonth
+    ? `${endParts.weekdayShort}, ${endParts.day}`
+    : `${endParts.weekdayShort}, ${endParts.month} ${endParts.day}`;
+
+  return `${startParts.weekdayShort}, ${startParts.month} ${startParts.day} - ${endLabel}`;
+}
+
+function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateRangeParts | null {
+  if (isValidDateParts(input.year, input.month, input.day)) {
+    return getEventDateRangeParts(
+      new Date(input.year as number, (input.month as number) - 1, input.day as number),
+      input.timezone
+    );
+  }
+
+  if (!input.fallbackIso) {
+    return null;
+  }
+
+  const fallbackDate = new Date(input.fallbackIso);
+  if (Number.isNaN(fallbackDate.getTime())) {
+    return null;
+  }
+
+  return getEventDateRangeParts(fallbackDate, input.timezone);
 }
 
 function isValidDateParts(
@@ -312,14 +401,21 @@ export function formatEventDateRangeFromParts({
 
   const startLabel = startDate.longDate || startDate.date;
   const endLabel = endDate.longDate || endDate.date;
+  const startParts = getEventDateRangePartsFromInput(start);
+  const endParts = getEventDateRangePartsFromInput(end);
+  const multiDayLabel =
+    isMultiDay && startParts && endParts
+      ? `${startParts.weekdayShort}, ${startParts.month} ${startParts.day} - ${
+          startParts.year === endParts.year && startParts.month === endParts.month
+            ? `${endParts.weekdayShort}, ${endParts.day}`
+            : `${endParts.weekdayShort}, ${endParts.month} ${endParts.day}`
+        }`
+      : null;
 
   return {
     startDate,
     endDate,
-    displayDate:
-      isMultiDay && startLabel && endLabel
-        ? `${startLabel} - ${endLabel}`
-        : startLabel || endLabel || '',
+    displayDate: multiDayLabel ?? (startLabel || endLabel || ''),
     isMultiDay,
   };
 }
