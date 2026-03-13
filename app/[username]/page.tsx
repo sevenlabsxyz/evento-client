@@ -1,10 +1,27 @@
 import { Env } from '@/lib/constants/env';
+import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
+import type { Metadata, ResolvingMetadata } from 'next';
+import { notFound } from 'next/navigation';
 import UserProfilePageClient from './page-client';
 
-export async function generateMetadata({ params }: any, parent: any) {
+interface UsernamePageProps {
+  params: {
+    username: string;
+  };
+}
+
+export async function generateMetadata(
+  { params }: UsernamePageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   const { username } = params;
+
+  if (shouldBypassUsernameRoute(username)) {
+    notFound();
+  }
+
   const profilePath = `/${username}`;
   const profileOgImage = `${profilePath}/opengraph-image`;
 
@@ -90,6 +107,10 @@ function getDefaultMetadata(previousImages: any[]) {
 
 export const dynamic = 'force-dynamic';
 
-export default function Page() {
+export default function Page({ params }: UsernamePageProps) {
+  if (shouldBypassUsernameRoute(params.username)) {
+    notFound();
+  }
+
   return <UserProfilePageClient />;
 }
