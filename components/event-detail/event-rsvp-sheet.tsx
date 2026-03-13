@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
-import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { useUpsertRSVP, RSVPError } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
@@ -196,6 +196,13 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               setRsvpPhase('success');
             },
             onError: (error: Error) => {
+              // Check if this is an RSVPError with a redirect
+              if (error instanceof RSVPError && error.redirectTo) {
+                toast.error(error.message);
+                router.push(error.redirectTo);
+                onClose();
+                return;
+              }
               toast.error(error.message || 'Failed to update RSVP. Please try again.');
               setRsvpPhase('idle');
               setSelectedStatus(null);
@@ -203,6 +210,14 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
           }
         );
       } catch (error) {
+        // Check if this is an RSVPError with a redirect
+        if (error instanceof RSVPError && error.redirectTo) {
+          const message = error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
+          toast.error(message);
+          router.push(error.redirectTo);
+          onClose();
+          return;
+        }
         const message =
           error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
         toast.error(message);
