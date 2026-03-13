@@ -8,6 +8,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
+import { formatEventDateRange } from '@/lib/utils/date';
 import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
 import { formatEventLocationAddress } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
@@ -218,7 +219,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   const startDate = useMemo(() => {
     const monthShort = event.monthShort ?? '';
     const day = event.dayOfMonth ?? '';
-    const fullDate = event.longDate ?? event.date;
+    const fullDate = formatEventDateRange(
+      event.computedStartDate,
+      event.computedEndDate,
+      eventData?.timezone
+    );
 
     if (!monthShort && !day && !fullDate) {
       return null;
@@ -229,7 +234,13 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       day,
       fullDate,
     };
-  }, [event.monthShort, event.dayOfMonth, event.longDate, event.date]);
+  }, [
+    event.monthShort,
+    event.dayOfMonth,
+    event.computedStartDate,
+    event.computedEndDate,
+    eventData?.timezone,
+  ]);
 
   const dateTimeSubtitle = `${event.startTime} - ${event.endTime}${event.timezone ? ` ${event.timezone}` : ''}`;
   const dateTimeText = [startDate?.fullDate, dateTimeSubtitle].filter(Boolean).join('\n');
