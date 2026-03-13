@@ -16,6 +16,17 @@ interface UpsertRSVPResponse {
   data: EventRSVP[];
 }
 
+// Custom error class for RSVP failures with redirect
+export class RSVPError extends Error {
+  redirectTo?: string;
+  
+  constructor(message: string, redirectTo?: string) {
+    super(message);
+    this.name = 'RSVPError';
+    this.redirectTo = redirectTo;
+  }
+}
+
 export function useUpsertRSVP() {
   const queryClient = useQueryClient();
 
@@ -31,13 +42,12 @@ export function useUpsertRSVP() {
           res = await apiClient.post<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
         }
       } catch (error: unknown) {
-        const message =
-          typeof error === 'object' && error !== null && 'message' in error
-            ? String((error as { message: string }).message)
-            : 'Failed to update RSVP';
+        const errorData = error as { message?: string; redirectTo?: string };
+        const message = errorData.message || 'Failed to update RSVP';
+        const redirectTo = errorData.redirectTo;
 
         console.error('[RSVP] API error:', { eventId, status, hasExisting, error });
-        throw new Error(message || 'Failed to update RSVP');
+        throw new RSVPError(message, redirectTo);
       }
 
       if (!res?.success) {

@@ -12,6 +12,7 @@ export interface ApiError {
   success: false;
   message: string;
   status?: number;
+  redirectTo?: string;
 }
 
 // User Details - complete profile information
