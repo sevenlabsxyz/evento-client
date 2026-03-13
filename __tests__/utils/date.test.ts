@@ -155,8 +155,57 @@ describe('formatEventDateRangeFromParts', () => {
     });
 
     expect(formatted.isMultiDay).toBe(true);
-    expect(formatted.displayDate).toBe('Monday, April 27 - Wednesday, April 29');
+    expect(formatted.displayDate).toBe('Mon, April 27 - Wed, 29');
     expect(formatted.startDate.monthShort).toBe('APR');
     expect(formatted.startDate.dayOfMonth).toBe('27');
+  });
+
+  it('shows both month names when a multi-day range crosses months', () => {
+    const formatted = formatEventDateRangeFromParts({
+      start: {
+        year: 2026,
+        month: 4,
+        day: 30,
+        hours: 13,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+      end: {
+        year: 2026,
+        month: 5,
+        day: 1,
+        hours: 17,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+    });
+
+    expect(formatted.isMultiDay).toBe(true);
+    expect(formatted.displayDate).toBe('Thu, April 30 - Fri, May 1');
+  });
+
+  it('falls back to a single display date when the end date is invalid', () => {
+    const formatted = formatEventDateRangeFromParts({
+      start: {
+        year: 2026,
+        month: 4,
+        day: 26,
+        hours: 10,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+      },
+      end: {
+        year: 2026,
+        month: 4,
+        day: 31,
+        hours: 17,
+        minutes: 0,
+        timezone: 'America/Los_Angeles',
+        fallbackIso: '2026-04-26T22:00:00.000Z',
+      },
+    });
+
+    expect(formatted.isMultiDay).toBe(false);
+    expect(formatted.displayDate).toBe('Sunday, April 26');
   });
 });
