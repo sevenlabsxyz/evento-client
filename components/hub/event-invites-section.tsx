@@ -19,7 +19,12 @@ export function EventInvitesSection() {
   const [selectedInvite, setSelectedInvite] = useState<EventInvite | null>(null);
   const [showDetailSheet, setShowDetailSheet] = useState(false);
 
-  const { data: pendingInvites = [], isLoading: isLoadingPending } = useEventInvites('pending');
+  const {
+    data: pendingInvites = [],
+    isLoading: isLoadingPending,
+    error: invitesError,
+    refetch: refetchInvites,
+  } = useEventInvites('pending');
 
   const handleRSVP = (eventId: string) => {
     setSelectedEventId(eventId);
@@ -42,6 +47,26 @@ export function EventInvitesSection() {
           {[...Array(5)].map((_, i) => (
             <Skeleton key={i} className='h-[100px] w-[100px] flex-shrink-0 rounded-2xl' />
           ))}
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state with retry
+  if (invitesError) {
+    return (
+      <div className='space-y-4'>
+        <div className='flex items-center justify-between'>
+          <h2 className='text-xl font-semibold'>Invites</h2>
+        </div>
+        <div className='flex flex-col items-center justify-center py-8 text-center'>
+          <p className='mb-2 text-sm text-gray-500'>Couldn&apos;t load invites</p>
+          <button
+            onClick={() => refetchInvites()}
+            className='text-sm font-medium text-primary underline'
+          >
+            Tap to retry
+          </button>
         </div>
       </div>
     );

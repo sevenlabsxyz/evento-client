@@ -5,7 +5,7 @@ import { Users } from 'lucide-react';
 import { CohostInviteCard } from './cohost-invite-card';
 
 export function CohostInvitesSection() {
-  const { data: pendingInvites = [], isLoading } = useMyCohostInvites('pending');
+  const { data: pendingInvites = [], isLoading, error, refetch } = useMyCohostInvites('pending');
 
   if (isLoading) {
     return (
@@ -16,6 +16,10 @@ export function CohostInvitesSection() {
         </div>
       </div>
     );
+  }
+
+  if (error) {
+    return null; // Non-critical section, hide on error
   }
 
   if (pendingInvites.length === 0) {

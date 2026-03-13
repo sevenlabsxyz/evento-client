@@ -136,6 +136,18 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       responseHeaders.append('set-cookie', cookie);
     });
 
+    // Add stale-while-revalidate cache headers for successful GET requests
+    // that don't already have cache-control from the backend.
+    // This lets the browser serve cached data instantly while revalidating.
+    if (
+      request.method === 'GET' &&
+      response.ok &&
+      !response.headers.get('cache-control') &&
+      setCookieHeaders.length === 0 // Don't cache responses that set cookies
+    ) {
+      responseHeaders.set('Cache-Control', 'private, max-age=60, stale-while-revalidate=300');
+    }
+
     // Handle different response types
     const contentType = response.headers.get('content-type');
     const duration = Date.now() - startTime;

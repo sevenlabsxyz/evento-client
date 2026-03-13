@@ -67,6 +67,7 @@ export function MyEventsSection() {
   const currentQuery = getCurrentQuery();
   const events = currentQuery.data?.pages?.[0]?.events || [];
   const isLoading = currentQuery.isLoading;
+  const isError = currentQuery.isError;
 
   // Group events by date
   const groupedEvents = events.reduce(
@@ -116,12 +117,11 @@ export function MyEventsSection() {
           {isLoading ? (
             // Skeleton loading for vertical layout
             <div className='flex flex-col gap-2'>
-              {Array.from({ length: 6 }, (_, idx) => `ske-${idx}`).map((skeletonKey) => (
+              {Array.from({ length: 3 }, (_, idx) => `ske-${idx}`).map((skeletonKey) => (
                 <div
                   key={skeletonKey}
                   className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4'
                 >
-                  {/* Left content skeleton */}
                   <div className='flex min-w-0 flex-1 flex-col gap-2'>
                     <div className='h-4 w-32 rounded bg-gray-200' />
                     <div className='h-5 w-3/4 rounded bg-gray-200' />
@@ -129,15 +129,20 @@ export function MyEventsSection() {
                       <div className='h-5 w-5 rounded-full bg-gray-200' />
                       <div className='h-3 w-24 rounded bg-gray-200' />
                     </div>
-                    <div className='flex items-center gap-1'>
-                      <div className='h-3.5 w-3.5 rounded bg-gray-200' />
-                      <div className='h-3 w-32 rounded bg-gray-200' />
-                    </div>
                   </div>
-                  {/* Right image skeleton */}
                   <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200' />
                 </div>
               ))}
+            </div>
+          ) : isError ? (
+            <div className='flex flex-col items-center justify-center py-12 text-center'>
+              <p className='mb-2 text-sm text-gray-500'>Couldn&apos;t load your events</p>
+              <button
+                onClick={() => currentQuery.refetch()}
+                className='text-sm font-medium text-primary underline'
+              >
+                Tap to retry
+              </button>
             </div>
           ) : events.length === 0 ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
