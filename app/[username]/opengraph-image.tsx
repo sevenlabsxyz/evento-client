@@ -1,7 +1,9 @@
 import { Env } from '@/lib/constants/env';
+import { isPublicAssetPathSegment } from '@/lib/utils/public-asset-paths';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ImageResponse } from 'next/og';
+import { notFound } from 'next/navigation';
 
 const supabase = createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
 
@@ -54,6 +56,10 @@ function renderFallbackProfileImage(username: string) {
 }
 
 export default async function Image({ params }: { params: { username: string } }) {
+  if (isPublicAssetPathSegment(params.username)) {
+    notFound();
+  }
+
   const { data: user, error } = await supabase
     .from('user_details')
     .select('image, username')
