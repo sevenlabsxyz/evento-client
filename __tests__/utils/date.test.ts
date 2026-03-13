@@ -1,4 +1,4 @@
-import { formatEventDate, formatEventDateFromParts } from '@/lib/utils/date';
+import { formatEventDate, formatEventDateFromParts, formatEventDateRange } from '@/lib/utils/date';
 
 describe('formatEventDate', () => {
   it('formats event date/time using the provided event timezone', () => {
@@ -102,5 +102,37 @@ describe('formatEventDateFromParts', () => {
 
     expect(midnight.time).toBe('12:00 AM');
     expect(endOfDay.time).toBe('11:59 PM');
+  });
+});
+
+describe('formatEventDateRange', () => {
+  it('uses abbreviated title-case weekdays for multi-day ranges in the same month', () => {
+    const formatted = formatEventDateRange(
+      '2026-04-27T20:00:00.000Z',
+      '2026-04-30T00:00:00.000Z',
+      'America/Los_Angeles'
+    );
+
+    expect(formatted).toBe('Mon, April 27 - Wed, 29');
+  });
+
+  it('shows both month names when a multi-day range crosses months', () => {
+    const formatted = formatEventDateRange(
+      '2026-04-30T20:00:00.000Z',
+      '2026-05-02T00:00:00.000Z',
+      'America/Los_Angeles'
+    );
+
+    expect(formatted).toBe('Thu, April 30 - Fri, May 1');
+  });
+
+  it('keeps the long-date format for single-day events', () => {
+    const formatted = formatEventDateRange(
+      '2026-04-26T17:00:00.000Z',
+      '2026-04-26T22:00:00.000Z',
+      'America/Los_Angeles'
+    );
+
+    expect(formatted).toBe('Sunday, April 26');
   });
 });
