@@ -188,8 +188,8 @@ export default function EditEventDetailsPage() {
             </div>
 
             {/* Other sections */}
-            {['location', 'description', 'capacity'].map((section) => (
-              <div key={section} className='rounded-2xl bg-white p-4'>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className='rounded-2xl bg-white p-4'>
                 <div className='flex items-center gap-4'>
                   <Skeleton className='h-8 w-8 rounded-lg' />
                   <div className='flex-1'>
@@ -216,7 +216,6 @@ export default function EditEventDetailsPage() {
             permission.
           </p>
           <button
-            type='button'
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
@@ -273,7 +272,7 @@ export default function EditEventDetailsPage() {
         {/* Event Title Module */}
         <div className='rounded-2xl bg-white p-4'>
           <div className='space-y-2'>
-            <p className='text-sm font-medium text-gray-500'>Event Title</p>
+            <label className='text-sm font-medium text-gray-500'>Event Title</label>
             <div className='flex items-center gap-3'>
               <EmojiSelector selectedEmoji={emoji} onEmojiSelect={setEmoji} />
               <input
@@ -296,14 +295,12 @@ export default function EditEventDetailsPage() {
             <span className='w-16 font-medium text-gray-700'>Starts</span>
             <div className='flex flex-1 gap-2'>
               <button
-                type='button'
                 onClick={() => setShowStartDateModal(true)}
                 className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(startDate)}
               </button>
               <button
-                type='button'
                 onClick={() => setShowStartTimeModal(true)}
                 className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600'
               >
@@ -319,14 +316,12 @@ export default function EditEventDetailsPage() {
             <span className='w-16 font-medium text-gray-700'>Ends</span>
             <div className='flex flex-1 gap-2'>
               <button
-                type='button'
                 onClick={() => setShowEndDateModal(true)}
                 className='flex-1 whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-900'
               >
                 {formatDateForDisplay(endDate)}
               </button>
               <button
-                type='button'
                 onClick={() => setShowEndTimeModal(true)}
                 className='whitespace-nowrap rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-600'
               >
@@ -339,7 +334,6 @@ export default function EditEventDetailsPage() {
         {/* Address Module */}
         <div className='rounded-2xl bg-white p-4'>
           <button
-            type='button'
             onClick={() => setShowLocationModal(true)}
             className='flex w-full items-center gap-4 text-left'
           >
@@ -347,7 +341,7 @@ export default function EditEventDetailsPage() {
               <MapPin className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
-              <p className='mb-1 block text-sm font-medium text-gray-500'>Address</p>
+              <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
               <div className='flex items-center justify-between'>
                 <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
                   {location ? getLocationDisplayName(location) : 'Choose address'}
@@ -361,7 +355,6 @@ export default function EditEventDetailsPage() {
         {/* Description Module */}
         <div className='rounded-2xl bg-white p-4'>
           <button
-            type='button'
             onClick={() => setShowDescriptionModal(true)}
             className='flex w-full items-start gap-4 text-left'
           >
@@ -369,7 +362,7 @@ export default function EditEventDetailsPage() {
               <Edit3 className='h-4 w-4 text-gray-600' />
             </div>
             <div className='flex-1'>
-              <p className='mb-2 block text-sm font-medium text-gray-500'>Description</p>
+              <label className='mb-2 block text-sm font-medium text-gray-500'>Description</label>
               <div className='flex items-center justify-between'>
                 <span
                   className={`${isContentEmpty(description) ? 'text-gray-400' : 'text-gray-900'}`}
@@ -393,15 +386,14 @@ export default function EditEventDetailsPage() {
               <div className='flex-1'>
                 <div className='flex items-center justify-between'>
                   <div className='flex flex-col'>
-                    <p className='mb-1 text-sm font-medium text-gray-500'>
+                    <label className='mb-1 text-sm font-medium text-gray-500'>
                       {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
-                    </p>
+                    </label>
                     {hasCapacity && capacity && (
                       <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
                     )}
                   </div>
                   <button
-                    type='button'
                     onClick={() => {
                       if (hasCapacity) {
                         setShowCapacityConfirmationSheet(true);
@@ -430,7 +422,6 @@ export default function EditEventDetailsPage() {
                   <p className='text-xs text-gray-500'>Display spots remaining to guests</p>
                 </div>
                 <button
-                  type='button'
                   onClick={() => setShowCapacityCount(!showCapacityCount)}
                   className={`h-6 w-12 rounded-full transition-colors ${
                     showCapacityCount ? 'bg-purple-500' : 'bg-gray-300'
