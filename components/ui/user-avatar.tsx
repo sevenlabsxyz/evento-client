@@ -124,22 +124,20 @@ export function UserAvatar({
       </button>
       {/* Verification Badge */}
       {user?.verification_status === 'verified' && (
-        <button
-          type='button'
+        <span
+          role='button'
+          tabIndex={0}
           aria-label='Verification badge'
           onClick={handleVerificationClick}
-          className={cn('absolute transition-transform hover:scale-105', sizeConfig.badgePosition)}
+          className={cn(
+            'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
+            sizeConfig.badge,
+            sizeConfig.badgePosition,
+            'transition-transform hover:scale-105'
+          )}
         >
-          <span
-            className={cn(
-              sizeConfig.badge,
-              'border-2',
-              'flex scale-90 items-center justify-center rounded-full border-gray-200 bg-red-600'
-            )}
-          >
-            <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
-          </span>
-        </button>
+          <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
+        </span>
       )}
     </div>
   );
