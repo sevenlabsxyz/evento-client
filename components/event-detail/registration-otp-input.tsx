@@ -2,22 +2,20 @@
 
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+const OTP_INPUT_IDS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'] as const;
+
 interface RegistrationOtpInputProps {
-  email: string;
   onVerify: (code: string) => Promise<void>;
-  onBack: () => void;
   onResend: () => Promise<void>;
   isLoading: boolean;
   error?: string;
 }
 
 export function RegistrationOtpInput({
-  email,
   onVerify,
-  onBack,
   onResend,
   isLoading,
   error,
@@ -127,28 +125,11 @@ export function RegistrationOtpInput({
 
   return (
     <div className='space-y-6'>
-      {/* Header */}
-      <div className='flex items-center gap-3'>
-        <button
-          onClick={onBack}
-          className='rounded-full p-2 hover:bg-gray-100'
-          disabled={isLoading}
-        >
-          <ArrowLeft className='h-5 w-5' />
-        </button>
-        <div>
-          <h2 className='text-lg font-semibold'>Verify your email</h2>
-          <p className='text-sm text-gray-500'>
-            Enter the 6-digit code sent to <span className='font-medium'>{email}</span>
-          </p>
-        </div>
-      </div>
-
       {/* OTP Inputs */}
       <div className='flex justify-center gap-2'>
         {code.map((digit, index) => (
           <input
-            key={index}
+            key={OTP_INPUT_IDS[index]}
             ref={(el) => {
               inputRefs.current[index] = el;
             }}
@@ -192,6 +173,7 @@ export function RegistrationOtpInput({
       {/* Resend link */}
       <div className='text-center'>
         <button
+          type='button'
           onClick={handleResend}
           disabled={resendCooldown > 0 || isResending || isLoading}
           className='text-sm text-gray-500 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50'

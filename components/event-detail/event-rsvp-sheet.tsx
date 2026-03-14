@@ -19,6 +19,7 @@ import { RegistrationForm } from './registration-form';
 import { RegistrationStatus } from './registration-status';
 
 type SheetView = 'rsvp-buttons' | 'registration-form' | 'registration-status';
+type RegistrationStep = 'form' | 'otp';
 type RsvpPhase = 'idle' | 'fading-out' | 'loading' | 'success';
 
 interface RsvpSheetProps {
@@ -45,6 +46,9 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   const [showContributionSheet, setShowContributionSheet] = useState(false);
   const [currentView, setCurrentView] = useState<SheetView>('rsvp-buttons');
+  const [registrationStep, setRegistrationStep] = useState<RegistrationStep>('form');
+  const [registrationEmail, setRegistrationEmail] = useState('');
+  const [isRegistrationStepBusy, setIsRegistrationStepBusy] = useState(false);
   const [pendingRegistration, setPendingRegistration] = useState<UserRegistration | null>(null);
   const [rsvpPhase, setRsvpPhase] = useState<RsvpPhase>('idle');
   const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(null);
@@ -93,6 +97,12 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     return 'rsvp-buttons';
   };
 
+  const resetRegistrationFlow = useCallback(() => {
+    setRegistrationStep('form');
+    setRegistrationEmail('');
+    setIsRegistrationStepBusy(false);
+  }, []);
+
   // Reset view when sheet opens
   const handleSheetOpenChange = (presented: boolean) => {
     if (!presented) {
@@ -100,6 +110,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       // Reset view and pending registration on close
       setTimeout(() => {
         setCurrentView('rsvp-buttons');
+        resetRegistrationFlow();
         setPendingRegistration(null);
         setRsvpPhase('idle');
         setSelectedStatus(null);
@@ -107,8 +118,23 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       }, 300);
     } else {
       setCurrentView(getInitialView());
+      resetRegistrationFlow();
     }
   };
+
+  const handleRegistrationStepChange = useCallback((step: RegistrationStep) => {
+    setRegistrationStep(step);
+  }, []);
+
+  const handleRegistrationHeaderBack = useCallback(() => {
+    if (registrationStep === 'otp') {
+      setRegistrationStep('form');
+      return;
+    }
+
+    resetRegistrationFlow();
+    setCurrentView('rsvp-buttons');
+  }, [registrationStep, resetRegistrationFlow]);
 
   const closeAfterSuccess = useCallback(
     (status: RSVPStatus) => {
@@ -170,6 +196,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       hasExistingRegistration &&
       existingRegistration?.approval_status !== 'approved'
     ) {
+      resetRegistrationFlow();
       setCurrentView('registration-status');
       return;
     }
@@ -238,6 +265,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       if (registration) {
         setPendingRegistration(registration);
       }
+      resetRegistrationFlow();
       setCurrentView('registration-status');
     }
   };
@@ -390,27 +418,48 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     }
 
     switch (currentView) {
-      case 'registration-form':
+      case 'registration-form': {
+        const isOtpStep = registrationStep === 'otp';
+
         return (
           <>
             <div className='mb-4 flex items-center gap-3'>
               <button
                 type='button'
-                onClick={() => setCurrentView('rsvp-buttons')}
-                className='rounded-full p-2 hover:bg-gray-100'
+                onClick={handleRegistrationHeaderBack}
+                disabled={isRegistrationStepBusy}
+                className='rounded-full p-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
               >
                 <ArrowLeft className='h-5 w-5' />
               </button>
-              <h2 className='text-lg font-semibold'>Register for Event</h2>
+              <div className='min-w-0'>
+                <DetachedSheet.Title className='text-lg font-semibold text-gray-900'>
+                  {isOtpStep ? 'Verify your email' : 'Register for Event'}
+                </DetachedSheet.Title>
+                {isOtpStep && (
+                  <DetachedSheet.Description className='text-sm text-gray-500'>
+                    Enter the 6-digit code sent to{' '}
+                    <span className='font-medium text-gray-700'>{registrationEmail}</span>
+                  </DetachedSheet.Description>
+                )}
+              </div>
             </div>
             <RegistrationForm
               eventId={eventId}
               questions={registrationSettings?.questions ?? []}
+              step={registrationStep}
+              onStepChange={handleRegistrationStepChange}
+              onEmailChange={setRegistrationEmail}
+              onStepBusyChange={setIsRegistrationStepBusy}
               onSuccess={handleRegistrationSuccess}
-              onCancel={() => setCurrentView('rsvp-buttons')}
+              onCancel={() => {
+                resetRegistrationFlow();
+                setCurrentView('rsvp-buttons');
+              }}
             />
           </>
         );
+      }
 
       case 'registration-status': {
         // Use existing registration from query, or fall back to pending registration
@@ -423,7 +472,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
                 registration={registrationToShow}
                 onShowRsvp={
                   registrationToShow.approval_status === 'approved'
-                    ? () => setCurrentView('rsvp-buttons')
+                    ? () => {
+                        resetRegistrationFlow();
+                        setCurrentView('rsvp-buttons');
+                      }
                     : undefined
                 }
               />
@@ -457,15 +509,13 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
                   <DetachedSheet.Handle />
                 </div>
 
-                <VisuallyHidden.Root asChild>
-                  <DetachedSheet.Title>
-                    {currentView === 'registration-form'
-                      ? 'Register for Event'
-                      : currentView === 'registration-status'
-                        ? 'Registration Status'
-                        : 'RSVP'}
-                  </DetachedSheet.Title>
-                </VisuallyHidden.Root>
+                {currentView !== 'registration-form' && (
+                  <VisuallyHidden.Root asChild>
+                    <DetachedSheet.Title>
+                      {currentView === 'registration-status' ? 'Registration Status' : 'RSVP'}
+                    </DetachedSheet.Title>
+                  </VisuallyHidden.Root>
+                )}
 
                 {renderContent()}
               </div>

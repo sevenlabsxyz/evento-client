@@ -1,4 +1,5 @@
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { queryKeys } from '@/lib/query-client';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -391,6 +392,8 @@ describe('useUpsertRSVP', () => {
 
     mockApiClient.post.mockResolvedValue(mockResponse);
 
+    const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
     const { result } = renderHook(() => useUpsertRSVP(), { wrapper });
 
     await act(async () => {
@@ -401,8 +404,12 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isSuccess).toBe(true);
     });
 
-    // Check that queries were invalidated
-    expect(queryClient.getQueryCache().findAll()).toHaveLength(0);
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: queryKeys.userRsvp(mockArgs.eventId),
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: queryKeys.eventRsvps(mockArgs.eventId),
+    });
   });
 
   it('should handle RSVP with user details', async () => {
