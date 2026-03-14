@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
-import { useUpsertRSVP, RSVPError } from '@/lib/hooks/use-upsert-rsvp';
+import { RSVPError, useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
@@ -212,7 +212,8 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       } catch (error) {
         // Check if this is an RSVPError with a redirect
         if (error instanceof RSVPError && error.redirectTo) {
-          const message = error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
+          const message =
+            error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
           toast.error(message);
           router.push(error.redirectTo);
           onClose();
@@ -310,6 +311,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               )}
 
             <button
+              type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
               disabled={isLoading || isBusy || shouldDisableYes}
               onClick={() => handleAction('yes')}
@@ -317,6 +319,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               {shouldDisableYes ? 'NO SPOTS LEFT' : renderButtonLabel('yes', buttons[0].label)}
             </button>
             <button
+              type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
               disabled={isLoading || isBusy}
               onClick={() => handleAction('maybe')}
@@ -324,6 +327,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               {renderButtonLabel('maybe', buttons[1].label)}
             </button>
             <button
+              type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[2].classes}`}
               disabled={isLoading || isBusy}
               onClick={() => handleAction('no')}
@@ -365,7 +369,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
         {/* Success state - fades in after loading */}
         {rsvpPhase === 'success' && (
-          <div className='absolute inset-0 flex animate-in fade-in duration-400 flex-col items-center justify-center'>
+          <div className='duration-400 absolute inset-0 flex flex-col items-center justify-center animate-in fade-in'>
             <div className='flex h-14 w-14 items-center justify-center rounded-full bg-green-100'>
               <Check className='h-7 w-7 text-green-600' strokeWidth={3} />
             </div>
@@ -377,7 +381,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   };
 
   const renderContent = () => {
-    if (isLoading) {
+    if (isLoading && currentView !== 'registration-form') {
       return (
         <div className='flex items-center justify-center py-12'>
           <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
@@ -391,6 +395,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
           <>
             <div className='mb-4 flex items-center gap-3'>
               <button
+                type='button'
                 onClick={() => setCurrentView('rsvp-buttons')}
                 className='rounded-full p-2 hover:bg-gray-100'
               >
@@ -407,7 +412,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
           </>
         );
 
-      case 'registration-status':
+      case 'registration-status': {
         // Use existing registration from query, or fall back to pending registration
         // from form submission (prevents flash while query refetches)
         const registrationToShow = existingRegistration || pendingRegistration;
@@ -424,6 +429,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               />
             )}
             <button
+              type='button'
               onClick={onClose}
               className='mt-4 w-full rounded-xl bg-gray-200 px-4 py-3 text-center font-medium text-gray-800 hover:bg-gray-300'
             >
@@ -431,6 +437,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             </button>
           </>
         );
+      }
 
       case 'rsvp-buttons':
       default:

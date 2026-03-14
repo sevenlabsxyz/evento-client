@@ -21,6 +21,8 @@ import { RegistrationOtpInput } from './registration-otp-input';
 
 type FormView = 'form' | 'otp';
 
+const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
+
 interface RegistrationFormProps {
   eventId: string;
   questions: RegistrationQuestion[];
@@ -53,6 +55,7 @@ export function RegistrationForm({
   const [otpError, setOtpError] = useState<string | undefined>();
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isCompletingRegistration, setIsCompletingRegistration] = useState(false);
 
   const updateAnswer = (questionId: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -183,6 +186,7 @@ export function RegistrationForm({
   // Handle OTP verification
   const handleOtpVerify = async (code: string) => {
     setIsVerifying(true);
+    setIsCompletingRegistration(true);
     setOtpError(undefined);
 
     try {
@@ -198,7 +202,10 @@ export function RegistrationForm({
       // 4. Update the user's name and generate username if needed
       // (for new users or users without a name/username set)
       // Do this BEFORE updating auth state to avoid re-renders
-      const userToUse = freshUserData || userData;
+      const userToUse = {
+        ...(freshUserData || userData),
+        image: (freshUserData || userData)?.image || DEFAULT_AVATAR_IMAGE,
+      };
       if (userToUse) {
         // Check if we need to update name or generate username
         const needsNameUpdate = !userToUse.name || userToUse.name !== name.trim();
@@ -236,6 +243,7 @@ export function RegistrationForm({
       const message =
         error instanceof Error ? error.message : 'Invalid verification code. Please try again.';
       setOtpError(message);
+      setIsCompletingRegistration(false);
     } finally {
       setIsVerifying(false);
     }
@@ -296,41 +304,55 @@ export function RegistrationForm({
             onValueChange={(val) => updateAnswer(question.id, val)}
             className='space-y-2'
           >
-            {question.options?.map((option) => (
-              <label
-                key={option}
-                className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50'
-              >
-                <RadioGroupItem value={option} />
-                <span className='text-sm'>{option}</span>
-              </label>
-            ))}
+            {question.options?.map((option) => {
+              const optionId = `${question.id}-${option.replace(/\s+/g, '-').toLowerCase()}`;
+              return (
+                <label
+                  key={option}
+                  htmlFor={optionId}
+                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50'
+                >
+                  <RadioGroupItem id={optionId} value={option} />
+                  <span className='text-sm'>{option}</span>
+                </label>
+              );
+            })}
           </RadioGroup>
         );
 
-      case 'multi_select':
+      case 'multi_select': {
         const selectedOptions = (value as string[]) || [];
         return (
           <div className='space-y-2'>
-            {question.options?.map((option) => (
-              <label
-                key={option}
-                className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50'
-              >
-                <Checkbox
-                  checked={selectedOptions.includes(option)}
-                  onCheckedChange={() => toggleMultiSelectOption(question.id, option)}
-                />
-                <span className='text-sm'>{option}</span>
-              </label>
-            ))}
+            {question.options?.map((option) => {
+              const optionId = `${question.id}-${option.replace(/\s+/g, '-').toLowerCase()}`;
+              return (
+                <label
+                  key={option}
+                  htmlFor={optionId}
+                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50'
+                >
+                  <Checkbox
+                    id={optionId}
+                    checked={selectedOptions.includes(option)}
+                    onCheckedChange={() => toggleMultiSelectOption(question.id, option)}
+                  />
+                  <span className='text-sm'>{option}</span>
+                </label>
+              );
+            })}
           </div>
         );
+      }
 
       case 'checkbox':
         return (
-          <label className='flex cursor-pointer items-center gap-3'>
+          <label
+            htmlFor={`${question.id}-checkbox`}
+            className='flex cursor-pointer items-center gap-3'
+          >
             <Checkbox
+              id={`${question.id}-checkbox`}
               checked={value === 'true'}
               onCheckedChange={(checked) => updateAnswer(question.id, checked ? 'true' : '')}
             />
@@ -341,7 +363,7 @@ export function RegistrationForm({
       case 'instagram':
       case 'twitter':
       case 'youtube':
-      case 'linkedin':
+      case 'linkedin': {
         const prefixes: Record<string, string> = {
           instagram: '@',
           twitter: '@',
@@ -369,6 +391,7 @@ export function RegistrationForm({
             />
           </div>
         );
+      }
 
       case 'company':
         return (
@@ -393,6 +416,18 @@ export function RegistrationForm({
   };
 
   // Show OTP verification view
+  if (isCompletingRegistration) {
+    return (
+      <div className='flex min-h-[280px] flex-col items-center justify-center gap-3 py-8 text-center'>
+        <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
+        <p className='text-sm font-medium text-gray-700'>Completing your registration...</p>
+        <p className='text-xs text-gray-500'>
+          Please wait while we finalize your account and RSVP.
+        </p>
+      </div>
+    );
+  }
+
   if (view === 'otp') {
     return (
       <RegistrationOtpInput
@@ -414,10 +449,11 @@ export function RegistrationForm({
       <div className='space-y-4'>
         {/* Name field */}
         <div>
-          <label className='mb-2 block text-sm font-medium'>
+          <label htmlFor='registration-name' className='mb-2 block text-sm font-medium'>
             Name <span className='text-red-500'>*</span>
           </label>
           <Input
+            id='registration-name'
             value={name}
             onChange={(e) => {
               setName(e.target.value);
@@ -437,10 +473,11 @@ export function RegistrationForm({
 
         {/* Email field */}
         <div>
-          <label className='mb-2 block text-sm font-medium'>
+          <label htmlFor='registration-email' className='mb-2 block text-sm font-medium'>
             Email <span className='text-red-500'>*</span>
           </label>
           <Input
+            id='registration-email'
             type='email'
             value={email}
             onChange={(e) => {
@@ -469,10 +506,10 @@ export function RegistrationForm({
         {/* Custom questions */}
         {questions.map((question) => (
           <div key={question.id}>
-            <label className='mb-2 block text-sm font-medium'>
+            <p className='mb-2 block text-sm font-medium'>
               {question.label}
               {question.is_required && <span className='text-red-500'> *</span>}
-            </label>
+            </p>
             {renderQuestionField(question)}
             {errors[question.id] && (
               <p className='mt-1 text-sm text-red-500'>{errors[question.id]}</p>
