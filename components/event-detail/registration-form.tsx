@@ -243,9 +243,9 @@ export function RegistrationForm({
       const message =
         error instanceof Error ? error.message : 'Invalid verification code. Please try again.';
       setOtpError(message);
-      setIsCompletingRegistration(false);
     } finally {
       setIsVerifying(false);
+      setIsCompletingRegistration(false);
     }
   };
 
