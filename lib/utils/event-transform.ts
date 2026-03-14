@@ -22,7 +22,7 @@ function normalizeDatePart(value: unknown, min: number, max: number): number | u
  */
 export function transformApiEventToDisplay(
   apiEvent: ApiEvent,
-  hosts: { user_details: UserDetails }[] = [],
+  hosts: { user_details: UserDetails | null }[] = [],
   galleryItems: { url: string }[] = []
 ): DisplayEvent {
   const normalizedStartYear = normalizeDatePart(apiEvent.start_date_year, 1, 9999);
@@ -76,15 +76,23 @@ export function transformApiEventToDisplay(
     : parseLocationString(apiEvent.location || '');
 
   // Transform hosts
-  const transformedHosts: EventHost[] = hosts.map((host) => ({
-    id: host.user_details.id,
-    name: host.user_details.name || host.user_details.username,
-    username: host.user_details.username,
-    avatar: getOptimizedCoverUrl(host.user_details.image || '', 'feed'),
-    title: host.user_details.bio ? 'Host' : undefined,
-    company: undefined,
-    verification_status: host.user_details.verification_status,
-  }));
+  const transformedHosts: EventHost[] = hosts.flatMap((host) => {
+    if (!host.user_details) {
+      return [];
+    }
+
+    return [
+      {
+        id: host.user_details.id,
+        name: host.user_details.name || host.user_details.username,
+        username: host.user_details.username,
+        avatar: getOptimizedCoverUrl(host.user_details.image || '', 'feed'),
+        title: host.user_details.bio ? 'Host' : undefined,
+        company: undefined,
+        verification_status: host.user_details.verification_status,
+      },
+    ];
+  });
 
   // Add creator as first host if not already included and we have user details
   if (apiEvent.user_details) {

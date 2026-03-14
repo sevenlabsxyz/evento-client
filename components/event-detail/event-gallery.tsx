@@ -1,6 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { EventDetail } from '@/lib/types/event';
 import { isGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
@@ -124,25 +132,28 @@ export default function EventGallery({ event, onImageClick }: EventGalleryProps)
           ))}
         </div>
       ) : (
-        <div className='flex flex-col items-center justify-center py-12 text-center'>
-          <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-            <Camera className='h-8 w-8 text-gray-400' />
-          </div>
-          <h3 className='mb-2 text-lg font-medium text-gray-900'>No Photos Yet</h3>
-          <p className='mb-6 max-w-xs text-sm text-gray-500'>
-            Be the first to add photos to this event. Photos added here will be visible to all event
-            guests.
-          </p>
-
-          <Button
-            onClick={handleAddPhoto}
-            variant='default'
-            className='gap-2 rounded-full px-5 py-2.5'
-          >
-            <Camera className='h-4 w-4' />
-            Add Photos
-          </Button>
-        </div>
+        <Empty className='py-12'>
+          <EmptyHeader>
+            <EmptyMedia variant='soft-squircle'>
+              <Camera className='h-8 w-8' />
+            </EmptyMedia>
+            <EmptyTitle>No Photos Yet</EmptyTitle>
+            <EmptyDescription>
+              Be the first to add photos to this event. Photos added here will be visible to all
+              event guests.
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button
+              onClick={handleAddPhoto}
+              variant='default'
+              className='gap-2 rounded-full px-5 py-2.5'
+            >
+              <Camera className='h-4 w-4' />
+              Add Photos
+            </Button>
+          </EmptyContent>
+        </Empty>
       )}
 
       {/* Photo Upload Sheet */}

@@ -2,6 +2,13 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventRSVPSheet from '@/components/event-detail/event-rsvp-sheet';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
@@ -54,13 +61,15 @@ export function EventInvitesSection() {
         <div className='flex items-center justify-between'>
           <h2 className='text-xl font-semibold'>Invites</h2>
         </div>
-        <div className='flex flex-col items-center justify-center py-8 text-center'>
-          <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-            <Calendar className='h-8 w-8 text-gray-400' />
-          </div>
-          <h3 className='mb-1 text-base font-semibold text-gray-900'>No pending invites</h3>
-          <p className='text-sm text-gray-500'>You&apos;re all caught up!</p>
-        </div>
+        <Empty className='py-8'>
+          <EmptyHeader>
+            <EmptyMedia variant='soft-square'>
+              <Calendar className='h-8 w-8' />
+            </EmptyMedia>
+            <EmptyTitle className='text-base sm:text-base'>No pending invites</EmptyTitle>
+            <EmptyDescription>You&apos;re all caught up!</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </div>
     );
   }

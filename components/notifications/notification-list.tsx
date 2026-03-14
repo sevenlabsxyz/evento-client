@@ -1,5 +1,13 @@
 'use client';
 
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UINotification } from '@/lib/types/notifications';
 import { Inbox } from 'lucide-react';
@@ -73,29 +81,35 @@ export function NotificationList({
   // Handle error state
   if (isError) {
     return (
-      <div className='flex flex-col items-center justify-center py-16 text-center'>
-        <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-          <Inbox className='h-8 w-8 text-red-500' />
-        </div>
-        <h2 className='mb-2 text-lg font-medium text-gray-900'>Unable to load notifications</h2>
-        <p className='mb-4 text-sm text-gray-600'>Please check your connection and try again.</p>
-        <Button onClick={() => window.location.reload()} size='sm'>
-          Retry
-        </Button>
-      </div>
+      <Empty className='py-16'>
+        <EmptyHeader>
+          <EmptyMedia variant='soft-circle' className='bg-red-100 text-red-500'>
+            <Inbox className='h-8 w-8' />
+          </EmptyMedia>
+          <EmptyTitle className='text-lg sm:text-lg'>Unable to load notifications</EmptyTitle>
+          <EmptyDescription>Please check your connection and try again.</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button onClick={() => window.location.reload()} size='sm'>
+            Retry
+          </Button>
+        </EmptyContent>
+      </Empty>
     );
   }
 
   // Handle empty state
   if (!isLoading && notifications.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center py-16 text-center'>
-        <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-          <Inbox className='h-8 w-8 text-gray-400' />
-        </div>
-        <h2 className='mb-2 text-lg font-medium text-gray-900'>You&apos;re all caught up!</h2>
-        <p className='text-sm text-gray-600'>No new notifications at the moment.</p>
-      </div>
+      <Empty className='py-16'>
+        <EmptyHeader>
+          <EmptyMedia variant='soft-circle'>
+            <Inbox className='h-8 w-8' />
+          </EmptyMedia>
+          <EmptyTitle className='text-lg sm:text-lg'>You&apos;re all caught up!</EmptyTitle>
+          <EmptyDescription>No new notifications at the moment.</EmptyDescription>
+        </EmptyHeader>
+      </Empty>
     );
   }
 

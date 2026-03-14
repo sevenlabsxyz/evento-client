@@ -1,6 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
@@ -162,16 +170,20 @@ export function TransactionHistory({
 
   if (payments.length === 0) {
     return (
-      <div className='flex flex-col items-center justify-center py-12 text-center'>
-        <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200'>
-          <Clock className='h-8 w-8 text-gray-400' />
-        </div>
-        <h3 className='mb-2 text-lg font-semibold text-gray-900'>No transactions yet</h3>
-        <p className='mb-4 text-sm text-gray-600'>Your transaction history will appear here</p>
-        <Button onClick={onRefresh} variant='outline' className='h-11'>
-          Refresh
-        </Button>
-      </div>
+      <Empty className='py-12'>
+        <EmptyHeader>
+          <EmptyMedia variant='soft-circle'>
+            <Clock className='h-8 w-8' />
+          </EmptyMedia>
+          <EmptyTitle className='text-lg sm:text-lg'>No transactions yet</EmptyTitle>
+          <EmptyDescription>Your transaction history will appear here</EmptyDescription>
+        </EmptyHeader>
+        <EmptyContent>
+          <Button onClick={onRefresh} variant='outline' className='h-11'>
+            Refresh
+          </Button>
+        </EmptyContent>
+      </Empty>
     );
   }
 

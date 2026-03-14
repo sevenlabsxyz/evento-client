@@ -1,6 +1,13 @@
 'use client';
 
 import CommentItem from '@/components/event-detail/comment-item';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAddComment } from '@/lib/hooks/use-add-comment';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -29,7 +36,6 @@ export default function EventComments({ eventId }: EventCommentsProps) {
   const [activeReplyId, setActiveReplyId] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
-  // Auto-grow textarea as content grows
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -154,13 +160,15 @@ export default function EventComments({ eventId }: EventCommentsProps) {
             ))}
           </div>
         ) : (
-          <div className='flex flex-col items-center justify-center py-8'>
-            <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No Comments Yet</h3>
-            <p className='text-center text-sm text-gray-500'>
-              Be the first to leave a comment about this event.
-            </p>
-          </div>
+          <Empty className='py-8'>
+            <EmptyHeader>
+              <EmptyMedia variant='default' className='text-gray-300'>
+                <MessageCircle className='h-12 w-12' />
+              </EmptyMedia>
+              <EmptyTitle className='text-lg sm:text-lg'>No Comments Yet</EmptyTitle>
+              <EmptyDescription>Be the first to leave a comment about this event.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
         )}
       </div>
 

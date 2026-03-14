@@ -205,6 +205,24 @@ describe('useEventHosts', () => {
       );
     });
 
+    it('rejects direct object responses that are not arrays', async () => {
+      mockApiClient.get.mockResolvedValueOnce({ event_id: 'event123' } as any);
+
+      const { result } = renderHook(() => useEventHosts('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true);
+      });
+
+      expect(result.current.error).toEqual(
+        expect.objectContaining({
+          message: 'Invalid response format',
+        })
+      );
+    });
+
     it('is disabled when eventId is empty', () => {
       const { result } = renderHook(() => useEventHosts(''), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -533,9 +551,15 @@ describe('useEventHosts', () => {
       });
 
       expect(result.current.data).toHaveLength(3);
-      expect(result.current.data![0].user_details.username).toBe('hostuser1');
-      expect(result.current.data![1].user_details.username).toBe('hostuser2');
-      expect(result.current.data![2].user_details.username).toBe('hostuser3');
+      expect(result.current.data?.[0]?.user_details).toEqual(
+        expect.objectContaining({ username: 'hostuser1' })
+      );
+      expect(result.current.data?.[1]?.user_details).toEqual(
+        expect.objectContaining({ username: 'hostuser2' })
+      );
+      expect(result.current.data?.[2]?.user_details).toEqual(
+        expect.objectContaining({ username: 'hostuser3' })
+      );
     });
   });
 
@@ -587,6 +611,23 @@ describe('useEventHosts', () => {
   });
 
   describe('edge cases', () => {
+    it('preserves hosts even when user details are missing', async () => {
+      const hostWithoutUserDetails = createMockEventHost({ user_details: null });
+      const mockResponse = createMockApiResponse([hostWithoutUserDetails]);
+      mockApiClient.get.mockResolvedValueOnce(mockResponse);
+
+      const { result } = renderHook(() => useEventHosts('event123'), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data).toEqual([hostWithoutUserDetails]);
+      expect(result.current.data?.[0]?.user_details).toBeNull();
+    });
+
     it('handles undefined response data', async () => {
       const mockResponse = {
         success: true,
@@ -648,8 +689,12 @@ describe('useEventHosts', () => {
       });
 
       expect(result.current.data).toHaveLength(50);
-      expect(result.current.data![0].user_details.username).toBe('hostuser0');
-      expect(result.current.data![49].user_details.username).toBe('hostuser49');
+      expect(result.current.data?.[0]?.user_details).toEqual(
+        expect.objectContaining({ username: 'hostuser0' })
+      );
+      expect(result.current.data?.[49]?.user_details).toEqual(
+        expect.objectContaining({ username: 'hostuser49' })
+      );
     });
 
     it('handles hosts with different event IDs in response', async () => {

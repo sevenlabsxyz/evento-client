@@ -4,6 +4,15 @@ import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
 import EventDetailPageClient from './page-client';
 
+function getEventMetadataClient() {
+  if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {
+    logger.warn('Skipping event metadata lookup because Supabase env vars are missing');
+    return null;
+  }
+
+  return createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
 // Define the types for props and params
 type Props = {
   params: { id: string };
@@ -11,11 +20,6 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata) {
-  // Initialize Supabase client
-  const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY;
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
   // Get the event ID from params
   const eventId = params.id;
   const eventPath = `/e/${eventId}`;
@@ -25,6 +29,12 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   const eventOgImage = `${eventPath}/opengraph-image`;
 
   try {
+    const supabase = getEventMetadataClient();
+
+    if (!supabase) {
+      return getDefaultMetadata(previousImages, eventPath, eventOgImage);
+    }
+
     const { data, error } = await supabase
       .from('events')
       .select('id, title, description')
@@ -35,7 +45,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
     if (!data) {
       logger.info('No event found for ID', { eventId });
-      return getDefaultMetadata(previousImages);
+      return getDefaultMetadata(previousImages, eventPath, eventOgImage);
     }
 
     const event = data;
@@ -96,26 +106,38 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     logger.error('Error fetching event data', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return getDefaultMetadata(previousImages);
+    return getDefaultMetadata(previousImages, eventPath, eventOgImage);
   }
 }
 
-function getDefaultMetadata(previousImages: any[]) {
+function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
+  const openGraphImages = fallbackImage
+    ? [
+        {
+          url: fallbackImage,
+          width: 1200,
+          height: 630,
+          alt: 'Evento',
+        },
+      ]
+    : [...previousImages];
+
   return {
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
-    alternates: { canonical: '/' },
+    alternates: { canonical: canonicalPath },
     description: 'Events made social -- evento.so',
     openGraph: {
-      url: '/',
-      images: [...previousImages],
+      url: canonicalPath,
+      images: openGraphImages,
     },
+    twitter: fallbackImage ? { card: 'summary_large_image', images: [fallbackImage] } : undefined,
   };
 }
 
 export const dynamic = 'force-dynamic';
 
-export default async function EventDetailPage({ params }: Props) {
+export default async function EventDetailPage() {
   // Server component simply renders the client component
   // All metadata is handled by generateMetadata function
   return <EventDetailPageClient />;
