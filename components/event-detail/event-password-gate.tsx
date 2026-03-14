@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { useVerifyEventPassword } from '@/lib/hooks/use-verify-event-password';
 import { PasswordProtectedEventResponse } from '@/lib/types/api';
+import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -52,6 +53,13 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
     );
   };
 
+  // Get optimized cover URL with fallback handling
+  const coverImageUrl = event.cover
+    ? isGif(event.cover)
+      ? event.cover
+      : getOptimizedCoverUrl(event.cover, 'feed')
+    : null;
+
   // Get primary host for display
   const primaryHost = event.hosts?.[0];
 
@@ -60,10 +68,10 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
       <Card className='w-full max-w-sm rounded-3xl bg-gray-50'>
         <CardHeader className='space-y-4'>
           {/* Event cover image */}
-          {event.cover && (
+          {coverImageUrl && (
             <div className='relative mx-auto aspect-video w-full overflow-hidden rounded-2xl'>
               <Image
-                src={event.cover}
+                src={coverImageUrl}
                 alt={event.title}
                 fill
                 className='object-cover'
