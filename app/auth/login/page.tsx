@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hooks/use-auth';
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
+import { validateRedirectUrl } from '@/lib/utils/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
@@ -17,7 +18,7 @@ import { useForm } from 'react-hook-form';
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get('redirect') || '/';
+  const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
   const { isLoading: isCheckingAuth } = useRedirectIfAuthenticated(redirectUrl);
   const { sendLoginCode, isLoading, error, reset } = useLogin();
   const { loginWithGoogle } = useGoogleLogin();
@@ -108,6 +109,9 @@ function LoginContent() {
             <div className='absolute inset-0 flex items-center'>
               <span className='w-full border-t' />
             </div>
+            <div className='relative flex justify-center text-xs uppercase'>
+              <span className='bg-white px-2 text-muted-foreground'>or</span>
+            </div>
           </div>
 
           <Button
@@ -128,11 +132,16 @@ function LoginContent() {
               </>
             )}
           </Button>
+
+          {/*
+            Telegram login is intentionally hidden for now because the current flow is not
+            fully functional in production.
+          */}
         </CardContent>
       </Card>
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
         <p>
-          By continuing to use this app, you agree to Evento's{' '}
+          By continuing to use this app, you agree to Evento&apos;s{' '}
           <Link href='/terms' className='underline hover:text-red-600'>
             Terms of Service
           </Link>{' '}

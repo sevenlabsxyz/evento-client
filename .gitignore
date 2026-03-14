@@ -33,3 +33,15 @@ next-env.d.ts
 
 # coverage
 coverage
+
+# playwright
+playwright-report/
+test-results/
+blob-report/
+e2e/.auth/
+
+# compiler cache
+.swc/
+
+# ai tool state
+.sisyphus/

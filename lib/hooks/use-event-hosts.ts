@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, UserDetails } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
@@ -10,7 +11,7 @@ export interface EventHost {
 
 export function useEventHosts(eventId: string) {
   return useQuery({
-    queryKey: ['event', 'hosts', eventId],
+    queryKey: queryKeys.eventHosts(eventId),
     queryFn: async (): Promise<EventHost[]> => {
       const response = await apiClient.get<ApiResponse<EventHost[]>>(`/v1/events/${eventId}/hosts`);
 

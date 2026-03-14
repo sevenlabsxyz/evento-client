@@ -4,6 +4,7 @@ import {
   useFollowStatus,
   useSearchUsers,
   useUpdateUserProfile,
+  useUploadProfileImage,
   useUserByUsername,
   useUserEventCount,
   useUserFollowers,
@@ -44,6 +45,18 @@ jest.mock('@/lib/stores/auth-store', () => ({
     setUser: jest.fn(),
     clearAuth: jest.fn(),
   }),
+}));
+
+// Mock environment constants
+jest.mock('@/lib/constants/env', () => ({
+  Env: {
+    NEXT_PUBLIC_API_URL: 'http://localhost:3002',
+  },
+}));
+
+// Mock file utility
+jest.mock('@/lib/utils/file', () => ({
+  sanitizeUploadFileName: jest.fn((name: string) => name.replace(/[^a-zA-Z0-9._-]/g, '_')),
 }));
 
 import { apiClient as mockApiClient } from '@/lib/api/client';
@@ -676,6 +689,149 @@ describe('User Profile Hooks', () => {
       });
 
       expect(result.current.data).toEqual({ available: true });
+    });
+  });
+
+  describe('useUploadProfileImage', () => {
+    const originalFetch = global.fetch;
+
+    beforeEach(() => {
+      global.fetch = jest.fn();
+    });
+
+    afterEach(() => {
+      global.fetch = originalFetch;
+    });
+
+    it('uploads image successfully and returns API response', async () => {
+      const mockResponse = {
+        success: true,
+        message: 'Image uploaded',
+        data: { image: '/users/usr_123/uploaded-images/avatar.jpg' },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const mockFile = new File(['test'], 'avatar.jpg', { type: 'image/jpeg' });
+
+      const { result } = renderHook(() => useUploadProfileImage(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await act(async () => {
+        await result.current.mutateAsync(mockFile);
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining('/v1/user/details/image-upload?filename=avatar.jpg'),
+        expect.objectContaining({
+          method: 'POST',
+          body: mockFile,
+          credentials: 'include',
+        })
+      );
+
+      expect(result.current.data).toEqual(mockResponse);
+      expect(result.current.data.data.image).toBe('/users/usr_123/uploaded-images/avatar.jpg');
+    });
+
+    it('returns full wrapped response with data.image path', async () => {
+      const mockResponse = {
+        success: true,
+        message: 'Upload successful',
+        data: { image: '/users/usr_456/profile.png' },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const mockFile = new File(['test'], 'profile.png', { type: 'image/png' });
+
+      const { result } = renderHook(() => useUploadProfileImage(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await act(async () => {
+        await result.current.mutateAsync(mockFile);
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(result.current.data.data.image).toBe('/users/usr_456/profile.png');
+      expect(result.current.data.data.image).not.toContain('render/image');
+      expect(result.current.data.data.image).not.toContain('width=');
+    });
+
+    it('handles upload failure with error', async () => {
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: false,
+        json: () => Promise.resolve({ message: 'Upload failed' }),
+      });
+
+      const mockFile = new File(['test'], 'avatar.jpg', { type: 'image/jpeg' });
+
+      const { result } = renderHook(() => useUploadProfileImage(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await act(async () => {
+        try {
+          await result.current.mutateAsync(mockFile);
+        } catch (error) {
+          // Expected error
+        }
+      });
+
+      await waitFor(() => {
+        expect(result.current.isError).toBe(true);
+      });
+
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect((result.current.error as Error).message).toBe('Upload failed');
+    });
+
+    it('does not eagerly invalidate queries on success', async () => {
+      const mockResponse = {
+        success: true,
+        message: 'Image uploaded',
+        data: { image: '/users/usr_123/avatar.jpg' },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse),
+      });
+
+      const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+
+      const mockFile = new File(['test'], 'avatar.jpg', { type: 'image/jpeg' });
+
+      const { result } = renderHook(() => useUploadProfileImage(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await act(async () => {
+        await result.current.mutateAsync(mockFile);
+      });
+
+      await waitFor(() => {
+        expect(result.current.isSuccess).toBe(true);
+      });
+
+      expect(invalidateQueriesSpy).not.toHaveBeenCalled();
+
+      invalidateQueriesSpy.mockRestore();
     });
   });
 });

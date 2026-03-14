@@ -12,6 +12,7 @@ export interface ApiError {
   success: false;
   message: string;
   status?: number;
+  redirectTo?: string;
 }
 
 // User Details - complete profile information
@@ -26,8 +27,8 @@ export interface UserDetails {
   x_handle?: string;
   instagram_handle?: string;
   ln_address?: string; // Lightning address
-  lightning_address?: string; // Lightning address (alternative field name)
   nip05?: string; // Nostr identifier
+  telegram_id?: number | null; // Telegram numeric user ID (null = not linked)
   verification_status: VerificationStatus;
   verification_date?: string;
 }
@@ -126,6 +127,21 @@ export interface UserSearchResult {
   image: string;
 }
 
+export interface ApiEventLocation {
+  id: string;
+  name: string | null;
+  address: string | null;
+  city: string | null;
+  state_province: string | null;
+  country: string | null;
+  country_code?: string | null;
+  postal_code?: string | null;
+  latitude: number | string | null;
+  longitude: number | string | null;
+  location_type?: string | null;
+  is_verified?: boolean | null;
+}
+
 // Event - complete event information
 export interface Event {
   id: string;
@@ -133,6 +149,7 @@ export interface Event {
   description: string;
   cover?: string;
   location: string;
+  event_locations?: ApiEventLocation | null;
   timezone: string;
   type?: EventBehaviorType;
   status: 'draft' | 'published' | 'cancelled' | 'archived';
@@ -150,6 +167,7 @@ export interface Event {
   // Password protection
   password_protected?: boolean;
   password?: string; // Only returned for hosts in manage mode
+  restricted_fields?: RestrictedEventField[];
 
   // Date components (stored separately for timezone handling)
   start_date_day: number;
@@ -178,10 +196,59 @@ export interface Event {
   contrib_paypal: string;
   contrib_btclightning: string;
 
+  source_type?: 'internal' | 'external';
+  source_url?: string | null;
+  source_platform?: string | null;
+
   created_at: string;
   updated_at: string;
 
   user_details?: UserDetails;
+}
+
+export type CampaignScope = 'event' | 'profile';
+export type CampaignVisibility = 'public' | 'private';
+export type CampaignStatus = 'active' | 'paused' | 'closed';
+export type CampaignPledgeStatus = 'pending' | 'settled' | 'expired' | 'failed';
+
+export interface Campaign {
+  id: string;
+  event_id: string | null;
+  user_id: string;
+  scope: CampaignScope;
+  title: string | null;
+  description: string | null;
+  goal_sats: number | null;
+  raised_sats: number;
+  pledge_count: number;
+  visibility: CampaignVisibility;
+  status: CampaignStatus;
+  destination_address: string;
+  destination_verify_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignPledge {
+  id: string;
+  campaign_id: string;
+  payer_user_id: string | null;
+  amount_sats: number;
+  status: CampaignPledgeStatus;
+  correlation_hash: string;
+  payment_hash: string;
+  verify_url: string;
+  bolt11_invoice: string;
+  preimage: string | null;
+  expires_at: string;
+  settled_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignWithProgress extends Campaign {
+  progressPercent: number;
+  isGoalMet: boolean;
 }
 
 // Event Invite
@@ -443,6 +510,7 @@ export type EventBehaviorType = 'rsvp' | 'registration' | 'ticketed';
 export type EventStatus = 'draft' | 'published' | 'cancelled' | 'archived';
 export type EventVisibility = 'public' | 'private';
 export type VerificationStatus = 'verified' | 'pending' | null;
+export type RestrictedEventField = 'location' | 'description' | 'guest_list';
 export type EmailBlastRecipientFilter = 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited';
 
 // Password-protected event response (minimal data when locked)
@@ -494,6 +562,11 @@ export type ApprovalMode = 'auto' | 'manual';
 export interface RegistrationSettings {
   registration_required: boolean;
   approval_mode: ApprovalMode;
+  hide_location_for_unapproved: boolean;
+  hide_guest_list_for_unapproved: boolean;
+  hide_description_for_unapproved: boolean;
+  custom_rsvp_email_enabled?: boolean;
+  custom_rsvp_email_content?: string | null;
   questions: RegistrationQuestion[];
 }
 

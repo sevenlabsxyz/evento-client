@@ -1,10 +1,29 @@
 import { Env } from '@/lib/constants/env';
+import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
+import type { Metadata, ResolvingMetadata } from 'next';
+import { notFound } from 'next/navigation';
 import UserProfilePageClient from './page-client';
 
-export async function generateMetadata({ params }: any, parent: any) {
+interface UsernamePageProps {
+  params: {
+    username: string;
+  };
+}
+
+export async function generateMetadata(
+  { params }: UsernamePageProps,
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   const { username } = params;
+
+  if (shouldBypassUsernameRoute(username)) {
+    notFound();
+  }
+
+  const profilePath = `/${username}`;
+  const profileOgImage = `${profilePath}/opengraph-image`;
 
   const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL!;
   const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY!;
@@ -31,32 +50,24 @@ export async function generateMetadata({ params }: any, parent: any) {
       ? `${user.name} (@${user.username}) on Evento`
       : `@${user.username} on Evento`;
 
-    const getProperURL = (url: string) => {
-      if (!url || !url.includes('https')) {
-        return `https://api.evento.so/storage/v1/object/public/cdn${url}?width=400&height=400`;
-      }
-
-      return url;
-    };
-
     return {
       title: { absolute: title },
       keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
       alternates: {
-        canonical: `https://evento.so/${user.username}`,
+        canonical: profilePath,
       },
       description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
       openGraph: {
-        url: `https://evento.so/${user.username}`,
+        url: profilePath,
         locale: 'en_US',
         type: 'profile',
         siteName: 'Evento',
         images: [
           {
-            url: getProperURL(user.image),
-            width: 400,
-            height: 400,
-            alt: `Profile picture of ${user.name || user.username}`,
+            url: profileOgImage,
+            width: 1200,
+            height: 630,
+            alt: `Profile card for ${user.name || user.username}`,
           },
         ],
       },
@@ -70,7 +81,7 @@ export async function generateMetadata({ params }: any, parent: any) {
         title,
         description: `View all events by ${user.name || `@${user.username}`} on Evento.`,
         creator: '@evento_so',
-        images: [getProperURL(user.image)],
+        images: [profileOgImage],
       },
     };
   } catch (error) {
@@ -85,10 +96,10 @@ function getDefaultMetadata(previousImages: any[]) {
   return {
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
-    alternates: { canonical: `https://evento.so/` },
+    alternates: { canonical: '/' },
     description: 'Events made social -- evento.so',
     openGraph: {
-      url: `https://evento.so/`,
+      url: '/',
       images: [...previousImages],
     },
   };
@@ -96,6 +107,10 @@ function getDefaultMetadata(previousImages: any[]) {
 
 export const dynamic = 'force-dynamic';
 
-export default function Page() {
+export default function Page({ params }: UsernamePageProps) {
+  if (shouldBypassUsernameRoute(params.username)) {
+    notFound();
+  }
+
   return <UserProfilePageClient />;
 }

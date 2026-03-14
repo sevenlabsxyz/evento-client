@@ -18,7 +18,7 @@ import apiClient from '@/lib/api/client';
 import {
   useCancelCohostInvite,
   useEventCohostInvites,
-  useEventHosts,
+  useEventCohosts,
 } from '@/lib/hooks/use-cohost-invites';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -49,7 +49,7 @@ export default function HostsManagementPage() {
     data: hosts = [],
     isLoading: hostsLoading,
     refetch: refetchHosts,
-  } = useEventHosts(eventId);
+  } = useEventCohosts(eventId);
   const { data: pendingInvites = [] } = useEventCohostInvites(eventId, 'pending');
   const cancelInviteMutation = useCancelCohostInvite(eventId);
 
@@ -130,7 +130,9 @@ export default function HostsManagementPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to manage doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -164,6 +166,10 @@ export default function HostsManagementPage() {
             <div className='space-y-3'>
               {hosts.map((host) => {
                 const isCreator = host.id === creatorId;
+                const isIdentityLoading = !host.name && !host.username;
+                const hostDisplayName = host.name || (host.username ? `@${host.username}` : '');
+                const hostHandle = host.username ? `@${host.username}` : '';
+
                 return (
                   <div
                     key={host.id}
@@ -181,20 +187,29 @@ export default function HostsManagementPage() {
                       size='md'
                     />
                     <div className='min-w-0 flex-1'>
-                      <div className='flex items-center gap-2'>
-                        <h3 className='truncate font-semibold text-gray-900'>
-                          {host.name || `@${host.username}`}
-                        </h3>
-                        {isCreator && (
-                          <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
-                            <Crown className='h-3 w-3' />
-                            Creator
-                          </span>
-                        )}
-                      </div>
-                      <p className='text-sm text-gray-500'>@{host.username}</p>
+                      {isIdentityLoading ? (
+                        <div className='space-y-2 py-1'>
+                          <Skeleton className='h-5 w-32' />
+                          <Skeleton className='h-4 w-24' />
+                        </div>
+                      ) : (
+                        <>
+                          <div className='flex items-center gap-2'>
+                            <h3 className='truncate font-semibold text-gray-900'>
+                              {hostDisplayName}
+                            </h3>
+                            {isCreator && (
+                              <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
+                                <Crown className='h-3 w-3' />
+                                Creator
+                              </span>
+                            )}
+                          </div>
+                          <p className='text-sm text-gray-500'>{hostHandle}</p>
+                        </>
+                      )}
                     </div>
-                    {!isCreator && (
+                    {!isCreator && !isIdentityLoading && (
                       <button
                         onClick={() => handleRemoveHost(host.id)}
                         disabled={removingHostId === host.id}
@@ -203,6 +218,9 @@ export default function HostsManagementPage() {
                       >
                         <Trash2 className='h-4 w-4' />
                       </button>
+                    )}
+                    {!isCreator && isIdentityLoading && (
+                      <Skeleton className='h-8 w-8 rounded-full' />
                     )}
                   </div>
                 );

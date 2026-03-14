@@ -110,9 +110,9 @@ export type CreateEventData = z.infer<typeof createEventSchema>;
 
 /**
  * Schema for updating an event (PATCH)
- * Includes ID and excludes settings
+ * Includes ID and settings for capacity management
  */
-export const updateEventSchema = eventFormSchema.omit({ settings: true }).extend({
+export const updateEventSchema = eventFormSchema.extend({
   id: z.string().min(1, 'Event ID is required'),
 });
 
@@ -192,10 +192,13 @@ export const apiEventSchema = z.object({
   computed_start_date: z.string(),
   computed_end_date: z.string(),
   type: z.enum(['rsvp', 'registration', 'ticketed']).optional(),
+  max_capacity: z.number().nullable().optional(),
+  show_capacity_count: z.boolean().optional(),
 
   // Password protection
   password_protected: z.boolean().optional(),
   password: z.string().nullable().optional(),
+  restricted_fields: z.array(z.enum(['location', 'description', 'guest_list'])).optional(),
 });
 
 export type ApiEvent = z.infer<typeof apiEventSchema>;

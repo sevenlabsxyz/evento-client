@@ -1,6 +1,7 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -10,13 +11,22 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { cn } from '@/lib/utils';
+
+const fadeConfig = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1 },
+  exit: { opacity: 0 },
+  transition: { duration: 0.15 },
+};
 
 export function SiteHeader() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
+  const { toggleSidebar } = useSidebar();
   const {
     leftMode,
     onBackPress,
@@ -29,6 +39,7 @@ export function SiteHeader() {
     textButtons,
     buttons,
     chatPartner,
+    hideMobileBreadcrumb,
   } = useTopBar();
 
   const handleBackPress = () => {
@@ -39,31 +50,43 @@ export function SiteHeader() {
     }
   };
 
+  const showsMainLogoOnMobileLeft = !isAuthenticated || leftMode === 'logo';
+
   const renderLeftContent = () => {
-    if (!isAuthenticated) {
+    if (showsMainLogoOnMobileLeft) {
       return (
-        <Link href='/' className='flex items-center gap-2'>
+        <Link href='/' className='flex items-center gap-2 md:hidden'>
           <Image
             src='/assets/img/evento-logo.svg'
             alt='Evento'
-            width={100}
-            height={24}
-            className='h-6 w-auto'
+            width={80}
+            height={20}
+            className='h-5 w-auto'
           />
         </Link>
       );
     }
 
     if (leftMode === 'back') {
-      return (
-        <Button variant='ghost' size='icon' onClick={handleBackPress} className='h-8 w-8'>
-          <ArrowLeft className='h-4 w-4' />
-          <span className='sr-only'>Go back</span>
-        </Button>
-      );
+      return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
     }
 
-    return <SidebarTrigger className='-ml-1' />;
+    return (
+      <div className='flex items-center gap-2 md:hidden'>
+        <CircledIconButton icon={Menu} onClick={toggleSidebar} />
+        {!hideMobileBreadcrumb && (
+          <Link href='/e/hub' className='flex items-center'>
+            <Image
+              src='/assets/img/evento-logo.svg'
+              alt='Evento'
+              width={80}
+              height={20}
+              className='h-5 w-auto'
+            />
+          </Link>
+        )}
+      </div>
+    );
   };
 
   const renderCenterContent = () => {
@@ -112,42 +135,92 @@ export function SiteHeader() {
     return null;
   };
 
+  const showLeftOnDesktop = leftMode === 'back';
+  const leftKey = `${leftMode}-${isAuthenticated}`;
+  const centerKey = `${centerMode}-${title}-${subtitle}`;
+  const rightKey =
+    [...textButtons.map((b) => b.id), ...buttons.map((b) => b.id)].join('-') || 'empty';
+
   return (
     <header className='group-has-data-[collapsible=icon]/sidebar-wrapper:h-[--header-height] flex h-[--header-height] shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear'>
-      <div className='flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
-        {renderLeftContent()}
-        <Separator orientation='vertical' className='mx-2 data-[orientation=vertical]:h-4' />
-        {renderCenterContent()}
-        <div className='ml-auto flex items-center gap-2'>
-          {textButtons.length > 0 && (
-            <div className='flex gap-2'>
-              {textButtons.map((button) => {
-                const Icon = button.icon;
+      <div className='relative flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6'>
+        {/* Left section */}
+        <AnimatePresence mode='wait'>
+          <motion.div key={leftKey} {...fadeConfig}>
+            {renderLeftContent()}
+          </motion.div>
+        </AnimatePresence>
 
-                return (
-                  <Button
-                    key={button.id}
-                    variant={button.variant || 'default'}
-                    size='sm'
-                    onClick={button.onClick}
-                    disabled={button.disabled}
-                    className='h-8 rounded-full px-3 text-sm font-medium'
-                  >
-                    {Icon && <Icon className='mr-1.5 h-4 w-4' />}
-                    {button.label}
-                  </Button>
-                );
-              })}
-            </div>
+        <Separator
+          orientation='vertical'
+          className={cn(
+            'mx-2 data-[orientation=vertical]:h-4',
+            !showLeftOnDesktop && 'md:hidden',
+            hideMobileBreadcrumb && 'hidden',
+            leftMode === 'back' && 'hidden'
           )}
-          {buttons.length > 0 && (
-            <div className='flex gap-2'>
-              {buttons.map((button) => (
-                <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
-              ))}
-            </div>
+        />
+
+        {/* Center section */}
+        <AnimatePresence mode='wait'>
+          <motion.div
+            key={centerKey}
+            className={cn(
+              'min-w-0 flex-1',
+              hideMobileBreadcrumb && 'hidden md:flex md:min-w-0 md:flex-1'
+            )}
+            {...fadeConfig}
+          >
+            {renderCenterContent()}
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Centered sublogo on mobile when breadcrumb is hidden */}
+        <AnimatePresence>
+          {hideMobileBreadcrumb && !showsMainLogoOnMobileLeft && (
+            <motion.div
+              key='sublogo'
+              className='pointer-events-none absolute inset-0 flex items-center justify-center md:hidden'
+              {...fadeConfig}
+            >
+              <Image src='/assets/img/evento-sublogo.svg' alt='Evento' width={28} height={28} />
+            </motion.div>
           )}
-        </div>
+        </AnimatePresence>
+
+        {/* Right section */}
+        <AnimatePresence mode='wait'>
+          <motion.div key={rightKey} className='ml-auto flex items-center gap-2' {...fadeConfig}>
+            {textButtons.length > 0 && (
+              <div className='flex gap-2'>
+                {textButtons.map((button) => {
+                  const Icon = button.icon;
+
+                  return (
+                    <Button
+                      key={button.id}
+                      variant={button.variant || 'default'}
+                      size='sm'
+                      onClick={button.onClick}
+                      disabled={button.disabled}
+                      className='h-8 rounded-full px-3 text-sm font-medium'
+                    >
+                      {Icon && <Icon className='mr-1.5 h-4 w-4' />}
+                      {button.label}
+                    </Button>
+                  );
+                })}
+              </div>
+            )}
+            {buttons.length > 0 && (
+              <div className='flex gap-2'>
+                {buttons.map((button) => (
+                  <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </header>
   );

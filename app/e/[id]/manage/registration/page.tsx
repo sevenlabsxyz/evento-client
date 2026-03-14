@@ -1,5 +1,6 @@
 'use client';
 
+import DescriptionSheet from '@/components/create-event/description-sheet';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -19,6 +20,7 @@ import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registrati
 import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationQuestion, RegistrationQuestionType } from '@/lib/types/api';
+import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
 import { toast } from '@/lib/utils/toast';
 import {
   closestCenter,
@@ -50,6 +52,7 @@ import {
   Linkedin,
   List,
   Loader2,
+  MessageSquareText,
   MoreHorizontal,
   Phone,
   Plus,
@@ -60,7 +63,7 @@ import {
   Type,
   Youtube,
 } from 'lucide-react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface QuestionTypeOption {
@@ -392,9 +395,10 @@ function SortableQuestionRow({
 
 export default function RegistrationQuestionsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const eventId = params.id as string;
   const shouldEnableRegistration = searchParams.get('enableRegistration') === '1';
 
@@ -424,6 +428,10 @@ export default function RegistrationQuestionsPage() {
   const deleteQuestion = useDeleteRegistrationQuestion();
   const [isTogglingRegistration, setIsTogglingRegistration] = useState(false);
   const [localRegistrationRequired, setLocalRegistrationRequired] = useState(false);
+  const [customApprovalMessageEnabled, setCustomApprovalMessageEnabled] = useState(false);
+  const [customApprovalMessage, setCustomApprovalMessage] = useState('<p></p>');
+  const [showCustomMessageSheet, setShowCustomMessageSheet] = useState(false);
+  const [isUpdatingCustomMessage, setIsUpdatingCustomMessage] = useState(false);
   const [isQuestionSheetOpen, setIsQuestionSheetOpen] = useState(false);
   const [questionSheetMode, setQuestionSheetMode] = useState<'choose' | 'create' | 'edit'>(
     'choose'
@@ -470,7 +478,8 @@ export default function RegistrationQuestionsPage() {
   }, []);
 
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
       title: 'Registration',
       leftMode: 'back',
       centerMode: 'title',
@@ -480,22 +489,18 @@ export default function RegistrationQuestionsPage() {
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        leftMode: 'menu',
-        centerMode: 'title',
-        subtitle: '',
-        onBackPress: null,
-        showAvatar: true,
-        buttons: [],
-        textButtons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [eventId, router, setTopBar]);
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   useEffect(() => {
     setLocalRegistrationRequired(settings?.registration_required ?? false);
   }, [settings?.registration_required]);
+
+  useEffect(() => {
+    setCustomApprovalMessageEnabled(settings?.custom_rsvp_email_enabled ?? false);
+    setCustomApprovalMessage(settings?.custom_rsvp_email_content ?? '<p></p>');
+  }, [settings?.custom_rsvp_email_enabled, settings?.custom_rsvp_email_content]);
 
   useEffect(() => {
     const requiresRegistrationByType =
@@ -598,7 +603,9 @@ export default function RegistrationQuestionsPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to manage doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -812,6 +819,51 @@ export default function RegistrationQuestionsPage() {
     setDeleteConfirmation({ isOpen: false, questionId: null, questionLabel: '' });
   };
 
+  const handleToggleCustomApprovalMessage = async () => {
+    if (isUpdatingCustomMessage) return;
+
+    const nextEnabled = !customApprovalMessageEnabled;
+    setCustomApprovalMessageEnabled(nextEnabled);
+    setIsUpdatingCustomMessage(true);
+
+    try {
+      await updateSettings.mutateAsync({
+        eventId,
+        custom_rsvp_email_enabled: nextEnabled,
+      });
+      toast.success(nextEnabled ? 'Custom RSVP message enabled' : 'Custom RSVP message disabled');
+    } catch {
+      setCustomApprovalMessageEnabled(!nextEnabled);
+      toast.error('Failed to update RSVP message settings');
+    } finally {
+      setIsUpdatingCustomMessage(false);
+    }
+  };
+
+  const handleSaveCustomApprovalMessage = async (content: string) => {
+    if (isUpdatingCustomMessage) return;
+
+    const message = content.trim() ? content : '<p></p>';
+    const previousMessage = customApprovalMessage;
+    setCustomApprovalMessage(message);
+    setIsUpdatingCustomMessage(true);
+
+    try {
+      await updateSettings.mutateAsync({
+        eventId,
+        custom_rsvp_email_enabled: customApprovalMessageEnabled,
+        custom_rsvp_email_content: message,
+      });
+      toast.success('Custom RSVP message saved');
+    } catch (error) {
+      setCustomApprovalMessage(previousMessage);
+      toast.error('Failed to save custom RSVP message');
+      throw error; // Re-throw to prevent DescriptionSheet from closing
+    } finally {
+      setIsUpdatingCustomMessage(false);
+    }
+  };
+
   const renderQuestionTypeSection = (title: string, types: QuestionTypeOption[]) => (
     <div className='mb-6'>
       <h3 className='mb-3 px-4 text-sm font-medium text-gray-500'>{title}</h3>
@@ -853,14 +905,14 @@ export default function RegistrationQuestionsPage() {
         {/* Registration Toggle */}
         <div className='rounded-2xl bg-gray-50 p-4'>
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3'>
-              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
-                <ClipboardList className='h-5 w-5 text-purple-600' />
-              </div>
-              <div>
-                <h3 className='font-medium'>Require Registration</h3>
-                <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
-              </div>
+              <div className='flex items-center gap-3'>
+                <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
+                  <ClipboardList className='h-5 w-5 text-purple-600' />
+                </div>
+                <div className='min-w-0'>
+                  <h3 className='font-medium'>Require Registration</h3>
+                  <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
+                </div>
             </div>
             <button
               onClick={handleToggleRegistrationRequired}
@@ -877,6 +929,55 @@ export default function RegistrationQuestionsPage() {
             </button>
           </div>
         </div>
+
+        {registrationRequired && (
+          <div className='rounded-2xl bg-gray-50 p-4'>
+            <div className='flex items-center justify-between'>
+              <div className='flex items-center gap-3'>
+                <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100'>
+                  <MessageSquareText className='h-5 w-5 text-blue-600' />
+                </div>
+                <div className='min-w-0'>
+                  <h3 className='font-medium'>Custom RSVP Message</h3>
+                  <p className='text-sm text-gray-500'>
+                    Send a custom message to guests when their registration is approved
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={handleToggleCustomApprovalMessage}
+                disabled={isUpdatingCustomMessage}
+                className={`h-6 w-10 rounded-full transition-colors ${
+                  customApprovalMessageEnabled ? 'bg-green-500' : 'bg-gray-300'
+                }`}
+              >
+                <div
+                  className={`h-4 w-4 rounded-full bg-white transition-transform ${
+                    customApprovalMessageEnabled ? 'translate-x-5' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {customApprovalMessageEnabled && (
+              <button
+                onClick={() => setShowCustomMessageSheet(true)}
+                className='mt-4 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-left transition-colors hover:bg-gray-50'
+              >
+                <p className='text-xs font-medium uppercase tracking-wide text-gray-500'>Message</p>
+                <p
+                  className={`mt-1 text-sm ${
+                    isContentEmpty(customApprovalMessage) ? 'text-gray-400' : 'text-gray-900'
+                  }`}
+                >
+                  {isContentEmpty(customApprovalMessage)
+                    ? 'Add a custom message for approved guests...'
+                    : getContentPreview(customApprovalMessage, 110)}
+                </p>
+              </button>
+            )}
+          </div>
+        )}
 
         {registrationRequired && (
           <>
@@ -941,6 +1042,15 @@ export default function RegistrationQuestionsPage() {
           </>
         )}
       </div>
+
+      <DescriptionSheet
+        isOpen={showCustomMessageSheet}
+        onClose={() => setShowCustomMessageSheet(false)}
+        onSave={handleSaveCustomApprovalMessage}
+        initialContent={customApprovalMessage}
+        title='Custom RSVP Message'
+        placeholder='Write the message approved guests will receive...'
+      />
 
       <MasterScrollableSheet
         title='Choose New Question'

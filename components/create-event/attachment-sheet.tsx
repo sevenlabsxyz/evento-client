@@ -3,16 +3,14 @@
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { Camera, Check, File, Link } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { useState } from 'react';
-import LinkSheet from './link-sheet';
 import SpotifySheet from './spotify-sheet';
 import WavlakeSheet from './wavlake-sheet';
 
 interface AttachmentSheetProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectType: (type: 'spotify' | 'wavlake' | 'photo' | 'file' | 'link') => void;
   onSaveAttachment?: (type: string, url: string) => void;
   spotifyUrl?: string;
   wavlakeUrl?: string;
@@ -21,14 +19,12 @@ interface AttachmentSheetProps {
 export default function AttachmentSheet({
   isOpen,
   onClose,
-  onSelectType,
   onSaveAttachment,
   spotifyUrl = '',
   wavlakeUrl = '',
 }: AttachmentSheetProps) {
   const [showSpotifySheet, setShowSpotifySheet] = useState(false);
   const [showWavlakeSheet, setShowWavlakeSheet] = useState(false);
-  const [showLinkSheet, setShowLinkSheet] = useState(false);
 
   const hasSpotify = !!spotifyUrl;
   const hasWavlake = !!wavlakeUrl;
@@ -39,10 +35,6 @@ export default function AttachmentSheet({
 
   const handleWavlakeClick = () => {
     setShowWavlakeSheet(true);
-  };
-
-  const handleLinkClick = () => {
-    setShowLinkSheet(true);
   };
 
   const handleSpotifySave = (url: string) => {
@@ -57,13 +49,6 @@ export default function AttachmentSheet({
       onSaveAttachment('wavlake', url);
     }
     setShowWavlakeSheet(false);
-  };
-
-  const handleLinkSave = (url: string) => {
-    if (onSaveAttachment) {
-      onSaveAttachment('link', url);
-    }
-    setShowLinkSheet(false);
   };
 
   const options = [
@@ -89,33 +74,6 @@ export default function AttachmentSheet({
       disabled: false,
       onClick: handleWavlakeClick,
     },
-    {
-      type: 'photo' as const,
-      label: 'Add Photo',
-      icon: <Camera className='h-6 w-6' />,
-      description: 'Select from your photos',
-      filled: false,
-      disabled: true,
-      onClick: () => {},
-    },
-    {
-      type: 'file' as const,
-      label: 'Add File',
-      icon: <File className='h-6 w-6' />,
-      description: 'Upload a document',
-      filled: false,
-      disabled: true,
-      onClick: () => {},
-    },
-    {
-      type: 'link' as const,
-      label: 'Add Link',
-      icon: <Link className='h-6 w-6' />,
-      description: 'Add any web link',
-      filled: false,
-      disabled: false,
-      onClick: handleLinkClick,
-    },
   ];
 
   return (
@@ -136,7 +94,7 @@ export default function AttachmentSheet({
 
               {/* Header */}
               <div className='mb-6'>
-                <h2 className='text-center text-xl font-semibold'>Add Attachment</h2>
+                <h2 className='text-center text-xl font-semibold'>Add Music</h2>
               </div>
 
               {/* Options */}
@@ -211,16 +169,13 @@ export default function AttachmentSheet({
               isOpen={showSpotifySheet}
               onClose={() => setShowSpotifySheet(false)}
               onSave={handleSpotifySave}
+              initialUrl={spotifyUrl}
             />
             <WavlakeSheet
               isOpen={showWavlakeSheet}
               onClose={() => setShowWavlakeSheet(false)}
               onSave={handleWavlakeSave}
-            />
-            <LinkSheet
-              isOpen={showLinkSheet}
-              onClose={() => setShowLinkSheet(false)}
-              onSave={handleLinkSave}
+              initialUrl={wavlakeUrl}
             />
           </DetachedSheet.Content>
         </DetachedSheet.View>

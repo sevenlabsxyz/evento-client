@@ -64,6 +64,7 @@ export function SendLightningSheet({
   const [paymentType, setPaymentType] = useState<'lightning' | 'bitcoin'>('lightning');
   const [bitcoinFeeSpeed, setBitcoinFeeSpeed] = useState<'fast' | 'medium' | 'slow'>('medium');
   const [bitcoinPrepareResponse, setBitcoinPrepareResponse] = useState<any>(null);
+  const [sendAll, setSendAll] = useState(false);
 
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading } = useSendPayment();
@@ -93,6 +94,7 @@ export function SendLightningSheet({
     setPaymentType('lightning');
     setBitcoinFeeSpeed('medium');
     setBitcoinPrepareResponse(null);
+    setSendAll(false);
   };
 
   // Populate invoice field when scanned data is provided
@@ -320,13 +322,16 @@ export function SendLightningSheet({
     }
   };
 
-  const handleAmountConfirm = async (amountSats: number) => {
+  const handleAmountConfirm = async (amountSats: number, sendAll?: boolean) => {
     logger.debug('📝 [SEND] handleAmountConfirm called', {
       amountSats,
       parsedInputType: parsedInput?.type,
       commentAllowed,
       paymentType,
+      sendAll,
     });
+
+    setSendAll(!!sendAll);
 
     // Validate amount against LNURL constraints
     if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
@@ -348,7 +353,7 @@ export function SendLightningSheet({
     if (paymentType === 'bitcoin') {
       setIsPreparingPayment(true);
       try {
-        await handlePrepareBitcoinPayment(amountSats);
+        await handlePrepareBitcoinPayment(amountSats, sendAll);
         // Step change is handled inside handlePrepareBitcoinPayment
       } catch (error) {
         // Error already handled in handlePrepareBitcoinPayment
@@ -431,10 +436,13 @@ export function SendLightningSheet({
     }
   };
 
-  const handlePrepareBitcoinPayment = async (amountSats: number) => {
+  const handlePrepareBitcoinPayment = async (amountSats: number, sendAll?: boolean) => {
     try {
       // Prepare Bitcoin on-chain payment
-      const prepareResponse = await breezSDK.preparePayment(invoice.trim(), amountSats);
+      // Use sendAll mode (feesIncluded) when user wants to drain full balance
+      const prepareResponse = sendAll
+        ? await breezSDK.prepareSendAll(invoice.trim(), amountSats)
+        : await breezSDK.preparePayment(invoice.trim(), amountSats);
 
       setBitcoinPrepareResponse(prepareResponse);
       // Move to fee selection step
@@ -576,6 +584,12 @@ export function SendLightningSheet({
               bitcoinPrepareResponse?.paymentMethod?.type === 'bitcoinAddress' && (
                 <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                   <div className='space-y-2'>
+                    {sendAll && (
+                      <div className='flex justify-between'>
+                        <span className='text-sm text-muted-foreground'>Mode</span>
+                        <span className='text-sm font-medium text-blue-600'>Send All</span>
+                      </div>
+                    )}
                     <div className='flex justify-between'>
                       <span className='text-sm text-muted-foreground'>Speed</span>
                       <span className='text-sm font-medium capitalize'>{bitcoinFeeSpeed}</span>
@@ -598,9 +612,13 @@ export function SendLightningSheet({
                             <span className='text-sm font-medium'>{totalFee} sats</span>
                           </div>
                           <div className='flex justify-between border-t border-gray-300 pt-2'>
-                            <span className='text-sm font-semibold'>Total</span>
                             <span className='text-sm font-semibold'>
-                              {Number(amount) + totalFee} sats
+                              {sendAll ? 'Recipient receives' : 'Total'}
+                            </span>
+                            <span className='text-sm font-semibold'>
+                              {sendAll
+                                ? `${(Number(amount) - totalFee).toLocaleString()} sats`
+                                : `${(Number(amount) + totalFee).toLocaleString()} sats`}
                             </span>
                           </div>
                         </>
@@ -985,6 +1003,9 @@ export function SendLightningSheet({
         }}
         onConfirm={handleAmountConfirm}
         isLoading={isPreparingPayment}
+        // Send-all is only available for Bitcoin payments due to Lightning network constraints
+        // (channel capacity, routing limits, fees). Lightning payments need manual amount entry.
+        maxAmount={paymentType === 'bitcoin' ? walletState.balance : undefined}
       />
     </>
   );

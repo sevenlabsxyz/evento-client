@@ -7,12 +7,13 @@ import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { Plus, Trash2 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function SubEventsManagementPage() {
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const eventId = params.id as string;
   const router = useRouter();
 
@@ -24,7 +25,8 @@ export default function SubEventsManagementPage() {
   const [pendingDelete, setPendingDelete] = useState<EventWithUser | null>(null);
 
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
       title: 'Sub Events',
       leftMode: 'back',
       showAvatar: false,
@@ -40,15 +42,9 @@ export default function SubEventsManagementPage() {
     });
 
     return () => {
-      setTopBar({
-        leftMode: 'menu',
-        buttons: [],
-        title: '',
-        subtitle: '',
-        showAvatar: true,
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar]);
+  }, [eventId, pathname, router, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   const handleDelete = async (subEvent: EventWithUser) => {
     // await deleteSubEvent.mutateAsync({

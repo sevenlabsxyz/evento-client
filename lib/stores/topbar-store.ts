@@ -2,7 +2,7 @@ import { LucideIcon } from 'lucide-react';
 import { create } from 'zustand';
 import { VerificationStatus } from '../types/api';
 
-export type LeftMode = 'menu' | 'back';
+export type LeftMode = 'menu' | 'back' | 'logo';
 export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
 
 export interface TopBarButton {
@@ -35,6 +35,7 @@ interface TopBarConfig {
   textButtons: TopBarTextButton[];
   showAvatar: boolean;
   isOverlaid: boolean;
+  hideMobileBreadcrumb: boolean;
   chatPartner?: {
     name: string;
     image?: string;
@@ -79,6 +80,7 @@ const initialState: TopBarConfig = {
   textButtons: [],
   showAvatar: true,
   isOverlaid: false,
+  hideMobileBreadcrumb: false,
 };
 
 export const useTopBarStore = create<TopBarState>((set, get) => ({
@@ -190,6 +192,7 @@ export const useTopBar = () => {
   const showAvatar = useTopBarStore((state) => state.showAvatar);
   const isOverlaid = useTopBarStore((state) => state.isOverlaid);
   const chatPartner = useTopBarStore((state) => state.chatPartner);
+  const hideMobileBreadcrumb = useTopBarStore((state) => state.hideMobileBreadcrumb);
   const currentRoute = useTopBarStore((state) => state.currentRoute);
   const setTopBar = useTopBarStore((state) => state.setTopBar);
   const setTopBarForRoute = useTopBarStore((state) => state.setTopBarForRoute);
@@ -222,6 +225,7 @@ export const useTopBar = () => {
     showAvatar,
     isOverlaid,
     chatPartner,
+    hideMobileBreadcrumb,
     currentRoute,
     setTopBar,
     setTopBarForRoute,

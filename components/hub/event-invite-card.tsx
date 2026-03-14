@@ -1,6 +1,6 @@
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { Check, Clock, Eye, MapPin, Users, X } from 'lucide-react';
 import Image from 'next/image';
@@ -16,9 +16,15 @@ interface EventInviteCardProps {
 
 export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardProps) {
   const router = useRouter();
-  const { shortDate: eventDate, time: eventTime } = formatEventDate(
-    invite.events.computed_start_date
-  );
+  const { shortDate: eventDate, time: eventTime } = formatEventDateFromParts({
+    year: invite.events.start_date_year,
+    month: invite.events.start_date_month,
+    day: invite.events.start_date_day,
+    hours: invite.events.start_date_hours,
+    minutes: invite.events.start_date_minutes,
+    timezone: invite.events.timezone,
+    fallbackIso: invite.events.computed_start_date,
+  });
 
   const event = transformApiEventToDisplay(invite.events, [], []);
 
@@ -75,7 +81,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
             <span className='line-clamp-1'>{invite.events.location || 'TBD'}</span>
           </div>
           {invite.message && (
-            <p className='line-clamp-2 text-sm text-gray-600'>"{invite.message}"</p>
+            <p className='line-clamp-2 text-sm text-gray-600'>&quot;{invite.message}&quot;</p>
           )}
         </div>
 

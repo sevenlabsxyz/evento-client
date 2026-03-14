@@ -23,9 +23,9 @@ interface EventHostsResponse {
   data: EventHostApiItem[];
 }
 
-export function useEventHosts(eventId: string, enabled = true) {
+export function useEventCohosts(eventId: string, enabled = true) {
   return useQuery({
-    queryKey: queryKeys.eventHosts(eventId),
+    queryKey: queryKeys.eventCohosts(eventId),
     queryFn: async () => {
       const res = await apiClient.get<EventHostsResponse>(`/v1/events/${eventId}/hosts`);
       const hosts = res.data || [];
@@ -39,12 +39,6 @@ export function useEventHosts(eventId: string, enabled = true) {
     },
     enabled,
   });
-}
-
-interface SendCohostInvitesRequest {
-  eventId: string;
-  invites: CohostInviteTarget[];
-  message?: string;
 }
 
 interface SendCohostInvitesResponse {
@@ -126,10 +120,18 @@ export function useAcceptCohostInvite() {
       const res = await apiClient.patch(`/v1/cohost-invites/${inviteId}/accept`);
       return res.data;
     },
-    onSuccess: () => {
-      toast.success('You are now a cohost of this event');
+    onSuccess: (data) => {
+      const eventId = data?.eventId;
+
       queryClient.invalidateQueries({ queryKey: queryKeys.myCohostInvites() });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventsUserMe() });
+      queryClient.invalidateQueries({ queryKey: ['user-events'] });
+
+      if (eventId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.event(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.eventHosts(eventId) });
+        queryClient.invalidateQueries({ queryKey: queryKeys.eventCohosts(eventId) });
+      }
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to accept invite');

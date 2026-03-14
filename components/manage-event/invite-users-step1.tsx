@@ -5,12 +5,15 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { InviteItem, UserDetails } from '@/lib/types/api';
 import { isValidEmail } from '@/lib/utils/email-validation';
-import { ChevronRight, MailIcon, Search, Upload, Users } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { toast } from '@/lib/utils/toast';
+import { motion } from 'framer-motion';
+import { ChevronRight, MailIcon, Search, Share2, Upload, Users } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface Step1SearchUsersProps {
+  eventId: string;
   searchText: string;
   setSearchText: (text: string) => void;
   selectedEmails: Set<string>;
@@ -21,6 +24,7 @@ interface Step1SearchUsersProps {
 }
 
 export default function Step1SearchUsers({
+  eventId,
   searchText,
   setSearchText,
   selectedEmails,
@@ -32,6 +36,14 @@ export default function Step1SearchUsers({
   // Search - use direct destructuring pattern (same as working search page)
   const { mutate: search, data: searchResults, isPending: isSearching, reset } = useUserSearch();
   const debouncedSearch = useDebounce(searchText, 400);
+  const [inviteLink, setInviteLink] = useState('');
+  const [canShareLink, setCanShareLink] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    setInviteLink(`${window.location.origin}/e/${eventId}`);
+    setCanShareLink(typeof navigator !== 'undefined' && typeof navigator.share === 'function');
+  }, [eventId]);
 
   // Trigger search when debounced value changes
   useEffect(() => {
@@ -51,6 +63,25 @@ export default function Step1SearchUsers({
   const selectedCount = selectedEmails.size + selectedUsers.length;
   const showResults = searchText.trim().length >= MIN_SEARCH_LENGTH;
   const hasResults = searchResults && searchResults.length > 0;
+
+  const handleShareInviteLink = async () => {
+    if (!inviteLink) return;
+    if (!navigator.share) {
+      toast.info('Sharing is not available on this device');
+      return;
+    }
+
+    try {
+      await navigator.share({
+        url: inviteLink,
+      });
+    } catch (error) {
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+      toast.error('Unable to share event link');
+    }
+  };
 
   const listToRender = useMemo(() => {
     const q = debouncedSearch.trim();
@@ -108,14 +139,38 @@ export default function Step1SearchUsers({
 
   return (
     <>
+      <div className='px-4 pt-4'>
+        <div className='w-full max-w-full overflow-hidden rounded-2xl border border-blue-200 bg-blue-50 p-3'>
+          <div className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2'>
+            <div className='min-w-0 overflow-hidden'>
+              <p className='text-sm font-semibold text-blue-900'>Share event link</p>
+              <p className='mt-0.5 text-xs text-blue-700'>Use your share menu to send this URL.</p>
+              <p className='mt-2 truncate font-mono text-xs text-blue-900'>
+                {inviteLink || `/e/${eventId}`}
+              </p>
+            </div>
+            <motion.button
+              type='button'
+              onClick={handleShareInviteLink}
+              whileTap={{ scale: 0.95 }}
+              disabled={!canShareLink}
+              aria-label='Share event link'
+              className='inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border border-blue-300 bg-white text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50'
+            >
+              <Share2 className='h-4 w-4' />
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
       {/* Search Bar */}
-      <div className='flex items-center gap-2 px-4'>
+      <div className='mt-3 flex items-center gap-2 px-4'>
         <div className='relative flex-1'>
           <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
           <input
             className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500'
             type='text'
-            placeholder='Search by @username'
+            placeholder='Email or @username'
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
@@ -207,7 +262,7 @@ export default function Step1SearchUsers({
               </div>
             ))}
           </div>
-        ) : !hasResults ? (
+        ) : !hasResults && !isEmailQuery(debouncedSearch.trim()) ? (
           // No results state
           <div className='flex flex-col items-center justify-center py-16 text-center'>
             <div className='mb-4 rounded-2xl bg-gray-100 p-4'>

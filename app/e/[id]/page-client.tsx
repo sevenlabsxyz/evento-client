@@ -1,5 +1,6 @@
 'use client';
 
+import EventCampaignCard from '@/components/event-detail/event-campaign-card';
 import EventComments from '@/components/event-detail/event-comments';
 import EventContributions from '@/components/event-detail/event-contributions';
 import EventDescription from '@/components/event-detail/event-description';
@@ -12,9 +13,10 @@ import { EventPasswordGate } from '@/components/event-detail/event-password-gate
 import { EventSpotifyEmbed } from '@/components/event-detail/event-spotify-embed';
 import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
+import SaveEventSheet from '@/components/event-detail/save-event-sheet';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
 import { LightboxViewer } from '@/components/lightbox-viewer';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
@@ -26,11 +28,12 @@ import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
+import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Share } from 'lucide-react';
+import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
@@ -43,6 +46,7 @@ export default function EventDetailPageClient() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [showSaveSheet, setShowSaveSheet] = useState(false);
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
   const [passwordAccessGranted, setPasswordAccessGranted] = useState(false);
@@ -125,8 +129,8 @@ export default function EventDetailPageClient() {
           const newUrl = newParams.toString() ? `${pathname}?${newParams.toString()}` : pathname;
           router.replace(newUrl, { scroll: false });
         },
-        onError: () => {
-          toast.error('Failed to update RSVP. Please try again.');
+        onError: (error: Error) => {
+          toast.error(error.message || 'Failed to update RSVP. Please try again.');
 
           // Clean up URL params even on error
           const newParams = new URLSearchParams(searchParams);
@@ -145,6 +149,7 @@ export default function EventDetailPageClient() {
     router,
     upsertRsvp.isPending,
     upsertRsvp.isSuccess,
+    upsertRsvp.mutate,
     isUserRsvpLoading,
     isUserRsvpFetching,
     userRsvpData,
@@ -176,8 +181,22 @@ export default function EventDetailPageClient() {
     enabled: !!event?.location.city && !!event?.location.country && !!event?.computedStartDate,
   });
 
+  const isOwnerOrCohost = useMemo(() => {
+    if (!user?.id) return false;
+    if (eventData?.creator_user_id === user.id) return true;
+    return hostsData.some((host) => host.user_details?.id === user.id);
+  }, [eventData?.creator_user_id, hostsData, user?.id]);
+
   // Configure TopBar for event pages
   useEffect(() => {
+    const initialPath = getInitialAppPath();
+    if (!initialPath) {
+      setInitialAppPath(pathname);
+    }
+
+    const resolvedInitialPath = initialPath ?? pathname;
+    const isDirectLanding = resolvedInitialPath === pathname && !hasAppNavigated();
+
     const handleShare = async () => {
       if (navigator.share) {
         try {
@@ -198,11 +217,12 @@ export default function EventDetailPageClient() {
     applyRouteConfig(pathname);
 
     setTopBarForRoute(pathname, {
-      leftMode: 'back',
+      leftMode: isDirectLanding ? 'logo' : 'back',
       onBackPress: cameFromManage ? () => router.push(isAuthenticated ? '/e/hub' : '/') : null,
       centerMode: 'title',
       title: event?.title || '',
       showAvatar: false,
+      hideMobileBreadcrumb: true,
       buttons: [
         {
           id: 'share',
@@ -210,8 +230,18 @@ export default function EventDetailPageClient() {
           onClick: handleShare,
           label: 'Share',
         },
+        ...(!isOwnerOrCohost
+          ? [
+              {
+                id: 'save-event',
+                icon: Bookmark,
+                onClick: () => setShowSaveSheet(true),
+                label: 'Save Event',
+              },
+            ]
+          : []),
       ],
-      isOverlaid: false,
+      isOverlaid: !!eventData?.password_protected && !(passwordAccessGranted || hasEventAccess(eventId) || (user && hostsData.some((host) => host.user_details.id === user.id)) || (user && eventData?.creator_user_id === user.id) || userRsvpData?.status === 'yes'),
     });
 
     return () => {
@@ -223,9 +253,16 @@ export default function EventDetailPageClient() {
     clearRoute,
     applyRouteConfig,
     event?.title,
+    isOwnerOrCohost,
     cameFromManage,
     router,
-    isAuthenticated,
+    eventData?.password_protected,
+    passwordAccessGranted,
+    eventId,
+    user,
+    hostsData,
+    eventData?.creator_user_id,
+    userRsvpData?.status,
   ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
@@ -290,8 +327,11 @@ export default function EventDetailPageClient() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're looking for doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re looking for doesn&apos;t exist.
+          </p>
           <button
+            type='button'
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
           >
@@ -305,14 +345,23 @@ export default function EventDetailPageClient() {
   const renderDetailsTab = () => (
     <div className='space-y-6'>
       <EventHost event={event} />
+      {/* Campaign card */}
+      <EventCampaignCard eventId={eventId} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
-      <EventGuestsSection
-        eventId={eventId}
-        eventCreatorUserId={eventData?.creator_user_id || ''}
-        hosts={hostsData}
-        currentUserId={user?.id || ''}
-      />
-      <EventDescription event={event} />
+      {eventData?.restricted_fields?.length ? (
+        <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900'>
+          Some event details are hidden until your registration is approved.
+        </div>
+      ) : null}
+      {!eventData?.restricted_fields?.includes('guest_list') && (
+        <EventGuestsSection
+          eventId={eventId}
+          eventCreatorUserId={eventData?.creator_user_id || ''}
+          hosts={hostsData}
+          currentUserId={user?.id || ''}
+        />
+      )}
+      {!eventData?.restricted_fields?.includes('description') && <EventDescription event={event} />}
       {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
         <EventSubEvents
           subEvents={subEvents}
@@ -320,7 +369,9 @@ export default function EventDetailPageClient() {
           subEventsError={subEventsError}
         />
       )}
-      <EventLocation event={event} weather={weather} />
+      {!eventData?.restricted_fields?.includes('location') && (
+        <EventLocation event={event} weather={weather} />
+      )}
 
       {/* Music Section - Show embeds if Spotify or Wavlake URLs exist */}
       {(eventData?.spotify_url || eventData?.wavlake_url) && (
@@ -376,14 +427,19 @@ export default function EventDetailPageClient() {
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'details', label: 'Details' },
-                  { value: 'comments', label: 'Comments' },
-                  { value: 'gallery', label: 'Gallery' },
+              <AnimatedTabs
+                expanded
+                className='mx-auto'
+                tabs={[
+                  { title: 'Details', icon: Info, onClick: () => handleTabChange('details') },
+                  {
+                    title: 'Comments',
+                    icon: MessageSquare,
+                    onClick: () => handleTabChange('comments'),
+                  },
+                  { title: 'Gallery', icon: Image, onClick: () => handleTabChange('gallery') },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => handleTabChange(v)}
+                selected={['details', 'comments', 'gallery'].indexOf(activeTab)}
               />
 
               {/* Tab Content */}
@@ -410,6 +466,14 @@ export default function EventDetailPageClient() {
         userId={user?.id || ''}
         eventId={event.id}
       />
+
+      {!isOwnerOrCohost && (
+        <SaveEventSheet
+          isOpen={showSaveSheet}
+          onClose={() => setShowSaveSheet(false)}
+          eventId={event.id}
+        />
+      )}
     </div>
   );
 }

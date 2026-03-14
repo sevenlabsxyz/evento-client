@@ -1,17 +1,43 @@
 import { Toaster } from '@/components/ui/sonner';
 import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import type React from 'react';
 import './globals.css';
 import { Providers } from './providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+});
+const appUrl =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3003' : 'https://app.evento.so';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(appUrl),
   title: 'Evento - Events made social',
   description: 'Create, manage and oversee events and communities',
   generator: 'v0.dev',
+  twitter: {
+    title: 'Evento - Events made social',
+    card: 'summary_large_image',
+    site: '@evento',
+    creator: '@evento_so',
+    images: 'https://i.imgur.com/dTclM4m.png',
+  },
+  openGraph: {
+    type: 'website',
+    url: 'https://app.evento.so',
+    title: 'Evento - Events made social',
+    description: 'Events made social.',
+    siteName: 'Evento - Events made social',
+    images: [
+      {
+        url: 'https://i.imgur.com/dTclM4m.png',
+      },
+    ],
+  },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -52,6 +78,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster />
           <Analytics />
+          <SpeedInsights />
         </Providers>
       </body>
     </html>

@@ -147,8 +147,8 @@ export default function PasswordProtectionSheet({
 
                   <div className='rounded-lg bg-gray-50 p-3'>
                     <p className='text-xs text-gray-500'>
-                      <strong>Note:</strong> Hosts, co-hosts, and guests who have already RSVP'd
-                      "Yes" will automatically bypass the password.
+                      <strong>Note:</strong> Hosts, co-hosts, and guests who have already
+                      RSVP&apos;d &quot;Yes&quot; will automatically bypass the password.
                     </p>
                   </div>
                 </div>

@@ -1,17 +1,30 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface WavlakeSheetProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (url: string) => void;
+  initialUrl?: string;
 }
 
-export default function WavlakeSheet({ isOpen, onClose, onSave }: WavlakeSheetProps) {
+export default function WavlakeSheet({
+  isOpen,
+  onClose,
+  onSave,
+  initialUrl = '',
+}: WavlakeSheetProps) {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen) {
+      setUrl(initialUrl);
+      setError('');
+    }
+  }, [isOpen, initialUrl]);
 
   const validateUrl = (inputUrl: string) => {
     try {

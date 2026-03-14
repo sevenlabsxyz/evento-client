@@ -195,7 +195,7 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(result.current.error).toBe(apiError);
+    expect(result.current.error).toEqual(new Error('Network Error'));
   });
 
   it('should handle unsuccessful response', async () => {
@@ -224,7 +224,7 @@ describe('useUpsertRSVP', () => {
       expect(result.current.isError).toBe(true);
     });
 
-    expect(result.current.error).toEqual(new Error('Failed to update RSVP'));
+    expect(result.current.error).toEqual(new Error('Some error occurred'));
   });
 
   it('should handle capacity reached error specifically', async () => {

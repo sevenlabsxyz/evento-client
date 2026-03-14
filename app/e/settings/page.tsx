@@ -3,13 +3,15 @@
 import { APISheet } from '@/components/settings/api-sheet';
 import { ContactSheet } from '@/components/settings/contact-sheet';
 import { DeveloperModeDialog } from '@/components/settings/developer-mode-dialog';
+import { TelegramConnectSheet } from '@/components/settings/telegram-connect-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
-import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
+  CheckCircle,
   ChevronRight,
   DollarSign,
   Info,
@@ -17,6 +19,7 @@ import {
   Languages,
   Mail,
   Scale,
+  Send,
   Share,
   Shield,
   Terminal,
@@ -26,12 +29,17 @@ import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
+  const { user, checkAuth } = useAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
 
   // Developer mode state
   const { isDeveloperMode, setDeveloperMode } = useDeveloperSettingsStore();
   const [developerDialogOpen, setDeveloperDialogOpen] = useState(false);
+
+  // Telegram connect state
+  const [telegramSheetOpen, setTelegramSheetOpen] = useState(false);
+  const isTelegramConnected = Boolean(user?.telegram_id);
 
   // Set TopBar content
   useEffect(() => {
@@ -234,6 +242,32 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {/* Accounts Section */}
+          <div className='mb-2 px-4'>
+            <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>ACCOUNTS</h2>
+          </div>
+          <div className='mx-4 mb-4 rounded-2xl border border-gray-200 bg-gray-50'>
+            <button
+              className='flex w-full items-center justify-between p-4 transition-colors hover:bg-gray-100'
+              onClick={() => setTelegramSheetOpen(true)}
+            >
+              <div className='flex items-center gap-3'>
+                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF7FD]'>
+                  <Send className='h-4 w-4 text-[#2AABEE]' />
+                </div>
+                <span className='font-medium'>Telegram</span>
+              </div>
+              {isTelegramConnected ? (
+                <div className='flex items-center gap-1 text-sm text-green-600'>
+                  <CheckCircle className='h-4 w-4' />
+                  <span>Connected</span>
+                </div>
+              ) : (
+                <ChevronRight className='h-4 w-4 text-gray-400' />
+              )}
+            </button>
+          </div>
+
           {/* Help Center Section */}
           <div className='mb-2 px-4'>
             <h2 className='text-sm font-medium uppercase tracking-wide text-gray-500'>
@@ -371,6 +405,12 @@ export default function SettingsPage() {
       </div>
 
       {/* Sheet Components */}
+      <TelegramConnectSheet
+        open={telegramSheetOpen}
+        onOpenChange={setTelegramSheetOpen}
+        isConnected={isTelegramConnected}
+        onConnectionChange={() => checkAuth()}
+      />
       <ContactSheet
         open={contactSheetOpen}
         onOpenChange={(open) => {

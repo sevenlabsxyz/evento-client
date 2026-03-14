@@ -1,6 +1,5 @@
 'use client';
 
-import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import { BackupCallout } from '@/components/wallet/backup-callout';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
@@ -112,6 +111,7 @@ export default function WalletPage() {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
       title: 'Wallet',
+      hideMobileBreadcrumb: true,
       centerMode: 'title',
       showAvatar: false,
       buttons: walletState.isConnected
@@ -282,9 +282,7 @@ export default function WalletPage() {
         const deposits = (event as any).unclaimedDeposits || [];
         setUnclaimedDepositsCount(deposits.length);
         if (deposits.length > 0) {
-          toast.error(
-            `${deposits.length} deposit${deposits.length > 1 ? 's' : ''} need manual claiming`
-          );
+          toast.info('Tap "Speed It Up" below to claim your funds now.', 'Onchain funds received');
         }
       }
     });
@@ -388,7 +386,6 @@ export default function WalletPage() {
     return (
       <>
         <WalletWelcome onSetup={() => setStep('setup')} onRestore={() => setStep('restore')} />
-        <Navbar />
       </>
     );
   }
@@ -400,7 +397,6 @@ export default function WalletPage() {
         <div className='mx-auto max-w-sm pb-28 pt-4'>
           <WalletSetup onComplete={handleSetupComplete} onCancel={() => setStep('welcome')} />
         </div>
-        <Navbar />
       </>
     );
   }
@@ -412,7 +408,6 @@ export default function WalletPage() {
         <div className='mx-auto max-w-sm pb-28 pt-4'>
           <WalletRestore onComplete={handleRestoreComplete} onCancel={() => setStep('welcome')} />
         </div>
-        <Navbar />
       </>
     );
   }
@@ -428,7 +423,6 @@ export default function WalletPage() {
             onCancel={handleBackupSkip}
           />
         </div>
-        <Navbar />
       </>
     );
   }
@@ -446,7 +440,6 @@ export default function WalletPage() {
           <WalletUnlock />
         </div>
         <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
-        <Navbar />
       </>
     );
   }
@@ -468,8 +461,7 @@ export default function WalletPage() {
               )}
 
               {/* Backup Callout - subtle reminder below action buttons */}
-              {true && (
-                // {showBackupReminder && (
+              {showBackupReminder && (
                 <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
               )}
 
@@ -500,16 +492,16 @@ export default function WalletPage() {
 
               {/* Incoming Onchain Bitcoin Alert */}
               {unclaimedDepositsCount > 0 && (
-                <div className='rounded-2xl border border-red-200 bg-red-50 px-6 py-4'>
+                <div className='rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4'>
                   {/* Header Row */}
                   <div className='mb-1 flex items-center justify-between gap-3'>
                     <div className='flex flex-row items-center gap-1'>
-                      <ChevronsRight className='h-7 w-7' />
+                      <ChevronsRight className='h-7 w-7 text-amber-600' />
                       <div className='text-lg font-semibold'>Money Incoming</div>
                     </div>
                     <motion.button
                       onClick={() => setShowOnchainEducationalSheet(true)}
-                      className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-red-200 bg-white transition-colors'
+                      className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white transition-colors'
                       whileTap={{ scale: 0.95 }}
                       transition={{
                         type: 'spring',
@@ -524,7 +516,7 @@ export default function WalletPage() {
                   {/* Description */}
                   <p className='mb-6 pr-16 text-sm text-muted-foreground'>
                     {
-                      "The network's a bit busy. Tap here to pay a small fee and get your funds instantly."
+                      "You've received onchain funds. Tap below to pay a small fee and claim them to your wallet instantly."
                     }
                   </p>
 
@@ -533,7 +525,7 @@ export default function WalletPage() {
                     onClick={() => setShowIncomingFundsModal(true)}
                     variant='outline'
                     size='lg'
-                    className='h-12 w-full rounded-full border-red-200 bg-white hover:bg-orange-100'
+                    className='h-12 w-full rounded-full border-amber-200 bg-white hover:bg-amber-100'
                   >
                     Speed It Up!
                   </Button>
@@ -605,7 +597,7 @@ export default function WalletPage() {
       <EarnBitcoinSheet
         open={openDrawers.includes('earn')}
         onOpenChange={(open) => !open && closeDrawer('earn')}
-        lightningAddress={user?.lightning_address || `${user?.username}@evento.cash`}
+        lightningAddress={address?.lightningAddress || user?.ln_address || ''}
       />
 
       {/* Incoming Onchain Funds Sheet */}
@@ -642,9 +634,6 @@ export default function WalletPage() {
         open={showOnchainEducationalSheet}
         onOpenChange={setShowOnchainEducationalSheet}
       />
-
-      {/* Bottom Navigation */}
-      <Navbar />
     </div>
   );
 }

@@ -20,7 +20,7 @@ export function usePublicUserEvents(params: PublicUserEventsParams) {
   return useQuery<EventWithUser[], Error>({
     queryKey: ['public-user-events', usernameOrDefault],
     queryFn: async () => {
-      const response = await apiClient.get(`/v1/users/${usernameOrDefault}/events`);
+      const response = await apiClient.get(`/v1/users/by-username/${usernameOrDefault}/events`);
 
       if (!response?.data) {
         return [];

@@ -4,16 +4,25 @@ import EventVisibilitySheet from '@/components/create-event/event-visibility-she
 import PasswordProtectionSheet from '@/components/create-event/password-protection-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
+import { Switch } from '@/components/ui/switch';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
+import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
 import { apiEventSchema } from '@/lib/schemas/event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
+import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+
+const DEFAULT_REGISTRATION_VISIBILITY = {
+  hide_location_for_unapproved: true,
+  hide_guest_list_for_unapproved: true,
+  hide_description_for_unapproved: false,
+};
 
 export default function SecurityPrivacyPage() {
   const params = useParams();
@@ -21,9 +30,11 @@ export default function SecurityPrivacyPage() {
   const router = useRouter();
   const eventId = params.id as string;
   const updateEventMutation = useUpdateEvent();
+  const updateRegistrationSettingsMutation = useUpdateRegistrationSettings();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
 
   const { data: eventData, isLoading, error } = useEventDetails(eventId);
+  const { data: registrationSettings } = useRegistrationSettings(eventId);
 
   const {
     visibility,
@@ -39,8 +50,50 @@ export default function SecurityPrivacyPage() {
 
   const [showVisibilitySheet, setShowVisibilitySheet] = useState(false);
   const [showPasswordSheet, setShowPasswordSheet] = useState(false);
+  const [hideLocationForUnapproved, setHideLocationForUnapproved] = useState<boolean>(
+    DEFAULT_REGISTRATION_VISIBILITY.hide_location_for_unapproved
+  );
+  const [hideGuestListForUnapproved, setHideGuestListForUnapproved] = useState<boolean>(
+    DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved
+  );
+  const [hideDescriptionForUnapproved, setHideDescriptionForUnapproved] = useState<boolean>(
+    DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
+  );
 
-  const isFormValid = isValid() && hasChanges();
+  const isRegistrationMode = eventData?.type === 'registration';
+
+  const hasVisibilitySettingsChanges =
+    hideLocationForUnapproved !==
+      (registrationSettings?.hide_location_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_location_for_unapproved) ||
+    hideGuestListForUnapproved !==
+      (registrationSettings?.hide_guest_list_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved) ||
+    hideDescriptionForUnapproved !==
+      (registrationSettings?.hide_description_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved);
+
+  const hasEventChanges = isValid() && hasChanges();
+  const isFormValid = hasEventChanges || (isRegistrationMode && hasVisibilitySettingsChanges);
+
+  useEffect(() => {
+    setHideLocationForUnapproved(
+      registrationSettings?.hide_location_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_location_for_unapproved
+    );
+    setHideGuestListForUnapproved(
+      registrationSettings?.hide_guest_list_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved
+    );
+    setHideDescriptionForUnapproved(
+      registrationSettings?.hide_description_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
+    );
+  }, [
+    registrationSettings?.hide_location_for_unapproved,
+    registrationSettings?.hide_guest_list_for_unapproved,
+    registrationSettings?.hide_description_for_unapproved,
+  ]);
 
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -72,23 +125,27 @@ export default function SecurityPrivacyPage() {
 
   const handleSaveChanges = async () => {
     try {
-      const formData = getFormData();
-      await updateEventMutation.mutateAsync(
-        {
+      if (hasEventChanges) {
+        const formData = getFormData();
+        await updateEventMutation.mutateAsync({
           ...formData,
           id: eventId,
-        },
-        {
-          onSuccess: () => {
-            toast.success('Security settings updated successfully!');
-            router.push(`/e/${eventId}/manage`);
-          },
-          onError: () => {
-            toast.error('Failed to update security settings');
-          },
-        }
-      );
+        });
+      }
+
+      if (isRegistrationMode && hasVisibilitySettingsChanges) {
+        await updateRegistrationSettingsMutation.mutateAsync({
+          eventId,
+          hide_location_for_unapproved: hideLocationForUnapproved,
+          hide_guest_list_for_unapproved: hideGuestListForUnapproved,
+          hide_description_for_unapproved: hideDescriptionForUnapproved,
+        });
+      }
+
+      toast.success('Security settings updated successfully!');
+      router.push(`/e/${eventId}/manage`);
     } catch (saveError) {
+      toast.error('Failed to update security settings');
       logger.error('Failed to update security settings', {
         error: saveError instanceof Error ? saveError.message : String(saveError),
       });
@@ -138,61 +195,118 @@ export default function SecurityPrivacyPage() {
 
   return (
     <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
-      <div className='flex-1 space-y-4 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
-        <div className='rounded-2xl bg-white p-4'>
-          <button
-            onClick={() => setShowVisibilitySheet(true)}
-            className='flex w-full items-center gap-4 text-left'
-          >
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              {visibility === 'public' ? (
-                <Globe className='h-4 w-4 text-gray-600' />
-              ) : (
-                <Lock className='h-4 w-4 text-gray-600' />
-              )}
-            </div>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>
-                Event Visibility
-              </label>
-              <div className='flex items-center justify-between'>
-                <span className='font-medium text-gray-900'>
-                  {visibility === 'public' ? 'Public' : 'Private'}
-                </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
+        {/* Event details */}
+        <div>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+            Event details
+          </h2>
+          <div className='overflow-hidden rounded-2xl bg-white'>
+            <button
+              onClick={() => setShowVisibilitySheet(true)}
+              className='flex w-full items-center gap-4 p-4 text-left'
+            >
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                {visibility === 'public' ? (
+                  <Globe className='h-4 w-4 text-gray-600' />
+                ) : (
+                  <Lock className='h-4 w-4 text-gray-600' />
+                )}
               </div>
-            </div>
-          </button>
+              <div className='flex-1'>
+                <label className='mb-1 block text-sm font-medium text-gray-500'>
+                  Event Visibility
+                </label>
+                <div className='flex items-center justify-between'>
+                  <span className='font-medium text-gray-900'>
+                    {visibility === 'public' ? 'Public' : 'Private'}
+                  </span>
+                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                </div>
+              </div>
+            </button>
+
+            {isRegistrationMode && (
+              <>
+                <div className='mx-4 border-t border-gray-100' />
+                <div className='p-4'>
+                  <div className='mb-3 flex items-start gap-4'>
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                      <EyeOff className='h-4 w-4 text-gray-600' />
+                    </div>
+                    <div>
+                      <p className='text-sm font-medium text-gray-900'>Registration Visibility</p>
+                      <p className='mt-0.5 text-xs text-gray-500'>
+                        Hide details from unapproved guests
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='overflow-hidden rounded-xl bg-gray-50'>
+                    <label className='flex items-center justify-between px-4 py-3'>
+                      <span className='text-sm text-gray-700'>Hide location until approved</span>
+                      <Switch
+                        checked={hideLocationForUnapproved}
+                        onCheckedChange={(checked) => setHideLocationForUnapproved(checked)}
+                      />
+                    </label>
+                    <div className='mx-4 border-t border-gray-200/60' />
+                    <label className='flex items-center justify-between px-4 py-3'>
+                      <span className='text-sm text-gray-700'>Hide guest list until approved</span>
+                      <Switch
+                        checked={hideGuestListForUnapproved}
+                        onCheckedChange={(checked) => setHideGuestListForUnapproved(checked)}
+                      />
+                    </label>
+                    <div className='mx-4 border-t border-gray-200/60' />
+                    <label className='flex items-center justify-between px-4 py-3'>
+                      <span className='text-sm text-gray-700'>Hide description until approved</span>
+                      <Switch
+                        checked={hideDescriptionForUnapproved}
+                        onCheckedChange={(checked) => setHideDescriptionForUnapproved(checked)}
+                      />
+                    </label>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
-        <div className='rounded-2xl bg-white p-4'>
-          <button
-            onClick={() => setShowPasswordSheet(true)}
-            className='flex w-full items-center gap-4 text-left'
-          >
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+        {/* Event security */}
+        <div>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+            Event security
+          </h2>
+          <div className='overflow-hidden rounded-2xl bg-white'>
+            <button
+              onClick={() => setShowPasswordSheet(true)}
+              className='flex w-full items-center gap-4 p-4 text-left'
             >
-              {passwordProtected ? (
-                <ShieldCheck className='h-4 w-4 text-red-600' />
-              ) : (
-                <ShieldOff className='h-4 w-4 text-gray-600' />
-              )}
-            </div>
-            <div className='flex-1'>
-              <label className='mb-1 block text-sm font-medium text-gray-500'>
-                Password Protection
-              </label>
-              <div className='flex items-center justify-between'>
-                <span
-                  className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
-                >
-                  {passwordProtected ? 'Protected' : 'Not Protected'}
-                </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
+              >
+                {passwordProtected ? (
+                  <ShieldCheck className='h-4 w-4 text-red-600' />
+                ) : (
+                  <ShieldOff className='h-4 w-4 text-gray-600' />
+                )}
               </div>
-            </div>
-          </button>
+              <div className='flex-1'>
+                <label className='mb-1 block text-sm font-medium text-gray-500'>
+                  Password Protection
+                </label>
+                <div className='flex items-center justify-between'>
+                  <span
+                    className={`font-medium ${passwordProtected ? 'text-red-600' : 'text-gray-900'}`}
+                  >
+                    {passwordProtected ? 'Protected' : 'Not Protected'}
+                  </span>
+                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                </div>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -215,8 +329,12 @@ export default function SecurityPrivacyPage() {
         <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleSaveChanges}
-            disabled={!isFormValid || updateEventMutation.isPending}
-            loading={updateEventMutation.isPending}
+            disabled={
+              !isFormValid ||
+              updateEventMutation.isPending ||
+              updateRegistrationSettingsMutation.isPending
+            }
+            loading={updateEventMutation.isPending || updateRegistrationSettingsMutation.isPending}
           >
             Save
           </SubmitButton>

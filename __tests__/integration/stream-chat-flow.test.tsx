@@ -2,6 +2,17 @@ import { useStreamChat, useStreamChatChannels } from '@/lib/hooks/use-stream-cha
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 
+jest.mock('@/lib/utils/logger', () => ({
+  logger: {
+    debug: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    logApiRequest: jest.fn(),
+    logApiResponse: jest.fn(),
+  },
+}));
+
 // Mock the Stream Chat service
 jest.mock('@/lib/services/stream-chat', () => ({
   streamChatService: {

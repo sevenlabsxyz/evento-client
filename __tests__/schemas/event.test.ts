@@ -427,18 +427,22 @@ describe('Event Schemas', () => {
       }
     });
 
-    it('does not accept settings field', () => {
+
+    it('accepts settings field for capacity management', () => {
       const dataWithSettings = {
         ...validUpdateData,
         settings: {
           max_capacity: 100,
+          show_capacity_count: true,
         },
       };
       const result = updateEventSchema.safeParse(dataWithSettings);
-      // Settings should be omitted, so the parse should succeed but settings won't be in result
+      // Settings should now be accepted for capacity management during updates
       expect(result.success).toBe(true);
       if (result.success) {
-        expect((result.data as any).settings).toBeUndefined();
+        expect((result.data as any).settings).toBeDefined();
+        expect((result.data as any).settings.max_capacity).toBe(100);
+        expect((result.data as any).settings.show_capacity_count).toBe(true);
       }
     });
   });

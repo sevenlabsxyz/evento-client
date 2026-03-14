@@ -3,11 +3,11 @@
 import {
   Calendar1,
   MessageCircle,
+  PanelRightClose,
+  PanelRightOpen,
   Plus,
   Search,
-  Settings,
   Star,
-  UserCircle2,
   Zap,
 } from 'lucide-react';
 import Image from 'next/image';
@@ -16,7 +16,6 @@ import { useRouter } from 'next/navigation';
 import * as React from 'react';
 
 import { NavMain } from '@/components/dashboard/nav-main';
-import { NavSecondary } from '@/components/dashboard/nav-secondary';
 import { NavUser } from '@/components/dashboard/nav-user';
 import { Button } from '@/components/ui/button';
 import {
@@ -27,8 +26,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
   useSidebar,
 } from '@/components/ui/sidebar';
+// import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 
 const navMain = [
   {
@@ -58,22 +59,10 @@ const navMain = [
   },
 ];
 
-const navSecondary = [
-  {
-    title: 'Profile',
-    url: '/e/profile',
-    icon: UserCircle2,
-  },
-  {
-    title: 'Settings',
-    url: '/e/settings',
-    icon: Settings,
-  },
-];
-
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const router = useRouter();
-  const { setOpenMobile } = useSidebar();
+  const { state, setOpenMobile, toggleSidebar } = useSidebar();
+  // const { isOpen: isCalendarOpen, toggle: toggleCalendar } = useRightSidebar();
 
   const handleCreateEvent = () => {
     router.push('/e/create');
@@ -81,34 +70,72 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   };
 
   return (
-    <Sidebar collapsible='offcanvas' {...props}>
+    <Sidebar collapsible='icon' {...props}>
       <SidebarHeader>
-        <SidebarMenu>
+        <Link href='/e/hub' className='relative flex h-8 items-center p-2'>
+          {/* Full logo — fades out when sidebar collapses */}
+          <Image
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={120}
+            height={17}
+            className='h-auto w-[120px] transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-0 dark:invert'
+          />
+          {/* Sub logo (asterisk) — fades in when sidebar collapses, pinned to left */}
+          <Image
+            src='/assets/img/evento-sublogo.svg'
+            alt='Evento'
+            width={28}
+            height={28}
+            className='absolute left-0.5 top-1/2 size-7 -translate-y-1/2 opacity-0 transition-opacity duration-200 ease-linear group-data-[collapsible=icon]:opacity-100 dark:invert'
+          />
+        </Link>
+        {/* Expanded: full black Button — fades out as sidebar collapses */}
+        <div className='mt-4 px-2 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:h-0 group-data-[collapsible=icon]:overflow-hidden group-data-[collapsible=icon]:opacity-0'>
+          <Button onClick={handleCreateEvent} className='w-full'>
+            <Plus className='h-4 w-4' />
+            Create Event
+          </Button>
+        </div>
+        {/* Collapsed: icon-only dark SidebarMenuButton — fades in as sidebar collapses */}
+        <SidebarMenu className='pointer-events-none h-0 overflow-hidden opacity-0 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-auto group-data-[collapsible=icon]:mt-2 group-data-[collapsible=icon]:h-auto group-data-[collapsible=icon]:overflow-visible group-data-[collapsible=icon]:opacity-100'>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild className='data-[slot=sidebar-menu-button]:!p-1.5'>
-              <Link href='/e/hub'>
-                <Image
-                  src='/assets/img/evento-sublogo.svg'
-                  alt='Evento'
-                  width={24}
-                  height={24}
-                  className='!size-6'
-                />
-                <span className='text-base font-semibold'>Evento</span>
-              </Link>
+            <SidebarMenuButton
+              tooltip='Create Event'
+              onClick={handleCreateEvent}
+              className='rounded-full bg-black text-white hover:bg-black/90 hover:text-white active:bg-black/80 group-data-[collapsible=icon]:!rounded-full'
+            >
+              <Plus />
+              <span>Create Event</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
-        <Button onClick={handleCreateEvent} className='mt-2 w-full'>
-          <Plus className='mr-2 h-4 w-4' />
-          Create Event
-        </Button>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavSecondary items={navSecondary} className='mt-auto' />
       </SidebarContent>
       <SidebarFooter>
+        <SidebarMenu>
+          {/* <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}
+              onClick={toggleCalendar}
+            >
+              {isCalendarOpen ? <PanelRightClose /> : <PanelRightOpen />}
+              <span>{isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem> */}
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
+              onClick={toggleSidebar}
+            >
+              {state === 'expanded' ? <PanelRightOpen /> : <PanelRightClose />}
+              <span>{state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+        <SidebarSeparator />
         <NavUser />
       </SidebarFooter>
     </Sidebar>

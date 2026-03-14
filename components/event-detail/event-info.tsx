@@ -1,36 +1,24 @@
 'use client';
 
+import { StatusBadge } from '@/components/ui/status-badge';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
-import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
+import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { streamChatService } from '@/lib/services/stream-chat';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
-import { getContributionMethods } from '@/lib/utils/event-transform';
-import { logger } from '@/lib/utils/logger';
+import { formatEventDateRangeFromParts } from '@/lib/utils/date';
+import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
+import { formatEventLocationAddress, getEventLocationDisplayLines } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import {
-  Calendar,
-  Clock,
-  Globe,
-  Lock,
-  Mail,
-  MapPin,
-  MoreHorizontal,
-  Share,
-  Star,
-  XCircle,
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import ContributionPaymentSheet from './contribution-payment-sheet';
+import { DateTimeActionsSheet } from './date-time-actions-sheet';
 import RsvpSheet from './event-rsvp-sheet';
-import MoreOptionsSheet from './more-options-sheet';
+import { LocationActionsSheet } from './location-actions-sheet';
 import OwnerEventButtons from './owner-event-buttons';
 import { RegistrationStatus } from './registration-status';
-import SaveEventSheet from './save-event-sheet';
 
 interface EventInfoProps {
   event: EventDetail;
@@ -40,17 +28,13 @@ interface EventInfoProps {
 }
 
 export default function EventInfo({ event, currentUserId = '', eventData, hosts }: EventInfoProps) {
-  const router = useRouter();
-  const [showMoreSheet, setShowMoreSheet] = useState(false);
   const [showRsvpSheet, setShowRsvpSheet] = useState(false);
-  const [showSaveSheet, setShowSaveSheet] = useState(false);
-  const [showContributionSheet, setShowContributionSheet] = useState(false);
+  const [showDateTimeSheet, setShowDateTimeSheet] = useState(false);
+  const [showLocationSheet, setShowLocationSheet] = useState(false);
 
   const { data: userRsvp } = useUserRSVP(event.id);
+  const { data: eventRsvps } = useEventRSVPs(event.id);
   const currentStatus = userRsvp?.status ?? null;
-
-  const { data: savedStatus } = useEventSavedStatus(event.id);
-  const isSaved = savedStatus?.is_saved ?? false;
 
   const { data: registrationSettings } = useRegistrationSettings(event.id);
   const { data: myRegistration } = useMyRegistration(event.id);
@@ -68,16 +52,29 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     myRegistration?.has_registration &&
     myRegistration.registration?.approval_status === 'denied';
 
-  const hasContributions = useMemo(() => {
-    if (!eventData) return false;
-    return getContributionMethods(eventData).length > 0;
-  }, [eventData]);
+  const maxCapacity = eventData?.max_capacity ?? null;
+  const showCapacityCount = Boolean(eventData?.show_capacity_count);
+  const yesRsvpCount = useMemo(
+    () => (eventRsvps ?? []).filter((rsvp) => rsvp.status === 'yes').length,
+    [eventRsvps]
+  );
+  const isEventFull = maxCapacity !== null && yesRsvpCount >= maxCapacity;
+  const spotsRemaining = maxCapacity !== null ? Math.max(0, maxCapacity - yesRsvpCount) : null;
+  const isYesRsvp = currentStatus === 'yes';
+  const shouldShowCapacityInfo =
+    showCapacityCount && maxCapacity !== null && (!isEventFull || isYesRsvp);
+  const shouldDisableRsvpButton = isEventFull && !isYesRsvp;
 
   const rsvpButton = useMemo(() => {
     if (currentStatus === 'yes')
       return {
         label: "You're going",
         className: 'bg-green-600 hover:bg-green-700 text-white',
+      };
+    if (shouldDisableRsvpButton)
+      return {
+        label: 'NO SPOTS LEFT',
+        className: 'bg-gray-500 text-white',
       };
     if (currentStatus === 'maybe')
       return {
@@ -93,9 +90,10 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       label: 'RSVP',
       className: 'bg-red-500 hover:bg-red-600 text-white',
     };
-  }, [currentStatus]);
+  }, [currentStatus, shouldDisableRsvpButton]);
 
   const handleRSVP = () => {
+    if (shouldDisableRsvpButton) return;
     setShowRsvpSheet(true);
   };
 
@@ -107,69 +105,27 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     toast.error('Your registration was not approved. Contact the host for details.');
   };
 
-  const handleContact = async () => {
-    const primaryHost = event.hosts?.[0];
-    if (!primaryHost) {
-      toast.error('No host available to contact');
+  const copyText = async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
       return;
-    }
-
-    try {
-      const res = await streamChatService.createDirectMessageChannel(primaryHost.id);
-      if (res?.channel?.id) {
-        router.push(`/e/messages/${res.channel.id}`);
-      } else {
-        toast.error('Unable to start chat');
-      }
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to start chat');
-      logger.error('createDirectMessageChannel error', {
-        error: err instanceof Error ? err.message : String(err),
-      });
-    }
-  };
-
-  const handleShare = async () => {
-    const url = window.location.href;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: event.title,
-          text: event.description,
-          url,
-        });
-        return;
-      } catch (error: any) {
-        if (error?.name === 'AbortError') return;
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
     } catch {
       const textArea = document.createElement('textarea');
-      textArea.value = url;
+      textArea.value = value;
       textArea.style.position = 'fixed';
       textArea.style.left = '-999999px';
       document.body.appendChild(textArea);
       textArea.select();
-      document.execCommand('copy');
+      const copied = document.execCommand('copy');
       document.body.removeChild(textArea);
-      toast.success('Link copied to clipboard!');
+
+      if (!copied) {
+        throw new Error('Copy command failed');
+      }
     }
   };
 
   const handleAddToCalendar = () => {
-    const formatICSDate = (dateStr: string) => {
-      const date = new Date(dateStr);
-      return date
-        .toISOString()
-        .replace(/[-:]/g, '')
-        .replace(/\.\d{3}/, '');
-    };
-
     const escapeICS = (text: string) => {
       return text
         .replace(/[\n\r]/g, '\\n')
@@ -177,11 +133,13 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         .replace(/;/g, '\\;');
     };
 
-    const location = `${event.location.name}, ${
-      event.location.address || ''
-    }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
-      .replace(/,\s*,/g, ',')
-      .trim();
+    const location = isLocationHidden
+      ? 'Location hidden until registration approval'
+      : `${event.location.name}, ${
+          event.location.address || ''
+        }, ${event.location.city}, ${event.location.state || ''} ${event.location.zipCode || ''}`
+          .replace(/,\s*,/g, ',')
+          .trim();
 
     const icsContent = [
       'BEGIN:VCALENDAR',
@@ -190,10 +148,30 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       'BEGIN:VEVENT',
       `UID:${event.id}@evento.so`,
       `DTSTAMP:${formatICSDate(new Date().toISOString())}`,
-      `DTSTART:${formatICSDate(event.computedStartDate)}`,
-      `DTEND:${formatICSDate(event.computedEndDate)}`,
+      `DTSTART${formatICSDateFromParts({
+        year: eventData?.start_date_year,
+        month: eventData?.start_date_month,
+        day: eventData?.start_date_day,
+        hours: eventData?.start_date_hours,
+        minutes: eventData?.start_date_minutes,
+        timezone: event.timezone,
+        fallbackIso: event.computedStartDate,
+      })}`,
+      `DTEND${formatICSDateFromParts({
+        year: eventData?.end_date_year,
+        month: eventData?.end_date_month,
+        day: eventData?.end_date_day,
+        hours: eventData?.end_date_hours,
+        minutes: eventData?.end_date_minutes,
+        timezone: event.timezone,
+        fallbackIso: event.computedEndDate,
+      })}`,
       `SUMMARY:${escapeICS(event.title)}`,
-      `DESCRIPTION:${escapeICS(event.description.replace(/<[^>]*>/g, ''))}`,
+      `DESCRIPTION:${escapeICS(
+        isDescriptionHidden
+          ? 'Description hidden until registration approval'
+          : event.description.replace(/<[^>]*>/g, '')
+      )}`,
       `LOCATION:${escapeICS(location)}`,
       event.registrationUrl ? `URL:${event.registrationUrl}` : '',
       'END:VEVENT',
@@ -215,8 +193,13 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     URL.revokeObjectURL(url);
   };
 
-  const handleContribute = () => {
-    setShowContributionSheet(true);
+  const handleCopyDateTime = async () => {
+    try {
+      await copyText(dateTimeText);
+      toast.success('Date and time copied');
+    } catch {
+      toast.error('Failed to copy date and time');
+    }
   };
 
   const isOwnerOrCohost = useMemo(() => {
@@ -225,56 +208,171 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     return hosts?.some((h) => h.user_details?.id === currentUserId) ?? false;
   }, [currentUserId, event.owner?.id, hosts]);
 
+  const hasStructuredLocation = Boolean(eventData?.event_locations);
+  const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
+  const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
+  const locationDisplay = getEventLocationDisplayLines(event.location, {
+    preferStructuredAddress: hasStructuredLocation,
+    fallbackLabel: hasStructuredLocation ? undefined : eventData?.location,
+  });
+  const isTBDLocation = locationDisplay.primary === 'TBD';
+  const fullAddress = formatEventLocationAddress(event.location);
+  const destination = event.location.coordinates
+    ? `${event.location.coordinates.lat},${event.location.coordinates.lng}`
+    : fullAddress;
+
+  const dateRange = useMemo(
+    () =>
+      formatEventDateRangeFromParts({
+        start: {
+          year: eventData?.start_date_year,
+          month: eventData?.start_date_month,
+          day: eventData?.start_date_day,
+          hours: eventData?.start_date_hours,
+          minutes: eventData?.start_date_minutes,
+          timezone: eventData?.timezone,
+          fallbackIso: event.computedStartDate,
+        },
+        end: {
+          year: eventData?.end_date_year,
+          month: eventData?.end_date_month,
+          day: eventData?.end_date_day,
+          hours: eventData?.end_date_hours,
+          minutes: eventData?.end_date_minutes,
+          timezone: eventData?.timezone,
+          fallbackIso: event.computedEndDate,
+        },
+      }),
+    [
+      event.computedEndDate,
+      event.computedStartDate,
+      eventData?.end_date_day,
+      eventData?.end_date_hours,
+      eventData?.end_date_minutes,
+      eventData?.end_date_month,
+      eventData?.end_date_year,
+      eventData?.start_date_day,
+      eventData?.start_date_hours,
+      eventData?.start_date_minutes,
+      eventData?.start_date_month,
+      eventData?.start_date_year,
+      eventData?.timezone,
+    ]
+  );
+
+  const startDate = useMemo(() => {
+    const monthShort = dateRange.startDate.monthShort || event.monthShort || '';
+    const day = dateRange.startDate.dayOfMonth || event.dayOfMonth || '';
+    const fullDate = dateRange.displayDate || event.longDate || event.date;
+
+    if (!monthShort && !day && !fullDate) {
+      return null;
+    }
+
+    return {
+      monthShort,
+      day,
+      fullDate,
+    };
+  }, [
+    dateRange.displayDate,
+    dateRange.startDate.dayOfMonth,
+    dateRange.startDate.monthShort,
+    event.date,
+    event.dayOfMonth,
+    event.longDate,
+    event.monthShort,
+  ]);
+
+  const startTime = dateRange.startDate.time || event.startTime;
+  const endTime = dateRange.endDate.time || event.endTime;
+  const dateTimeSubtitle = `${startTime} - ${endTime}${event.timezone ? ` ${event.timezone}` : ''}`;
+  const dateTimeText = [startDate?.fullDate, dateTimeSubtitle].filter(Boolean).join('\n');
+
+  const detailModuleBaseClassName =
+    'flex h-[2.7rem] w-[2.7rem] shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-50';
+
   return (
     <>
       <div className='space-y-6 py-6'>
-        <div className='space-y-3'>
-          <div className='flex items-center gap-3 text-black'>
-            <span className='text-2xl font-bold'>{event.title}</span>
-            {eventData?.visibility && (
-              <span
-                className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${
-                  eventData.visibility === 'public'
-                    ? 'border-green-200 bg-green-50 text-green-700'
-                    : 'border-gray-300 bg-gray-100 text-gray-700'
-                }`}
-              >
-                {eventData.visibility === 'public' ? (
-                  <Globe className='h-3 w-3' />
-                ) : (
-                  <Lock className='h-3 w-3' />
-                )}
-                {eventData.visibility === 'public' ? 'Public' : 'Private'}
+        <div className='space-y-4'>
+          {eventData?.visibility && (
+            <div className='mb-2 flex items-center gap-2'>
+              <StatusBadge
+                status={eventData.visibility === 'public' ? 'success' : 'default'}
+                leftIcon={eventData.visibility === 'public' ? Globe : Lock}
+                leftLabel={eventData.visibility === 'public' ? 'Public' : 'Private'}
+              />
+            </div>
+          )}
+          <span className='text-2xl font-bold text-black'>{event.title}</span>
+
+          {/* Date + Time */}
+          <button
+            type='button'
+            onClick={() => setShowDateTimeSheet(true)}
+            className='group flex w-full items-center gap-4 text-left'
+          >
+            <div className={`${detailModuleBaseClassName} flex-col`}>
+              <span className='text-[9px] font-semibold uppercase leading-none text-gray-500'>
+                {startDate?.monthShort}
               </span>
-            )}
-          </div>
-          <div className='flex items-center gap-3 text-gray-700'>
-            <Calendar className='h-5 w-5 text-gray-400' />
-            <span className='font-medium'>{event.date}</span>
-          </div>
-          <div className='flex items-center gap-3 text-gray-700'>
-            <Clock className='h-5 w-5 text-gray-400' />
-            <span>
-              {event.startTime} - {event.endTime}
-              {event.timezone && ` ${event.timezone}`}
-            </span>
-          </div>
-          <div className='flex items-center gap-3 text-gray-700'>
-            <MapPin className='h-5 w-5 text-gray-400' />
-            <span>{event.location.name}</span>
-          </div>
+              <span className='text-[15px] font-bold leading-none text-gray-900'>
+                {startDate?.day}
+              </span>
+            </div>
+            <div className='min-w-0 flex-1'>
+              <div className='flex flex-col'>
+                <span className='font-semibold text-gray-900 group-hover:underline'>
+                  {startDate?.fullDate}
+                </span>
+                <span className='text-sm text-gray-500'>{dateTimeSubtitle}</span>
+              </div>
+            </div>
+            <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+          </button>
+
+          {/* Location */}
+          {!isLocationHidden && (
+            <button
+              type='button'
+              onClick={() => !isTBDLocation && setShowLocationSheet(true)}
+              className='group flex w-full items-center gap-4 text-left'
+            >
+              <div className={detailModuleBaseClassName}>
+                <MapPin className='h-[18px] w-[18px] text-gray-600' />
+              </div>
+              <div className='min-w-0 flex-1'>
+                <div className='flex flex-col'>
+                  <span
+                    className={`font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900 group-hover:underline'}`}
+                  >
+                    {locationDisplay.primary}
+                  </span>
+                  {locationDisplay.secondary && (
+                    <span className='text-sm text-gray-500'>
+                      {locationDisplay.secondary}
+                    </span>
+                  )}
+                </div>
+              </div>
+              {!isTBDLocation && (
+                <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+              )}
+            </button>
+          )}
         </div>
 
         {isOwnerOrCohost ? (
           <OwnerEventButtons eventId={event.id} />
         ) : (
           <>
-            <div className='grid grid-cols-4 gap-2'>
+            <div className='grid grid-cols-1 gap-2'>
               {hasPendingRegistration ? (
                 <button
                   type='button'
                   onClick={handlePendingClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
+                  className='flex h-16 flex-col items-center justify-center rounded-full bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
                 >
                   <Clock className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>Pending</span>
@@ -283,7 +381,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <button
                   type='button'
                   onClick={handleDeniedClick}
-                  className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-100 text-red-700 transition-colors hover:bg-red-200'
+                  className='flex h-16 flex-col items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200'
                 >
                   <XCircle className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>Denied</span>
@@ -292,40 +390,22 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <button
                   type='button'
                   onClick={handleRSVP}
-                  className={`flex h-16 flex-col items-center justify-center rounded-2xl transition-colors ${rsvpButton.className}`}
+                  disabled={shouldDisableRsvpButton}
+                  className={`flex h-16 flex-col items-center justify-center rounded-full transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
                 >
                   <Star className='mb-1 h-5 w-5' />
                   <span className='text-xs font-medium'>{rsvpButton.label}</span>
                 </button>
               )}
-
-              <button
-                type='button'
-                onClick={handleContact}
-                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <Mail className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>Contact</span>
-              </button>
-
-              <button
-                type='button'
-                onClick={handleShare}
-                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <Share className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>Share</span>
-              </button>
-
-              <button
-                type='button'
-                onClick={() => setShowMoreSheet(true)}
-                className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
-              >
-                <MoreHorizontal className='mb-1 h-5 w-5' />
-                <span className='text-xs font-medium'>More</span>
-              </button>
             </div>
+
+            {shouldShowCapacityInfo && spotsRemaining !== null && (
+              <p className='text-center text-sm text-gray-500'>
+                {isEventFull && isYesRsvp
+                  ? 'No more spots left'
+                  : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
+              </p>
+            )}
 
             {(hasPendingRegistration || hasDeniedRegistration) && myRegistration?.registration && (
               <div className='mt-4'>
@@ -336,20 +416,12 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         )}
       </div>
 
-      <MoreOptionsSheet
-        isOpen={showMoreSheet}
-        onClose={() => setShowMoreSheet(false)}
+      <DateTimeActionsSheet
+        open={showDateTimeSheet}
+        onOpenChange={setShowDateTimeSheet}
+        dateTimeText={dateTimeText}
         onAddToCalendar={handleAddToCalendar}
-        onSaveEvent={() => setShowSaveSheet(true)}
-        onContribute={handleContribute}
-        isSaved={isSaved}
-        hasContributions={hasContributions}
-      />
-
-      <SaveEventSheet
-        isOpen={showSaveSheet}
-        onClose={() => setShowSaveSheet(false)}
-        eventId={event.id}
+        onCopyDateTime={handleCopyDateTime}
       />
 
       <RsvpSheet
@@ -359,11 +431,12 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         eventData={eventData}
       />
 
-      {eventData && (
-        <ContributionPaymentSheet
-          isOpen={showContributionSheet}
-          onClose={() => setShowContributionSheet(false)}
-          eventData={eventData}
+      {!isLocationHidden && !isTBDLocation && (
+        <LocationActionsSheet
+          open={showLocationSheet}
+          onOpenChange={setShowLocationSheet}
+          fullAddress={fullAddress}
+          destination={destination}
         />
       )}
     </>

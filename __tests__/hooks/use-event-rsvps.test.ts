@@ -1,5 +1,6 @@
 import { apiClient } from '@/lib/api/client';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
+import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, EventRSVP, UserDetails } from '@/lib/types/api';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -310,7 +311,7 @@ describe('useEventRSVPs', () => {
       });
 
       // Check that the query key is correct
-      const queryData = queryClient.getQueryData(['eventRSVPs', 'event123']);
+      const queryData = queryClient.getQueryData(queryKeys.eventRsvps('event123'));
       expect(queryData).toEqual(mockRSVPs);
     });
 

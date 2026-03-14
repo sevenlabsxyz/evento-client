@@ -4,7 +4,6 @@ import EnhancedBlogContent from '@/components/blog/enhanced-blog-content';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import Image from 'next/image';
-import '../blog/blog-post.css';
 
 interface BlogPost {
   id: string;

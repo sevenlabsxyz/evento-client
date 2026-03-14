@@ -65,8 +65,14 @@ export function BlogSection() {
           <h2 className='text-lg font-semibold'>From our blog</h2>
         </div>
         <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3'>
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className='h-64 rounded-lg' />
+          {[
+            'blog-skeleton-1',
+            'blog-skeleton-2',
+            'blog-skeleton-3',
+            'blog-skeleton-4',
+            'blog-skeleton-5',
+          ].map((skeletonKey) => (
+            <Skeleton key={skeletonKey} className='h-64 rounded-lg' />
           ))}
         </div>
       </div>
@@ -100,7 +106,7 @@ export function BlogSection() {
       </div>
       <div className='flex justify-center pb-6 pt-4'>
         <Button asChild variant='outline' className='w-full md:w-auto'>
-          <Link href='/blog'>
+          <Link href='/e/blog'>
             View more posts <ArrowRight className='ml-2 h-4 w-4' />
           </Link>
         </Button>

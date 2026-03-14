@@ -1,18 +1,20 @@
 'use client';
 
 import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
-import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
+import { BadgeItem } from '@/components/badges/badge-item';
+import { BottomTabBar } from '@/components/bottom-tab-bar';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
-import { Navbar } from '@/components/navbar';
+import ProfileCampaignCard from '@/components/profile/profile-campaign-card';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -22,22 +24,21 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { usePublicUserBadges } from '@/lib/hooks/use-badges';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
-import { EventSortBy, type EventTimeframe } from '@/lib/hooks/use-user-events';
+import { type EventTimeframe } from '@/lib/hooks/use-user-events';
 import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useFollowAction,
   useFollowStatus,
   useUserByUsername,
   useUserEventCount,
-  useUserFollowers,
-  useUserFollowing,
+  useUserFollowersCount,
+  useUserFollowingCount,
 } from '@/lib/hooks/use-user-profile';
 import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useAuth } from '@/lib/stores/auth-store';
@@ -51,15 +52,18 @@ import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
+  Award,
   BadgeCheck,
+  Calendar,
   MessageCircle,
   Search,
   Share,
+  User,
   UserMinus,
   UserPlus,
 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function UserProfilePageClient() {
   // Fetch auth state but don’t enforce login – allows public profile view
@@ -69,7 +73,8 @@ export default function UserProfilePageClient() {
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
-  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [hasAutoSelectedInitialTab, setHasAutoSelectedInitialTab] = useState(false);
+  const [hasAutoSwitchedToPast, setHasAutoSwitchedToPast] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
@@ -97,8 +102,8 @@ export default function UserProfilePageClient() {
   const followActionMutation = useFollowAction();
 
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
-  const { data: followers = [] } = useUserFollowers(userData?.id || '');
-  const { data: following = [] } = useUserFollowing(userData?.id || '');
+  const { data: followersCount = 0 } = useUserFollowersCount(userData?.id || '');
+  const { data: followingCount = 0 } = useUserFollowingCount(userData?.id || '');
 
   // Get user interests and prompts (only visible prompts for other users)
   const { data: userInterests = [], isLoading: isLoadingInterests } = useOtherUserInterests(
@@ -108,6 +113,20 @@ export default function UserProfilePageClient() {
 
   // Get user badges (displayed badges only)
   const { data: userBadges = [] } = usePublicUserBadges(userData?.id);
+
+  const hasAboutContent = useMemo(() => {
+    if (!userData) return false;
+
+    const hasBio = Boolean(userData.bio?.trim());
+    const hasSocialLinks = [
+      userData.bio_link,
+      userData.instagram_handle,
+      userData.x_handle,
+      userData.nip05,
+    ].some((value) => Boolean(value?.trim()));
+
+    return hasBio || hasSocialLinks || userInterests.length > 0 || userPrompts.length > 0;
+  }, [userData, userInterests.length, userPrompts.length]);
 
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
@@ -122,8 +141,8 @@ export default function UserProfilePageClient() {
         isVerified: userData.verification_status === 'verified',
         stats: {
           events: eventCount,
-          following: following.length,
-          followers: followers.length,
+          following: followingCount,
+          followers: followersCount,
           countries: 0, // This would need to be calculated from events
           mutuals: 0, // This would need to be calculated
         },
@@ -223,6 +242,47 @@ export default function UserProfilePageClient() {
     enabled: activeTab === 'events',
   });
 
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+
+  const upcomingEvents = useMemo(
+    () =>
+      (publicEventsData || []).filter((event: EventWithUser) => event.computed_start_date >= today),
+    [publicEventsData, today]
+  );
+
+  const pastEvents = useMemo(
+    () =>
+      (publicEventsData || []).filter((event: EventWithUser) => event.computed_start_date < today),
+    [publicEventsData, today]
+  );
+
+  useEffect(() => {
+    setActiveTab('about');
+    setTimeframe('future');
+    setHasAutoSelectedInitialTab(false);
+    setHasAutoSwitchedToPast(false);
+  }, [username]);
+
+  useEffect(() => {
+    if (hasAutoSelectedInitialTab || !userData || isLoadingInterests || isLoadingPrompts) {
+      return;
+    }
+
+    setActiveTab(hasAboutContent ? 'about' : 'events');
+    setHasAutoSelectedInitialTab(true);
+  }, [hasAboutContent, hasAutoSelectedInitialTab, isLoadingInterests, isLoadingPrompts, userData]);
+
+  useEffect(() => {
+    if (activeTab !== 'events' || hasAutoSwitchedToPast || isLoadingEvents) {
+      return;
+    }
+
+    if (upcomingEvents.length === 0) {
+      setTimeframe('past');
+      setHasAutoSwitchedToPast(true);
+    }
+  }, [activeTab, hasAutoSwitchedToPast, isLoadingEvents, upcomingEvents.length]);
+
   // Handle loading state
   if (isUserLoading || isCheckingAuth) {
     return (
@@ -257,7 +317,7 @@ export default function UserProfilePageClient() {
             </Button>
           </EmptyContent>
         </Empty>
-        <Navbar />
+        <BottomTabBar />
       </div>
     );
   }
@@ -356,20 +416,10 @@ export default function UserProfilePageClient() {
   }));
 
   const renderEventsTab = () => {
-    // Filter events by timeframe (client-side filtering)
-    const today = new Date().toISOString().slice(0, 10);
-    const filteredEvents = (publicEventsData || []).filter((event: EventWithUser) => {
-      const eventDate = event.computed_start_date;
-      if (timeframe === 'future') {
-        return eventDate >= today;
-      } else if (timeframe === 'past') {
-        return eventDate < today;
-      }
-      return true;
-    });
+    const eventsForTimeframe = timeframe === 'future' ? upcomingEvents : pastEvents;
 
     // Group events by date
-    const groupedEvents = filteredEvents
+    const groupedEvents = eventsForTimeframe
       .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
         const date = event.computed_start_date;
         const group = groups.find((g) => g.date === date);
@@ -386,13 +436,7 @@ export default function UserProfilePageClient() {
         (
           a: { date: string; events: EventWithUser[] },
           b: { date: string; events: EventWithUser[] }
-        ) => {
-          if (sortBy === 'date-desc') {
-            return new Date(b.date).getTime() - new Date(a.date).getTime();
-          } else {
-            return new Date(a.date).getTime() - new Date(b.date).getTime();
-          }
-        }
+        ) => new Date(b.date).getTime() - new Date(a.date).getTime()
       );
 
     const canPinEvent = (event: EventWithUser) => {
@@ -442,7 +486,7 @@ export default function UserProfilePageClient() {
     return (
       <div className='space-y-4'>
         {/* Filter Controls */}
-        <div className='flex items-center justify-between gap-2'>
+        <div className='flex justify-center'>
           {/* Timeframe Toggle */}
           <div className='flex items-center rounded-full bg-gray-50 p-1'>
             <button
@@ -468,37 +512,11 @@ export default function UserProfilePageClient() {
               Past
             </button>
           </div>
+        </div>
 
-          <div className='flex items-center gap-2'>
-            {/* Sort Toggle */}
-            <div className='flex items-center rounded-full bg-gray-50 p-1'>
-              <button
-                onClick={() => setSortBy('date-desc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-desc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Latest
-              </button>
-              <button
-                onClick={() => setSortBy('date-asc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-asc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Oldest
-              </button>
-            </div>
-
-            {/* Search Button */}
-            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
-          </div>
+        <div className='flex justify-end'>
+          {/* Search Button */}
+          <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
         </div>
 
         {/* Events List */}
@@ -514,7 +532,9 @@ export default function UserProfilePageClient() {
               <div className='rounded-full bg-gray-100 p-3'>
                 <MessageCircle className='h-6 w-6 text-gray-400' />
               </div>
-              <p className='text-sm text-gray-500'>No events found</p>
+              <p className='text-sm text-gray-500'>
+                {timeframe === 'future' ? 'No upcoming events found' : 'No past events found'}
+              </p>
             </div>
           ) : (
             groupedEvents.map((group) => (
@@ -561,15 +581,6 @@ export default function UserProfilePageClient() {
           />
         )}
 
-        {/* User Badges */}
-        {userBadges.length > 0 && (
-          <UserBadgesDisplay
-            badges={userBadges}
-            isOwnProfile={false}
-            onBadgeClick={(badge) => setSelectedBadge(badge)}
-          />
-        )}
-
         {/* Bio/Description */}
         {!userProfile?.bio ? null : (
           <div>
@@ -582,6 +593,43 @@ export default function UserProfilePageClient() {
 
         {/* User Prompts (only visible ones) */}
         {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={false} />}
+      </div>
+    );
+  };
+
+  const renderBadgesTab = () => {
+    const sortedBadges = [...userBadges].sort(
+      (a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime()
+    );
+
+    return (
+      <div className='space-y-4'>
+        {sortedBadges.length ? (
+          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='grid grid-cols-3 gap-4 sm:grid-cols-4'>
+              {sortedBadges.map((userBadge) => (
+                <BadgeItem
+                  key={userBadge.id}
+                  badge={userBadge.badge}
+                  size='lg'
+                  onClick={() => setSelectedBadge(userBadge)}
+                  className='w-full'
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Empty className='py-8'>
+            <EmptyHeader>
+              <EmptyMedia variant='icon'>
+                <BadgeCheck className='size-5' />
+              </EmptyMedia>
+              <EmptyTitle>No badges yet</EmptyTitle>
+              <EmptyDescription>This user has not been awarded any badges yet.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent />
+          </Empty>
+        )}
       </div>
     );
   };
@@ -630,7 +678,7 @@ export default function UserProfilePageClient() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{following?.length || 0}</div>
+                    <div className='text-xl font-bold text-gray-900'>{followingCount}</div>
                     <div className='text-sm text-gray-500'>Following</div>
                   </motion.button>
                   <motion.button
@@ -639,7 +687,7 @@ export default function UserProfilePageClient() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{followers?.length || 0}</div>
+                    <div className='text-xl font-bold text-gray-900'>{followersCount}</div>
                     <div className='text-sm text-gray-500'>Followers</div>
                   </motion.button>
                 </div>
@@ -681,7 +729,7 @@ export default function UserProfilePageClient() {
               </div>
 
               {/* Zap Button */}
-              {userData?.ln_address && (
+              {userData?.ln_address && userData?.id !== user?.id && (
                 <div className='mb-6'>
                   <ZapSheet
                     recipientLightningAddress={userData.ln_address}
@@ -692,27 +740,54 @@ export default function UserProfilePageClient() {
                   />
                 </div>
               )}
+
+              {/* Campaign Card — shown between zap button and tabs */}
+              <ProfileCampaignCard userId={userData?.id || ''} className='mb-6' />
             </div>
           </div>
 
           {/* Tabs */}
           <div className='pb-20'>
             {/* Tabbed Section */}
-            <div className='mb-4 w-full bg-white px-6 lg:px-0'>
+            <div className='mb-4 w-full bg-white px-6 pb-5 md:pb-0 lg:px-0'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'about', label: 'About' },
-                  { value: 'events', label: 'Events' },
+              <AnimatedTabs
+                expanded
+                className='mx-auto'
+                tabs={[
+                  {
+                    title: 'About',
+                    icon: User,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('about');
+                    },
+                  },
+                  {
+                    title: 'Events',
+                    icon: Calendar,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('events');
+                    },
+                  },
+                  {
+                    title: 'Badges',
+                    icon: Award,
+                    onClick: () => {
+                      setHasAutoSelectedInitialTab(true);
+                      setActiveTab('badges');
+                    },
+                  },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => setActiveTab(v)}
+                selected={['about', 'events', 'badges'].indexOf(activeTab)}
               />
 
               {/* Tab Content */}
-              <div>
+              <div className='mt-4'>
                 {activeTab === 'about' && renderAboutTab()}
                 {activeTab === 'events' && renderEventsTab()}
+                {activeTab === 'badges' && renderBadgesTab()}
               </div>
             </div>
           </div>
@@ -720,7 +795,7 @@ export default function UserProfilePageClient() {
       </div>
 
       {/* Bottom Navbar */}
-      <Navbar />
+      <BottomTabBar />
 
       {/* Followers Sheet */}
       <FollowersSheet

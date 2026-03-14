@@ -203,7 +203,9 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
               <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
               <div className='text-sm text-amber-900'>
                 <p className='font-medium'>Important</p>
-                <p className='mt-1'>Remember this PIN! You'll need it to access your wallet.</p>
+                <p className='mt-1'>
+                  Remember this PIN! You&apos;ll need it to access your wallet.
+                </p>
               </div>
             </div>
           </div>

@@ -39,6 +39,15 @@ export const REGIONAL_EXCHANGES: Exchange[] = [
     supportedCountries: ['US', 'GB', 'AR'],
     isGlobal: false,
   },
+  {
+    id: 'flash',
+    name: 'Flash',
+    description: 'Neobank for Bitcoin in Jamaica',
+    logo: '/assets/partners/flash.svg',
+    link: 'https://getflash.io/',
+    supportedCountries: ['JM'],
+    isGlobal: false,
+  },
 ];
 
 /**

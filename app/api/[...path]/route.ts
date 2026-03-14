@@ -102,7 +102,11 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       }
 
       // Log request body for debugging
-      if (requestBody && process.env.NODE_ENV === 'development') {
+      if (
+        requestBody &&
+        process.env.NODE_ENV === 'development' &&
+        Env.API_PROXY_LOG_BODIES === 'true'
+      ) {
         console.debug(`Request body for ${fullUrl}:`, {
           requestId,
           body: requestBody,
@@ -135,11 +139,10 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
     // Handle different response types
     const contentType = response.headers.get('content-type');
     const duration = Date.now() - startTime;
-    let responseData;
     let bodySize = 0;
 
     if (contentType?.includes('application/json')) {
-      responseData = await response.json();
+      const responseData = await response.json();
       bodySize = JSON.stringify(responseData).length;
 
       // Log successful response
@@ -158,8 +161,8 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       });
     } else {
       // For non-JSON responses, return as-is
-      responseData = await response.text();
-      bodySize = responseData.length;
+      const responseText = await response.text();
+      bodySize = responseText.length;
 
       // Log successful response
       // logger.logApiResponse(fullUrl, {
@@ -170,7 +173,7 @@ async function handler(request: NextRequest, { params }: { params: { path: strin
       //   duration,
       // });
 
-      return new NextResponse(responseData, {
+      return new NextResponse(responseText, {
         status: response.status,
         headers: responseHeaders,
       });

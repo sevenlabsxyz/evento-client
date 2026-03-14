@@ -6,9 +6,14 @@ interface ApiLogMetadata {
   [key: string]: unknown;
 }
 
-const DEBUG_ENABLED = process.env.NODE_ENV !== 'production';
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
+const DEBUG_ENABLED = !IS_PRODUCTION;
 
 function writeLog(level: LogLevel, message: string, metadata?: unknown) {
+  if (IS_PRODUCTION && (level === 'debug' || level === 'info')) {
+    return;
+  }
+
   if (level === 'debug' && !DEBUG_ENABLED) {
     return;
   }

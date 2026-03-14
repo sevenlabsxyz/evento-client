@@ -2,14 +2,17 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowers } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 import { UserAvatar } from '../ui/user-avatar';
+
+const EMPTY_FOLLOWERS: UserDetails[] = [];
 
 interface FollowersSheetProps {
   isOpen: boolean;
@@ -19,25 +22,59 @@ interface FollowersSheetProps {
 }
 
 export default function FollowersSheet({ isOpen, onClose, userId, username }: FollowersSheetProps) {
+  const PAGE_SIZE = 50;
   const [activeDetent, setActiveDetent] = useState(0);
   const [searchText, setSearchText] = useState('');
+  const debouncedSearchText = useDebounce(searchText, 400);
+  const [offset, setOffset] = useState(0);
+  const [allFollowers, setAllFollowers] = useState<UserDetails[]>([]);
+  const [hasMore, setHasMore] = useState(false);
   const router = useRouter();
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
-  const { data: followers, isLoading, error } = useUserFollowers(userId);
+  const {
+    data: followersPage,
+    isLoading,
+    error,
+    isFetching,
+  } = useUserFollowers(userId, {
+    limit: PAGE_SIZE,
+    offset,
+    search: debouncedSearchText,
+  });
 
-  // Filter followers based on search query
-  const filteredFollowers = useMemo(() => {
-    if (!followers) return [];
-    if (!searchText.trim()) return followers;
+  useEffect(() => {
+    if (!isOpen) return;
+    setOffset(0);
+    setAllFollowers([]);
+    setHasMore(false);
+  }, [isOpen, userId]);
 
-    const query = searchText.toLowerCase();
-    return followers.filter(
-      (follower) =>
-        follower.username?.toLowerCase().includes(query) ||
-        follower.name?.toLowerCase().includes(query)
-    );
-  }, [followers, searchText]);
+  useEffect(() => {
+    if (!isOpen) return;
+    setOffset(0);
+    setAllFollowers([]);
+    setHasMore(false);
+  }, [isOpen, debouncedSearchText]);
+
+  useEffect(() => {
+    if (!isOpen || !followersPage) return;
+
+    if (offset === 0) {
+      setAllFollowers(followersPage);
+    } else if (followersPage.length > 0) {
+      setAllFollowers((prev) => {
+        const seen = new Set(prev.map((item) => item.id));
+        const uniqueNew = followersPage.filter((item) => !seen.has(item.id));
+        return [...prev, ...uniqueNew];
+      });
+    }
+
+    setHasMore(followersPage.length === PAGE_SIZE);
+  }, [followersPage, offset, isOpen]);
+
+  const filteredFollowers = allFollowers;
+  const currentPageFollowers = followersPage ?? EMPTY_FOLLOWERS;
 
   const handleUserClick = useCallback(
     (username: string) => {
@@ -88,7 +125,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
               <SheetWithDetent.ScrollRoot asChild>
                 <SheetWithDetent.ScrollView className='min-h-0'>
                   <SheetWithDetent.ScrollContent className='grid gap-5 p-5'>
-                    {isLoading ? (
+                    {isLoading && allFollowers.length === 0 ? (
                       // Loading State
                       Array.from({ length: 3 }).map((_, index) => (
                         <div
@@ -102,7 +139,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                           </div>
                         </div>
                       ))
-                    ) : error ? (
+                    ) : error && allFollowers.length === 0 ? (
                       // Error State
                       <div className='flex items-center justify-center px-4 py-12'>
                         <div className='text-center text-base text-red-500'>
@@ -120,53 +157,65 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                       </div>
                     ) : (
                       // Followers List
-                      filteredFollowers.map((follower, index) => (
-                        <div
-                          key={follower.id || `follower-${index}`}
-                          className='grid grid-cols-[1fr_auto] items-center gap-4'
-                        >
-                          <button
-                            onClick={() => handleUserClick(follower.username)}
-                            className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
+                      <>
+                        {filteredFollowers.map((follower, index) => (
+                          <div
+                            key={follower.id || `follower-${index}`}
+                            className='grid grid-cols-[1fr_auto] items-center gap-4'
                           >
-                            <UserAvatar
-                              user={{
-                                name: follower.name || undefined,
-                                username: follower.username || undefined,
-                                image: follower.image || undefined,
-                                verification_status: follower.verification_status || null,
-                              }}
-                              size='sm'
-                            />
-                            <div className='min-w-0 flex-1'>
-                              <div className='truncate text-sm font-medium'>
-                                @{follower.username}
-                              </div>
-                              <div className='truncate text-xs text-gray-500'>
-                                {follower.name || follower.username}
-                              </div>
-                            </div>
-                          </button>
-                          <div className='flex gap-2'>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
-                              onClick={() => handleMessageClick(follower.id)}
-                            >
-                              <MessageCircle className='h-4 w-4 text-gray-500' />
-                            </Button>
-                            <Button
-                              variant='ghost'
-                              size='icon'
-                              className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                            <button
                               onClick={() => handleUserClick(follower.username)}
+                              className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
                             >
-                              <ArrowRight className='h-4 w-4 text-gray-500' />
-                            </Button>
+                              <UserAvatar
+                                user={{
+                                  name: follower.name || undefined,
+                                  username: follower.username || undefined,
+                                  image: follower.image || undefined,
+                                  verification_status: follower.verification_status || null,
+                                }}
+                                size='sm'
+                              />
+                              <div className='min-w-0 flex-1'>
+                                <div className='truncate text-sm font-medium'>
+                                  @{follower.username}
+                                </div>
+                                <div className='truncate text-xs text-gray-500'>
+                                  {follower.name || follower.username}
+                                </div>
+                              </div>
+                            </button>
+                            <div className='flex gap-2'>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                onClick={() => handleMessageClick(follower.id)}
+                              >
+                                <MessageCircle className='h-4 w-4 text-gray-500' />
+                              </Button>
+                              <Button
+                                variant='ghost'
+                                size='icon'
+                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                onClick={() => handleUserClick(follower.username)}
+                              >
+                                <ArrowRight className='h-4 w-4 text-gray-500' />
+                              </Button>
+                            </div>
                           </div>
-                        </div>
-                      ))
+                        ))}
+                        {hasMore && currentPageFollowers.length > 0 && (
+                          <Button
+                            variant='outline'
+                            onClick={() => setOffset((prev) => prev + PAGE_SIZE)}
+                            disabled={isFetching}
+                            className='w-full'
+                          >
+                            {isFetching ? 'Loading...' : 'Load more'}
+                          </Button>
+                        )}
+                      </>
                     )}
                   </SheetWithDetent.ScrollContent>
                 </SheetWithDetent.ScrollView>

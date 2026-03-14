@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { formatEventDate } from '@/lib/utils/date';
+import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { Check, MapPin, Users, X } from 'lucide-react';
@@ -20,18 +20,15 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
   const router = useRouter();
   const event = invite.events;
 
-  // Get local time (user's browser timezone)
-  const localTime = new Date(event.computed_start_date).toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
+  const { timeWithTz: eventTimeWithTz } = formatEventDateFromParts({
+    year: event.start_date_year,
+    month: event.start_date_month,
+    day: event.start_date_day,
+    hours: event.start_date_hours,
+    minutes: event.start_date_minutes,
+    timezone: event.timezone,
+    fallbackIso: event.computed_start_date,
   });
-
-  // Get event time with timezone
-  const { timeWithTz: eventTimeWithTz } = formatEventDate(
-    event.computed_start_date,
-    event.timezone
-  );
 
   // Get relative time for when invite was sent (short format)
   const invitedAgo = formatDistanceToNowStrict(new Date(invite.created_at), { addSuffix: true })
@@ -98,8 +95,6 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
 
           {/* Time Row */}
           <div className='flex items-center gap-1 text-sm'>
-            <span className='text-gray-500'>{localTime}</span>
-            <span className='text-gray-400'>·</span>
             <span className='font-medium text-amber-600'>{eventTimeWithTz}</span>
           </div>
 
@@ -113,7 +108,9 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
 
           {/* Invite Message */}
           {invite.message && (
-            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>"{invite.message}"</p>
+            <p className='mt-1 line-clamp-2 text-sm italic text-gray-500'>
+              &quot;{invite.message}&quot;
+            </p>
           )}
         </div>
 

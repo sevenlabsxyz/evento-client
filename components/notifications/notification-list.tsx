@@ -93,7 +93,7 @@ export function NotificationList({
         <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
           <Inbox className='h-8 w-8 text-gray-400' />
         </div>
-        <h2 className='mb-2 text-lg font-medium text-gray-900'>You're all caught up!</h2>
+        <h2 className='mb-2 text-lg font-medium text-gray-900'>You&apos;re all caught up!</h2>
         <p className='text-sm text-gray-600'>No new notifications at the moment.</p>
       </div>
     );

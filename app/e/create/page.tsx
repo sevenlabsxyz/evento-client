@@ -58,6 +58,7 @@ export default function CreatePage() {
     setTopBarForRoute(pathname, {
       leftMode: 'back',
       title: 'Create Event',
+      hideMobileBreadcrumb: true,
       subtitle: undefined,
       showAvatar: true,
       centerMode: 'title',
@@ -87,9 +88,9 @@ export default function CreatePage() {
     visibility,
     hasCapacity,
     capacity,
+    showCapacityCount,
     spotifyUrl,
     wavlakeUrl,
-    attachments,
     emoji,
     setTitle,
     setDescription,
@@ -104,9 +105,9 @@ export default function CreatePage() {
     setVisibility,
     setHasCapacity,
     setCapacity,
+    setShowCapacityCount,
     setSpotifyUrl,
     setWavlakeUrl,
-    setAttachments,
     setEmoji,
     getFormData,
     reset,
@@ -200,47 +201,12 @@ export default function CreatePage() {
     setCoverImage(imageUrl);
   };
 
-  const handleAttachmentType = (type: 'spotify' | 'wavlake' | 'photo' | 'file' | 'link') => {
-    // This will be handled by the AttachmentSheet internally
-    // For now, just handle the file pickers
-    switch (type) {
-      case 'photo':
-        // Trigger native photo picker
-        const photoInput = document.createElement('input');
-        photoInput.type = 'file';
-        photoInput.accept = 'image/*';
-        photoInput.onchange = (e) => {
-          const file = (e.target as HTMLInputElement).files?.[0];
-          if (file) {
-            const newAttachments = [...attachments, { type: 'photo', data: file }];
-            setAttachments(newAttachments);
-          }
-        };
-        photoInput.click();
-        break;
-      case 'file':
-        // Trigger native file picker
-        const fileInput = document.createElement('input');
-        fileInput.type = 'file';
-        fileInput.onchange = (e) => {
-          const file = (e.target as HTMLInputElement).files?.[0];
-          if (file) {
-            const newAttachments = [...attachments, { type: 'file', data: file }];
-            setAttachments(newAttachments);
-          }
-        };
-        fileInput.click();
-        break;
-    }
-  };
-
   const handleSaveAttachment = (type: string, url: string) => {
     if (type === 'spotify') {
       setSpotifyUrl(url);
     } else if (type === 'wavlake') {
       setWavlakeUrl(url);
     }
-    setAttachments([...attachments, { type, url }]);
   };
 
   const handleCreateEvent = async () => {
@@ -403,7 +369,7 @@ export default function CreatePage() {
         </div>
 
         {/* Bottom CTA */}
-        <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:left-[--sidebar-width] md:right-2 md:rounded-b-xl'>
+        <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:rounded-b-xl'>
           <div className='mx-auto max-w-full md:max-w-md'>
             <Skeleton className='h-10 w-full rounded-xl' />
           </div>
@@ -562,42 +528,65 @@ export default function CreatePage() {
 
         {/* Capacity Options */}
         <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-          <div className='flex items-center gap-4'>
-            <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
-              <Users className='h-4 w-4 text-gray-600' />
+          <div className='space-y-3'>
+            <div className='flex items-center gap-4'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white'>
+                <Users className='h-4 w-4 text-gray-600' />
+              </div>
+              <div className='flex-1'>
+                <div className='flex items-center justify-between'>
+                  <div className='flex flex-col'>
+                    <label className='mb-1 text-sm font-medium text-gray-500'>
+                      {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
+                    </label>
+                    {hasCapacity && capacity && (
+                      <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => {
+                      if (hasCapacity) {
+                        // User is trying to turn off capacity
+                        setShowCapacityConfirmationSheet(true);
+                      } else {
+                        // User is trying to turn on capacity
+                        setShowCapacitySettingSheet(true);
+                      }
+                    }}
+                    className={`h-6 w-12 rounded-full transition-colors ${
+                      hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                    }`}
+                  >
+                    <div
+                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                        hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
+                      }`}
+                    ></div>
+                  </button>
+                </div>
+              </div>
             </div>
-            <div className='flex-1'>
-              <div className='flex items-center justify-between'>
-                <div className='flex flex-col'>
-                  <label className='mb-1 text-sm font-medium text-gray-500'>
-                    {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
-                  </label>
-                  {hasCapacity && capacity && (
-                    <span className='text-xs text-gray-400'>Maximum attendees: {capacity}</span>
-                  )}
+
+            {hasCapacity && (
+              <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-white px-3 py-2'>
+                <div>
+                  <p className='text-sm font-medium text-gray-700'>Show capacity count</p>
+                  <p className='text-xs text-gray-500'>Display spots remaining to guests</p>
                 </div>
                 <button
-                  onClick={() => {
-                    if (hasCapacity) {
-                      // User is trying to turn off capacity
-                      setShowCapacityConfirmationSheet(true);
-                    } else {
-                      // User is trying to turn on capacity
-                      setShowCapacitySettingSheet(true);
-                    }
-                  }}
+                  onClick={() => setShowCapacityCount(!showCapacityCount)}
                   className={`h-6 w-12 rounded-full transition-colors ${
-                    hasCapacity ? 'bg-purple-500' : 'bg-gray-300'
+                    showCapacityCount ? 'bg-purple-500' : 'bg-gray-300'
                   }`}
                 >
                   <div
                     className={`h-5 w-5 rounded-full bg-white transition-transform ${
-                      hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
+                      showCapacityCount ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   ></div>
                 </button>
               </div>
-            </div>
+            )}
           </div>
         </div>
 
@@ -637,7 +626,7 @@ export default function CreatePage() {
                 onClick={() => setShowAttachmentModal(true)}
                 className='text-left font-medium text-gray-500'
               >
-                Add Music, Photo, File or Link
+                Add Music
               </button>
             </div>
           </div>
@@ -645,7 +634,7 @@ export default function CreatePage() {
       </div>
 
       {/* Fixed Bottom Button */}
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:left-[--sidebar-width] md:right-2 md:rounded-b-xl'>
+      <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:rounded-b-xl'>
         <div className='mx-auto max-w-full md:max-w-md'>
           <SubmitButton
             onClick={handleCreateEvent}
@@ -702,7 +691,6 @@ export default function CreatePage() {
         <AttachmentSheet
           isOpen={showAttachmentModal}
           onClose={() => setShowAttachmentModal(false)}
-          onSelectType={handleAttachmentType}
           onSaveAttachment={handleSaveAttachment}
           spotifyUrl={spotifyUrl}
           wavlakeUrl={wavlakeUrl}
@@ -759,6 +747,7 @@ export default function CreatePage() {
           onConfirm={() => {
             setHasCapacity(false);
             setCapacity('');
+            setShowCapacityCount(false);
             setShowCapacityConfirmationSheet(false);
           }}
           currentCapacity={capacity}

@@ -2,7 +2,7 @@
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { LocationData, useGooglePlaces } from '@/lib/hooks/use-google-places';
 import { debugLog } from '@/lib/utils/debug';
-import { Loader2, MapPin, Plus, Search } from 'lucide-react';
+import { Check, Loader2, MapPin, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface LocationSheetProps {
@@ -14,7 +14,12 @@ interface LocationSheetProps {
 
 export type { LocationData };
 
-export default function LocationSheet({ isOpen, onClose, onLocationSelect }: LocationSheetProps) {
+export default function LocationSheet({
+  isOpen,
+  onClose,
+  onLocationSelect,
+  selectedLocation,
+}: LocationSheetProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isSelectingPlace, setIsSelectingPlace] = useState(false);
   const [isGettingCurrentLocation, setIsGettingCurrentLocation] = useState(false);
@@ -115,31 +120,49 @@ export default function LocationSheet({ isOpen, onClose, onLocationSelect }: Loc
       open={isOpen}
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={searchHeader}
-      contentClassName='pb-safe'
+      contentClassName='overflow-x-hidden pb-safe'
     >
-      <div className='flex flex-col'>
-        {/* Current Location Option */}
-        <button
-          onClick={handleCurrentLocation}
-          disabled={isGettingCurrentLocation}
-          className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
-        >
-          <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100'>
-            {isGettingCurrentLocation ? (
-              <Loader2 className='h-5 w-5 animate-spin text-blue-600' />
-            ) : (
-              <MapPin className='h-5 w-5 text-blue-600' />
-            )}
-          </div>
-          <div className='min-w-0 flex-1'>
-            <div className='truncate font-medium text-gray-900'>
-              {isGettingCurrentLocation ? 'Getting location...' : 'Use current location'}
+      <div className='flex w-full min-w-0 flex-col overflow-hidden'>
+        {selectedLocation && (
+          <button
+            onClick={() => handleLocationSelect(selectedLocation)}
+            className='flex w-full min-w-0 items-center gap-3 overflow-hidden border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
+          >
+            <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
+              <Check className='h-5 w-5 text-red-600' />
             </div>
-            <div className='truncate text-sm text-gray-500'>
-              {error || "We'll use your current GPS location"}
+            <div className='min-w-0 flex-1 overflow-hidden'>
+              <div className='truncate font-medium text-gray-900'>
+                {selectedLocation.formatted || selectedLocation.name || selectedLocation.city}
+              </div>
+              <div className='truncate text-sm text-gray-500'>Selected address</div>
             </div>
-          </div>
-        </button>
+          </button>
+        )}
+
+        {!selectedLocation && (
+          <button
+            onClick={handleCurrentLocation}
+            disabled={isGettingCurrentLocation}
+            className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
+          >
+            <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100'>
+              {isGettingCurrentLocation ? (
+                <Loader2 className='h-5 w-5 animate-spin text-blue-600' />
+              ) : (
+                <MapPin className='h-5 w-5 text-blue-600' />
+              )}
+            </div>
+            <div className='min-w-0 flex-1'>
+              <div className='truncate font-medium text-gray-900'>
+                {isGettingCurrentLocation ? 'Getting location...' : 'Use current location'}
+              </div>
+              <div className='truncate text-sm text-gray-500'>
+                {error || "We'll use your current GPS location"}
+              </div>
+            </div>
+          </button>
+        )}
 
         {/* Loading State */}
         {(isLoading || isSelectingPlace) && (
@@ -182,7 +205,9 @@ export default function LocationSheet({ isOpen, onClose, onLocationSelect }: Loc
                   <Plus className='h-5 w-5 text-red-500' />
                 </div>
                 <div className='min-w-0 flex-1'>
-                  <div className='truncate font-medium text-gray-900'>Add "{searchQuery}"</div>
+                  <div className='truncate font-medium text-gray-900'>
+                    Add &quot;{searchQuery}&quot;
+                  </div>
                   <div className='truncate text-sm text-gray-500'>Use as custom location</div>
                 </div>
               </button>

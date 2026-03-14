@@ -249,7 +249,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                   </p>
                                   <p className='mt-0.5 text-xs text-orange-700'>
                                     {deposit.claimError.type === 'maxDepositClaimFeeExceeded'
-                                      ? `Network fee of ${deposit.claimError.requiredFeeSats} sats is too high (waiting for fees below 1 sat/vbyte)`
+                                      ? `Network fee of ${deposit.claimError.requiredFeeSats} sats exceeds auto-claim limit — claim manually or wait for lower fees`
                                       : deposit.claimError.type === 'missingUtxo'
                                         ? 'Transaction output not found'
                                         : deposit.claimError.type === 'generic'

@@ -1,6 +1,5 @@
 'use client';
 
-import { Navbar } from '@/components/navbar';
 import { MessageSquare } from 'lucide-react';
 import { useState } from 'react';
 
@@ -29,7 +28,6 @@ export default function MessagesPage() {
           <h2 className='mb-2 text-xl font-semibold text-gray-900'>No conversation selected</h2>
           <p className='text-sm text-gray-500'>Select a chat from your messages list</p>
         </div>
-        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     </>
   );

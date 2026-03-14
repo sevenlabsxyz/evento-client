@@ -1,8 +1,8 @@
-import SegmentedTabs from '@/components/ui/segmented-tabs';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { EventInvite } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { Calendar, Check } from 'lucide-react';
+import { Archive, Calendar, Check, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 import { MasterInviteCard } from './master-invite-card';
@@ -64,15 +64,17 @@ export function EventInvitesSheet({
               </VisuallyHidden.Root>
 
               {/* Tabs */}
-              <SegmentedTabs
-                items={[
-                  { value: 'pending', label: `Waiting (${pendingInvites.length})` },
-                  { value: 'responded', label: 'Archive' },
+              <AnimatedTabs
+                tabs={[
+                  {
+                    title: `Waiting (${pendingInvites.length})`,
+                    icon: Clock,
+                    onClick: () => setActiveTab('pending'),
+                  },
+                  { title: 'Archive', icon: Archive, onClick: () => setActiveTab('responded') },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => setActiveTab(v as 'pending' | 'responded')}
-                wrapperClassName='mb-4 px-0 py-0'
-                align='left'
+                selected={['pending', 'responded'].indexOf(activeTab)}
+                className='mb-4'
               />
             </div>
 
@@ -96,7 +98,7 @@ export function EventInvitesSheet({
                           <h3 className='mb-1 text-base font-semibold text-gray-900'>
                             No pending invites
                           </h3>
-                          <p className='text-sm text-gray-500'>You're all caught up!</p>
+                          <p className='text-sm text-gray-500'>You&apos;re all caught up!</p>
                         </div>
                       ) : (
                         <div className='space-y-4'>

@@ -32,13 +32,13 @@ export default function CancelEventModal({
         onSuccess: () => {
           toast.success(
             sendEmail
-              ? 'Event cancelled. Notification emails have been sent to attendees.'
-              : 'Event cancelled successfully.'
+              ? 'Event canceled. Notification emails have been sent to attendees.'
+              : 'Event canceled successfully.'
           );
 
           onClose();
-          // Redirect to feed page after successful cancellation
-          router.push('/e/feed');
+          // Redirect to hub page after successful cancellation
+          router.push('/e/hub');
         },
         onError: () => {
           toast.error('Failed to cancel event. Please try again.');

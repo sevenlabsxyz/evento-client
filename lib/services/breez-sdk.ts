@@ -34,7 +34,14 @@ import {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
-} from '@breeztech/breez-sdk-spark';
+} from '@breeztech/breez-sdk-spark/web';
+
+type LightningAddressChangedEvent = {
+  type: 'lightningAddressChanged';
+  lightningAddress?: LightningAddressInfo;
+};
+
+export type BreezEvent = SdkEvent | LightningAddressChangedEvent;
 
 // Set to true to enable verbose logging
 const DEBUG_BREEZ = false;
@@ -58,7 +65,7 @@ export class BreezSDKService {
   private static instance: BreezSDKService;
   private sdk: BreezSdk | null = null;
   private eventListenerId: string | null = null;
-  private eventCallbacks: Set<(event: SdkEvent) => void> = new Set();
+  private eventCallbacks: Set<(event: BreezEvent) => void> = new Set();
 
   private constructor() {}
 
@@ -96,20 +103,23 @@ export class BreezSDKService {
         }
         return sdkInstance;
       } else {
-        console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!', {
-          currentFingerprint: currentWalletFingerprint,
-          newFingerprint,
-        });
+        if (DEBUG_BREEZ) {
+          console.warn('⚠️ [BREEZ:CONNECT] Different wallet detected!', {
+            currentFingerprint: currentWalletFingerprint,
+            newFingerprint,
+          });
+        }
 
         try {
           if (DEBUG_BREEZ) console.info('🔌 [BREEZ:CONNECT] Disconnecting existing wallet...');
           await this.disconnect();
         } catch (error) {
-          if (DEBUG_BREEZ)
+          if (DEBUG_BREEZ) {
             console.warn(
               '⚠️ [BREEZ:CONNECT] Failed to disconnect existing wallet, continuing',
               error
             );
+          }
         }
 
         // Continue to create new SDK instance for the new wallet
@@ -134,7 +144,7 @@ export class BreezSDKService {
         if (DEBUG_BREEZ) {
           console.debug('Loading Breez SDK module...');
         }
-        sdkModule = await import('@breeztech/breez-sdk-spark');
+        sdkModule = await import('@breeztech/breez-sdk-spark/web');
 
         // Initialize WASM if there's a default export (initialization function)
         if (sdkModule.default && typeof sdkModule.default === 'function') {
@@ -175,9 +185,11 @@ export class BreezSDKService {
       config.apiKey = apiKey;
       // Configure LNURL domain for Lightning addresses
       config.lnurlDomain = 'evento.cash';
+      config.supportLnurlVerify = true;
       // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
-      // Auto-claims if fee is ≤ 1 sat/vbyte
-      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 1 } as MaxFee;
+      // Auto-claims if fee is ≤ 10 sat/vbyte (~2,000 sats for a typical 200 vbyte swap tx)
+      // This covers most normal fee environments; only extreme spikes require manual claiming
+      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 10 } as MaxFee;
 
       // Storage directory - using browser's IndexedDB
       const storageDir = './.breez-data';
@@ -496,6 +508,40 @@ export class BreezSDKService {
   }
 
   /**
+   * Prepare a send-all payment (fees deducted from balance)
+   * Uses FeePolicy 'feesIncluded' so the full amount minus fees is sent to the recipient.
+   * Useful for draining the wallet or sending the entire balance to a Bitcoin address.
+   */
+  async prepareSendAll(
+    paymentRequest: string,
+    amountSats: number
+  ): Promise<PrepareSendPaymentResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ) console.debug('⚡ [BREEZ:PREPARE_SEND_ALL] Preparing send-all payment...');
+      const request: PrepareSendPaymentRequest = {
+        paymentRequest,
+        amount: BigInt(amountSats),
+        feePolicy: 'feesIncluded',
+      };
+
+      const response = await this.sdk.prepareSendPayment(request);
+      if (DEBUG_BREEZ) {
+        console.debug('✅ [BREEZ:PREPARE_SEND_ALL] Send-all payment prepared successfully', {
+          amount: Number(response.amount),
+          feePolicy: response.feePolicy,
+        });
+      }
+      return response;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_SEND_PAYMENT);
+      const userMessage = getBreezErrorMessage(error, 'prepare send-all payment');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
    * Send a Lightning payment
    */
   async sendPayment(paymentRequest: string, amountSats?: number): Promise<SendPaymentResponse> {
@@ -765,7 +811,7 @@ export class BreezSDKService {
   /**
    * Format and log Breez SDK events with readable context
    */
-  private logBreezEvent(event: SdkEvent): void {
+  private logBreezEvent(event: BreezEvent): void {
     const timestamp = new Date().toLocaleTimeString();
 
     switch (event.type) {
@@ -830,8 +876,20 @@ export class BreezSDKService {
             } deposit(s) (${totalAmount.toLocaleString()} sats total)`,
             { deposits }
           );
-          console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Reason: Fee exceeded maxDepositClaimFee');
+          console.debug(
+            '⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Reason: Fee exceeded maxDepositClaimFee (10 sat/vbyte)'
+          );
           console.debug('⚠️ [BREEZ:UNCLAIMED_DEPOSITS] Action required: User must manually claim');
+        }
+        break;
+      }
+
+      case 'lightningAddressChanged': {
+        if (DEBUG_BREEZ) {
+          console.debug(`⚡ [BREEZ:LIGHTNING_ADDRESS_CHANGED] ${timestamp}`, {
+            lightningAddress: event.lightningAddress?.lightningAddress ?? null,
+            username: event.lightningAddress?.username ?? null,
+          });
         }
         break;
       }
@@ -851,13 +909,15 @@ export class BreezSDKService {
     try {
       const eventListener: EventListener = {
         onEvent: async (event: SdkEvent) => {
+          const sdkEvent = event as BreezEvent;
+
           // Log all events with formatted output
-          this.logBreezEvent(event);
+          this.logBreezEvent(sdkEvent);
 
           // Notify all registered callbacks
           this.eventCallbacks.forEach((callback) => {
             try {
-              callback(event);
+              callback(sdkEvent);
             } catch (error) {
               console.error('Error in event callback', {
                 error: error instanceof Error ? error.message : String(error),
@@ -880,7 +940,7 @@ export class BreezSDKService {
   /**
    * Register a callback for SDK events
    */
-  onEvent(callback: (event: SdkEvent) => void): () => void {
+  onEvent(callback: (event: BreezEvent) => void): () => void {
     this.eventCallbacks.add(callback);
 
     // Return unsubscribe function
@@ -893,4 +953,4 @@ export class BreezSDKService {
 export const breezSDK = BreezSDKService.getInstance();
 
 // Re-export types for use in components
-export type { DepositInfo, Fee } from '@breeztech/breez-sdk-spark';
+export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark/web';

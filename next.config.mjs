@@ -1,4 +1,52 @@
 /** @type {import('next').NextConfig} */
+function getGhostHostname() {
+  const ghostUrl = process.env.NEXT_PUBLIC_GHOST_URL;
+
+  if (!ghostUrl) {
+    return null;
+  }
+
+  try {
+    return new URL(ghostUrl).hostname;
+  } catch {
+    return null;
+  }
+}
+
+const ghostHostname = getGhostHostname();
+
+const ghostRemotePatterns = [
+  ...(ghostHostname
+    ? [
+        {
+          protocol: 'https',
+          hostname: ghostHostname,
+          pathname: '/content/images/**',
+        },
+      ]
+    : []),
+  {
+    protocol: 'https',
+    hostname: 'blogapi.evento.so',
+    pathname: '/content/images/**',
+  },
+  {
+    protocol: 'https',
+    hostname: 'laughing-sunfish.pikapod.net',
+    pathname: '/content/images/**',
+  },
+  {
+    protocol: 'https',
+    hostname: '**.ghost.io',
+    pathname: '/content/images/**',
+  },
+  {
+    protocol: 'https',
+    hostname: 'static.ghost.org',
+    pathname: '/**',
+  },
+];
+
 const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
@@ -6,19 +54,53 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  experimental: {
+    optimizeCss: true,
+  },
   images: {
     unoptimized: false,
-    domains: [
-      'evento.so',
-      'api.evento.so',
-      'blogapi.evento.so',
-      'laughing-sunfish.pikapod.net',
-      'media.giphy.com',
-      'media0.giphy.com',
-      'media1.giphy.com',
-      'media2.giphy.com',
-      'media3.giphy.com',
-      'media4.giphy.com',
+    remotePatterns: [
+      ...ghostRemotePatterns,
+      {
+        protocol: 'https',
+        hostname: 'evento.so',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'api.evento.so',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media.giphy.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media0.giphy.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media1.giphy.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media2.giphy.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media3.giphy.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'media4.giphy.com',
+        pathname: '/**',
+      },
     ],
   },
   async redirects() {

@@ -1,7 +1,6 @@
 'use client';
 
 import NewChatSheet from '@/components/messages/new-chat-sheet';
-import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
@@ -18,7 +17,6 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
-  const [activeTab, setActiveTab] = useState('messages');
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
 
   const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
@@ -78,9 +76,6 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
             <Skeleton className='h-8 w-8 animate-spin rounded-full' />
           </div>
         </div>
-        <div className='md:hidden'>
-          <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
       </div>
     );
   }
@@ -106,9 +101,6 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
           </div>
           <p className='font-medium text-red-600'>Failed to connect to chat</p>
           <p className='mt-1 text-sm text-gray-500'>Please try refreshing the page</p>
-        </div>
-        <div className='md:hidden'>
-          <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
         </div>
       </div>
     );
@@ -147,10 +139,6 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
       </button>
 
       <NewChatSheet isOpen={isNewChatOpen} onClose={() => setIsNewChatOpen(false)} />
-
-      <div className='md:hidden'>
-        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
-      </div>
     </div>
   );
 }

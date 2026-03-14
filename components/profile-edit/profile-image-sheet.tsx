@@ -3,7 +3,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { useUploadProfileImage } from '@/lib/hooks/use-user-profile';
+import { useUpdateUserProfile, useUploadProfileImage } from '@/lib/hooks/use-user-profile';
 import { toast } from '@/lib/utils/toast';
 import { Camera, Upload, X } from 'lucide-react';
 import Image from 'next/image';
@@ -29,6 +29,7 @@ export default function ProfileImageSheet({
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const uploadMutation = useUploadProfileImage();
+  const updateProfileMutation = useUpdateUserProfile();
 
   const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -64,15 +65,27 @@ export default function ProfileImageSheet({
 
     setIsUploading(true);
     try {
+      // Step 1: Upload image to Supabase storage
       const result = await uploadMutation.mutateAsync(selectedFile);
       const imageUrl = result?.data?.image ?? result?.image;
-      if (imageUrl && onImageUpdate) {
+
+      if (!imageUrl) {
+        throw new Error('No image URL returned from upload');
+      }
+
+      // Step 2: Persist image URL to user profile in database
+      await updateProfileMutation.mutateAsync({ image: imageUrl });
+
+      // Step 3: Update local form state
+      if (onImageUpdate) {
         onImageUpdate(imageUrl);
       }
+
+      // Step 4: Success UX — only after BOTH upload and persistence succeed
       toast.success('Profile image updated');
       onClose();
     } catch (error) {
-      toast.error('Failed to upload image');
+      toast.error('Failed to update profile image');
     } finally {
       setIsUploading(false);
     }
@@ -158,9 +171,13 @@ export default function ProfileImageSheet({
                     <Button
                       onClick={handleSave}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'
-                      disabled={!selectedFile || isUploading}
+                      disabled={!selectedFile || isUploading || updateProfileMutation.isPending}
                     >
-                      {isUploading ? 'Uploading...' : 'Save'}
+                      {isUploading
+                        ? 'Uploading...'
+                        : updateProfileMutation.isPending
+                          ? 'Saving...'
+                          : 'Save'}
                     </Button>
                     <Button onClick={handleCancel} variant='outline' className='flex-1'>
                       Cancel

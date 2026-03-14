@@ -34,7 +34,7 @@ export default function WalletSettingsPage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute, router]);
+  }, [pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   const handleLockWallet = () => {
     lockWallet();
@@ -52,8 +52,14 @@ export default function WalletSettingsPage() {
     window.location.reload();
   };
 
+  useEffect(() => {
+    if (!walletState.isConnected) {
+      router.replace('/e/wallet');
+    }
+  }, [walletState.isConnected, router]);
+
   if (!walletState.isConnected) {
-    router.push('/e/wallet');
+    return null;
   }
 
   return (
@@ -65,6 +71,7 @@ export default function WalletSettingsPage() {
         <div className='space-y-3'>
           {/* Lock Wallet */}
           <button
+            type='button'
             onClick={handleLockWallet}
             className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
           >
@@ -80,6 +87,7 @@ export default function WalletSettingsPage() {
 
           {/* Backup Status */}
           <button
+            type='button'
             onClick={() => setShowBackupChoiceSheet(true)}
             className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
           >

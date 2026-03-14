@@ -208,7 +208,7 @@ export function AIDescriptionGeneratorSheet({
                         <div className='mb-6'>
                           <h2 className='mb-2 text-base font-medium'>Custom Prompt (Optional)</h2>
                           <p className='mb-2 text-sm text-gray-500'>
-                            Add specific details you'd like to include in your description
+                            Add specific details you&apos;d like to include in your description
                           </p>
                           <textarea
                             className={cn(

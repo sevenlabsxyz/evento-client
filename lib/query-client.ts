@@ -73,6 +73,15 @@ export const queryKeys = {
   eventsUserGoing: (userId: string) => [...queryKeys.events, 'user', userId, 'going'] as const,
   eventsUserPast: (userId: string) => [...queryKeys.events, 'user', userId, 'past'] as const,
 
+  campaigns: ['campaigns'] as const,
+  eventCampaign: (eventId: string) => [...queryKeys.campaigns, 'event', eventId] as const,
+  profileCampaign: (userId: string) => [...queryKeys.campaigns, 'profile', userId] as const,
+  myCampaign: () => [...queryKeys.campaigns, 'me'] as const,
+  campaignFeed: (campaignId: string) => [...queryKeys.campaigns, campaignId, 'feed'] as const,
+
+  pledges: ['pledges'] as const,
+  pledgeStatus: (pledgeId: string) => [...queryKeys.pledges, pledgeId, 'status'] as const,
+
   // RSVPs
   rsvps: ['rsvps'] as const,
   eventRsvps: (eventId: string) => [...queryKeys.rsvps, 'event', eventId] as const,
@@ -99,6 +108,7 @@ export const queryKeys = {
 
   // Event hosts
   eventHosts: (eventId: string) => [...queryKeys.events, eventId, 'hosts'] as const,
+  eventCohosts: (eventId: string) => [...queryKeys.events, eventId, 'cohosts'] as const,
 
   // Cohost invites
   cohostInvites: ['cohost-invites'] as const,
@@ -125,4 +135,10 @@ export const queryKeys = {
   eventEmailBlasts: (eventId: string) => [...queryKeys.emailBlasts, eventId] as const,
   emailBlast: (eventId: string, blastId: string) =>
     [...queryKeys.emailBlasts, eventId, blastId] as const,
+
+  // Blog (Ghost CMS)
+  blog: ['blog'] as const,
+  blogPosts: (options?: { limit?: number; page?: number; filter?: string }) =>
+    [...queryKeys.blog, 'posts', options] as const,
+  blogPost: (slug: string) => [...queryKeys.blog, 'post', slug] as const,
 } as const;

@@ -18,9 +18,11 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
   // Get the event ID from params
   const eventId = params.id;
+  const eventPath = `/e/${eventId}`;
 
   // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
+  const eventOgImage = `${eventPath}/opengraph-image`;
 
   try {
     const { data, error } = await supabase
@@ -40,9 +42,16 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
     const title =
       event?.title === 'Untitled Event' ? 'RSVP on Evento Now' : `${event?.title} - Evento`;
-    const descText = event?.description
-      ? (event.description.replace(/<[^>]*>/g, '') || '').slice(0, 250) +
-        (event.description.length > 250 ? '...' : '')
+    const cleanDescription = event?.description
+      ? event.description
+          .replace(/<br\s*\/?>/gi, ' ')
+          .replace(/<\/p>/gi, ' ')
+          .replace(/<[^>]*>/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim()
+      : '';
+    const descText = cleanDescription
+      ? cleanDescription.slice(0, 250) + (cleanDescription.length > 250 ? '...' : '')
       : 'Events made social - evento.so';
 
     return {
@@ -51,16 +60,24 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
       keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
       alternates: {
-        canonical: `https://evento.so/p/${event?.id}`,
+        canonical: eventPath,
       },
       description: descText,
       openGraph: {
-        url: `https://evento.so/p/${event?.id}`,
+        url: eventPath,
         locale: 'en_US',
         type: 'website',
         siteName: 'Evento',
         title: title,
         description: descText,
+        images: [
+          {
+            url: eventOgImage,
+            width: 1200,
+            height: 630,
+            alt: title,
+          },
+        ],
       },
       robots: {
         index: true,
@@ -72,6 +89,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         title: title,
         description: descText,
         creator: '@evento_so',
+        images: [eventOgImage],
       },
     };
   } catch (error) {
@@ -86,10 +104,10 @@ function getDefaultMetadata(previousImages: any[]) {
   return {
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
-    alternates: { canonical: `https://evento.so/` },
+    alternates: { canonical: '/' },
     description: 'Events made social -- evento.so',
     openGraph: {
-      url: `https://evento.so/`,
+      url: '/',
       images: [...previousImages],
     },
   };

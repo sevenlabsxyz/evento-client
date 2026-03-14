@@ -1,6 +1,7 @@
 'use client';
 
 import { BadgeDetailSheet } from '@/components/badges/badge-detail-sheet';
+import { BadgeItem } from '@/components/badges/badge-item';
 import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
 import { UserBadgesDisplay } from '@/components/badges/user-badges-display';
 import { CircledIconButton } from '@/components/circled-icon-button';
@@ -9,24 +10,30 @@ import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
-import { Navbar } from '@/components/navbar';
 import SocialLinks from '@/components/profile/social-links';
 import { UserInterests } from '@/components/profile/user-interests';
 import { UserPrompts } from '@/components/profile/user-prompts';
 import RowCard from '@/components/row-card';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
-import SegmentedTabs from '@/components/ui/segmented-tabs';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
-import { ZapSheet } from '@/components/zap';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useUserBadges } from '@/lib/hooks/use-badges';
-import { EventSortBy, EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
+import { EventTimeframe, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserInterests } from '@/lib/hooks/use-user-interests';
 import {
   useUserEventCount,
-  useUserFollowers,
-  useUserFollowing,
+  useUserFollowersCount,
+  useUserFollowingCount,
   useUserProfile,
 } from '@/lib/hooks/use-user-profile';
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
@@ -38,31 +45,33 @@ import { formatDateHeader } from '@/lib/utils/date';
 import { motion } from 'framer-motion';
 import {
   ArrowUpRight,
+  Award,
   BadgeCheck,
+  Calendar,
   Edit3,
   Loader2,
   MessageCircle,
   Search,
   Settings,
+  User,
 } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { setTopBar } = useTopBar();
+  const pathname = usePathname();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
-  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
   const [showFollowingSheet, setShowFollowingSheet] = useState(false);
   const [showFollowersSheet, setShowFollowersSheet] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [selectedAvatarIndex, setSelectedAvatarIndex] = useState<number | null>(null);
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [showEventSearchSheet, setShowEventSearchSheet] = useState(false);
-  const [showZapModal, setShowZapModal] = useState(false);
   const [showBadgesManagementSheet, setShowBadgesManagementSheet] = useState(false);
   const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
@@ -76,8 +85,8 @@ export default function ProfilePage() {
   // Get user badges
   const { data: userBadges = [] } = useUserBadges();
   const { data: eventCount } = useUserEventCount(user?.id || '');
-  const { data: followers } = useUserFollowers(user?.id || '');
-  const { data: following } = useUserFollowing(user?.id || '');
+  const { data: followersCount } = useUserFollowersCount(user?.id || '');
+  const { data: followingCount } = useUserFollowingCount(user?.id || '');
 
   // Fetch user events with the hook (always show all events - 'upcoming' filter)
   const {
@@ -89,7 +98,7 @@ export default function ProfilePage() {
   } = useUserEvents({
     filter: 'upcoming',
     timeframe: timeframe,
-    sortBy: sortBy,
+    sortBy: 'date-desc',
     limit: 10,
     enabled: activeTab === 'events',
   });
@@ -97,8 +106,8 @@ export default function ProfilePage() {
   // Handle URL parameters for tab state
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'events') {
-      setActiveTab('events');
+    if (tab === 'events' || tab === 'badges') {
+      setActiveTab(tab);
     } else {
       setActiveTab('about');
     }
@@ -106,8 +115,10 @@ export default function ProfilePage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
       title: 'Profile',
+      hideMobileBreadcrumb: true,
       leftMode: 'menu',
       buttons: [
         {
@@ -126,19 +137,16 @@ export default function ProfilePage() {
     });
 
     return () => {
-      setTopBar({
-        title: '',
-        buttons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [router, setTopBar]);
+  }, [router, setTopBarForRoute, applyRouteConfig, clearRoute, pathname]);
 
   const userStats = {
     events: eventCount || 0,
     countries: 8, // This would come from a different API endpoint
     mutuals: 156, // This would come from a different API endpoint
-    following: following?.length || 0,
-    followers: followers?.length || 0,
+    following: followingCount || 0,
+    followers: followersCount || 0,
   };
 
   const userData = {
@@ -146,6 +154,7 @@ export default function ProfilePage() {
     username: user?.username ? `@${user.username}` : '@user',
     status: user?.bio || 'Welcome to Evento',
     image: user?.image,
+    verification_status: user?.verification_status,
     isVerified: user?.verification_status === 'verified',
   };
 
@@ -213,22 +222,17 @@ export default function ProfilePage() {
           (
             a: { date: string; events: EventWithUser[] },
             b: { date: string; events: EventWithUser[] }
-          ) => {
-            if (sortBy === 'date-desc') {
-              return new Date(b.date).getTime() - new Date(a.date).getTime();
-            } else {
-              return new Date(a.date).getTime() - new Date(b.date).getTime();
-            }
-          }
+          ) => new Date(b.date).getTime() - new Date(a.date).getTime()
         ) || [];
 
     return (
       <div className='space-y-4'>
         {/* Filter Controls */}
-        <div className='flex items-center justify-between gap-2'>
+        <div className='flex justify-center'>
           {/* Timeframe Toggle */}
           <div className='flex items-center rounded-full bg-gray-50 p-1'>
             <button
+              type='button'
               onClick={() => setTimeframe('future')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
@@ -240,6 +244,7 @@ export default function ProfilePage() {
               Upcoming
             </button>
             <button
+              type='button'
               onClick={() => setTimeframe('past')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
@@ -251,37 +256,11 @@ export default function ProfilePage() {
               Past
             </button>
           </div>
+        </div>
 
-          <div className='flex items-center gap-2'>
-            {/* Sort Toggle */}
-            <div className='flex items-center rounded-full bg-gray-50 p-1'>
-              <button
-                onClick={() => setSortBy('date-desc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-desc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Latest
-              </button>
-              <button
-                onClick={() => setSortBy('date-asc')}
-                className={cn(
-                  'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
-                  sortBy === 'date-asc'
-                    ? 'bg-white text-black shadow-sm'
-                    : 'text-gray-500 hover:text-gray-700'
-                )}
-              >
-                Oldest
-              </button>
-            </div>
-
-            {/* Search Button */}
-            <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
-          </div>
+        <div className='flex justify-end'>
+          {/* Search Button */}
+          <CircledIconButton icon={Search} onClick={() => setShowEventSearchSheet(true)} />
         </div>
 
         {/* Events List */}
@@ -362,16 +341,6 @@ export default function ProfilePage() {
           />
         )}
 
-        {/* User Badges */}
-        {userBadges.length > 0 && (
-          <UserBadgesDisplay
-            badges={userBadges}
-            isOwnProfile={true}
-            onManageClick={() => setShowBadgesManagementSheet(true)}
-            onBadgeClick={(badge) => setSelectedBadge(badge)}
-          />
-        )}
-
         {/* Bio/Description */}
         {!user?.bio ? null : (
           <div>
@@ -384,6 +353,60 @@ export default function ProfilePage() {
 
         {/* User Prompts */}
         {!isLoadingPrompts && <UserPrompts prompts={userPrompts} isOwnProfile={true} />}
+      </div>
+    );
+  };
+
+  const renderBadgesTab = () => {
+    const sortedBadges = [...userBadges].sort(
+      (a, b) => new Date(b.earned_at).getTime() - new Date(a.earned_at).getTime()
+    );
+    const displayedBadges = userBadges.filter((badge) => badge.display_order !== null);
+
+    return (
+      <div className='space-y-4'>
+        {displayedBadges.length ? (
+          <UserBadgesDisplay
+            badges={userBadges}
+            isOwnProfile={true}
+            onManageClick={() => setShowBadgesManagementSheet(true)}
+            onBadgeClick={(badge) => setSelectedBadge(badge)}
+          />
+        ) : (
+          <Button
+            variant='secondary'
+            className='w-full rounded-full'
+            onClick={() => setShowBadgesManagementSheet(true)}
+          >
+            Pick favorite badges
+          </Button>
+        )}
+        {sortedBadges.length ? (
+          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='grid grid-cols-3 gap-4 sm:grid-cols-4'>
+              {sortedBadges.map((userBadge) => (
+                <BadgeItem
+                  key={userBadge.id}
+                  badge={userBadge.badge}
+                  size='lg'
+                  onClick={() => setSelectedBadge(userBadge)}
+                  className='w-full'
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <Empty className='py-8'>
+            <EmptyHeader>
+              <EmptyMedia variant='icon'>
+                <BadgeCheck className='size-5' />
+              </EmptyMedia>
+              <EmptyTitle>No badges yet</EmptyTitle>
+              <EmptyDescription>You have not been awarded any badges yet.</EmptyDescription>
+            </EmptyHeader>
+            <EmptyContent />
+          </Empty>
+        )}
       </div>
     );
   };
@@ -455,17 +478,6 @@ export default function ProfilePage() {
                   </motion.button>
                 </div>
               </div>
-              {/* Zap Button */}
-              {user?.ln_address && (
-                <div>
-                  <ZapSheet
-                    recipientLightningAddress={user.ln_address}
-                    recipientName={user.name || 'You'}
-                    recipientUsername={user.username}
-                    recipientAvatar={user.image}
-                  />
-                </div>
-              )}
               {/* Edit Profile Button - desktop only */}
               <div className='mt-2 hidden lg:block'>
                 <Button
@@ -485,24 +497,33 @@ export default function ProfilePage() {
             {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
               {/* Tab Headers */}
-              <SegmentedTabs
-                items={[
-                  { value: 'about', label: 'About' },
-                  { value: 'events', label: 'Events' },
+              <AnimatedTabs
+                expanded
+                className='mx-auto'
+                tabs={[
+                  {
+                    title: 'About',
+                    icon: User,
+                    onClick: () => router.push('/e/profile', { scroll: false }),
+                  },
+                  {
+                    title: 'Events',
+                    icon: Calendar,
+                    onClick: () => router.push('/e/profile?tab=events', { scroll: false }),
+                  },
+                  {
+                    title: 'Badges',
+                    icon: Award,
+                    onClick: () => router.push('/e/profile?tab=badges', { scroll: false }),
+                  },
                 ]}
-                value={activeTab}
-                onValueChange={(v) => {
-                  if (v === 'about') {
-                    router.push('/e/profile', { scroll: false });
-                  } else {
-                    router.push(`/e/profile?tab=${v}`, { scroll: false });
-                  }
-                }}
+                selected={['about', 'events', 'badges'].indexOf(activeTab)}
               />
               {/* Tab Content */}
-              <div>
+              <div className='mt-4'>
                 {activeTab === 'about' && renderAboutTab()}
                 {activeTab === 'events' && renderEventsTab()}
+                {activeTab === 'badges' && renderBadgesTab()}
               </div>
             </div>
           </div>
@@ -568,9 +589,6 @@ export default function ProfilePage() {
         userId={user?.id || ''}
         eventId=''
       />
-
-      {/* Bottom Navbar */}
-      <Navbar />
 
       {/* Followers Sheet */}
       <FollowersSheet

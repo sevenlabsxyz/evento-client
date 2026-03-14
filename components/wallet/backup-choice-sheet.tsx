@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Textarea } from '@/components/ui/textarea';
@@ -19,6 +20,7 @@ import {
   Eye,
   EyeOff,
   Key,
+  KeyRound,
   Shield,
 } from 'lucide-react';
 import { useState } from 'react';
@@ -52,6 +54,12 @@ export function BackupChoiceSheet({
   const [seedCopied, setSeedCopied] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
 
+  // Admin password mode state
+  const [isPasswordMode, setIsPasswordMode] = useState(false);
+  const [password, setPassword] = useState('');
+  const [isSeedPasswordMode, setIsSeedPasswordMode] = useState(false);
+  const [seedPassword, setSeedPassword] = useState('');
+
   const resetState = () => {
     setStep('choice');
     setPin('');
@@ -64,6 +72,11 @@ export function BackupChoiceSheet({
     setShowSeed(false);
     setSeedConfirmed(false);
     setSeedCopied(false);
+    // Reset password mode state
+    setIsPasswordMode(false);
+    setPassword('');
+    setIsSeedPasswordMode(false);
+    setSeedPassword('');
   };
 
   const handleOpenChange = (newOpen: boolean) => {
@@ -73,18 +86,36 @@ export function BackupChoiceSheet({
     onOpenChange(newOpen);
   };
 
+  // Long-press delete handlers for admin password mode
+  const handleLongPressDelete = () => {
+    setIsPasswordMode(true);
+    setPin('');
+  };
+
+  const handleSeedLongPressDelete = () => {
+    setIsSeedPasswordMode(true);
+    setSeedPin('');
+  };
+
   const handleGetBackup = async () => {
-    if (!pin || pin.length < 4) {
-      toast.error('Please enter your PIN');
+    const credential = isPasswordMode ? password : pin;
+
+    if (!credential || credential.length < 4) {
+      toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
       return;
     }
 
     try {
-      const backup = await getEncryptedBackup(pin);
+      const backup = await getEncryptedBackup(credential);
       setEncryptedSeed(backup);
       setStep('backup');
     } catch (error: any) {
-      toast.error(error.message || 'Invalid PIN');
+      toast.error(error.message || (isPasswordMode ? 'Invalid password' : 'Invalid PIN'));
+      if (isPasswordMode) {
+        setPassword('');
+      } else {
+        setPin('');
+      }
     }
   };
 
@@ -144,8 +175,10 @@ export function BackupChoiceSheet({
 
   // Seed phrase handlers
   const handleSeedPinVerify = async () => {
-    if (!seedPin || seedPin.length < 4) {
-      toast.error('Please enter your PIN');
+    const credential = isSeedPasswordMode ? seedPassword : seedPin;
+
+    if (!credential || credential.length < 4) {
+      toast.error(isSeedPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
       return;
     }
 
@@ -157,11 +190,16 @@ export function BackupChoiceSheet({
         return;
       }
 
-      const decrypted = await WalletStorageService.decryptSeed(encryptedSeedData, seedPin);
+      const decrypted = await WalletStorageService.decryptSeed(encryptedSeedData, credential);
       setMnemonic(decrypted);
       setStep('seed-view');
     } catch (error: any) {
-      toast.error('Invalid PIN');
+      toast.error(isSeedPasswordMode ? 'Invalid password' : 'Invalid PIN');
+      if (isSeedPasswordMode) {
+        setSeedPassword('');
+      } else {
+        setSeedPin('');
+      }
       setSeedPin('');
     } finally {
       setIsVerifying(false);
@@ -296,36 +334,62 @@ export function BackupChoiceSheet({
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-              <Shield className='h-8 w-8 text-orange-600' />
+              {isPasswordMode ? (
+                <KeyRound className='h-8 w-8 text-orange-600' />
+              ) : (
+                <Shield className='h-8 w-8 text-orange-600' />
+              )}
             </div>
             <p className='text-sm text-muted-foreground'>
-              Enter your PIN to export encrypted backup
+              {isPasswordMode
+                ? 'Enter your admin password to export encrypted backup'
+                : 'Enter your PIN to export encrypted backup'}
             </p>
+            {isPasswordMode && (
+              <p className='mt-1 text-xs text-muted-foreground'>Admin mode enabled</p>
+            )}
           </div>
 
-          {/* PIN Display - show dots for entered digits */}
-          <div className='flex justify-center gap-3'>
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <div
-                key={index}
-                className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
-              >
-                {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+          {isPasswordMode ? (
+            /* Password Input Mode */
+            <div className='px-4'>
+              <Input
+                type='password'
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder='Enter admin password'
+                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg'
+                autoFocus
+                disabled={isLoading}
+              />
+            </div>
+          ) : (
+            /* PIN Display Mode */
+            <>
+              <div className='flex justify-center gap-3'>
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <div
+                    key={index}
+                    className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                  >
+                    {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Numeric Keypad */}
-          <NumericKeypad
-            onNumberClick={(num) => {
-              if (pin.length < 6) {
-                setPin(pin + num);
-              }
-            }}
-            onDelete={() => setPin(pin.slice(0, -1))}
-            showDecimal={false}
-            disabled={isLoading}
-          />
+              <NumericKeypad
+                onNumberClick={(num) => {
+                  if (pin.length < 6) {
+                    setPin(pin + num);
+                  }
+                }}
+                onDelete={() => setPin(pin.slice(0, -1))}
+                onLongPressDelete={handleLongPressDelete}
+                showDecimal={false}
+                disabled={isLoading}
+              />
+            </>
+          )}
 
           {/* Buttons */}
           <div className='flex flex-col gap-3'>
@@ -333,7 +397,7 @@ export function BackupChoiceSheet({
               onClick={handleGetBackup}
               className='w-full rounded-full'
               size='lg'
-              disabled={pin.length < 4 || isLoading}
+              disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isLoading}
             >
               {isLoading ? 'Verifying...' : 'Continue'}
               {!isLoading && <ArrowRight className='ml-2 h-4 w-4' />}
@@ -438,7 +502,7 @@ export function BackupChoiceSheet({
                 className='w-full rounded-full'
                 size='lg'
               >
-                I've Saved My Backup
+                I&apos;ve Saved My Backup
               </Button>
             </div>
           </div>
@@ -450,36 +514,62 @@ export function BackupChoiceSheet({
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-              <Key className='h-8 w-8 text-orange-600' />
+              {isSeedPasswordMode ? (
+                <KeyRound className='h-8 w-8 text-orange-600' />
+              ) : (
+                <Key className='h-8 w-8 text-orange-600' />
+              )}
             </div>
             <p className='text-sm text-muted-foreground'>
-              Enter your PIN to view your recovery phrase
+              {isSeedPasswordMode
+                ? 'Enter your admin password to view your recovery phrase'
+                : 'Enter your PIN to view your recovery phrase'}
             </p>
+            {isSeedPasswordMode && (
+              <p className='mt-1 text-xs text-muted-foreground'>Admin mode enabled</p>
+            )}
           </div>
 
-          {/* PIN Display */}
-          <div className='flex justify-center gap-3'>
-            {[0, 1, 2, 3, 4, 5].map((index) => (
-              <div
-                key={index}
-                className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
-              >
-                {seedPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+          {isSeedPasswordMode ? (
+            /* Password Input Mode */
+            <div className='px-4'>
+              <Input
+                type='password'
+                value={seedPassword}
+                onChange={(e) => setSeedPassword(e.target.value)}
+                placeholder='Enter admin password'
+                className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg'
+                autoFocus
+                disabled={isVerifying}
+              />
+            </div>
+          ) : (
+            /* PIN Display Mode */
+            <>
+              <div className='flex justify-center gap-3'>
+                {[0, 1, 2, 3, 4, 5].map((index) => (
+                  <div
+                    key={index}
+                    className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50'
+                  >
+                    {seedPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {/* Numeric Keypad */}
-          <NumericKeypad
-            onNumberClick={(num) => {
-              if (seedPin.length < 6) {
-                setSeedPin(seedPin + num);
-              }
-            }}
-            onDelete={() => setSeedPin(seedPin.slice(0, -1))}
-            showDecimal={false}
-            disabled={isVerifying}
-          />
+              <NumericKeypad
+                onNumberClick={(num) => {
+                  if (seedPin.length < 6) {
+                    setSeedPin(seedPin + num);
+                  }
+                }}
+                onDelete={() => setSeedPin(seedPin.slice(0, -1))}
+                onLongPressDelete={handleSeedLongPressDelete}
+                showDecimal={false}
+                disabled={isVerifying}
+              />
+            </>
+          )}
 
           {/* Buttons */}
           <div className='flex flex-col gap-3'>
@@ -487,7 +577,9 @@ export function BackupChoiceSheet({
               onClick={handleSeedPinVerify}
               className='w-full rounded-full'
               size='lg'
-              disabled={seedPin.length < 4 || isVerifying}
+              disabled={
+                (isSeedPasswordMode ? seedPassword.length < 4 : seedPin.length < 4) || isVerifying
+              }
             >
               {isVerifying ? 'Verifying...' : 'Continue'}
               {!isVerifying && <ArrowRight className='ml-2 h-4 w-4' />}
@@ -495,6 +587,8 @@ export function BackupChoiceSheet({
             <Button
               onClick={() => {
                 setSeedPin('');
+                setSeedPassword('');
+                setIsSeedPasswordMode(false);
                 setStep('choice');
               }}
               variant='outline'
@@ -595,7 +689,7 @@ export function BackupChoiceSheet({
                 onCheckedChange={(checked: boolean) => setSeedConfirmed(checked)}
               />
               <Label htmlFor='confirm-seed' className='text-sm font-normal'>
-                I've saved my recovery phrase in a safe place
+                I&apos;ve saved my recovery phrase in a safe place
               </Label>
             </div>
           </div>

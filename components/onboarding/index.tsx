@@ -6,7 +6,6 @@ import { useReplaceInterests } from '@/lib/hooks/use-user-interests';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useAnswerPrompt } from '@/lib/hooks/use-user-prompts';
 import { validateRedirectUrl } from '@/lib/utils/auth';
-import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { sanitizeUploadFileName } from '@/lib/utils/file';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
@@ -126,11 +125,11 @@ export const UserOnboardingFlow = ({
 
       const res = await response.json();
 
-      if (!res.image) {
+      if (!res.data?.image) {
         throw new Error('No image path returned from server');
       }
 
-      setUploadedImg(`${getCoverImageUrl500x500(res.image)}`);
+      setUploadedImg(res.data.image);
       toast.success('Image uploaded successfully');
     } catch (error) {
       logger.error('Image upload error', {

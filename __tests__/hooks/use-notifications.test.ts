@@ -668,8 +668,7 @@ describe('useNotifications', () => {
 
       const params: MarkAllNotificationsParams = {
         before: 'cursor_1',
-        workflow_keys: ['event_reminder'],
-        tenant: 'tenant_1',
+        categories: ['event_reminder'],
       };
 
       await act(async () => {

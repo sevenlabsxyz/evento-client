@@ -27,7 +27,7 @@ export function BackupReminder({ onBackup, onDismiss }: BackupReminderProps) {
             </button>
           </div>
           <p className='mt-1 text-sm text-amber-800'>
-            Protect your funds by backing up your seed phrase. Without it, you won't be able to
+            Protect your funds by backing up your seed phrase. Without it, you won&apos;t be able to
             recover your wallet if you lose access to this device.
           </p>
           <div className='mt-3 flex gap-2'>

@@ -2,10 +2,13 @@
 
 import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { BadgeCheck } from 'lucide-react';
+import { Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 type UserAvatarSize = 'xs' | 'sm' | 'base' | 'md' | 'lg';
+
+const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
 
 interface UserAvatarProps {
   user?: {
@@ -31,12 +34,19 @@ export function UserAvatar({
   height,
   width,
 }: UserAvatarProps) {
+  const [avatarSrc, setAvatarSrc] = useState(user?.image || DEFAULT_AVATAR_IMAGE);
+
+  useEffect(() => {
+    setAvatarSrc(user?.image || DEFAULT_AVATAR_IMAGE);
+  }, [user?.image]);
+
   // Size variants configuration
   const sizeVariants = {
     xs: {
       avatar: 'h-5 w-5',
       border: 'border-1',
       badge: 'h-2 w-2',
+      badgeIcon: 'h-1 w-1',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-xs',
     },
@@ -44,6 +54,7 @@ export function UserAvatar({
       avatar: 'h-8 w-8',
       border: 'border-2',
       badge: 'h-4 w-4',
+      badgeIcon: 'h-2.5 w-2.5',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-sm',
     },
@@ -51,6 +62,7 @@ export function UserAvatar({
       avatar: 'h-10 w-10',
       border: 'border-2',
       badge: 'h-5 w-5',
+      badgeIcon: 'h-3 w-3',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-base',
     },
@@ -58,6 +70,7 @@ export function UserAvatar({
       avatar: 'h-16 w-16',
       border: 'border-2',
       badge: 'h-6 w-6',
+      badgeIcon: 'h-3.5 w-3.5',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-lg',
     },
@@ -65,6 +78,7 @@ export function UserAvatar({
       avatar: 'h-36 w-36',
       border: 'border-4',
       badge: 'h-8 w-8',
+      badgeIcon: 'h-5 w-5',
       badgePosition: 'bottom-0 right-0',
       textSize: 'text-3xl',
     },
@@ -79,21 +93,35 @@ export function UserAvatar({
   };
 
   return (
-    <button onClick={onAvatarClick} className={cn('relative', className)}>
-      <Avatar
-        className={cn(
-          // Only use size config if no explicit dimensions are provided
-          !height && !width ? sizeConfig.avatar : '',
-          sizeConfig.border,
-          'border-gray-200 bg-white'
-        )}
-        style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
-      >
-        <AvatarImage src={user?.image || '/assets/img/evento-sublogo.svg'} alt='Profile' />
-        <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
-          {user?.name?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
-        </AvatarFallback>
-      </Avatar>
+    <div className={cn('relative', className)}>
+      <button type='button' onClick={onAvatarClick}>
+        <Avatar
+          className={cn(
+            // Only use size config if no explicit dimensions are provided
+            !height && !width ? sizeConfig.avatar : '',
+            sizeConfig.border,
+            'border-gray-200 bg-white'
+          )}
+          style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
+        >
+          <AvatarImage
+            src={avatarSrc}
+            alt='Profile'
+            onError={() => {
+              if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
+                setAvatarSrc(DEFAULT_AVATAR_IMAGE);
+              }
+            }}
+          />
+          <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
+            <img
+              src={DEFAULT_AVATAR_IMAGE}
+              alt='Default profile'
+              className='h-full w-full object-cover'
+            />
+          </AvatarFallback>
+        </Avatar>
+      </button>
       {/* Verification Badge */}
       {user?.verification_status === 'verified' && (
         <span
@@ -101,13 +129,16 @@ export function UserAvatar({
           tabIndex={0}
           aria-label='Verification badge'
           onClick={handleVerificationClick}
-          className={cn('absolute transition-transform hover:scale-105', sizeConfig.badgePosition)}
+          className={cn(
+            'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
+            sizeConfig.badge,
+            sizeConfig.badgePosition,
+            'transition-transform hover:scale-105'
+          )}
         >
-          <BadgeCheck
-            className={cn(sizeConfig.badge, 'rounded-full bg-red-600 text-white shadow-sm')}
-          />
+          <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
         </span>
       )}
-    </button>
+    </div>
   );
 }

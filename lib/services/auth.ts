@@ -3,6 +3,8 @@ import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
+const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
+
 export const authService = {
   /**
    * Send OTP code to email via Supabase SDK
@@ -40,7 +42,7 @@ export const authService = {
       throw new Error('No user data returned from verification');
     }
 
-    logger.info('Auth: OTP verification successful for user', { userId: data.user.id });
+    logger.debug('Auth: OTP verification successful for user', { userId: data.user.id });
     logger.debug('Auth: User metadata', { metadata: data.user.user_metadata });
 
     // Return minimal user details - actual data will come from backend
@@ -50,7 +52,7 @@ export const authService = {
       username: data.user.user_metadata?.username || '',
       name: data.user.user_metadata?.full_name || '',
       bio: '',
-      image: data.user.user_metadata?.avatar_url || '',
+      image: data.user.user_metadata?.avatar_url || DEFAULT_AVATAR_IMAGE,
       bio_link: '',
       x_handle: '',
       instagram_handle: '',
@@ -76,11 +78,11 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        logger.info('Auth: No session found, returning null');
+        logger.debug('Auth: No session found, returning null');
         return null; // No session means not authenticated
       }
 
-      logger.info('Auth: Fetching current user from backend');
+      logger.debug('Auth: Fetching current user from backend');
       const response = await apiClient.get<ApiResponse<UserDetails[]>>('/v1/user');
 
       // Handle both response formats (array or object with data property)
@@ -99,12 +101,12 @@ export const authService = {
 
       // Handle empty array case explicitly
       if (!userData || !Array.isArray(userData) || userData.length === 0) {
-        logger.info('Auth: No user data found (empty array), returning null');
+        logger.debug('Auth: No user data found (empty array), returning null');
         return null;
       }
 
       const firstUser = userData[0];
-      logger.info('Auth: Returning user', { userId: firstUser?.id });
+      logger.debug('Auth: Returning user', { userId: firstUser?.id });
       return firstUser;
     } catch (error) {
       logger.error('Auth: Failed to get current user', {

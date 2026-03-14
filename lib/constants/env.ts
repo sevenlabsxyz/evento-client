@@ -10,6 +10,7 @@ export const Env = {
   // API URLs
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'https://evento.so/api',
   API_PROXY_TARGET: process.env.API_PROXY_TARGET || 'http://localhost:3002/api',
+  API_PROXY_LOG_BODIES: process.env.API_PROXY_LOG_BODIES || 'false',
 
   // Supabase
   NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL || '',

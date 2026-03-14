@@ -79,7 +79,7 @@ export function useUpdateUserProfile() {
     mutationFn: async (updates: Partial<UserDetails>) => {
       // Only send the fields that are being updated
       const filteredUpdates = Object.fromEntries(
-        Object.entries(updates).filter(([_, value]) => value !== undefined || value !== null)
+        Object.entries(updates).filter(([_, value]) => value !== undefined && value !== null)
       );
 
       const response = await apiClient.patch<ApiResponse<UserDetails[]>>(
@@ -92,6 +92,8 @@ export function useUpdateUserProfile() {
       if (updatedUser) {
         // Update the query cache
         queryClient.setQueryData(USER_PROFILE_QUERY_KEY, updatedUser);
+        queryClient.setQueryData(['auth', 'user'], updatedUser);
+        queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
         // Update the auth store
         setUser(updatedUser);
       }
@@ -138,7 +140,7 @@ export function useUploadProfileImage() {
       return result;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+      // Cache invalidation is handled by the calling component after persisting the image URL
     },
     onError: (error) => {
       logger.error('Profile image upload failed', {
@@ -245,22 +247,41 @@ export function useFollowAction() {
 /**
  * Hook to get user's followers
  */
-export function useUserFollowers(userId: string) {
+export function useUserFollowers(
+  userId: string,
+  options?: { limit?: number; offset?: number; search?: string }
+) {
+  const limit = options?.limit ?? 50;
+  const offset = options?.offset ?? 0;
+  const search = options?.search?.trim() ?? '';
+
   return useQuery({
-    queryKey: ['user', 'followers', userId],
+    queryKey: ['user', 'followers', userId, limit, offset, search],
     queryFn: async () => {
+      const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
       const response = await apiClient.get<ApiResponse<any[]> | any[]>(
-        `/v1/user/followers/list?id=${userId}`
+        `/v1/user/followers/list?id=${userId}&limit=${limit}&offset=${offset}${searchParam}`
       );
       const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = responseData.map((item: any) => ({
-        id: item.user_details?.id || item.follower_id,
-        username: item.user_details?.username || '',
-        name: item.user_details?.name || '',
-        image: item.user_details?.image || '',
-        verification_status: item.user_details?.verification_status || '',
-      }));
+      const transformedData = responseData
+        .map((item: any) => ({
+          ...item,
+          user_details: Array.isArray(item.user_details) ? item.user_details[0] : item.user_details,
+        }))
+        .filter((item: any) => {
+          const username = item.user_details?.username;
+          return (
+            item.user_details?.id && typeof username === 'string' && username.trim().length > 0
+          );
+        })
+        .map((item: any) => ({
+          id: item.user_details.id,
+          username: item.user_details.username || '',
+          name: item.user_details.name || '',
+          image: item.user_details.image || '',
+          verification_status: item.user_details.verification_status || '',
+        }));
       return transformedData as UserDetails[];
     },
     enabled: !!userId,
@@ -271,26 +292,79 @@ export function useUserFollowers(userId: string) {
 /**
  * Hook to get user's following
  */
-export function useUserFollowing(userId: string) {
+export function useUserFollowing(
+  userId: string,
+  options?: { limit?: number; offset?: number; search?: string }
+) {
+  const limit = options?.limit ?? 50;
+  const offset = options?.offset ?? 0;
+  const search = options?.search?.trim() ?? '';
+
   return useQuery({
-    queryKey: ['user', 'following', userId],
+    queryKey: ['user', 'following', userId, limit, offset, search],
     queryFn: async () => {
+      const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
       const response = await apiClient.get<ApiResponse<any[]> | any[]>(
-        `/v1/user/follows/list?id=${userId}`
+        `/v1/user/follows/list?id=${userId}&limit=${limit}&offset=${offset}${searchParam}`
       );
       const responseData = isApiResponse<any[]>(response) ? response.data || [] : response;
       // Transform the API response to match UI expectations
-      const transformedData = responseData.map((item: any) => ({
-        id: item.user_details?.id || item.followed_id,
-        username: item.user_details?.username || '',
-        name: item.user_details?.name || '',
-        image: item.user_details?.image || '',
-        verification_status: item.user_details?.verification_status || '',
-      }));
+      const transformedData = responseData
+        .map((item: any) => ({
+          ...item,
+          user_details: Array.isArray(item.user_details) ? item.user_details[0] : item.user_details,
+        }))
+        .filter((item: any) => {
+          const username = item.user_details?.username;
+          return (
+            item.user_details?.id && typeof username === 'string' && username.trim().length > 0
+          );
+        })
+        .map((item: any) => ({
+          id: item.user_details.id,
+          username: item.user_details.username || '',
+          name: item.user_details.name || '',
+          image: item.user_details.image || '',
+          verification_status: item.user_details.verification_status || '',
+        }));
       return transformedData as UserDetails[];
     },
     enabled: !!userId,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+export function useUserFollowersCount(userId: string) {
+  return useQuery({
+    queryKey: ['user', 'followers', 'count', userId],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<{ count: number }> | { count: number }>(
+        `/v1/user/followers/count?id=${userId}`
+      );
+      if (isApiResponse<{ count: number }>(response)) {
+        return response.data?.count || 0;
+      }
+      return response.count || 0;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useUserFollowingCount(userId: string) {
+  return useQuery({
+    queryKey: ['user', 'following', 'count', userId],
+    queryFn: async () => {
+      const response = await apiClient.get<ApiResponse<{ count: number }> | { count: number }>(
+        `/v1/user/follows/count?id=${userId}`
+      );
+      if (isApiResponse<{ count: number }>(response)) {
+        return response.data?.count || 0;
+      }
+      return response.count || 0;
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000,
   });
 }
 

@@ -2,7 +2,6 @@
 
 import { EventCard } from '@/components/event-card';
 import { EventDateGroup } from '@/components/event-date-group';
-import { Navbar } from '@/components/navbar';
 import { Button } from '@/components/ui/button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
@@ -289,8 +288,6 @@ export default function FeedPage() {
             )}
           </div>
         </div>
-
-        <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
       </div>
     );
   }
@@ -449,9 +446,6 @@ export default function FeedPage() {
         </div>
       )}
 
-      {/* Bottom Navbar */}
-      <Navbar activeTab={activeTab} onTabChange={setActiveTab} />
-
       {/* Search Sheet */}
       <SheetWithDetent.Root
         presented={showSearchSheet}
@@ -511,7 +505,7 @@ export default function FeedPage() {
                           // Results
                           <div>
                             <h3 className='mb-4 text-sm font-semibold text-gray-900'>
-                              Results for "{searchText}"
+                              Results for &quot;{searchText}&quot;
                             </h3>
                             <div className='space-y-2'>
                               {searchResults.map((user) => (
@@ -550,7 +544,9 @@ export default function FeedPage() {
                         ) : (
                           // No results
                           <div className='py-8 text-center'>
-                            <p className='text-gray-500'>No results found for "{searchText}"</p>
+                            <p className='text-gray-500'>
+                              No results found for &quot;{searchText}&quot;
+                            </p>
                           </div>
                         )}
                       </div>

@@ -7,16 +7,52 @@ import {
   getBreezErrorMessage,
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
+import { logger } from '@/lib/utils/logger';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
-import { useCallback, useEffect, useState } from 'react';
-import { useWallet } from './use-wallet';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { apiClient } from '../api/client';
 
 export function useLightningAddress() {
-  const { walletState } = useWallet();
+  const walletState = useWalletStore((state) => state.walletState);
   const lightningAddress = useWalletStore((state) => state.lightningAddress);
   const setLightningAddress = useWalletStore((state) => state.setLightningAddress);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const lastSyncedAddressRef = useRef<string | null>(null);
+  const syncInFlightRef = useRef<string | null>(null);
+
+  const syncLightningAddressToBackend = useCallback(async (value: string) => {
+    const normalized = value.trim().toLowerCase();
+
+    if (!normalized.endsWith('@evento.cash')) {
+      return;
+    }
+
+    if (lastSyncedAddressRef.current === normalized) {
+      return;
+    }
+
+    if (syncInFlightRef.current === normalized) {
+      return;
+    }
+
+    try {
+      syncInFlightRef.current = normalized;
+      await apiClient.patch('/v1/user/lightning-address', {
+        lightning_address: value,
+      });
+      lastSyncedAddressRef.current = normalized;
+    } catch (syncError) {
+      logger.warn('Failed to sync Lightning address to backend profile', {
+        error: syncError instanceof Error ? syncError.message : String(syncError),
+        lightningAddress: value,
+      });
+    } finally {
+      if (syncInFlightRef.current === normalized) {
+        syncInFlightRef.current = null;
+      }
+    }
+  }, []);
 
   const loadLightningAddress = useCallback(async () => {
     try {
@@ -40,6 +76,14 @@ export function useLightningAddress() {
       loadLightningAddress();
     }
   }, [walletState.isConnected, lightningAddress, loadLightningAddress]);
+
+  useEffect(() => {
+    if (!walletState.isConnected || !lightningAddress?.lightningAddress) {
+      return;
+    }
+
+    void syncLightningAddressToBackend(lightningAddress.lightningAddress);
+  }, [walletState.isConnected, lightningAddress, syncLightningAddressToBackend]);
 
   const checkAvailability = useCallback(async (username: string): Promise<boolean> => {
     try {

@@ -408,7 +408,7 @@ describe('useEventHosts', () => {
       });
 
       // Check that the query key is correct
-      const queryData = queryClient.getQueryData(['event', 'hosts', 'event123']);
+      const queryData = queryClient.getQueryData(['events', 'event123', 'hosts']);
       expect(queryData).toEqual(mockEventHosts);
     });
 

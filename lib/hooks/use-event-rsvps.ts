@@ -1,12 +1,13 @@
 'use client';
 
 import { apiClient } from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, EventRSVP } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
 export function useEventRSVPs(eventId: string) {
   return useQuery({
-    queryKey: ['eventRSVPs', eventId],
+    queryKey: queryKeys.eventRsvps(eventId),
     queryFn: async (): Promise<EventRSVP[]> => {
       const response = await apiClient.get<ApiResponse<EventRSVP[]>>(`/v1/events/${eventId}/rsvps`);
       if (response && Array.isArray(response.data)) {

@@ -1,28 +1,49 @@
 'use client';
 
 import { RegistrationDetailSheet } from '@/components/manage-event/registration-detail-sheet';
+import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useApproveRegistration } from '@/lib/hooks/use-approve-registration';
 import { useDenyRegistration } from '@/lib/hooks/use-deny-registration';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useRegistrationSubmissions } from '@/lib/hooks/use-registration-submissions';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationStatus, RegistrationSubmission } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { format } from 'date-fns';
-import { ArrowLeft, ChevronRight, ClipboardList } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { CheckCircle, ChevronRight, ClipboardList, Clock, XCircle } from 'lucide-react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
-type TabStatus = RegistrationStatus | 'all';
+type TabStatus = RegistrationStatus;
 
 export default function RegistrationSubmissionsPage() {
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const eventId = params.id as string;
 
-  const [activeTab, setActiveTab] = useState<TabStatus>('all');
+  const [activeTab, setActiveTab] = useState<TabStatus>('pending');
   const [selectedRegistrationId, setSelectedRegistrationId] = useState<string | null>(null);
+
+  useEffect(() => {
+    applyRouteConfig(pathname);
+    setTopBarForRoute(pathname, {
+      title: 'Registration Submissions',
+      leftMode: 'back',
+      centerMode: 'title',
+      onBackPress: () => router.push(`/e/${eventId}/manage`),
+      showAvatar: false,
+      buttons: [],
+      textButtons: [],
+    });
+
+    return () => {
+      clearRoute(pathname);
+    };
+  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
 
   // Get existing event data from API
   const { data: existingEvent, isLoading: isLoadingEvent, error } = useEventDetails(eventId);
@@ -37,19 +58,16 @@ export default function RegistrationSubmissionsPage() {
   const approveRegistration = useApproveRegistration();
   const denyRegistration = useDenyRegistration();
 
-  const isLoading = isLoadingEvent || isLoadingSubmissions;
+  const isLoadingInitialPage = isLoadingEvent;
 
   const registrations = submissionsData?.registrations ?? [];
+  const filteredRegistrations = registrations.filter(
+    (registration) => registration.approval_status === activeTab
+  );
   const counts = submissionsData?.counts ?? { pending: 0, approved: 0, denied: 0 };
-
-  // Filter registrations based on active tab (already filtered by API, but this handles 'all')
-  const filteredRegistrations = useMemo(() => {
-    if (activeTab === 'all') return registrations;
-    return registrations.filter((r) => r.approval_status === activeTab);
-  }, [registrations, activeTab]);
+  const totalCount = counts.pending + counts.approved + counts.denied;
 
   const tabs: { key: TabStatus; label: string; count: number }[] = [
-    { key: 'all', label: 'All', count: counts.pending + counts.approved + counts.denied },
     { key: 'pending', label: 'Pending', count: counts.pending },
     { key: 'approved', label: 'Approved', count: counts.approved },
     { key: 'denied', label: 'Denied', count: counts.denied },
@@ -105,24 +123,18 @@ export default function RegistrationSubmissionsPage() {
     );
   };
 
-  if (isLoading) {
+  if (isLoadingInitialPage) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-        <div className='space-y-4 p-4'>
-          {/* Header skeleton */}
-          <div className='flex items-center gap-4'>
-            <Skeleton className='h-10 w-10 rounded-full' />
-            <Skeleton className='h-6 w-32' />
-          </div>
-
-          {/* Tabs skeleton */}
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+        <div className='border-b border-gray-100 px-4 py-4'>
           <div className='flex space-x-1'>
-            {Array.from({ length: 4 }).map((_, i) => (
+            {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='h-10 w-20 rounded-lg' />
             ))}
           </div>
+        </div>
 
-          {/* List skeleton */}
+        <div className='flex-1 space-y-3 overflow-y-auto p-4'>
           <div className='space-y-3'>
             {Array.from({ length: 5 }).map((_, i) => (
               <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
@@ -136,6 +148,13 @@ export default function RegistrationSubmissionsPage() {
             ))}
           </div>
         </div>
+
+        <div className='border-t border-gray-100 bg-gray-50 p-4'>
+          <div className='flex items-center justify-between text-sm text-gray-600'>
+            <Skeleton className='h-4 w-16' />
+            <Skeleton className='h-4 w-24' />
+          </div>
+        </div>
       </div>
     );
   }
@@ -145,7 +164,9 @@ export default function RegistrationSubmissionsPage() {
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
           <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>The event you're trying to manage doesn't exist.</p>
+          <p className='mb-4 text-gray-600'>
+            The event you&apos;re trying to manage doesn&apos;t exist.
+          </p>
           <button
             onClick={() => router.back()}
             className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
@@ -158,38 +179,35 @@ export default function RegistrationSubmissionsPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
-      {/* Header */}
-      <div className='flex items-center gap-4 border-b border-gray-100 p-4'>
-        <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
-          <ArrowLeft className='h-5 w-5' />
-        </button>
-        <h1 className='text-xl font-semibold'>Registration Submissions</h1>
-      </div>
-
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
       {/* Tabs */}
-      <div className='px-4 pt-4'>
-        <div className='flex space-x-1 overflow-x-auto pb-2'>
-          {tabs.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`flex-shrink-0 rounded-lg px-4 py-2 font-medium transition-colors ${
-                activeTab === tab.key
-                  ? 'bg-red-500 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {tab.label}
-              {tab.count > 0 && <span className='ml-1 text-xs'>({tab.count})</span>}
-            </button>
-          ))}
-        </div>
+      <div className='border-b border-gray-100 px-4 py-4'>
+        <AnimatedTabs
+          tabs={tabs.map((tab) => ({
+            title: tab.count > 0 ? `${tab.label} (${tab.count})` : tab.label,
+            icon: tab.key === 'pending' ? Clock : tab.key === 'approved' ? CheckCircle : XCircle,
+            onClick: () => setActiveTab(tab.key),
+          }))}
+          selected={tabs.findIndex((t) => t.key === activeTab)}
+        />
       </div>
 
       {/* Content */}
-      <div className='flex-1 p-4'>
-        {filteredRegistrations.length > 0 ? (
+      <div className='min-h-0 flex-1 overflow-y-auto px-4 pb-6 pt-4'>
+        {isLoadingSubmissions ? (
+          <div className='space-y-3'>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+                <Skeleton className='h-12 w-12 rounded-full' />
+                <div className='flex-1 space-y-2'>
+                  <Skeleton className='h-4 w-32' />
+                  <Skeleton className='h-3 w-24' />
+                </div>
+                <Skeleton className='h-6 w-16 rounded-full' />
+              </div>
+            ))}
+          </div>
+        ) : filteredRegistrations.length > 0 ? (
           <div className='space-y-3'>
             {filteredRegistrations.map((registration) => (
               <RegistrationCard
@@ -207,7 +225,6 @@ export default function RegistrationSubmissionsPage() {
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900'>No Submissions</h3>
             <p className='text-sm text-gray-500'>
-              {activeTab === 'all' && 'No registrations have been submitted yet.'}
               {activeTab === 'pending' && 'No pending registrations to review.'}
               {activeTab === 'approved' && 'No approved registrations.'}
               {activeTab === 'denied' && 'No denied registrations.'}
@@ -229,14 +246,20 @@ export default function RegistrationSubmissionsPage() {
       />
 
       {/* Summary Footer */}
-      <div className='border-t border-gray-100 bg-gray-50 p-4'>
-        <div className='flex items-center justify-between text-sm text-gray-600'>
-          <span>Total: {counts.pending + counts.approved + counts.denied}</span>
-          <span>
-            {activeTab === 'all' ? 'Showing all' : `Showing ${activeTab}`}:{' '}
-            {filteredRegistrations.length}
-          </span>
-        </div>
+      <div className='shrink-0 border-t border-gray-100 bg-gray-50 p-4'>
+        {isLoadingSubmissions ? (
+          <div className='flex items-center justify-between'>
+            <Skeleton className='h-4 w-16' />
+            <Skeleton className='h-4 w-24' />
+          </div>
+        ) : (
+          <div className='flex items-center justify-between text-sm text-gray-600'>
+            <span>Total: {totalCount}</span>
+            <span>
+              Showing {activeTab}: {filteredRegistrations.length}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );

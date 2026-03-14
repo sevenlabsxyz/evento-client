@@ -24,6 +24,12 @@ export const STORAGE_KEYS = {
   RECENT_LIGHTNING_ADDRESSES: 'evento-recent-lightning-addresses', // Zustand persist
 } as const;
 
+export const SESSION_KEYS = {
+  APP_INITIAL_PATH: 'evento_app_initial_path',
+  APP_HAS_LOADED: 'evento_app_has_loaded',
+  APP_HAS_NAVIGATED: 'evento_app_has_navigated',
+} as const;
+
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
 
 // Keys that should be preserved across logout

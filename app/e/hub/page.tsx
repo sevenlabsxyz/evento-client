@@ -5,7 +5,6 @@ import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
-import { Navbar } from '@/components/navbar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
@@ -32,6 +31,7 @@ export default function HubPage() {
     // Set configuration for this specific route
     setTopBarForRoute(pathname, {
       title: 'Evento Hub',
+      hideMobileBreadcrumb: true,
       subtitle: '',
       leftMode: 'menu',
       showAvatar: true,
@@ -55,8 +55,8 @@ export default function HubPage() {
 
   if (isCheckingAuth || isCheckingOnboarding) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='mx-auto h-full w-full max-w-full bg-white px-4 pb-36 pt-4 md:max-w-sm md:pb-24'>
+      <div className='flex min-h-screen w-full flex-col bg-white'>
+        <div className='h-full w-full bg-white px-4 pb-36 pt-4 md:px-8 md:pb-24'>
           {/* Welcome text */}
           <div className='mb-4'>
             <Skeleton className='h-5 w-48' />
@@ -77,21 +77,25 @@ export default function HubPage() {
             </div>
           </div>
         </div>
-        <Navbar />
       </div>
     );
   }
 
   return (
     <>
-      <div className='mx-auto flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:max-w-6xl md:pb-32'>
+      <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
         <CohostInvitesSection />
-        <MyEventsSection />
+        <div className='flex flex-col gap-6 md:flex-row md:gap-12'>
+          <div className='md:w-1/2'>
+            <MyEventsSection />
+          </div>
+          <div className='md:w-1/2'>
+            <ForYouSection />
+          </div>
+        </div>
         <EventInvitesSection />
-        <ForYouSection />
         <HubBlogGallery />
       </div>
-      <Navbar />
     </>
   );
 }

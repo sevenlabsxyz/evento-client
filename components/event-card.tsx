@@ -5,7 +5,7 @@ import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-she
 import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { htmlToPlainText } from '@/lib/utils/content';
-import { formatEventDate, getRelativeTime } from '@/lib/utils/date';
+import { formatEventDateFromParts, getRelativeTime } from '@/lib/utils/date';
 import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
@@ -43,7 +43,15 @@ export function EventCard({
   onMenuClick,
 }: EventCardProps) {
   const router = useRouter();
-  const { date, timeWithTz } = formatEventDate(event.computed_start_date, event.timezone);
+  const { date, timeWithTz } = formatEventDateFromParts({
+    year: event.start_date_year,
+    month: event.start_date_month,
+    day: event.start_date_day,
+    hours: event.start_date_hours,
+    minutes: event.start_date_minutes,
+    timezone: event.timezone,
+    fallbackIso: event.computed_start_date,
+  });
   const timeAgo = getRelativeTime(event.created_at);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

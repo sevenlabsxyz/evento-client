@@ -96,7 +96,7 @@ export function ContactSheet({
               </div>
               <div>
                 <h2 className='mb-2 text-2xl font-bold text-gray-900'>Contact Us</h2>
-                <p className='text-gray-600'>Send us a message and we'll get back to you</p>
+                <p className='text-gray-600'>Send us a message and we&apos;ll get back to you</p>
               </div>
             </div>
 

@@ -8,7 +8,7 @@ import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -30,6 +30,7 @@ export function TopBar() {
     showAvatar,
     isOverlaid,
     chatPartner,
+    hideMobileBreadcrumb,
   } = useTopBar();
   const { user } = useUserProfile();
   const router = useRouter();
@@ -91,6 +92,22 @@ export function TopBar() {
   const renderLeftContent = () => {
     if (leftMode === 'back') {
       return <CircledIconButton icon={ArrowLeft} onClick={handleBackPress} />;
+    }
+
+    if (leftMode === 'logo') {
+      return (
+        <div className='flex items-center gap-3'>
+          <CircledIconButton icon={Menu} onClick={handleMenuClick} />
+          <Image
+            priority
+            src='/assets/img/evento-logo.svg'
+            alt='Evento'
+            width={67}
+            height={20}
+            className='h-5 w-auto'
+          />
+        </div>
+      );
     }
 
     return (
@@ -217,9 +234,9 @@ export function TopBar() {
         <div
           className={`relative flex items-center justify-between transition-opacity duration-300 ${getContentOpacity()}`}
         >
-          <div className='flex min-w-0 items-center gap-3'>
+          <div className={`flex min-w-0 items-center ${leftMode === 'logo' ? '' : 'gap-3'}`}>
             {renderLeftContent()}
-            {centerMode !== 'logo' && renderCenterContent()}
+            {centerMode !== 'logo' && !hideMobileBreadcrumb && renderCenterContent()}
           </div>
 
           {/* Absolutely centered logo */}

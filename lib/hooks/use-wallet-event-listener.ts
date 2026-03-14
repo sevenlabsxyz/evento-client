@@ -3,7 +3,7 @@
 // Set to true to enable verbose wallet event logging
 const DEBUG_WALLET = false;
 
-import { breezSDK } from '@/lib/services/breez-sdk';
+import { BreezEvent, breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletStore } from '@/lib/stores/wallet-store';
 import { logger } from '@/lib/utils/logger';
@@ -19,6 +19,7 @@ export function useWalletEventListener() {
   const isConnected = useWalletStore((state) => state.walletState.isConnected);
   const setWalletState = useWalletStore((state) => state.setWalletState);
   const setError = useWalletStore((state) => state.setError);
+  const setLightningAddress = useWalletStore((state) => state.setLightningAddress);
 
   /**
    * Refresh wallet balance
@@ -52,7 +53,7 @@ export function useWalletEventListener() {
   useEffect(() => {
     if (!isConnected) return;
 
-    const unsubscribe = breezSDK.onEvent((event) => {
+    const unsubscribe = breezSDK.onEvent((event: BreezEvent) => {
       // Logging is handled in breez-sdk.ts service layer
 
       // Handle different event types
@@ -78,13 +79,15 @@ export function useWalletEventListener() {
         refreshBalanceRef.current();
       } else if (event.type === 'synced') {
         refreshBalanceRef.current();
+      } else if (event.type === 'lightningAddressChanged') {
+        setLightningAddress(event.lightningAddress ?? null);
       }
     });
 
     return () => {
       unsubscribe();
     };
-  }, [isConnected]); // Only depends on primitive isConnected value
+  }, [isConnected, setLightningAddress]);
 
   return null; // This hook doesn't return anything
 }

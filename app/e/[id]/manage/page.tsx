@@ -9,9 +9,9 @@ import { usePublishEvent } from '@/lib/hooks/use-publish-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
+  ClipboardList,
   DollarSign,
   FileText,
-  HelpCircle,
   // Layers,
   Mail,
   MessageCircle,
@@ -20,13 +20,15 @@ import {
   UserPlus,
   Users,
   X,
+  Zap,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function ManageEventPage() {
-  const { setTopBar } = useTopBar();
+  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const params = useParams();
+  const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
   const { data: eventDetails, isLoading, error } = useEventDetails(eventId);
@@ -34,7 +36,9 @@ export default function ManageEventPage() {
 
   // Set TopBar content
   useEffect(() => {
-    setTopBar({
+    applyRouteConfig(pathname);
+
+    setTopBarForRoute(pathname, {
       title: 'Manage Event',
       leftMode: 'back',
       onBackPress: () => router.push(`/e/${eventId}?from=manage`),
@@ -51,25 +55,34 @@ export default function ManageEventPage() {
       ],
     });
 
-    // Cleanup function to reset topbar state when leaving this page
     return () => {
-      setTopBar({
-        title: '',
-        leftMode: 'menu',
-        showAvatar: true,
-        subtitle: '',
-        centerMode: 'title',
-        onBackPress: null,
-        textButtons: [],
-      });
+      clearRoute(pathname);
     };
-  }, [setTopBar, router, eventId]);
+  }, [setTopBarForRoute, applyRouteConfig, clearRoute, pathname, router, eventId]);
 
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [showPublishSheet, setShowPublishSheet] = useState(false);
-  const showRegistrationOption = eventDetails?.type ? eventDetails.type !== 'rsvp' : true;
+  const isRegistrationType =
+    eventDetails?.type === 'registration' || eventDetails?.type === 'ticketed';
+  const showRegistrationOption = isRegistrationType;
+
+  const showSubmissionsOption = isRegistrationType && eventDetails?.status === 'published';
 
   const managementOptions = [
+    ...(showSubmissionsOption
+      ? [
+          {
+            id: 'registration-submissions',
+            title: 'Registrations',
+            description: 'Review and manage guest registrations',
+            icon: <ClipboardList className='h-6 w-6' />,
+            iconBg: 'bg-blue-100',
+            iconColor: 'text-blue-700',
+            route: `/e/${eventId}/manage/registration/submissions`,
+            isPriority: true,
+          },
+        ]
+      : []),
     {
       id: 'event-details',
       title: 'Event Details',
@@ -92,9 +105,9 @@ export default function ManageEventPage() {
       ? [
           {
             id: 'registration-questions',
-            title: 'Registration',
-            description: 'Collect information from guests',
-            icon: <HelpCircle className='h-6 w-6' />,
+            title: 'Registration Forms',
+            description: 'Create and edit your registration form',
+            icon: <FileText className='h-6 w-6' />,
             iconBg: 'bg-purple-100',
             iconColor: 'text-purple-600',
             route: `/e/${eventId}/manage/registration`,
@@ -154,6 +167,15 @@ export default function ManageEventPage() {
       iconBg: 'bg-green-100',
       iconColor: 'text-green-600',
       route: `/e/${eventId}/manage/contributions`,
+    },
+    {
+      id: 'crowdfunding',
+      title: 'Crowdfunding',
+      description: 'Set up a Lightning crowdfunding campaign',
+      icon: <Zap className='h-6 w-6' />,
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600',
+      route: `/e/${eventId}/manage/crowdfunding`,
     },
   ];
 
@@ -261,7 +283,11 @@ export default function ManageEventPage() {
             <button
               key={option.id}
               onClick={() => handleOptionClick(option.route)}
-              className='flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-colors hover:bg-gray-100'
+              className={`flex w-full items-center gap-4 rounded-2xl border p-4 transition-colors ${
+                option.isPriority
+                  ? 'mb-6 border-blue-200 bg-blue-50 hover:bg-blue-100'
+                  : 'border-gray-200 bg-gray-50 hover:bg-gray-100'
+              }`}
             >
               <div
                 className={`h-12 w-12 ${option.iconBg} flex items-center justify-center rounded-xl`}
