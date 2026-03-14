@@ -10,7 +10,7 @@ import { Event as ApiEvent } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { formatEventDateRangeFromParts } from '@/lib/utils/date';
 import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
-import { formatEventLocationAddress } from '@/lib/utils/location';
+import { formatEventLocationAddress, getEventLocationDisplayLines } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
 import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -208,9 +208,14 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     return hosts?.some((h) => h.user_details?.id === currentUserId) ?? false;
   }, [currentUserId, event.owner?.id, hosts]);
 
+  const hasStructuredLocation = Boolean(eventData?.event_locations);
   const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
   const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
-  const isTBDLocation = event.location.name === 'TBD';
+  const locationDisplay = getEventLocationDisplayLines(event.location, {
+    preferStructuredAddress: hasStructuredLocation,
+    fallbackLabel: hasStructuredLocation ? undefined : eventData?.location,
+  });
+  const isTBDLocation = locationDisplay.primary === 'TBD';
   const fullAddress = formatEventLocationAddress(event.location);
   const destination = event.location.coordinates
     ? `${event.location.coordinates.lat},${event.location.coordinates.lng}`
@@ -342,12 +347,11 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   <span
                     className={`font-semibold ${isTBDLocation ? 'text-gray-500' : 'text-gray-900 group-hover:underline'}`}
                   >
-                    {event.location.name}
+                    {locationDisplay.primary}
                   </span>
-                  {(event.location.city || event.location.state) && (
+                  {locationDisplay.secondary && (
                     <span className='text-sm text-gray-500'>
-                      {event.location.city}
-                      {event.location.city && event.location.state && `, ${event.location.state}`}
+                      {locationDisplay.secondary}
                     </span>
                   )}
                 </div>
