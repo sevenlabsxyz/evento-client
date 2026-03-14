@@ -20,7 +20,7 @@ a
 | **React Hook Form** | 7.60.0  | Form handling                          |
 | **Zod**             | 4.0.5   | Schema validation                      |
 | **Axios**           | 1.10.0  | HTTP client                            |
-| **Breez SDK Spark** | 0.4.2   | Bitcoin Lightning wallet               |
+| **Breez SDK Spark** | 0.11.0  | Bitcoin Lightning wallet               |
 
 ---
 
