@@ -54,8 +54,6 @@ const nextConfig = {
   typescript: {
     ignoreDuringBuilds: true,
   },
-  bundlePagesRouterDependencies: true,
-  serverExternalPackages: [],
   experimental: {
     optimizeCss: true,
   },
