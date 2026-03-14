@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Calendar, Menu } from 'lucide-react';
+import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -13,7 +13,6 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { useRightSidebar } from '@/lib/stores/right-sidebar-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { cn } from '@/lib/utils';
 
@@ -27,7 +26,6 @@ const fadeConfig = {
 export function SiteHeader() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
-  const { toggle: toggleRightSidebar } = useRightSidebar();
   const { toggleSidebar } = useSidebar();
   const {
     leftMode,
@@ -218,13 +216,6 @@ export function SiteHeader() {
                   <CircledIconButton key={button.id} icon={button.icon} onClick={button.onClick} />
                 ))}
               </div>
-            )}
-            {isAuthenticated && (
-              <CircledIconButton
-                icon={Calendar}
-                onClick={toggleRightSidebar}
-                className='hidden lg:flex'
-              />
             )}
           </motion.div>
         </AnimatePresence>
