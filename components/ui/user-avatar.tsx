@@ -92,53 +92,71 @@ export function UserAvatar({
     onVerificationClick?.();
   };
 
+  const avatar = (
+    <Avatar
+      className={cn(
+        !height && !width ? sizeConfig.avatar : '',
+        sizeConfig.border,
+        'border-gray-200 bg-white'
+      )}
+      style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
+    >
+      <AvatarImage
+        src={avatarSrc}
+        alt='Profile'
+        onError={() => {
+          if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
+            setAvatarSrc(DEFAULT_AVATAR_IMAGE);
+          }
+        }}
+      />
+      <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
+        <img
+          src={DEFAULT_AVATAR_IMAGE}
+          alt='Default profile'
+          className='h-full w-full object-cover'
+        />
+      </AvatarFallback>
+    </Avatar>
+  );
+
   return (
     <div className={cn('relative', className)}>
-      <button type='button' onClick={onAvatarClick}>
-        <Avatar
-          className={cn(
-            // Only use size config if no explicit dimensions are provided
-            !height && !width ? sizeConfig.avatar : '',
-            sizeConfig.border,
-            'border-gray-200 bg-white'
-          )}
-          style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
-        >
-          <AvatarImage
-            src={avatarSrc}
-            alt='Profile'
-            onError={() => {
-              if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
-                setAvatarSrc(DEFAULT_AVATAR_IMAGE);
-              }
-            }}
-          />
-          <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
-            <img
-              src={DEFAULT_AVATAR_IMAGE}
-              alt='Default profile'
-              className='h-full w-full object-cover'
-            />
-          </AvatarFallback>
-        </Avatar>
-      </button>
-      {/* Verification Badge */}
-      {user?.verification_status === 'verified' && (
-        <span
-          role='button'
-          tabIndex={0}
-          aria-label='Verification badge'
-          onClick={handleVerificationClick}
-          className={cn(
-            'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
-            sizeConfig.badge,
-            sizeConfig.badgePosition,
-            'transition-transform hover:scale-105'
-          )}
-        >
-          <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
-        </span>
+      {onAvatarClick ? (
+        <button type='button' onClick={onAvatarClick}>
+          {avatar}
+        </button>
+      ) : (
+        avatar
       )}
+      {/* Verification Badge */}
+      {user?.verification_status === 'verified' &&
+        (onVerificationClick ? (
+          <button
+            type='button'
+            aria-label='Verification badge'
+            onClick={handleVerificationClick}
+            className={cn(
+              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
+              sizeConfig.badge,
+              sizeConfig.badgePosition,
+              'transition-transform hover:scale-105'
+            )}
+          >
+            <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
+          </button>
+        ) : (
+          <span
+            aria-hidden='true'
+            className={cn(
+              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
+              sizeConfig.badge,
+              sizeConfig.badgePosition
+            )}
+          >
+            <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
+          </span>
+        ))}
     </div>
   );
 }
