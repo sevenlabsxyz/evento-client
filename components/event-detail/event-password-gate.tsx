@@ -69,7 +69,7 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
         <CardHeader className='space-y-4'>
           {/* Event cover image */}
           {coverImageUrl && (
-            <div className='relative mx-auto aspect-video w-full overflow-hidden rounded-2xl'>
+            <div className='relative mx-auto aspect-square w-full overflow-hidden rounded-2xl'>
               <Image
                 src={coverImageUrl}
                 alt={event.title}
