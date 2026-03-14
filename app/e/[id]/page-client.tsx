@@ -241,7 +241,15 @@ export default function EventDetailPageClient() {
             ]
           : []),
       ],
-      isOverlaid: !!eventData?.password_protected && !(passwordAccessGranted || hasEventAccess(eventId) || (user && hostsData.some((host) => host.user_details.id === user.id)) || (user && eventData?.creator_user_id === user.id) || userRsvpData?.status === 'yes'),
+      isOverlaid:
+        !!eventData?.password_protected &&
+        !(
+          passwordAccessGranted ||
+          hasEventAccess(eventId) ||
+          (user && hostsData.some((host) => host.user_details?.id === user.id)) ||
+          (user && eventData?.creator_user_id === user.id) ||
+          userRsvpData?.status === 'yes'
+        ),
     });
 
     return () => {

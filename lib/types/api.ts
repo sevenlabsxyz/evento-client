@@ -519,6 +519,13 @@ export interface PasswordProtectedEventResponse {
   title: string;
   cover?: string;
   password_protected: true;
+  hosts?: {
+    id: string;
+    name: string;
+    username: string;
+    avatar: string;
+    image?: string;
+  }[];
 }
 
 // Password verification request/response
