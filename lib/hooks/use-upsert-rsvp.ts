@@ -1,6 +1,7 @@
 'use client';
 
 import { apiClient } from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { EventRSVP, RSVPStatus } from '@/lib/types/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
@@ -58,10 +59,8 @@ export function useUpsertRSVP() {
       return Array.isArray(arr) && arr.length > 0 ? (arr[0] as EventRSVP) : null;
     },
     onSuccess: (_data, variables) => {
-      // Invalidate the current user RSVP for this event
-      queryClient.invalidateQueries({
-        queryKey: ['event', 'user-rsvp', variables.eventId],
-      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.userRsvp(variables.eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.eventRsvps(variables.eventId) });
     },
   });
 }
