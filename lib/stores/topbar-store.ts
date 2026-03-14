@@ -124,6 +124,9 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   },
 
   applyRouteConfig: (route) => {
+    // Skip if already on this route — avoids redundant state updates
+    if (get().currentRoute === route) return;
+
     const routeConfigs = get().routeConfigs;
     const routeConfig = routeConfigs.get(route);
 
@@ -140,6 +143,10 @@ export const useTopBarStore = create<TopBarState>((set, get) => ({
   },
 
   clearRoute: (route) => {
+    // Bail out if there's nothing to clear — avoids unnecessary state updates
+    // that can trigger infinite re-render loops when called from effect cleanup
+    if (!get().routeConfigs.has(route) && get().currentRoute !== route) return;
+
     const routeConfigs = new Map(get().routeConfigs);
     routeConfigs.delete(route);
 
