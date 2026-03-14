@@ -14,40 +14,47 @@ export const contentType = 'image/png';
 const NO_COVER_FALLBACK =
   'https://api.evento.so/storage/v1/render/image/public/cdn/eventos/default-covers/tech/15.webp';
 
+function getEventImageClient() {
+  if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {
+    logger.warn('Skipping event OG image lookup because Supabase env vars are missing');
+    return null;
+  }
+
+  return createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
+}
+
 function renderFallbackEventImage(title: string) {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#111827',
+        color: '#f9fafb',
+        padding: '64px',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+      }}
+    >
       <div
         style={{
-          display: 'flex',
-          width: '100%',
-          height: '100%',
-          backgroundColor: '#111827',
-          color: '#f9fafb',
-          padding: '64px',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          fontSize: '44px',
+          fontWeight: 700,
         }}
       >
-        <div
-          style={{
-            fontSize: '44px',
-            fontWeight: 700,
-          }}
-        >
-          Evento
-        </div>
-        <div
-          style={{
-            fontSize: '58px',
-            fontWeight: 700,
-            lineHeight: 1.2,
-          }}
-        >
-          {title}
-        </div>
+        Evento
       </div>
-    ),
+      <div
+        style={{
+          fontSize: '58px',
+          fontWeight: 700,
+          lineHeight: 1.2,
+        }}
+      >
+        {title}
+      </div>
+    </div>,
     {
       ...size,
     }
@@ -55,7 +62,11 @@ function renderFallbackEventImage(title: string) {
 }
 
 export default async function Image({ params }: { params: { id: string } }) {
-  const supabase = createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
+  const supabase = getEventImageClient();
+
+  if (!supabase) {
+    return renderFallbackEventImage('Evento Event');
+  }
 
   const { data: event, error } = await supabase
     .from('events')
@@ -99,98 +110,96 @@ export default async function Image({ params }: { params: { id: string } }) {
   ]);
 
   return new ImageResponse(
-    (
+    <div
+      style={{
+        display: 'flex',
+        background: 'white',
+        width: '100%',
+        height: '100%',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '40px',
+      }}
+    >
       <div
         style={{
           display: 'flex',
-          background: 'white',
-          width: '100%',
-          height: '100%',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          padding: '40px',
+          borderRadius: '18px',
+          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+        }}
+      >
+        <img
+          src={getProperURL(event.cover)}
+          alt={eventTitle}
+          style={{
+            width: '450px',
+            height: '450px',
+            objectFit: 'cover',
+            borderRadius: '18px',
+          }}
+        />
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          width: '50%',
         }}
       >
         <div
           style={{
             display: 'flex',
-            borderRadius: '18px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
           }}
         >
           <img
-            src={getProperURL(event.cover)}
-            alt={eventTitle}
+            src='https://app.evento.so/assets/img/evento-logo.svg'
+            alt='Evento'
             style={{
-              width: '450px',
-              height: '450px',
-              objectFit: 'cover',
-              borderRadius: '18px',
+              width: '250px',
+              height: '30px',
             }}
           />
         </div>
 
+        <h1
+          style={{
+            marginBottom: '32px',
+            fontFamily: 'Work Sans',
+            fontSize: '36px',
+            fontWeight: 600,
+            color: '#1f2937',
+            lineHeight: 1.2,
+          }}
+        >
+          {eventTitle}
+        </h1>
+
         <div
           style={{
             display: 'flex',
-            flexDirection: 'column',
+            marginTop: '32px',
+            padding: '16px 24px',
+            width: '250px',
+            backgroundColor: '#dc2626',
+            color: 'white',
+            fontFamily: 'Work Sans',
+            fontSize: '18px',
+            fontWeight: 500,
+            borderRadius: '12px',
             justifyContent: 'center',
-            width: '50%',
+            alignItems: 'center',
           }}
         >
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'flex-start',
-            }}
-          >
-            <img
-              src='https://app.evento.so/assets/img/evento-logo.svg'
-              alt='Evento'
-              style={{
-                width: '250px',
-                height: '30px',
-              }}
-            />
-          </div>
-
-          <h1
-            style={{
-              marginBottom: '32px',
-              fontFamily: 'Work Sans',
-              fontSize: '36px',
-              fontWeight: 600,
-              color: '#1f2937',
-              lineHeight: 1.2,
-            }}
-          >
-            {eventTitle}
-          </h1>
-
-          <div
-            style={{
-              display: 'flex',
-              marginTop: '32px',
-              padding: '16px 24px',
-              width: '250px',
-              backgroundColor: '#dc2626',
-              color: 'white',
-              fontFamily: 'Work Sans',
-              fontSize: '18px',
-              fontWeight: 500,
-              borderRadius: '12px',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            RSVP NOW
-          </div>
+          RSVP NOW
         </div>
       </div>
-    ),
+    </div>,
     {
       ...size,
       fonts: [
