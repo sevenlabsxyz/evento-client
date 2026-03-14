@@ -1,4 +1,11 @@
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { EventInvite } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -91,15 +98,17 @@ export function EventInvitesSheet({
                           ))}
                         </div>
                       ) : pendingInvites.length === 0 ? (
-                        <div className='flex flex-col items-center justify-center py-16 text-center'>
-                          <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                            <Calendar className='h-8 w-8 text-gray-400' />
-                          </div>
-                          <h3 className='mb-1 text-base font-semibold text-gray-900'>
-                            No pending invites
-                          </h3>
-                          <p className='text-sm text-gray-500'>You&apos;re all caught up!</p>
-                        </div>
+                        <Empty className='py-16'>
+                          <EmptyHeader>
+                            <EmptyMedia variant='soft-square'>
+                              <Calendar className='h-8 w-8' />
+                            </EmptyMedia>
+                            <EmptyTitle className='text-base sm:text-base'>
+                              No pending invites
+                            </EmptyTitle>
+                            <EmptyDescription>You&apos;re all caught up!</EmptyDescription>
+                          </EmptyHeader>
+                        </Empty>
                       ) : (
                         <div className='space-y-4'>
                           {pendingInvites.map((invite: EventInvite) => (
@@ -119,17 +128,19 @@ export function EventInvitesSheet({
                         ))}
                       </div>
                     ) : respondedInvites.length === 0 ? (
-                      <div className='flex flex-col items-center justify-center py-16 text-center'>
-                        <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                          <Check className='h-8 w-8 text-gray-400' />
-                        </div>
-                        <h3 className='mb-1 text-base font-semibold text-gray-900'>
-                          No responded invites
-                        </h3>
-                        <p className='text-sm text-gray-500'>
-                          Invites you respond to will appear here
-                        </p>
-                      </div>
+                      <Empty className='py-16'>
+                        <EmptyHeader>
+                          <EmptyMedia variant='soft-square'>
+                            <Check className='h-8 w-8' />
+                          </EmptyMedia>
+                          <EmptyTitle className='text-base sm:text-base'>
+                            No responded invites
+                          </EmptyTitle>
+                          <EmptyDescription>
+                            Invites you respond to will appear here
+                          </EmptyDescription>
+                        </EmptyHeader>
+                      </Empty>
                     ) : (
                       <div className='space-y-4'>
                         {respondedInvites.map((invite: EventInvite) => (
