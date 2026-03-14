@@ -93,33 +93,35 @@ export function UserAvatar({
   };
 
   return (
-    <button type='button' onClick={onAvatarClick} className={cn('relative', className)}>
-      <Avatar
-        className={cn(
-          // Only use size config if no explicit dimensions are provided
-          !height && !width ? sizeConfig.avatar : '',
-          sizeConfig.border,
-          'border-gray-200 bg-white'
-        )}
-        style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
-      >
-        <AvatarImage
-          src={avatarSrc}
-          alt='Profile'
-          onError={() => {
-            if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
-              setAvatarSrc(DEFAULT_AVATAR_IMAGE);
-            }
-          }}
-        />
-        <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
-          <img
-            src={DEFAULT_AVATAR_IMAGE}
-            alt='Default profile'
-            className='h-full w-full object-cover'
+    <div className={cn('relative', className)}>
+      <button type='button' onClick={onAvatarClick}>
+        <Avatar
+          className={cn(
+            // Only use size config if no explicit dimensions are provided
+            !height && !width ? sizeConfig.avatar : '',
+            sizeConfig.border,
+            'border-gray-200 bg-white'
+          )}
+          style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
+        >
+          <AvatarImage
+            src={avatarSrc}
+            alt='Profile'
+            onError={() => {
+              if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
+                setAvatarSrc(DEFAULT_AVATAR_IMAGE);
+              }
+            }}
           />
-        </AvatarFallback>
-      </Avatar>
+          <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
+            <img
+              src={DEFAULT_AVATAR_IMAGE}
+              alt='Default profile'
+              className='h-full w-full object-cover'
+            />
+          </AvatarFallback>
+        </Avatar>
+      </button>
       {/* Verification Badge */}
       {user?.verification_status === 'verified' && (
         <button
@@ -139,6 +141,6 @@ export function UserAvatar({
           </span>
         </button>
       )}
-    </button>
+    </div>
   );
 }
