@@ -11,7 +11,6 @@ import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
-import { ContactHostModal } from './contact-host-modal';
 
 interface EventPasswordGateProps {
   event: PasswordProtectedEventResponse;
@@ -22,7 +21,6 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showContactModal, setShowContactModal] = useState(false);
 
   const verifyPassword = useVerifyEventPassword();
 
@@ -139,39 +137,12 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
               )}
             </Button>
           </form>
-
-          <div className='relative'>
-            <div className='absolute inset-0 flex items-center'>
-              <span className='w-full border-t' />
-            </div>
-            <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-gray-50 px-2 text-muted-foreground'>or</span>
-            </div>
-          </div>
-
-          {/* Contact Host Button */}
-          <Button
-            variant='secondary'
-            className='w-full border border-gray-200 bg-white py-6 text-base'
-            onClick={() => setShowContactModal(true)}
-            disabled={verifyPassword.isPending}
-          >
-            Contact Host
-          </Button>
         </CardContent>
       </Card>
 
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
         <p>You&apos;ve been invited to an evento. Enter the password to access event details.</p>
       </div>
-
-      {/* Contact Host Modal */}
-      <ContactHostModal
-        open={showContactModal}
-        onOpenChange={setShowContactModal}
-        eventId={event.id}
-        hostName={primaryHost?.name || 'the host'}
-      />
     </div>
   );
 }
