@@ -252,13 +252,11 @@ export default function EventDetailPageClient() {
         ),
     });
 
-    return () => {
-      clearRoute(pathname);
-    };
+    // Cleanup is handled by a separate unmount-only effect below
+    // to avoid re-render loops when data-driven deps change.
   }, [
     pathname,
     setTopBarForRoute,
-    clearRoute,
     applyRouteConfig,
     event?.title,
     isOwnerOrCohost,
@@ -271,7 +269,17 @@ export default function EventDetailPageClient() {
     hostsData,
     eventData?.creator_user_id,
     userRsvpData?.status,
+    isAuthenticated,
   ]);
+
+  // Separate unmount-only effect for topbar cleanup — prevents infinite
+  // re-render loops caused by clearRoute calling set() on every dep change.
+  useEffect(() => {
+    return () => {
+      clearRoute(pathname);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
