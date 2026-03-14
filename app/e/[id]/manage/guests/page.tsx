@@ -223,26 +223,29 @@ export default function GuestListPage() {
         </div>
 
         {/* Tabs */}
-        <AnimatedTabs
-          tabs={[
-            {
-              title: `Going (${getGuestCount('yes')})`,
-              icon: CheckCircle,
-              onClick: () => handleTabChange('yes'),
-            },
-            {
-              title: `Not Going (${getGuestCount('no')})`,
-              icon: XCircle,
-              onClick: () => handleTabChange('no'),
-            },
-            {
-              title: `Maybe (${getGuestCount('maybe')})`,
-              icon: CircleHelp,
-              onClick: () => handleTabChange('maybe'),
-            },
-          ]}
-          selected={['yes', 'no', 'maybe'].indexOf(activeTab)}
-        />
+        <div className='flex justify-center p-4'>
+          <AnimatedTabs
+            expanded
+            tabs={[
+              {
+                title: `Yes (${getGuestCount('yes')})`,
+                icon: CheckCircle,
+                onClick: () => handleTabChange('yes'),
+              },
+              {
+                title: `No (${getGuestCount('no')})`,
+                icon: XCircle,
+                onClick: () => handleTabChange('no'),
+              },
+              {
+                title: `Maybe (${getGuestCount('maybe')})`,
+                icon: CircleHelp,
+                onClick: () => handleTabChange('maybe'),
+              },
+            ]}
+            selected={['yes', 'no', 'maybe'].indexOf(activeTab)}
+          />
+        </div>
 
         {activeTab === 'yes' && (
           <div className='px-4'>
