@@ -241,7 +241,7 @@ export default function EventDetailPageClient() {
             ]
           : []),
       ],
-      isOverlaid: false,
+      isOverlaid: !!eventData?.password_protected && !(passwordAccessGranted || hasEventAccess(eventId) || (user && hostsData.some((host) => host.user_details.id === user.id)) || (user && eventData?.creator_user_id === user.id) || userRsvpData?.status === 'yes'),
     });
 
     return () => {
@@ -256,7 +256,13 @@ export default function EventDetailPageClient() {
     isOwnerOrCohost,
     cameFromManage,
     router,
-    isAuthenticated,
+    eventData?.password_protected,
+    passwordAccessGranted,
+    eventId,
+    user,
+    hostsData,
+    eventData?.creator_user_id,
+    userRsvpData?.status,
   ]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
