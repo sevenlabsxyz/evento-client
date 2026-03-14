@@ -16,7 +16,7 @@ import { toast } from '@/lib/utils/toast';
 import { generateAvailableUsername } from '@/lib/utils/username';
 import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RegistrationOtpInput } from './registration-otp-input';
 
 type FormView = 'form' | 'otp';
@@ -26,6 +26,10 @@ const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
 interface RegistrationFormProps {
   eventId: string;
   questions: RegistrationQuestion[];
+  step: FormView;
+  onStepChange: (step: FormView) => void;
+  onEmailChange: (email: string) => void;
+  onStepBusyChange: (isBusy: boolean) => void;
   onSuccess: (autoApproved: boolean, registration?: UserRegistration) => void;
   onCancel: () => void;
 }
@@ -33,6 +37,10 @@ interface RegistrationFormProps {
 export function RegistrationForm({
   eventId,
   questions,
+  step,
+  onStepChange,
+  onEmailChange,
+  onStepBusyChange,
   onSuccess,
   onCancel,
 }: RegistrationFormProps) {
@@ -41,9 +49,6 @@ export function RegistrationForm({
   const queryClient = useQueryClient();
   const submitRegistration = useSubmitRegistration();
   const updateProfile = useUpdateUserProfile();
-
-  // View state for multi-step form
-  const [view, setView] = useState<FormView>('form');
 
   // Form data
   const [name, setName] = useState(user?.name || '');
@@ -56,6 +61,23 @@ export function RegistrationForm({
   const [isVerifying, setIsVerifying] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [isCompletingRegistration, setIsCompletingRegistration] = useState(false);
+
+  useEffect(() => {
+    onEmailChange(email.trim());
+  }, [email, onEmailChange]);
+
+  useEffect(() => {
+    if (step === 'form') {
+      setOtpError(undefined);
+    }
+  }, [step]);
+
+  useEffect(() => {
+    const isOtpStepBusy =
+      step === 'otp' && (isVerifying || submitRegistration.isPending || isCompletingRegistration);
+
+    onStepBusyChange(isOtpStepBusy);
+  }, [isCompletingRegistration, isVerifying, onStepBusyChange, step, submitRegistration.isPending]);
 
   const updateAnswer = (questionId: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
@@ -171,7 +193,7 @@ export function RegistrationForm({
     setIsSendingOtp(true);
     try {
       await authService.sendLoginCode(email.trim());
-      setView('otp');
+      onStepChange('otp');
     } catch (error: unknown) {
       const message =
         error instanceof Error
@@ -185,6 +207,7 @@ export function RegistrationForm({
 
   // Handle OTP verification
   const handleOtpVerify = async (code: string) => {
+    onStepBusyChange(true);
     setIsVerifying(true);
     setOtpError(undefined);
 
@@ -266,12 +289,6 @@ export function RegistrationForm({
       toast.error(message);
       throw error; // Re-throw to let OTP component handle cooldown
     }
-  };
-
-  // Handle back from OTP view
-  const handleOtpBack = () => {
-    setView('form');
-    setOtpError(undefined);
   };
 
   const renderQuestionField = (question: RegistrationQuestion) => {
@@ -434,12 +451,10 @@ export function RegistrationForm({
     );
   }
 
-  if (view === 'otp') {
+  if (step === 'otp') {
     return (
       <RegistrationOtpInput
-        email={email.trim()}
         onVerify={handleOtpVerify}
-        onBack={handleOtpBack}
         onResend={handleOtpResend}
         isLoading={isVerifying || submitRegistration.isPending}
         error={otpError}
