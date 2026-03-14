@@ -1,6 +1,16 @@
 import { LocationData } from '@/lib/hooks/use-google-places';
 import { EventLocation } from '@/lib/types/event';
 
+export interface EventLocationDisplayLines {
+  primary: string;
+  secondary: string;
+}
+
+interface EventLocationDisplayOptions {
+  preferStructuredAddress?: boolean;
+  fallbackLabel?: string;
+}
+
 /**
  * Converts LocationData from the modal to EventLocation format used in the Event interface
  */
@@ -161,4 +171,43 @@ export function getLocationDisplayName(location: LocationData): string {
   }
 
   return location.formatted.split(',')[0] || 'Unknown Location';
+}
+
+export function getEventLocationDisplayLines(
+  location: EventLocation,
+  options: EventLocationDisplayOptions = {}
+): EventLocationDisplayLines {
+  const fallbackLabel = options.fallbackLabel?.trim() || '';
+
+  if (!options.preferStructuredAddress) {
+    return {
+      primary:
+        fallbackLabel ||
+        location.name.trim() ||
+        location.address.trim() ||
+        location.city.trim() ||
+        location.country.trim() ||
+        'TBD',
+      secondary: '',
+    };
+  }
+
+  const primary =
+    location.address.trim() ||
+    location.name.trim() ||
+    location.city.trim() ||
+    location.country.trim() ||
+    'TBD';
+
+  const secondaryParts = [location.city.trim()];
+  const region = location.state?.trim() || location.country.trim();
+
+  if (region && region !== secondaryParts[0]) {
+    secondaryParts.push(region);
+  }
+
+  return {
+    primary,
+    secondary: secondaryParts.filter(Boolean).join(', '),
+  };
 }
