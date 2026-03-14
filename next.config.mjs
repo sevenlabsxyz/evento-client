@@ -52,7 +52,12 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreDuringBuilds: true,
+  },
+  bundlePagesRouterDependencies: true,
+  serverExternalPackages: [],
+  experimental: {
+    optimizeCss: true,
   },
   images: {
     unoptimized: false,

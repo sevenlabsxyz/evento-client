@@ -7,7 +7,10 @@ import type React from 'react';
 import './globals.css';
 import { Providers } from './providers';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+});
 const appUrl =
   process.env.NODE_ENV === 'development' ? 'http://localhost:3003' : 'https://app.evento.so';
 
