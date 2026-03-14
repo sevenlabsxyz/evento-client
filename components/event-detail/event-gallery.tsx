@@ -134,7 +134,7 @@ export default function EventGallery({ event, onImageClick }: EventGalleryProps)
       ) : (
         <Empty className='py-12'>
           <EmptyHeader>
-            <EmptyMedia variant='soft-squircle'>
+            <EmptyMedia variant='icon'>
               <Camera className='h-8 w-8' />
             </EmptyMedia>
             <EmptyTitle>No Photos Yet</EmptyTitle>

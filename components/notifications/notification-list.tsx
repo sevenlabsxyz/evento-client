@@ -83,7 +83,7 @@ export function NotificationList({
     return (
       <Empty className='py-16'>
         <EmptyHeader>
-          <EmptyMedia variant='soft-circle' className='bg-red-100 text-red-500'>
+          <EmptyMedia variant='icon' className='bg-red-100 text-red-500'>
             <Inbox className='h-8 w-8' />
           </EmptyMedia>
           <EmptyTitle className='text-lg sm:text-lg'>Unable to load notifications</EmptyTitle>
@@ -103,7 +103,7 @@ export function NotificationList({
     return (
       <Empty className='py-16'>
         <EmptyHeader>
-          <EmptyMedia variant='soft-circle'>
+          <EmptyMedia variant='icon'>
             <Inbox className='h-8 w-8' />
           </EmptyMedia>
           <EmptyTitle className='text-lg sm:text-lg'>You&apos;re all caught up!</EmptyTitle>
