@@ -26,7 +26,7 @@ import { useEventWeather } from '@/lib/hooks/use-event-weather';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
-import { useTopBar } from '@/lib/stores/topbar-store';
+import { useTopBarStore } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
@@ -43,7 +43,9 @@ export default function EventDetailPageClient() {
   const pathname = usePathname();
   const eventId = params.id as string;
   const { user, isAuthenticated } = useAuth();
-  const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
+  const setTopBarForRoute = useTopBarStore((s) => s.setTopBarForRoute);
+  const applyRouteConfig = useTopBarStore((s) => s.applyRouteConfig);
+  const clearRoute = useTopBarStore((s) => s.clearRoute);
   const [lightboxImages, setLightboxImages] = useState<string[]>([]);
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
@@ -187,13 +189,40 @@ export default function EventDetailPageClient() {
     return hostsData.some((host) => host.user_details?.id === user.id);
   }, [eventData?.creator_user_id, hostsData, user?.id]);
 
-  // Configure TopBar for event pages
+  // Precompute topbar-relevant values as stable primitives to avoid
+  // object/array deps in the effect that trigger infinite re-renders.
+  const eventTitle = event?.title || '';
+  const isPasswordProtected = !!eventData?.password_protected;
+  const creatorUserId = eventData?.creator_user_id || '';
+  const rsvpStatus = userRsvpData?.status;
+
+  const isOverlaid = useMemo(() => {
+    if (!isPasswordProtected) return false;
+    if (passwordAccessGranted) return false;
+    if (hasEventAccess(eventId)) return false;
+    if (isOwnerOrCohost) return false;
+    if (rsvpStatus === 'yes') return false;
+    return true;
+  }, [isPasswordProtected, passwordAccessGranted, eventId, isOwnerOrCohost, rsvpStatus]);
+
+  // Effect 1: Route lifecycle — mount/unmount only.
+  // applyRouteConfig on mount, clearRoute on unmount.
   useEffect(() => {
     const initialPath = getInitialAppPath();
     if (!initialPath) {
       setInitialAppPath(pathname);
     }
+    applyRouteConfig(pathname);
+    return () => {
+      clearRoute(pathname);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
+  // Effect 2: TopBar config updates — reacts to data changes.
+  // No cleanup (clearRoute is handled above). Only primitive deps.
+  useEffect(() => {
+    const initialPath = getInitialAppPath();
     const resolvedInitialPath = initialPath ?? pathname;
     const isDirectLanding = resolvedInitialPath === pathname && !hasAppNavigated();
 
@@ -214,13 +243,11 @@ export default function EventDetailPageClient() {
       }
     };
 
-    applyRouteConfig(pathname);
-
     setTopBarForRoute(pathname, {
       leftMode: isDirectLanding ? 'logo' : 'back',
       onBackPress: cameFromManage ? () => router.push(isAuthenticated ? '/e/hub' : '/') : null,
       centerMode: 'title',
-      title: event?.title || '',
+      title: eventTitle,
       showAvatar: false,
       hideMobileBreadcrumb: true,
       buttons: [
@@ -241,45 +268,18 @@ export default function EventDetailPageClient() {
             ]
           : []),
       ],
-      isOverlaid:
-        !!eventData?.password_protected &&
-        !(
-          passwordAccessGranted ||
-          hasEventAccess(eventId) ||
-          (user && hostsData.some((host) => host.user_details?.id === user.id)) ||
-          (user && eventData?.creator_user_id === user.id) ||
-          userRsvpData?.status === 'yes'
-        ),
+      isOverlaid,
     });
-
-    // Cleanup is handled by a separate unmount-only effect below
-    // to avoid re-render loops when data-driven deps change.
   }, [
     pathname,
     setTopBarForRoute,
-    applyRouteConfig,
-    event?.title,
+    eventTitle,
     isOwnerOrCohost,
+    isOverlaid,
     cameFromManage,
     router,
-    eventData?.password_protected,
-    passwordAccessGranted,
-    eventId,
-    user,
-    hostsData,
-    eventData?.creator_user_id,
-    userRsvpData?.status,
     isAuthenticated,
   ]);
-
-  // Separate unmount-only effect for topbar cleanup — prevents infinite
-  // re-render loops caused by clearRoute calling set() on every dep change.
-  useEffect(() => {
-    return () => {
-      clearRoute(pathname);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
 
   const isLoading = eventLoading || hostsLoading || galleryLoading;
 
