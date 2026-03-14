@@ -451,20 +451,6 @@ export interface PasswordProtectedEventResponse {
   title: string;
   cover?: string;
   password_protected: true;
-  hosts: Array<{
-    id: string;
-    name: string;
-    username: string;
-    avatar: string;
-    image?: string;
-  }>;
-}
-
-// Contact host message form
-export interface ContactHostForm {
-  name: string;
-  email: string;
-  message: string;
 }
 
 // Password verification request/response

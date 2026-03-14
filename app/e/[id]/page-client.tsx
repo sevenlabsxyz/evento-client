@@ -265,13 +265,6 @@ export default function EventDetailPageClient() {
       title: eventData.title,
       cover: eventData.cover,
       password_protected: true,
-      hosts: hostsData.map((host) => ({
-        id: host.user_details.id,
-        name: host.user_details.name || '',
-        username: host.user_details.username,
-        avatar: host.user_details.image || '',
-        image: host.user_details.image || undefined,
-      })),
     };
 
     return (
