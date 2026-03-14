@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 export interface EventHost {
   event_id: string;
   created_at: string;
-  user_details: UserDetails;
+  user_details: UserDetails | null;
 }
 
 export function useEventHosts(eventId: string) {
@@ -26,7 +26,11 @@ export function useEventHosts(eventId: string) {
       }
 
       // Fallback for direct data response
-      return response as EventHost[];
+      if (Array.isArray(response)) {
+        return response;
+      }
+
+      throw new Error('Invalid response format');
     },
     enabled: !!eventId,
     staleTime: 1000 * 60 * 5, // Cache for 5 minutes

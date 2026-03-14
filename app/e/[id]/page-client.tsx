@@ -270,7 +270,7 @@ export default function EventDetailPageClient() {
     if (hasEventAccess(eventId)) return true;
 
     // Check if user is a host or co-host
-    if (user && hostsData.some((host) => host.user_details.id === user.id)) return true;
+    if (user && hostsData.some((host) => host.user_details?.id === user.id)) return true;
 
     // Check if user is the creator
     if (user && eventData.creator_user_id === user.id) return true;
@@ -296,13 +296,21 @@ export default function EventDetailPageClient() {
       title: eventData.title,
       cover: eventData.cover,
       password_protected: true,
-      hosts: hostsData.map((host) => ({
-        id: host.user_details.id,
-        name: host.user_details.name || '',
-        username: host.user_details.username,
-        avatar: host.user_details.image || '',
-        image: host.user_details.image || undefined,
-      })),
+      hosts: hostsData.flatMap((host) => {
+        if (!host.user_details) {
+          return [];
+        }
+
+        return [
+          {
+            id: host.user_details.id,
+            name: host.user_details.name || '',
+            username: host.user_details.username,
+            avatar: host.user_details.image || '',
+            image: host.user_details.image || undefined,
+          },
+        ];
+      }),
     };
 
     return (

@@ -51,4 +51,27 @@ describe('transformApiEventToDisplay', () => {
 
     expect(result.location.coordinates).toEqual({ lat: 0, lng: 0 });
   });
+
+  it('skips hosts without user details', () => {
+    const result = transformApiEventToDisplay(baseApiEvent, [
+      { user_details: null },
+      {
+        user_details: {
+          id: 'host-1',
+          username: 'hostone',
+          name: 'Host One',
+          image: 'host.jpg',
+          bio: 'Main host',
+          verification_status: 'verified',
+        },
+      },
+    ]);
+
+    expect(result.hosts).toEqual([
+      expect.objectContaining({
+        id: 'host-1',
+        username: 'hostone',
+      }),
+    ]);
+  });
 });
