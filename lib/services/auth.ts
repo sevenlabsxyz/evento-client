@@ -3,6 +3,8 @@ import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
+const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
+
 export const authService = {
   /**
    * Send OTP code to email via Supabase SDK
@@ -50,7 +52,7 @@ export const authService = {
       username: data.user.user_metadata?.username || '',
       name: data.user.user_metadata?.full_name || '',
       bio: '',
-      image: data.user.user_metadata?.avatar_url || '',
+      image: data.user.user_metadata?.avatar_url || DEFAULT_AVATAR_IMAGE,
       bio_link: '',
       x_handle: '',
       instagram_handle: '',

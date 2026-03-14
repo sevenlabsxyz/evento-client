@@ -3,9 +3,12 @@
 import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 type UserAvatarSize = 'xs' | 'sm' | 'base' | 'md' | 'lg';
+
+const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
 
 interface UserAvatarProps {
   user?: {
@@ -31,6 +34,12 @@ export function UserAvatar({
   height,
   width,
 }: UserAvatarProps) {
+  const [avatarSrc, setAvatarSrc] = useState(user?.image || DEFAULT_AVATAR_IMAGE);
+
+  useEffect(() => {
+    setAvatarSrc(user?.image || DEFAULT_AVATAR_IMAGE);
+  }, [user?.image]);
+
   // Size variants configuration
   const sizeVariants = {
     xs: {
@@ -84,7 +93,7 @@ export function UserAvatar({
   };
 
   return (
-    <button onClick={onAvatarClick} className={cn('relative', className)}>
+    <button type='button' onClick={onAvatarClick} className={cn('relative', className)}>
       <Avatar
         className={cn(
           // Only use size config if no explicit dimensions are provided
@@ -94,16 +103,27 @@ export function UserAvatar({
         )}
         style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
       >
-        <AvatarImage src={user?.image || '/assets/img/evento-sublogo.svg'} alt='Profile' />
+        <AvatarImage
+          src={avatarSrc}
+          alt='Profile'
+          onError={() => {
+            if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
+              setAvatarSrc(DEFAULT_AVATAR_IMAGE);
+            }
+          }}
+        />
         <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
-          {user?.name?.charAt(0).toUpperCase() || user?.username?.charAt(0).toUpperCase() || 'U'}
+          <img
+            src={DEFAULT_AVATAR_IMAGE}
+            alt='Default profile'
+            className='h-full w-full object-cover'
+          />
         </AvatarFallback>
       </Avatar>
       {/* Verification Badge */}
       {user?.verification_status === 'verified' && (
-        <span
-          role='button'
-          tabIndex={0}
+        <button
+          type='button'
           aria-label='Verification badge'
           onClick={handleVerificationClick}
           className={cn('absolute transition-transform hover:scale-105', sizeConfig.badgePosition)}
@@ -117,7 +137,7 @@ export function UserAvatar({
           >
             <Check className={cn(sizeConfig.badgeIcon, 'stroke-[3] text-white')} />
           </span>
-        </span>
+        </button>
       )}
     </button>
   );
