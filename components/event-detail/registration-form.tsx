@@ -29,6 +29,7 @@ interface RegistrationFormProps {
   step: FormView;
   onStepChange: (step: FormView) => void;
   onEmailChange: (email: string) => void;
+  onStepBusyChange: (isBusy: boolean) => void;
   onSuccess: (autoApproved: boolean, registration?: UserRegistration) => void;
   onCancel: () => void;
 }
@@ -39,6 +40,7 @@ export function RegistrationForm({
   step,
   onStepChange,
   onEmailChange,
+  onStepBusyChange,
   onSuccess,
   onCancel,
 }: RegistrationFormProps) {
@@ -69,6 +71,13 @@ export function RegistrationForm({
       setOtpError(undefined);
     }
   }, [step]);
+
+  useEffect(() => {
+    const isOtpStepBusy =
+      step === 'otp' && (isVerifying || submitRegistration.isPending || isCompletingRegistration);
+
+    onStepBusyChange(isOtpStepBusy);
+  }, [isCompletingRegistration, isVerifying, onStepBusyChange, step, submitRegistration.isPending]);
 
   const updateAnswer = (questionId: string, value: string | string[]) => {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));

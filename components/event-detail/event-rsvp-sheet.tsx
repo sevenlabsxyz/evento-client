@@ -48,6 +48,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const [currentView, setCurrentView] = useState<SheetView>('rsvp-buttons');
   const [registrationStep, setRegistrationStep] = useState<RegistrationStep>('form');
   const [registrationEmail, setRegistrationEmail] = useState('');
+  const [isRegistrationStepBusy, setIsRegistrationStepBusy] = useState(false);
   const [pendingRegistration, setPendingRegistration] = useState<UserRegistration | null>(null);
   const [rsvpPhase, setRsvpPhase] = useState<RsvpPhase>('idle');
   const [selectedStatus, setSelectedStatus] = useState<RSVPStatus | null>(null);
@@ -99,6 +100,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const resetRegistrationFlow = useCallback(() => {
     setRegistrationStep('form');
     setRegistrationEmail('');
+    setIsRegistrationStepBusy(false);
   }, []);
 
   // Reset view when sheet opens
@@ -425,7 +427,8 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               <button
                 type='button'
                 onClick={handleRegistrationHeaderBack}
-                className='rounded-full p-2 hover:bg-gray-100'
+                disabled={isRegistrationStepBusy}
+                className='rounded-full p-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
               >
                 <ArrowLeft className='h-5 w-5' />
               </button>
@@ -447,6 +450,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               step={registrationStep}
               onStepChange={handleRegistrationStepChange}
               onEmailChange={setRegistrationEmail}
+              onStepBusyChange={setIsRegistrationStepBusy}
               onSuccess={handleRegistrationSuccess}
               onCancel={() => {
                 resetRegistrationFlow();
