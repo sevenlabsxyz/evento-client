@@ -207,6 +207,7 @@ export function RegistrationForm({
 
   // Handle OTP verification
   const handleOtpVerify = async (code: string) => {
+    onStepBusyChange(true);
     setIsVerifying(true);
     setOtpError(undefined);
 
