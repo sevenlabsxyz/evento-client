@@ -225,9 +225,10 @@ export function formatEventDateRange(startIso: string, endIso: string, timezone?
 
 function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateRangeParts | null {
   if (isValidDateParts(input.year, input.month, input.day)) {
-    return getEventDateRangeParts(
-      new Date(input.year as number, (input.month as number) - 1, input.day as number),
-      input.timezone
+    return getEventDateRangePartsForCalendarDate(
+      input.year as number,
+      input.month as number,
+      input.day as number
     );
   }
 
@@ -241,6 +242,27 @@ function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateR
   }
 
   return getEventDateRangeParts(fallbackDate, input.timezone);
+}
+
+function getEventDateRangePartsForCalendarDate(
+  year: number,
+  month: number,
+  day: number
+): EventDateRangeParts {
+  const utcCalendarDate = new Date(Date.UTC(year, month - 1, day));
+
+  return {
+    day: String(day),
+    month: utcCalendarDate.toLocaleDateString('en-US', {
+      month: 'long',
+      timeZone: 'UTC',
+    }),
+    weekdayShort: utcCalendarDate.toLocaleDateString('en-US', {
+      weekday: 'short',
+      timeZone: 'UTC',
+    }),
+    year: String(year),
+  };
 }
 
 function isValidDateParts(
