@@ -905,14 +905,14 @@ export default function RegistrationQuestionsPage() {
         {/* Registration Toggle */}
         <div className='rounded-2xl bg-gray-50 p-4'>
           <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3'>
-              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
-                <ClipboardList className='h-5 w-5 text-purple-600' />
-              </div>
-              <div>
-                <h3 className='font-medium'>Require Registration</h3>
-                <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
-              </div>
+              <div className='flex items-center gap-3'>
+                <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
+                  <ClipboardList className='h-5 w-5 text-purple-600' />
+                </div>
+                <div className='min-w-0'>
+                  <h3 className='font-medium'>Require Registration</h3>
+                  <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
+                </div>
             </div>
             <button
               onClick={handleToggleRegistrationRequired}
@@ -937,7 +937,7 @@ export default function RegistrationQuestionsPage() {
                 <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100'>
                   <MessageSquareText className='h-5 w-5 text-blue-600' />
                 </div>
-                <div>
+                <div className='min-w-0'>
                   <h3 className='font-medium'>Custom RSVP Message</h3>
                   <p className='text-sm text-gray-500'>
                     Send a custom message to guests when their registration is approved
