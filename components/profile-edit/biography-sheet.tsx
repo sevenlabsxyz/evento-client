@@ -23,7 +23,7 @@ export default function BiographySheet({
   onSave,
   currentBio = '',
 }: BiographySheetProps) {
-  const [bio, setBio] = useState(currentBio);
+  const [bio, setBio] = useState(currentBio || '');
   const maxLength = 500;
   const updateProfileMutation = useUpdateUserProfile();
 

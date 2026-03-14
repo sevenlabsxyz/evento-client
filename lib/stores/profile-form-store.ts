@@ -76,7 +76,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
         set({
           username: user.username,
           name: user.name,
-          bio: user.bio,
+          bio: user.bio || '',
           image: user.image,
           bio_link: user.bio_link,
           x_handle: user.x_handle,
@@ -86,7 +86,7 @@ export const useProfileFormStore = create<ProfileFormState>()(
           originalData: {
             username: user.username,
             name: user.name,
-            bio: user.bio,
+            bio: user.bio || '',
             image: user.image,
             bio_link: user.bio_link,
             x_handle: user.x_handle,
