@@ -139,7 +139,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     onClick={() => router.push(tab.path)}
                     transition={transition}
                     className={cn(
-                      'relative flex items-center rounded-xl px-3 py-2 text-base font-medium transition-colors duration-300',
+                      'relative flex items-center rounded-full px-3 py-2 text-base font-medium transition-colors duration-300',
                       isSelected
                         ? 'bg-muted-foreground/20 text-primary-foreground'
                         : 'text-muted-foreground hover:text-primary-foreground/80'
@@ -187,7 +187,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                   onClick={() => router.push(tab.path)}
                   transition={transition}
                   className={cn(
-                    'relative flex items-center rounded-xl py-2.5 text-base font-medium transition-colors duration-300',
+                    'relative flex items-center rounded-full py-2.5 text-base font-medium transition-colors duration-300',
                     isSelected
                       ? 'bg-muted-foreground/20 text-primary-foreground'
                       : 'text-muted-foreground hover:text-primary-foreground/80'
