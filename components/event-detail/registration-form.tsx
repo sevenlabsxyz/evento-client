@@ -186,12 +186,14 @@ export function RegistrationForm({
   // Handle OTP verification
   const handleOtpVerify = async (code: string) => {
     setIsVerifying(true);
-    setIsCompletingRegistration(true);
     setOtpError(undefined);
 
     try {
       // 1. Verify OTP - this creates the user session
       const userData = await authService.verifyCode(email.trim(), code);
+
+      // Show completion UI only after successful verification
+      setIsCompletingRegistration(true);
 
       // 2. Invalidate auth query to pick up new session
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
@@ -238,7 +240,11 @@ export function RegistrationForm({
 
       // 6. Update auth store AFTER registration succeeds
       // This prevents auth state change from causing component re-render mid-flow
-      setUser(userToUse);
+      try {
+        setUser(userToUse);
+      } catch (authError) {
+        logger.error('Failed to update auth state after registration', { authError });
+      }
     } catch (error: unknown) {
       const message =
         error instanceof Error ? error.message : 'Invalid verification code. Please try again.';
