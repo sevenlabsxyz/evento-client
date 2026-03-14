@@ -172,7 +172,7 @@ export function TransactionHistory({
     return (
       <Empty className='py-12'>
         <EmptyHeader>
-          <EmptyMedia variant='soft-circle'>
+          <EmptyMedia variant='icon'>
             <Clock className='h-8 w-8' />
           </EmptyMedia>
           <EmptyTitle className='text-lg sm:text-lg'>No transactions yet</EmptyTitle>

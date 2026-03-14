@@ -32,13 +32,7 @@ const emptyMediaVariants = cva(
     variants: {
       variant: {
         default: 'bg-transparent',
-        icon: "bg-muted/70 text-muted-foreground flex shrink-0 items-center justify-center rounded-2xl [&_svg:not([class*='size-'])]:size-6",
-        'soft-square':
-          "bg-muted/70 text-muted-foreground flex shrink-0 items-center justify-center rounded-2xl [&_svg:not([class*='size-'])]:size-7",
-        'soft-circle':
-          "bg-muted/70 text-muted-foreground flex shrink-0 items-center justify-center rounded-full [&_svg:not([class*='size-'])]:size-7",
-        'soft-squircle':
-          "bg-muted/70 text-muted-foreground flex shrink-0 items-center justify-center rounded-[1.75rem] [&_svg:not([class*='size-'])]:size-7",
+        icon: "bg-muted/70 text-muted-foreground flex shrink-0 items-center justify-center rounded-full [&_svg:not([class*='size-'])]:size-6",
       },
       size: {
         sm: 'size-12',
