@@ -36,6 +36,13 @@ import {
   SendPaymentResponse,
 } from '@breeztech/breez-sdk-spark/web';
 
+type LightningAddressChangedEvent = {
+  type: 'lightningAddressChanged';
+  lightningAddress?: LightningAddressInfo;
+};
+
+export type BreezEvent = SdkEvent | LightningAddressChangedEvent;
+
 // Set to true to enable verbose logging
 const DEBUG_BREEZ = false;
 
@@ -58,7 +65,7 @@ export class BreezSDKService {
   private static instance: BreezSDKService;
   private sdk: BreezSdk | null = null;
   private eventListenerId: string | null = null;
-  private eventCallbacks: Set<(event: SdkEvent) => void> = new Set();
+  private eventCallbacks: Set<(event: BreezEvent) => void> = new Set();
 
   private constructor() {}
 
@@ -804,7 +811,7 @@ export class BreezSDKService {
   /**
    * Format and log Breez SDK events with readable context
    */
-  private logBreezEvent(event: SdkEvent): void {
+  private logBreezEvent(event: BreezEvent): void {
     const timestamp = new Date().toLocaleTimeString();
 
     switch (event.type) {
@@ -877,6 +884,16 @@ export class BreezSDKService {
         break;
       }
 
+      case 'lightningAddressChanged': {
+        if (DEBUG_BREEZ) {
+          console.debug(`⚡ [BREEZ:LIGHTNING_ADDRESS_CHANGED] ${timestamp}`, {
+            lightningAddress: event.lightningAddress?.lightningAddress ?? null,
+            username: event.lightningAddress?.username ?? null,
+          });
+        }
+        break;
+      }
+
       default:
         if (DEBUG_BREEZ) console.debug(`🔔 [BREEZ:UNKNOWN_EVENT] ${timestamp}`, { event });
         break;
@@ -892,13 +909,15 @@ export class BreezSDKService {
     try {
       const eventListener: EventListener = {
         onEvent: async (event: SdkEvent) => {
+          const sdkEvent = event as BreezEvent;
+
           // Log all events with formatted output
-          this.logBreezEvent(event);
+          this.logBreezEvent(sdkEvent);
 
           // Notify all registered callbacks
           this.eventCallbacks.forEach((callback) => {
             try {
-              callback(event);
+              callback(sdkEvent);
             } catch (error) {
               console.error('Error in event callback', {
                 error: error instanceof Error ? error.message : String(error),
@@ -921,7 +940,7 @@ export class BreezSDKService {
   /**
    * Register a callback for SDK events
    */
-  onEvent(callback: (event: SdkEvent) => void): () => void {
+  onEvent(callback: (event: BreezEvent) => void): () => void {
     this.eventCallbacks.add(callback);
 
     // Return unsubscribe function
