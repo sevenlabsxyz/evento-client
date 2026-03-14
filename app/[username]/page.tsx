@@ -1,10 +1,19 @@
 import { Env } from '@/lib/constants/env';
-import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { logger } from '@/lib/utils/logger';
+import { shouldBypassUsernameRoute } from '@/lib/utils/public-asset-paths';
 import { createClient } from '@supabase/supabase-js';
 import type { Metadata, ResolvingMetadata } from 'next';
 import { notFound } from 'next/navigation';
 import UserProfilePageClient from './page-client';
+
+function getProfileMetadataClient() {
+  if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {
+    logger.warn('Skipping profile metadata lookup because Supabase env vars are missing');
+    return null;
+  }
+
+  return createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
+}
 
 interface UsernamePageProps {
   params: {
@@ -25,14 +34,16 @@ export async function generateMetadata(
   const profilePath = `/${username}`;
   const profileOgImage = `${profilePath}/opengraph-image`;
 
-  const supabaseUrl = Env.NEXT_PUBLIC_SUPABASE_URL!;
-  const supabaseKey = Env.SUPABASE_SERVICE_ROLE_KEY!;
-  const supabase = createClient(supabaseUrl, supabaseKey);
-
   // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
 
   try {
+    const supabase = getProfileMetadataClient();
+
+    if (!supabase) {
+      return getDefaultMetadata(previousImages, profilePath, profileOgImage);
+    }
+
     const { data: user, error } = await supabase
       .from('user_details')
       .select('name, username, image')
@@ -43,7 +54,7 @@ export async function generateMetadata(
 
     if (!user) {
       logger.info('No user found for username', { username });
-      return getDefaultMetadata(previousImages);
+      return getDefaultMetadata(previousImages, profilePath, profileOgImage);
     }
 
     const title = user.name
@@ -88,20 +99,32 @@ export async function generateMetadata(
     logger.error('Error fetching user data', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return getDefaultMetadata(previousImages);
+    return getDefaultMetadata(previousImages, profilePath, profileOgImage);
   }
 }
 
-function getDefaultMetadata(previousImages: any[]) {
+function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
+  const openGraphImages = fallbackImage
+    ? [
+        {
+          url: fallbackImage,
+          width: 1200,
+          height: 630,
+          alt: 'Evento',
+        },
+      ]
+    : [...previousImages];
+
   return {
     title: { absolute: 'Evento' },
     keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
-    alternates: { canonical: '/' },
+    alternates: { canonical: canonicalPath },
     description: 'Events made social -- evento.so',
     openGraph: {
-      url: '/',
-      images: [...previousImages],
+      url: canonicalPath,
+      images: openGraphImages,
     },
+    twitter: fallbackImage ? { card: 'summary_large_image', images: [fallbackImage] } : undefined,
   };
 }
 
