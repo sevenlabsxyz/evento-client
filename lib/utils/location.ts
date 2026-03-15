@@ -192,8 +192,19 @@ export function getEventLocationDisplayLines(
     };
   }
 
+  // Strip city/state/zip/country from the address field so we only show the
+  // street portion. The backend sometimes stores the full formatted address
+  // (e.g. "2070 Park Centre Dr, Las Vegas, NV 89135, USA") in this field.
+  let streetAddress = location.address.trim();
+  if (streetAddress && location.city?.trim()) {
+    const cityIdx = streetAddress.toLowerCase().indexOf(', ' + location.city.trim().toLowerCase());
+    if (cityIdx > 0) {
+      streetAddress = streetAddress.slice(0, cityIdx).trim();
+    }
+  }
+
   const primary =
-    location.address.trim() ||
+    streetAddress ||
     location.name.trim() ||
     location.city.trim() ||
     location.country.trim() ||
