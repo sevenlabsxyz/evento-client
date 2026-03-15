@@ -63,7 +63,7 @@ export function EventInvitesSection() {
         </div>
         <Empty className='py-8'>
           <EmptyHeader>
-            <EmptyMedia variant='soft-square'>
+            <EmptyMedia variant='icon'>
               <Calendar className='h-8 w-8' />
             </EmptyMedia>
             <EmptyTitle className='text-base sm:text-base'>No pending invites</EmptyTitle>

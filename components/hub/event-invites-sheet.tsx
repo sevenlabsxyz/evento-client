@@ -100,7 +100,7 @@ export function EventInvitesSheet({
                       ) : pendingInvites.length === 0 ? (
                         <Empty className='py-16'>
                           <EmptyHeader>
-                            <EmptyMedia variant='soft-square'>
+                            <EmptyMedia variant='icon'>
                               <Calendar className='h-8 w-8' />
                             </EmptyMedia>
                             <EmptyTitle className='text-base sm:text-base'>
@@ -130,7 +130,7 @@ export function EventInvitesSheet({
                     ) : respondedInvites.length === 0 ? (
                       <Empty className='py-16'>
                         <EmptyHeader>
-                          <EmptyMedia variant='soft-square'>
+                          <EmptyMedia variant='icon'>
                             <Check className='h-8 w-8' />
                           </EmptyMedia>
                           <EmptyTitle className='text-base sm:text-base'>
