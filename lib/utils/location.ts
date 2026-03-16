@@ -46,9 +46,28 @@ export function eventLocationToLocationData(eventLocation: EventLocation): Locat
  * Formats an EventLocation into a display-friendly address string
  */
 export function formatEventLocationAddress(location: EventLocation): string {
+  // Strip city/state/zip/country from the address field when it contains the
+  // full formatted address (e.g. "2070 Park Centre Dr, Las Vegas, NV 89135, USA")
+  // to avoid duplication with the structured fields.
+  let streetAddress = (location.address ?? '').trim();
+  if (streetAddress && location.city?.trim()) {
+    const cityIdx = streetAddress
+      .toLowerCase()
+      .indexOf(', ' + location.city.trim().toLowerCase());
+    if (cityIdx > 0) {
+      streetAddress = streetAddress.slice(0, cityIdx).trim();
+    }
+  }
+
+  // If the street address starts with the venue name, skip the name to avoid
+  // duplication (e.g. name="Av. Nhandú, 848" address="Av. Nhandú, 848 - Planalto...").
+  const name = (location.name ?? '').trim();
+  const skipName =
+    name && streetAddress && streetAddress.toLowerCase().startsWith(name.toLowerCase());
+
   const parts = [
-    location.name,
-    location.address,
+    skipName ? '' : name,
+    streetAddress,
     location.city,
     location.state,
     location.zipCode,
