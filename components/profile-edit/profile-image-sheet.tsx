@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useUpdateUserProfile, useUploadProfileImage } from '@/lib/hooks/use-user-profile';
 import { toast } from '@/lib/utils/toast';
+import { compressImageForUpload } from '@/lib/utils/compress-image';
 import { Camera, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
@@ -31,30 +32,40 @@ export default function ProfileImageSheet({
   const uploadMutation = useUploadProfileImage();
   const updateProfileMutation = useUpdateUserProfile();
 
-  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
+    // Reset input value so re-selecting the same file triggers onChange (Android Chrome fix)
+    event.target.value = '';
+
+    // Validate file type — some Android devices leave file.type empty for camera photos
+    if (file.type && !file.type.startsWith('image/')) {
       toast.error('Please select an image file');
       return;
     }
 
-    // Validate file size (max 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Image size should be less than 5MB');
+    // Validate file size (max 10MB before compression, will be compressed down)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Image size should be less than 10MB');
       return;
     }
 
-    setSelectedFile(file);
+    // Compress image client-side (handles HEIC, large camera photos, etc.)
+    const compressed = await compressImageForUpload(file, {
+      maxDimension: 1200,
+      quality: 0.85,
+      maxSizeBytes: 1.5 * 1024 * 1024,
+    });
+
+    setSelectedFile(compressed);
 
     // Create preview
     const reader = new FileReader();
     reader.onload = (e) => {
       setSelectedImage(e.target?.result as string);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(compressed);
   };
 
   const handleSave = async () => {
@@ -85,7 +96,9 @@ export default function ProfileImageSheet({
       toast.success('Profile image updated');
       onClose();
     } catch (error) {
-      toast.error('Failed to update profile image');
+      const message =
+        error instanceof Error ? error.message : 'Failed to update profile image';
+      toast.error(message);
     } finally {
       setIsUploading(false);
     }

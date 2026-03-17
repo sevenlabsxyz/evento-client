@@ -117,27 +117,44 @@ export function useUploadProfileImage() {
       // Sanitize the filename for security
       const safeFilename = sanitizeUploadFileName(file.name);
 
-      // Send raw file bytes directly — the backend streams request.body to Supabase storage
-      // (FormData/multipart breaks this because the backend doesn't parse multipart boundaries)
-      const response = await fetch(
-        `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
-        {
-          method: 'POST',
-          body: file,
-          headers: {
-            'Content-Type': file.type || 'application/octet-stream',
-          },
-          credentials: 'include', // Include cookies for auth
+      // Ensure Content-Type is set — some Android devices leave file.type empty for camera photos
+      const contentType = file.type || 'image/jpeg';
+
+      // Add a 30-second timeout to prevent hanging on mobile networks
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30_000);
+
+      try {
+        // Send raw file bytes directly — the backend streams request.body to Supabase storage
+        // (FormData/multipart breaks this because the backend doesn't parse multipart boundaries)
+        const response = await fetch(
+          `${Env.NEXT_PUBLIC_API_URL}/v1/user/details/image-upload?filename=${encodeURIComponent(safeFilename)}`,
+          {
+            method: 'POST',
+            body: file,
+            headers: {
+              'Content-Type': contentType,
+            },
+            credentials: 'include', // Include cookies for auth
+            signal: controller.signal,
+          }
+        );
+
+        if (!response.ok) {
+          const error = await response.json().catch(() => ({ message: 'Upload failed' }));
+          throw new Error(error.message || `Upload failed with status ${response.status}`);
         }
-      );
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: 'Upload failed' }));
-        throw new Error(error.message || `Upload failed with status ${response.status}`);
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        if (error instanceof DOMException && error.name === 'AbortError') {
+          throw new Error('Upload timed out. Please check your connection and try again.');
+        }
+        throw error;
+      } finally {
+        clearTimeout(timeoutId);
       }
-
-      const result = await response.json();
-      return result;
     },
     onSuccess: () => {
       // Cache invalidation is handled by the calling component after persisting the image URL
