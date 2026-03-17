@@ -43,6 +43,39 @@ describe('useApproveRegistration', () => {
     jest.clearAllMocks();
   });
 
+  it('invalidates registration and hosted feed queries after success', async () => {
+    const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+    mockApiClient.post.mockResolvedValue({
+      data: {
+        registration: {
+          id: 'reg_123',
+          approval_status: 'approved',
+          reviewed_at: '2024-01-15T10:30:00Z',
+          reviewed_by: 'host_user_123',
+        },
+        rsvp: null,
+      },
+    });
+
+    const { result } = renderHook(() => useApproveRegistration(), {
+      wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ eventId: 'event_123', registrationId: 'reg_123' });
+    });
+
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['registration', 'submissions', 'event_123'],
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['registration', 'hosted'],
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['rsvps', 'event', 'event_123'],
+    });
+  });
+
   describe('mutation functionality', () => {
     it('approves registration successfully', async () => {
       const mockResponse = {

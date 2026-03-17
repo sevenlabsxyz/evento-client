@@ -38,6 +38,9 @@ export function useDenyRegistration() {
       queryClient.invalidateQueries({
         queryKey: queryKeys.registrationSubmissions(variables.eventId),
       });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.myHostedRegistrations(),
+      });
     },
   });
 }
