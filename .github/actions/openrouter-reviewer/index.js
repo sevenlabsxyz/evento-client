@@ -81,7 +81,7 @@ async function run() {
   const openRouterApiKey = core.getInput('openrouter_api_key', { required: true });
   const githubToken = core.getInput('github_token', { required: true });
   const botName = core.getInput('bot_name') || '@alfred';
-  const model = core.getInput('model') || 'openrouter/z-ai/glm-5';
+  const model = core.getInput('model') || 'z-ai/glm-5';
   const autoReview = core.getInput('auto_review') === 'true';
 
   const payload = github.context.payload;
