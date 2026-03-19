@@ -85,11 +85,12 @@ export const eventFormSchema = z.object({
   // Cost
   cost: z.string().optional(),
 
-  // Settings (only for creation)
+  // Settings
   settings: z
     .object({
       max_capacity: z.number().positive().optional(),
       show_capacity_count: z.boolean().optional(),
+      is_guest_list_visible: z.boolean().optional(),
     })
     .optional(),
 
@@ -102,7 +103,6 @@ export type EventFormData = z.infer<typeof eventFormSchema>;
 
 /**
  * Schema for creating an event (POST)
- * Includes settings object
  */
 export const createEventSchema = eventFormSchema;
 
@@ -110,19 +110,55 @@ export type CreateEventData = z.infer<typeof createEventSchema>;
 
 /**
  * Schema for updating an event (PATCH)
- * All fields are optional for partial updates; id is required
+ * All fields except id are optional to support partial updates.
  */
-export const updateEventSchema = eventFormSchema.partial().extend({
+export const updateEventSchema = z.object({
   id: z.string().min(1, 'Event ID is required'),
+
+  // Optional fields from eventFormSchema
+  title: z.string().min(1).max(200).optional(),
+  description: z.string().optional(),
+  location: locationObjectSchema.nullable().optional(),
+  timezone: z.string().min(1).optional(),
+
+  cover: z.string().nullable().optional(),
+
+  start_date_day: z.number().min(1).max(31).optional(),
+  start_date_month: z.number().min(1).max(12).optional(),
+  start_date_year: z.number().min(2024).max(2050).optional(),
+  start_date_hours: z.number().min(0).max(23).nullable().optional(),
+  start_date_minutes: z.number().min(0).max(59).nullable().optional(),
+
+  end_date_day: z.number().min(1).max(31).optional(),
+  end_date_month: z.number().min(1).max(12).optional(),
+  end_date_year: z.number().min(2024).max(2050).optional(),
+  end_date_hours: z.number().min(0).max(23).nullable().optional(),
+  end_date_minutes: z.number().min(0).max(59).nullable().optional(),
+
+  type: z.enum(['rsvp', 'registration', 'ticketed']).optional(),
+  visibility: z.enum(['public', 'private']).optional(),
+  status: z.enum(['published', 'draft']).optional(),
+
+  spotify_url: z.string().url().optional().or(z.literal('')),
+  wavlake_url: z.string().url().optional().or(z.literal('')),
+
+  contrib_cashapp: z.string().optional(),
+  contrib_venmo: z.string().optional(),
+  contrib_paypal: z.string().optional(),
+  contrib_btclightning: z.string().optional(),
+
+  cost: z.string().optional(),
+
   settings: z
     .object({
-      max_capacity: z.number().positive().nullable().optional(),
-      show_capacity_count: z.boolean().nullable().optional(),
-      hide_guest_list_for_unapproved: z.boolean().optional(),
-      hide_location_for_unapproved: z.boolean().optional(),
-      hide_description_for_unapproved: z.boolean().optional(),
+      max_capacity: z.number().positive().optional(),
+      show_capacity_count: z.boolean().optional(),
+      is_guest_list_visible: z.boolean().optional(),
     })
     .optional(),
+
+  password_protected: z.boolean().optional(),
+  password: z.string().optional(),
 });
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
