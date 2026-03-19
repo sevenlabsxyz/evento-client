@@ -1,0 +1,25 @@
+name: 'OpenRouter Reviewer'
+author: 'evento'
+description: 'Interactive AI code reviewer that responds to @mention using OpenRouter'
+
+inputs:
+  openrouter_api_key:
+    description: 'OpenRouter API key'
+    required: true
+  github_token:
+    description: 'GitHub token for API access'
+    required: true
+  bot_name:
+    description: 'Bot name to respond to (e.g., @alfred)'
+    default: '@alfred'
+  model:
+    description: 'OpenRouter model ID'
+    default: 'openrouter/z-ai/glm-5'
+
+runs:
+  using: 'node20'
+  main: 'index.js'
+
+branding:
+  icon: 'message-circle'
+  color: 'purple'

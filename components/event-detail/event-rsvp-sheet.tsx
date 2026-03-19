@@ -1,5 +1,6 @@
 'use client';
 
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
@@ -9,11 +10,9 @@ import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
-import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { DetachedSheet } from '../ui/detached-sheet';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 import { RegistrationForm } from './registration-form';
 import { RegistrationStatus } from './registration-status';
@@ -419,45 +418,20 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
     switch (currentView) {
       case 'registration-form': {
-        const isOtpStep = registrationStep === 'otp';
-
         return (
-          <>
-            <div className='mb-4 flex items-center gap-3'>
-              <button
-                type='button'
-                onClick={handleRegistrationHeaderBack}
-                disabled={isRegistrationStepBusy}
-                className='rounded-full p-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
-              >
-                <ArrowLeft className='h-5 w-5' />
-              </button>
-              <div className='min-w-0'>
-                <DetachedSheet.Title className='text-lg font-semibold text-gray-900'>
-                  {isOtpStep ? 'Verify your email' : 'Register for Event'}
-                </DetachedSheet.Title>
-                {isOtpStep && (
-                  <DetachedSheet.Description className='text-sm text-gray-500'>
-                    Enter the 6-digit code sent to{' '}
-                    <span className='font-medium text-gray-700'>{registrationEmail}</span>
-                  </DetachedSheet.Description>
-                )}
-              </div>
-            </div>
-            <RegistrationForm
-              eventId={eventId}
-              questions={registrationSettings?.questions ?? []}
-              step={registrationStep}
-              onStepChange={handleRegistrationStepChange}
-              onEmailChange={setRegistrationEmail}
-              onStepBusyChange={setIsRegistrationStepBusy}
-              onSuccess={handleRegistrationSuccess}
-              onCancel={() => {
-                resetRegistrationFlow();
-                setCurrentView('rsvp-buttons');
-              }}
-            />
-          </>
+          <RegistrationForm
+            eventId={eventId}
+            questions={registrationSettings?.questions ?? []}
+            step={registrationStep}
+            onStepChange={handleRegistrationStepChange}
+            onEmailChange={setRegistrationEmail}
+            onStepBusyChange={setIsRegistrationStepBusy}
+            onSuccess={handleRegistrationSuccess}
+            onCancel={() => {
+              resetRegistrationFlow();
+              setCurrentView('rsvp-buttons');
+            }}
+          />
         );
       }
 
@@ -499,30 +473,45 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   return (
     <>
-      <DetachedSheet.Root presented={isOpen} onPresentedChange={handleSheetOpenChange}>
-        <DetachedSheet.Portal>
-          <DetachedSheet.View>
-            <DetachedSheet.Backdrop />
-            <DetachedSheet.Content>
-              <div className='max-h-[80vh] overflow-y-auto p-6 pb-24'>
-                <div className='mb-4 flex justify-center'>
-                  <DetachedSheet.Handle />
-                </div>
-
-                {currentView !== 'registration-form' && (
-                  <VisuallyHidden.Root asChild>
-                    <DetachedSheet.Title>
-                      {currentView === 'registration-status' ? 'Registration Status' : 'RSVP'}
-                    </DetachedSheet.Title>
-                  </VisuallyHidden.Root>
+      <MasterScrollableSheet
+        title={
+          currentView === 'registration-form'
+            ? registrationStep === 'otp'
+              ? 'Verify your email'
+              : 'Register for Event'
+            : 'RSVP'
+        }
+        open={isOpen}
+        onOpenChange={handleSheetOpenChange}
+        headerLeft={
+          currentView === 'registration-form' ? (
+            <div className='flex min-w-0 items-center gap-3'>
+              <button
+                type='button'
+                onClick={handleRegistrationHeaderBack}
+                disabled={isRegistrationStepBusy}
+                className='flex-shrink-0 rounded-full p-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
+              >
+                <ArrowLeft className='h-5 w-5' />
+              </button>
+              <div className='min-w-0'>
+                <h2 className='truncate text-lg font-semibold text-gray-900'>
+                  {registrationStep === 'otp' ? 'Verify your email' : 'Register for Event'}
+                </h2>
+                {registrationStep === 'otp' && (
+                  <p className='truncate text-sm text-gray-500'>
+                    Code sent to{' '}
+                    <span className='font-medium text-gray-700'>{registrationEmail}</span>
+                  </p>
                 )}
-
-                {renderContent()}
               </div>
-            </DetachedSheet.Content>
-          </DetachedSheet.View>
-        </DetachedSheet.Portal>
-      </DetachedSheet.Root>
+            </div>
+          ) : undefined
+        }
+        contentClassName='px-4 pb-6 pt-0'
+      >
+        {renderContent()}
+      </MasterScrollableSheet>
 
       {eventData && (
         <ContributionPaymentSheet
