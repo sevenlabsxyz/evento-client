@@ -77,22 +77,12 @@ If there are no real issues, say "LGTM" and nothing else.`,
   return data.choices[0].message.content;
 }
 
-async function postComment(octokit, owner, repo, issueNumber, body, isPR = true) {
-  if (isPR) {
-    await octokit.rest.issues.createComment({
-      owner,
-      repo,
-      issue_number: issueNumber,
-      body,
-    });
-  }
-}
-
 async function run() {
   const openRouterApiKey = core.getInput('openrouter_api_key', { required: true });
   const githubToken = core.getInput('github_token', { required: true });
   const botName = core.getInput('bot_name') || '@alfred';
   const model = core.getInput('model') || 'openrouter/z-ai/glm-5';
+  const autoReview = core.getInput('auto_review') === 'true';
 
   const payload = github.context.payload;
   const eventName = github.context.eventName;
@@ -100,48 +90,44 @@ async function run() {
   let commentBody = '';
   let shouldRespond = false;
 
-  // Check if this event contains a mention of the bot
-  if (eventName === 'issue_comment') {
-    commentBody = payload.comment.body || '';
-    shouldRespond = commentBody.toLowerCase().includes(botName.toLowerCase());
-  } else if (eventName === 'pull_request_review_comment') {
-    commentBody = payload.comment.body || '';
-    shouldRespond = commentBody.toLowerCase().includes(botName.toLowerCase());
-  } else if (eventName === 'pull_request_review') {
-    commentBody = payload.review.body || '';
-    shouldRespond = commentBody.toLowerCase().includes(botName.toLowerCase());
-  } else if (eventName === 'issues') {
-    const issueBody = payload.issue.body || '';
-    const issueTitle = payload.issue.title || '';
-    shouldRespond =
-      issueBody.toLowerCase().includes(botName.toLowerCase()) ||
-      issueTitle.toLowerCase().includes(botName.toLowerCase());
-  }
+  // Check if this event contains a mention of the bot (only for non-auto mode)
+  if (!autoReview) {
+    if (eventName === 'issue_comment') {
+      commentBody = payload.comment.body || '';
+      shouldRespond = commentBody.toLowerCase().includes(botName.toLowerCase());
+    } else if (eventName === 'pull_request_review_comment') {
+      commentBody = payload.comment.body || '';
+      shouldRespond = commentBody.toLowerCase().includes(botName.toLowerCase());
+    } else if (eventName === 'pull_request_review') {
+      commentBody = payload.review.body || '';
+      shouldRespond = commentBody.toLowerCase().includes(botName.toLowerCase());
+    } else if (eventName === 'issues') {
+      const issueBody = payload.issue.body || '';
+      const issueTitle = payload.issue.title || '';
+      shouldRespond =
+        issueBody.toLowerCase().includes(botName.toLowerCase()) ||
+        issueTitle.toLowerCase().includes(botName.toLowerCase());
+    }
 
-  if (!shouldRespond) {
-    console.log('Bot mention not found, skipping');
-    return;
+    if (!shouldRespond) {
+      console.log('Bot mention not found, skipping');
+      return;
+    }
   }
 
   const octokit = github.getOctokit(githubToken);
   const { owner, repo } = github.context.repo;
 
   let prNumber = null;
-  let isPR = true;
 
   // Determine if this is a PR comment or issue
   if (payload.pull_request) {
     prNumber = payload.pull_request.number;
   } else if (payload.issue && payload.issue.pull_request) {
     prNumber = payload.issue.number;
-  } else if (payload.comment) {
-    // Check if comment is on a PR
-    if (payload.comment.pull_request_url) {
-      const prUrl = payload.comment.pull_request_url;
-      prNumber = parseInt(prUrl.split('/pulls/')[1]);
-    } else if (payload.issue && payload.issue.pull_request) {
-      prNumber = payload.issue.number;
-    }
+  } else if (payload.comment && payload.comment.pull_request_url) {
+    const prUrl = payload.comment.pull_request_url;
+    prNumber = parseInt(prUrl.split('/pulls/')[1]);
   }
 
   if (!prNumber) {
@@ -177,18 +163,24 @@ ${pr.body || 'No description provided.'}
 ### Diff:
 ${diff}
 
----
+${autoReview ? 'This is an automatic review triggered on PR open/sync.' : `The user mentioned ${botName} in a comment.`}
 
-The user mentioned ${botName} in a comment. Review this PR and provide helpful, actionable feedback.`;
+Review this PR and provide helpful, actionable feedback.`;
 
     console.log('Calling OpenRouter API...');
     const review = await callOpenRouter(openRouterApiKey, model, prompt);
     console.log('Received review from OpenRouter');
 
     // Post the review as a comment
-    const commentBody = `## ${model.split('/')[1]} Review\n\n${review}\n\n---\n*Reviewed by OpenRouter AI*`;
+    const modelName = model.includes('/') ? model.split('/')[1] : model;
+    const commentBody = `## ${modelName} Review\n\n${review}\n\n---\n*Reviewed by OpenRouter AI*`;
 
-    await postComment(octokit, owner, repo, prNumber, commentBody, isPR);
+    await octokit.rest.issues.createComment({
+      owner,
+      repo,
+      issue_number: prNumber,
+      body: commentBody,
+    });
     console.log('Comment posted successfully');
   } catch (error) {
     core.setFailed(`Error: ${error.message}`);

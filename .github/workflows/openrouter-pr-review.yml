@@ -24,13 +24,16 @@ jobs:
           fetch-depth: 1
 
       - name: Run OpenRouter AI Review
-        id: openrouter-review
-        uses: jonit-dev/openrouter-github-action@main
+        uses: ./.github/actions/openrouter-reviewer
         with:
+          openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           open_router_key: ${{ secrets.OPENROUTER_API_KEY }}
           model_id: 'openrouter/z-ai/glm-5'
           reasoning_effort: 'medium'
+          bot_name: '@alfred'
+          model: 'openrouter/z-ai/glm-5'
+          auto_review: 'true'
           minimum_score: '70'
           max_pr_reviews: '5'
 
