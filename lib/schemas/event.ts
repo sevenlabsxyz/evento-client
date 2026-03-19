@@ -244,6 +244,14 @@ export const apiEventSchema = z.object({
   password_protected: z.boolean().optional(),
   password: z.string().nullable().optional(),
   restricted_fields: z.array(z.enum(['location', 'description', 'guest_list'])).optional(),
+  visibility_settings: z
+    .object({
+      is_guest_list_visible: z.boolean().optional(),
+      hide_guest_list_for_unapproved: z.boolean().optional(),
+      hide_location_for_unapproved: z.boolean().optional(),
+      hide_description_for_unapproved: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export type ApiEvent = z.infer<typeof apiEventSchema>;
