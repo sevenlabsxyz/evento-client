@@ -1,5 +1,4 @@
 import { Env } from '@/lib/constants/env';
-import { createClient } from '@/lib/supabase/client';
 import axios, {
   AxiosError,
   AxiosRequestConfig,
@@ -8,6 +7,7 @@ import axios, {
   type AxiosInstance,
 } from 'axios';
 
+// Our interceptor returns response.data, so expose method signatures that resolve to T directly
 type ApiClient = Omit<AxiosInstance, 'get' | 'post' | 'put' | 'patch' | 'delete' | 'request'> & {
   request<T = any, D = any>(config: AxiosRequestConfig<D>): Promise<T>;
   get<T = any, D = any>(url: string, config?: AxiosRequestConfig<D>): Promise<T>;
@@ -19,36 +19,35 @@ type ApiClient = Omit<AxiosInstance, 'get' | 'post' | 'put' | 'patch' | 'delete'
   patch<T = any, D = any>(url: string, data?: D, config?: AxiosRequestConfig<D>): Promise<T>;
 };
 
+// Create the main API client for session-based authentication
 export const apiClient: ApiClient = axios.create({
   baseURL: Env.NEXT_PUBLIC_API_URL,
-  withCredentials: true,
+  withCredentials: true, // Important: includes session cookies
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 10000,
+  timeout: 10000, // 10 second timeout
 }) as unknown as ApiClient;
 
+// Add request interceptor for logging
 apiClient.interceptors.request.use(
-  async (config: InternalAxiosRequestConfig) => {
+  (config: InternalAxiosRequestConfig) => {
     const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
+    // Store request ID and start time in config for correlation
     config.metadata = {
       requestId,
       startTime: Date.now(),
     };
 
-    try {
-      const supabase = createClient();
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      if (session?.access_token) {
-        config.headers.Authorization = `Bearer ${session.access_token}`;
-      }
-    } catch {
-      // No session available - continue without auth header
-    }
+    // Log the outgoing request
+    // logger.logApiRequest(config.url || 'unknown', {
+    //   requestId,
+    //   method: config.method?.toUpperCase(),
+    //   headers: config.headers as Record<string, string>,
+    //   body: config.data,
+    //   userAgent: navigator?.userAgent,
+    // });
 
     return config;
   },
@@ -58,8 +57,29 @@ apiClient.interceptors.request.use(
   }
 );
 
+// Response interceptor for handling errors and data extraction
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => response.data,
+  (response: AxiosResponse) => {
+    // const config = response.config as AxiosRequestConfig & {
+    //   metadata?: { requestId: string; startTime: number };
+    // };
+    // const requestId = config.metadata?.requestId;
+    // const startTime = config.metadata?.startTime || Date.now();
+    // const duration = Date.now() - startTime;
+
+    // Log successful response
+    // logger.logApiResponse(config.url || 'unknown', {
+    //   requestId,
+    //   statusCode: response.status,
+    //   headers: response.headers as Record<string, string>,
+    //   body: response.data,
+    //   bodySize: JSON.stringify(response.data).length,
+    //   duration,
+    // });
+
+    // For successful responses, return the data directly
+    return response.data;
+  },
   (error: AxiosError) => {
     const config = error.config as AxiosRequestConfig & {
       metadata?: { requestId: string; startTime: number };
@@ -68,9 +88,11 @@ apiClient.interceptors.response.use(
     const startTime = config?.metadata?.startTime || Date.now();
     const duration = Date.now() - startTime;
 
+    // Extract error message from response
     const errorMessage =
       (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
 
+    // Log API error with full context
     console.error('API Error:', {
       url: config?.url || 'unknown',
       error: error.message,
@@ -85,6 +107,7 @@ apiClient.interceptors.response.use(
       timeout: error.code === 'ECONNABORTED',
     });
 
+    // Create a standardized error object
     const apiError = {
       message: errorMessage,
       status: error.response?.status,
@@ -95,6 +118,7 @@ apiClient.interceptors.response.use(
   }
 );
 
+// Extend AxiosRequestConfig to include metadata for request correlation
 declare module 'axios' {
   interface AxiosRequestConfig {
     metadata?: {
