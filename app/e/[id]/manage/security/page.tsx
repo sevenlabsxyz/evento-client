@@ -14,7 +14,7 @@ import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
+import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff, Users } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -59,6 +59,9 @@ export default function SecurityPrivacyPage() {
   const [hideDescriptionForUnapproved, setHideDescriptionForUnapproved] = useState<boolean>(
     DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
   );
+  const [hideGuestListEntirely, setHideGuestListEntirely] = useState<boolean>(
+    eventData?.restricted_fields?.includes('guest_list') ?? false
+  );
 
   const isRegistrationMode = eventData?.type === 'registration';
 
@@ -73,8 +76,14 @@ export default function SecurityPrivacyPage() {
       (registrationSettings?.hide_description_for_unapproved ??
         DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved);
 
+  const hasGuestListVisibilityChanges =
+    hideGuestListEntirely !== (eventData?.restricted_fields?.includes('guest_list') ?? false);
+
   const hasEventChanges = isValid() && hasChanges();
-  const isFormValid = hasEventChanges || (isRegistrationMode && hasVisibilitySettingsChanges);
+  const isFormValid =
+    hasEventChanges ||
+    (isRegistrationMode && hasVisibilitySettingsChanges) ||
+    hasGuestListVisibilityChanges;
 
   useEffect(() => {
     setHideLocationForUnapproved(
@@ -89,10 +98,12 @@ export default function SecurityPrivacyPage() {
       registrationSettings?.hide_description_for_unapproved ??
         DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
     );
+    setHideGuestListEntirely(eventData?.restricted_fields?.includes('guest_list') ?? false);
   }, [
     registrationSettings?.hide_location_for_unapproved,
     registrationSettings?.hide_guest_list_for_unapproved,
     registrationSettings?.hide_description_for_unapproved,
+    eventData?.restricted_fields,
   ]);
 
   useEffect(() => {
@@ -130,6 +141,24 @@ export default function SecurityPrivacyPage() {
         await updateEventMutation.mutateAsync({
           ...formData,
           id: eventId,
+        });
+      }
+
+      // Handle guest list entirely visibility change (restricted_fields)
+      const currentRestrictedFields = eventData?.restricted_fields ?? [];
+      const currentGuestListHidden = currentRestrictedFields.includes('guest_list');
+      if (hideGuestListEntirely !== currentGuestListHidden) {
+        const newRestrictedFields: ('location' | 'description' | 'guest_list')[] =
+          hideGuestListEntirely
+            ? [...currentRestrictedFields.filter((f) => f !== 'guest_list'), 'guest_list']
+            : (currentRestrictedFields.filter((f) => f !== 'guest_list') as (
+                | 'location'
+                | 'description'
+                | 'guest_list'
+              )[]);
+        await updateEventMutation.mutateAsync({
+          id: eventId,
+          restricted_fields: newRestrictedFields.length > 0 ? newRestrictedFields : undefined,
         });
       }
 
@@ -270,6 +299,28 @@ export default function SecurityPrivacyPage() {
                 </div>
               </>
             )}
+          </div>
+        </div>
+
+        {/* Guest List */}
+        <div>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400'>
+            Guest List
+          </h2>
+          <div className='overflow-hidden rounded-2xl bg-white'>
+            <div className='flex items-center gap-4 p-4'>
+              <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
+                <Users className='h-4 w-4 text-gray-600' />
+              </div>
+              <div className='flex-1'>
+                <p className='text-sm font-medium text-gray-900'>Hide guest list</p>
+                <p className='text-xs text-gray-500'>Prevent anyone from seeing who is attending</p>
+              </div>
+              <Switch
+                checked={hideGuestListEntirely}
+                onCheckedChange={(checked) => setHideGuestListEntirely(checked)}
+              />
+            </div>
           </div>
         </div>
 

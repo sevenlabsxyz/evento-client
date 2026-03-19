@@ -110,10 +110,19 @@ export type CreateEventData = z.infer<typeof createEventSchema>;
 
 /**
  * Schema for updating an event (PATCH)
- * Includes ID and settings for capacity management
+ * All fields are optional for partial updates; id is required
  */
-export const updateEventSchema = eventFormSchema.extend({
+export const updateEventSchema = eventFormSchema.partial().extend({
   id: z.string().min(1, 'Event ID is required'),
+  settings: z
+    .object({
+      max_capacity: z.number().positive().nullable().optional(),
+      show_capacity_count: z.boolean().nullable().optional(),
+      hide_guest_list_for_unapproved: z.boolean().optional(),
+      hide_location_for_unapproved: z.boolean().optional(),
+      hide_description_for_unapproved: z.boolean().optional(),
+    })
+    .optional(),
 });
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
