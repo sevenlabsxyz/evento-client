@@ -408,6 +408,7 @@ export default function EventDetailPageClient() {
       <EventCampaignCard eventId={eventId} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
       {!isApprovedAttendee &&
+      registrationSettings?.registration_required &&
       visibilitySettings &&
       (visibilitySettings.hide_location_for_unapproved ||
         visibilitySettings.hide_description_for_unapproved ||
