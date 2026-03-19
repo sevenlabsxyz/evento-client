@@ -60,7 +60,8 @@ export default function SecurityPrivacyPage() {
     DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
   );
   const [hideGuestListEntirely, setHideGuestListEntirely] = useState<boolean>(
-    eventData?.restricted_fields?.includes('guest_list') ?? false
+    registrationSettings?.hide_guest_list_for_unapproved ??
+      DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved
   );
 
   const isRegistrationMode = eventData?.type === 'registration';
@@ -77,7 +78,9 @@ export default function SecurityPrivacyPage() {
         DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved);
 
   const hasGuestListVisibilityChanges =
-    hideGuestListEntirely !== (eventData?.restricted_fields?.includes('guest_list') ?? false);
+    hideGuestListEntirely !==
+    (registrationSettings?.hide_guest_list_for_unapproved ??
+      DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved);
 
   const hasEventChanges = isValid() && hasChanges();
   const isFormValid =
@@ -98,12 +101,14 @@ export default function SecurityPrivacyPage() {
       registrationSettings?.hide_description_for_unapproved ??
         DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved
     );
-    setHideGuestListEntirely(eventData?.restricted_fields?.includes('guest_list') ?? false);
+    setHideGuestListEntirely(
+      registrationSettings?.hide_guest_list_for_unapproved ??
+        DEFAULT_REGISTRATION_VISIBILITY.hide_guest_list_for_unapproved
+    );
   }, [
     registrationSettings?.hide_location_for_unapproved,
     registrationSettings?.hide_guest_list_for_unapproved,
     registrationSettings?.hide_description_for_unapproved,
-    eventData?.restricted_fields,
   ]);
 
   useEffect(() => {
@@ -144,21 +149,13 @@ export default function SecurityPrivacyPage() {
         });
       }
 
-      // Handle guest list entirely visibility change (restricted_fields)
-      const currentRestrictedFields = eventData?.restricted_fields ?? [];
-      const currentGuestListHidden = currentRestrictedFields.includes('guest_list');
-      if (hideGuestListEntirely !== currentGuestListHidden) {
-        const newRestrictedFields: ('location' | 'description' | 'guest_list')[] =
-          hideGuestListEntirely
-            ? [...currentRestrictedFields.filter((f) => f !== 'guest_list'), 'guest_list']
-            : (currentRestrictedFields.filter((f) => f !== 'guest_list') as (
-                | 'location'
-                | 'description'
-                | 'guest_list'
-              )[]);
+      // Handle guest list entirely visibility change via settings
+      if (hasGuestListVisibilityChanges) {
         await updateEventMutation.mutateAsync({
           id: eventId,
-          restricted_fields: newRestrictedFields.length > 0 ? newRestrictedFields : undefined,
+          settings: {
+            hide_guest_list_for_unapproved: hideGuestListEntirely,
+          },
         });
       }
 
