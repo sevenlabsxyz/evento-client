@@ -209,8 +209,26 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
   }, [currentUserId, event.owner?.id, hosts]);
 
   const hasStructuredLocation = Boolean(eventData?.event_locations);
-  const isLocationHidden = eventData?.restricted_fields?.includes('location') ?? false;
-  const isDescriptionHidden = eventData?.restricted_fields?.includes('description') ?? false;
+
+  // Compute whether this viewer is an approved attendee.
+  // Password alone does NOT count — requires RSVP 'yes' and, when registration is
+  // required, an 'approved' approval status.
+  const isApprovedAttendee = useMemo(() => {
+    if (isOwnerOrCohost) return true;
+    if (currentStatus !== 'yes') return false;
+    if (registrationRequired) {
+      return myRegistration?.registration?.approval_status === 'approved';
+    }
+    return true;
+  }, [isOwnerOrCohost, currentStatus, registrationRequired, myRegistration]);
+
+  // Drive visibility from the host's raw settings + approval state,
+  // NOT from restricted_fields (which is backend-computed and treats password-holders as approved).
+  const visibilitySettings = eventData?.visibility_settings;
+  const isLocationHidden =
+    (visibilitySettings?.hide_location_for_unapproved ?? false) && !isApprovedAttendee;
+  const isDescriptionHidden =
+    (visibilitySettings?.hide_description_for_unapproved ?? false) && !isApprovedAttendee;
   const locationDisplay = getEventLocationDisplayLines(event.location, {
     preferStructuredAddress: hasStructuredLocation,
     fallbackLabel: hasStructuredLocation ? undefined : eventData?.location,
@@ -350,9 +368,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                     {locationDisplay.primary}
                   </span>
                   {locationDisplay.secondary && (
-                    <span className='text-sm text-gray-500'>
-                      {locationDisplay.secondary}
-                    </span>
+                    <span className='text-sm text-gray-500'>{locationDisplay.secondary}</span>
                   )}
                 </div>
               </div>

@@ -23,6 +23,8 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventHosts } from '@/lib/hooks/use-event-hosts';
 import { useEventWeather } from '@/lib/hooks/use-event-weather';
+import { useMyRegistration } from '@/lib/hooks/use-my-registration';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
@@ -188,6 +190,32 @@ export default function EventDetailPageClient() {
     if (eventData?.creator_user_id === user.id) return true;
     return hostsData.some((host) => host.user_details?.id === user.id);
   }, [eventData?.creator_user_id, hostsData, user?.id]);
+
+  const { data: registrationSettings } = useRegistrationSettings(eventId);
+  const { data: myRegistration } = useMyRegistration(eventId);
+
+  // Approved attendee = RSVP 'yes' + approval (when registration is required).
+  // Password access alone does NOT make someone approved.
+  const isApprovedAttendee = useMemo(() => {
+    if (isOwnerOrCohost) return true;
+    if (userRsvpData?.status !== 'yes') return false;
+    const registrationRequired =
+      eventData?.type !== undefined
+        ? eventData.type !== 'rsvp'
+        : (registrationSettings?.registration_required ?? false);
+    if (registrationRequired) {
+      return myRegistration?.registration?.approval_status === 'approved';
+    }
+    return true;
+  }, [
+    isOwnerOrCohost,
+    userRsvpData?.status,
+    eventData?.type,
+    registrationSettings,
+    myRegistration,
+  ]);
+
+  const visibilitySettings = eventData?.visibility_settings;
 
   // Precompute topbar-relevant values as stable primitives to avoid
   // object/array deps in the effect that trigger infinite re-renders.
@@ -379,14 +407,16 @@ export default function EventDetailPageClient() {
       {/* Campaign card */}
       <EventCampaignCard eventId={eventId} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
-      {eventData?.restricted_fields?.length &&
-      !isOwnerOrCohost &&
-      eventData?.visibility_settings?.is_guest_list_visible !== false ? (
+      {!isApprovedAttendee &&
+      visibilitySettings &&
+      (visibilitySettings.hide_location_for_unapproved ||
+        visibilitySettings.hide_description_for_unapproved ||
+        visibilitySettings.hide_guest_list_for_unapproved) ? (
         <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900'>
           Some event details are hidden until your registration is approved.
         </div>
       ) : null}
-      {(isOwnerOrCohost || !eventData?.restricted_fields?.includes('guest_list')) && (
+      {!(visibilitySettings?.hide_guest_list_for_unapproved && !isApprovedAttendee) && (
         <EventGuestsSection
           eventId={eventId}
           eventCreatorUserId={eventData?.creator_user_id || ''}
@@ -394,7 +424,7 @@ export default function EventDetailPageClient() {
           currentUserId={user?.id || ''}
         />
       )}
-      {(isOwnerOrCohost || !eventData?.restricted_fields?.includes('description')) && (
+      {!(visibilitySettings?.hide_description_for_unapproved && !isApprovedAttendee) && (
         <EventDescription event={event} />
       )}
       {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
@@ -404,7 +434,7 @@ export default function EventDetailPageClient() {
           subEventsError={subEventsError}
         />
       )}
-      {(isOwnerOrCohost || !eventData?.restricted_fields?.includes('location')) && (
+      {!(visibilitySettings?.hide_location_for_unapproved && !isApprovedAttendee) && (
         <EventLocation event={event} weather={weather} />
       )}
 
