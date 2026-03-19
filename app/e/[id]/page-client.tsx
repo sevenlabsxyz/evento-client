@@ -379,12 +379,14 @@ export default function EventDetailPageClient() {
       {/* Campaign card */}
       <EventCampaignCard eventId={eventId} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
-      {eventData?.restricted_fields?.length ? (
+      {eventData?.restricted_fields?.length &&
+      !isOwnerOrCohost &&
+      eventData?.visibility_settings?.is_guest_list_visible !== false ? (
         <div className='rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900'>
           Some event details are hidden until your registration is approved.
         </div>
       ) : null}
-      {!eventData?.restricted_fields?.includes('guest_list') && (
+      {(isOwnerOrCohost || !eventData?.restricted_fields?.includes('guest_list')) && (
         <EventGuestsSection
           eventId={eventId}
           eventCreatorUserId={eventData?.creator_user_id || ''}
@@ -392,7 +394,9 @@ export default function EventDetailPageClient() {
           currentUserId={user?.id || ''}
         />
       )}
-      {!eventData?.restricted_fields?.includes('description') && <EventDescription event={event} />}
+      {(isOwnerOrCohost || !eventData?.restricted_fields?.includes('description')) && (
+        <EventDescription event={event} />
+      )}
       {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
         <EventSubEvents
           subEvents={subEvents}
@@ -400,7 +404,7 @@ export default function EventDetailPageClient() {
           subEventsError={subEventsError}
         />
       )}
-      {!eventData?.restricted_fields?.includes('location') && (
+      {(isOwnerOrCohost || !eventData?.restricted_fields?.includes('location')) && (
         <EventLocation event={event} weather={weather} />
       )}
 

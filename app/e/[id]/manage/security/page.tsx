@@ -43,7 +43,6 @@ export default function SecurityPrivacyPage() {
     setVisibility,
     setPasswordProtection,
     populateFromApiEvent,
-    getFormData,
     isValid,
     hasChanges,
   } = useEventFormStore();
@@ -75,7 +74,7 @@ export default function SecurityPrivacyPage() {
         DEFAULT_REGISTRATION_VISIBILITY.hide_description_for_unapproved);
 
   const hasHideGuestListEntirelyChanges =
-    hideGuestListEntirely !== (eventData?.restricted_fields?.includes('guest_list') ?? false);
+    hideGuestListEntirely !== (eventData?.visibility_settings?.is_guest_list_visible === false);
 
   const hasEventChanges = isValid() && hasChanges();
   const isFormValid =
@@ -103,8 +102,8 @@ export default function SecurityPrivacyPage() {
   ]);
 
   useEffect(() => {
-    setHideGuestListEntirely(eventData?.restricted_fields?.includes('guest_list') ?? false);
-  }, [eventData?.restricted_fields]);
+    setHideGuestListEntirely(eventData?.visibility_settings?.is_guest_list_visible === false);
+  }, [eventData?.visibility_settings?.is_guest_list_visible]);
 
   useEffect(() => {
     applyRouteConfig(pathname);
@@ -137,10 +136,11 @@ export default function SecurityPrivacyPage() {
   const handleSaveChanges = async () => {
     try {
       if (hasEventChanges) {
-        const formData = getFormData();
         await updateEventMutation.mutateAsync({
-          ...formData,
           id: eventId,
+          visibility,
+          password_protected: passwordProtected,
+          password: passwordProtected ? (password ?? undefined) : undefined,
         });
       }
 

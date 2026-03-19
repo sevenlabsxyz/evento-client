@@ -15,24 +15,24 @@ export function useUpdateEvent() {
 
   return useMutation({
     mutationFn: async (data: UpdateEventData) => {
-      // Validate data
       const validatedData = updateEventSchema.parse(data);
 
-      // Make API call - eventId in path
-      const response = await apiClient.patch<ApiResponse<UpdateEventResponse[]>>(
-        `/v1/events/${validatedData.id}`,
-        validatedData
-      );
+      const response = await apiClient.patch<
+        ApiResponse<UpdateEventResponse | UpdateEventResponse[]>
+      >(`/v1/events/${validatedData.id}`, validatedData);
 
-      // The API returns { success: true, data: [...] }
-      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
-        return response.data[0];
+      if (response && response.data) {
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          return response.data[0];
+        }
+        if (!Array.isArray(response.data)) {
+          return response.data;
+        }
       }
 
       throw new Error('Failed to update event');
     },
     onSuccess: (data) => {
-      // Invalidate related queries to refetch updated data
       queryClient.invalidateQueries({
         queryKey: ['event', 'details', data.id],
       });
@@ -46,33 +46,29 @@ export function useUpdateEvent() {
   });
 }
 
-/**
- * Hook for updating an event with custom callbacks
- * Useful when you need to handle success differently
- */
 export function useUpdateEventWithCallbacks() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: async (data: UpdateEventData) => {
-      // Validate data
       const validatedData = updateEventSchema.parse(data);
 
-      // Make API call - eventId in path
-      const response = await apiClient.patch<ApiResponse<UpdateEventResponse[]>>(
-        `/v1/events/${validatedData.id}`,
-        validatedData
-      );
+      const response = await apiClient.patch<
+        ApiResponse<UpdateEventResponse | UpdateEventResponse[]>
+      >(`/v1/events/${validatedData.id}`, validatedData);
 
-      // The API returns { success: true, data: [...] }
-      if (response && response.data && Array.isArray(response.data) && response.data.length > 0) {
-        return response.data[0];
+      if (response && response.data) {
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          return response.data[0];
+        }
+        if (!Array.isArray(response.data)) {
+          return response.data;
+        }
       }
 
       throw new Error('Failed to update event');
     },
     onSuccess: (data) => {
-      // Invalidate related queries
       queryClient.invalidateQueries({
         queryKey: ['event', 'details', data.id],
       });
