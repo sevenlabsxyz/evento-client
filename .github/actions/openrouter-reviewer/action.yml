@@ -1,6 +1,6 @@
 name: 'OpenRouter Reviewer'
 author: 'evento'
-description: 'Interactive AI code reviewer that responds to @mention using OpenRouter'
+description: 'Interactive AI code reviewer using OpenRouter'
 
 inputs:
   openrouter_api_key:
@@ -15,6 +15,9 @@ inputs:
   model:
     description: 'OpenRouter model ID'
     default: 'openrouter/z-ai/glm-5'
+  auto_review:
+    description: 'Run review automatically on PR without requiring @mention'
+    default: 'false'
 
 runs:
   using: 'node20'
