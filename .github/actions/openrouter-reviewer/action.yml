@@ -14,14 +14,14 @@ inputs:
     default: '@alfred'
   model:
     description: 'OpenRouter model ID'
-    default: 'openrouter/z-ai/glm-5'
+    default: 'z-ai/glm-5'
   auto_review:
     description: 'Run review automatically on PR without requiring @mention'
     default: 'false'
 
 runs:
   using: 'node20'
-  main: 'index.js'
+  main: 'dist/index.js'
 
 branding:
   icon: 'message-circle'
