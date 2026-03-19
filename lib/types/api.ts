@@ -169,6 +169,15 @@ export interface Event {
   password?: string; // Only returned for hosts in manage mode
   restricted_fields?: RestrictedEventField[];
 
+  // Visibility settings — raw host-configured flags (viewer-independent)
+  // Use these + the viewer's own RSVP/approval state to compute field visibility
+  visibility_settings?: {
+    is_guest_list_visible: boolean;
+    hide_guest_list_for_unapproved: boolean;
+    hide_location_for_unapproved: boolean;
+    hide_description_for_unapproved: boolean;
+  };
+
   // Date components (stored separately for timezone handling)
   start_date_day: number;
   start_date_month: number;
