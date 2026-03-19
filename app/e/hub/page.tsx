@@ -3,6 +3,7 @@
 import { CohostInvitesSection } from '@/components/hub/cohost-invites-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
+import { HostedRegistrationsSection } from '@/components/hub/hosted-registrations-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -85,6 +86,7 @@ export default function HubPage() {
     <>
       <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
         <CohostInvitesSection />
+        <HostedRegistrationsSection />
         <div className='flex flex-col gap-6 md:flex-row md:gap-12'>
           <div className='md:w-1/2'>
             <MyEventsSection />

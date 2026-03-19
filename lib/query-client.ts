@@ -125,6 +125,7 @@ export const queryKeys = {
   registrationSettings: (eventId: string) =>
     [...queryKeys.registration, 'settings', eventId] as const,
   myRegistration: (eventId: string) => [...queryKeys.registration, 'my', eventId] as const,
+  myHostedRegistrations: () => [...queryKeys.registration, 'hosted'] as const,
   registrationSubmissions: (eventId: string) =>
     [...queryKeys.registration, 'submissions', eventId] as const,
   registrationQuestions: (eventId: string) =>

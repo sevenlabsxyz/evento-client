@@ -654,6 +654,44 @@ export interface RegistrationSubmissionsResponse {
   };
 }
 
+export interface HostedRegistrationPreview {
+  id: string;
+  event_id: string;
+  user_id: string | null;
+  email: string;
+  name: string;
+  approval_status: RegistrationStatus;
+  created_at: string;
+  reviewed_at?: string;
+  reviewed_by?: string;
+  preview_answers?: Array<{
+    question: string;
+    answer: string;
+  }>;
+  user_details?: {
+    id: string;
+    username: string;
+    name: string;
+    image: string | null;
+    verification_status: VerificationStatus;
+  };
+}
+
+export interface HostedEventRegistration {
+  event: EventWithUser;
+  registration_counts: {
+    pending: number;
+    approved: number;
+    denied: number;
+    total: number;
+  };
+  latest_registrations: HostedRegistrationPreview[];
+}
+
+export type MyHostedRegistrationsResponse =
+  | HostedEventRegistration[]
+  | { data: HostedEventRegistration[] };
+
 export interface CreateRegistrationQuestionRequest {
   type: RegistrationQuestionType;
   label: string;

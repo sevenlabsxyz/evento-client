@@ -39,6 +39,9 @@ export function useApproveRegistration() {
         queryKey: queryKeys.registrationSubmissions(variables.eventId),
       });
       queryClient.invalidateQueries({
+        queryKey: queryKeys.myHostedRegistrations(),
+      });
+      queryClient.invalidateQueries({
         queryKey: queryKeys.eventRsvps(variables.eventId),
       });
     },

@@ -43,6 +43,36 @@ describe('useDenyRegistration', () => {
     jest.clearAllMocks();
   });
 
+  it('invalidates registration and hosted feed queries after success', async () => {
+    const invalidateQueriesSpy = jest.spyOn(queryClient, 'invalidateQueries');
+    mockApiClient.post.mockResolvedValue({
+      data: {
+        registration: {
+          id: 'reg_123',
+          approval_status: 'denied',
+          reviewed_at: '2024-01-15T10:30:00Z',
+          reviewed_by: 'host_user_123',
+          denial_reason: null,
+        },
+      },
+    });
+
+    const { result } = renderHook(() => useDenyRegistration(), {
+      wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+    });
+
+    await act(async () => {
+      await result.current.mutateAsync({ eventId: 'event_123', registrationId: 'reg_123' });
+    });
+
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['registration', 'submissions', 'event_123'],
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: ['registration', 'hosted'],
+    });
+  });
+
   describe('mutation functionality', () => {
     it('denies registration successfully without reason', async () => {
       const mockResponse = {
