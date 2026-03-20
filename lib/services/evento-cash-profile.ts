@@ -1,5 +1,6 @@
 import apiClient from '@/lib/api/client';
 import { UserDetails } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
 
 export interface EventoCashProfile {
   username: string;
@@ -39,8 +40,12 @@ export class EventoCashProfileService {
         displayName: response.name,
         avatar: response.image,
       };
-    } catch {
-      // Never throw - return null on any error (404, network, etc.)
+    } catch (error) {
+      // Log for debugging but don't throw - profile enrichment is optional
+      logger.warn('Failed to fetch evento.cash profile', {
+        lightningAddress,
+        error: error instanceof Error ? error.message : String(error),
+      });
       return null;
     }
   }

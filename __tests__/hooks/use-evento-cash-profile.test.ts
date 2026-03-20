@@ -133,7 +133,7 @@ describe('useEventoCashProfile', () => {
     // Check stale time is 5 minutes (300000ms)
     const queryCache = queryClient.getQueryCache();
     const query = queryCache.find({ queryKey: ['eventoCashProfile', 'alice@evento.cash'] });
-    expect(query?.options.staleTime).toBe(5 * 60 * 1000);
+    expect((query?.options as any).staleTime).toBe(5 * 60 * 1000);
   });
 
   it('refetches when lightning address changes', async () => {

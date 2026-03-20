@@ -57,7 +57,9 @@ export function useContacts() {
   const addMutation = useMutation({
     mutationFn: async (request: AddContactRequest): Promise<Contact> => {
       // Check for duplicate before adding
-      const existing = contacts.find((c) => c.paymentIdentifier === request.paymentIdentifier);
+      const existing = contacts.find(
+        (c) => c.paymentIdentifier.toLowerCase() === request.paymentIdentifier.toLowerCase()
+      );
       if (existing) {
         throw new Error('Contact already exists with this Lightning address');
       }
@@ -74,7 +76,13 @@ export function useContacts() {
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.ADDING_CONTACT);
-      toast.error(error.message || 'Failed to add contact');
+      // Check if it's a user-thrown "already exists" error
+      if (error.message === 'Contact already exists with this Lightning address') {
+        toast.error(error.message);
+      } else {
+        const userMessage = getBreezErrorMessage(error, 'add contact');
+        toast.error(userMessage);
+      }
     },
   });
 
@@ -93,7 +101,8 @@ export function useContacts() {
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.UPDATING_CONTACT);
-      toast.error(error.message || 'Failed to update contact');
+      const userMessage = getBreezErrorMessage(error, 'update contact');
+      toast.error(userMessage);
     },
   });
 
@@ -112,7 +121,8 @@ export function useContacts() {
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.DELETING_CONTACT);
-      toast.error(error.message || 'Failed to delete contact');
+      const userMessage = getBreezErrorMessage(error, 'delete contact');
+      toast.error(userMessage);
     },
   });
 
@@ -120,7 +130,9 @@ export function useContacts() {
    * Find a contact by their Lightning address (paymentIdentifier)
    */
   const findContactByAddress = (lightningAddress: string): Contact | undefined => {
-    return contacts.find((c) => c.paymentIdentifier === lightningAddress);
+    return contacts.find(
+      (c) => c.paymentIdentifier.toLowerCase() === lightningAddress.toLowerCase()
+    );
   };
 
   return {
