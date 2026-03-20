@@ -221,9 +221,6 @@ describe('useContacts', () => {
       });
 
       expect(mockBreezSDK.addContact).not.toHaveBeenCalled();
-      expect(mockToast.error).toHaveBeenCalledWith(
-        'Contact already exists with this Lightning address'
-      );
     });
 
     it('throws error when wallet not connected', async () => {

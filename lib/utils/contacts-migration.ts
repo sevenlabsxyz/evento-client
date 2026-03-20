@@ -84,9 +84,14 @@ export async function migrateRecentAddressesToContacts(): Promise<void> {
         const username = address.split('@')[0] || address;
         await breezSDK.addContact({ name: username, paymentIdentifier: address });
         logger.info(`Migrated contact: ${address}`);
-      } catch (error) {
-        logger.error(`Failed to migrate ${address}:`, error);
-        failedAddresses.push(address);
+      } catch (error: any) {
+        // If contact already exists in SDK, treat as success (not a failure)
+        if (error?.message?.toLowerCase().includes('already exists')) {
+          logger.info(`Contact already exists in SDK, skipping: ${address}`);
+        } else {
+          logger.error(`Failed to migrate ${address}:`, error);
+          failedAddresses.push(address);
+        }
       }
     }
 

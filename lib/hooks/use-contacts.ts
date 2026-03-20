@@ -66,10 +66,8 @@ export function useContacts() {
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.ADDING_CONTACT);
-      // Check if it's a user-thrown "already exists" error
-      if (error.message === 'Contact already exists with this Lightning address') {
-        toast.error(error.message);
-      } else {
+      // Don't show toast for "already exists" errors - the form already shows it
+      if (error.message !== 'Contact already exists with this Lightning address') {
         const userMessage = getBreezErrorMessage(error, 'add contact');
         toast.error(userMessage);
       }
