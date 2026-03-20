@@ -80,7 +80,7 @@ export function ContactsList({
               <Users className='h-8 w-8' />
             </EmptyMedia>
             <EmptyTitle className='text-lg sm:text-lg'>No contacts found</EmptyTitle>
-            <EmptyDescription>No contacts match your search for "{searchQuery}"</EmptyDescription>
+            <EmptyDescription>No contacts match your search for `{searchQuery}`</EmptyDescription>
           </EmptyHeader>
         </Empty>
       );

@@ -155,7 +155,7 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Contact</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to delete "{contact.name}"? This action cannot be undone.
+              Are you sure you want to delete `{contact.name}`? This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

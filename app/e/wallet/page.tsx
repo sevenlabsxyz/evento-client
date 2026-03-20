@@ -40,6 +40,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import type { Contact } from '@/lib/types/wallet';
+import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
@@ -257,6 +258,17 @@ export default function WalletPage() {
 
     registerLightningAddressIfNeeded();
   }, [walletState.isConnected, address, user, checkAvailability, registerAddress]);
+
+  // Migrate recent Lightning addresses to contacts on first wallet connect
+  useEffect(() => {
+    if (walletState.isConnected) {
+      migrateRecentAddressesToContacts().catch((error) => {
+        logger.error('Failed to migrate recent addresses to contacts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
+    }
+  }, [walletState.isConnected]);
 
   // Listen for deposit events and manage unclaimed deposits
   useEffect(() => {
