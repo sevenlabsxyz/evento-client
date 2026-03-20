@@ -37,7 +37,12 @@ jest.mock('@/lib/services/breez-sdk', () => ({
 
 // Mock contacts store - define mock inside the callback
 jest.mock('@/lib/stores/contacts-store', () => {
-  const mockState = {
+  const mockState: {
+    contacts: any[];
+    isLoading: boolean;
+    error: string | null;
+    searchQuery: string;
+  } = {
     contacts: [],
     isLoading: false,
     error: null,
