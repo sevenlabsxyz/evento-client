@@ -102,7 +102,8 @@ export async function migrateRecentAddressesToContacts(): Promise<void> {
     }
   } catch (error) {
     logger.error('Contacts migration failed:', error);
-    // Don't set flag - allow retry
+    // Set flag to prevent infinite retry - if data is corrupted, retrying won't help
+    localStorage.setItem(MIGRATION_FLAG_KEY, 'true');
   }
 }
 

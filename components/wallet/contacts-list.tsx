@@ -11,7 +11,6 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
-import { useContactsStore } from '@/lib/stores/contacts-store';
 import type { Contact } from '@/lib/types/wallet';
 import { UserPlus, Users } from 'lucide-react';
 import { useMemo } from 'react';
@@ -37,24 +36,11 @@ export function ContactsList({
   className,
 }: ContactsListProps) {
   const { contacts, isLoading } = useContacts();
-  const { searchQuery } = useContactsStore();
 
-  // Filter and sort contacts
+  // Sort contacts alphabetically by name
   const filteredContacts = useMemo(() => {
-    // First, filter by search query
-    const filtered = contacts.filter((contact) => {
-      if (!searchQuery.trim()) return true;
-
-      const query = searchQuery.toLowerCase();
-      const nameMatch = contact.name.toLowerCase().includes(query);
-      const addressMatch = contact.paymentIdentifier.toLowerCase().includes(query);
-
-      return nameMatch || addressMatch;
-    });
-
-    // Then, sort alphabetically by name
-    return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
-  }, [contacts, searchQuery]);
+    return [...contacts].sort((a, b) => a.name.localeCompare(b.name));
+  }, [contacts]);
 
   // Show loading skeleton during initial load
   if (isLoading) {
@@ -71,21 +57,6 @@ export function ContactsList({
 
   // Show empty state when no contacts (after loading)
   if (filteredContacts.length === 0) {
-    // Different empty state based on whether there's a search query
-    if (searchQuery.trim()) {
-      return (
-        <Empty className={className}>
-          <EmptyHeader>
-            <EmptyMedia variant='soft-circle'>
-              <Users className='h-8 w-8' />
-            </EmptyMedia>
-            <EmptyTitle className='text-lg sm:text-lg'>No contacts found</EmptyTitle>
-            <EmptyDescription>No contacts match your search for `{searchQuery}`</EmptyDescription>
-          </EmptyHeader>
-        </Empty>
-      );
-    }
-
     return (
       <Empty className={className}>
         <EmptyHeader>

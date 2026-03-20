@@ -187,7 +187,7 @@ describe('contacts-migration', () => {
       expect(mockIsConnected.mock.calls.length).toBeGreaterThan(0);
     });
 
-    it('does not set migration flag on failure', async () => {
+    it('sets migration flag on failure to prevent infinite retry', async () => {
       mockIsConnected.mockImplementation(() => true);
 
       // Simulate a failure by making localStorage throw
@@ -201,8 +201,8 @@ describe('contacts-migration', () => {
 
       await migrateRecentAddressesToContacts();
 
-      // Flag should NOT be set on failure
-      expect(localStorageMock.getItem(MIGRATION_FLAG_KEY)).toBeNull();
+      // Flag SHOULD be set on failure to prevent infinite retry
+      expect(localStorageMock.getItem(MIGRATION_FLAG_KEY)).toBe('true');
 
       // Restore
       localStorageMock.getItem = originalGetItem;
@@ -269,7 +269,7 @@ describe('contacts-migration', () => {
         expect(mockIsConnected.mock.calls.length).toBeGreaterThan(0);
       });
 
-      it('should allow retry when migration fails (flag not set)', async () => {
+      it('sets migration flag on failure to prevent infinite retry', async () => {
         mockIsConnected.mockImplementation(() => true);
 
         // Simulate a failure by making localStorage throw
@@ -283,8 +283,8 @@ describe('contacts-migration', () => {
 
         await migrateRecentAddressesToContacts();
 
-        // Flag should not be set on failure, allowing retry
-        expect(localStorageMock.getItem(MIGRATION_FLAG_KEY)).toBeNull();
+        // Flag SHOULD be set on failure to prevent infinite retry
+        expect(localStorageMock.getItem(MIGRATION_FLAG_KEY)).toBe('true');
 
         // Restore
         localStorageMock.getItem = originalGetItem;
