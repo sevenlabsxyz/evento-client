@@ -9,6 +9,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useContacts } from '@/lib/hooks/use-contacts';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
@@ -30,6 +31,7 @@ export function TransactionDetailsSheet({
   const [amountUSD, setAmountUSD] = useState<number>(0);
   const [feesUSD, setFeesUSD] = useState<number>(0);
   const { satsToUSD } = useAmountConverter();
+  const { findContactByAddress } = useContacts();
 
   // Convert amounts to USD
   useEffect(() => {
@@ -148,6 +150,20 @@ export function TransactionDetailsSheet({
     return null;
   };
 
+  // Get Lightning address from payment details
+  const getLightningAddress = () => {
+    if (payment.details?.type === 'lightning') {
+      // Try to get lightning address from various possible fields
+      const details = payment.details as any;
+      return details.lightningAddress || details.lnAddress || null;
+    }
+    return null;
+  };
+
+  // Look up contact for this payment
+  const lightningAddress = getLightningAddress();
+  const contact = lightningAddress ? findContactByAddress(lightningAddress) : null;
+
   const handleCopy = async (text: string, label: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -192,6 +208,9 @@ export function TransactionDetailsSheet({
               )}
             </div>
             <span className='text-sm font-medium text-gray-600'>{getTypeLabel()}</span>
+            {contact && (
+              <span className='ml-2 text-sm font-semibold text-primary'>{contact.name}</span>
+            )}
           </div>
           <div className='text-center'>
             <div className='flex items-baseline justify-center gap-2'>

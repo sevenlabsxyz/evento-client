@@ -10,6 +10,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useContacts } from '@/lib/hooks/use-contacts';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
@@ -37,6 +38,7 @@ export function TransactionHistory({
   maxTransactions,
 }: TransactionHistoryProps) {
   const { balanceHidden } = useWalletPreferences();
+  const { findContactByAddress } = useContacts();
   const [usdPrices, setUsdPrices] = useState<Record<string, number>>({});
 
   // Fetch USD prices for all payments
@@ -119,8 +121,19 @@ export function TransactionHistory({
     if (!payment.details) return 'No description';
 
     switch (payment.details.type) {
-      case 'lightning':
+      case 'lightning': {
+        // Check if there's a destination Lightning address in the details
+        // Note: Breez SDK may provide this in future versions
+        const lightningAddress =
+          (payment.details as any).lightningAddress || (payment.details as any).destinationAddress;
+        if (lightningAddress) {
+          const contact = findContactByAddress(lightningAddress);
+          if (contact) {
+            return contact.name;
+          }
+        }
         return payment.details.description || 'Lightning payment';
+      }
       case 'spark':
         return 'Spark payment';
       case 'token':
