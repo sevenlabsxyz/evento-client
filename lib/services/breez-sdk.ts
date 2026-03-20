@@ -1,4 +1,10 @@
 import {
+  AddContactRequest,
+  Contact,
+  ListContactsRequest,
+  UpdateContactRequest,
+} from '@/lib/types/wallet';
+import {
   BREEZ_ERROR_CONTEXT,
   getBreezErrorMessage,
   logBreezError,
@@ -804,6 +810,83 @@ export class BreezSDKService {
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.REFUNDING_DEPOSIT);
       const userMessage = getBreezErrorMessage(error, 'refund deposit');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Add a new contact to the wallet
+   */
+  async addContact(request: AddContactRequest): Promise<Contact> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ)
+        console.debug('📇 [BREEZ:ADD_CONTACT] Adding contact...', { name: request.name });
+      const contact = await this.sdk.addContact(request);
+      if (DEBUG_BREEZ)
+        console.debug('✅ [BREEZ:ADD_CONTACT] Contact added successfully', { id: contact.id });
+      return contact;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.ADDING_CONTACT);
+      const userMessage = getBreezErrorMessage(error, 'add contact');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Update an existing contact
+   */
+  async updateContact(request: UpdateContactRequest): Promise<Contact> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ)
+        console.debug('📇 [BREEZ:UPDATE_CONTACT] Updating contact...', { id: request.id });
+      const contact = await this.sdk.updateContact(request);
+      if (DEBUG_BREEZ) console.debug('✅ [BREEZ:UPDATE_CONTACT] Contact updated successfully');
+      return contact;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.UPDATING_CONTACT);
+      const userMessage = getBreezErrorMessage(error, 'update contact');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Delete a contact by ID
+   */
+  async deleteContact(id: string): Promise<void> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ) console.debug('📇 [BREEZ:DELETE_CONTACT] Deleting contact...', { id });
+      await this.sdk.deleteContact(id);
+      if (DEBUG_BREEZ) console.debug('✅ [BREEZ:DELETE_CONTACT] Contact deleted successfully');
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.DELETING_CONTACT);
+      const userMessage = getBreezErrorMessage(error, 'delete contact');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * List all contacts with optional pagination
+   */
+  async listContacts(request?: ListContactsRequest): Promise<Contact[]> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ) console.debug('📇 [BREEZ:LIST_CONTACTS] Fetching contacts...', request);
+      const result = await this.sdk.listContacts(request || {});
+      if (DEBUG_BREEZ)
+        console.debug('✅ [BREEZ:LIST_CONTACTS] Contacts fetched successfully', {
+          count: result.length,
+        });
+      return result;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.LISTING_CONTACTS);
+      const userMessage = getBreezErrorMessage(error, 'list contacts');
       throw new Error(userMessage);
     }
   }
