@@ -7,8 +7,6 @@ export interface WalletState {
   lightningAddress?: string;
 }
 
-export type WalletType = 'mnemonic' | 'passkey' | null;
-
 export interface WalletSetupData {
   mnemonic: string;
   password: string;

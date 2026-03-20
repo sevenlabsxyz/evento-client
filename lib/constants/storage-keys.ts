@@ -17,10 +17,6 @@ export const STORAGE_KEYS = {
   BACKUP_DISMISSED_DATE: 'evento_backup_dismissed_date',
   WALLET_PREFERENCES: 'wallet-preferences', // Zustand persist
   WALLET_UNLOCK_RETURN_PATH: 'evento_wallet_unlock_return_path',
-  // Passkey wallet keys
-  WALLET_TYPE: 'evento_wallet_type',
-  PASSKEY_LABEL: 'evento_passkey_label',
-  PASSKEY_WALLETS_CACHE: 'evento_passkey_wallets_cache',
 
   // User Preferences
   VIEW_MODE: 'evento-view-mode', // Zustand persist
