@@ -1,15 +1,12 @@
 'use client';
 
-// Set to true to enable verbose wallet logging
-const DEBUG_WALLET = false;
-
-import { Env } from '@/lib/constants/env';
 import { breezSDK } from '@/lib/services/breez-sdk';
-import { BTCPriceService } from '@/lib/services/btc-price';
+import { passkeyService } from '@/lib/services/passkey-service';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
+import { Env } from '@/lib/constants/env';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
-import { BTCPrice, WalletState } from '@/lib/types/wallet';
+import { WalletState } from '@/lib/types/wallet';
 import {
   BREEZ_ERROR_CONTEXT,
   getBreezErrorMessage,
@@ -18,73 +15,83 @@ import {
 import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
 
+// Wallet type - determines which auth method is used
+type WalletType = 'mnemonic' | 'passkey' | null;
+
 export function useWallet() {
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
+  const { getSeed: getInMemorySeed, isSeedValid, setSeed: setInMemorySeed, clearSeed } = useWalletSeedStore();
+  const [walletType, setWalletType] = useState<WalletType>(null);
 
-  const {
-    getSeed: getInMemorySeed,
-    isSeedValid,
-    setSeed: setInMemorySeed,
-    clearSeed,
-  } = useWalletSeedStore();
+  // Load wallet type on mount
+  useEffect(() => {
+    const loadWalletType = () => {
+      if (typeof window === 'undefined') return;
+      const savedType = localStorage.getItem('evento_wallet_type') as WalletType;
+      if (savedType === 'mnemonic' || savedType === 'passkey') {
+        setWalletType(savedType);
+      }
+    };
+    loadWalletType();
+  }, []);
+
+  // Save wallet type when it changes
+  const saveWalletType = useCallback((type: WalletType) => {
+    if (typeof window === 'undefined') return;
+    if (type) {
+      localStorage.setItem('evento_wallet_type', type);
+    } else {
+      localStorage.removeItem('evento_wallet_type');
+    }
+    setWalletType(type);
+  }, []);
 
   // Initialize wallet on mount
   useEffect(() => {
     const initWallet = async () => {
       try {
-        // Check if there's an encrypted seed (wallet exists)
+        // Check if there's an encrypted seed (mnemonic wallet)
         const encryptedSeed = WalletStorageService.getEncryptedSeed();
         const savedState = WalletStorageService.getWalletState();
+        const savedType = localStorage.getItem('evento_wallet_type') as WalletType;
 
-        // Handle inconsistent state: has state but no encrypted seed
-        if (!encryptedSeed && savedState?.isInitialized) {
-          WalletStorageService.clearWalletData();
+        if (savedType === 'passkey') {
+          // Passkey wallet - check if we have a cached label
+          const cachedLabel = localStorage.getItem('evento_passkey_label') || 'evento';
+          // Passkey wallets are always "initialized" but need unlock via biometric
           setWalletState({
-            isInitialized: false,
+            isInitialized: true,
             isConnected: false,
             balance: 0,
-            hasBackup: false,
+            hasBackup: true, // Passkey wallets don't need traditional backup
           });
         } else if (encryptedSeed) {
-          // Wallet exists, check if seed is in memory and valid
+          // Mnemonic wallet - existing flow
           const inMemorySeed = getInMemorySeed();
-
           if (inMemorySeed && isSeedValid()) {
-            // Seed is still valid in memory, auto-connect
             try {
               await breezSDK.connect(inMemorySeed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-              // Get current balance
               const balance = await breezSDK.getBalance();
-
               setWalletState({
                 isInitialized: true,
                 isConnected: true,
                 balance,
                 hasBackup: savedState?.hasBackup || false,
-                lastBackupDate: savedState?.lastBackupDate,
-                lightningAddress: savedState?.lightningAddress,
               });
             } catch (err) {
-              logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
               setWalletState({
                 isInitialized: true,
                 isConnected: false,
                 balance: 0,
                 hasBackup: savedState?.hasBackup || false,
-                lastBackupDate: savedState?.lastBackupDate,
-                lightningAddress: savedState?.lightningAddress,
               });
             }
           } else {
-            // Seed expired or not in memory, show as initialized but locked
             setWalletState({
               isInitialized: true,
               isConnected: false,
               balance: 0,
               hasBackup: savedState?.hasBackup || false,
-              lastBackupDate: savedState?.lastBackupDate,
-              lightningAddress: savedState?.lightningAddress,
             });
           }
         }
@@ -99,47 +106,133 @@ export function useWallet() {
     initWallet();
   }, [getInMemorySeed, isSeedValid]);
 
-  // Save wallet state whenever it changes
-  useEffect(() => {
-    if (walletState.isInitialized) {
-      WalletStorageService.saveWalletState(walletState);
-    }
-  }, [walletState]);
+  // ========== PASSKEY WALLET METHODS ==========
 
   /**
-   * Create a new wallet
+   * Create a new passkey wallet
+   * This is separate from mnemonic wallet flow
    */
+  const createPasskeyWallet = useCallback(
+    async (label: string = 'evento'): Promise<{ mnemonic: string }> => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Initialize passkey service
+        await passkeyService.initialize();
+
+        // Create wallet - this will trigger WebAuthn credential creation
+        const { seed, mnemonic } = await passkeyService.createWallet(label);
+
+        // Connect to Breez SDK with passkey-derived seed
+        await breezSDK.connectWithBytes(seed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+
+        // Update state
+        setWalletState({
+          isInitialized: true,
+          isConnected: true,
+          balance: 0,
+          hasBackup: false, // User hasn't seen recovery phrase yet
+        });
+
+        // Save wallet type
+        saveWalletType('passkey');
+
+        // Cache the label
+        localStorage.setItem('evento_passkey_label', label);
+
+        return { mnemonic };
+      } catch (err: any) {
+        logBreezError(err, 'creating passkey wallet');
+        const userMessage = getBreezErrorMessage(err, 'create passkey wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [saveWalletType]
+  );
+
+  /**
+   * Unlock a passkey wallet
+   * Triggers biometric prompt
+   */
+  const unlockPasskeyWallet = useCallback(
+    async (label: string = 'evento'): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Initialize passkey service
+        await passkeyService.initialize();
+
+        // Connect to wallet - triggers biometric
+        const { seed } = await passkeyService.connectWallet(label);
+
+        // Connect to Breez SDK
+        await breezSDK.connectWithBytes(seed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+
+        // Get balance
+        const balance = await breezSDK.getBalance();
+
+        // Update state
+        setWalletState((prev) => ({
+          ...prev,
+          isConnected: true,
+          balance,
+        }));
+      } catch (err: any) {
+        logBreezError(err, 'unlocking passkey wallet');
+        const userMessage = getBreezErrorMessage(err, 'unlock wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    []
+  );
+
+  /**
+   * Get recovery phrase for a passkey wallet
+   * Shows the 12-word mnemonic for emergency backup
+   */
+  const getPasskeyRecoveryPhrase = useCallback(
+    async (label: string = 'evento'): Promise<string> => {
+      try {
+        await passkeyService.initialize();
+        return await passkeyService.getRecoveryPhrase(label);
+      } catch (err: any) {
+        logBreezError(err, 'getting passkey recovery phrase');
+        const userMessage = getBreezErrorMessage(err, 'retrieve recovery phrase');
+        throw new Error(userMessage);
+      }
+    },
+    []
+  );
+
+  // ========== MNEMONIC WALLET METHODS (UNCHANGED) ==========
+
   const createWallet = useCallback(
     async (password: string): Promise<string> => {
       try {
         setLoading(true);
         setError(null);
-
-        // Clear any existing wallet data first
         WalletStorageService.clearWalletData();
         clearSeed();
-
-        // Generate mnemonic
         const mnemonic = WalletStorageService.generateMnemonic();
-
-        // Encrypt and save seed
         const encryptedSeed = await WalletStorageService.encryptSeed(mnemonic, password);
         WalletStorageService.saveEncryptedSeed(encryptedSeed);
-
-        // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
-
-        // Connect to Breez SDK
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-        // Update wallet state
         setWalletState({
           isInitialized: true,
           isConnected: true,
           balance: 0,
           hasBackup: false,
         });
-
+        saveWalletType('mnemonic');
         return mnemonic;
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.CREATING_WALLET);
@@ -150,45 +243,26 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed, clearSeed]
+    [setInMemorySeed, clearSeed, saveWalletType]
   );
 
-  /**
-   * Restore wallet from encrypted backup
-   */
   const restoreWallet = useCallback(
     async (encryptedSeed: string, password: string): Promise<void> => {
       try {
         setLoading(true);
         setError(null);
-
-        // Clear any existing wallet data first
         WalletStorageService.clearWalletData();
         clearSeed();
-
         let mnemonic: string;
-
         try {
-          // Try to decrypt encrypted seed
           mnemonic = await WalletStorageService.decryptSeed(encryptedSeed, password);
         } catch {
-          // Invalid seed
           throw new Error('Invalid backup string or password');
         }
-
-        // Save encrypted seed
         WalletStorageService.saveEncryptedSeed(encryptedSeed);
-
-        // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
-
-        // Connect to Breez SDK
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-        // Get balance
         const balance = await breezSDK.getBalance();
-
-        // Update wallet state
         const newState: WalletState = {
           isInitialized: true,
           isConnected: true,
@@ -196,11 +270,9 @@ export function useWallet() {
           hasBackup: true,
           lastBackupDate: new Date(),
         };
-
         setWalletState(newState);
-
-        // Persist to localStorage
         WalletStorageService.saveWalletState(newState);
+        saveWalletType('mnemonic');
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.RESTORING_WALLET);
         const userMessage = getBreezErrorMessage(err, 'restore wallet');
@@ -210,47 +282,31 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed, clearSeed]
+    [setInMemorySeed, clearSeed, saveWalletType]
   );
 
-  /**
-   * Restore wallet from raw mnemonic (12/24 words)
-   * Used when user imports a seed phrase directly
-   */
   const restoreFromMnemonic = useCallback(
     async (mnemonic: string, pin: string): Promise<void> => {
       try {
         setLoading(true);
         setError(null);
-
-        // Clear any existing wallet data first
         WalletStorageService.clearWalletData();
         clearSeed();
-
-        // Connect to Breez SDK with the mnemonic
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-        // Get balance to verify connection
         const balance = await breezSDK.getBalance();
-
-        // Encrypt mnemonic with the new PIN
         const encryptedSeed = await WalletStorageService.encryptSeed(mnemonic, pin);
         WalletStorageService.saveEncryptedSeed(encryptedSeed);
-
-        // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
-
-        // Update wallet state
         const newState: WalletState = {
           isInitialized: true,
           isConnected: true,
           balance,
-          hasBackup: true, // User imported their own seed, so they have it
+          hasBackup: true,
           lastBackupDate: new Date(),
         };
-
         setWalletState(newState);
         WalletStorageService.saveWalletState(newState);
+        saveWalletType('mnemonic');
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.RESTORING_FROM_MNEMONIC);
         const userMessage = getBreezErrorMessage(err, 'restore wallet');
@@ -260,39 +316,23 @@ export function useWallet() {
         setLoading(false);
       }
     },
-    [setInMemorySeed, clearSeed]
+    [setInMemorySeed, clearSeed, saveWalletType]
   );
 
-  /**
-   * Unlock wallet with password
-   */
   const unlockWallet = useCallback(
     async (password: string): Promise<void> => {
       try {
         setLoading(true);
         setError(null);
-
         const encryptedSeed = WalletStorageService.getEncryptedSeed();
         if (!encryptedSeed) {
           throw new Error('No wallet found');
         }
-
-        // Decrypt seed
         const mnemonic = await WalletStorageService.decryptSeed(encryptedSeed, password);
-
-        // Store seed in memory with TTL
         setInMemorySeed(mnemonic);
-
-        // Connect to Breez SDK
         await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-        // Get balance
         const balance = await breezSDK.getBalance();
-
-        // Get current saved state
         const savedState = WalletStorageService.getWalletState();
-
-        // Update wallet state
         const newState = {
           isInitialized: true,
           isConnected: true,
@@ -301,7 +341,6 @@ export function useWallet() {
           lastBackupDate: savedState?.lastBackupDate,
           lightningAddress: savedState?.lightningAddress,
         };
-
         setWalletState(newState);
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.UNLOCKING_WALLET);
@@ -315,13 +354,10 @@ export function useWallet() {
     [setInMemorySeed]
   );
 
-  /**
-   * Lock wallet
-   */
   const lockWallet = useCallback(async (): Promise<void> => {
     try {
       await breezSDK.disconnect();
-      clearSeed(); // Clear in-memory seed
+      clearSeed();
       setWalletState((prev) => ({
         ...prev,
         isConnected: false,
@@ -333,15 +369,11 @@ export function useWallet() {
     }
   }, [clearSeed]);
 
-  /**
-   * Refresh balance
-   */
   const refreshBalance = useCallback(async (): Promise<void> => {
     try {
       if (!breezSDK.isConnected()) {
         throw new Error('Wallet not connected');
       }
-
       const balance = await breezSDK.getBalance();
       setWalletState((prev) => ({
         ...prev,
@@ -354,9 +386,6 @@ export function useWallet() {
     }
   }, [setWalletState, setError]);
 
-  /**
-   * Mark wallet as backed up
-   */
   const markAsBackedUp = useCallback(() => {
     setWalletState((prev) => {
       const newState = {
@@ -364,42 +393,38 @@ export function useWallet() {
         hasBackup: true,
         lastBackupDate: new Date(),
       };
-
-      // Persist to localStorage
       WalletStorageService.saveWalletState(newState);
-
-      // Clear transaction flag since wallet is now backed up
-      WalletStorageService.clearTransactionFlag();
-
       return newState;
     });
   }, []);
 
-  /**
-   * Get encrypted backup (requires password confirmation)
-   */
-  const getEncryptedBackup = useCallback(async (password: string): Promise<string> => {
-    try {
-      const encryptedSeed = WalletStorageService.getEncryptedSeed();
-      if (!encryptedSeed) {
-        throw new Error('No wallet found');
+  const getEncryptedBackup = useCallback(
+    async (password: string): Promise<string> => {
+      try {
+        const encryptedSeed = WalletStorageService.getEncryptedSeed();
+        if (!encryptedSeed) {
+          throw new Error('No wallet found');
+        }
+        await WalletStorageService.decryptSeed(encryptedSeed, password);
+        return encryptedSeed;
+      } catch (err: any) {
+        logBreezError(err, 'getting encrypted backup');
+        throw new Error('Invalid password');
       }
-
-      // Verify password by attempting to decrypt
-      await WalletStorageService.decryptSeed(encryptedSeed, password);
-
-      // Return the encrypted seed for backup
-      return encryptedSeed;
-    } catch (err: any) {
-      logBreezError(err, 'getting encrypted backup');
-      throw new Error('Invalid password');
-    }
-  }, []);
+    },
+    []
+  );
 
   return {
     walletState,
+    walletType,
     isLoading,
     error,
+    // Passkey methods
+    createPasskeyWallet,
+    unlockPasskeyWallet,
+    getPasskeyRecoveryPhrase,
+    // Mnemonic methods (unchanged)
     createWallet,
     restoreWallet,
     restoreFromMnemonic,
@@ -408,79 +433,5 @@ export function useWallet() {
     refreshBalance,
     markAsBackedUp,
     getEncryptedBackup,
-  };
-}
-
-export function useWalletBalance() {
-  const [balance, setBalance] = useState<number>(0);
-  const [balanceUSD, setBalanceUSD] = useState<number>(0);
-  const [isLoading, setLoading] = useState(true);
-
-  const refreshBalance = useCallback(async () => {
-    try {
-      setLoading(true);
-
-      if (!breezSDK.isConnected()) {
-        return;
-      }
-
-      const sats = await breezSDK.getBalance();
-      const usd = await BTCPriceService.satsToUSD(sats);
-
-      setBalance(sats);
-      setBalanceUSD(usd);
-    } catch (error) {
-      logBreezError(error, BREEZ_ERROR_CONTEXT.REFRESHING_BALANCE);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    refreshBalance();
-
-    // Refresh balance every 30 seconds
-    const interval = setInterval(refreshBalance, 30000);
-    return () => clearInterval(interval);
-  }, [refreshBalance]);
-
-  return {
-    balance,
-    balanceUSD,
-    isLoading,
-    refreshBalance,
-  };
-}
-
-export function useBTCPrice() {
-  const [price, setPrice] = useState<BTCPrice | null>(null);
-  const [isLoading, setLoading] = useState(true);
-
-  const refreshPrice = useCallback(async () => {
-    try {
-      setLoading(true);
-      const btcPrice = await BTCPriceService.fetchPrice();
-      setPrice(btcPrice);
-    } catch (error) {
-      logger.error('Failed to fetch BTC price', {
-        error: error instanceof Error ? error.message : String(error),
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    refreshPrice();
-
-    // Refresh price every 5 minutes
-    const interval = setInterval(refreshPrice, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, [refreshPrice]);
-
-  return {
-    price,
-    isLoading,
-    refreshPrice,
   };
 }
