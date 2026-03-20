@@ -9,12 +9,12 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
-import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 interface ContactAutocompleteProps {
   value: string;
@@ -88,6 +88,7 @@ export function ContactAutocomplete({
   disabled = false,
 }: ContactAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { contacts, isLoading } = useContacts();
 
   // Filter contacts by name or paymentIdentifier (case-insensitive)
@@ -131,8 +132,17 @@ export function ContactAutocomplete({
 
   const handleBlur = () => {
     // Delay closing to allow click events on dropdown items
-    setTimeout(() => setIsOpen(false), 200);
+    blurTimeoutRef.current = setTimeout(() => setIsOpen(false), 200);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (blurTimeoutRef.current) {
+        clearTimeout(blurTimeoutRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Popover open={shouldShowDropdown} onOpenChange={setIsOpen}>

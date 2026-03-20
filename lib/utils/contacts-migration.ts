@@ -46,7 +46,8 @@ export async function migrateRecentAddressesToContacts(): Promise<void> {
     }
 
     const data = JSON.parse(stored);
-    const addresses = data?.state?.addresses as string[] | undefined;
+    // The old Zustand store used 'recentAddresses' as the property name
+    const addresses = data?.state?.recentAddresses as string[] | undefined;
 
     if (!addresses || addresses.length === 0) {
       logger.info('No recent addresses to migrate');
@@ -54,9 +55,28 @@ export async function migrateRecentAddressesToContacts(): Promise<void> {
       return;
     }
 
+    // Get existing contacts to avoid duplicates
+    let existingContacts: { paymentIdentifier: string }[] = [];
+    try {
+      existingContacts = await breezSDK.listContacts();
+    } catch (error) {
+      logger.error('Failed to list existing contacts:', error);
+      // Continue with migration anyway
+    }
+
+    const existingAddresses = new Set(
+      existingContacts.map((c) => c.paymentIdentifier.toLowerCase())
+    );
+
     // Migrate each address
     for (const address of addresses) {
       try {
+        // Skip if contact already exists
+        if (existingAddresses.has(address.toLowerCase())) {
+          logger.info(`Contact already exists, skipping: ${address}`);
+          continue;
+        }
+
         // Extract username from Lightning address (user@domain -> "user")
         const username = address.split('@')[0] || address;
         await breezSDK.addContact({ name: username, paymentIdentifier: address });

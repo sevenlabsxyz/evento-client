@@ -17,7 +17,7 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import type { Contact } from '@/lib/types/wallet';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -48,8 +48,11 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
       name: contact.name,
     },
   });
-
   // Reset form when contact changes
+  useEffect(() => {
+    reset({ name: contact.name });
+  }, [contact, reset]);
+
   const handleOpenChange = (newOpen: boolean) => {
     if (!newOpen) {
       reset({ name: contact.name });
