@@ -68,6 +68,9 @@ export async function migrateRecentAddressesToContacts(): Promise<void> {
       existingContacts.map((c) => c.paymentIdentifier.toLowerCase())
     );
 
+    // Track migration results
+    const failedAddresses: string[] = [];
+
     // Migrate each address
     for (const address of addresses) {
       try {
@@ -83,13 +86,20 @@ export async function migrateRecentAddressesToContacts(): Promise<void> {
         logger.info(`Migrated contact: ${address}`);
       } catch (error) {
         logger.error(`Failed to migrate ${address}:`, error);
-        // Continue with next address
+        failedAddresses.push(address);
       }
     }
 
-    // Set migration flag on success
-    localStorage.setItem(MIGRATION_FLAG_KEY, 'true');
-    logger.info('Contacts migration completed');
+    // Only set migration flag if all succeeded
+    if (failedAddresses.length === 0) {
+      localStorage.setItem(MIGRATION_FLAG_KEY, 'true');
+      logger.info('Contacts migration completed successfully');
+    } else {
+      logger.warn(`Contacts migration completed with ${failedAddresses.length} failures`, {
+        failedAddresses,
+      });
+      logger.info('Migration will retry on next wallet connection');
+    }
   } catch (error) {
     logger.error('Contacts migration failed:', error);
     // Don't set flag - allow retry

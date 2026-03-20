@@ -689,7 +689,12 @@ export default function WalletPage() {
       {/* Contacts Sheet (Full View) */}
       <MasterScrollableSheet
         open={showContactsSheet}
-        onOpenChange={setShowContactsSheet}
+        onOpenChange={(open) => {
+          setShowContactsSheet(open);
+          if (!open) {
+            setSelectedContact(null);
+          }
+        }}
         title='Contacts'
         headerRight={
           <Button
