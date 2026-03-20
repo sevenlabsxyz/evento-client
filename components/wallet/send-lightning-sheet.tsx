@@ -25,6 +25,7 @@ import { AmountInputSheet } from './amount-input-sheet';
 import { ContactAutocomplete } from './contact-autocomplete';
 import { ContactsList } from './contacts-list';
 
+import { useSaveContactPrompt } from './save-contact-prompt';
 interface SendLightningSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -76,6 +77,7 @@ export function SendLightningSheet({
   const { satsToUSD, usdToSats } = useAmountConverter();
   const { contacts, findContactByAddress } = useContacts();
 
+  const { showSaveContactPrompt } = useSaveContactPrompt();
   // Reset form to initial state
   const resetForm = () => {
     setInvoice('');
@@ -496,6 +498,11 @@ export function SendLightningSheet({
       }
 
       toast.success('Payment sent!');
+
+      // Show save contact prompt for Lightning address payments (if not already in contacts)
+      if (parsedInput?.type === 'lightningAddress') {
+        showSaveContactPrompt(invoice.trim());
+      }
       resetForm();
       onOpenChange(false);
     } catch (error: any) {
