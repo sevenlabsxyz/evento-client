@@ -714,24 +714,17 @@ export function SendLightningSheet({
         <div className='mx-auto max-w-md space-y-6'>
           {/* Invoice/Address Input */}
           <div className='space-y-3'>
-            <Textarea
-              value={invoice}
-              onChange={(e) => handleInvoiceChange(e.target.value)}
-              placeholder='Lightning invoice, Lightning address, or onchain address'
-              className='resize-none bg-gray-50 font-mono text-sm'
-              rows={4}
-            />
-
-            {/* Contact Autocomplete */}
             <ContactAutocomplete
               value={invoice}
               onChange={handleInvoiceChange}
               onSelect={(lightningAddress) => {
                 handleInvoiceChange(lightningAddress);
               }}
-              placeholder='Search contacts...'
-              className='bg-gray-50'
+              placeholder='Lightning invoice, Lightning address, or onchain address'
+              className='bg-gray-50 font-mono text-sm'
               disabled={isValidating}
+              multiline={true}
+              rows={4}
             />
 
             {/* Validation Feedback */}

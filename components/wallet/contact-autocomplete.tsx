@@ -10,6 +10,7 @@ import {
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Textarea } from '@/components/ui/textarea';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
@@ -23,6 +24,8 @@ interface ContactAutocompleteProps {
   placeholder?: string;
   className?: string;
   disabled?: boolean;
+  multiline?: boolean;
+  rows?: number;
 }
 
 function getInitials(name: string): string {
@@ -86,6 +89,8 @@ export function ContactAutocomplete({
   placeholder = 'Search contacts...',
   className,
   disabled = false,
+  multiline = false,
+  rows = 4,
 }: ContactAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -114,7 +119,7 @@ export function ContactAutocomplete({
     setIsOpen(false);
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
     // Open dropdown when typing
@@ -147,20 +152,37 @@ export function ContactAutocomplete({
   return (
     <Popover open={shouldShowDropdown} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Input
-          type='text'
-          value={value}
-          onChange={handleInputChange}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholder={placeholder}
-          disabled={disabled || isLoading}
-          className={cn(className)}
-          autoComplete='off'
-          autoCorrect='off'
-          autoCapitalize='off'
-          spellCheck='false'
-        />
+        {multiline ? (
+          <Textarea
+            value={value}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            disabled={disabled || isLoading}
+            className={cn(className)}
+            rows={rows}
+            autoComplete='off'
+            autoCorrect='off'
+            autoCapitalize='off'
+            spellCheck='false'
+          />
+        ) : (
+          <Input
+            type='text'
+            value={value}
+            onChange={handleInputChange}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholder={placeholder}
+            disabled={disabled || isLoading}
+            className={cn(className)}
+            autoComplete='off'
+            autoCorrect='off'
+            autoCapitalize='off'
+            spellCheck='false'
+          />
+        )}
       </PopoverTrigger>
       {shouldShowDropdown && (
         <PopoverContent
