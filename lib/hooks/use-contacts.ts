@@ -1,7 +1,6 @@
 'use client';
 
 import { breezSDK } from '@/lib/services/breez-sdk';
-import { useContactsStore } from '@/lib/stores/contacts-store';
 import type { AddContactRequest, Contact, UpdateContactRequest } from '@/lib/types/wallet';
 import {
   BREEZ_ERROR_CONTEXT,
@@ -14,11 +13,9 @@ import { toast } from 'sonner';
 /**
  * Hook for managing wallet contacts
  * Uses React Query for data fetching and mutations
- * Integrates with contacts-store for UI state
  */
 export function useContacts() {
   const queryClient = useQueryClient();
-  const { setContacts, setLoading, setError } = useContactsStore();
 
   // Query for listing contacts
   const {
@@ -30,23 +27,16 @@ export function useContacts() {
     queryKey: ['contacts'],
     queryFn: async (): Promise<Contact[]> => {
       try {
-        setLoading(true);
-        setError(null);
-
         if (!breezSDK.isConnected()) {
           return [];
         }
 
         const result = await breezSDK.listContacts();
-        setContacts(result);
         return result;
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.LISTING_CONTACTS);
         const userMessage = getBreezErrorMessage(err, 'list contacts');
-        setError(userMessage);
         throw new Error(userMessage);
-      } finally {
-        setLoading(false);
       }
     },
     enabled: breezSDK.isConnected(),
