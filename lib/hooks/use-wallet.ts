@@ -86,10 +86,12 @@ export function useWallet() {
               }
 
               setWalletState({
-                isInitialized: false,
+                isInitialized: true,
                 isConnected: false,
                 balance: 0,
-                hasBackup: false,
+                hasBackup: savedState?.hasBackup || false,
+                lastBackupDate: savedState?.lastBackupDate,
+                lightningAddress: savedState?.lightningAddress,
               });
             }
           } else {
@@ -340,7 +342,7 @@ export function useWallet() {
 
         setWalletState(newState);
         WalletStorageService.saveWalletState(newState);
-      } catch (err: any) {
+      } catch (err: unknown) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.RESTORING_FROM_MNEMONIC);
         const userMessage = getBreezErrorMessage(err, 'connect wallet');
         setError(userMessage);

@@ -644,7 +644,7 @@ export function getPasskeyErrorMessage(error: PasskeyError): string {
       return 'Your browser does not support the PRF extension required for passkey-based wallet recovery.';
 
     case 'prf_evaluation_failed':
-      return 'Failed to derive wallet key from passkey. Please try again.';
+      return 'Failed to derive wallet key from passkey. On Windows, Windows Hello may not support PRF. Try using a security key or another device/browser.';
 
     case 'no_credentials_found':
       return 'No passkey found. Please create a passkey first.';

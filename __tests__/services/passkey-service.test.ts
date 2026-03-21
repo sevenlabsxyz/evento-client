@@ -517,7 +517,9 @@ describe('passkey-service', () => {
 
     it('returns user-friendly message for prf_evaluation_failed', () => {
       const error = new PasskeyError('Test', 'prf_evaluation_failed');
-      expect(getPasskeyErrorMessage(error)).toBe('Failed to derive wallet key from passkey. Please try again.');
+      expect(getPasskeyErrorMessage(error)).toBe(
+        'Failed to derive wallet key from passkey. On Windows, Windows Hello may not support PRF. Try using a security key or another device/browser.'
+      );
     });
 
     it('returns user-friendly message for no_credentials_found', () => {

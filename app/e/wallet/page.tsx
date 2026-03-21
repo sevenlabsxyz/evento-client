@@ -10,6 +10,7 @@ import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet
 import { ScanQrSheet } from '@/components/wallet/scan-qr-sheet';
 import { SeedBackup } from '@/components/wallet/seed-backup';
 import { SendLightningSheet } from '@/components/wallet/send-lightning-sheet';
+import { PasskeyRestore } from '@/components/wallet/passkey-restore';
 import { BTCConverterSheet } from '@/components/wallet/sheets/btc-converter-sheet';
 import { BuySellBitcoinSheet } from '@/components/wallet/sheets/buy-sell-bitcoin-sheet';
 import { EarnBitcoinSheet } from '@/components/wallet/sheets/earn-bitcoin-sheet';
@@ -32,6 +33,7 @@ import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { PasskeyStorageService } from '@/lib/services/passkey-storage';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
@@ -62,7 +64,7 @@ export default function WalletPage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
   const router = useRouter();
-  const { walletState, isLoading: isWalletLoading, markAsBackedUp } = useWallet();
+  const { walletState, isLoading: isWalletLoading, markAsBackedUp, connectWithMnemonic } = useWallet();
   const { payments, isLoading: isLoadingPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
   const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
@@ -338,6 +340,20 @@ export default function WalletPage() {
     setStep('main');
   };
 
+  const handlePasskeyRestoreComplete = async (restoredMnemonic: string) => {
+    try {
+      await connectWithMnemonic(restoredMnemonic, { hasBackup: walletState.hasBackup });
+      setStep('main');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to unlock passkey wallet');
+    }
+  };
+
+  const hasPasskeyWallet =
+    walletState.isInitialized &&
+    !WalletStorageService.getEncryptedSeed() &&
+    PasskeyStorageService.hasPasskeyWallet();
+
   const handleBackupRequired = () => {
     // Close drawer and show backup flow
     closeDrawer();
@@ -437,7 +453,14 @@ export default function WalletPage() {
     return (
       <>
         <div className='mx-auto max-w-sm pb-28 pt-4'>
-          <WalletUnlock />
+          {hasPasskeyWallet ? (
+            <PasskeyRestore
+              onComplete={handlePasskeyRestoreComplete}
+              onCancel={() => setStep('welcome')}
+            />
+          ) : (
+            <WalletUnlock />
+          )}
         </div>
         <BetaSheet open={showBetaSheet} onOpenChange={setShowBetaSheet} />
       </>
