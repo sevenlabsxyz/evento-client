@@ -3,6 +3,42 @@ import '@testing-library/jest-dom';
 global.URL.createObjectURL = jest.fn(() => 'mock-object-url');
 global.URL.revokeObjectURL = jest.fn();
 
+// Mock Web Crypto API for AES-GCM encryption tests
+const mockCryptoKey = {} as CryptoKey;
+const mockIV = new Uint8Array(12);
+const mockEncryptedData = new Uint8Array(64);
+
+global.crypto = {
+  ...global.crypto,
+  subtle: {
+    importKey: jest.fn().mockResolvedValue(mockCryptoKey),
+    encrypt: jest.fn().mockImplementation(async () => mockEncryptedData.buffer),
+    decrypt: jest.fn().mockImplementation(async (algorithm: any, key: any, data: BufferSource) => {
+      // For tests, return a valid mnemonic string
+      const mnemonic = 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about';
+      return new TextEncoder().encode(mnemonic).buffer;
+    }),
+    digest: jest.fn().mockImplementation(async (algorithm: string, data: BufferSource) => {
+      // Return a 32-byte hash for SHA-256
+      return new Uint8Array(32).buffer;
+    }),
+    generateKey: jest.fn().mockResolvedValue(mockCryptoKey),
+    exportKey: jest.fn().mockResolvedValue(new ArrayBuffer(32)),
+    sign: jest.fn().mockResolvedValue(new ArrayBuffer(64)),
+    verify: jest.fn().mockResolvedValue(true),
+    deriveKey: jest.fn().mockResolvedValue(mockCryptoKey),
+    deriveBits: jest.fn().mockResolvedValue(new ArrayBuffer(32)),
+    wrapKey: jest.fn().mockResolvedValue(new ArrayBuffer(64)),
+    unwrapKey: jest.fn().mockResolvedValue(mockCryptoKey),
+  } as any,
+  getRandomValues: jest.fn().mockImplementation((arr: any) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = Math.floor(Math.random() * 256);
+    }
+    return arr;
+  }),
+  randomUUID: jest.fn().mockReturnValue('test-uuid-1234'),
+} as any;
 jest.mock('@/lib/api/client', () => {
   const mockApiClient = {
     get: jest.fn(),

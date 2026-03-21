@@ -35,6 +35,17 @@ export type { PRFSupportResult } from '@/lib/utils/webauthn-capabilities';
 const DEBUG_PASSKEY = false;
 
 /**
+ * Marker for PRF-derived wallets (fresh setup)
+ * Stored as the "encrypted mnemonic" to indicate mnemonic should be derived from PRF
+ */
+export const PRF_DERIVED_MARKER = 'prf-derived';
+
+/**
+ * Marker prefix for PRF-encrypted mnemonics (migrated wallets)
+ * Actual encrypted data follows this prefix
+ */
+export const PRF_ENCRYPTED_PREFIX = 'prf-enc:';
+/**
  * Custom error types for passkey operations
  */
 export class PasskeyError extends Error {
@@ -645,4 +656,129 @@ export function getPasskeyErrorMessage(error: PasskeyError): string {
     default:
       return error.message || 'An unexpected error occurred with the passkey operation.';
   }
+}
+
+// ============================================================
+// PRF-based Encryption/Decryption for Migrated Wallets
+// ============================================================
+
+/**
+ * Derive an AES-GCM key from PRF output
+ *
+ * PRF output is 32 bytes - we use HKDF-like approach to derive a proper key.
+ * For simplicity, we use the PRF output directly as key material.
+ */
+async function deriveAESKeyFromPRF(prfOutput: Uint8Array): Promise<CryptoKey> {
+  // Import PRF output as raw key material
+  return crypto.subtle.importKey(
+    'raw',
+    prfOutput,
+    { name: 'AES-GCM', length: 256 },
+    false, // not extractable
+    ['encrypt', 'decrypt']
+  );
+}
+
+/**
+ * Encrypt a mnemonic using PRF output as the encryption key
+ *
+ * Used during migration to encrypt the existing wallet mnemonic
+ * with the PRF output, enabling recovery via passkey authentication.
+ *
+ * @param mnemonic - The mnemonic to encrypt
+ * @param prfOutput - The PRF output to use as encryption key
+ * @returns Encrypted data with prefix marker
+ */
+export async function encryptMnemonicWithPRF(
+  mnemonic: string,
+  prfOutput: Uint8Array
+): Promise<string> {
+  const key = await deriveAESKeyFromPRF(prfOutput);
+
+  // Generate random IV (12 bytes for AES-GCM)
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+
+  // Encrypt the mnemonic
+  const encoder = new TextEncoder();
+  const mnemonicBytes = encoder.encode(mnemonic);
+
+  const encryptedBuffer = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    mnemonicBytes
+  );
+
+  // Combine IV + encrypted data and encode as base64
+  const combined = new Uint8Array(iv.length + encryptedBuffer.byteLength);
+  combined.set(iv, 0);
+  combined.set(new Uint8Array(encryptedBuffer), iv.length);
+
+  // Convert to base64
+  const base64 = btoa(String.fromCharCode(...combined));
+
+  // Return with prefix marker
+  return `${PRF_ENCRYPTED_PREFIX}${base64}`;
+}
+
+/**
+ * Decrypt a mnemonic using PRF output as the decryption key
+ *
+ * Used during restore/export to decrypt migrated wallet mnemonics.
+ *
+ * @param encryptedData - The encrypted data (with prefix marker)
+ * @param prfOutput - The PRF output to use as decryption key
+ * @returns The decrypted mnemonic
+ * @throws Error if decryption fails or data is malformed
+ */
+export async function decryptMnemonicWithPRF(
+  encryptedData: string,
+  prfOutput: Uint8Array
+): Promise<string> {
+  // Verify prefix
+  if (!encryptedData.startsWith(PRF_ENCRYPTED_PREFIX)) {
+    throw new Error('Invalid encrypted data format - missing prefix');
+  }
+
+  // Extract base64 data
+  const base64Data = encryptedData.slice(PRF_ENCRYPTED_PREFIX.length);
+
+  // Decode from base64
+  const combined = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0));
+
+  // Extract IV (first 12 bytes) and encrypted data
+  const iv = combined.slice(0, 12);
+  const encryptedBytes = combined.slice(12);
+
+  // Derive key and decrypt
+  const key = await deriveAESKeyFromPRF(prfOutput);
+
+  const decryptedBuffer = await crypto.subtle.decrypt(
+    { name: 'AES-GCM', iv },
+    key,
+    encryptedBytes
+  );
+
+  // Convert to string
+  const decoder = new TextDecoder();
+  return decoder.decode(decryptedBuffer);
+}
+
+/**
+ * Check if stored wallet data represents a PRF-derived wallet (fresh setup)
+ *
+ * @param storedData - The data stored as "encrypted mnemonic"
+ * @returns true if this is a PRF-derived wallet (mnemonic should be derived from PRF)
+ */
+export function isPRFDerivedWallet(storedData: string): boolean {
+  return storedData === PRF_DERIVED_MARKER;
+}
+
+/**
+ * Check if stored wallet data represents a migrated wallet (encrypted mnemonic)
+ *
+ * @param storedData - The data stored as "encrypted mnemonic"
+ * @returns true if this is a migrated wallet (mnemonic should be decrypted)
+ */
+export function isPRFEncryptedWallet(storedData: string): boolean {
+  return storedData.startsWith(PRF_ENCRYPTED_PREFIX);
 }

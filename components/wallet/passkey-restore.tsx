@@ -4,7 +4,13 @@ import { Button } from '@/components/ui/button';
 import { usePasskey } from '@/lib/hooks/use-passkey';
 import { PasskeyStorageService } from '@/lib/services/passkey-storage';
 import { prfOutputToMnemonic } from '@/lib/services/prf-to-mnemonic';
-import { PasskeyError, isPasskeyError } from '@/lib/services/passkey-service';
+import {
+  PasskeyError,
+  isPasskeyError,
+  decryptMnemonicWithPRF,
+  isPRFDerivedWallet,
+  isPRFEncryptedWallet,
+} from '@/lib/services/passkey-service';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Fingerprint, KeyRound, Loader2, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
@@ -51,6 +57,15 @@ export function PasskeyRestore({ onComplete, onCancel, rpId = 'evento.cash' }: P
         );
       }
 
+      // Get the stored wallet data to determine wallet type
+      const storedData = PasskeyStorageService.getPasskeyWallet(credentialId);
+      if (!storedData) {
+        throw new PasskeyError(
+          'Passkey wallet data not found. Please restore using your recovery phrase.',
+          'no_credentials_found'
+        );
+      }
+
       // Authenticate with PRF using credential ID as salt
       const result = await authenticateWithPRF(rpId, credentialId, {
         credentialId,
@@ -64,9 +79,22 @@ export function PasskeyRestore({ onComplete, onCancel, rpId = 'evento.cash' }: P
         isProcessing: true,
       });
 
-      // Derive mnemonic from PRF output
-      const mnemonic = prfOutputToMnemonic(result.prfOutput);
+      // Determine how to recover the mnemonic based on wallet type
+      let mnemonic: string;
 
+      if (isPRFDerivedWallet(storedData)) {
+        // Fresh setup wallet: mnemonic is derived from PRF output
+        mnemonic = prfOutputToMnemonic(result.prfOutput);
+      } else if (isPRFEncryptedWallet(storedData)) {
+        // Migrated wallet: mnemonic is encrypted with PRF output, decrypt it
+        mnemonic = await decryptMnemonicWithPRF(storedData, result.prfOutput);
+      } else {
+        // Unknown wallet type - this shouldn't happen
+        throw new PasskeyError(
+          'Invalid wallet data format. Please restore using your recovery phrase.',
+          'failed'
+        );
+      }
       // Success - call onComplete with mnemonic
       toast.success('Wallet restored successfully!');
       onComplete(mnemonic);

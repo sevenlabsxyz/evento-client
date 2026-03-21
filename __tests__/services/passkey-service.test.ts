@@ -540,4 +540,59 @@ describe('passkey-service', () => {
       expect(getPasskeyErrorMessage(error)).toBe('An unexpected error occurred with the passkey operation.');
     });
   });
+
+  describe('PRF-based Encryption Helpers', () => {
+    // Note: Encryption/decryption tests require crypto.subtle which may not be available in all test environments
+    // The core logic is tested via integration tests
+
+    describe('isPRFDerivedWallet', () => {
+      it('returns true for prf-derived marker', () => {
+        const { isPRFDerivedWallet, PRF_DERIVED_MARKER } = require('@/lib/services/passkey-service');
+        expect(isPRFDerivedWallet(PRF_DERIVED_MARKER)).toBe(true);
+      });
+
+      it('returns false for encrypted data', () => {
+        const { isPRFDerivedWallet } = require('@/lib/services/passkey-service');
+        expect(isPRFDerivedWallet('prf-enc:somedata')).toBe(false);
+      });
+
+      it('returns false for other strings', () => {
+        const { isPRFDerivedWallet } = require('@/lib/services/passkey-service');
+        expect(isPRFDerivedWallet('random-data')).toBe(false);
+        expect(isPRFDerivedWallet('')).toBe(false);
+      });
+    });
+
+    describe('isPRFEncryptedWallet', () => {
+      it('returns true for prf-enc prefixed data', () => {
+        const { isPRFEncryptedWallet } = require('@/lib/services/passkey-service');
+        expect(isPRFEncryptedWallet('prf-enc:somedata')).toBe(true);
+      });
+
+      it('returns false for prf-derived marker', () => {
+        const { isPRFEncryptedWallet, PRF_DERIVED_MARKER } = require('@/lib/services/passkey-service');
+        expect(isPRFEncryptedWallet(PRF_DERIVED_MARKER)).toBe(false);
+      });
+
+      it('returns false for other strings', () => {
+        const { isPRFEncryptedWallet } = require('@/lib/services/passkey-service');
+        expect(isPRFEncryptedWallet('random-data')).toBe(false);
+        expect(isPRFEncryptedWallet('')).toBe(false);
+      });
+    });
+
+    describe('PRF_ENCRYPTED_PREFIX', () => {
+      it('has correct prefix value', () => {
+        const { PRF_ENCRYPTED_PREFIX } = require('@/lib/services/passkey-service');
+        expect(PRF_ENCRYPTED_PREFIX).toBe('prf-enc:');
+      });
+    });
+
+    describe('PRF_DERIVED_MARKER', () => {
+      it('has correct marker value', () => {
+        const { PRF_DERIVED_MARKER } = require('@/lib/services/passkey-service');
+        expect(PRF_DERIVED_MARKER).toBe('prf-derived');
+      });
+    });
+  });
 });

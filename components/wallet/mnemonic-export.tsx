@@ -7,7 +7,12 @@ import { useState, useCallback } from 'react';
 import { usePasskey } from '@/lib/hooks/use-passkey';
 import { PasskeyStorageService } from '@/lib/services/passkey-storage';
 import { prfOutputToMnemonic } from '@/lib/services/prf-to-mnemonic';
-import { isPasskeyError } from '@/lib/services/passkey-service';
+import {
+  isPasskeyError,
+  decryptMnemonicWithPRF,
+  isPRFDerivedWallet,
+  isPRFEncryptedWallet,
+} from '@/lib/services/passkey-service';
 
 interface MnemonicExportProps {
   /**
@@ -73,6 +78,12 @@ export function MnemonicExport({
         throw new Error('No passkey wallet data found. Please create a wallet first.');
       }
 
+      // Get the stored wallet data to determine wallet type
+      const storedData = PasskeyStorageService.getPasskeyWallet(credentialId);
+      if (!storedData) {
+        throw new Error('Passkey wallet data not found. Please create a wallet first.');
+      }
+
       // Authenticate with passkey and get PRF output
       // Use the credentialId as the salt for deterministic derivation
       const result = await authenticateWithPRF(rpId, credentialId, {
@@ -80,11 +91,21 @@ export function MnemonicExport({
         requireUserVerification: true,
       });
 
-      // Derive mnemonic from PRF output
-      const derivedMnemonic = prfOutputToMnemonic(result.prfOutput);
+      // Determine how to recover the mnemonic based on wallet type
+      let mnemonic: string;
 
+      if (isPRFDerivedWallet(storedData)) {
+        // Fresh setup wallet: mnemonic is derived from PRF output
+        mnemonic = prfOutputToMnemonic(result.prfOutput);
+      } else if (isPRFEncryptedWallet(storedData)) {
+        // Migrated wallet: mnemonic is encrypted with PRF output, decrypt it
+        mnemonic = await decryptMnemonicWithPRF(storedData, result.prfOutput);
+      } else {
+        // Unknown wallet type - this shouldn't happen
+        throw new Error('Invalid wallet data format. Please restore using your recovery phrase.');
+      }
       // Show the mnemonic
-      setMnemonic(derivedMnemonic);
+      setMnemonic(mnemonic);
       setShowMnemonic(false); // Start blurred
       setStep('display');
     } catch (error) {
