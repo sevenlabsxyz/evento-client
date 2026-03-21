@@ -372,7 +372,21 @@
   height: 100%;
 }
 
-.str-chat__message-bubble .str-chat__message-text,
+.str-chat__message--has-text .str-chat__message-bubble {
+  width: fit-content;
+}
+
+.str-chat__message-bubble .str-chat__message-text {
+  background: #e9e9eb !important;
+  color: #1c1c1e !important;
+  border-radius: 18px !important;
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  word-wrap: break-word !important;
+  display: block !important;
+  max-width: none !important;
+}
+
 .str-chat__message-simple__text {
   background: #e9e9eb !important;
   color: #1c1c1e !important;
