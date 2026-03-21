@@ -1,5 +1,58 @@
 import 'whatwg-fetch';
 
+// Mock Web Crypto API for AES-GCM encryption tests - MUST be set unconditionally
+// Node 19+ has crypto but it may not have all subtle methods we need
+const mockCryptoKey = {} as CryptoKey;
+
+const mockCrypto = {
+  subtle: {
+    importKey: () => Promise.resolve(mockCryptoKey),
+    encrypt: async (algorithm: any, key: any, data: BufferSource) => {
+      // Return encrypted data (IV + ciphertext simulation)
+      const input = new Uint8Array(data as ArrayBuffer);
+      const result = new Uint8Array(12 + input.length);
+      // Fake IV
+      for (let i = 0; i < 12; i++) result[i] = i;
+      // Fake ciphertext (just copy input)
+      for (let i = 0; i < input.length; i++) result[12 + i] = input[i] ^ 0x42;
+      return result.buffer;
+    },
+    decrypt: async (algorithm: any, key: any, data: BufferSource) => {
+      // Decrypt by reversing the encrypt mock
+      const input = new Uint8Array(data as ArrayBuffer);
+      if (input.length < 12) throw new Error('Invalid data');
+      // Extract ciphertext (skip IV)
+      const ciphertext = input.slice(12);
+      // Reverse the XOR
+      const result = new Uint8Array(ciphertext.length);
+      for (let i = 0; i < ciphertext.length; i++) result[i] = ciphertext[i] ^ 0x42;
+      return result.buffer;
+    },
+    digest: async (algorithm: string, data: BufferSource) => {
+      // Return a 32-byte hash for SHA-256
+      return new Uint8Array(32).buffer;
+    },
+    generateKey: () => Promise.resolve(mockCryptoKey),
+    exportKey: () => Promise.resolve(new ArrayBuffer(32)),
+    sign: () => Promise.resolve(new ArrayBuffer(64)),
+    verify: () => Promise.resolve(true),
+    deriveKey: () => Promise.resolve(mockCryptoKey),
+    deriveBits: () => Promise.resolve(new ArrayBuffer(32)),
+    wrapKey: () => Promise.resolve(new ArrayBuffer(64)),
+    unwrapKey: () => Promise.resolve(mockCryptoKey),
+  },
+  getRandomValues: (arr: any) => {
+    for (let i = 0; i < arr.length; i++) {
+      arr[i] = Math.floor(Math.random() * 256);
+    }
+    return arr;
+  },
+  randomUUID: () => 'test-uuid-1234',
+};
+
+// Force override - critical for tests
+(global as any).crypto = mockCrypto;
+
 class BroadcastChannelMock {
   name: string;
   private static channels: Map<string, Set<BroadcastChannelMock>> = new Map();
