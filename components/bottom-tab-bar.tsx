@@ -91,7 +91,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
   }, [pathname]);
 
   // Routes where the tab bar slides away
-  const hidden = pathname?.startsWith('/e/create') || pathname?.endsWith('/manage/details');
+  const hidden = pathname?.startsWith('/e/create') || pathname?.match(/\/manage(?:\/|$)/);
 
   return (
     <div
