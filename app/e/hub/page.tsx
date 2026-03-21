@@ -6,20 +6,34 @@ import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
-import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { getOnboardingRedirectUrl, isUserOnboarded } from '@/lib/utils/auth';
 import { MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HubPage() {
   const router = useRouter();
-  const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
-  const { user } = useUserProfile();
+  const pathname = usePathname();
+  const { isLoading: isCheckingAuth, isAuthenticated, user } = useAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
+  const isCheckingOnboarding = isCheckingAuth;
+
+  useEffect(() => {
+    if (isCheckingAuth) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    if (user && !isUserOnboarded(user)) {
+      router.push(getOnboardingRedirectUrl(pathname));
+    }
+  }, [isCheckingAuth, isAuthenticated, user, pathname, router]);
 
   // Set TopBar content
   useEffect(() => {
