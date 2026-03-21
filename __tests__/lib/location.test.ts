@@ -1,4 +1,4 @@
-import { getEventLocationDisplayLines } from '@/lib/utils/location';
+import { formatEventLocationAddress, getEventLocationDisplayLines } from '@/lib/utils/location';
 
 describe('getEventLocationDisplayLines', () => {
   it('prefers the street address and shows city/state on the second line', () => {
@@ -97,6 +97,108 @@ describe('getEventLocationDisplayLines', () => {
       primary: 'Austin, TX',
       secondary: '',
     });
+  });
+
+  it('strips city/state/zip/country from full address string', () => {
+    expect(
+      getEventLocationDisplayLines(
+        {
+          name: '',
+          address: '2070 Park Centre Dr, Las Vegas, NV 89135, USA',
+          city: 'Las Vegas',
+          state: 'Nevada',
+          country: 'USA',
+          zipCode: '89135',
+        },
+        {
+          preferStructuredAddress: true,
+        }
+      )
+    ).toEqual({
+      primary: '2070 Park Centre Dr',
+      secondary: 'Las Vegas, Nevada',
+    });
+  });
+
+  it('handles country aliases when stripping the full address', () => {
+    expect(
+      getEventLocationDisplayLines(
+        {
+          name: '',
+          address: '50 Example Ave, Portland, OR 97201, United States',
+          city: 'Portland',
+          state: 'OR',
+          country: 'USA',
+          zipCode: '97201',
+        },
+        {
+          preferStructuredAddress: true,
+        }
+      )
+    ).toEqual({
+      primary: '50 Example Ave',
+      secondary: 'Portland, OR',
+    });
+  });
+
+  it('strips city/state from address when they appear as suffixes', () => {
+    expect(
+      getEventLocationDisplayLines(
+        {
+          name: 'Some Place',
+          address: '123 Main St, San Francisco, CA 94103, United States',
+          city: 'San Francisco',
+          state: 'CA',
+          country: 'United States',
+          zipCode: '94103',
+        },
+        {
+          preferStructuredAddress: true,
+        }
+      )
+    ).toEqual({
+      primary: '123 Main St',
+      secondary: 'San Francisco, CA',
+    });
+  });
+
+  it('does not duplicate name or city in formatEventLocationAddress', () => {
+    expect(
+      formatEventLocationAddress({
+        name: 'Av. Nhandú, 848',
+        address: 'Av. Nhandú, 848 - Planalto Paulista, São Paulo - SP, 04059-002, Brazil',
+        city: 'São Paulo',
+        state: 'SP',
+        country: 'Brazil',
+        zipCode: '04059-002',
+      })
+    ).toBe('Av. Nhandú, 848 - Planalto Paulista, São Paulo, SP, 04059-002, Brazil');
+  });
+
+  it('strips full address in formatEventLocationAddress', () => {
+    expect(
+      formatEventLocationAddress({
+        name: '',
+        address: '2070 Park Centre Dr, Las Vegas, NV 89135, USA',
+        city: 'Las Vegas',
+        state: 'Nevada',
+        country: 'USA',
+        zipCode: '89135',
+      })
+    ).toBe('2070 Park Centre Dr, Las Vegas, Nevada, 89135, USA');
+  });
+
+  it('supports mixed-case city/state tokens in formatted address cleanup', () => {
+    expect(
+      formatEventLocationAddress({
+        name: '',
+        address: ' 7414 Yonie Ct , AUSTIN , tx 78751 , usa ',
+        city: 'Austin',
+        state: 'TX',
+        country: 'United States',
+        zipCode: '78751',
+      })
+    ).toBe('7414 Yonie Ct, Austin, TX, 78751, United States');
   });
 
   it('keeps the TBD fallback when no location details exist', () => {
