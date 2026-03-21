@@ -2,12 +2,14 @@
 
 import { Button } from '@/components/ui/button';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
+import { PasskeySetupWizard } from '@/components/wallet/passkey-setup-wizard';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { PasskeyStorageService } from '@/lib/services/passkey-storage';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Key, Loader2, Wallet } from 'lucide-react';
+import { AlertCircle, Fingerprint, Key, Loader2, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletSetupProps {
@@ -15,10 +17,12 @@ interface WalletSetupProps {
   onCancel?: () => void;
 }
 
-type Step = 'create-pin' | 'confirm-pin' | 'creating' | 'error';
+type AuthMethod = 'passkey' | 'pin' | null;
+type Step = 'choose-method' | 'create-pin' | 'confirm-pin' | 'creating' | 'error';
 
 export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
-  const [step, setStep] = useState<Step>('create-pin');
+  const [step, setStep] = useState<Step>('choose-method');
+  const [authMethod, setAuthMethod] = useState<AuthMethod>(null);
   const [pin, setPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +30,6 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   const { createWallet } = useWallet();
   const { user } = useAuth();
   const { checkAvailability, registerAddress } = useLightningAddress();
-
   const handleNumberClick = (num: string) => {
     if (step === 'create-pin' && pin.length < 6) {
       setPin(pin + num);
@@ -51,6 +54,36 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     setStep('confirm-pin');
   };
 
+  const registerLightningAddress = async () => {
+    if (!user?.username) return;
+
+    try {
+      const baseUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
+      let username = baseUsername;
+      let isAvailable = false;
+      let attempts = 0;
+
+      // Try base username, then add numbers if taken
+      while (!isAvailable && attempts < 10) {
+        isAvailable = await checkAvailability(username);
+        if (!isAvailable) {
+          attempts++;
+          username = `${baseUsername}${attempts}`;
+        }
+      }
+
+      if (isAvailable) {
+        await registerAddress(username, `Pay to ${user.name || user.username}`);
+        logger.info(`Lightning address registered: ${username}@evento.cash`);
+      }
+    } catch (error) {
+      logger.error('Failed to register Lightning address', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      // Don't fail wallet creation if Lightning address registration fails
+    }
+  };
+
   const handleConfirmAndCreate = async () => {
     if (confirmPin !== pin) {
       toast.error('PINs do not match');
@@ -65,33 +98,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       const mnemonic = await createWallet(pin);
 
       // Automatically register Lightning address
-      if (user?.username) {
-        try {
-          const baseUsername = user.username.toLowerCase().replace(/[^a-z0-9]/g, '');
-          let username = baseUsername;
-          let isAvailable = false;
-          let attempts = 0;
-
-          // Try base username, then add numbers if taken
-          while (!isAvailable && attempts < 10) {
-            isAvailable = await checkAvailability(username);
-            if (!isAvailable) {
-              attempts++;
-              username = `${baseUsername}${attempts}`;
-            }
-          }
-
-          if (isAvailable) {
-            await registerAddress(username, `Pay to ${user.name || user.username}`);
-            logger.info(`Lightning address registered: ${username}@evento.cash`);
-          }
-        } catch (error) {
-          logger.error('Failed to register Lightning address', {
-            error: error instanceof Error ? error.message : String(error),
-          });
-          // Don't fail wallet creation if Lightning address registration fails
-        }
-      }
+      await registerLightningAddress();
 
       toast.success('Wallet created successfully!');
       onComplete(mnemonic);
@@ -115,7 +122,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   };
 
   const handleRetry = () => {
-    setStep('create-pin');
+    setStep('choose-method');
+    setAuthMethod(null);
     setPin('');
     setConfirmPin('');
     setError(null);
@@ -171,6 +179,117 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           <h2 className='text-2xl font-bold'>Creating Wallet</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Setting up your wallet...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Passkey flow - render PasskeySetupWizard
+  if (authMethod === 'passkey') {
+    return (
+      <PasskeySetupWizard
+        onComplete={(mnemonic, credentialId) => {
+          // Store passkey wallet data
+          // Note: In production, the mnemonic would be encrypted with the PRF output
+          // For now, we store a placeholder since the mnemonic is derived from PRF
+          try {
+            PasskeyStorageService.storePasskeyWallet(credentialId, 'prf-derived');
+            logger.info('Passkey wallet stored', { credentialId: credentialId.slice(0, 8) + '...' });
+          } catch (err) {
+            logger.error('Failed to store passkey wallet', {
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+
+          // Register Lightning address if user exists
+          registerLightningAddress();
+
+          toast.success('Wallet created successfully!');
+          onComplete(mnemonic);
+        }}
+        onUsePinFallback={() => {
+          setAuthMethod('pin');
+          setStep('create-pin');
+        }}
+        onCancel={onCancel}
+      />
+    );
+  }
+
+  // Choose authentication method screen
+  if (step === 'choose-method') {
+    return (
+      <div className='space-y-6'>
+        <div className='text-center'>
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
+            <Wallet className='h-8 w-8 text-orange-600' />
+          </div>
+          <h2 className='text-2xl font-bold'>Choose Your Security Method</h2>
+          <p className='mt-2 text-sm text-muted-foreground'>
+            How would you like to secure your wallet?
+          </p>
+        </div>
+
+        <div className='space-y-3'>
+          {/* Passkey Option */}
+          <button
+            onClick={() => setAuthMethod('passkey')}
+            className='w-full rounded-2xl border-2 border-gray-100 bg-white p-4 text-left transition-all hover:border-primary hover:bg-primary/5'
+          >
+            <div className='flex items-start gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-full bg-primary/10'>
+                <Fingerprint className='h-5 w-5 text-primary' />
+              </div>
+              <div className='flex-1'>
+                <p className='font-semibold'>Use Passkey</p>
+                <p className='mt-1 text-sm text-muted-foreground'>
+                  Secure with Face ID, Touch ID, or device screen lock. No passwords to remember.
+                </p>
+              </div>
+            </div>
+          </button>
+
+          {/* PIN Option */}
+          <button
+            onClick={() => {
+              setAuthMethod('pin');
+              setStep('create-pin');
+            }}
+            className='w-full rounded-2xl border-2 border-gray-100 bg-white p-4 text-left transition-all hover:border-primary hover:bg-primary/5'
+          >
+            <div className='flex items-start gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
+                <Key className='h-5 w-5 text-gray-600' />
+              </div>
+              <div className='flex-1'>
+                <p className='font-semibold'>Use PIN + Mnemonic</p>
+                <p className='mt-1 text-sm text-muted-foreground'>
+                  Traditional security with a PIN and backup recovery phrase.
+                </p>
+              </div>
+            </div>
+          </button>
+        </div>
+
+        <div className='rounded-lg bg-blue-50 p-4'>
+          <div className='flex items-start gap-2'>
+            <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+            <div className='text-sm text-blue-900'>
+              <p className='font-medium'>Which should I choose?</p>
+              <p className='mt-1'>
+                <strong>Passkey</strong> is recommended for most users - it&apos;s more secure and easier to use.
+              </p>
+              <p className='mt-1'>
+                <strong>PIN + Mnemonic</strong> is a good choice if your browser doesn&apos;t support passkeys or you prefer traditional backup methods.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {onCancel && (
+          <Button onClick={onCancel} variant='ghost' className='w-full'>
+            Cancel
+          </Button>
+        )}
       </div>
     );
   }

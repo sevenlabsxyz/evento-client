@@ -8,6 +8,11 @@ export const STORAGE_KEYS = {
   SUPABASE_ACCESS_TOKEN: 'supabase_access_token',
   SUPABASE_REFRESH_TOKEN: 'supabase_refresh_token',
 
+  // Passkey Wallet (PRF-encrypted - SENSITIVE)
+  PASSKEY_CREDENTIAL_ID: 'evento_passkey_credential_id',
+  PASSKEY_ENCRYPTED_MNEMONIC: 'evento_passkey_encrypted_mnemonic',
+  PASSKEY_WALLET_STATE: 'evento_passkey_wallet_state',
+
   // Wallet (self-custodial - SENSITIVE)
   WALLET_STATE: 'evento_wallet_state',
   ENCRYPTED_SEED: 'evento_encrypted_seed',
