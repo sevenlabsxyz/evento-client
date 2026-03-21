@@ -1,9 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { AddContactSheet } from '@/components/wallet/add-contact-sheet';
 import { BackupCallout } from '@/components/wallet/backup-callout';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
+import { ContactsList } from '@/components/wallet/contacts-list';
+import { EditContactSheet } from '@/components/wallet/edit-contact-sheet';
 import { IncomingFundsSheet } from '@/components/wallet/incoming-funds-sheet';
 import { QuickToolsSection } from '@/components/wallet/quick-tools-section';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
@@ -35,11 +39,13 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
+import type { Contact } from '@/lib/types/wallet';
+import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
-import { ChevronsRight, Eye, EyeOff, HelpCircle, Settings } from 'lucide-react';
+import { ChevronsRight, Eye, EyeOff, HelpCircle, Settings, UserPlus } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -80,6 +86,9 @@ export default function WalletPage() {
   const [showOnchainEducationalSheet, setShowOnchainEducationalSheet] = useState(false);
   const [onchainEducationalArticle, setOnchainEducationalArticle] = useState<any>(null);
   const [hasShownUnlockRedirectHint, setHasShownUnlockRedirectHint] = useState(false);
+  const [showContactsSheet, setShowContactsSheet] = useState(false);
+  const [showAddContactSheet, setShowAddContactSheet] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -105,6 +114,12 @@ export default function WalletPage() {
     if (!openDrawers.includes('transaction-details')) {
       setOpenDrawers([...openDrawers, 'transaction-details']);
     }
+  };
+
+  const handleContactSelect = (contact: Contact) => {
+    setScannedData(contact.paymentIdentifier);
+    setShowContactsSheet(false);
+    openDrawer('send');
   };
 
   useEffect(() => {
@@ -249,6 +264,17 @@ export default function WalletPage() {
 
     registerLightningAddressIfNeeded();
   }, [walletState.isConnected, address, user, checkAvailability, registerAddress]);
+
+  // Migrate recent Lightning addresses to contacts on first wallet connect
+  useEffect(() => {
+    if (walletState.isConnected) {
+      migrateRecentAddressesToContacts().catch((error) => {
+        logger.error('Failed to migrate recent addresses to contacts', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
+    }
+  }, [walletState.isConnected]);
 
   // Listen for deposit events and manage unclaimed deposits
   useEffect(() => {
@@ -490,6 +516,34 @@ export default function WalletPage() {
                 />
               </div>
 
+              {/* Contacts Preview */}
+              <div className='mt-6 space-y-3 md:mt-4'>
+                <div className='flex items-center justify-between'>
+                  <h3 className='text-sm font-semibold'>Contacts</h3>
+                  <Button
+                    variant='ghost'
+                    size='sm'
+                    onClick={() => setShowAddContactSheet(true)}
+                    className='h-8 w-8 p-0'
+                  >
+                    <UserPlus className='h-4 w-4' />
+                  </Button>
+                </div>
+                <ContactsList
+                  maxContacts={3}
+                  showAddButton={false}
+                  onContactClick={handleContactSelect}
+                />
+                <Button
+                  variant='outline'
+                  size='sm'
+                  onClick={() => setShowContactsSheet(true)}
+                  className='w-full'
+                >
+                  View All Contacts
+                </Button>
+              </div>
+
               {/* Incoming Onchain Bitcoin Alert */}
               {unclaimedDepositsCount > 0 && (
                 <div className='rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4'>
@@ -634,6 +688,58 @@ export default function WalletPage() {
         open={showOnchainEducationalSheet}
         onOpenChange={setShowOnchainEducationalSheet}
       />
+
+      {/* Contacts Sheet (Full View) */}
+      <MasterScrollableSheet
+        open={showContactsSheet}
+        onOpenChange={(open) => {
+          setShowContactsSheet(open);
+          if (!open) {
+            setSelectedContact(null);
+          }
+        }}
+        title='Contacts'
+        headerRight={
+          <Button
+            variant='ghost'
+            size='sm'
+            onClick={() => {
+              setShowContactsSheet(false);
+              setShowAddContactSheet(true);
+            }}
+            className='h-8 w-8 p-0'
+          >
+            <UserPlus className='h-4 w-4' />
+          </Button>
+        }
+      >
+        <div className='p-4'>
+          <ContactsList
+            showAddButton={false}
+            onContactClick={handleContactSelect}
+            onEditContact={(contact) => {
+              setSelectedContact(contact);
+              setShowContactsSheet(false);
+            }}
+          />
+        </div>
+      </MasterScrollableSheet>
+
+      {/* Add Contact Sheet */}
+      <AddContactSheet open={showAddContactSheet} onOpenChange={setShowAddContactSheet} />
+
+      {/* Edit Contact Sheet */}
+      {selectedContact && (
+        <EditContactSheet
+          contact={selectedContact}
+          open={!!selectedContact && !showContactsSheet}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedContact(null);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

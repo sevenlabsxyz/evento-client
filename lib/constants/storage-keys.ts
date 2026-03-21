@@ -21,7 +21,6 @@ export const STORAGE_KEYS = {
   // User Preferences
   VIEW_MODE: 'evento-view-mode', // Zustand persist
   RECENT_SEARCHES: 'evento-recent-searches', // Zustand persist
-  RECENT_LIGHTNING_ADDRESSES: 'evento-recent-lightning-addresses', // Zustand persist
 } as const;
 
 export const SESSION_KEYS = {

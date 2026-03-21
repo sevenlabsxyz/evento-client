@@ -60,6 +60,13 @@ export const BREEZ_ERROR_CONTEXT = {
 
   // Zap Operations
   SENDING_ZAP: 'sending zap',
+
+  // Contact Operations
+  ADDING_CONTACT: 'adding contact',
+  UPDATING_CONTACT: 'updating contact',
+  DELETING_CONTACT: 'deleting contact',
+  LISTING_CONTACTS: 'listing contacts',
+  FETCHING_CONTACT_PROFILE: 'fetching contact profile',
 } as const;
 
 export interface BreezErrorInfo {

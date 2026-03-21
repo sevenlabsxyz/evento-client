@@ -1,13 +1,14 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Textarea } from '@/components/ui/textarea';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
+import { useContacts } from '@/lib/hooks/use-contacts';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
-import { useRecentLightningAddressesStore } from '@/lib/stores/recent-lightning-addresses-store';
 import {
   BREEZ_ERROR_CONTEXT,
   getBreezErrorMessage,
@@ -17,11 +18,14 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
-import { AlertCircle, ArrowLeft, Loader2, Scan, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Badge } from '../ui/badge';
+import { AddContactSheet } from './add-contact-sheet';
 import { AmountInputSheet } from './amount-input-sheet';
+import { ContactAutocomplete } from './contact-autocomplete';
+import { ContactsList } from './contacts-list';
 
+import { useSaveContactPrompt } from './save-contact-prompt';
 interface SendLightningSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -65,12 +69,15 @@ export function SendLightningSheet({
   const [bitcoinFeeSpeed, setBitcoinFeeSpeed] = useState<'fast' | 'medium' | 'slow'>('medium');
   const [bitcoinPrepareResponse, setBitcoinPrepareResponse] = useState<any>(null);
   const [sendAll, setSendAll] = useState(false);
+  const [showContactsSheet, setShowContactsSheet] = useState(false);
+  const [showAddContactSheet, setShowAddContactSheet] = useState(false);
 
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading } = useSendPayment();
   const { satsToUSD, usdToSats } = useAmountConverter();
-  const { recentAddresses, addRecentAddress } = useRecentLightningAddressesStore();
+  const { contacts, findContactByAddress } = useContacts();
 
+  const { showSaveContactPrompt } = useSaveContactPrompt();
   // Reset form to initial state
   const resetForm = () => {
     setInvoice('');
@@ -490,12 +497,12 @@ export function SendLightningSheet({
         await sendPayment(invoice, amount ? Number(amount) : undefined);
       }
 
-      // Save Lightning address to recent addresses
-      if (parsedInput?.type === 'lightningAddress') {
-        addRecentAddress(invoice.trim());
-      }
-
       toast.success('Payment sent!');
+
+      // Show save contact prompt for Lightning address payments (if not already in contacts)
+      if (parsedInput?.type === 'lightningAddress') {
+        showSaveContactPrompt(invoice.trim());
+      }
       resetForm();
       onOpenChange(false);
     } catch (error: any) {
@@ -707,28 +714,18 @@ export function SendLightningSheet({
         <div className='mx-auto max-w-md space-y-6'>
           {/* Invoice/Address Input */}
           <div className='space-y-3'>
-            <Textarea
+            <ContactAutocomplete
               value={invoice}
-              onChange={(e) => handleInvoiceChange(e.target.value)}
+              onChange={handleInvoiceChange}
+              onSelect={(lightningAddress) => {
+                handleInvoiceChange(lightningAddress);
+              }}
               placeholder='Lightning invoice, Lightning address, or onchain address'
-              className='resize-none bg-gray-50 font-mono text-sm'
+              className='bg-gray-50 font-mono text-sm'
+              disabled={isValidating}
+              multiline={true}
               rows={4}
             />
-
-            {/* Recent Lightning Addresses */}
-            {recentAddresses.length > 0 && !invoice && (
-              <div className='flex flex-wrap gap-2'>
-                {recentAddresses.map((address) => (
-                  <Badge
-                    key={address}
-                    onClick={() => handleInvoiceChange(address)}
-                    className='rounded-full border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-200'
-                  >
-                    {address}
-                  </Badge>
-                ))}
-              </div>
-            )}
 
             {/* Validation Feedback */}
             {isValidating && (
@@ -772,15 +769,25 @@ export function SendLightningSheet({
             </div>
           </div>
 
-          {/* Scan QR Code */}
-          <Button
-            onClick={handleScanQR}
-            variant='outline'
-            className='h-12 w-full rounded-full bg-gray-50'
-          >
-            <Scan className='mr-2 h-5 w-5' />
-            Scan QR Code
-          </Button>
+          {/* Action Buttons */}
+          <div className='flex gap-3'>
+            <Button
+              onClick={handleScanQR}
+              variant='outline'
+              className='h-12 flex-1 rounded-full bg-gray-50'
+            >
+              <Scan className='mr-2 h-5 w-5' />
+              Scan QR Code
+            </Button>
+            <Button
+              onClick={() => setShowContactsSheet(true)}
+              variant='outline'
+              className='h-12 flex-1 rounded-full bg-gray-50'
+            >
+              <Users className='mr-2 h-5 w-5' />
+              Contacts
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -1007,6 +1014,41 @@ export function SendLightningSheet({
         // (channel capacity, routing limits, fees). Lightning payments need manual amount entry.
         maxAmount={paymentType === 'bitcoin' ? walletState.balance : undefined}
       />
+
+      {/* Contacts Sheet */}
+      <MasterScrollableSheet
+        open={showContactsSheet}
+        onOpenChange={setShowContactsSheet}
+        title='Contacts'
+        headerRight={
+          <Button
+            onClick={() => {
+              setShowContactsSheet(false);
+              setShowAddContactSheet(true);
+            }}
+            size='sm'
+            className='h-8'
+          >
+            <UserPlus className='h-4 w-4' />
+          </Button>
+        }
+      >
+        <ContactsList
+          onAddContact={() => {
+            setShowContactsSheet(false);
+            setShowAddContactSheet(true);
+          }}
+          onContactClick={(contact) => {
+            handleInvoiceChange(contact.paymentIdentifier);
+            setShowContactsSheet(false);
+          }}
+          showAddButton={false}
+          className='p-6'
+        />
+      </MasterScrollableSheet>
+
+      {/* Add Contact Sheet */}
+      <AddContactSheet open={showAddContactSheet} onOpenChange={setShowAddContactSheet} />
     </>
   );
 }

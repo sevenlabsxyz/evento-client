@@ -67,3 +67,33 @@ export interface BackupOptions {
   encryptedSeed: string;
   timestamp: Date;
 }
+
+export interface Contact {
+  id: string;
+  name: string;
+  paymentIdentifier: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface AddContactRequest {
+  name: string;
+  paymentIdentifier: string;
+}
+
+export interface UpdateContactRequest {
+  id: string;
+  name: string;
+  paymentIdentifier: string;
+}
+
+export interface ListContactsRequest {
+  offset?: number;
+  limit?: number;
+}
+
+export interface EventoCashProfile {
+  username: string;
+  displayName?: string;
+  avatar?: string;
+}
