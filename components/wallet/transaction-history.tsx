@@ -124,8 +124,9 @@ export function TransactionHistory({
       case 'lightning': {
         // Check if there's a destination Lightning address in the details
         // Note: Breez SDK may provide this in future versions
+        const details = payment.details as any;
         const lightningAddress =
-          (payment.details as any).lightningAddress || (payment.details as any).destinationAddress;
+          details.lightningAddress || details.lnAddress || details.destinationAddress;
         if (lightningAddress) {
           const contact = findContactByAddress(lightningAddress);
           if (contact) {

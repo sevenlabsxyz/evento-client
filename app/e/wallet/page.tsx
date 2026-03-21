@@ -116,6 +116,12 @@ export default function WalletPage() {
     }
   };
 
+  const handleContactSelect = (contact: Contact) => {
+    setScannedData(contact.paymentIdentifier);
+    setShowContactsSheet(false);
+    openDrawer('send');
+  };
+
   useEffect(() => {
     applyRouteConfig(pathname);
     setTopBarForRoute(pathname, {
@@ -526,10 +532,7 @@ export default function WalletPage() {
                 <ContactsList
                   maxContacts={3}
                   showAddButton={false}
-                  onContactClick={(contact) => {
-                    setSelectedContact(contact);
-                    setShowContactsSheet(true);
-                  }}
+                  onContactClick={handleContactSelect}
                 />
                 <Button
                   variant='outline'
@@ -713,10 +716,7 @@ export default function WalletPage() {
         <div className='p-4'>
           <ContactsList
             showAddButton={false}
-            onContactClick={(contact) => {
-              setSelectedContact(contact);
-              setShowContactsSheet(false);
-            }}
+            onContactClick={handleContactSelect}
             onEditContact={(contact) => {
               setSelectedContact(contact);
               setShowContactsSheet(false);

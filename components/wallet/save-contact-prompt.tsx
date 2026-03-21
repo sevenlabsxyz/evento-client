@@ -54,22 +54,15 @@ export function useSaveContactPrompt() {
         action: {
           label: 'Save',
           onClick: async () => {
-            const savePromise = addContactAsync({
-              name: suggestedName,
-              paymentIdentifier: lightningAddress,
-            });
-
-            toast.promise(savePromise, {
-              loading: 'Saving contact...',
-              success: () => {
-                onSave?.();
-                return 'Contact saved';
-              },
-              error: () => {
-                // Error is already handled by useContacts hook's toast
-                return 'Failed to save contact';
-              },
-            });
+            try {
+              await addContactAsync({
+                name: suggestedName,
+                paymentIdentifier: lightningAddress,
+              });
+              onSave?.();
+            } catch {
+              // Add-contact errors are already surfaced by the useContacts hook toast handlers.
+            }
           },
         },
         cancel: {

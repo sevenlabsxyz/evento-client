@@ -155,7 +155,7 @@ export function TransactionDetailsSheet({
     if (payment.details?.type === 'lightning') {
       // Try to get lightning address from various possible fields
       const details = payment.details as any;
-      return details.lightningAddress || details.lnAddress || null;
+      return details.lightningAddress || details.lnAddress || details.destinationAddress || null;
     }
     return null;
   };
