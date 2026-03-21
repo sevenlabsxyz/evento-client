@@ -27,7 +27,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   const [confirmPin, setConfirmPin] = useState('');
   const [error, setError] = useState<string | null>(null);
 
-  const { createWallet } = useWallet();
+  const { createWallet, connectWithMnemonic } = useWallet();
   const { user } = useAuth();
   const { checkAvailability, registerAddress } = useLightningAddress();
   const handleNumberClick = (num: string) => {
@@ -187,24 +187,22 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   if (authMethod === 'passkey') {
     return (
       <PasskeySetupWizard
-        onComplete={(mnemonic, credentialId) => {
-          // Store passkey wallet data
-          // Note: In production, the mnemonic would be encrypted with the PRF output
-          // For now, we store a placeholder since the mnemonic is derived from PRF
+        onComplete={async (mnemonic, credentialId) => {
           try {
             PasskeyStorageService.storePasskeyWallet(credentialId, 'prf-derived');
             logger.info('Passkey wallet stored', { credentialId: credentialId.slice(0, 8) + '...' });
+
+            await connectWithMnemonic(mnemonic, { hasBackup: false });
+            await registerLightningAddress();
+
+            toast.success('Wallet created successfully!');
+            onComplete(mnemonic);
           } catch (err) {
-            logger.error('Failed to store passkey wallet', {
+            logger.error('Passkey wallet setup error', {
               error: err instanceof Error ? err.message : String(err),
             });
+            toast.error(err instanceof Error ? err.message : 'Failed to create passkey wallet');
           }
-
-          // Register Lightning address if user exists
-          registerLightningAddress();
-
-          toast.success('Wallet created successfully!');
-          onComplete(mnemonic);
         }}
         onUsePinFallback={() => {
           setAuthMethod('pin');
