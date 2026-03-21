@@ -25,6 +25,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 
 import { AttachmentPreview } from '@/components/chat/attachment-preview';
 import { PinnedMessageBanner } from '@/components/chat/pinned-message-banner';
+import { ResolvedStreamAvatar } from '@/components/chat/resolved-stream-avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useMessageActions } from '@/lib/hooks/use-message-actions';
 import { MessageList } from 'stream-chat-react';
@@ -413,7 +414,7 @@ export default function SingleChatPage() {
 
   return (
     <div className='flex h-full w-full flex-col bg-white'>
-      <Channel channel={channel}>
+      <Channel channel={channel} Avatar={ResolvedStreamAvatar}>
         {pinnedMessages.length > 0 && pinnedMessages[currentPinnedIndex] && (
           <PinnedMessageBanner
             pinnedMessage={pinnedMessages[currentPinnedIndex]}

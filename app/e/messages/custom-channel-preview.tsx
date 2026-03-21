@@ -1,13 +1,17 @@
 'use client';
 
+import { getDirectMessagePartner } from '@/lib/utils/stream-chat-display';
 import { useRouter } from 'next/navigation';
 import { ChannelPreviewUIComponentProps, useChatContext } from 'stream-chat-react';
 
 export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
   const router = useRouter();
-  const { setActiveChannel } = useChatContext();
+  const { client, setActiveChannel } = useChatContext();
   const { channel, displayImage, displayTitle, lastMessage, unread } = props;
   const unreadCount = unread ?? 0;
+  const chatPartner = getDirectMessagePartner(channel, client.user?.id);
+  const previewImage = chatPartner?.image || displayImage;
+  const previewTitle = chatPartner?.name || displayTitle || 'Unknown Channel';
 
   const handleClick = () => {
     setActiveChannel(channel);
@@ -71,24 +75,18 @@ export const CustomChannelPreview = (props: ChannelPreviewUIComponentProps) => {
     >
       <div className='str-chat__channel-preview-messenger--left'>
         <div className='str-chat__avatar str-chat__avatar--circle'>
-          {displayImage && (
-            <img
-              src={displayImage}
-              alt={displayTitle || 'Channel'}
-              className='str-chat__avatar-image'
-            />
+          {previewImage && (
+            <img src={previewImage} alt={previewTitle} className='str-chat__avatar-image' />
           )}
-          {!displayImage && (
-            <div className='str-chat__avatar-fallback'>
-              {displayTitle?.charAt(0).toUpperCase() || 'C'}
-            </div>
+          {!previewImage && (
+            <div className='str-chat__avatar-fallback'>{previewTitle.charAt(0)}</div>
           )}
         </div>
       </div>
 
       <div className='str-chat__channel-preview-messenger--main'>
         <div className='str-chat__channel-preview-messenger--name'>
-          <span>{displayTitle || 'Unknown Channel'}</span>
+          <span>{previewTitle}</span>
           {unreadCount > 0 && (
             <span className='str-chat__channel-preview-unread-badge'>{unreadCount}</span>
           )}
