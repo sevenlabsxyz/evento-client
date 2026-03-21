@@ -30,6 +30,20 @@ let uuidCounter = 0;
   return `00000000-0000-4000-8000-${uuidCounter.toString().padStart(12, '0')}`;
 };
 
+// Mock crypto.subtle.digest for SHA-256 salt normalization
+(global as any).crypto.subtle = {
+  digest: async (algorithm: string, data: BufferSource): Promise<ArrayBuffer> => {
+    // Simple mock: return a deterministic 32-byte hash based on input
+    const input = new Uint8Array(data as ArrayBuffer);
+    const hash = new Uint8Array(32);
+    // Simple hash simulation: XOR each byte with its position
+    for (let i = 0; i < 32; i++) {
+      hash[i] = input[i % input.length] ^ i;
+    }
+    return hash.buffer;
+  },
+};
+
 Object.defineProperty(global.navigator, 'credentials', {
   value: {
     create: mockCredentialsCreate,
@@ -276,7 +290,7 @@ describe('passkey-service', () => {
       expect(result.prfOutput).toEqual(prfOutput);
     });
 
-    it('pads short salts to 32 bytes', async () => {
+    it('normalizes non-32-byte salts using SHA-256', async () => {
       const shortSalt = new Uint8Array(16).fill(1);
       const prfOutput = new Uint8Array(32).fill(123);
       const mockCredential = createMockCredential({ prfEnabled: true, prfOutput });
@@ -286,7 +300,25 @@ describe('passkey-service', () => {
 
       const call = mockCredentialsGet.mock.calls[0][0];
       const evalSalt = call.publicKey.extensions.prf.eval.first;
+      // SHA-256 always produces 32 bytes
       expect(evalSalt).toHaveLength(32);
+      // The salt should be different from the original (it's hashed)
+      expect(evalSalt).not.toEqual(shortSalt);
+    });
+
+    it('uses 32-byte salts directly without hashing', async () => {
+      const salt32 = new Uint8Array(32).fill(42);
+      const prfOutput = new Uint8Array(32).fill(123);
+      const mockCredential = createMockCredential({ prfEnabled: true, prfOutput });
+      mockCredentialsGet.mockResolvedValue(mockCredential);
+
+      await authenticateWithPRF('evento.app', salt32);
+
+      const call = mockCredentialsGet.mock.calls[0][0];
+      const evalSalt = call.publicKey.extensions.prf.eval.first;
+      // 32-byte salt should be used directly
+      expect(evalSalt).toHaveLength(32);
+      expect(new Uint8Array(evalSalt)).toEqual(salt32);
     });
 
     it('authenticates with specific credential ID', async () => {

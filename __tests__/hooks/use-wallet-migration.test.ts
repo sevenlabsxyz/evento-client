@@ -50,9 +50,12 @@ const mockWalletStorage = WalletStorageService as jest.Mocked<typeof WalletStora
 // Helper to create mock passkey hook return value
 const createMockPasskeyHook = (overrides: Partial<ReturnType<typeof usePasskey>> = {}) => ({
   createPasskey: jest.fn(),
-  authenticateWithPRF: jest.fn(),
+  authenticateWithPRF: jest.fn().mockResolvedValue({
+    prfOutput: new Uint8Array(32).fill(1),
+    credentialId: 'cred-123',
+    userVerified: true,
+  }),
   checkPRFSupport: jest.fn().mockResolvedValue({ supported: true }),
-  generateSalt: jest.fn().mockReturnValue('test-salt'),
   getErrorMessage: jest.fn((error?: unknown) => {
     if (error instanceof Error) return error.message;
     return 'An error occurred';
@@ -78,10 +81,6 @@ const createMockCredential = () => ({
   attestationObject: new Uint8Array([4, 5, 6]),
   clientDataJSON: new Uint8Array([7, 8, 9]),
   prfEnabled: true,
-  prfSalts: {
-    first: new Uint8Array(32).fill(1),
-    second: new Uint8Array(32).fill(2),
-  },
 });
 
 describe('useWalletMigration', () => {
@@ -353,7 +352,6 @@ describe('useWalletMigration', () => {
       const mockCredential = {
         ...createMockCredential(),
         prfEnabled: false,
-        prfSalts: undefined,
       };
       const mockCreatePasskey = jest.fn().mockResolvedValue(mockCredential);
       mockUsePasskey.mockReturnValue(
@@ -380,6 +378,64 @@ describe('useWalletMigration', () => {
       }
     });
 
+    it('throws error when authenticateWithPRF fails after passkey creation', async () => {
+      const mockCredential = createMockCredential();
+      const mockCreatePasskey = jest.fn().mockResolvedValue(mockCredential);
+      const mockAuthenticateWithPRF = jest.fn().mockRejectedValue(new Error('Auth failed'));
+      mockUsePasskey.mockReturnValue(
+        createMockPasskeyHook({
+          createPasskey: mockCreatePasskey,
+          authenticateWithPRF: mockAuthenticateWithPRF,
+        })
+      );
+
+      const { result } = renderHook(() => useWalletMigration(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await act(async () => {
+        await expect(result.current.migrateToPasskey('1234')).rejects.toThrow(MigrationError);
+      });
+
+      try {
+        await result.current.migrateToPasskey('1234');
+      } catch (error) {
+        expect(isMigrationError(error)).toBe(true);
+        if (isMigrationError(error)) {
+          expect(error.code).toBe('passkey_creation_failed');
+        }
+      }
+    });
+
+    it('calls authenticateWithPRF with credential.id as salt', async () => {
+      const mockCredential = createMockCredential();
+      const mockCreatePasskey = jest.fn().mockResolvedValue(mockCredential);
+      const mockAuthenticateWithPRF = jest.fn().mockResolvedValue({
+        prfOutput: new Uint8Array(32).fill(1),
+        credentialId: mockCredential.id,
+        userVerified: true,
+      });
+      mockUsePasskey.mockReturnValue(
+        createMockPasskeyHook({
+          createPasskey: mockCreatePasskey,
+          authenticateWithPRF: mockAuthenticateWithPRF,
+        })
+      );
+
+      const { result } = renderHook(() => useWalletMigration(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await act(async () => {
+        await result.current.migrateToPasskey('1234');
+      });
+
+      expect(mockAuthenticateWithPRF).toHaveBeenCalledWith(
+        'evento.cash',
+        mockCredential.id,
+        { credentialId: mockCredential.id }
+      );
+    });
     it('throws error when storage fails', async () => {
       const mockCredential = createMockCredential();
       const mockCreatePasskey = jest.fn().mockResolvedValue(mockCredential);

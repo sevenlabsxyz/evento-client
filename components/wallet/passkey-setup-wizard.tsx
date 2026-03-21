@@ -48,8 +48,7 @@ export function PasskeySetupWizard({
 }: PasskeySetupWizardProps) {
   const {
     createPasskey,
-    checkPRFSupport,
-    generateSalt,
+    authenticateWithPRF,
     getErrorMessage,
     isLoading: isHookLoading,
     error: hookError,
@@ -97,25 +96,25 @@ export function PasskeySetupWizard({
       // Create passkey with PRF extension
       const credential = await createPasskey(rpId);
 
-      if (!credential.prfEnabled || !credential.prfSalts?.first) {
+      if (!credential.prfEnabled) {
         throw new Error('PRF extension was not enabled for this passkey');
       }
 
-      // Generate a unique salt for this wallet
-      const salt = generateSalt();
+      // Authenticate with PRF using credential.id as the canonical salt
+      // This ensures consistency with export/restore flows which also use credential.id
+      const authResult = await authenticateWithPRF(rpId, credential.id, {
+        credentialId: credential.id,
+      });
 
-      // For initial setup, we use the first PRF salt from creation
-      // The mnemonic is derived from the PRF output using the salt
-      // Note: In production, the salt would be stored and used for future authentication
-      const prfOutput = credential.prfSalts.first;
-      const mnemonic = prfOutputToMnemonic(prfOutput);
+      // Derive mnemonic from the actual PRF output (not from the input salt)
+      const mnemonic = prfOutputToMnemonic(authResult.prfOutput);
 
       setState((prev) => ({
         ...prev,
         step: 'show-mnemonic',
         credentialId: credential.id,
         mnemonic,
-        prfOutput,
+        prfOutput: authResult.prfOutput,
         isProcessing: false,
       }));
 
@@ -129,7 +128,7 @@ export function PasskeySetupWizard({
       }));
       toast.error(errorMessage);
     }
-  }, [createPasskey, generateSalt, rpId]);
+  }, [createPasskey, authenticateWithPRF, rpId]);
 
   /**
    * Handle mnemonic backup completion

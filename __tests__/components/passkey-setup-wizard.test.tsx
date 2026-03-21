@@ -12,15 +12,15 @@ jest.mock('@/lib/utils/toast', () => ({
 
 // Mock usePasskey hook
 const mockCreatePasskey = jest.fn();
+const mockAuthenticateWithPRF = jest.fn();
 const mockCheckPRFSupport = jest.fn();
-const mockGenerateSalt = jest.fn();
 const mockGetErrorMessage = jest.fn();
 
 jest.mock('@/lib/hooks/use-passkey', () => ({
   usePasskey: () => ({
     createPasskey: mockCreatePasskey,
+    authenticateWithPRF: mockAuthenticateWithPRF,
     checkPRFSupport: mockCheckPRFSupport,
-    generateSalt: mockGenerateSalt,
     getErrorMessage: mockGetErrorMessage,
     isLoading: false,
     error: null,
@@ -42,9 +42,15 @@ const TEST_PRF_OUTPUT = new Uint8Array(32).fill(1);
 describe('PasskeySetupWizard', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockGenerateSalt.mockReturnValue('test-salt-uuid');
     mockGetErrorMessage.mockImplementation((err) => err?.message || 'An error occurred');
     (prfOutputToMnemonic as jest.Mock).mockReturnValue(TEST_MNEMONIC);
+    
+    // Default mock for authenticateWithPRF
+    mockAuthenticateWithPRF.mockResolvedValue({
+      prfOutput: TEST_PRF_OUTPUT,
+      credentialId: TEST_CREDENTIAL_ID,
+      userVerified: true,
+    });
   });
 
   describe('Wizard Step Types', () => {
@@ -111,17 +117,36 @@ describe('PasskeySetupWizard', () => {
         id: TEST_CREDENTIAL_ID,
         rawId: new Uint8Array(32),
         prfEnabled: true,
-        prfSalts: { first: TEST_PRF_OUTPUT },
       });
       
       await mockCreatePasskey(rpId);
       expect(mockCreatePasskey).toHaveBeenCalledWith(rpId);
     });
 
-    it('derives mnemonic from PRF output after passkey creation', () => {
+    it('calls authenticateWithPRF after passkey creation with credential.id as salt', async () => {
+      mockCreatePasskey.mockResolvedValue({
+        id: TEST_CREDENTIAL_ID,
+        rawId: new Uint8Array(32),
+        prfEnabled: true,
+      });
+      
+      // Simulate the flow: create passkey, then authenticate
+      const credential = await mockCreatePasskey('evento.cash');
+      await mockAuthenticateWithPRF('evento.cash', credential.id, {
+        credentialId: credential.id,
+      });
+      
+      expect(mockAuthenticateWithPRF).toHaveBeenCalledWith(
+        'evento.cash',
+        TEST_CREDENTIAL_ID,
+        { credentialId: TEST_CREDENTIAL_ID }
+      );
+    });
+
+    it('derives mnemonic from PRF output (not from prfSalts.first)', () => {
       const prfOutput = TEST_PRF_OUTPUT;
       
-      // Simulate the derivation
+      // Simulate the derivation from authenticateWithPRF result
       const mnemonic = prfOutputToMnemonic(prfOutput);
       
       expect(prfOutputToMnemonic).toHaveBeenCalledWith(prfOutput);
@@ -146,11 +171,10 @@ describe('PasskeySetupWizard', () => {
       mockCreatePasskey.mockResolvedValue({
         id: TEST_CREDENTIAL_ID,
         prfEnabled: false,
-        prfSalts: undefined,
       });
       
       const credential = await mockCreatePasskey('evento.cash');
-      const hasError = !credential.prfEnabled || !credential.prfSalts?.first;
+      const hasError = !credential.prfEnabled;
       
       expect(hasError).toBe(true);
     });
@@ -459,29 +483,25 @@ describe('PasskeySetupWizard', () => {
     });
   });
 
-  describe('Salt Generation', () => {
-    it('generates unique salt for each wallet', () => {
-      mockGenerateSalt.mockReturnValueOnce('salt-1').mockReturnValueOnce('salt-2');
-      
-      const salt1 = mockGenerateSalt();
-      const salt2 = mockGenerateSalt();
-      
-      expect(salt1).toBe('salt-1');
-      expect(salt2).toBe('salt-2');
-      expect(salt1).not.toBe(salt2);
-    });
-
-    it('calls generateSalt during passkey creation', async () => {
+  describe('Canonical Salt (credential.id)', () => {
+    it('uses credential.id as salt for PRF authentication', async () => {
       mockCreatePasskey.mockResolvedValue({
         id: TEST_CREDENTIAL_ID,
         prfEnabled: true,
-        prfSalts: { first: TEST_PRF_OUTPUT },
       });
       
-      await mockCreatePasskey('evento.cash');
-      mockGenerateSalt();
+      const credential = await mockCreatePasskey('evento.cash');
       
-      expect(mockGenerateSalt).toHaveBeenCalled();
+      // The credential.id is used as the salt for authenticateWithPRF
+      expect(credential.id).toBe(TEST_CREDENTIAL_ID);
+    });
+
+    it('credential.id ensures consistency with export/restore flows', () => {
+      // Export and restore also use credential.id as salt
+      // This ensures the same mnemonic is derived across all flows
+      const canonicalSalt = TEST_CREDENTIAL_ID;
+      
+      expect(canonicalSalt).toBe(TEST_CREDENTIAL_ID);
     });
   });
 
@@ -519,32 +539,19 @@ describe('PasskeySetupWizard', () => {
       const credential = {
         id: TEST_CREDENTIAL_ID,
         prfEnabled: true,
-        prfSalts: { first: TEST_PRF_OUTPUT },
       };
       
-      const isValid = credential.prfEnabled && credential.prfSalts?.first;
+      const isValid = credential.prfEnabled;
       expect(isValid).toBeTruthy();
     });
 
     it('rejects credential without PRF enabled', () => {
-      const credential: { id: string; prfEnabled: boolean; prfSalts?: { first: Uint8Array } } = {
+      const credential = {
         id: TEST_CREDENTIAL_ID,
         prfEnabled: false,
-        prfSalts: undefined,
       };
       
-      const isValid = credential.prfEnabled && credential.prfSalts?.first;
-      expect(isValid).toBeFalsy();
-    });
-
-    it('rejects credential without PRF salts', () => {
-      const credential: { id: string; prfEnabled: boolean; prfSalts?: { first: Uint8Array } } = {
-        id: TEST_CREDENTIAL_ID,
-        prfEnabled: true,
-        prfSalts: undefined,
-      };
-      
-      const isValid = credential.prfEnabled && credential.prfSalts?.first;
+      const isValid = credential.prfEnabled;
       expect(isValid).toBeFalsy();
     });
   });

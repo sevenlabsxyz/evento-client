@@ -2,7 +2,6 @@
 
 import { usePasskey } from '@/lib/hooks/use-passkey';
 import { PasskeyStorageService } from '@/lib/services/passkey-storage';
-import { prfOutputToMnemonic } from '@/lib/services/prf-to-mnemonic';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { logger } from '@/lib/utils/logger';
 import { useCallback, useState } from 'react';
@@ -85,7 +84,7 @@ interface UseWalletMigrationState {
  * ```
  */
 export function useWalletMigration() {
-  const { createPasskey, checkPRFSupport, prfSupport, isCheckingPRFSupport } = usePasskey();
+  const { createPasskey, authenticateWithPRF, checkPRFSupport, prfSupport, isCheckingPRFSupport } = usePasskey();
 
   const [state, setState] = useState<UseWalletMigrationState>({
     migrationState: 'idle',
@@ -215,7 +214,7 @@ export function useWalletMigration() {
 
         const credential = await createPasskey(rpId);
 
-        if (!credential.prfEnabled || !credential.prfSalts?.first) {
+        if (!credential.prfEnabled) {
           throw new MigrationError(
             'PRF extension was not enabled for this passkey',
             'passkey_creation_failed'
@@ -226,26 +225,29 @@ export function useWalletMigration() {
           logger.debug('Passkey created', { credentialId: credential.id, prfEnabled: credential.prfEnabled });
         }
 
-        // Step 5: Derive mnemonic from PRF output
-        // Note: For migration, we use the PRF salt from creation
-        // The mnemonic is derived from the PRF output
-        const derivedMnemonic = prfOutputToMnemonic(credential.prfSalts.first);
-
-        // Step 6: Verify derived mnemonic matches existing wallet
-        // IMPORTANT: For migration, we need to use the EXISTING mnemonic, not derive a new one
-        // The passkey will be used to encrypt/store the existing mnemonic
-        // We verify the passkey works by checking PRF output
+        // Step 5: Verify passkey works by authenticating with PRF
+        // We use credential.id as the salt for consistency with export/restore flows
+        // This verifies the user can authenticate with the passkey they just created
+        try {
+          await authenticateWithPRF(rpId, credential.id, {
+            credentialId: credential.id,
+          });
+        } catch (authError) {
+          throw new MigrationError(
+            'Failed to verify passkey authentication',
+            'passkey_creation_failed',
+            authError instanceof Error ? authError : undefined
+          );
+        }
 
         if (DEBUG_MIGRATION) {
-          logger.debug('Derived mnemonic from PRF', {
-            derivedMatches: derivedMnemonic === existingMnemonic,
-          });
+          logger.debug('Passkey authentication verified');
         }
 
         // Note: In the migration flow, we DON'T derive a new mnemonic from PRF
-        // Instead, we store the EXISTING mnemonic encrypted with the PRF output
+        // Instead, we store the EXISTING mnemonic (encrypted with the original PIN)
         // This preserves the user's existing wallet funds
-
+        // The passkey is used for authentication, not for deriving a new wallet
         // Step 7: Store passkey wallet data
         setState((prev) => ({ ...prev, migrationState: 'storing', progress: 70 }));
 
@@ -319,7 +321,7 @@ export function useWalletMigration() {
         throw migrationError;
       }
     },
-    [checkPRFSupport, createPasskey]
+    [checkPRFSupport, createPasskey, authenticateWithPRF]
   );
 
   /**

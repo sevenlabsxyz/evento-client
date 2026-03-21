@@ -406,15 +406,15 @@ export async function authenticateWithPRF(
     // Convert salt to Uint8Array if needed
     const saltBytes = typeof salt === 'string' ? stringToUint8Array(salt) : salt;
 
-    // Ensure salt is at least 32 bytes (pad if needed)
-    let paddedSalt = saltBytes;
-    if (saltBytes.length < 32) {
-      paddedSalt = new Uint8Array(32);
-      paddedSalt.set(saltBytes);
-      // Fill remaining with zeros
-      for (let i = saltBytes.length; i < 32; i++) {
-        paddedSalt[i] = 0;
-      }
+    // Normalize salt to exactly 32 bytes using SHA-256 for non-32-byte inputs
+    // This ensures deterministic behavior regardless of input salt length
+    let normalizedSalt: Uint8Array;
+    if (saltBytes.length === 32) {
+      normalizedSalt = saltBytes;
+    } else {
+      // Hash non-32-byte salts to get deterministic 32-byte output
+      const hashBuffer = await crypto.subtle.digest('SHA-256', saltBytes);
+      normalizedSalt = new Uint8Array(hashBuffer);
     }
 
     // Generate challenge
@@ -440,7 +440,7 @@ export async function authenticateWithPRF(
       extensions: {
         prf: {
           eval: {
-            first: paddedSalt.slice(0, 32),
+            first: normalizedSalt,
           },
         },
       },
