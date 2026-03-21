@@ -1,5 +1,4 @@
 @import '@silk-hq/components/unlayered-styles';
-@import 'stream-chat-react/dist/css/v2/index.css' layer(utilities);
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

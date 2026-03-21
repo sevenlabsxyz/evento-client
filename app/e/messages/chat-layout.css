@@ -211,15 +211,18 @@
   margin-bottom: 8px;
 }
 
+.str-chat__message-bubble,
 .str-chat__message-simple__content {
   border-radius: 18px;
 }
 
+.str-chat__message--me .str-chat__message-bubble,
 .str-chat__message-simple--me .str-chat__message-simple__content {
   background-color: #007aff;
   color: white;
 }
 
+.str-chat__message--other .str-chat__message-bubble,
 .str-chat__message-simple:not(.str-chat__message-simple--me) .str-chat__message-simple__content {
   background-color: #e9e9eb;
   color: #1c1c1e;
@@ -369,6 +372,7 @@
   height: 100%;
 }
 
+.str-chat__message-bubble .str-chat__message-text,
 .str-chat__message-simple__text {
   background: #e9e9eb !important;
   color: #1c1c1e !important;
@@ -380,19 +384,23 @@
   display: inline-block !important;
 }
 
+.str-chat__message--me .str-chat__message-bubble .str-chat__message-text,
 .str-chat__message-simple--me .str-chat__message-simple__text {
   background: #007aff !important;
   color: #ffffff !important;
 }
 
+.str-chat__message--me .str-chat__message-bubble .str-chat__message-text *,
 .str-chat__message-simple--me .str-chat__message-simple__text * {
   color: #ffffff !important;
 }
 
+.str-chat__message--other .str-chat__message-bubble .str-chat__message-text *,
 .str-chat__message-simple:not(.str-chat__message-simple--me) .str-chat__message-simple__text * {
   color: #1c1c1e !important;
 }
 
+.str-chat__message-bubble,
 .str-chat__message-simple__content {
   background: transparent !important;
   border: none !important;
@@ -408,17 +416,21 @@
   flex-direction: row-reverse !important;
 }
 
+.str-chat__message--me .str-chat__message-bubble,
 .str-chat__message-simple--me .str-chat__message-simple__content {
   align-items: flex-end !important;
 }
 
 .str-chat__message-simple *,
 .str-chat__message-simple__content *,
-.str-chat__message-simple__text * {
+.str-chat__message-simple__text *,
+.str-chat__message-bubble *,
+.str-chat__message-text * {
   background-image: none !important;
 }
 
-.str-chat__message-text {
+.str-chat__message-text,
+.str-chat__message-bubble {
   color: inherit !important;
   background: transparent !important;
 }
@@ -430,18 +442,14 @@
   position: relative;
 }
 
-.str-chat__date-separator::before {
-  display: none;
-}
-
-.str-chat__date-separator::after {
-  content: '';
+.str-chat__date-separator-line {
   flex: 1;
   height: 1px;
   background: var(--str-chat__date-separator-line-color);
-  margin-left: 1rem;
+  border: none;
 }
 
+.str-chat__date-separator-date,
 .str-chat__date-separator__date {
   background: #ffffff;
   color: #64748b;
@@ -458,44 +466,41 @@
 
 .str-chat__date-separator--center {
   justify-content: center;
+  gap: 1rem;
 }
 
 .str-chat__date-separator--left {
   justify-content: flex-start;
+  gap: 1rem;
 }
 
-.str-chat__date-separator--left::before {
-  display: none;
-}
-
+.str-chat__date-separator--left .str-chat__date-separator-date,
 .str-chat__date-separator--left .str-chat__date-separator__date {
   margin-left: 0;
 }
 
 .str-chat__date-separator--right {
   justify-content: flex-end;
+  gap: 1rem;
 }
 
-.str-chat__date-separator--right::after {
-  display: none;
-}
-
+.str-chat__date-separator--right .str-chat__date-separator-date,
 .str-chat__date-separator--right .str-chat__date-separator__date {
   margin-right: 0;
 }
 
+.str-chat__date-separator--unread .str-chat__date-separator-date,
 .str-chat__date-separator--unread .str-chat__date-separator__date {
   background: #fef2f2;
   color: #dc2626;
   border-color: #fecaca;
 }
 
-.str-chat__date-separator--unread::before,
-.str-chat__date-separator--unread::after {
+.str-chat__date-separator--unread .str-chat__date-separator-line {
   background: linear-gradient(to right, transparent, #fecaca, transparent);
 }
 
-.str-chat__date-separator--unread::after {
+.str-chat__date-separator--unread .str-chat__date-separator-line:last-of-type {
   background: linear-gradient(to left, transparent, #fecaca, transparent);
 }
 
@@ -517,6 +522,7 @@
   background: #94a3b8;
 }
 
+.str-chat__message-text-inner,
 .str-chat__message-text-inner.str-chat__message-simple-text-inner {
   color: #1c1c1e !important;
 }
