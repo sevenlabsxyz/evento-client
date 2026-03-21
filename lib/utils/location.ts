@@ -11,6 +11,15 @@ interface EventLocationDisplayOptions {
   fallbackLabel?: string;
 }
 
+type LocationTextFields = {
+  name: string;
+  city: string;
+  state: string;
+  country: string;
+  zipCode: string;
+  address: string;
+};
+
 const COUNTRY_ALIASES: Record<string, string[]> = {
   usa: ['united states', 'united states of america'],
   'united states': ['usa', 'united states of america'],
@@ -22,6 +31,17 @@ const COUNTRY_ALIASES: Record<string, string[]> = {
 
 function getSafeLocationField(value?: string): string {
   return value?.trim() || '';
+}
+
+function getLocationTextFields(location: EventLocation): LocationTextFields {
+  return {
+    name: getSafeLocationField(location.name),
+    city: getSafeLocationField(location.city),
+    state: getSafeLocationField(location.state),
+    country: getSafeLocationField(location.country),
+    zipCode: getSafeLocationField(location.zipCode),
+    address: getSafeLocationField(location.address),
+  };
 }
 
 function normalizeLocationToken(value: string): string {
@@ -202,14 +222,11 @@ export function eventLocationToLocationData(eventLocation: EventLocation): Locat
  * Formats an EventLocation into a display-friendly address string
  */
 export function formatEventLocationAddress(location: EventLocation): string {
-  const name = getSafeLocationField(location.name);
-  const city = getSafeLocationField(location.city);
-  const country = getSafeLocationField(location.country);
-  const zipCode = getSafeLocationField(location.zipCode);
+  const { name, city, state, country, zipCode, address } = getLocationTextFields(location);
 
-  let streetAddress = stripLocationSuffixFromAddress(getSafeLocationField(location.address), {
+  let streetAddress = stripLocationSuffixFromAddress(address, {
     city,
-    state: getSafeLocationField(location.state),
+    state,
     country,
     zipCode,
   });
@@ -219,14 +236,9 @@ export function formatEventLocationAddress(location: EventLocation): string {
   const skipName =
     name && streetAddress && streetAddress.toLowerCase().startsWith(name.toLowerCase());
 
-  const parts = [
-    skipName ? '' : name,
-    streetAddress,
-    location.city,
-    location.state,
-    location.zipCode,
-    location.country,
-  ].filter((part) => part && part.trim() !== '');
+  const parts = [skipName ? '' : name, streetAddress, city, state, zipCode, country].filter(
+    (part) => part && part.trim() !== ''
+  );
 
   return parts.join(', ');
 }
@@ -350,12 +362,7 @@ export function getEventLocationDisplayLines(
   location: EventLocation,
   options: EventLocationDisplayOptions = {}
 ): EventLocationDisplayLines {
-  const name = getSafeLocationField(location.name);
-  const city = getSafeLocationField(location.city);
-  const state = getSafeLocationField(location.state);
-  const country = getSafeLocationField(location.country);
-  const zipCode = getSafeLocationField(location.zipCode);
-  const address = getSafeLocationField(location.address);
+  const { name, city, state, country, zipCode, address } = getLocationTextFields(location);
 
   const fallbackLabel = options.fallbackLabel?.trim() || '';
 
