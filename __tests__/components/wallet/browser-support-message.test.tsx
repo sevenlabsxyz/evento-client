@@ -602,9 +602,6 @@ describe('BrowserSupportMessage', () => {
   });
 
   describe('Generic unsupported message', () => {
-    });
-
-  describe('Generic unsupported message', () => {
     it('shows fallback message for unknown limitations', async () => {
       mockedCheckPRFSupport.mockResolvedValue({
         supported: false,
