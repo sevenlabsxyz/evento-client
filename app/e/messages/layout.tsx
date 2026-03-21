@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
 import { ChannelList, Chat } from 'stream-chat-react';
+import 'stream-chat-react/dist/css/v2/index.css';
 import './chat-layout.css';
 import { CustomChannelPreview } from './custom-channel-preview';
 
