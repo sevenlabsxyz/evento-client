@@ -2,7 +2,6 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { useDuplicateEvent } from '@/lib/hooks/use-duplicate-event';
 import { toast } from '@/lib/utils/toast';
@@ -161,7 +161,14 @@ export default function OwnerEventButtons({ eventId, eventTitle }: OwnerEventBut
         )}
       </div>
 
-      <AlertDialog open={showDuplicateDialog} onOpenChange={setShowDuplicateDialog}>
+      <AlertDialog
+        open={showDuplicateDialog}
+        onOpenChange={(open) => {
+          if (!duplicateEvent.isPending) {
+            setShowDuplicateDialog(open);
+          }
+        }}
+      >
         <AlertDialogContent className='max-w-sm rounded-2xl'>
           <AlertDialogHeader>
             <AlertDialogTitle>Duplicate Event?</AlertDialogTitle>
@@ -174,9 +181,9 @@ export default function OwnerEventButtons({ eventId, eventTitle }: OwnerEventBut
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel disabled={duplicateEvent.isPending}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDuplicateEvent} disabled={duplicateEvent.isPending}>
+            <Button onClick={handleDuplicateEvent} disabled={duplicateEvent.isPending}>
               {duplicateEvent.isPending ? 'Duplicating...' : 'Duplicate Event'}
-            </AlertDialogAction>
+            </Button>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
