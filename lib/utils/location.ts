@@ -11,6 +11,162 @@ interface EventLocationDisplayOptions {
   fallbackLabel?: string;
 }
 
+const COUNTRY_ALIASES: Record<string, string[]> = {
+  usa: ['united states', 'united states of america'],
+  'united states': ['usa', 'united states of america'],
+  'united states of america': ['usa', 'united states'],
+  uk: ['united kingdom', 'great britain'],
+  'united kingdom': ['uk', 'great britain'],
+  canada: ['ca'],
+};
+
+function getSafeLocationField(value?: string): string {
+  return value?.trim() || '';
+}
+
+function normalizeLocationToken(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeLocationCode(value: string): string {
+  return normalizeLocationToken(value).replace(/[^a-z0-9]/g, '');
+}
+
+function isCountrySuffixSegment(addressSegment: string, country: string): boolean {
+  if (!country) return false;
+
+  const normalizedAddressSegment = normalizeLocationToken(addressSegment);
+  const normalizedCountry = normalizeLocationToken(country);
+  if (!normalizedAddressSegment || !normalizedCountry) {
+    return false;
+  }
+
+  if (normalizedAddressSegment === normalizedCountry) {
+    return true;
+  }
+
+  for (const [canonical, aliases] of Object.entries(COUNTRY_ALIASES)) {
+    const normalizedCanonical = normalizeLocationToken(canonical);
+    const normalizedAliases = aliases.map((alias) => normalizeLocationToken(alias));
+    if (
+      normalizedCanonical === normalizedCountry ||
+      normalizedAliases.includes(normalizedCountry)
+    ) {
+      if (
+        normalizedAliases.includes(normalizedAddressSegment) ||
+        normalizedCanonical === normalizedAddressSegment
+      ) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+function isZipSuffixSegment(addressSegment: string, zipCode?: string): boolean {
+  if (!zipCode) return false;
+  const normalizedAddressSegment = normalizeLocationCode(addressSegment);
+  const normalizedZipCode = normalizeLocationCode(zipCode);
+
+  if (!normalizedAddressSegment || !normalizedZipCode) return false;
+
+  return normalizedAddressSegment.includes(normalizedZipCode);
+}
+
+function isStateSuffixSegment(addressSegment: string, state?: string): boolean {
+  if (!state) return false;
+
+  const normalizedAddressSegment = normalizeLocationToken(addressSegment);
+  const normalizedState = normalizeLocationToken(state);
+
+  if (!normalizedAddressSegment || !normalizedState) {
+    return false;
+  }
+
+  if (normalizedAddressSegment === normalizedState) {
+    return true;
+  }
+
+  return normalizedAddressSegment.startsWith(`${normalizedState} `);
+}
+
+function isCitySuffixSegment(addressSegment: string, city?: string): boolean {
+  if (!city) return false;
+
+  const normalizedAddressSegment = normalizeLocationToken(addressSegment);
+  const normalizedCity = normalizeLocationToken(city);
+
+  if (!normalizedAddressSegment || !normalizedCity) {
+    return false;
+  }
+
+  if (normalizedAddressSegment === normalizedCity) return true;
+
+  return normalizedAddressSegment.split('-')[0]?.trim() === normalizedCity;
+}
+
+function stripLocationSuffixFromAddress(
+  address: string,
+  location: Pick<EventLocation, 'city' | 'state' | 'country' | 'zipCode'>
+): string {
+  const trimmedAddress = address.trim();
+  if (!trimmedAddress) {
+    return '';
+  }
+
+  const segments = trimmedAddress
+    .split(',')
+    .map((segment) => segment.trim())
+    .filter((segment) => segment !== '');
+
+  if (segments.length <= 1) {
+    return trimmedAddress;
+  }
+
+  let suffixIndex = segments.length - 1;
+  let foundSuffix = false;
+
+  if (isCountrySuffixSegment(segments[suffixIndex], location.country)) {
+    suffixIndex -= 1;
+    foundSuffix = true;
+  }
+
+  while (suffixIndex > 0) {
+    const segment = segments[suffixIndex];
+    const isZipMatch = isZipSuffixSegment(segment, location.zipCode);
+    const isStateMatch = isStateSuffixSegment(segment, location.state);
+    if (!isZipMatch && !isStateMatch) {
+      break;
+    }
+
+    suffixIndex -= 1;
+    foundSuffix = true;
+  }
+
+  const cityIndex = segments.findIndex(
+    (segment, index) =>
+      index > 0 && index <= suffixIndex && isCitySuffixSegment(segment, location.city)
+  );
+
+  if (!foundSuffix && cityIndex === -1) {
+    return trimmedAddress;
+  }
+
+  // If we found the city with data after it, assume it's a full backend-formatted suffix.
+  if (cityIndex > 0 && cityIndex < segments.length - 1) {
+    return segments.slice(0, cityIndex).join(', ');
+  }
+
+  return trimmedAddress;
+}
+
 /**
  * Converts LocationData from the modal to EventLocation format used in the Event interface
  */
@@ -46,22 +202,20 @@ export function eventLocationToLocationData(eventLocation: EventLocation): Locat
  * Formats an EventLocation into a display-friendly address string
  */
 export function formatEventLocationAddress(location: EventLocation): string {
-  // Strip city/state/zip/country from the address field when it contains the
-  // full formatted address (e.g. "2070 Park Centre Dr, Las Vegas, NV 89135, USA")
-  // to avoid duplication with the structured fields.
-  let streetAddress = (location.address ?? '').trim();
-  if (streetAddress && location.city?.trim()) {
-    const cityIdx = streetAddress
-      .toLowerCase()
-      .indexOf(', ' + location.city.trim().toLowerCase());
-    if (cityIdx > 0) {
-      streetAddress = streetAddress.slice(0, cityIdx).trim();
-    }
-  }
+  const name = getSafeLocationField(location.name);
+  const city = getSafeLocationField(location.city);
+  const country = getSafeLocationField(location.country);
+  const zipCode = getSafeLocationField(location.zipCode);
+
+  let streetAddress = stripLocationSuffixFromAddress(getSafeLocationField(location.address), {
+    city,
+    state: getSafeLocationField(location.state),
+    country,
+    zipCode,
+  });
 
   // If the street address starts with the venue name, skip the name to avoid
   // duplication (e.g. name="Av. Nhandú, 848" address="Av. Nhandú, 848 - Planalto...").
-  const name = (location.name ?? '').trim();
   const skipName =
     name && streetAddress && streetAddress.toLowerCase().startsWith(name.toLowerCase());
 
@@ -196,17 +350,18 @@ export function getEventLocationDisplayLines(
   location: EventLocation,
   options: EventLocationDisplayOptions = {}
 ): EventLocationDisplayLines {
+  const name = getSafeLocationField(location.name);
+  const city = getSafeLocationField(location.city);
+  const state = getSafeLocationField(location.state);
+  const country = getSafeLocationField(location.country);
+  const zipCode = getSafeLocationField(location.zipCode);
+  const address = getSafeLocationField(location.address);
+
   const fallbackLabel = options.fallbackLabel?.trim() || '';
 
   if (!options.preferStructuredAddress) {
     return {
-      primary:
-        fallbackLabel ||
-        location.name.trim() ||
-        location.address.trim() ||
-        location.city.trim() ||
-        location.country.trim() ||
-        'TBD',
+      primary: fallbackLabel || name || address || city || country || 'TBD',
       secondary: '',
     };
   }
@@ -214,23 +369,17 @@ export function getEventLocationDisplayLines(
   // Strip city/state/zip/country from the address field so we only show the
   // street portion. The backend sometimes stores the full formatted address
   // (e.g. "2070 Park Centre Dr, Las Vegas, NV 89135, USA") in this field.
-  let streetAddress = location.address.trim();
-  if (streetAddress && location.city?.trim()) {
-    const cityIdx = streetAddress.toLowerCase().indexOf(', ' + location.city.trim().toLowerCase());
-    if (cityIdx > 0) {
-      streetAddress = streetAddress.slice(0, cityIdx).trim();
-    }
-  }
+  const streetAddress = stripLocationSuffixFromAddress(address, {
+    city,
+    state,
+    country,
+    zipCode,
+  });
 
-  const primary =
-    streetAddress ||
-    location.name.trim() ||
-    location.city.trim() ||
-    location.country.trim() ||
-    'TBD';
+  const primary = streetAddress || name || city || country || 'TBD';
 
-  const secondaryParts = [location.city.trim()];
-  const region = location.state?.trim() || location.country.trim();
+  const secondaryParts = [city];
+  const region = state || country;
 
   if (region && region !== secondaryParts[0]) {
     secondaryParts.push(region);

@@ -120,6 +120,27 @@ describe('getEventLocationDisplayLines', () => {
     });
   });
 
+  it('handles country aliases when stripping the full address', () => {
+    expect(
+      getEventLocationDisplayLines(
+        {
+          name: '',
+          address: '50 Example Ave, Portland, OR 97201, United States',
+          city: 'Portland',
+          state: 'OR',
+          country: 'USA',
+          zipCode: '97201',
+        },
+        {
+          preferStructuredAddress: true,
+        }
+      )
+    ).toEqual({
+      primary: '50 Example Ave',
+      secondary: 'Portland, OR',
+    });
+  });
+
   it('strips city/state from address when they appear as suffixes', () => {
     expect(
       getEventLocationDisplayLines(
@@ -165,6 +186,19 @@ describe('getEventLocationDisplayLines', () => {
         zipCode: '89135',
       })
     ).toBe('2070 Park Centre Dr, Las Vegas, Nevada, 89135, USA');
+  });
+
+  it('supports mixed-case city/state tokens in formatted address cleanup', () => {
+    expect(
+      formatEventLocationAddress({
+        name: '',
+        address: ' 7414 Yonie Ct , AUSTIN , tx 78751 , usa ',
+        city: 'Austin',
+        state: 'TX',
+        country: 'United States',
+        zipCode: '78751',
+      })
+    ).toBe('7414 Yonie Ct, Austin, TX, 78751, United States');
   });
 
   it('keeps the TBD fallback when no location details exist', () => {
