@@ -74,7 +74,7 @@ export function ContactItem({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
-      <div className='flex items-center gap-3'>
+      <div className='flex min-w-0 items-center gap-3'>
         {/* Avatar */}
         <UserAvatar
           user={{
@@ -87,8 +87,8 @@ export function ContactItem({
         />
 
         {/* Contact info */}
-        <div className='min-w-0 flex-1'>
-          <div className='flex items-center justify-between gap-2'>
+        <div className='min-w-0 flex-1 overflow-hidden'>
+          <div className='flex min-w-0 items-center justify-between gap-2'>
             <div className='min-w-0 flex-1'>
               <p className='truncate font-medium text-gray-900'>
                 {isProfileLoading ? contact.name : displayName}
@@ -98,11 +98,11 @@ export function ContactItem({
 
             {/* Action buttons - visible on hover */}
             {rightContent ? (
-              <div className='flex items-center gap-2 pl-2'>{rightContent}</div>
+              <div className='flex shrink-0 items-center gap-2 pl-2'>{rightContent}</div>
             ) : (
-              <div className='flex items-center gap-1 pl-2'>
+              <div className='flex shrink-0 items-center gap-1 pl-2'>
                 {(onEdit || onDelete) && isHovered && (
-                  <div className='flex items-center gap-1'>
+                  <div className='flex shrink-0 items-center gap-1'>
                     {onEdit && (
                       <button
                         onClick={handleEdit}
