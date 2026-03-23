@@ -6,20 +6,34 @@ import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
-import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { getOnboardingRedirectUrl, isUserOnboarded } from '@/lib/utils/auth';
 import { MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 
 export default function HubPage() {
   const router = useRouter();
-  const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
-  const { user } = useUserProfile();
+  const pathname = usePathname();
+  const { isLoading: isCheckingAuth, isAuthenticated, user } = useAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
+
+  useEffect(() => {
+    if (isCheckingAuth) {
+      return;
+    }
+
+    if (!isAuthenticated) {
+      router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+      return;
+    }
+
+    if (!user || !isUserOnboarded(user)) {
+      router.push(getOnboardingRedirectUrl(pathname));
+      return;
+    }
+  }, [isCheckingAuth, isAuthenticated, user, pathname, router]);
 
   // Set TopBar content
   useEffect(() => {
@@ -53,7 +67,7 @@ export default function HubPage() {
     };
   }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
-  if (isCheckingAuth || isCheckingOnboarding) {
+  if (isCheckingAuth) {
     return (
       <div className='flex min-h-screen w-full flex-col bg-white'>
         <div className='h-full w-full bg-white px-4 pb-36 pt-4 md:px-8 md:pb-24'>
