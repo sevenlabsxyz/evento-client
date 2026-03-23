@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import type { Contact } from '@/lib/types/wallet';
 import { UserPlus, Users } from 'lucide-react';
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 import { ContactItem } from './contact-item';
 
 interface ContactsListProps {
@@ -24,6 +24,7 @@ interface ContactsListProps {
   showAddButton?: boolean;
   maxContacts?: number;
   className?: string;
+  renderContactRightContent?: (contact: Contact) => ReactNode;
 }
 
 export function ContactsList({
@@ -34,6 +35,7 @@ export function ContactsList({
   showAddButton = true,
   maxContacts,
   className,
+  renderContactRightContent,
 }: ContactsListProps) {
   const { contacts, isLoading } = useContacts();
 
@@ -93,6 +95,7 @@ export function ContactsList({
             onEdit={onEditContact}
             onDelete={onDeleteContact}
             onClick={onContactClick}
+            rightContent={renderContactRightContent?.(contact)}
           />
         ))}
       </div>

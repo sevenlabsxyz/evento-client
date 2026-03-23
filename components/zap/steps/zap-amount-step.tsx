@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { motion } from 'framer-motion';
-import { Loader2, X, Zap } from 'lucide-react';
-import Image from 'next/image';
+import { Loader2, X } from 'lucide-react';
 import type { LnurlPayRequestDetails, RecipientInfo } from '../zap-types';
 
 interface ZapAmountStepProps {
@@ -57,15 +57,16 @@ export function ZapAmountStep({
         <div className='mx-auto max-w-md space-y-6'>
           {/* Recipient Card */}
           <div className='flex items-center gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
-            {recipient.avatar ? (
-              <div className='relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full'>
-                <Image src={recipient.avatar} alt={recipient.name} fill className='object-cover' />
-              </div>
-            ) : (
-              <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-                <Zap className='h-6 w-6 text-red-600' />
-              </div>
-            )}
+            <UserAvatar
+              user={{
+                name: recipient.name,
+                username: recipient.username,
+                image: recipient.avatar,
+              }}
+              height={48}
+              width={48}
+              className='flex-shrink-0'
+            />
             <div className='min-w-0 flex-1'>
               <p className='truncate font-semibold text-gray-900'>{recipient.name}</p>
               {recipient.username && (

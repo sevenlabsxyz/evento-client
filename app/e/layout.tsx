@@ -24,7 +24,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
 
   useWallet();
   useWalletEventListener();
-  useLightningAddress();
+  useLightningAddress({ autoLoad: true, autoSyncToBackend: true });
 
   useEffect(() => {
     applyRouteConfig(pathname);

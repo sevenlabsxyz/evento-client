@@ -1,6 +1,5 @@
 'use client';
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Command,
   CommandEmpty,
@@ -11,6 +10,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
@@ -26,15 +26,6 @@ interface ContactAutocompleteProps {
   disabled?: boolean;
   multiline?: boolean;
   rows?: number;
-}
-
-function getInitials(name: string): string {
-  return name
-    .split(' ')
-    .map((word) => word[0])
-    .join('')
-    .toUpperCase()
-    .slice(0, 2);
 }
 
 /**
@@ -54,9 +45,8 @@ function ContactAutocompleteItem({
     isEventoCashAddress ? contact.paymentIdentifier : undefined
   );
 
-  const avatarSrc = profile?.avatar || undefined;
+  const avatarSrc = isEventoCashAddress ? profile?.avatar : undefined;
   const displayName = profile?.displayName || contact.name;
-  const initials = getInitials(contact.name);
 
   return (
     <CommandItem
@@ -64,12 +54,15 @@ function ContactAutocompleteItem({
       onSelect={onSelect}
       className='flex items-center gap-3 px-3 py-2'
     >
-      <Avatar className='h-8 w-8 shrink-0'>
-        <AvatarImage src={avatarSrc} alt={displayName} />
-        <AvatarFallback className='bg-primary/10 text-xs font-medium text-primary'>
-          {initials}
-        </AvatarFallback>
-      </Avatar>
+      <UserAvatar
+        user={{
+          name: displayName,
+          image: avatarSrc,
+        }}
+        height={32}
+        width={32}
+        className='shrink-0'
+      />
       <div className='min-w-0 flex-1'>
         <p className='truncate text-sm font-medium'>{displayName}</p>
         <p className='truncate text-xs text-muted-foreground'>{contact.paymentIdentifier}</p>

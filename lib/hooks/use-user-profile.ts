@@ -5,6 +5,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { apiClient } from '../api/client';
 import { authService } from '../services/auth';
+import { fetchUserByUsername } from '../services/user-profile';
 import { useAuthStore } from '../stores/auth-store';
 import { ApiResponse, UserDetails } from '../types/api';
 
@@ -394,23 +395,9 @@ export function useUserEventCount(userId: string) {
 export function useUserByUsername(username: string) {
   return useQuery({
     queryKey: ['user', 'profile', 'username', username],
-    queryFn: async () => {
-      const response = await apiClient.get<ApiResponse<UserDetails>>(
-        `/v1/user/details?username=${encodeURIComponent(username)}`
-      );
-
-      // Extract the users array from the API response
-      const user = response?.data || {};
-
-      if (!user) {
-        return null;
-      }
-
-      // Return the first user
-      return user || null;
-    },
+    queryFn: () => fetchUserByUsername(username),
     enabled: !!username,
-    staleTime: 1 * 60 * 1000, // 5 minutes
+    staleTime: 1 * 60 * 1000,
     retry: (failureCount, error) => {
       // Don't retry on 404 errors (user not found)
       if (error && typeof error === 'object' && 'status' in error) {

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2, UserPlus } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -76,26 +76,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
   };
 
   return (
-    <MasterScrollableSheet
-      open={open}
-      onOpenChange={handleOpenChange}
-      title='Add Contact'
-      headerRight={
-        <Button
-          type='submit'
-          form='add-contact-form'
-          disabled={isAddingContact || !isValid}
-          size='sm'
-          className='h-8'
-        >
-          {isAddingContact ? (
-            <Loader2 className='h-4 w-4 animate-spin' />
-          ) : (
-            <UserPlus className='h-4 w-4' />
-          )}
-        </Button>
-      }
-    >
+    <MasterScrollableSheet open={open} onOpenChange={handleOpenChange} title='Add Contact'>
       <div className='p-6'>
         <form id='add-contact-form' onSubmit={handleSubmit(onSubmit)} className='space-y-6'>
           {/* Name Input */}
@@ -110,6 +91,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               placeholder='Contact name'
               disabled={isAddingContact}
               autoComplete='name'
+              className='h-12 rounded-full bg-gray-50'
             />
             {errors.name && <p className='text-sm text-destructive'>{errors.name.message}</p>}
           </div>
@@ -126,6 +108,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               placeholder='user@domain.com'
               disabled={isAddingContact}
               autoComplete='email'
+              className='h-12 rounded-full bg-gray-50'
             />
             {errors.lightningAddress && (
               <p className='text-sm text-destructive'>{errors.lightningAddress.message}</p>
@@ -134,6 +117,21 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               Enter a Lightning address in user@domain format (e.g., alice@evento.cash)
             </p>
           </div>
+
+          <Button
+            type='submit'
+            disabled={isAddingContact || !isValid}
+            className='h-12 w-full rounded-full'
+          >
+            {isAddingContact ? (
+              <>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                Saving...
+              </>
+            ) : (
+              'Save Contact'
+            )}
+          </Button>
         </form>
       </div>
     </MasterScrollableSheet>

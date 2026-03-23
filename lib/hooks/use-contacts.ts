@@ -77,6 +77,15 @@ export function useContacts() {
   // Mutation for updating a contact
   const updateMutation = useMutation({
     mutationFn: async (request: UpdateContactRequest): Promise<Contact> => {
+      const existing = contacts.find(
+        (c) =>
+          c.id !== request.id &&
+          c.paymentIdentifier.toLowerCase() === request.paymentIdentifier.toLowerCase()
+      );
+      if (existing) {
+        throw new Error('Contact already exists with this Lightning address');
+      }
+
       if (!breezSDK.isConnected()) {
         throw new Error('Wallet not connected');
       }
@@ -89,8 +98,10 @@ export function useContacts() {
     },
     onError: (error: Error) => {
       logBreezError(error, BREEZ_ERROR_CONTEXT.UPDATING_CONTACT);
-      const userMessage = getBreezErrorMessage(error, 'update contact');
-      toast.error(userMessage);
+      if (error.message !== 'Contact already exists with this Lightning address') {
+        const userMessage = getBreezErrorMessage(error, 'update contact');
+        toast.error(userMessage);
+      }
     },
   });
 

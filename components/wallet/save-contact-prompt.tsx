@@ -38,7 +38,7 @@ export function useSaveContactPrompt() {
   const { findContactByAddress, addContactAsync } = useContacts();
 
   const showSaveContactPrompt = useCallback(
-    async (lightningAddress: string, onSave?: () => void) => {
+    async (lightningAddress: string, onSave?: () => void, suggestedName?: string) => {
       // Check if address already exists in contacts
       const existingContact = findContactByAddress(lightningAddress);
       if (existingContact) {
@@ -46,17 +46,18 @@ export function useSaveContactPrompt() {
       }
 
       // Extract suggested name from Lightning address (user@domain -> 'user')
-      const suggestedName = extractSuggestedName(lightningAddress);
+      const fallbackName = extractSuggestedName(lightningAddress);
+      const contactName = suggestedName?.trim() || fallbackName;
 
       // Show toast with Save and Skip actions
-      toast(`Save ${suggestedName} as contact?`, {
+      toast(`Save ${contactName} as contact?`, {
         description: `Add ${lightningAddress} to your contacts for easy future payments.`,
         action: {
           label: 'Save',
           onClick: async () => {
             try {
               await addContactAsync({
-                name: suggestedName,
+                name: contactName,
                 paymentIdentifier: lightningAddress,
               });
               onSave?.();

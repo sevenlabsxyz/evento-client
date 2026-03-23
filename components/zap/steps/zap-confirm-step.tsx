@@ -1,9 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { ArrowLeft, X, Zap } from 'lucide-react';
-import Image from 'next/image';
 import type { RecipientInfo } from '../zap-types';
 
 interface ZapConfirmStepProps {
@@ -62,20 +62,16 @@ export function ZapConfirmStep({
           <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
             <p className='mb-1 text-xs text-gray-500'>Sending to</p>
             <div className='flex items-center gap-3'>
-              {recipient.avatar ? (
-                <div className='relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full'>
-                  <Image
-                    src={recipient.avatar}
-                    alt={recipient.name}
-                    fill
-                    className='object-cover'
-                  />
-                </div>
-              ) : (
-                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-                  <Zap className='h-5 w-5 text-red-600' />
-                </div>
-              )}
+              <UserAvatar
+                user={{
+                  name: recipient.name,
+                  username: recipient.username,
+                  image: recipient.avatar,
+                }}
+                height={40}
+                width={40}
+                className='flex-shrink-0'
+              />
               <div>
                 <p className='font-semibold text-gray-900'>{recipient.name}</p>
                 <p className='font-mono text-xs text-gray-500'>{recipient.lightningAddress}</p>

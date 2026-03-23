@@ -1,18 +1,15 @@
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
-import { EventoCashProfileService } from '@/lib/services/evento-cash-profile';
+import { fetchUserByUsername } from '@/lib/services/user-profile';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
 
-// Mock the EventoCashProfileService
-jest.mock('@/lib/services/evento-cash-profile', () => ({
-  EventoCashProfileService: {
-    fetchProfile: jest.fn(),
-  },
+jest.mock('@/lib/services/user-profile', () => ({
+  fetchUserByUsername: jest.fn(),
 }));
 
-const mockFetchProfile = EventoCashProfileService.fetchProfile as jest.MockedFunction<
-  typeof EventoCashProfileService.fetchProfile
+const mockFetchUserByUsername = fetchUserByUsername as jest.MockedFunction<
+  typeof fetchUserByUsername
 >;
 
 describe('useEventoCashProfile', () => {
@@ -21,7 +18,7 @@ describe('useEventoCashProfile', () => {
   beforeEach(() => {
     queryClient = new QueryClient({
       defaultOptions: {
-        queries: { retry: false },
+        queries: { retry: false, retryDelay: 0 },
         mutations: { retry: false },
       },
     });
@@ -33,9 +30,17 @@ describe('useEventoCashProfile', () => {
       username: 'alice',
       displayName: 'Alice Smith',
       avatar: 'https://example.com/alice.jpg',
+      verification_status: 'verified' as const,
     };
 
-    mockFetchProfile.mockResolvedValue(mockProfile);
+    mockFetchUserByUsername.mockResolvedValue({
+      id: 'user123',
+      username: 'alice',
+      name: 'Alice Smith',
+      bio: '',
+      image: 'https://example.com/alice.jpg',
+      verification_status: 'verified',
+    } as any);
 
     const { result } = renderHook(() => useEventoCashProfile('alice@evento.cash'), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -49,7 +54,7 @@ describe('useEventoCashProfile', () => {
     });
 
     expect(result.current.data).toEqual(mockProfile);
-    expect(mockFetchProfile).toHaveBeenCalledWith('alice@evento.cash');
+    expect(mockFetchUserByUsername).toHaveBeenCalledWith('alice');
   });
 
   it('is disabled for non-@evento.cash addresses', () => {
@@ -60,7 +65,7 @@ describe('useEventoCashProfile', () => {
     // Should not be loading because query is disabled
     expect(result.current.isLoading).toBe(false);
     expect(result.current.fetchStatus).toBe('idle');
-    expect(mockFetchProfile).not.toHaveBeenCalled();
+    expect(mockFetchUserByUsername).not.toHaveBeenCalled();
   });
 
   it('is disabled for undefined address', () => {
@@ -70,7 +75,7 @@ describe('useEventoCashProfile', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.fetchStatus).toBe('idle');
-    expect(mockFetchProfile).not.toHaveBeenCalled();
+    expect(mockFetchUserByUsername).not.toHaveBeenCalled();
   });
 
   it('is disabled for empty string address', () => {
@@ -80,11 +85,11 @@ describe('useEventoCashProfile', () => {
 
     expect(result.current.isLoading).toBe(false);
     expect(result.current.fetchStatus).toBe('idle');
-    expect(mockFetchProfile).not.toHaveBeenCalled();
+    expect(mockFetchUserByUsername).not.toHaveBeenCalled();
   });
 
   it('handles null response from service gracefully', async () => {
-    mockFetchProfile.mockResolvedValue(null);
+    mockFetchUserByUsername.mockResolvedValue(null);
 
     const { result } = renderHook(() => useEventoCashProfile('nonexistent@evento.cash'), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -100,7 +105,7 @@ describe('useEventoCashProfile', () => {
 
   it('handles service errors gracefully', async () => {
     const error = new Error('Network error');
-    mockFetchProfile.mockRejectedValue(error);
+    mockFetchUserByUsername.mockRejectedValue(error);
 
     const { result } = renderHook(() => useEventoCashProfile('alice@evento.cash'), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -118,9 +123,17 @@ describe('useEventoCashProfile', () => {
       username: 'alice',
       displayName: 'Alice Smith',
       avatar: 'https://example.com/alice.jpg',
+      verification_status: null,
     };
 
-    mockFetchProfile.mockResolvedValue(mockProfile);
+    mockFetchUserByUsername.mockResolvedValue({
+      id: 'user123',
+      username: 'alice',
+      name: 'Alice Smith',
+      bio: '',
+      image: 'https://example.com/alice.jpg',
+      verification_status: null,
+    } as any);
 
     const { result } = renderHook(() => useEventoCashProfile('alice@evento.cash'), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -132,7 +145,7 @@ describe('useEventoCashProfile', () => {
 
     // Check stale time is 5 minutes (300000ms)
     const queryCache = queryClient.getQueryCache();
-    const query = queryCache.find({ queryKey: ['eventoCashProfile', 'alice@evento.cash'] });
+    const query = queryCache.find({ queryKey: ['user', 'profile', 'username', 'alice'] });
     expect((query?.options as any).staleTime).toBe(5 * 60 * 1000);
   });
 
@@ -141,15 +154,33 @@ describe('useEventoCashProfile', () => {
       username: 'alice',
       displayName: 'Alice Smith',
       avatar: 'https://example.com/alice.jpg',
+      verification_status: null,
     };
 
     const mockProfile2 = {
       username: 'bob',
       displayName: 'Bob Jones',
       avatar: 'https://example.com/bob.jpg',
+      verification_status: 'verified' as const,
     };
 
-    mockFetchProfile.mockResolvedValueOnce(mockProfile1).mockResolvedValueOnce(mockProfile2);
+    mockFetchUserByUsername
+      .mockResolvedValueOnce({
+        id: 'user123',
+        username: 'alice',
+        name: 'Alice Smith',
+        bio: '',
+        image: 'https://example.com/alice.jpg',
+        verification_status: null,
+      } as any)
+      .mockResolvedValueOnce({
+        id: 'user456',
+        username: 'bob',
+        name: 'Bob Jones',
+        bio: '',
+        image: 'https://example.com/bob.jpg',
+        verification_status: 'verified',
+      } as any);
 
     const { result, rerender } = renderHook(({ address }) => useEventoCashProfile(address), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -167,9 +198,9 @@ describe('useEventoCashProfile', () => {
       expect(result.current.data).toEqual(mockProfile2);
     });
 
-    expect(mockFetchProfile).toHaveBeenCalledTimes(2);
-    expect(mockFetchProfile).toHaveBeenNthCalledWith(1, 'alice@evento.cash');
-    expect(mockFetchProfile).toHaveBeenNthCalledWith(2, 'bob@evento.cash');
+    expect(mockFetchUserByUsername).toHaveBeenCalledTimes(2);
+    expect(mockFetchUserByUsername).toHaveBeenNthCalledWith(1, 'alice');
+    expect(mockFetchUserByUsername).toHaveBeenNthCalledWith(2, 'bob');
   });
 
   it('does not refetch when switching from valid to invalid address', async () => {
@@ -177,9 +208,17 @@ describe('useEventoCashProfile', () => {
       username: 'alice',
       displayName: 'Alice Smith',
       avatar: 'https://example.com/alice.jpg',
+      verification_status: null,
     };
 
-    mockFetchProfile.mockResolvedValue(mockProfile);
+    mockFetchUserByUsername.mockResolvedValue({
+      id: 'user123',
+      username: 'alice',
+      name: 'Alice Smith',
+      bio: '',
+      image: 'https://example.com/alice.jpg',
+      verification_status: null,
+    } as any);
 
     const { result, rerender } = renderHook(({ address }) => useEventoCashProfile(address), {
       wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -196,6 +235,7 @@ describe('useEventoCashProfile', () => {
     // Should keep previous data but not be loading
     expect(result.current.isLoading).toBe(false);
     expect(result.current.fetchStatus).toBe('idle');
-    expect(mockFetchProfile).toHaveBeenCalledTimes(1);
+    expect(result.current.data).toBeUndefined();
+    expect(mockFetchUserByUsername).toHaveBeenCalledTimes(1);
   });
 });

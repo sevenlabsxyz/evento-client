@@ -16,20 +16,19 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
 
 // Mock the API client
-jest.mock('@/lib/api/client', () => ({
-  apiClient: {
+jest.mock('@/lib/api/client', () => {
+  const mockClient = {
     get: jest.fn(),
     patch: jest.fn(),
     post: jest.fn(),
     delete: jest.fn(),
-  },
-  default: {
-    get: jest.fn(),
-    patch: jest.fn(),
-    post: jest.fn(),
-    delete: jest.fn(),
-  },
-}));
+  };
+
+  return {
+    apiClient: mockClient,
+    default: mockClient,
+  };
+});
 
 // Mock the auth service
 jest.mock('@/lib/services/auth', () => ({
@@ -59,12 +58,20 @@ jest.mock('@/lib/utils/file', () => ({
   sanitizeUploadFileName: jest.fn((name: string) => name.replace(/[^a-zA-Z0-9._-]/g, '_')),
 }));
 
+jest.mock('@/lib/services/user-profile', () => ({
+  fetchUserByUsername: jest.fn(),
+}));
+
 import { apiClient as mockApiClient } from '@/lib/api/client';
 import { authService as mockAuthService } from '@/lib/services/auth';
+import { fetchUserByUsername as mockFetchUserByUsername } from '@/lib/services/user-profile';
 
 // Type the mock API client
 const mockApiClientTyped = mockApiClient as any;
 const mockAuthServiceTyped = mockAuthService as any;
+const mockFetchUserByUsernameTyped = mockFetchUserByUsername as jest.MockedFunction<
+  typeof mockFetchUserByUsername
+>;
 
 describe('User Profile Hooks', () => {
   let queryClient: QueryClient;
@@ -486,9 +493,7 @@ describe('User Profile Hooks', () => {
         verification_date: '',
       };
 
-      mockApiClientTyped.get.mockResolvedValue({
-        data: mockUser,
-      });
+      mockFetchUserByUsernameTyped.mockResolvedValue(mockUser as any);
 
       const { result } = renderHook(() => useUserByUsername('testuser'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -501,9 +506,8 @@ describe('User Profile Hooks', () => {
       expect(result.current.data).toEqual(mockUser);
     });
 
-    it('returns undefined for non-existent user', async () => {
-      const notFoundError = { status: 404, message: 'User not found' };
-      mockApiClientTyped.get.mockRejectedValue(notFoundError);
+    it('returns null for non-existent user', async () => {
+      mockFetchUserByUsernameTyped.mockResolvedValue(null);
 
       const { result } = renderHook(() => useUserByUsername('nonexistent'), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -513,7 +517,7 @@ describe('User Profile Hooks', () => {
         expect(result.current.isLoading).toBe(false);
       });
 
-      expect(result.current.data).toBeUndefined();
+      expect(result.current.data).toBeNull();
     });
 
     it('is disabled when username is empty', () => {

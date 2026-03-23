@@ -1,6 +1,7 @@
 'use client';
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { useSaveContactPrompt } from '@/components/wallet/save-contact-prompt';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
@@ -48,6 +49,7 @@ export function ZapSheet({
 
   const { satsToUSD, usdToSats } = useAmountConverter();
   const notifyMutation = useNotifyWalletInvite();
+  const { showSaveContactPrompt } = useSaveContactPrompt();
 
   const hasExistingWallet = () => {
     if (typeof window === 'undefined') {
@@ -372,6 +374,10 @@ export function ZapSheet({
       await breezSDK.lnurlPay({
         prepareResponse,
       });
+
+      if (recipientLightningAddress) {
+        void showSaveContactPrompt(recipientLightningAddress, undefined, recipientName);
+      }
 
       setStep('success');
       onSuccess?.(selectedAmount);

@@ -1,11 +1,13 @@
 'use client';
 
+import { CircledIconButton } from '@/components/circled-icon-button';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { AddContactSheet } from '@/components/wallet/add-contact-sheet';
 import { BackupCallout } from '@/components/wallet/backup-callout';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
+import { ContactActionsSheet } from '@/components/wallet/contact-actions-sheet';
 import { ContactsList } from '@/components/wallet/contacts-list';
 import { EditContactSheet } from '@/components/wallet/edit-contact-sheet';
 import { IncomingFundsSheet } from '@/components/wallet/incoming-funds-sheet';
@@ -45,7 +47,17 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
-import { ChevronsRight, Eye, EyeOff, HelpCircle, Settings, UserPlus } from 'lucide-react';
+import {
+  ChevronRight,
+  ChevronsRight,
+  Contact as ContactIcon,
+  Eye,
+  EyeOff,
+  HelpCircle,
+  MoreHorizontal,
+  Plus,
+  Settings,
+} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -89,6 +101,7 @@ export default function WalletPage() {
   const [showContactsSheet, setShowContactsSheet] = useState(false);
   const [showAddContactSheet, setShowAddContactSheet] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -120,6 +133,11 @@ export default function WalletPage() {
     setScannedData(contact.paymentIdentifier);
     setShowContactsSheet(false);
     openDrawer('send');
+  };
+
+  const handleEditContact = (contact: Contact) => {
+    setSelectedContact(contact);
+    setShowContactsSheet(false);
   };
 
   useEffect(() => {
@@ -519,15 +537,14 @@ export default function WalletPage() {
               {/* Contacts Preview */}
               <div className='mt-6 space-y-3 md:mt-4'>
                 <div className='flex items-center justify-between'>
-                  <h3 className='text-sm font-semibold'>Contacts</h3>
-                  <Button
-                    variant='ghost'
-                    size='sm'
-                    onClick={() => setShowAddContactSheet(true)}
-                    className='h-8 w-8 p-0'
-                  >
-                    <UserPlus className='h-4 w-4' />
-                  </Button>
+                  <h3 className='text-sm font-semibold'>Wallet Contacts</h3>
+                  <div className='flex items-center gap-2'>
+                    <CircledIconButton icon={Plus} onClick={() => setShowAddContactSheet(true)} />
+                    <CircledIconButton
+                      icon={ContactIcon}
+                      onClick={() => setShowContactsSheet(true)}
+                    />
+                  </div>
                 </div>
                 <ContactsList
                   maxContacts={3}
@@ -535,10 +552,9 @@ export default function WalletPage() {
                   onContactClick={handleContactSelect}
                 />
                 <Button
-                  variant='outline'
-                  size='sm'
                   onClick={() => setShowContactsSheet(true)}
-                  className='w-full'
+                  variant='outline'
+                  className='font-lg h-12 w-full rounded-full bg-gray-50'
                 >
                   View All Contacts
                 </Button>
@@ -699,31 +715,59 @@ export default function WalletPage() {
           }
         }}
         title='Contacts'
-        headerRight={
+      >
+        <div className='space-y-4 p-4'>
           <Button
-            variant='ghost'
-            size='sm'
+            type='button'
+            className='h-12 w-full rounded-full text-base font-semibold'
             onClick={() => {
               setShowContactsSheet(false);
               setShowAddContactSheet(true);
             }}
-            className='h-8 w-8 p-0'
           >
-            <UserPlus className='h-4 w-4' />
+            New Contact
           </Button>
-        }
-      >
-        <div className='p-4'>
+
           <ContactsList
             showAddButton={false}
-            onContactClick={handleContactSelect}
-            onEditContact={(contact) => {
-              setSelectedContact(contact);
-              setShowContactsSheet(false);
-            }}
+            onContactClick={handleEditContact}
+            renderContactRightContent={(contact) => (
+              <>
+                <CircledIconButton
+                  icon={MoreHorizontal}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setActionMenuContact(contact);
+                  }}
+                  className='bg-white'
+                />
+                <CircledIconButton
+                  icon={ChevronRight}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleContactSelect(contact);
+                  }}
+                  className='bg-white'
+                />
+              </>
+            )}
           />
         </div>
       </MasterScrollableSheet>
+
+      <ContactActionsSheet
+        contact={actionMenuContact}
+        open={!!actionMenuContact}
+        onOpenChange={(open) => {
+          if (!open) {
+            setActionMenuContact(null);
+          }
+        }}
+        onEdit={(contact) => {
+          setActionMenuContact(null);
+          handleEditContact(contact);
+        }}
+      />
 
       {/* Add Contact Sheet */}
       <AddContactSheet open={showAddContactSheet} onOpenChange={setShowAddContactSheet} />

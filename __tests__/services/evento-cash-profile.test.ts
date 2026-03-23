@@ -51,8 +51,9 @@ describe('EventoCashProfileService', () => {
         username: 'alice',
         displayName: 'Alice Smith',
         avatar: 'https://example.com/alice.jpg',
+        verification_status: null,
       });
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/users/username/alice');
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/details?username=alice');
     });
 
     it('returns null for non-@evento.cash addresses', async () => {
@@ -90,7 +91,7 @@ describe('EventoCashProfileService', () => {
       const result = await EventoCashProfileService.fetchProfile('nonexistent@evento.cash');
 
       expect(result).toBeNull();
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/users/username/nonexistent');
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/details?username=nonexistent');
     });
 
     it('handles network errors gracefully by returning null', async () => {
@@ -100,7 +101,7 @@ describe('EventoCashProfileService', () => {
       const result = await EventoCashProfileService.fetchProfile('alice@evento.cash');
 
       expect(result).toBeNull();
-      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/users/username/alice');
+      expect(mockApiClientTyped.get).toHaveBeenCalledWith('/v1/user/details?username=alice');
     });
 
     it('handles 500 server errors gracefully by returning null', async () => {
@@ -146,7 +147,7 @@ describe('EventoCashProfileService', () => {
         await EventoCashProfileService.fetchProfile(testCase.input);
 
         expect(mockApiClientTyped.get).toHaveBeenCalledWith(
-          `/v1/users/username/${testCase.expectedUsername}`
+          `/v1/user/details?username=${testCase.expectedUsername}`
         );
       }
     });
