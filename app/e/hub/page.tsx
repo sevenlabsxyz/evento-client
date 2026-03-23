@@ -18,14 +18,9 @@ export default function HubPage() {
   const pathname = usePathname();
   const { isLoading: isCheckingAuth, isAuthenticated, user } = useAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
-  const isCheckingUserForOnboarding = isAuthenticated && !user;
 
   useEffect(() => {
     if (isCheckingAuth) {
-      return;
-    }
-
-    if (isAuthenticated && !user) {
       return;
     }
 
@@ -34,7 +29,7 @@ export default function HubPage() {
       return;
     }
 
-    if (!isUserOnboarded(user)) {
+    if (!user || !isUserOnboarded(user)) {
       router.push(getOnboardingRedirectUrl(pathname));
       return;
     }
@@ -72,7 +67,7 @@ export default function HubPage() {
     };
   }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
-  if (isCheckingAuth || isCheckingUserForOnboarding) {
+  if (isCheckingAuth) {
     return (
       <div className='flex min-h-screen w-full flex-col bg-white'>
         <div className='h-full w-full bg-white px-4 pb-36 pt-4 md:px-8 md:pb-24'>
