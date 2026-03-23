@@ -62,14 +62,17 @@ import {
   UserMinus,
   UserPlus,
 } from 'lucide-react';
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
-export default function UserProfilePageClient() {
+interface UserProfilePageClientProps {
+  username: string;
+}
+
+export default function UserProfilePageClient({ username }: UserProfilePageClientProps) {
   // Fetch auth state but don’t enforce login – allows public profile view
   const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
-  const params = useParams();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
@@ -86,7 +89,6 @@ export default function UserProfilePageClient() {
   const [selectedBadge, setSelectedBadge] = useState<UserBadge | null>(null);
 
   // Fetch user data from API
-  const username = params.username as string;
   const {
     data: userData,
     isLoading: isUserLoading,

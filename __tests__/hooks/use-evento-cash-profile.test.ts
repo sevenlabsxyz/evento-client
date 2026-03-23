@@ -145,7 +145,7 @@ describe('useEventoCashProfile', () => {
 
     // Check stale time is 5 minutes (300000ms)
     const queryCache = queryClient.getQueryCache();
-    const query = queryCache.find({ queryKey: ['user', 'profile', 'username', 'alice'] });
+    const query = queryCache.find({ queryKey: ['wallet', 'evento-cash-profile', 'alice'] });
     expect((query?.options as any).staleTime).toBe(5 * 60 * 1000);
   });
 

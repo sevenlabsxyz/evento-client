@@ -135,5 +135,5 @@ export default function Page({ params }: UsernamePageProps) {
     notFound();
   }
 
-  return <UserProfilePageClient />;
+  return <UserProfilePageClient username={params.username} />;
 }

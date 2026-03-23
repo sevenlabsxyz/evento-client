@@ -16,7 +16,7 @@ export function useEventoCashProfile(lightningAddress: string | undefined) {
       : '';
 
   return useQuery<EventoCashProfile | null>({
-    queryKey: ['user', 'profile', 'username', username],
+    queryKey: ['wallet', 'evento-cash-profile', username],
     queryFn: async () => {
       const user = await fetchUserByUsername(username);
 

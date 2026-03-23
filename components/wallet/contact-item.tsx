@@ -64,7 +64,7 @@ export function ContactItem({
   return (
     <div
       className={cn(
-        'w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100',
+        'w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-100',
         className
       )}
       onClick={handleClick}
@@ -74,7 +74,7 @@ export function ContactItem({
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
     >
-      <div className='flex min-w-0 items-center gap-3'>
+      <div className='grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3'>
         {/* Avatar */}
         <UserAvatar
           user={{
@@ -88,48 +88,44 @@ export function ContactItem({
 
         {/* Contact info */}
         <div className='min-w-0 flex-1 overflow-hidden'>
-          <div className='flex min-w-0 items-center justify-between gap-2'>
-            <div className='min-w-0 flex-1'>
-              <p className='truncate font-medium text-gray-900'>
-                {isProfileLoading ? contact.name : displayName}
-              </p>
-              <p className='truncate text-sm text-gray-500'>{contact.paymentIdentifier}</p>
-            </div>
+          <p className='block w-full truncate font-medium text-gray-900'>
+            {isProfileLoading ? contact.name : displayName}
+          </p>
+          <p className='block w-full truncate text-sm text-gray-500'>{contact.paymentIdentifier}</p>
+        </div>
 
-            {/* Action buttons - visible on hover */}
-            {rightContent ? (
-              <div className='flex shrink-0 items-center gap-2 pl-2'>{rightContent}</div>
-            ) : (
-              <div className='flex shrink-0 items-center gap-1 pl-2'>
-                {(onEdit || onDelete) && isHovered && (
-                  <div className='flex shrink-0 items-center gap-1'>
-                    {onEdit && (
-                      <button
-                        onClick={handleEdit}
-                        className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200'
-                        aria-label='Edit contact'
-                        title='Edit'
-                      >
-                        <Pencil className='h-4 w-4' />
-                      </button>
-                    )}
-                    {onDelete && (
-                      <button
-                        onClick={handleDelete}
-                        className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500'
-                        aria-label='Delete contact'
-                        title='Delete'
-                      >
-                        <Trash2 className='h-4 w-4' />
-                      </button>
-                    )}
-                  </div>
+        {/* Action buttons - visible on hover */}
+        {rightContent ? (
+          <div className='flex shrink-0 items-center gap-1.5 pl-1'>{rightContent}</div>
+        ) : (
+          <div className='flex shrink-0 items-center gap-1 pl-1'>
+            {(onEdit || onDelete) && isHovered && (
+              <div className='flex shrink-0 items-center gap-1'>
+                {onEdit && (
+                  <button
+                    onClick={handleEdit}
+                    className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200'
+                    aria-label='Edit contact'
+                    title='Edit'
+                  >
+                    <Pencil className='h-4 w-4' />
+                  </button>
                 )}
-                <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+                {onDelete && (
+                  <button
+                    onClick={handleDelete}
+                    className='rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-200 hover:text-red-500'
+                    aria-label='Delete contact'
+                    title='Delete'
+                  >
+                    <Trash2 className='h-4 w-4' />
+                  </button>
+                )}
               </div>
             )}
+            <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
