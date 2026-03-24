@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ImageResponse } from 'next/og';
@@ -11,8 +12,7 @@ export const size = {
 };
 export const contentType = 'image/png';
 
-const NO_COVER_FALLBACK =
-  'https://api.evento.so/storage/v1/render/image/public/cdn/eventos/default-covers/tech/15.webp';
+const NO_COVER_FALLBACK = DEFAULT_EVENT_COVER_URL;
 
 function getEventImageClient() {
   if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {

@@ -3,7 +3,7 @@
 import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
-import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -146,7 +146,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
           src={
             event.cover && isGif(event.cover)
               ? event.cover
-              : getOptimizedCoverUrl(event.cover || '', 'thumbnail')
+              : getEventCoverDisplayUrl(event.cover, 'thumbnail')
           }
           alt={event.title}
           width={96}

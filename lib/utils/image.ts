@@ -1,3 +1,5 @@
+import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
+
 /**
  * Get optimized image URL using Supabase image transformations
  * @param url - Image URL (can be relative path or full URL)
@@ -79,4 +81,15 @@ export function getOptimizedCoverUrl(
         ? ImageSizes.MEDIUM
         : ImageSizes.LARGE;
   return getOptimizedImageUrl(url, imageSize, 80);
+}
+
+export function getEventCoverDisplayUrl(
+  url: string | null | undefined,
+  size: 'thumbnail' | 'feed' | 'detail' = 'feed'
+): string {
+  if (!url) {
+    return DEFAULT_EVENT_COVER_URL;
+  }
+
+  return getOptimizedCoverUrl(url, size);
 }
