@@ -38,6 +38,7 @@ export const BREEZ_ERROR_CONTEXT = {
   // LNURL Operations
   PREPARING_LNURL_PAYMENT: 'preparing LNURL payment',
   EXECUTING_LNURL_PAYMENT: 'executing LNURL payment',
+  EXECUTING_LNURL_WITHDRAW: 'executing LNURL withdraw',
 
   // Payment History
   LISTING_PAYMENTS: 'listing payments',

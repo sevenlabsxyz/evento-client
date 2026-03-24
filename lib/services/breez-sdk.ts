@@ -24,6 +24,8 @@ import {
   LightningAddressInfo,
   LnurlPayRequest,
   LnurlPayResponse,
+  LnurlWithdrawRequest,
+  LnurlWithdrawResponse,
   MaxFee,
   Network,
   Payment,
@@ -636,6 +638,25 @@ export class BreezSDKService {
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.EXECUTING_LNURL_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'send Lightning address payment');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Execute LNURL withdraw flow
+   */
+  async lnurlWithdraw(params: LnurlWithdrawRequest): Promise<LnurlWithdrawResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      if (DEBUG_BREEZ) console.debug('📥 [BREEZ:LNURL_WITHDRAW] Executing LNURL withdraw...');
+      const response = await this.sdk.lnurlWithdraw(params);
+      if (DEBUG_BREEZ)
+        console.debug('✅ [BREEZ:LNURL_WITHDRAW] LNURL withdraw executed successfully');
+      return response;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.EXECUTING_LNURL_WITHDRAW);
+      const userMessage = getBreezErrorMessage(error, 'receive LNURL withdraw');
       throw new Error(userMessage);
     }
   }

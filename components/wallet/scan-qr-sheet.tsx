@@ -44,7 +44,9 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
               <div className='absolute bottom-8 left-0 right-0 z-40 px-6 text-center'>
                 <div className='mx-auto max-w-sm rounded-2xl bg-black/50 p-4 backdrop-blur-sm'>
                   <p className='text-sm font-medium text-white'>Point your camera at a QR code</p>
-                  <p className='mt-1 text-xs text-white/80'>Lightning invoice or Bitcoin address</p>
+                  <p className='mt-1 text-xs text-white/80'>
+                    Lightning, LNURL, or Bitcoin payment QR
+                  </p>
                 </div>
               </div>
             </div>

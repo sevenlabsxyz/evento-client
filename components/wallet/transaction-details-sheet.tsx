@@ -13,6 +13,7 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -98,26 +99,6 @@ export function TransactionDetailsSheet({
     }
   };
 
-  // Get description/note
-  const getDescription = () => {
-    if (!payment.details) return null;
-
-    switch (payment.details.type) {
-      case 'lightning':
-        return payment.details.description || null;
-      case 'spark':
-        return 'Spark payment';
-      case 'token':
-        return 'Token payment';
-      case 'withdraw':
-        return 'Withdrawal';
-      case 'deposit':
-        return 'Deposit';
-      default:
-        return null;
-    }
-  };
-
   // Get invoice
   const getInvoice = () => {
     if (payment.details?.type === 'lightning') {
@@ -161,7 +142,8 @@ export function TransactionDetailsSheet({
   };
 
   // Look up contact for this payment
-  const lightningAddress = getLightningAddress();
+  const displayData = getWalletPaymentDisplayData(payment);
+  const lightningAddress = displayData.lightningAddress ?? getLightningAddress();
   const contact = lightningAddress ? findContactByAddress(lightningAddress) : null;
 
   const handleCopy = async (text: string, label: string) => {
@@ -175,10 +157,29 @@ export function TransactionDetailsSheet({
 
   const statusInfo = getStatusInfo();
   const invoice = getInvoice();
-  const description = getDescription();
   const preimage = getPreimage();
   const paymentHash = getPaymentHash();
   const destinationPubkey = getDestinationPubkey();
+  const detailRows = [
+    displayData.senderComment
+      ? { label: 'Sender Comment', value: displayData.senderComment, copyable: false }
+      : null,
+    displayData.description && displayData.description !== displayData.senderComment
+      ? { label: 'Description', value: displayData.description, copyable: false }
+      : null,
+    contact ? { label: 'Saved Contact', value: contact.name, copyable: false } : null,
+  ].filter((row): row is { label: string; value: string; copyable: boolean } => Boolean(row));
+  const advancedRows = [
+    displayData.lightningUsername
+      ? { label: 'Username', value: displayData.lightningUsername, copyable: true }
+      : null,
+    displayData.lightningAddress
+      ? { label: 'Lightning Address', value: displayData.lightningAddress, copyable: true }
+      : null,
+    displayData.lightningDomain
+      ? { label: 'Provider', value: displayData.lightningDomain, copyable: true }
+      : null,
+  ].filter((row): row is { label: string; value: string; copyable: boolean } => Boolean(row));
 
   return (
     <MasterScrollableSheet
@@ -191,7 +192,7 @@ export function TransactionDetailsSheet({
       <div className='mx-auto min-h-fit max-w-md space-y-4 pb-8'>
         {/* Amount Card - Glassmorphic */}
         <div className='rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-sm backdrop-blur-xl'>
-          <div className='mb-4 flex items-center justify-center gap-2'>
+          <div className='mb-4 flex flex-col items-center justify-center gap-2 text-center'>
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
                 payment.paymentType === 'receive' ? 'bg-green-100' : 'bg-blue-100'
@@ -207,10 +208,10 @@ export function TransactionDetailsSheet({
                 <ArrowUpRight className='h-5 w-5 text-blue-600' />
               )}
             </div>
-            <span className='text-sm font-medium text-gray-600'>{getTypeLabel()}</span>
-            {contact && (
-              <span className='ml-2 text-sm font-semibold text-primary'>{contact.name}</span>
-            )}
+            <div className='space-y-1'>
+              <p className='text-sm font-medium text-gray-600'>{getTypeLabel()}</p>
+              {contact && <p className='text-sm font-semibold text-primary'>{contact.name}</p>}
+            </div>
           </div>
           <div className='text-center'>
             <div className='flex items-baseline justify-center gap-2'>
@@ -279,17 +280,35 @@ export function TransactionDetailsSheet({
         )}
 
         {/* Payment Details Group */}
-        {(description || invoice) && (
+        {(detailRows.length > 0 || invoice) && (
           <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
-            {/* Note/Description */}
-            {description && (
-              <div className={`px-4 py-3 ${invoice ? 'border-b border-gray-200' : ''}`}>
-                <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
-                  Note
+            {detailRows.map((row, index) => {
+              const shouldShowBorder = index < detailRows.length - 1 || Boolean(invoice);
+
+              return (
+                <div
+                  key={row.label}
+                  className={`px-4 py-3 ${shouldShowBorder ? 'border-b border-gray-200' : ''}`}
+                >
+                  <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
+                    {row.label}
+                  </div>
+                  <div className='flex items-start gap-2'>
+                    <p className='flex-1 break-all text-sm text-gray-900'>{row.value}</p>
+                    {row.copyable && (
+                      <Button
+                        onClick={() => handleCopy(row.value, row.label)}
+                        variant='ghost'
+                        size='sm'
+                        className='h-11 w-11 flex-shrink-0 p-0'
+                      >
+                        <Copy className='h-4 w-4' />
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <p className='text-sm text-gray-900'>{description}</p>
-              </div>
-            )}
+              );
+            })}
 
             {/* Invoice */}
             {invoice && (
@@ -319,7 +338,7 @@ export function TransactionDetailsSheet({
         )}
 
         {/* Advanced Details Accordion */}
-        {(preimage || paymentHash || destinationPubkey) && (
+        {(advancedRows.length > 0 || preimage || paymentHash || destinationPubkey) && (
           <Accordion type='single' collapsible className='w-full'>
             <AccordionItem value='advanced' className='border-none'>
               <AccordionTrigger className='h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 shadow-sm hover:bg-gray-100 hover:no-underline'>
@@ -327,10 +346,32 @@ export function TransactionDetailsSheet({
               </AccordionTrigger>
               <AccordionContent className='pt-4'>
                 <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
+                  {advancedRows.map((row) => (
+                    <div key={row.label} className='border-b border-gray-200 px-4 py-3'>
+                      <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
+                        {row.label}
+                      </div>
+                      <div className='flex items-start gap-2'>
+                        <p className='flex-1 break-all text-sm text-gray-900'>{row.value}</p>
+                        <Button
+                          onClick={() => handleCopy(row.value, row.label)}
+                          variant='ghost'
+                          size='sm'
+                          className='h-11 w-11 flex-shrink-0 p-0'
+                        >
+                          <Copy className='h-4 w-4' />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
                   {/* Payment Hash */}
                   {paymentHash && (
                     <div
-                      className={`px-4 py-3 ${preimage || destinationPubkey || payment.id ? 'border-b border-gray-200' : ''}`}
+                      className={`px-4 py-3 ${
+                        preimage || destinationPubkey || payment.id
+                          ? 'border-b border-gray-200'
+                          : ''
+                      }`}
                     >
                       <div className='mb-2 flex items-center gap-1'>
                         <span className='text-xs font-medium uppercase tracking-wide text-gray-500'>
