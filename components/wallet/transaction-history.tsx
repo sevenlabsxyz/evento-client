@@ -14,6 +14,7 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
+import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -117,37 +118,6 @@ export function TransactionHistory({
     }
   };
 
-  const getPaymentDescription = (payment: Payment): string => {
-    if (!payment.details) return 'No description';
-
-    switch (payment.details.type) {
-      case 'lightning': {
-        // Check if there's a destination Lightning address in the details
-        // Note: Breez SDK may provide this in future versions
-        const details = payment.details as any;
-        const lightningAddress =
-          details.lightningAddress || details.lnAddress || details.destinationAddress;
-        if (lightningAddress) {
-          const contact = findContactByAddress(lightningAddress);
-          if (contact) {
-            return contact.name;
-          }
-        }
-        return payment.details.description || 'Lightning payment';
-      }
-      case 'spark':
-        return 'Spark payment';
-      case 'token':
-        return 'Token payment';
-      case 'withdraw':
-        return 'Withdrawal';
-      case 'deposit':
-        return 'Deposit';
-      default:
-        return 'Payment';
-    }
-  };
-
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp * 1000);
     const now = new Date();
@@ -207,7 +177,16 @@ export function TransactionHistory({
         const isIncoming = payment.paymentType === 'receive';
         const amountSats = Number(payment.amount);
         const usdAmount = usdPrices[payment.id] || 0;
-        const description = getPaymentDescription(payment);
+        const displayData = getWalletPaymentDisplayData(payment);
+        const contact = displayData.lightningAddress
+          ? findContactByAddress(displayData.lightningAddress)
+          : null;
+        const detailParts = [
+          displayData.secondaryText,
+          contact?.name,
+          displayData.lightningAddress,
+          formatDate(payment.timestamp),
+        ].filter(Boolean);
 
         return (
           <button
@@ -224,9 +203,11 @@ export function TransactionHistory({
                     <div className='flex items-center gap-2'>
                       {payment.status !== 'pending' && getStatusIcon(payment.status)}
                       <div className='flex min-w-0 max-w-[220px] flex-1 flex-col md:max-w-none'>
-                        <p className='truncate font-medium text-gray-900'>{description}</p>
-                        <p className='text-xs font-normal text-gray-600'>
-                          {formatDate(payment.timestamp)}
+                        <p className='truncate font-medium text-gray-900'>
+                          {displayData.primaryText}
+                        </p>
+                        <p className='truncate text-xs font-normal text-gray-600'>
+                          {detailParts.join(' • ')}
                         </p>
                       </div>
                     </div>

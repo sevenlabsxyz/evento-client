@@ -13,6 +13,7 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
 import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -98,26 +99,6 @@ export function TransactionDetailsSheet({
     }
   };
 
-  // Get description/note
-  const getDescription = () => {
-    if (!payment.details) return null;
-
-    switch (payment.details.type) {
-      case 'lightning':
-        return payment.details.description || null;
-      case 'spark':
-        return 'Spark payment';
-      case 'token':
-        return 'Token payment';
-      case 'withdraw':
-        return 'Withdrawal';
-      case 'deposit':
-        return 'Deposit';
-      default:
-        return null;
-    }
-  };
-
   // Get invoice
   const getInvoice = () => {
     if (payment.details?.type === 'lightning') {
@@ -161,7 +142,8 @@ export function TransactionDetailsSheet({
   };
 
   // Look up contact for this payment
-  const lightningAddress = getLightningAddress();
+  const displayData = getWalletPaymentDisplayData(payment);
+  const lightningAddress = displayData.lightningAddress ?? getLightningAddress();
   const contact = lightningAddress ? findContactByAddress(lightningAddress) : null;
 
   const handleCopy = async (text: string, label: string) => {
@@ -175,10 +157,30 @@ export function TransactionDetailsSheet({
 
   const statusInfo = getStatusInfo();
   const invoice = getInvoice();
-  const description = getDescription();
   const preimage = getPreimage();
   const paymentHash = getPaymentHash();
   const destinationPubkey = getDestinationPubkey();
+  const metadataRows = [
+    displayData.senderComment
+      ? { label: 'Sender Comment', value: displayData.senderComment, copyable: false }
+      : null,
+    displayData.description && displayData.description !== displayData.senderComment
+      ? { label: 'Description', value: displayData.description, copyable: false }
+      : null,
+    contact ? { label: 'Saved Contact', value: contact.name, copyable: false } : null,
+    displayData.lightningUsername
+      ? { label: 'Username', value: displayData.lightningUsername, copyable: true }
+      : null,
+    displayData.lightningAddress
+      ? { label: 'Lightning Address', value: displayData.lightningAddress, copyable: true }
+      : null,
+    displayData.lightningDomain
+      ? { label: 'Domain', value: displayData.lightningDomain, copyable: true }
+      : null,
+    displayData.lnurlMetadata
+      ? { label: 'LNURL Metadata', value: displayData.lnurlMetadata, copyable: true }
+      : null,
+  ].filter((row): row is { label: string; value: string; copyable: boolean } => Boolean(row));
 
   return (
     <MasterScrollableSheet
@@ -279,17 +281,35 @@ export function TransactionDetailsSheet({
         )}
 
         {/* Payment Details Group */}
-        {(description || invoice) && (
+        {(metadataRows.length > 0 || invoice) && (
           <div className='overflow-hidden rounded-xl border border-gray-200 bg-gray-50 shadow-sm'>
-            {/* Note/Description */}
-            {description && (
-              <div className={`px-4 py-3 ${invoice ? 'border-b border-gray-200' : ''}`}>
-                <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
-                  Note
+            {metadataRows.map((row, index) => {
+              const shouldShowBorder = index < metadataRows.length - 1 || Boolean(invoice);
+
+              return (
+                <div
+                  key={row.label}
+                  className={`px-4 py-3 ${shouldShowBorder ? 'border-b border-gray-200' : ''}`}
+                >
+                  <div className='mb-1 text-xs font-medium uppercase tracking-wide text-gray-500'>
+                    {row.label}
+                  </div>
+                  <div className='flex items-start gap-2'>
+                    <p className='flex-1 break-all text-sm text-gray-900'>{row.value}</p>
+                    {row.copyable && (
+                      <Button
+                        onClick={() => handleCopy(row.value, row.label)}
+                        variant='ghost'
+                        size='sm'
+                        className='h-11 w-11 flex-shrink-0 p-0'
+                      >
+                        <Copy className='h-4 w-4' />
+                      </Button>
+                    )}
+                  </div>
                 </div>
-                <p className='text-sm text-gray-900'>{description}</p>
-              </div>
-            )}
+              );
+            })}
 
             {/* Invoice */}
             {invoice && (
