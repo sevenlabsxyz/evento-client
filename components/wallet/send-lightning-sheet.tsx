@@ -75,7 +75,7 @@ export function SendLightningSheet({
   const { walletState } = useWallet();
   const { prepareSend, sendPayment, feeEstimate, isLoading } = useSendPayment();
   const { satsToUSD, usdToSats } = useAmountConverter();
-  const { contacts, findContactByAddress } = useContacts();
+  const { isLoading: isContactsLoading } = useContacts();
 
   const { showSaveContactPrompt } = useSaveContactPrompt();
   // Reset form to initial state
@@ -762,13 +762,6 @@ export function SendLightningSheet({
             </Button>
           </div>
 
-          {/* Separator */}
-          <div className='relative'>
-            <div className='absolute inset-0 flex items-center'>
-              <div className='w-full border-t border-gray-200' />
-            </div>
-          </div>
-
           {/* Action Buttons */}
           <div className='flex gap-3'>
             <Button
@@ -783,9 +776,19 @@ export function SendLightningSheet({
               onClick={() => setShowContactsSheet(true)}
               variant='outline'
               className='h-12 flex-1 rounded-full bg-gray-50'
+              disabled={isContactsLoading}
             >
-              <Users className='mr-2 h-5 w-5' />
-              Contacts
+              {isContactsLoading ? (
+                <>
+                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  Loading...
+                </>
+              ) : (
+                <>
+                  <Users className='mr-2 h-5 w-5' />
+                  Contacts
+                </>
+              )}
             </Button>
           </div>
         </div>
