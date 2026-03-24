@@ -47,7 +47,13 @@ import { EventWithUser } from '@/lib/types/api';
 import { UserBadge } from '@/lib/types/badges';
 import { EventHost } from '@/lib/types/event';
 import { cn } from '@/lib/utils';
+import { formatDateHeader } from '@/lib/utils/date';
 import { logger } from '@/lib/utils/logger';
+import {
+  getProfileEventDateKey,
+  sortAndGroupProfileEvents,
+  sortProfileEventsByStartDate,
+} from '@/lib/utils/profile-events';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
 import {
@@ -244,17 +250,35 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     enabled: activeTab === 'events',
   });
 
-  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const today = useMemo(() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = `${now.getMonth() + 1}`.padStart(2, '0');
+    const day = `${now.getDate()}`.padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }, []);
 
   const upcomingEvents = useMemo(
     () =>
-      (publicEventsData || []).filter((event: EventWithUser) => event.computed_start_date >= today),
+      sortProfileEventsByStartDate(
+        (publicEventsData || []).filter((event: EventWithUser) => {
+          const eventDateKey = getProfileEventDateKey(event);
+          return eventDateKey !== null && eventDateKey >= today;
+        }),
+        'asc'
+      ),
     [publicEventsData, today]
   );
 
   const pastEvents = useMemo(
     () =>
-      (publicEventsData || []).filter((event: EventWithUser) => event.computed_start_date < today),
+      sortProfileEventsByStartDate(
+        (publicEventsData || []).filter((event: EventWithUser) => {
+          const eventDateKey = getProfileEventDateKey(event);
+          return eventDateKey !== null && eventDateKey < today;
+        }),
+        'desc'
+      ),
     [publicEventsData, today]
   );
 
@@ -419,27 +443,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
 
   const renderEventsTab = () => {
     const eventsForTimeframe = timeframe === 'future' ? upcomingEvents : pastEvents;
-
-    // Group events by date
-    const groupedEvents = eventsForTimeframe
-      .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
-        const date = event.computed_start_date;
-        const group = groups.find((g) => g.date === date);
-
-        if (group) {
-          group.events.push(event);
-        } else {
-          groups.push({ date, events: [event] });
-        }
-
-        return groups;
-      }, [])
-      .sort(
-        (
-          a: { date: string; events: EventWithUser[] },
-          b: { date: string; events: EventWithUser[] }
-        ) => new Date(b.date).getTime() - new Date(a.date).getTime()
-      );
+    const groupedEvents = sortAndGroupProfileEvents(
+      eventsForTimeframe,
+      timeframe === 'future' ? 'asc' : 'desc'
+    );
 
     const canPinEvent = (event: EventWithUser) => {
       if (!user) return false;
@@ -468,22 +475,6 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       });
     };
     void handlePinEvent;
-
-    const formatDateHeader = (date: string) => {
-      const today = new Date().toISOString().slice(0, 10);
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      const tomorrowStr = tomorrow.toISOString().slice(0, 10);
-
-      if (date === today) return 'Today';
-      if (date === tomorrowStr) return 'Tomorrow';
-
-      return new Date(date).toLocaleDateString('en-US', {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-      });
-    };
 
     return (
       <div className='space-y-4'>

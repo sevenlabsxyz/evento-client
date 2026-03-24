@@ -38,10 +38,10 @@ import {
 } from '@/lib/hooks/use-user-profile';
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { EventWithUser } from '@/lib/types/api';
 import { UserBadge } from '@/lib/types/badges';
 import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
+import { sortAndGroupProfileEvents } from '@/lib/utils/profile-events';
 import { motion } from 'framer-motion';
 import {
   ArrowUpRight,
@@ -56,7 +56,7 @@ import {
   User,
 } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export default function ProfilePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -98,7 +98,7 @@ export default function ProfilePage() {
   } = useUserEvents({
     filter: 'upcoming',
     timeframe: timeframe,
-    sortBy: 'date-desc',
+    sortBy: timeframe === 'future' ? 'date-asc' : 'date-desc',
     limit: 10,
     enabled: activeTab === 'events',
   });
@@ -201,30 +201,12 @@ export default function ProfilePage() {
     created_at: new Date().toISOString(),
   }));
 
+  const groupedProfileEvents = useMemo(() => {
+    const allEvents = userEventsData?.pages.flatMap((page) => page.events) || [];
+    return sortAndGroupProfileEvents(allEvents, timeframe === 'future' ? 'asc' : 'desc');
+  }, [timeframe, userEventsData]);
+
   const renderEventsTab = () => {
-    // Group events by date
-    const groupedEvents =
-      userEventsData?.pages
-        .flatMap((page) => page.events)
-        .reduce((groups: { date: string; events: EventWithUser[] }[], event: EventWithUser) => {
-          const date = event.computed_start_date.slice(0, 10); // Extract YYYY-MM-DD
-          const group = groups.find((g) => g.date === date);
-
-          if (group) {
-            group.events.push(event);
-          } else {
-            groups.push({ date, events: [event] });
-          }
-
-          return groups;
-        }, [])
-        .sort(
-          (
-            a: { date: string; events: EventWithUser[] },
-            b: { date: string; events: EventWithUser[] }
-          ) => new Date(b.date).getTime() - new Date(a.date).getTime()
-        ) || [];
-
     return (
       <div className='space-y-4'>
         {/* Filter Controls */}
@@ -270,7 +252,7 @@ export default function ProfilePage() {
               <Skeleton className='h-5 w-24' />
               <Skeleton variant='list' className='mt-2' />
             </div>
-          ) : groupedEvents.length === 0 ? (
+          ) : groupedProfileEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
               <div className='rounded-full bg-gray-100 p-3'>
                 <MessageCircle className='h-6 w-6 text-gray-400' />
@@ -278,7 +260,7 @@ export default function ProfilePage() {
               <p className='text-sm text-gray-500'>No events found</p>
             </div>
           ) : (
-            groupedEvents.map((group) => (
+            groupedProfileEvents.map((group) => (
               <div key={group.date} className='space-y-3'>
                 <h3 className='text-sm font-medium text-gray-500'>
                   {formatDateHeader(group.date)}
