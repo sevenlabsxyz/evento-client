@@ -20,7 +20,7 @@ interface UpsertRSVPResponse {
 // Custom error class for RSVP failures with redirect
 export class RSVPError extends Error {
   redirectTo?: string;
-  
+
   constructor(message: string, redirectTo?: string) {
     super(message);
     this.name = 'RSVPError';
@@ -61,6 +61,7 @@ export function useUpsertRSVP() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.userRsvp(variables.eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventRsvps(variables.eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
   });
 }

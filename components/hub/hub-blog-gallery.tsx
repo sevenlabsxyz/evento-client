@@ -1,5 +1,6 @@
 'use client';
 
+import { GhostPost } from '@/lib/types/ghost';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
@@ -8,76 +9,18 @@ import { useEffect, useState } from 'react';
 import { CircledIconButton } from '@/components/circled-icon-button';
 import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
-import { Skeleton } from '@/components/ui/skeleton';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
-import { Env } from '@/lib/constants/env';
-import { logger } from '@/lib/utils/logger';
 
-export interface BlogPost {
-  id: string;
-  slug: string;
-  title: string;
-  excerpt: string;
-  feature_image: string;
-  published_at: string;
-  html: string;
-  tags: Array<{
-    id: string;
-    name: string;
-    slug: string;
-  }>;
-  authors: Array<{
-    id: string;
-    name: string;
-    profile_image: string;
-  }>;
+interface HubBlogGalleryProps {
+  posts: GhostPost[];
 }
 
-export function HubBlogGallery() {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [selectedArticle, setSelectedArticle] = useState<BlogPost | null>(null);
+export function HubBlogGallery({ posts }: HubBlogGalleryProps) {
+  const [selectedArticle, setSelectedArticle] = useState<GhostPost | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [carouselApi, setCarouselApi] = useState<CarouselApi>();
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
-
-  // Fetch blog posts from Ghost API
-  useEffect(() => {
-    const fetchPosts = async () => {
-      // Check for required environment variables
-      if (!Env.NEXT_PUBLIC_GHOST_URL || !Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY) {
-        logger.warn('Ghost API configuration missing - cannot fetch blog content');
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const res = await fetch(
-          `${Env.NEXT_PUBLIC_GHOST_URL}/ghost/api/content/posts/?key=${Env.NEXT_PUBLIC_GHOST_CONTENT_API_KEY}&filter=tag:hub&include=tags,authors&limit=10`
-        );
-
-        if (!res.ok) {
-          logger.error('Failed to fetch hub blog posts', {
-            status: res.status,
-          });
-          setIsLoading(false);
-          return;
-        }
-
-        const data = await res.json();
-        setPosts(data.posts || []);
-      } catch (error) {
-        logger.error('Error fetching hub blog posts', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
 
   // Carousel navigation handlers
   useEffect(() => {
@@ -94,24 +37,6 @@ export function HubBlogGallery() {
       carouselApi.off('select', updateSelection);
     };
   }, [carouselApi]);
-
-  // Loading skeleton
-  if (isLoading) {
-    return (
-      <div className='space-y-3'>
-        <h2 className='text-xl font-semibold'>Latest from Evento</h2>
-        <div className='flex gap-3 overflow-x-hidden'>
-          {[1, 2, 3].map((i) => (
-            <Skeleton
-              key={i}
-              className='h-96 flex-shrink-0 rounded-2xl md:h-80'
-              style={{ width: '316px' }}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   // Don't show section if no posts
   if (posts.length === 0) {

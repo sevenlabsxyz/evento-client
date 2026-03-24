@@ -9,8 +9,8 @@ import { fetchUserByUsername } from '../services/user-profile';
 import { useAuthStore } from '../stores/auth-store';
 import { ApiResponse, UserDetails } from '../types/api';
 
-// Query keys
-const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
+// Keep this aligned with useAuth() so profile reads reuse the same current-user query.
+const USER_PROFILE_QUERY_KEY = ['auth', 'user'] as const;
 
 const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
