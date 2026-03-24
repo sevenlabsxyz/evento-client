@@ -181,9 +181,10 @@ export function TransactionHistory({
         const contact = displayData.lightningAddress
           ? findContactByAddress(displayData.lightningAddress)
           : null;
+        const primaryText = contact?.name ?? displayData.primaryText;
         const detailParts = [
-          displayData.secondaryText,
-          contact?.name,
+          contact ? displayData.primaryText : displayData.secondaryText,
+          contact ? displayData.secondaryText : null,
           displayData.lightningAddress,
           formatDate(payment.timestamp),
         ].filter(Boolean);
@@ -203,9 +204,7 @@ export function TransactionHistory({
                     <div className='flex items-center gap-2'>
                       {payment.status !== 'pending' && getStatusIcon(payment.status)}
                       <div className='flex min-w-0 max-w-[220px] flex-1 flex-col md:max-w-none'>
-                        <p className='truncate font-medium text-gray-900'>
-                          {displayData.primaryText}
-                        </p>
+                        <p className='truncate font-medium text-gray-900'>{primaryText}</p>
                         <p className='truncate text-xs font-normal text-gray-600'>
                           {detailParts.join(' • ')}
                         </p>

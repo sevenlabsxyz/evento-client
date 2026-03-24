@@ -19,6 +19,27 @@ function getLightningFallback(payment: Payment): string {
   return payment.paymentType === 'receive' ? 'Lightning payment received' : 'Lightning payment';
 }
 
+function getDefaultDescription(payment: Payment): string {
+  if (!payment.details) {
+    return 'No description';
+  }
+
+  switch (payment.details.type) {
+    case 'lightning':
+      return getLightningFallback(payment);
+    case 'spark':
+      return 'Spark payment';
+    case 'token':
+      return 'Token payment';
+    case 'withdraw':
+      return 'Withdrawal';
+    case 'deposit':
+      return 'Deposit';
+    default:
+      return 'Payment';
+  }
+}
+
 function getLegacyLightningAddress(payment: Payment): string | null {
   if (payment.details?.type !== 'lightning') {
     return null;
@@ -83,7 +104,7 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         normalizeText(payment.details.lnurlPayInfo?.domain) ??
         normalizeText(domainFromAddress) ??
         getLnurlWithdrawDomain(payment);
-      const primaryText = senderComment ?? description ?? getLightningFallback(payment);
+      const primaryText = senderComment ?? description ?? getDefaultDescription(payment);
       const secondaryText =
         senderComment && description && senderComment !== description ? description : null;
 
@@ -101,7 +122,7 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       return {
         primaryText: 'Spark payment',
         secondaryText: null,
-        description: null,
+        description: 'Spark payment',
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -111,7 +132,7 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       return {
         primaryText: 'Token payment',
         secondaryText: null,
-        description: null,
+        description: 'Token payment',
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -121,7 +142,7 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       return {
         primaryText: 'Withdrawal',
         secondaryText: null,
-        description: null,
+        description: 'Withdrawal',
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,
@@ -131,7 +152,7 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       return {
         primaryText: 'Deposit',
         secondaryText: null,
-        description: null,
+        description: 'Deposit',
         senderComment: null,
         lightningAddress: null,
         lightningUsername: null,

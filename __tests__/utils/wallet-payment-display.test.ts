@@ -63,6 +63,26 @@ describe('getWalletPaymentDisplayData', () => {
     });
   });
 
+  it('falls back to LNURL pay comment when sender comment is missing', () => {
+    const payment = createLightningPayment({
+      description: undefined,
+      lnurlReceiveMetadata: undefined,
+      lnurlPayInfo: {
+        lnAddress: 'satoshi@evento.cash',
+        domain: 'evento.cash',
+        comment: 'Comment from LNURL pay',
+      },
+    });
+
+    expect(getWalletPaymentDisplayData(payment)).toMatchObject({
+      primaryText: 'Comment from LNURL pay',
+      secondaryText: null,
+      senderComment: 'Comment from LNURL pay',
+      lightningAddress: 'satoshi@evento.cash',
+      lightningDomain: 'evento.cash',
+    });
+  });
+
   it('preserves legacy lightning address fields when LNURL pay info is missing', () => {
     const payment = createLightningPayment({
       description: 'Legacy payment',
@@ -94,6 +114,54 @@ describe('getWalletPaymentDisplayData', () => {
       lightningAddress: null,
       lightningUsername: null,
       lightningDomain: 'withdraw.example.com',
+    });
+  });
+
+  it.each([
+    ['spark', 'Spark payment'],
+    ['token', 'Token payment'],
+    ['withdraw', 'Withdrawal'],
+    ['deposit', 'Deposit'],
+  ] as const)('keeps description text for %s payments', (type, label) => {
+    const payment = {
+      id: `payment_${type}`,
+      paymentType: 'receive',
+      status: 'completed',
+      amount: BigInt(2100),
+      fees: BigInt(0),
+      timestamp: 1700000000,
+      method: 'lightning',
+      details:
+        type === 'token'
+          ? {
+              type: 'token',
+              metadata: {
+                tokenId: 'usdt',
+                ticker: 'USDT',
+                name: 'Tether',
+              },
+              txHash: 'hash_123',
+              txType: 'transfer',
+            }
+          : type === 'spark'
+            ? {
+                type: 'spark',
+              }
+            : type === 'withdraw'
+              ? {
+                  type: 'withdraw',
+                  txId: 'tx_123',
+                }
+              : {
+                  type: 'deposit',
+                  txId: 'tx_123',
+                },
+    } as Payment;
+
+    expect(getWalletPaymentDisplayData(payment)).toMatchObject({
+      primaryText: label,
+      description: label,
+      secondaryText: null,
     });
   });
 });
