@@ -50,7 +50,7 @@ import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
 import { logger } from '@/lib/utils/logger';
 import {
-  getProfileEventDateKey,
+  getProfileEventStartTimestamp,
   sortAndGroupProfileEvents,
   sortProfileEventsByStartDate,
 } from '@/lib/utils/profile-events';
@@ -250,36 +250,34 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     enabled: activeTab === 'events',
   });
 
-  const today = useMemo(() => {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = `${now.getMonth() + 1}`.padStart(2, '0');
-    const day = `${now.getDate()}`.padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }, []);
-
   const upcomingEvents = useMemo(
-    () =>
-      sortProfileEventsByStartDate(
+    () => {
+      const currentTimestamp = Date.now();
+
+      return sortProfileEventsByStartDate(
         (publicEventsData || []).filter((event: EventWithUser) => {
-          const eventDateKey = getProfileEventDateKey(event);
-          return eventDateKey !== null && eventDateKey >= today;
+          const startTimestamp = getProfileEventStartTimestamp(event);
+          return startTimestamp !== null && startTimestamp >= currentTimestamp;
         }),
         'asc'
-      ),
-    [publicEventsData, today]
+      );
+    },
+    [publicEventsData]
   );
 
   const pastEvents = useMemo(
-    () =>
-      sortProfileEventsByStartDate(
+    () => {
+      const currentTimestamp = Date.now();
+
+      return sortProfileEventsByStartDate(
         (publicEventsData || []).filter((event: EventWithUser) => {
-          const eventDateKey = getProfileEventDateKey(event);
-          return eventDateKey !== null && eventDateKey < today;
+          const startTimestamp = getProfileEventStartTimestamp(event);
+          return startTimestamp !== null && startTimestamp < currentTimestamp;
         }),
         'desc'
-      ),
-    [publicEventsData, today]
+      );
+    },
+    [publicEventsData]
   );
 
   useEffect(() => {

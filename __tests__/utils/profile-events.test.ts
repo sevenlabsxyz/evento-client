@@ -1,6 +1,7 @@
 import { EventWithUser } from '@/lib/types/api';
 import {
   getProfileEventDateKey,
+  getProfileEventStartTimestamp,
   sortAndGroupProfileEvents,
   sortProfileEventsByStartDate,
 } from '@/lib/utils/profile-events';
@@ -154,5 +155,22 @@ describe('profile-events utilities', () => {
       aprilTwentySixth,
       aprilTwentySeventh,
     ]);
+  });
+
+  it('preserves the computed start instant for upcoming/past filtering when date keys differ', () => {
+    const lateNightEvent = createEvent('late-night', '2026-04-27T01:30:00.000Z', {
+      start_date_year: 2026,
+      start_date_month: 4,
+      start_date_day: 26,
+      start_date_hours: 18,
+      start_date_minutes: 30,
+    });
+    const currentTimestamp = new Date('2026-04-27T00:45:00.000Z').getTime();
+
+    expect(getProfileEventDateKey(lateNightEvent)).toBe('2026-04-26');
+    expect(getProfileEventStartTimestamp(lateNightEvent)).toBe(
+      new Date('2026-04-27T01:30:00.000Z').getTime()
+    );
+    expect(getProfileEventStartTimestamp(lateNightEvent)).toBeGreaterThan(currentTimestamp);
   });
 });

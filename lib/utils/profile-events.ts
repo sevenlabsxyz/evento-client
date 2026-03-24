@@ -25,8 +25,7 @@ function hasDisplayDateParts(event: EventWithUser): boolean {
 
 function hasDisplayTimeParts(event: EventWithUser): boolean {
   return (
-    isValidDatePart(event.start_date_hours, 0, 23) &&
-    isValidDatePart(event.start_date_minutes, 0, 59)
+    isValidDatePart(event.start_date_hours, 0, 23) && isValidDatePart(event.start_date_minutes, 0, 59)
   );
 }
 
@@ -44,6 +43,31 @@ export function getProfileEventDateKey(event: EventWithUser): string | null {
   }
 
   return event.computed_start_date.slice(0, 10);
+}
+
+export function getProfileEventStartTimestamp(event: EventWithUser): number | null {
+  if (hasValidProfileEventDate(event.computed_start_date)) {
+    const computedTimestamp = new Date(event.computed_start_date).getTime();
+    if (!Number.isNaN(computedTimestamp)) {
+      return computedTimestamp;
+    }
+  }
+
+  if (!hasDisplayDateParts(event)) {
+    return null;
+  }
+
+  const hours = hasDisplayTimeParts(event) ? event.start_date_hours : 0;
+  const minutes = hasDisplayTimeParts(event) ? event.start_date_minutes : 0;
+  const fallbackTimestamp = new Date(
+    event.start_date_year,
+    event.start_date_month - 1,
+    event.start_date_day,
+    hours,
+    minutes
+  ).getTime();
+
+  return Number.isNaN(fallbackTimestamp) ? null : fallbackTimestamp;
 }
 
 function getEventTimestamp(event: EventWithUser): number {
