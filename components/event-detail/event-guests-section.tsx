@@ -36,6 +36,11 @@ export default function EventGuestsSection({
     return hosts?.some((h) => h.user_details?.id === currentUserId);
   }, [currentUserId, eventCreatorUserId, hosts]);
 
+  const hostUserIds = useMemo(
+    () => hosts.map((host) => host.user_details?.id).filter(Boolean) as string[],
+    [hosts]
+  );
+
   const goingRSVPs = useMemo(() => {
     return rsvps.filter((r) => r.status === 'yes');
   }, [rsvps]);
@@ -162,7 +167,14 @@ export default function EventGuestsSection({
           )}
         </div>
 
-        <GuestsSheet open={sheetOpen} onOpenChange={setSheetOpen} rsvps={rsvps} />
+        <GuestsSheet
+          open={sheetOpen}
+          onOpenChange={setSheetOpen}
+          rsvps={rsvps}
+          eventCreatorUserId={eventCreatorUserId}
+          hostUserIds={hostUserIds}
+          currentUserId={currentUserId}
+        />
       </div>
 
       {/* Invite Users Sheet */}

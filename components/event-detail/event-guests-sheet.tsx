@@ -5,7 +5,9 @@ import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { BatchZapSheet } from '@/components/zap/batch-zap-sheet';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
+import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { ArrowRight, Check, CircleHelp, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
@@ -14,12 +16,41 @@ interface GuestsSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   rsvps: EventRSVP[];
+  eventCreatorUserId: string;
+  hostUserIds: string[];
+  currentUserId?: string;
 }
 
-export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetProps) {
+export default function GuestsSheet({
+  open,
+  onOpenChange,
+  rsvps,
+  eventCreatorUserId,
+  hostUserIds,
+  currentUserId,
+}: GuestsSheetProps) {
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
+  const [isBatchZapOpen, setIsBatchZapOpen] = useState(false);
+
+  const isViewerHost = useMemo(() => {
+    if (!currentUserId) return false;
+    if (currentUserId === eventCreatorUserId) return true;
+    return hostUserIds.includes(currentUserId);
+  }, [currentUserId, eventCreatorUserId, hostUserIds]);
+
+  const batchRecipientSummary = useMemo(
+    () =>
+      buildBatchZapRecipients({
+        rsvps,
+        creatorUserId: eventCreatorUserId,
+        hostUserIds,
+        currentUserId,
+        isViewerHost,
+      }),
+    [rsvps, eventCreatorUserId, hostUserIds, currentUserId, isViewerHost]
+  );
 
   // Filter by search text first
   const filteredAll = useMemo(() => {
@@ -68,14 +99,25 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
               selected={['yes', 'maybe', 'no'].indexOf(activeTab)}
             />
 
-            <div className='relative'>
-              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
-              <input
-                className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
-                placeholder='Search guests'
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-              />
+            <div className='flex items-center gap-2'>
+              <div className='relative flex-1'>
+                <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+                <input
+                  className='w-full rounded-full border border-gray-200 bg-gray-50 py-3 pl-10 pr-4 text-gray-900 outline-none placeholder:text-gray-500'
+                  placeholder='Search guests'
+                  value={searchText}
+                  onChange={(e) => setSearchText(e.target.value)}
+                />
+              </div>
+              <Button
+                variant='outline'
+                size='sm'
+                className='h-12 rounded-full border-gray-200 bg-gray-50 px-4'
+                disabled={batchRecipientSummary.eligibleRecipients.length === 0}
+                onClick={() => setIsBatchZapOpen(true)}
+              >
+                Zap All
+              </Button>
             </div>
           </div>
         }
@@ -154,6 +196,12 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
           user={selectedUser}
         />
       )}
+
+      <BatchZapSheet
+        open={isBatchZapOpen}
+        onOpenChange={setIsBatchZapOpen}
+        recipientSummary={batchRecipientSummary}
+      />
     </>
   );
 }

@@ -2,15 +2,19 @@
 
 import { exportGuestsCsvAction } from '@/app/actions/export-guests';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
+import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { BatchZapSheet } from '@/components/zap/batch-zap-sheet';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useRemoveGuest } from '@/lib/hooks/use-remove-guest';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
+import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
 import { CheckCircle, CircleHelp, Loader2, Search, Share2, Users, X, XCircle } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -20,6 +24,7 @@ export default function GuestListPage() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { user } = useAuth();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const eventId = params.id as string;
 
@@ -33,6 +38,7 @@ export default function GuestListPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [guestToRemove, setGuestToRemove] = useState<EventRSVP | null>(null);
   const [removingUserId, setRemovingUserId] = useState<string | null>(null);
+  const [isBatchZapOpen, setIsBatchZapOpen] = useState(false);
   const removeGuest = useRemoveGuest();
 
   // Filter guests based on active tab and search query
@@ -63,6 +69,18 @@ export default function GuestListPage() {
     if (cohostIds.has(userId)) return 'cohost' as const;
     return null;
   };
+
+  const batchRecipientSummary = useMemo(
+    () =>
+      buildBatchZapRecipients({
+        rsvps: guests,
+        creatorUserId: creatorId,
+        hostUserIds: Array.from(cohostIds),
+        currentUserId: user?.id,
+        isViewerHost: true,
+      }),
+    [guests, creatorId, cohostIds, user?.id]
+  );
 
   // Configure TopBar for this route
   useEffect(() => {
@@ -210,15 +228,26 @@ export default function GuestListPage() {
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
         {/* Search Bar */}
         <div className='p-4 pb-0'>
-          <div className='relative'>
-            <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
-            <input
-              type='text'
-              placeholder='Search event guests...'
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none'
-            />
+          <div className='flex items-center gap-2'>
+            <div className='relative flex-1'>
+              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+              <input
+                type='text'
+                placeholder='Search event guests...'
+                value={searchQuery}
+                onChange={handleSearchChange}
+                className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none'
+              />
+            </div>
+            <Button
+              variant='outline'
+              size='sm'
+              className='h-12 rounded-full border-gray-200 bg-gray-50 px-4'
+              disabled={batchRecipientSummary.eligibleRecipients.length === 0}
+              onClick={() => setIsBatchZapOpen(true)}
+            >
+              Zap All
+            </Button>
           </div>
         </div>
 
@@ -389,6 +418,12 @@ export default function GuestListPage() {
           </DetachedSheet.View>
         </DetachedSheet.Portal>
       </DetachedSheet.Root>
+
+      <BatchZapSheet
+        open={isBatchZapOpen}
+        onOpenChange={setIsBatchZapOpen}
+        recipientSummary={batchRecipientSummary}
+      />
     </>
   );
 }
