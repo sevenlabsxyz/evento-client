@@ -25,7 +25,6 @@ function createLightningPayment(
       lnurlPayInfo: {
         lnAddress: 'satoshi@evento.cash',
         domain: 'evento.cash',
-        metadata: '[["text/plain","Evento wallet payment"]]',
       },
       lnurlReceiveMetadata: {
         senderComment: 'Dinner split',
@@ -48,7 +47,6 @@ describe('getWalletPaymentDisplayData', () => {
       lightningAddress: 'satoshi@evento.cash',
       lightningUsername: 'satoshi',
       lightningDomain: 'evento.cash',
-      lnurlMetadata: '[["text/plain","Evento wallet payment"]]',
     });
   });
 

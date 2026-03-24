@@ -8,7 +8,6 @@ export interface WalletPaymentDisplayData {
   lightningAddress: string | null;
   lightningUsername: string | null;
   lightningDomain: string | null;
-  lnurlMetadata: string | null;
 }
 
 function normalizeText(value?: string | null): string | null {
@@ -30,7 +29,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       lightningAddress: null,
       lightningUsername: null,
       lightningDomain: null,
-      lnurlMetadata: null,
     };
   }
 
@@ -45,7 +43,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       const lightningUsername = normalizeText(usernameFromAddress);
       const lightningDomain =
         normalizeText(payment.details.lnurlPayInfo?.domain) ?? normalizeText(domainFromAddress);
-      const lnurlMetadata = normalizeText(payment.details.lnurlPayInfo?.metadata);
       const primaryText = senderComment ?? description ?? getLightningFallback(payment);
       const secondaryText =
         senderComment && description && senderComment !== description ? description : null;
@@ -58,7 +55,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         lightningAddress,
         lightningUsername,
         lightningDomain,
-        lnurlMetadata,
       };
     }
     case 'spark':
@@ -70,7 +66,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         lightningAddress: null,
         lightningUsername: null,
         lightningDomain: null,
-        lnurlMetadata: null,
       };
     case 'token':
       return {
@@ -81,7 +76,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         lightningAddress: null,
         lightningUsername: null,
         lightningDomain: null,
-        lnurlMetadata: null,
       };
     case 'withdraw':
       return {
@@ -92,7 +86,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         lightningAddress: null,
         lightningUsername: null,
         lightningDomain: null,
-        lnurlMetadata: null,
       };
     case 'deposit':
       return {
@@ -103,7 +96,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         lightningAddress: null,
         lightningUsername: null,
         lightningDomain: null,
-        lnurlMetadata: null,
       };
     default:
       return {
@@ -114,7 +106,6 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
         lightningAddress: null,
         lightningUsername: null,
         lightningDomain: null,
-        lnurlMetadata: null,
       };
   }
 }
