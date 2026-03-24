@@ -19,6 +19,42 @@ function getLightningFallback(payment: Payment): string {
   return payment.paymentType === 'receive' ? 'Lightning payment received' : 'Lightning payment';
 }
 
+function getLegacyLightningAddress(payment: Payment): string | null {
+  if (payment.details?.type !== 'lightning') {
+    return null;
+  }
+
+  const details = payment.details as Payment['details'] & {
+    lightningAddress?: string | null;
+    lnAddress?: string | null;
+    destinationAddress?: string | null;
+  };
+
+  return (
+    normalizeText(details.lightningAddress) ??
+    normalizeText(details.lnAddress) ??
+    normalizeText(details.destinationAddress)
+  );
+}
+
+function getLnurlWithdrawDomain(payment: Payment): string | null {
+  if (payment.details?.type !== 'lightning') {
+    return null;
+  }
+
+  const withdrawUrl = normalizeText(payment.details.lnurlWithdrawInfo?.withdrawUrl);
+
+  if (!withdrawUrl) {
+    return null;
+  }
+
+  try {
+    return normalizeText(new URL(withdrawUrl).hostname);
+  } catch {
+    return null;
+  }
+}
+
 export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisplayData {
   if (!payment.details) {
     return {
@@ -38,11 +74,15 @@ export function getWalletPaymentDisplayData(payment: Payment): WalletPaymentDisp
       const senderComment =
         normalizeText(payment.details.lnurlReceiveMetadata?.senderComment) ??
         normalizeText(payment.details.lnurlPayInfo?.comment);
-      const lightningAddress = normalizeText(payment.details.lnurlPayInfo?.lnAddress);
+      const lightningAddress =
+        normalizeText(payment.details.lnurlPayInfo?.lnAddress) ??
+        getLegacyLightningAddress(payment);
       const [usernameFromAddress, domainFromAddress] = lightningAddress?.split('@') ?? [];
       const lightningUsername = normalizeText(usernameFromAddress);
       const lightningDomain =
-        normalizeText(payment.details.lnurlPayInfo?.domain) ?? normalizeText(domainFromAddress);
+        normalizeText(payment.details.lnurlPayInfo?.domain) ??
+        normalizeText(domainFromAddress) ??
+        getLnurlWithdrawDomain(payment);
       const primaryText = senderComment ?? description ?? getLightningFallback(payment);
       const secondaryText =
         senderComment && description && senderComment !== description ? description : null;

@@ -62,4 +62,38 @@ describe('getWalletPaymentDisplayData', () => {
       senderComment: null,
     });
   });
+
+  it('preserves legacy lightning address fields when LNURL pay info is missing', () => {
+    const payment = createLightningPayment({
+      description: 'Legacy payment',
+      lnurlPayInfo: undefined,
+      lnurlReceiveMetadata: undefined,
+      destinationAddress: 'legacy@evento.cash',
+    } as Partial<Payment['details']> & { destinationAddress: string });
+
+    expect(getWalletPaymentDisplayData(payment)).toMatchObject({
+      primaryText: 'Legacy payment',
+      lightningAddress: 'legacy@evento.cash',
+      lightningUsername: 'legacy',
+      lightningDomain: 'evento.cash',
+    });
+  });
+
+  it('derives provider host from LNURL withdraw metadata', () => {
+    const payment = createLightningPayment({
+      description: undefined,
+      lnurlPayInfo: undefined,
+      lnurlReceiveMetadata: undefined,
+      lnurlWithdrawInfo: {
+        withdrawUrl: 'https://withdraw.example.com/callback?k1=abc123',
+      },
+    });
+
+    expect(getWalletPaymentDisplayData(payment)).toMatchObject({
+      primaryText: 'Lightning payment received',
+      lightningAddress: null,
+      lightningUsername: null,
+      lightningDomain: 'withdraw.example.com',
+    });
+  });
 });

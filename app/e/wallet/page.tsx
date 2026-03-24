@@ -13,6 +13,7 @@ import { EditContactSheet } from '@/components/wallet/edit-contact-sheet';
 import { IncomingFundsSheet } from '@/components/wallet/incoming-funds-sheet';
 import { QuickToolsSection } from '@/components/wallet/quick-tools-section';
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
+import { ReceiveLnurlWithdrawSheet } from '@/components/wallet/receive-lnurl-withdraw-sheet';
 import { ScanQrSheet } from '@/components/wallet/scan-qr-sheet';
 import { SeedBackup } from '@/components/wallet/seed-backup';
 import { SendLightningSheet } from '@/components/wallet/send-lightning-sheet';
@@ -45,7 +46,7 @@ import type { Contact } from '@/lib/types/wallet';
 import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Payment } from '@breeztech/breez-sdk-spark/web';
+import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
 import {
   ChevronRight,
@@ -66,6 +67,7 @@ type DrawerContent =
   | 'receive'
   | 'send'
   | 'scan'
+  | 'lnurl-withdraw'
   | 'history'
   | 'transaction-details'
   | 'converter'
@@ -74,14 +76,16 @@ type DrawerContent =
   | 'earn'
   | null;
 
+type LnurlWithdrawInput = Extract<InputType, { type: 'lnurlWithdraw' }>;
+
 export default function WalletPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { user } = useAuth();
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
   const router = useRouter();
-  const { walletState, isLoading: isWalletLoading, markAsBackedUp } = useWallet();
-  const { payments, isLoading: isLoadingPayments } = usePaymentHistory();
+  const { walletState, isLoading: isWalletLoading, markAsBackedUp, refreshBalance } = useWallet();
+  const { payments, isLoading: isLoadingPayments, fetchPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
   const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
 
@@ -93,6 +97,7 @@ export default function WalletPage() {
   const [showBackupChoiceSheet, setShowBackupChoiceSheet] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
   const [scannedData, setScannedData] = useState<string>('');
+  const [scannedLnurlWithdraw, setScannedLnurlWithdraw] = useState<LnurlWithdrawInput | null>(null);
   const [unclaimedDepositsCount, setUnclaimedDepositsCount] = useState(0);
   const [showIncomingFundsModal, setShowIncomingFundsModal] = useState(false);
   const [showOnchainEducationalSheet, setShowOnchainEducationalSheet] = useState(false);
@@ -405,10 +410,16 @@ export default function WalletPage() {
 
     // Validate the QR code
     try {
-      await breezSDK.parseInput(cleanedData);
-      // Valid - proceed to send sheet
-      setScannedData(cleanedData);
       closeDrawer('scan');
+      const parsed = await breezSDK.parseInput(cleanedData);
+
+      if (parsed.type === 'lnurlWithdraw') {
+        setScannedLnurlWithdraw(parsed);
+        openDrawer('lnurl-withdraw');
+        return;
+      }
+
+      setScannedData(cleanedData);
       openDrawer('send');
     } catch (error) {
       // Invalid QR code
@@ -613,6 +624,19 @@ export default function WalletPage() {
       <ReceiveLightningSheet
         open={openDrawers.includes('receive')}
         onOpenChange={(open) => !open && closeDrawer('receive')}
+      />
+      <ReceiveLnurlWithdrawSheet
+        open={openDrawers.includes('lnurl-withdraw')}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeDrawer('lnurl-withdraw');
+            setScannedLnurlWithdraw(null);
+          }
+        }}
+        withdrawRequest={scannedLnurlWithdraw}
+        onReceived={async () => {
+          await Promise.all([refreshBalance(), fetchPayments()]);
+        }}
       />
       <SendLightningSheet
         open={openDrawers.includes('send')}
