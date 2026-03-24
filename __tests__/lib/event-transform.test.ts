@@ -1,3 +1,4 @@
+import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 import type { Event as ApiEvent } from '@/lib/types/api';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 
@@ -50,6 +51,12 @@ describe('transformApiEventToDisplay', () => {
     const result = transformApiEventToDisplay(baseApiEvent);
 
     expect(result.location.coordinates).toEqual({ lat: 0, lng: 0 });
+  });
+
+  it('uses the default event cover when the API event has no cover', () => {
+    const result = transformApiEventToDisplay(baseApiEvent);
+
+    expect(result.coverImages).toEqual([DEFAULT_EVENT_COVER_URL]);
   });
 
   it('skips hosts without user details', () => {

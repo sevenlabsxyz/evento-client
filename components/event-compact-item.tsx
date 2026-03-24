@@ -2,7 +2,7 @@
 
 import { EventWithUser } from '@/lib/types/api';
 import { formatEventDateFromParts } from '@/lib/utils/date';
-import { getOptimizedCoverUrl } from '@/lib/utils/image';
+import { getEventCoverDisplayUrl } from '@/lib/utils/image';
 import { Calendar, Clock, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
@@ -52,7 +52,7 @@ export function EventCompactItem({
       {/* Event thumbnail */}
       <div className='h-14 w-14 overflow-hidden rounded-md'>
         <img
-          src={getOptimizedCoverUrl(event.cover || '', 'feed')}
+          src={getEventCoverDisplayUrl(event.cover, 'feed')}
           alt={event.title}
           className='h-full w-full object-cover'
         />

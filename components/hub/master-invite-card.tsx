@@ -5,7 +5,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
-import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { Check, MapPin, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -55,11 +55,8 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
   };
 
   // Get cover image
-  const coverImage = event.cover
-    ? isGif(event.cover)
-      ? event.cover
-      : getOptimizedCoverUrl(event.cover, 'feed')
-    : null;
+  const coverImage =
+    event.cover && isGif(event.cover) ? event.cover : getEventCoverDisplayUrl(event.cover, 'feed');
 
   return (
     <div

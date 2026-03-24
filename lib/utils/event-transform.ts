@@ -1,7 +1,7 @@
 import { Event as ApiEvent, UserDetails } from '@/lib/types/api';
 import { EventDetail as DisplayEvent, EventHost, EventLocation } from '@/lib/types/event';
 import { formatEventDateFromParts } from '@/lib/utils/date';
-import { getOptimizedCoverUrl } from '@/lib/utils/image';
+import { getEventCoverDisplayUrl, getOptimizedCoverUrl } from '@/lib/utils/image';
 import { getTimezoneAbbreviationSync } from '@/lib/utils/timezone';
 
 function normalizeDatePart(value: unknown, min: number, max: number): number | undefined {
@@ -127,7 +127,7 @@ export function transformApiEventToDisplay(
     dayOfMonth: startDateTime.dayOfMonth,
     longDate: startDateTime.longDate,
     location: location,
-    coverImages: apiEvent.cover ? [getOptimizedCoverUrl(apiEvent.cover, 'detail')] : [],
+    coverImages: [getEventCoverDisplayUrl(apiEvent.cover, 'detail')],
     galleryImages: galleryItems.map((item) => getOptimizedCoverUrl(item.url, 'detail')),
     hosts: transformedHosts,
     guests: [], // Not provided by API currently
