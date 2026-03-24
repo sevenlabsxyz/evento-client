@@ -25,8 +25,7 @@ function hasDisplayDateParts(event: EventWithUser): boolean {
 
 function hasDisplayTimeParts(event: EventWithUser): boolean {
   return (
-    isValidDatePart(event.start_date_hours, 0, 23) &&
-    isValidDatePart(event.start_date_minutes, 0, 59)
+    isValidDatePart(event.start_date_hours, 0, 23) && isValidDatePart(event.start_date_minutes, 0, 59)
   );
 }
 

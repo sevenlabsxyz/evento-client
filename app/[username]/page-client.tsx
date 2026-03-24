@@ -250,29 +250,35 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     enabled: activeTab === 'events',
   });
 
-  const upcomingEvents = useMemo(() => {
-    const currentTimestamp = Date.now();
+  const upcomingEvents = useMemo(
+    () => {
+      const currentTimestamp = Date.now();
 
-    return sortProfileEventsByStartDate(
-      (publicEventsData || []).filter((event: EventWithUser) => {
-        const startTimestamp = getProfileEventStartTimestamp(event);
-        return startTimestamp !== null && startTimestamp >= currentTimestamp;
-      }),
-      'asc'
-    );
-  }, [publicEventsData]);
+      return sortProfileEventsByStartDate(
+        (publicEventsData || []).filter((event: EventWithUser) => {
+          const startTimestamp = getProfileEventStartTimestamp(event);
+          return startTimestamp !== null && startTimestamp >= currentTimestamp;
+        }),
+        'asc'
+      );
+    },
+    [publicEventsData]
+  );
 
-  const pastEvents = useMemo(() => {
-    const currentTimestamp = Date.now();
+  const pastEvents = useMemo(
+    () => {
+      const currentTimestamp = Date.now();
 
-    return sortProfileEventsByStartDate(
-      (publicEventsData || []).filter((event: EventWithUser) => {
-        const startTimestamp = getProfileEventStartTimestamp(event);
-        return startTimestamp !== null && startTimestamp < currentTimestamp;
-      }),
-      'desc'
-    );
-  }, [publicEventsData]);
+      return sortProfileEventsByStartDate(
+        (publicEventsData || []).filter((event: EventWithUser) => {
+          const startTimestamp = getProfileEventStartTimestamp(event);
+          return startTimestamp !== null && startTimestamp < currentTimestamp;
+        }),
+        'desc'
+      );
+    },
+    [publicEventsData]
+  );
 
   useEffect(() => {
     setActiveTab('about');
