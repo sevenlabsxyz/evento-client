@@ -139,9 +139,7 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                 </div>
                 <div className='flex shrink-0 items-center gap-2'>
                   <ZapSheet
-                    recipientLightningAddress={
-                      rsvp.user_details?.username ? `${rsvp.user_details.username}@evento.cash` : ''
-                    }
+                    recipientLightningAddress={rsvp.user_details?.ln_address || ''}
                     recipientName={
                       rsvp.user_details?.name || rsvp.user_details?.username || 'Guest'
                     }
