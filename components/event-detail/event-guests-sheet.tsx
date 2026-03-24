@@ -5,8 +5,10 @@ import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
-import { ArrowRight, Check, CircleHelp, Search, X } from 'lucide-react';
+import { ArrowRight, Check, CircleHelp, Search, X, Zap } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 
@@ -17,6 +19,7 @@ interface GuestsSheetProps {
 }
 
 export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetProps) {
+  const { user: loggedInUser } = useAuth();
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
@@ -134,13 +137,31 @@ export default function GuestsSheet({ open, onOpenChange, rsvps }: GuestsSheetPr
                     </div>
                   </div>
                 </div>
-                <CircledIconButton
-                  icon={ArrowRight}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleViewProfile(rsvp.user_details, rsvp.user_id);
-                  }}
-                />
+                <div className='flex shrink-0 items-center gap-2'>
+                  <ZapSheet
+                    recipientLightningAddress={rsvp.user_details?.ln_address || ''}
+                    recipientName={
+                      rsvp.user_details?.name || rsvp.user_details?.username || 'Guest'
+                    }
+                    recipientUsername={rsvp.user_details?.username || undefined}
+                    recipientAvatar={rsvp.user_details?.image || undefined}
+                    currentUsername={loggedInUser?.username}
+                  >
+                    <CircledIconButton
+                      icon={Zap}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                    />
+                  </ZapSheet>
+                  <CircledIconButton
+                    icon={ArrowRight}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleViewProfile(rsvp.user_details, rsvp.user_id);
+                    }}
+                  />
+                </div>
               </button>
             ))}
           </div>
