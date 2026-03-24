@@ -35,10 +35,22 @@ export function EventInvitesSheet({
   const [loadedTabs, setLoadedTabs] = useState<Set<'pending' | 'responded'>>(new Set());
 
   // Only load data for tabs that have been opened
+  const {
+    data: fullPendingInvites,
+    isLoading: isLoadingPending,
+    error: pendingFetchError,
+  } = useEventInvites('pending', showInvitesSheet && loadedTabs.has('pending'));
   const { data: respondedInvites = [], isLoading: isLoadingResponded } = useEventInvites(
     'responded',
     loadedTabs.has('responded')
   );
+
+  const pendingSheetInvites = fullPendingInvites ?? pendingInvites;
+  const shouldShowPendingLoading = isLoadingPending && !fullPendingInvites;
+  const pendingSheetError =
+    pendingFetchError && pendingInvites.length === 0
+      ? { message: pendingFetchError.message }
+      : pendingError;
 
   // Track when tabs are opened for lazy loading
   useEffect(() => {
@@ -93,7 +105,13 @@ export function EventInvitesSheet({
                 <SheetWithDetentFull.ScrollContent>
                   <div className='px-4 pb-6'>
                     {activeTab === 'pending' ? (
-                      pendingError ? (
+                      shouldShowPendingLoading ? (
+                        <div className='space-y-4'>
+                          {[...Array(3)].map((_, i) => (
+                            <div key={i} className='h-32 animate-pulse rounded-2xl bg-gray-100' />
+                          ))}
+                        </div>
+                      ) : pendingSheetError ? (
                         <Empty className='py-16'>
                           <EmptyHeader>
                             <EmptyMedia variant='soft-square'>
@@ -102,10 +120,10 @@ export function EventInvitesSheet({
                             <EmptyTitle className='text-base sm:text-base'>
                               Couldn&apos;t load pending invites
                             </EmptyTitle>
-                            <EmptyDescription>{pendingError.message}</EmptyDescription>
+                            <EmptyDescription>{pendingSheetError.message}</EmptyDescription>
                           </EmptyHeader>
                         </Empty>
-                      ) : pendingInvites.length === 0 ? (
+                      ) : pendingSheetInvites.length === 0 ? (
                         <Empty className='py-16'>
                           <EmptyHeader>
                             <EmptyMedia variant='soft-square'>
@@ -119,7 +137,7 @@ export function EventInvitesSheet({
                         </Empty>
                       ) : (
                         <div className='space-y-4'>
-                          {pendingInvites.map((invite: EventInvite) => (
+                          {pendingSheetInvites.map((invite: EventInvite) => (
                             <MasterInviteCard
                               key={invite.id}
                               invite={invite}
