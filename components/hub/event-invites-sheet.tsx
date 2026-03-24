@@ -7,9 +7,9 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
-import { EventInvite } from '@/lib/types/api';
+import { EventInvite, HubSectionError } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { Archive, Calendar, Check, Clock } from 'lucide-react';
+import { AlertTriangle, Archive, Calendar, Check, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 import { MasterInviteCard } from './master-invite-card';
@@ -18,21 +18,23 @@ interface EventInvitesSheetProps {
   showInvitesSheet: boolean;
   setShowInvitesSheet: (show: boolean) => void;
   handleRSVP: (eventId: string) => void;
+  pendingInvites: EventInvite[];
+  pendingTotalCount?: number | null;
+  pendingError?: HubSectionError;
 }
 
 export function EventInvitesSheet({
   showInvitesSheet,
   setShowInvitesSheet,
   handleRSVP,
+  pendingInvites,
+  pendingTotalCount,
+  pendingError,
 }: EventInvitesSheetProps) {
   const [activeTab, setActiveTab] = useState<'pending' | 'responded'>('pending');
-  const [loadedTabs, setLoadedTabs] = useState<Set<'pending' | 'responded'>>(new Set(['pending']));
+  const [loadedTabs, setLoadedTabs] = useState<Set<'pending' | 'responded'>>(new Set());
 
   // Only load data for tabs that have been opened
-  const { data: pendingInvites = [], isLoading: isLoadingPending } = useEventInvites(
-    'pending',
-    loadedTabs.has('pending')
-  );
   const { data: respondedInvites = [], isLoading: isLoadingResponded } = useEventInvites(
     'responded',
     loadedTabs.has('responded')
@@ -48,7 +50,7 @@ export function EventInvitesSheet({
   // Reset loaded tabs when sheet closes
   useEffect(() => {
     if (!showInvitesSheet) {
-      setLoadedTabs(new Set(['pending'])); // Always keep pending loaded for the main section
+      setLoadedTabs(new Set());
     }
   }, [showInvitesSheet]);
 
@@ -74,7 +76,7 @@ export function EventInvitesSheet({
               <AnimatedTabs
                 tabs={[
                   {
-                    title: `Waiting (${pendingInvites.length})`,
+                    title: `Waiting (${pendingTotalCount ?? pendingInvites.length})`,
                     icon: Clock,
                     onClick: () => setActiveTab('pending'),
                   },
@@ -91,12 +93,18 @@ export function EventInvitesSheet({
                 <SheetWithDetentFull.ScrollContent>
                   <div className='px-4 pb-6'>
                     {activeTab === 'pending' ? (
-                      isLoadingPending ? (
-                        <div className='space-y-4'>
-                          {[...Array(3)].map((_, i) => (
-                            <div key={i} className='h-32 animate-pulse rounded-2xl bg-gray-100' />
-                          ))}
-                        </div>
+                      pendingError ? (
+                        <Empty className='py-16'>
+                          <EmptyHeader>
+                            <EmptyMedia variant='soft-square'>
+                              <AlertTriangle className='h-8 w-8' />
+                            </EmptyMedia>
+                            <EmptyTitle className='text-base sm:text-base'>
+                              Couldn&apos;t load pending invites
+                            </EmptyTitle>
+                            <EmptyDescription>{pendingError.message}</EmptyDescription>
+                          </EmptyHeader>
+                        </Empty>
                       ) : pendingInvites.length === 0 ? (
                         <Empty className='py-16'>
                           <EmptyHeader>

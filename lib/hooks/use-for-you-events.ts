@@ -2,18 +2,10 @@
 
 import apiClient from '@/lib/api/client';
 import { useQuery } from '@tanstack/react-query';
-import { EventWithUser } from '../types/api';
+import { ForYouEvent } from '../types/api';
 
 export interface ForYouEventsParams {
   enabled?: boolean;
-}
-
-/**
- * Extended event type with featured fields from the For You API
- */
-export interface ForYouEvent extends EventWithUser {
-  featured_id: string;
-  featured_position: number;
 }
 
 /**

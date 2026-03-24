@@ -5,28 +5,28 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import Image from 'next/image';
 
-interface BlogPost {
+export interface EducationalArticle {
   id: string;
   slug: string;
   title: string;
-  excerpt: string;
-  feature_image: string;
-  published_at: string;
-  html: string;
-  tags: Array<{
+  excerpt?: string | null;
+  feature_image?: string | null;
+  published_at?: string | null;
+  html?: string | null;
+  tags?: Array<{
     id: string;
     name: string;
     slug: string;
   }>;
-  authors: Array<{
+  authors?: Array<{
     id: string;
     name: string;
-    profile_image: string;
+    profile_image: string | null;
   }>;
 }
 
 interface WalletEducationalSheetProps {
-  article: BlogPost | null;
+  article: EducationalArticle | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
@@ -63,7 +63,7 @@ export function WalletEducationalSheet({
       {/* Article Content */}
       <div className='px-6 pb-24'>
         <div className='prose prose-lg mx-auto max-w-full prose-headings:break-words prose-headings:font-bold prose-headings:text-gray-900 prose-p:break-words prose-p:leading-relaxed prose-p:text-gray-700 prose-a:break-words prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline prose-strong:font-semibold prose-strong:text-gray-900 prose-code:break-words prose-code:rounded prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:text-sm prose-code:text-gray-900 prose-ol:my-4 prose-ul:my-4 prose-li:text-gray-700 prose-img:max-w-full prose-img:rounded-2xl prose-img:border prose-img:border-gray-200'>
-          <EnhancedBlogContent html={article.html} />
+          <EnhancedBlogContent html={article.html || ''} />
         </div>
 
         {/* Done Button */}

@@ -1,101 +1,27 @@
-'use client';
+import { ghostService } from '@/lib/services/ghost';
+import { GhostPost } from '@/lib/types/ghost';
+import { logger } from '@/lib/utils/logger';
+import HubPageClient from './page-client';
 
-import { CohostInvitesSection } from '@/components/hub/cohost-invites-section';
-import { EventInvitesSection } from '@/components/hub/event-invites-section';
-import { ForYouSection } from '@/components/hub/for-you-section';
-import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
-import { MyEventsSection } from '@/components/hub/my-events-section';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
-import { useUserProfile } from '@/lib/hooks/use-user-profile';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { MessageCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
-
-export default function HubPage() {
-  const router = useRouter();
-  const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
-  const { user } = useUserProfile();
-  const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
-
-  // Set TopBar content
-  useEffect(() => {
-    const pathname = '/e/hub'; // This component is always used for hub
-
-    // Apply any existing configuration for this route
-    applyRouteConfig(pathname);
-
-    // Set configuration for this specific route
-    setTopBarForRoute(pathname, {
-      title: 'Evento Hub',
-      hideMobileBreadcrumb: true,
-      subtitle: '',
-      leftMode: 'menu',
-      showAvatar: true,
-      centerMode: 'title',
-      buttons: [
-        {
-          id: 'chat',
-          icon: MessageCircle,
-          onClick: () => router.push('/e/messages'),
-          label: 'Chat',
-        },
-      ],
-      badge: undefined,
+async function getHubPosts(): Promise<GhostPost[]> {
+  try {
+    const data = await ghostService.getPosts({
+      filter: 'tag:hub',
+      include: 'tags,authors',
+      limit: 10,
     });
 
-    // Cleanup on unmount
-    return () => {
-      clearRoute(pathname);
-    };
-  }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
-
-  if (isCheckingAuth || isCheckingOnboarding) {
-    return (
-      <div className='flex min-h-screen w-full flex-col bg-white'>
-        <div className='h-full w-full bg-white px-4 pb-36 pt-4 md:px-8 md:pb-24'>
-          {/* Welcome text */}
-          <div className='mb-4'>
-            <Skeleton className='h-5 w-48' />
-          </div>
-          {/* Sections */}
-          <div className='flex flex-col gap-4'>
-            <div className='rounded-2xl bg-white p-4'>
-              <Skeleton className='mb-3 h-5 w-28' />
-              <Skeleton className='h-16 w-full rounded-lg' />
-            </div>
-            <div className='rounded-2xl bg-white p-4'>
-              <Skeleton className='mb-3 h-5 w-36' />
-              <Skeleton className='h-16 w-full rounded-lg' />
-            </div>
-            <div className='rounded-2xl bg-white p-4'>
-              <Skeleton className='mb-3 h-5 w-24' />
-              <Skeleton className='h-24 w-full rounded-lg' />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return data.posts;
+  } catch (error) {
+    logger.warn('Hub blog posts unavailable', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return [];
   }
+}
 
-  return (
-    <>
-      <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
-        <CohostInvitesSection />
-        <div className='flex flex-col gap-6 md:flex-row md:gap-12'>
-          <div className='md:w-1/2'>
-            <MyEventsSection />
-          </div>
-          <div className='md:w-1/2'>
-            <ForYouSection />
-          </div>
-        </div>
-        <EventInvitesSection />
-        <HubBlogGallery />
-      </div>
-    </>
-  );
+export default async function HubPage() {
+  const posts = await getHubPosts();
+
+  return <HubPageClient posts={posts} />;
 }

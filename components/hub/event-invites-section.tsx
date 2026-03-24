@@ -9,24 +9,30 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
-import { Skeleton } from '@/components/ui/skeleton';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
-import { useEventInvites } from '@/lib/hooks/use-event-invites';
-import { EventInvite } from '@/lib/types/api';
-import { ArrowRight, Calendar } from 'lucide-react';
+import { EventInvite, HubSectionError } from '@/lib/types/api';
+import { AlertTriangle, ArrowRight, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { EventInviteDetailSheet } from './event-invite-detail-sheet';
 import { EventInviteStoryThumbnail } from './event-invite-story-thumbnail';
 import { EventInvitesSheet } from './event-invites-sheet';
 
-export function EventInvitesSection() {
+interface EventInvitesSectionProps {
+  pendingInvites?: EventInvite[];
+  pendingTotalCount?: number | null;
+  pendingError?: HubSectionError;
+}
+
+export function EventInvitesSection({
+  pendingInvites = [],
+  pendingTotalCount,
+  pendingError,
+}: EventInvitesSectionProps) {
   const [showInvitesSheet, setShowInvitesSheet] = useState(false);
   const [showRSVPSheet, setShowRSVPSheet] = useState(false);
   const [selectedEventId, setSelectedEventId] = useState<string>('');
   const [selectedInvite, setSelectedInvite] = useState<EventInvite | null>(null);
   const [showDetailSheet, setShowDetailSheet] = useState(false);
-
-  const { data: pendingInvites = [], isLoading: isLoadingPending } = useEventInvites('pending');
 
   const handleRSVP = (eventId: string) => {
     setSelectedEventId(eventId);
@@ -38,18 +44,21 @@ export function EventInvitesSection() {
     setShowDetailSheet(true);
   };
 
-  // Show loading state
-  if (isLoadingPending) {
+  if (pendingError) {
     return (
       <div className='space-y-4'>
         <div className='flex items-center justify-between'>
           <h2 className='text-xl font-semibold'>Invites</h2>
         </div>
-        <div className='no-scrollbar flex gap-3 overflow-x-auto pb-2'>
-          {[...Array(5)].map((_, i) => (
-            <Skeleton key={i} className='h-[100px] w-[100px] flex-shrink-0 rounded-2xl' />
-          ))}
-        </div>
+        <Empty className='py-8'>
+          <EmptyHeader>
+            <EmptyMedia variant='soft-square'>
+              <AlertTriangle className='h-8 w-8' />
+            </EmptyMedia>
+            <EmptyTitle className='text-base sm:text-base'>Couldn&apos;t load invites</EmptyTitle>
+            <EmptyDescription>{pendingError.message}</EmptyDescription>
+          </EmptyHeader>
+        </Empty>
       </div>
     );
   }
@@ -98,6 +107,9 @@ export function EventInvitesSection() {
         showInvitesSheet={showInvitesSheet}
         setShowInvitesSheet={setShowInvitesSheet}
         handleRSVP={handleRSVP}
+        pendingInvites={pendingInvites}
+        pendingTotalCount={pendingTotalCount}
+        pendingError={pendingError}
       />
 
       {/* Detail Sheet */}
