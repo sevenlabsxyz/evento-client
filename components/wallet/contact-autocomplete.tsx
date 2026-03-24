@@ -87,7 +87,7 @@ export function ContactAutocomplete({
 }: ContactAutocompleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const { contacts, isLoading } = useContacts();
+  const { contacts } = useContacts();
 
   // Filter contacts by name or paymentIdentifier (case-insensitive)
   const filteredContacts = useMemo(() => {
@@ -152,7 +152,7 @@ export function ContactAutocomplete({
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            disabled={disabled || isLoading}
+            disabled={disabled}
             className={cn(className)}
             rows={rows}
             autoComplete='off'
@@ -168,7 +168,7 @@ export function ContactAutocomplete({
             onFocus={handleFocus}
             onBlur={handleBlur}
             placeholder={placeholder}
-            disabled={disabled || isLoading}
+            disabled={disabled}
             className={cn(className)}
             autoComplete='off'
             autoCorrect='off'
