@@ -121,6 +121,16 @@ function extractRelativePath(url: string): string {
 // Get smart defaults for event creation
 const defaultDateTime = getDefaultEventDateTime();
 
+const getAutoAdjustedEndTime = (startTime: TimeFormat): TimeFormat => {
+  const startApiTime = timeToApiFormat(startTime);
+  const newEndTotalMinutes = startApiTime.hours * 60 + startApiTime.minutes + 60;
+
+  return apiToTime(
+    Math.floor(newEndTotalMinutes / 60) % 24,
+    newEndTotalMinutes % 60
+  );
+};
+
 const initialState = {
   initialData: null,
   title: '',
@@ -170,23 +180,13 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
         // Set end date to match start date (same day)
         updates.endDate = new Date(startDate);
 
-        // If end time is before or equal to start time, adjust it to be 1 hour after
-        const startHours = state.startTime.hour;
-        const startMinutes = state.startTime.minute;
-        const endHours = state.endTime.hour;
-        const endMinutes = state.endTime.minute;
-
-        const startTotalMinutes = startHours * 60 + startMinutes;
-        const endTotalMinutes = endHours * 60 + endMinutes;
+        const startApiTime = timeToApiFormat(state.startTime);
+        const endApiTime = timeToApiFormat(state.endTime);
+        const startTotalMinutes = startApiTime.hours * 60 + startApiTime.minutes;
+        const endTotalMinutes = endApiTime.hours * 60 + endApiTime.minutes;
 
         if (endTotalMinutes <= startTotalMinutes) {
-          // Add 1 hour to start time
-          const newEndTotalMinutes = startTotalMinutes + 60;
-          updates.endTime = {
-            hour: Math.floor(newEndTotalMinutes / 60) % 24,
-            minute: newEndTotalMinutes % 60,
-            period: state.endTime.period,
-          };
+          updates.endTime = getAutoAdjustedEndTime(state.startTime);
         }
       }
 
@@ -199,17 +199,13 @@ export const useEventFormStore = create<EventFormState>((set, get) => ({
 
       // If start and end dates are the same day, ensure end time is after start time
       if (state.startDate.toDateString() === state.endDate.toDateString()) {
-        const startTotalMinutes = startTime.hour * 60 + startTime.minute;
-        const endTotalMinutes = state.endTime.hour * 60 + state.endTime.minute;
+        const startApiTime = timeToApiFormat(startTime);
+        const endApiTime = timeToApiFormat(state.endTime);
+        const startTotalMinutes = startApiTime.hours * 60 + startApiTime.minutes;
+        const endTotalMinutes = endApiTime.hours * 60 + endApiTime.minutes;
 
         if (endTotalMinutes <= startTotalMinutes) {
-          // Add 1 hour to the new start time
-          const newEndTotalMinutes = startTotalMinutes + 60;
-          updates.endTime = {
-            hour: Math.floor(newEndTotalMinutes / 60) % 24,
-            minute: newEndTotalMinutes % 60,
-            period: state.endTime.period,
-          };
+          updates.endTime = getAutoAdjustedEndTime(startTime);
         }
       }
 

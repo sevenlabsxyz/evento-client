@@ -17,6 +17,10 @@ jest.mock('@/components/zap/zap-sheet', () => ({
   ZapSheet: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
+jest.mock('@/components/zap/batch-zap-sheet', () => ({
+  BatchZapSheet: () => null,
+}));
+
 jest.mock('@/components/ui/quick-profile-sheet', () => ({
   __esModule: true,
   default: ({ isOpen, user }: { isOpen: boolean; user: { username?: string } }) =>

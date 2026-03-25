@@ -5,6 +5,10 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useBatchZapPayments } from '@/lib/hooks/use-batch-zap-payments';
+import {
+  NotifyWalletInviteBatchSummary,
+  useNotifyWalletInviteBatch,
+} from '@/lib/hooks/use-notify-wallet-invite-batch';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
@@ -42,16 +46,50 @@ const SUMMARY_ROW_CLASS =
 
 type BatchZapStep = 'setup' | 'comment' | 'review';
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string' &&
+    error.message
+  ) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZapSheetProps) {
   const router = useRouter();
   const { walletState } = useWallet();
   const { progress, reset, sendBatch } = useBatchZapPayments();
+  const { mutateAsync: notifyBatch, reset: resetNotifyBatch } = useNotifyWalletInviteBatch();
   const [step, setStep] = useState<BatchZapStep>('setup');
   const [amountMode, setAmountMode] = useState<BatchZapAmountMode | null>(null);
   const [amountInput, setAmountInput] = useState('');
   const [comment, setComment] = useState('');
   const [availableBalanceUSD, setAvailableBalanceUSD] = useState(0);
   const [isBalanceUSDLoading, setIsBalanceUSDLoading] = useState(true);
+  const [walletNotifySummary, setWalletNotifySummary] =
+    useState<NotifyWalletInviteBatchSummary | null>(null);
+  const [walletNotifyError, setWalletNotifyError] = useState<string | null>(null);
+
+  const noWalletRecipientUsernames = useMemo(
+    () =>
+      Array.from(
+        new Set(
+          recipientSummary.excludedNoLightning
+            .map((rsvp) => rsvp.user_details?.username?.trim().toLowerCase())
+            .filter((username): username is string => Boolean(username))
+        )
+      ),
+    [recipientSummary.excludedNoLightning]
+  );
 
   const enteredAmountSats = useMemo(() => {
     if (!amountInput.trim()) return 0;
@@ -87,9 +125,12 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
       setAmountMode(null);
       setAmountInput('');
       setComment('');
+      setWalletNotifySummary(null);
+      setWalletNotifyError(null);
+      resetNotifyBatch();
       reset();
     }
-  }, [open, reset]);
+  }, [open, reset, resetNotifyBatch]);
 
   useEffect(() => {
     if (typeof window === 'undefined' || open || !walletState.isConnected) {
@@ -155,11 +196,26 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         comment: comment.trim().length > 0 ? comment.trim() : undefined,
       });
 
+      setWalletNotifySummary(null);
+      setWalletNotifyError(null);
+
+      if (noWalletRecipientUsernames.length > 0) {
+        try {
+          const notifyResponse = await notifyBatch({
+            recipientUsernames: noWalletRecipientUsernames,
+          });
+
+          setWalletNotifySummary(notifyResponse.summary);
+        } catch (error) {
+          setWalletNotifyError(getErrorMessage(error, 'Failed to notify guests without wallets'));
+        }
+      }
+
       if (batchResult.results.some((result) => result.status === 'sent')) {
         toast.success('Batch Zap completed');
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to start batch zap');
+      toast.error(getErrorMessage(error, 'Failed to start batch zap'));
     }
   };
 
@@ -269,6 +325,45 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 </div>
               </div>
             </div>
+
+            {recipientSummary.excludedNoLightning.length > 0 && (
+              <div
+                className={`rounded-3xl p-5 ${
+                  walletNotifyError
+                    ? 'border border-red-200 bg-red-50'
+                    : 'border border-blue-200 bg-blue-50'
+                }`}
+              >
+                <div className='flex items-start gap-3'>
+                  {walletNotifyError ? (
+                    <XCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                  ) : (
+                    <Info className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                  )}
+                  <div>
+                    <p className='font-semibold text-gray-900'>Wallet reminder emails</p>
+                    {walletNotifyError ? (
+                      <p className='mt-1 text-sm text-red-700'>{walletNotifyError}</p>
+                    ) : walletNotifySummary ? (
+                      <p className='mt-1 text-sm text-gray-700'>
+                        {walletNotifySummary.sentCount} guest
+                        {walletNotifySummary.sentCount === 1 ? '' : 's'} emailed,{' '}
+                        {walletNotifySummary.alreadyNotifiedCount} already notified,{' '}
+                        {walletNotifySummary.errorCount} could not be notified.
+                      </p>
+                    ) : noWalletRecipientUsernames.length === 0 ? (
+                      <p className='mt-1 text-sm text-gray-700'>
+                        We could not identify any usernames for the guests without wallets.
+                      </p>
+                    ) : (
+                      <p className='mt-1 text-sm text-gray-700'>
+                        Wallet reminder email results are not available yet.
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className='grid gap-3 sm:grid-cols-3'>
               <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
