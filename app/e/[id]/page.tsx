@@ -1,4 +1,10 @@
 import { Env } from '@/lib/constants/env';
+import { getAbsoluteAppUrl } from '@/lib/utils/app-url';
+import {
+  buildEventSocialImageUrl,
+  formatEventSeoDescription,
+  formatEventSeoTitle,
+} from '@/lib/utils/event-social-metadata';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
@@ -20,24 +26,23 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata) {
-  // Get the event ID from params
   const eventId = params.id;
   const eventPath = `/e/${eventId}`;
+  const eventUrl = getAbsoluteAppUrl(eventPath);
 
-  // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
-  const eventOgImage = `${eventPath}/opengraph-image`;
+  const fallbackOgImage = buildEventSocialImageUrl(eventId);
 
   try {
     const supabase = getEventMetadataClient();
 
     if (!supabase) {
-      return getDefaultMetadata(previousImages, eventPath, eventOgImage);
+      return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
     const { data, error } = await supabase
       .from('events')
-      .select('id, title, description')
+      .select('id, title, description, cover, updated_at')
       .eq('id', eventId)
       .single();
 
@@ -45,24 +50,17 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
     if (!data) {
       logger.info('No event found for ID', { eventId });
-      return getDefaultMetadata(previousImages, eventPath, eventOgImage);
+      return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
     const event = data;
-
-    const title =
-      event?.title === 'Untitled Event' ? 'RSVP on Evento Now' : `${event?.title} - Evento`;
-    const cleanDescription = event?.description
-      ? event.description
-          .replace(/<br\s*\/?>/gi, ' ')
-          .replace(/<\/p>/gi, ' ')
-          .replace(/<[^>]*>/g, ' ')
-          .replace(/\s+/g, ' ')
-          .trim()
-      : '';
-    const descText = cleanDescription
-      ? cleanDescription.slice(0, 250) + (cleanDescription.length > 250 ? '...' : '')
-      : 'Events made social - evento.so';
+    const title = formatEventSeoTitle(event.title);
+    const descText = formatEventSeoDescription(event.description);
+    const eventOgImage = buildEventSocialImageUrl(eventId, {
+      updatedAt: event.updated_at,
+      title: event.title,
+      cover: event.cover,
+    });
 
     return {
       title: {
@@ -70,11 +68,11 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
       keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
       alternates: {
-        canonical: eventPath,
+        canonical: eventUrl,
       },
       description: descText,
       openGraph: {
-        url: eventPath,
+        url: eventUrl,
         locale: 'en_US',
         type: 'website',
         siteName: 'Evento',
@@ -96,7 +94,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
       twitter: {
         card: 'summary_large_image',
-        title: title,
+        title,
         description: descText,
         creator: '@evento_so',
         images: [eventOgImage],
@@ -106,7 +104,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     logger.error('Error fetching event data', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return getDefaultMetadata(previousImages, eventPath, eventOgImage);
+    return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
   }
 }
 
@@ -136,9 +134,8 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
 }
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default async function EventDetailPage() {
-  // Server component simply renders the client component
-  // All metadata is handled by generateMetadata function
   return <EventDetailPageClient />;
 }

@@ -1,4 +1,5 @@
 import { Toaster } from '@/components/ui/sonner';
+import { getAppUrl } from '@/lib/utils/app-url';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import type { Metadata } from 'next';
@@ -11,8 +12,7 @@ const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
 });
-const appUrl =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3003' : 'https://app.evento.so';
+const appUrl = getAppUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
