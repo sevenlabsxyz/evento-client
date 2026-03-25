@@ -18,6 +18,100 @@ import {
 import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
 
+let walletInitializationPromise: Promise<void> | null = null;
+
+function buildLockedWalletState(savedState?: WalletState | null): WalletState {
+  return {
+    isInitialized: true,
+    isConnected: false,
+    balance: 0,
+    hasBackup: savedState?.hasBackup || false,
+    lastBackupDate: savedState?.lastBackupDate,
+    lightningAddress: savedState?.lightningAddress,
+  };
+}
+
+function buildConnectedWalletState(balance: number, savedState?: WalletState | null): WalletState {
+  return {
+    isInitialized: true,
+    isConnected: true,
+    balance,
+    hasBackup: savedState?.hasBackup || false,
+    lastBackupDate: savedState?.lastBackupDate,
+    lightningAddress: savedState?.lightningAddress,
+  };
+}
+
+async function initializeWalletState({
+  getInMemorySeed,
+  isSeedValid,
+  setError,
+  setLoading,
+  setWalletState,
+}: {
+  getInMemorySeed: () => string | null;
+  isSeedValid: () => boolean;
+  setError: (error: string | null) => void;
+  setLoading: (loading: boolean) => void;
+  setWalletState: (state: WalletState | ((prev: WalletState) => WalletState)) => void;
+}): Promise<void> {
+  try {
+    const encryptedSeed = WalletStorageService.getEncryptedSeed();
+    const savedState = WalletStorageService.getWalletState();
+
+    if (!encryptedSeed && savedState?.isInitialized) {
+      WalletStorageService.clearWalletData();
+      setWalletState({
+        isInitialized: false,
+        isConnected: false,
+        balance: 0,
+        hasBackup: false,
+      });
+      return;
+    }
+
+    if (!encryptedSeed) {
+      return;
+    }
+
+    // If the SDK is already live in this tab, preserve that session even if the
+    // in-memory seed TTL has expired. Later-mounted hooks should not downgrade
+    // the UI back to "locked" while the wallet is still connected.
+    if (breezSDK.isConnected()) {
+      try {
+        const balance = await breezSDK.getBalance();
+        setWalletState(buildConnectedWalletState(balance, savedState));
+        return;
+      } catch (err) {
+        logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
+      }
+    }
+
+    const inMemorySeed = getInMemorySeed();
+
+    if (inMemorySeed && isSeedValid()) {
+      try {
+        await breezSDK.connect(inMemorySeed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+        const balance = await breezSDK.getBalance();
+
+        setWalletState(buildConnectedWalletState(balance, savedState));
+      } catch (err) {
+        logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
+        setWalletState(buildLockedWalletState(savedState));
+      }
+
+      return;
+    }
+
+    setWalletState(buildLockedWalletState(savedState));
+  } catch (err) {
+    logBreezError(err, BREEZ_ERROR_CONTEXT.INITIALIZING_WALLET);
+    setError('Failed to load wallet');
+  } finally {
+    setLoading(false);
+  }
+}
+
 export function useWallet() {
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
 
@@ -30,74 +124,16 @@ export function useWallet() {
 
   // Initialize wallet on mount
   useEffect(() => {
-    const initWallet = async () => {
-      try {
-        // Check if there's an encrypted seed (wallet exists)
-        const encryptedSeed = WalletStorageService.getEncryptedSeed();
-        const savedState = WalletStorageService.getWalletState();
+    walletInitializationPromise ??= initializeWalletState({
+      getInMemorySeed,
+      isSeedValid,
+      setError,
+      setLoading,
+      setWalletState,
+    });
 
-        // Handle inconsistent state: has state but no encrypted seed
-        if (!encryptedSeed && savedState?.isInitialized) {
-          WalletStorageService.clearWalletData();
-          setWalletState({
-            isInitialized: false,
-            isConnected: false,
-            balance: 0,
-            hasBackup: false,
-          });
-        } else if (encryptedSeed) {
-          // Wallet exists, check if seed is in memory and valid
-          const inMemorySeed = getInMemorySeed();
-
-          if (inMemorySeed && isSeedValid()) {
-            // Seed is still valid in memory, auto-connect
-            try {
-              await breezSDK.connect(inMemorySeed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-              // Get current balance
-              const balance = await breezSDK.getBalance();
-
-              setWalletState({
-                isInitialized: true,
-                isConnected: true,
-                balance,
-                hasBackup: savedState?.hasBackup || false,
-                lastBackupDate: savedState?.lastBackupDate,
-                lightningAddress: savedState?.lightningAddress,
-              });
-            } catch (err) {
-              logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
-              setWalletState({
-                isInitialized: true,
-                isConnected: false,
-                balance: 0,
-                hasBackup: savedState?.hasBackup || false,
-                lastBackupDate: savedState?.lastBackupDate,
-                lightningAddress: savedState?.lightningAddress,
-              });
-            }
-          } else {
-            // Seed expired or not in memory, show as initialized but locked
-            setWalletState({
-              isInitialized: true,
-              isConnected: false,
-              balance: 0,
-              hasBackup: savedState?.hasBackup || false,
-              lastBackupDate: savedState?.lastBackupDate,
-              lightningAddress: savedState?.lightningAddress,
-            });
-          }
-        }
-      } catch (err) {
-        logBreezError(err, BREEZ_ERROR_CONTEXT.INITIALIZING_WALLET);
-        setError('Failed to load wallet');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    initWallet();
-  }, [getInMemorySeed, isSeedValid]);
+    void walletInitializationPromise;
+  }, [getInMemorySeed, isSeedValid, setError, setLoading, setWalletState]);
 
   // Save wallet state whenever it changes
   useEffect(() => {
