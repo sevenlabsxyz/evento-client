@@ -2,6 +2,7 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import { X } from 'lucide-react';
 import { useState } from 'react';
@@ -73,7 +74,9 @@ export function MasterScrollableSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className={`flex flex-col md:!max-w-md ${className ?? ''}`}>
+          <SheetWithDetentFull.Content
+            className={cn('flex min-w-0 flex-col overflow-hidden md:!max-w-md', className)}
+          >
             {/* Handle */}
             <div className='my-4 flex items-center'>
               <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
@@ -85,8 +88,8 @@ export function MasterScrollableSheet({
             </VisuallyHidden.Root>
 
             {/* Sticky Header - OUTSIDE scroll */}
-            <div className='flex items-center justify-between gap-3 px-4 pb-4 pt-0'>
-              <div className='flex-1'>{headerLeft ?? defaultLeft}</div>
+            <div className='flex min-w-0 items-center justify-between gap-3 px-4 pb-4 pt-0'>
+              <div className='min-w-0 flex-1'>{headerLeft ?? defaultLeft}</div>
               {headerCenter && <div>{headerCenter}</div>}
               <div className='flex-shrink-0'>{headerRight ?? defaultRight}</div>
             </div>
@@ -96,11 +99,16 @@ export function MasterScrollableSheet({
 
             {/* Scrollable Content - wrapper ensures height propagates to Silk Scroll */}
             <div
-              className={`min-h-0 flex-1 overflow-hidden ${footer ? 'max-h-[calc(100%-330px)]' : ''}`}
+              className={cn(
+                'min-h-0 min-w-0 flex-1 overflow-hidden',
+                footer && 'max-h-[calc(100%-330px)]'
+              )}
             >
-              <SheetWithDetentFull.ScrollRoot className='h-full'>
-                <SheetWithDetentFull.ScrollView className='h-full'>
-                  <SheetWithDetentFull.ScrollContent className={contentClassName}>
+              <SheetWithDetentFull.ScrollRoot className='h-full min-w-0'>
+                <SheetWithDetentFull.ScrollView className='h-full min-w-0 overflow-x-hidden'>
+                  <SheetWithDetentFull.ScrollContent
+                    className={cn('w-full min-w-0 max-w-full', contentClassName)}
+                  >
                     {children}
                   </SheetWithDetentFull.ScrollContent>
                 </SheetWithDetentFull.ScrollView>

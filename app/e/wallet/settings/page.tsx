@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
-import { useWallet } from '@/lib/hooks/use-wallet';
+import { resetWalletInitialization, useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
@@ -42,9 +42,10 @@ export default function WalletSettingsPage() {
     router.push('/e/wallet');
   };
 
-  const handleDeleteWallet = () => {
+  const handleDeleteWallet = async () => {
     // Clear all wallet data
     WalletStorageService.clearWalletData();
+    await resetWalletInitialization({ disconnect: true, resetStore: true });
     toast.success('Wallet deleted');
     router.push('/e/wallet');
 

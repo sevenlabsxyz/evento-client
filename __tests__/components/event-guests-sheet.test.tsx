@@ -1,6 +1,14 @@
 import GuestsSheet from '@/components/event-detail/event-guests-sheet';
 import { fireEvent, render, screen } from '@testing-library/react';
 
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+}));
+
 jest.mock('@/components/ui/master-scrollable-sheet', () => ({
   MasterScrollableSheet: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
