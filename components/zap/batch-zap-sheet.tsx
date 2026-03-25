@@ -76,6 +76,22 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   }, [open, reset]);
 
   useEffect(() => {
+    if (typeof window === 'undefined' || open || !walletState.isConnected) {
+      return;
+    }
+
+    const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+    const pendingBatchZapReturnPath = localStorage.getItem(STORAGE_KEYS.BATCH_ZAP_RETURN_PATH);
+
+    if (pendingBatchZapReturnPath !== currentPath) {
+      return;
+    }
+
+    localStorage.removeItem(STORAGE_KEYS.BATCH_ZAP_RETURN_PATH);
+    onOpenChange(true);
+  }, [open, onOpenChange, walletState.isConnected]);
+
+  useEffect(() => {
     const fetchAvailableBalanceUSD = async () => {
       try {
         setIsBalanceUSDLoading(true);
@@ -119,6 +135,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     if (typeof window !== 'undefined') {
       const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
       localStorage.setItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH, returnPath);
+      localStorage.setItem(STORAGE_KEYS.BATCH_ZAP_RETURN_PATH, returnPath);
     }
     router.push('/e/wallet');
   };
