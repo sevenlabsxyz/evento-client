@@ -216,4 +216,9 @@ describe('formatDateHeader', () => {
     expect(formatDateHeader('2026-04-26')).toBe('Sunday, April 26');
     expect(formatDateHeader('2026-04-27')).toBe('Monday, April 27');
   });
+
+  it('returns a safe fallback when the date is missing or invalid', () => {
+    expect(formatDateHeader(null as unknown as string)).toBe('No date set');
+    expect(formatDateHeader('not-a-date')).toBe('No date set');
+  });
 });

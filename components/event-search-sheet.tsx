@@ -14,7 +14,8 @@ import {
   useUserEvents,
 } from '@/lib/hooks/use-user-events';
 import { cn } from '@/lib/utils';
-import { formatDateHeader } from '@/lib/utils/date';
+import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
+import { getProfileEventDateKey } from '@/lib/utils/profile-events';
 import debounce from 'lodash.debounce';
 import { Calendar, List, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -167,11 +168,7 @@ export default function EventSearchSheet({
   // Group events by date
   const groupedEvents = useMemo(() => {
     return events.reduce((groups: { date: string; events: typeof events }[], event) => {
-      if (!hasValidEventDate(event.computed_start_date)) {
-        return groups;
-      }
-
-      const date = event.computed_start_date.slice(0, 10); // Extract YYYY-MM-DD
+      const date = getProfileEventDateKey(event) ?? UNDATED_DATE_KEY;
       const group = groups.find((g) => g.date === date);
 
       if (group) {
