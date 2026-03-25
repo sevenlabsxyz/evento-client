@@ -8,7 +8,8 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
-import { formatDateHeader } from '@/lib/utils/date';
+import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
+import { getProfileEventDateKey } from '@/lib/utils/profile-events';
 import { ArrowRight, Calendar, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
@@ -71,7 +72,7 @@ export function MyEventsSection() {
   // Group events by date
   const groupedEvents = events.reduce(
     (groups: { date: string; events: typeof events }[], event) => {
-      const date = event.computed_start_date;
+      const date = getProfileEventDateKey(event) ?? UNDATED_DATE_KEY;
       const group = groups.find((g) => g.date === date);
 
       if (group) {
@@ -106,7 +107,7 @@ export function MyEventsSection() {
               { title: 'Hosting', icon: MapPinHouse, onClick: () => setActiveTab('hosting') },
               { title: 'Drafts', icon: UserRoundPen, onClick: () => setActiveTab('drafts') },
             ]}
-            defaultSelected={0}
+            selected={['upcoming', 'hosting', 'drafts'].indexOf(activeTab)}
           />
           <CircledIconButton icon={Search} onClick={handleViewAll} />
         </div>

@@ -66,7 +66,13 @@ function toLocalDateKey(date: Date): string {
   return `${year}-${month}-${day}`;
 }
 
-function parseDateOnlyString(date: string): Date | null {
+export const UNDATED_DATE_KEY = '__undated__';
+
+function parseDateOnlyString(date?: string | null): Date | null {
+  if (typeof date !== 'string') {
+    return null;
+  }
+
   const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!match) {
     return null;
@@ -466,7 +472,11 @@ export function getRelativeTime(isoString: string): string {
  * Returns "Today", "Tomorrow", or full date format (e.g., "Wednesday, December 17")
  * @param date - Date string in YYYY-MM-DD format
  */
-export function formatDateHeader(date: string): string {
+export function formatDateHeader(date?: string | null): string {
+  if (!date || date === UNDATED_DATE_KEY) {
+    return 'No date set';
+  }
+
   const today = toLocalDateKey(new Date());
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
@@ -477,7 +487,12 @@ export function formatDateHeader(date: string): string {
 
   const parsedDate = parseDateOnlyString(date);
   if (!parsedDate) {
-    return new Date(date).toLocaleDateString('en-US', {
+    const fallbackDate = new Date(date);
+    if (Number.isNaN(fallbackDate.getTime())) {
+      return 'No date set';
+    }
+
+    return fallbackDate.toLocaleDateString('en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
