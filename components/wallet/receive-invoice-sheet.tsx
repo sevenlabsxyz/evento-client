@@ -179,14 +179,16 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
         onOpenChange={onOpenChange}
         title='Receive'
         headerSecondary={
-          <AnimatedTabs
-            tabs={[
-              { title: 'Lightning', icon: Zap, onClick: () => handleTabChange('lightning') },
-              { title: 'Onchain', icon: Bitcoin, onClick: () => handleTabChange('bitcoin') },
-            ]}
-            selected={['lightning', 'bitcoin'].indexOf(activeTab)}
-            className='mb-2'
-          />
+          <div className='px-4 pb-2'>
+            <AnimatedTabs
+              expanded
+              tabs={[
+                { title: 'Lightning', icon: Zap, onClick: () => handleTabChange('lightning') },
+                { title: 'Onchain', icon: Bitcoin, onClick: () => handleTabChange('bitcoin') },
+              ]}
+              selected={['lightning', 'bitcoin'].indexOf(activeTab)}
+            />
+          </div>
         }
       >
         <div className='mx-auto max-w-md space-y-6 p-6'>
