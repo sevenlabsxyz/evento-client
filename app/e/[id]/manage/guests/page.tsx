@@ -16,7 +16,17 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
-import { CheckCircle, CircleHelp, Loader2, Search, Share2, Users, X, XCircle } from 'lucide-react';
+import {
+  CheckCircle,
+  CircleHelp,
+  Loader2,
+  Search,
+  Share2,
+  Users,
+  X,
+  XCircle,
+  Zap,
+} from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -246,6 +256,7 @@ export default function GuestListPage() {
               disabled={batchRecipientSummary.eligibleRecipients.length === 0}
               onClick={() => setIsBatchZapOpen(true)}
             >
+              <Zap className='h-4 w-4' />
               Zap All
             </Button>
           </div>

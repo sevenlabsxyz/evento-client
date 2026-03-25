@@ -8,7 +8,7 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { BatchZapSheet } from '@/components/zap/batch-zap-sheet';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
-import { ArrowRight, Check, CircleHelp, Search, X } from 'lucide-react';
+import { ArrowRight, Check, CircleHelp, Search, X, Zap } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 
@@ -116,6 +116,7 @@ export default function GuestsSheet({
                 disabled={batchRecipientSummary.eligibleRecipients.length === 0}
                 onClick={() => setIsBatchZapOpen(true)}
               >
+                <Zap className='h-4 w-4' />
                 Zap All
               </Button>
             </div>

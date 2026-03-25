@@ -13,15 +13,7 @@ import {
   validateBatchZap,
 } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Info,
-  Loader2,
-  TriangleAlert,
-  XCircle,
-  Zap,
-} from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Info, Loader2, TriangleAlert, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -62,6 +54,39 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   const failedResults = progress.results.filter((result) => result.status === 'failed');
   const skippedResults = progress.results.filter((result) => result.status === 'skipped');
   const totalSentSats = sentResults.reduce((sum, result) => sum + result.amountSats, 0);
+  const recipientContextLine = useMemo(() => {
+    const parts: string[] = [];
+
+    if (recipientSummary.eligibleRecipients.length > 0) {
+      parts.push(
+        `This batch will go to ${recipientSummary.eligibleRecipients.length} ${
+          recipientSummary.eligibleRecipients.length === 1 ? 'guest' : 'guests'
+        }.`
+      );
+    }
+
+    if (recipientSummary.excludedSelf.length > 0) {
+      parts.push('You are excluded.');
+    }
+
+    if (recipientSummary.isViewerHost && recipientSummary.excludedHosts.length > 0) {
+      parts.push(
+        `${recipientSummary.excludedHosts.length} ${
+          recipientSummary.excludedHosts.length === 1 ? 'host is' : 'hosts are'
+        } excluded from this send.`
+      );
+    }
+
+    if (recipientSummary.excludedNoLightning.length > 0) {
+      parts.push(
+        `${recipientSummary.excludedNoLightning.length} ${
+          recipientSummary.excludedNoLightning.length === 1 ? 'guest' : 'guests'
+        } without an Evento wallet can't receive this batch zap.`
+      );
+    }
+
+    return parts.join(' ');
+  }, [recipientSummary]);
 
   useEffect(() => {
     if (!open) {
@@ -367,51 +392,6 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         </div>
       ) : (
         <div className='space-y-6'>
-          <div className='rounded-3xl border border-red-200 bg-red-50 p-5'>
-            <div className='flex items-start gap-3'>
-              <Zap className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-500' />
-              <div>
-                <p className='font-semibold text-red-900'>
-                  You&apos;re about to zap {recipientSummary.eligibleRecipients.length}{' '}
-                  {recipientSummary.eligibleRecipients.length === 1 ? 'person' : 'people'}
-                </p>
-                <p className='mt-1 text-sm text-red-800'>
-                  This sends live Lightning payments from your wallet. Double-check the amount
-                  before you confirm.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className='space-y-3'>
-            <div className={SUMMARY_ROW_CLASS}>
-              <span className='text-sm text-gray-500'>Eligible recipients</span>
-              <span className='font-semibold text-gray-900'>
-                {recipientSummary.eligibleRecipients.length}
-              </span>
-            </div>
-            <div className={SUMMARY_ROW_CLASS}>
-              <span className='text-sm text-gray-500'>Excluded: you</span>
-              <span className='font-semibold text-gray-900'>
-                {recipientSummary.excludedSelf.length}
-              </span>
-            </div>
-            {recipientSummary.isViewerHost && (
-              <div className={SUMMARY_ROW_CLASS}>
-                <span className='text-sm text-gray-500'>Excluded: hosts</span>
-                <span className='font-semibold text-gray-900'>
-                  {recipientSummary.excludedHosts.length}
-                </span>
-              </div>
-            )}
-            <div className={SUMMARY_ROW_CLASS}>
-              <span className='text-sm text-gray-500'>Excluded: no Lightning address</span>
-              <span className='font-semibold text-gray-900'>
-                {recipientSummary.excludedNoLightning.length}
-              </span>
-            </div>
-          </div>
-
           <div className='rounded-3xl border border-gray-200 bg-white p-5'>
             <div className='flex items-center justify-between gap-3'>
               <div>
@@ -467,6 +447,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
               <p className='mt-2 text-xs text-gray-500'>
                 Minimum {5} sats per guest. Total-split keeps any remainder in your wallet.
               </p>
+              {recipientContextLine && (
+                <p className='mt-3 text-sm leading-6 text-gray-600'>{recipientContextLine}</p>
+              )}
             </div>
           </div>
 
