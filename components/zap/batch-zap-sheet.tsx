@@ -162,6 +162,11 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     );
   };
 
+  const swallowOverlayEvent = (event: React.SyntheticEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   const handleConfirm = async () => {
     if (!validation.valid || !amountMode || !validation.distribution) {
       return;
@@ -174,11 +179,15 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     }
 
     try {
-      await sendBatch({
+      const batchResult = await sendBatch({
         recipients: recipientSummary.eligibleRecipients,
         amountMode,
         amountSats: enteredAmountSats,
       });
+
+      if (batchResult.results.some((result) => result.status === 'sent')) {
+        toast.success('Batch Zap completed');
+      }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Failed to start batch zap');
     }
@@ -468,6 +477,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: 'easeOut' }}
             className='fixed inset-0 z-[120] flex items-center justify-center bg-black/65 px-4 backdrop-blur-sm'
+            onClick={swallowOverlayEvent}
+            onMouseDown={swallowOverlayEvent}
+            onPointerDown={swallowOverlayEvent}
           >
             <motion.div
               initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -475,6 +487,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
               exit={{ opacity: 0, y: 16, scale: 0.98 }}
               transition={{ duration: 0.2, ease: 'easeOut' }}
               className='w-full max-w-sm bg-[#111111] px-6 py-7 text-white shadow-2xl rounded-[32px]'
+              onClick={swallowOverlayEvent}
+              onMouseDown={swallowOverlayEvent}
+              onPointerDown={swallowOverlayEvent}
             >
               <div className='rounded-3xl border border-white/10 bg-white/5 p-5'>
                 <div className='flex items-start gap-3'>
