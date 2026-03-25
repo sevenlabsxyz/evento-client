@@ -20,6 +20,7 @@ export function NavMain({
     title: string;
     url: string;
     icon?: LucideIcon;
+    external?: boolean;
   }[];
 }) {
   const pathname = usePathname();
@@ -30,18 +31,31 @@ export function NavMain({
       <SidebarGroupContent className='flex flex-col gap-2'>
         <SidebarMenu>
           {items.map((item) => {
-            const isActive =
-              pathname === item.url ||
-              (item.url !== '/' && pathname?.startsWith(item.url)) ||
-              (item.url === '/e/hub' && pathname === '/');
+            const isActive = item.external
+              ? false
+              : pathname === item.url ||
+                (item.url !== '/' && pathname?.startsWith(item.url)) ||
+                (item.url === '/e/hub' && pathname === '/');
 
             return (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton tooltip={item.title} isActive={isActive} asChild>
-                  <Link href={item.url} onClick={() => setOpenMobile(false)}>
-                    {item.icon && <item.icon />}
-                    <span>{item.title}</span>
-                  </Link>
+                  {item.external ? (
+                    <a
+                      href={item.url}
+                      target='_blank'
+                      rel='noreferrer'
+                      onClick={() => setOpenMobile(false)}
+                    >
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </a>
+                  ) : (
+                    <Link href={item.url} onClick={() => setOpenMobile(false)}>
+                      {item.icon && <item.icon />}
+                      <span>{item.title}</span>
+                    </Link>
+                  )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
             );

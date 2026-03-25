@@ -2,6 +2,7 @@
 
 import {
   Calendar1,
+  ChefHat,
   MessageCircle,
   PanelRightClose,
   PanelRightOpen,
@@ -56,6 +57,12 @@ const navMain = [
     title: 'Messages',
     url: '/e/messages',
     icon: MessageCircle,
+  },
+  {
+    title: 'Store',
+    url: 'https://theoriginalbhd.com/bitcoin',
+    icon: ChefHat,
+    external: true,
   },
 ];
 
