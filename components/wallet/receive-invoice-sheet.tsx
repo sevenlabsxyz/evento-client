@@ -187,7 +187,6 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                 { title: 'Onchain', icon: Bitcoin, onClick: () => handleTabChange('bitcoin') },
               ]}
               selected={['lightning', 'bitcoin'].indexOf(activeTab)}
-              className='mb-2'
             />
           </div>
         }
