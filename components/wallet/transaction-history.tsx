@@ -193,26 +193,27 @@ export function TransactionHistory({
           <button
             key={payment.id}
             onClick={() => onTransactionClick?.(payment)}
-            className='w-full cursor-pointer rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50'
+            className='w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50'
           >
-            <div className='flex items-start gap-3'>
+            <div className='flex min-w-0 items-start gap-3'>
               {getPaymentIcon(payment)}
 
               <div className='min-w-0 flex-1'>
-                <div className='flex items-start justify-between gap-2'>
-                  <div className='min-w-0 flex-1'>
-                    <div className='flex items-center gap-2'>
+                <div className='flex min-w-0 items-start gap-2'>
+                  <div className='flex min-w-0 flex-1 items-center gap-2 overflow-hidden'>
+                    <div className='shrink-0'>
                       {payment.status !== 'pending' && getStatusIcon(payment.status)}
-                      <div className='flex min-w-0 max-w-[220px] flex-1 flex-col md:max-w-none'>
-                        <p className='truncate font-medium text-gray-900'>{primaryText}</p>
-                        <p className='truncate text-xs font-normal text-gray-600'>
-                          {detailParts.join(' • ')}
-                        </p>
-                      </div>
+                    </div>
+
+                    <div className='min-w-0 flex-1 overflow-hidden'>
+                      <p className='truncate font-medium text-gray-900'>{primaryText}</p>
+                      <p className='truncate text-xs font-normal text-gray-600'>
+                        {detailParts.join(' • ')}
+                      </p>
                     </div>
                   </div>
 
-                  <div className='text-right'>
+                  <div className='flex-shrink-0 text-right'>
                     {balanceHidden ? (
                       <p className='font-semibold text-gray-900'>••••••</p>
                     ) : (
