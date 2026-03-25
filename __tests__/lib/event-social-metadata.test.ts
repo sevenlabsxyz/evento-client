@@ -19,8 +19,17 @@ describe('event social metadata helpers', () => {
 
   afterAll(() => {
     process.env.NODE_ENV = originalNodeEnv;
-    process.env.VERCEL_URL = originalVercelUrl;
-    process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercelProductionUrl;
+    if (originalVercelUrl === undefined) {
+      delete process.env.VERCEL_URL;
+    } else {
+      process.env.VERCEL_URL = originalVercelUrl;
+    }
+
+    if (originalVercelProductionUrl === undefined) {
+      delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    } else {
+      process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercelProductionUrl;
+    }
   });
 
   it('formats event SEO titles with Evento suffix', () => {
