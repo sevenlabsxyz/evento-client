@@ -7,18 +7,19 @@ import {
 } from '@/lib/utils/event-social-metadata';
 
 describe('event social metadata helpers', () => {
+  const env = process.env as Record<string, string | undefined>;
   const originalNodeEnv = process.env.NODE_ENV;
   const originalVercelUrl = process.env.VERCEL_URL;
   const originalVercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
 
   beforeEach(() => {
-    process.env.NODE_ENV = 'production';
+    env.NODE_ENV = 'production';
     delete process.env.VERCEL_URL;
     delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
   });
 
   afterAll(() => {
-    process.env.NODE_ENV = originalNodeEnv;
+    env.NODE_ENV = originalNodeEnv;
     if (originalVercelUrl === undefined) {
       delete process.env.VERCEL_URL;
     } else {

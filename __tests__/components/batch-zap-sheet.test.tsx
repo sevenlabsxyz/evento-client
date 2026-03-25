@@ -50,8 +50,10 @@ jest.mock('@/lib/hooks/use-wallet', () => ({
 }));
 
 jest.mock('@/lib/hooks/use-batch-zap-payments', () => ({
-  useBatchZapPayments: () => ({
-    progress: {
+  useBatchZapPayments: () => {
+    const React = require('react');
+
+    const initialProgress = {
       status: 'idle',
       currentIndex: 0,
       totalCount: 0,
@@ -60,10 +62,36 @@ jest.mock('@/lib/hooks/use-batch-zap-payments', () => ({
       failedCount: 0,
       remainingCount: 0,
       results: [],
-    },
-    reset: resetBatchMock,
-    sendBatch: sendBatchMock,
-  }),
+    } as const;
+
+    const [progress, setProgress] = React.useState(initialProgress);
+
+    return {
+      progress,
+      reset: () => {
+        resetBatchMock();
+        setProgress(initialProgress);
+      },
+      sendBatch: async (args: unknown) => {
+        const result = await sendBatchMock(args);
+        const results = result.results ?? [];
+
+        setProgress({
+          status: 'completed',
+          currentIndex: results.length,
+          totalCount: results.length,
+          currentRecipient: null,
+          sentCount: results.filter((entry: { status: string }) => entry.status === 'sent').length,
+          failedCount: results.filter((entry: { status: string }) => entry.status === 'failed')
+            .length,
+          remainingCount: 0,
+          results,
+        });
+
+        return result;
+      },
+    };
+  },
 }));
 
 jest.mock('@/lib/hooks/use-notify-wallet-invite-batch', () => ({
@@ -247,5 +275,61 @@ describe('BatchZapSheet', () => {
 
     expect(toast.success).toHaveBeenCalledWith('Batch Zap completed');
     expect(__toastMocks.error).not.toHaveBeenCalled();
+  });
+
+  it('shows backend error text when batch wallet notify rejects with an API error object', async () => {
+    notifyBatchMock.mockRejectedValueOnce({
+      message: 'Batch wallet notify is temporarily unavailable.',
+    });
+
+    render(
+      <BatchZapSheet
+        open={true}
+        onOpenChange={jest.fn()}
+        recipientSummary={{
+          eligibleRecipients: [
+            {
+              userId: 'wallet-user',
+              name: 'Wallet Guest',
+              username: 'walletguest',
+              lightningAddress: 'wallet@evento.cash',
+            },
+          ],
+          excludedSelf: [],
+          excludedHosts: [],
+          excludedNoLightning: [
+            {
+              id: 'rsvp-1',
+              event_id: 'event-1',
+              user_id: 'guest-2',
+              status: 'yes',
+              created_at: '2026-03-24T00:00:00Z',
+              updated_at: '2026-03-24T00:00:00Z',
+              user_details: {
+                id: 'guest-2',
+                username: 'guest2',
+                name: 'Guest Two',
+                bio: '',
+                image: '',
+                verification_status: null,
+              },
+            },
+          ],
+          isViewerHost: true,
+        }}
+      />
+    );
+
+    await screen.findByText('$1.23 available');
+
+    fireEvent.click(screen.getByRole('button', { name: /Per person/i }));
+    fireEvent.change(screen.getByLabelText('Amount in sats'), {
+      target: { value: '100' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Confirm and send' }));
+
+    await screen.findByText('Batch wallet notify is temporarily unavailable.');
   });
 });

@@ -46,6 +46,24 @@ const SUMMARY_ROW_CLASS =
 
 type BatchZapStep = 'setup' | 'comment' | 'review';
 
+const getErrorMessage = (error: unknown, fallback: string) => {
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'message' in error &&
+    typeof error.message === 'string' &&
+    error.message
+  ) {
+    return error.message;
+  }
+
+  return fallback;
+};
+
 export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZapSheetProps) {
   const router = useRouter();
   const { walletState } = useWallet();
@@ -189,9 +207,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
 
           setWalletNotifySummary(notifyResponse.summary);
         } catch (error) {
-          setWalletNotifyError(
-            error instanceof Error ? error.message : 'Failed to notify guests without wallets'
-          );
+          setWalletNotifyError(getErrorMessage(error, 'Failed to notify guests without wallets'));
         }
       }
 
@@ -199,7 +215,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         toast.success('Batch Zap completed');
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to start batch zap');
+      toast.error(getErrorMessage(error, 'Failed to start batch zap'));
     }
   };
 
