@@ -207,6 +207,34 @@ describe('Event Creation Form Validation', () => {
       );
     });
 
+    it('auto-adjusts noon start time to 1 PM end time on same-day events', () => {
+      const { result } = renderHook(() => useEventFormStore());
+      const sameDay = new Date('2025-12-31T00:00:00');
+
+      act(() => {
+        result.current.setStartDate(sameDay);
+        result.current.setEndDate(new Date(sameDay));
+        result.current.setEndTime({ hour: 12, minute: 0, period: 'PM' });
+        result.current.setStartTime({ hour: 12, minute: 0, period: 'PM' });
+      });
+
+      expect(result.current.endTime).toEqual({ hour: 1, minute: 0, period: 'PM' });
+    });
+
+    it('auto-adjusts midnight start time to 1 AM end time on same-day events', () => {
+      const { result } = renderHook(() => useEventFormStore());
+      const sameDay = new Date('2025-12-31T00:00:00');
+
+      act(() => {
+        result.current.setStartDate(sameDay);
+        result.current.setEndDate(new Date(sameDay));
+        result.current.setEndTime({ hour: 12, minute: 0, period: 'AM' });
+        result.current.setStartTime({ hour: 12, minute: 0, period: 'AM' });
+      });
+
+      expect(result.current.endTime).toEqual({ hour: 1, minute: 0, period: 'AM' });
+    });
+
     it('sets timezone', () => {
       const { result } = renderHook(() => useEventFormStore());
 
