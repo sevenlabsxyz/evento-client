@@ -2,15 +2,18 @@
 
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useSaveContactPrompt } from '@/components/wallet/save-contact-prompt';
-import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import {
+  redirectToWalletUnlock,
+  showWalletUnlockToast as showWalletUnlockToastPrompt,
+} from '@/lib/utils/wallet-unlock-toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
-import { Info, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';
@@ -51,75 +54,12 @@ export function ZapSheet({
   const notifyMutation = useNotifyWalletInvite();
   const { showSaveContactPrompt } = useSaveContactPrompt();
 
-  const hasExistingWallet = () => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-
-    const walletStateRaw = localStorage.getItem(STORAGE_KEYS.WALLET_STATE);
-    const encryptedSeed = localStorage.getItem(STORAGE_KEYS.ENCRYPTED_SEED);
-
-    if (encryptedSeed) {
-      return true;
-    }
-
-    if (!walletStateRaw) {
-      return false;
-    }
-
-    try {
-      const parsedState = JSON.parse(walletStateRaw);
-      return Boolean(parsedState?.isInitialized);
-    } catch {
-      return true;
-    }
-  };
-
   const handleUnlockWallet = () => {
-    if (typeof window !== 'undefined') {
-      const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      localStorage.setItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH, returnPath);
-    }
-    router.push('/e/wallet');
+    redirectToWalletUnlock(router);
   };
 
   const showWalletUnlockToast = () => {
-    const walletExists = hasExistingWallet();
-    const actionLabel = walletExists ? 'Unlock wallet' : 'Create wallet';
-    const descriptionText = walletExists
-      ? 'Please unlock your Wallet to continue.'
-      : 'Please create your Wallet to continue.';
-
-    toast.custom(
-      (id) => (
-        <div className='w-full border border-blue-200 bg-blue-50 p-6 shadow-lg rounded-[28px]'>
-          <div className='flex items-start gap-3'>
-            <div className='mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white'>
-              <Info className='h-4 w-4' />
-            </div>
-            <div className='min-w-0'>
-              <p className='text-base font-semibold leading-none tracking-tight text-slate-900'>
-                Wallet action needed
-              </p>
-              <p className='mt-3 text-[16px] leading-[1.3] text-slate-700'>{descriptionText}</p>
-            </div>
-          </div>
-          <button
-            type='button'
-            onClick={() => {
-              toast.dismiss(id);
-              handleUnlockWallet();
-            }}
-            className='mt-5 h-12 w-full rounded-full bg-blue-600 px-4 text-base font-semibold text-white transition-colors hover:bg-blue-700'
-          >
-            {actionLabel}
-          </button>
-        </div>
-      ),
-      {
-        unstyled: true,
-      }
-    );
+    showWalletUnlockToastPrompt(handleUnlockWallet);
   };
 
   // Recipient info object for step components

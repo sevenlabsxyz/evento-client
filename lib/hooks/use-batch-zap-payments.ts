@@ -15,6 +15,7 @@ interface SendBatchZapParams {
   recipients: BatchZapRecipient[];
   amountMode: BatchZapAmountMode;
   amountSats: number;
+  comment?: string;
 }
 
 const INITIAL_PROGRESS: BatchZapProgress = {
@@ -42,7 +43,7 @@ export function useBatchZapPayments() {
   }, []);
 
   const sendBatch = useCallback(
-    async ({ recipients, amountMode, amountSats }: SendBatchZapParams) => {
+    async ({ recipients, amountMode, amountSats, comment }: SendBatchZapParams) => {
       const distribution = getBatchZapDistribution(amountMode, amountSats, recipients.length);
       if (!distribution) {
         throw new Error('Invalid batch zap distribution');
@@ -91,6 +92,7 @@ export function useBatchZapPayments() {
           const prepareResponse = await breezSDK.prepareLnurlPay({
             payRequest,
             amountSats: distribution.perRecipientAmountSats,
+            comment: comment || undefined,
           });
 
           await breezSDK.lnurlPay({

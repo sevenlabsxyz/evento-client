@@ -8,9 +8,13 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { BatchZapSheet } from '@/components/zap/batch-zap-sheet';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useWallet } from '@/lib/hooks/use-wallet';
+import { breezSDK } from '@/lib/services/breez-sdk';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
+import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { ArrowRight, Check, CircleHelp, Search, X, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
 
@@ -31,7 +35,9 @@ export default function GuestsSheet({
   hostUserIds,
   currentUserId,
 }: GuestsSheetProps) {
+  const router = useRouter();
   const { user: loggedInUser } = useAuth();
+  const { walletState, isLoading: isWalletLoading } = useWallet();
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
@@ -83,6 +89,21 @@ export default function GuestsSheet({
     });
   };
 
+  const handleOpenBatchZap = () => {
+    if (isWalletLoading) {
+      return;
+    }
+
+    if (!walletState.isConnected || !breezSDK.isConnected()) {
+      showWalletUnlockToast(() =>
+        redirectToWalletUnlock(router, { rememberBatchZapReturnPath: true })
+      );
+      return;
+    }
+
+    setIsBatchZapOpen(true);
+  };
+
   return (
     <>
       <MasterScrollableSheet
@@ -117,7 +138,7 @@ export default function GuestsSheet({
                 size='sm'
                 className='h-12 rounded-full border-gray-200 bg-gray-50 px-4'
                 disabled={batchRecipientSummary.eligibleRecipients.length === 0}
-                onClick={() => setIsBatchZapOpen(true)}
+                onClick={handleOpenBatchZap}
               >
                 <Zap className='h-4 w-4' />
                 Zap All
@@ -220,13 +241,11 @@ export default function GuestsSheet({
         />
       )}
 
-      {isBatchZapOpen && (
-        <BatchZapSheet
-          open={isBatchZapOpen}
-          onOpenChange={setIsBatchZapOpen}
-          recipientSummary={batchRecipientSummary}
-        />
-      )}
+      <BatchZapSheet
+        open={isBatchZapOpen}
+        onOpenChange={setIsBatchZapOpen}
+        recipientSummary={batchRecipientSummary}
+      />
     </>
   );
 }
