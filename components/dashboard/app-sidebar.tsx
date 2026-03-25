@@ -2,12 +2,12 @@
 
 import {
   Calendar1,
-  ChefHat,
   MessageCircle,
   PanelRightClose,
   PanelRightOpen,
   Plus,
   Search,
+  Shirt,
   Star,
   Zap,
 } from 'lucide-react';
@@ -57,12 +57,6 @@ const navMain = [
     title: 'Messages',
     url: '/e/messages',
     icon: MessageCircle,
-  },
-  {
-    title: 'Store',
-    url: 'https://theoriginalbhd.com/bitcoin',
-    icon: ChefHat,
-    external: true,
   },
 ];
 
@@ -123,6 +117,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip='Store' asChild>
+              <a
+                href='https://theoriginalbhd.com/bitcoin'
+                target='_blank'
+                rel='noreferrer'
+                onClick={() => setOpenMobile(false)}
+              >
+                <Shirt />
+                <span>Store</span>
+              </a>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           {/* <SidebarMenuItem>
             <SidebarMenuButton
               tooltip={isCalendarOpen ? 'Hide Calendar' : 'Show Calendar'}

@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { BatchZapSheet } from '@/components/zap/batch-zap-sheet';
+import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { ArrowRight, Check, CircleHelp, Search, X, Zap } from 'lucide-react';
@@ -29,6 +31,7 @@ export default function GuestsSheet({
   hostUserIds,
   currentUserId,
 }: GuestsSheetProps) {
+  const { user: loggedInUser } = useAuth();
   const [searchText, setSearchText] = useState('');
   const [activeTab, setActiveTab] = useState<'yes' | 'maybe' | 'no'>('yes');
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
@@ -215,11 +218,13 @@ export default function GuestsSheet({
         />
       )}
 
-      <BatchZapSheet
-        open={isBatchZapOpen}
-        onOpenChange={setIsBatchZapOpen}
-        recipientSummary={batchRecipientSummary}
-      />
+      {isBatchZapOpen && (
+        <BatchZapSheet
+          open={isBatchZapOpen}
+          onOpenChange={setIsBatchZapOpen}
+          recipientSummary={batchRecipientSummary}
+        />
+      )}
     </>
   );
 }
