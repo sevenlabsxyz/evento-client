@@ -6,7 +6,7 @@ import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { htmlToPlainText } from '@/lib/utils/content';
 import { formatEventDateFromParts, getRelativeTime } from '@/lib/utils/date';
-import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import {
   Bookmark,
@@ -162,7 +162,7 @@ export function EventCard({
           src={
             event.cover && isGif(event.cover)
               ? event.cover
-              : getOptimizedCoverUrl(event.cover || '', 'feed')
+              : getEventCoverDisplayUrl(event.cover, 'feed')
           }
           alt={event.title}
           className='mx-auto aspect-square w-[calc(94%)] cursor-pointer rounded-2xl object-cover shadow-md'

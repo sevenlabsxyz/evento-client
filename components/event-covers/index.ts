@@ -1,8 +1,8 @@
+import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from 'lucide-react';
 import COVERS from './categories';
 
-export const NO_COVER_FALLBACK =
-  'https://api.evento.so/storage/v1/render/image/public/cdn/eventos/default-covers/tech/15.webp';
+export const NO_COVER_FALLBACK = DEFAULT_EVENT_COVER_URL;
 
 export const DEFAULT_COVERS = COVERS;
 

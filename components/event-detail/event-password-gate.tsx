@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { useVerifyEventPassword } from '@/lib/hooks/use-verify-event-password';
 import { PasswordProtectedEventResponse } from '@/lib/types/api';
-import { getOptimizedCoverUrl, isGif } from '@/lib/utils/image';
+import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react';
 import Image from 'next/image';
@@ -52,11 +52,8 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
   };
 
   // Get optimized cover URL with fallback handling
-  const coverImageUrl = event.cover
-    ? isGif(event.cover)
-      ? event.cover
-      : getOptimizedCoverUrl(event.cover, 'feed')
-    : null;
+  const coverImageUrl =
+    event.cover && isGif(event.cover) ? event.cover : getEventCoverDisplayUrl(event.cover, 'feed');
 
   // Get primary host for display
   const primaryHost = event.hosts?.[0];

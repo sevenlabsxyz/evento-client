@@ -152,13 +152,18 @@ export default function GuestsSheet({
         ) : (
           <div className='space-y-3'>
             {listForTab.map((rsvp, index) => (
-              <button
-                type='button'
+              <div
                 key={rsvp.id ?? `${rsvp.user_id ?? 'guest'}-${rsvp.status}-${index}`}
-                onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
-                className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:bg-gray-100'
+                className='flex w-full items-center gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-3 transition-colors hover:bg-gray-100'
               >
-                <div className='flex flex-1 items-center gap-3'>
+                <button
+                  type='button'
+                  onClick={() => handleViewProfile(rsvp.user_details, rsvp.user_id)}
+                  className='flex min-w-0 flex-1 items-center gap-3 text-left'
+                  aria-label={`Open profile for @${
+                    rsvp.user_details?.username || rsvp.user_details?.name || 'guest'
+                  }`}
+                >
                   <UserAvatar
                     user={{
                       name: rsvp.user_details?.name || undefined,
@@ -176,15 +181,27 @@ export default function GuestsSheet({
                       {rsvp.user_details?.name || 'Guest'}
                     </div>
                   </div>
+                </button>
+                <div className='flex shrink-0 items-center gap-2'>
+                  <ZapSheet
+                    recipientLightningAddress={rsvp.user_details?.ln_address || ''}
+                    recipientName={
+                      rsvp.user_details?.name || rsvp.user_details?.username || 'Guest'
+                    }
+                    recipientUsername={rsvp.user_details?.username || undefined}
+                    recipientAvatar={rsvp.user_details?.image || undefined}
+                    currentUsername={loggedInUser?.username}
+                  >
+                    <CircledIconButton icon={Zap} />
+                  </ZapSheet>
+                  <CircledIconButton
+                    icon={ArrowRight}
+                    onClick={() => {
+                      handleViewProfile(rsvp.user_details, rsvp.user_id);
+                    }}
+                  />
                 </div>
-                <CircledIconButton
-                  icon={ArrowRight}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleViewProfile(rsvp.user_details, rsvp.user_id);
-                  }}
-                />
-              </button>
+              </div>
             ))}
           </div>
         )}

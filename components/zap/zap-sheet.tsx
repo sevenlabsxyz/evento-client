@@ -427,8 +427,15 @@ export function ZapSheet({
     if (children) {
       // Clone child element and add onClick
       if (isValidElement(children)) {
+        const existingOnClick = (children.props as { onClick?: (event: any) => void }).onClick;
         return cloneElement(children as React.ReactElement<any>, {
-          onClick: handleOpenSheet,
+          onClick: (event: any) => {
+            existingOnClick?.(event);
+
+            if (!event?.defaultPrevented) {
+              handleOpenSheet();
+            }
+          },
         });
       }
       return <div onClick={handleOpenSheet}>{children}</div>;

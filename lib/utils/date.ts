@@ -59,6 +59,24 @@ const MAX_MINUTE = 59;
 const DATE_PARTS_CACHE_LIMIT = 200;
 const datePartsDisplayCache = new Map<string, EventDateDisplay>();
 
+function toLocalDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = `${date.getMonth() + 1}`.padStart(2, '0');
+  const day = `${date.getDate()}`.padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateOnlyString(date: string): Date | null {
+  const match = date.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) {
+    return null;
+  }
+
+  const [, year, month, day] = match;
+  const parsedDate = new Date(Number(year), Number(month) - 1, Number(day));
+  return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+}
+
 function getIntlTimeZoneOptions(timezone?: string): Intl.DateTimeFormatOptions {
   if (!timezone) {
     return {};
@@ -449,15 +467,24 @@ export function getRelativeTime(isoString: string): string {
  * @param date - Date string in YYYY-MM-DD format
  */
 export function formatDateHeader(date: string): string {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = toLocalDateKey(new Date());
   const tomorrow = new Date();
   tomorrow.setDate(tomorrow.getDate() + 1);
-  const tomorrowStr = tomorrow.toISOString().slice(0, 10);
+  const tomorrowStr = toLocalDateKey(tomorrow);
 
   if (date === today) return 'Today';
   if (date === tomorrowStr) return 'Tomorrow';
 
-  return new Date(date).toLocaleDateString('en-US', {
+  const parsedDate = parseDateOnlyString(date);
+  if (!parsedDate) {
+    return new Date(date).toLocaleDateString('en-US', {
+      weekday: 'long',
+      month: 'long',
+      day: 'numeric',
+    });
+  }
+
+  return parsedDate.toLocaleDateString('en-US', {
     weekday: 'long',
     month: 'long',
     day: 'numeric',

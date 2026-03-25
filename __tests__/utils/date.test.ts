@@ -1,4 +1,5 @@
 import {
+  formatDateHeader,
   formatEventDate,
   formatEventDateFromParts,
   formatEventDateRangeFromParts,
@@ -207,5 +208,12 @@ describe('formatEventDateRangeFromParts', () => {
 
     expect(formatted.isMultiDay).toBe(false);
     expect(formatted.displayDate).toBe('Sunday, April 26');
+  });
+});
+
+describe('formatDateHeader', () => {
+  it('formats YYYY-MM-DD headers as local calendar dates without shifting a day', () => {
+    expect(formatDateHeader('2026-04-26')).toBe('Sunday, April 26');
+    expect(formatDateHeader('2026-04-27')).toBe('Monday, April 27');
   });
 });

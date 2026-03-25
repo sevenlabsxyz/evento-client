@@ -1,6 +1,7 @@
 'use client';
 
 import ProgressiveImage from '@/components/ui/progressive-image';
+import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { isGif } from '@/lib/utils/image';
 import { Camera } from 'lucide-react';
@@ -40,29 +41,13 @@ export default function CoverImageSelector({
           )}
         </div>
       ) : (
-        // Default sunny character placeholder matching the screenshot
-        <div className='flex h-full items-center justify-center'>
-          <div className='relative'>
-            {/* Simplified sun character representation */}
-            <div className='relative h-32 w-32 rounded-full bg-yellow-400'>
-              {/* Sun rays */}
-              <div className='absolute -top-4 left-1/2 h-8 w-1 -translate-x-1/2 transform rounded-full bg-yellow-500'></div>
-              <div className='absolute -bottom-4 left-1/2 h-8 w-1 -translate-x-1/2 transform rounded-full bg-yellow-500'></div>
-              <div className='absolute -left-4 top-1/2 h-1 w-8 -translate-y-1/2 transform rounded-full bg-yellow-500'></div>
-              <div className='absolute -right-4 top-1/2 h-1 w-8 -translate-y-1/2 transform rounded-full bg-yellow-500'></div>
-
-              {/* Face */}
-              <div className='absolute inset-0 flex items-center justify-center'>
-                <div className='text-4xl'>😎</div>
-              </div>
-
-              {/* Arms and legs (simplified) */}
-              <div className='absolute -bottom-2 -left-2 h-6 w-6 rounded-full bg-gray-700'></div>
-              <div className='absolute -bottom-2 -right-2 h-6 w-6 rounded-full bg-gray-700'></div>
-              <div className='absolute -left-4 bottom-8 h-8 w-4 rotate-45 transform rounded-full bg-gray-700'></div>
-              <div className='absolute -right-4 bottom-8 h-8 w-4 -rotate-45 transform rounded-full bg-gray-700'></div>
-            </div>
-          </div>
+        <div className='h-full w-full'>
+          <ProgressiveImage
+            src={getCoverImageUrl500x500(DEFAULT_EVENT_COVER_URL)}
+            alt='Default event cover'
+            fill
+            className='object-cover'
+          />
         </div>
       )}
 
