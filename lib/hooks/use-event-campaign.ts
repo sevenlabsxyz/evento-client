@@ -1,6 +1,7 @@
 import apiClient from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
 import {
+  ApiError,
   ApiResponse,
   CampaignStatus,
   CampaignVisibility,
@@ -60,12 +61,36 @@ function toUpdatePayload(input: UpdateEventCampaignInput): UpdateEventCampaignPa
   return payload;
 }
 
-export async function getEventCampaign(eventId: string): Promise<CampaignWithProgress> {
-  const response = await apiClient.get<ApiResponse<CampaignWithProgress>>(
-    `/v1/events/${eventId}/campaign`
-  );
+function isMissingCampaignError(error: unknown): error is ApiError {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
 
-  return response.data;
+  const apiError = error as ApiError;
+
+  return (
+    apiError.status === 404 ||
+    (apiError.status === 400 && apiError.message === 'Campaign not found.')
+  );
+}
+
+export async function getEventCampaign(eventId: string): Promise<CampaignWithProgress | null> {
+  try {
+    const response = await apiClient.get<ApiResponse<CampaignWithProgress>>(
+      `/v1/events/${eventId}/campaign`,
+      {
+        suppressErrorStatuses: [400, 404],
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (isMissingCampaignError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export async function createEventCampaign(

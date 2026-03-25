@@ -92,20 +92,23 @@ apiClient.interceptors.response.use(
     const errorMessage =
       (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
 
-    // Log API error with full context
-    console.error('API Error:', {
-      url: config?.url || 'unknown',
-      error: error.message,
-      stack: error.stack,
-      requestId,
-      method: config?.method?.toUpperCase(),
-      statusCode: error.response?.status,
-      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
-      duration,
-      responseData: error.response?.data,
-      networkError: !error.response,
-      timeout: error.code === 'ECONNABORTED',
-    });
+    const shouldLogError = !config?.suppressErrorStatuses?.includes(error.response?.status ?? -1);
+
+    if (shouldLogError) {
+      console.error('API Error:', {
+        url: config?.url || 'unknown',
+        error: error.message,
+        stack: error.stack,
+        requestId,
+        method: config?.method?.toUpperCase(),
+        statusCode: error.response?.status,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
+        duration,
+        responseData: error.response?.data,
+        networkError: !error.response,
+        timeout: error.code === 'ECONNABORTED',
+      });
+    }
 
     // Create a standardized error object
     const apiError = {
@@ -125,6 +128,7 @@ declare module 'axios' {
       requestId: string;
       startTime: number;
     };
+    suppressErrorStatuses?: number[];
   }
 
   interface InternalAxiosRequestConfig {
@@ -132,6 +136,7 @@ declare module 'axios' {
       requestId: string;
       startTime: number;
     };
+    suppressErrorStatuses?: number[];
   }
 }
 

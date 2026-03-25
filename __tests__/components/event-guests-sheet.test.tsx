@@ -22,6 +22,11 @@ jest.mock('@/lib/hooks/use-auth', () => ({
 }));
 
 describe('GuestsSheet', () => {
+  const defaultProps = {
+    eventCreatorUserId: 'host-1',
+    hostUserIds: ['host-1'],
+  };
+
   const rsvps = [
     {
       id: 'rsvp-1',
@@ -44,14 +49,14 @@ describe('GuestsSheet', () => {
 
   it('does not nest interactive buttons inside the guest row', () => {
     const { container } = render(
-      <GuestsSheet open={true} onOpenChange={jest.fn()} rsvps={rsvps} />
+      <GuestsSheet open={true} onOpenChange={jest.fn()} rsvps={rsvps} {...defaultProps} />
     );
 
     expect(container.querySelector('button button')).toBeNull();
   });
 
   it('opens the quick profile from the main guest row button', () => {
-    render(<GuestsSheet open={true} onOpenChange={jest.fn()} rsvps={rsvps} />);
+    render(<GuestsSheet open={true} onOpenChange={jest.fn()} rsvps={rsvps} {...defaultProps} />);
 
     fireEvent.click(screen.getByRole('button', { name: 'Open profile for @alice' }));
 
@@ -59,7 +64,7 @@ describe('GuestsSheet', () => {
   });
 
   it('does not open the quick profile when the zap trigger is clicked', () => {
-    render(<GuestsSheet open={true} onOpenChange={jest.fn()} rsvps={rsvps} />);
+    render(<GuestsSheet open={true} onOpenChange={jest.fn()} rsvps={rsvps} {...defaultProps} />);
 
     const buttons = screen.getAllByRole('button');
     fireEvent.click(buttons[1]!);

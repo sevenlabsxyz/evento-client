@@ -217,7 +217,9 @@ describe('Event Campaign Manage Flow', () => {
 
       await waitFor(() => expect(result.current.isSuccess).toBe(true));
       expect(result.current.data).toEqual(fakeCampaign);
-      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/evt_test123/campaign');
+      expect(mockApiClient.get).toHaveBeenCalledWith('/v1/events/evt_test123/campaign', {
+        suppressErrorStatuses: [400, 404],
+      });
     });
 
     it('handles 404 (no campaign)', async () => {
@@ -227,7 +229,9 @@ describe('Event Campaign Manage Flow', () => {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(result.current.isError).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toBeNull();
+      expect(result.current.isError).toBe(false);
     });
 
     it('is disabled when eventId is empty', () => {
@@ -354,7 +358,8 @@ describe('Event Campaign Manage Flow', () => {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(queryResult.current.isError).toBe(true));
+      await waitFor(() => expect(queryResult.current.isSuccess).toBe(true));
+      expect(queryResult.current.data).toBeNull();
 
       const { result: createResult } = renderHook(() => useCreateEventCampaign('evt_test123'), {
         wrapper: createWrapper(queryClient),
@@ -385,10 +390,10 @@ describe('Event Campaign Manage Flow', () => {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(queryResult.current.isError).toBe(true));
+      await waitFor(() => expect(queryResult.current.isSuccess).toBe(true));
 
-      // Campaign data is undefined — page should treat this as create mode
-      expect(queryResult.current.data).toBeUndefined();
+      // Campaign data is null — page should treat this as create mode
+      expect(queryResult.current.data).toBeNull();
 
       // Create mutation should still succeed when invoked
       const { result: createResult } = renderHook(() => useCreateEventCampaign('evt_test123'), {
@@ -423,7 +428,8 @@ describe('Event Campaign Manage Flow', () => {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(queryResult.current.isError).toBe(true));
+      await waitFor(() => expect(queryResult.current.isSuccess).toBe(true));
+      expect(queryResult.current.data).toBeNull();
 
       const { result: createResult } = renderHook(() => useCreateEventCampaign('evt_test123'), {
         wrapper: createWrapper(queryClient),

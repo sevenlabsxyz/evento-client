@@ -186,17 +186,19 @@ export default function GuestsSheet({
                   </div>
                 </button>
                 <div className='flex shrink-0 items-center gap-2'>
-                  <ZapSheet
-                    recipientLightningAddress={rsvp.user_details?.ln_address || ''}
-                    recipientName={
-                      rsvp.user_details?.name || rsvp.user_details?.username || 'Guest'
-                    }
-                    recipientUsername={rsvp.user_details?.username || undefined}
-                    recipientAvatar={rsvp.user_details?.image || undefined}
-                    currentUsername={loggedInUser?.username}
-                  >
-                    <CircledIconButton icon={Zap} />
-                  </ZapSheet>
+                  {rsvp.user_details?.username !== loggedInUser?.username && (
+                    <ZapSheet
+                      recipientLightningAddress={rsvp.user_details?.ln_address || ''}
+                      recipientName={
+                        rsvp.user_details?.name || rsvp.user_details?.username || 'Guest'
+                      }
+                      recipientUsername={rsvp.user_details?.username || undefined}
+                      recipientAvatar={rsvp.user_details?.image || undefined}
+                      currentUsername={loggedInUser?.username}
+                    >
+                      <CircledIconButton icon={Zap} />
+                    </ZapSheet>
+                  )}
                   <CircledIconButton
                     icon={ArrowRight}
                     onClick={() => {

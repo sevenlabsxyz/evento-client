@@ -148,8 +148,9 @@ describe('Event Campaign Card Integration', () => {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(result.current.isError).toBe(true));
-      expect(result.current.data).toBeUndefined();
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toBeNull();
+      expect(result.current.isError).toBe(false);
     });
   });
 
