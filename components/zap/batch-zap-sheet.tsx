@@ -2,11 +2,13 @@
 
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useBatchZapPayments } from '@/lib/hooks/use-batch-zap-payments';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { BTCPriceService } from '@/lib/services/btc-price';
 import {
   BatchZapAmountMode,
   BatchZapRecipientSummary,
@@ -32,6 +34,8 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   const { progress, reset, sendBatch } = useBatchZapPayments();
   const [amountMode, setAmountMode] = useState<BatchZapAmountMode | null>(null);
   const [amountInput, setAmountInput] = useState('');
+  const [availableBalanceUSD, setAvailableBalanceUSD] = useState(0);
+  const [isBalanceUSDLoading, setIsBalanceUSDLoading] = useState(true);
 
   const enteredAmountSats = useMemo(() => {
     if (!amountInput.trim()) return 0;
@@ -55,37 +59,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   const skippedResults = progress.results.filter((result) => result.status === 'skipped');
   const totalSentSats = sentResults.reduce((sum, result) => sum + result.amountSats, 0);
   const recipientContextLine = useMemo(() => {
-    const parts: string[] = [];
-
-    if (recipientSummary.eligibleRecipients.length > 0) {
-      parts.push(
-        `This batch will go to ${recipientSummary.eligibleRecipients.length} ${
-          recipientSummary.eligibleRecipients.length === 1 ? 'guest' : 'guests'
-        }.`
-      );
-    }
-
-    if (recipientSummary.excludedSelf.length > 0) {
-      parts.push('You are excluded.');
-    }
-
-    if (recipientSummary.isViewerHost && recipientSummary.excludedHosts.length > 0) {
-      parts.push(
-        `${recipientSummary.excludedHosts.length} ${
-          recipientSummary.excludedHosts.length === 1 ? 'host is' : 'hosts are'
-        } excluded from this send.`
-      );
-    }
-
-    if (recipientSummary.excludedNoLightning.length > 0) {
-      parts.push(
-        `${recipientSummary.excludedNoLightning.length} ${
-          recipientSummary.excludedNoLightning.length === 1 ? 'guest' : 'guests'
-        } without an Evento wallet can't receive this batch zap.`
-      );
-    }
-
-    return parts.join(' ');
+    return `This batch will go to ${recipientSummary.eligibleRecipients.length} guest(s). A total of ${recipientSummary.excludedNoLightning.length} guest(s) without an Evento wallet can't receive this batch zap but will be notified over email of the attempt.`;
   }, [recipientSummary]);
 
   useEffect(() => {
@@ -95,6 +69,22 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
       reset();
     }
   }, [open, reset]);
+
+  useEffect(() => {
+    const fetchAvailableBalanceUSD = async () => {
+      try {
+        setIsBalanceUSDLoading(true);
+        const usd = await BTCPriceService.satsToUSD(walletState.balance);
+        setAvailableBalanceUSD(usd);
+      } catch {
+        setAvailableBalanceUSD(0);
+      } finally {
+        setIsBalanceUSDLoading(false);
+      }
+    };
+
+    void fetchAvailableBalanceUSD();
+  }, [walletState.balance]);
 
   const hasExistingWallet = () => {
     if (typeof window === 'undefined') {
@@ -210,20 +200,20 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         Done
       </Button>
     ) : (
-      <div className='flex gap-3'>
+      <div className='flex flex-col gap-3'>
         <Button
-          variant='outline'
-          className='flex-1 rounded-full'
-          onClick={() => onOpenChange(false)}
-        >
-          Cancel
-        </Button>
-        <Button
-          className='flex-1 rounded-full bg-red-500 text-white hover:bg-red-600'
+          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
           disabled={!validation.valid}
           onClick={handleConfirm}
         >
           Confirm and send
+        </Button>
+        <Button
+          variant='outline'
+          className='w-full rounded-full'
+          onClick={() => onOpenChange(false)}
+        >
+          Cancel
         </Button>
       </div>
     );
@@ -398,7 +388,18 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 <p className='text-base font-semibold text-gray-900'>Amount</p>
                 <p className='text-sm text-gray-500'>Choose how to calculate the batch.</p>
               </div>
-              <WalletBalanceDisplay size='sm' />
+              <div className='text-right'>
+                <div className='text-sm font-semibold text-gray-900'>
+                  {walletState.balance.toLocaleString()} sats
+                </div>
+                {isBalanceUSDLoading ? (
+                  <Skeleton className='ml-auto mt-1 h-3 w-16' />
+                ) : (
+                  <div className='text-xs text-gray-500'>
+                    ${availableBalanceUSD.toFixed(2)} available
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className='mt-4 grid grid-cols-2 gap-3'>
@@ -447,11 +448,12 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
               <p className='mt-2 text-xs text-gray-500'>
                 Minimum {5} sats per guest. Total-split keeps any remainder in your wallet.
               </p>
-              {recipientContextLine && (
-                <p className='mt-3 text-sm leading-6 text-gray-600'>{recipientContextLine}</p>
-              )}
             </div>
           </div>
+
+          {recipientContextLine && (
+            <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+          )}
 
           {validation.distribution && (
             <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5'>
