@@ -76,12 +76,14 @@ function buildConnectedWalletState(balance: number, savedState?: WalletState | n
 
 async function initializeWalletState({
   getInMemorySeed,
+  getCurrentWalletState,
   isSeedValid,
   setError,
   setLoading,
   setWalletState,
 }: {
   getInMemorySeed: () => string | null;
+  getCurrentWalletState: () => WalletState;
   isSeedValid: () => boolean;
   setError: (error: string | null) => void;
   setLoading: (loading: boolean) => void;
@@ -116,6 +118,13 @@ async function initializeWalletState({
         return true;
       } catch (err) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
+        const currentWalletState = getCurrentWalletState();
+        const fallbackBalance = currentWalletState.isInitialized
+          ? currentWalletState.balance
+          : (savedState?.balance ?? 0);
+
+        setWalletState(buildConnectedWalletState(fallbackBalance, savedState));
+        return true;
       }
     }
 
@@ -189,6 +198,7 @@ export function useWallet() {
 
     walletInitializationPromise ??= initializeWalletState({
       getInMemorySeed,
+      getCurrentWalletState: () => useWalletStore.getState().walletState,
       isSeedValid,
       setError: guardedSetError,
       setLoading: guardedSetLoading,
