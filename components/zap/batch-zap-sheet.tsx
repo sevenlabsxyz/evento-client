@@ -3,7 +3,6 @@
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
-import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useBatchZapPayments } from '@/lib/hooks/use-batch-zap-payments';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -15,6 +14,7 @@ import {
   validateBatchZap,
 } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
+import { AnimatePresence, motion } from 'framer-motion';
 import { AlertTriangle, CheckCircle2, Info, Loader2, TriangleAlert, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -32,6 +32,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   const router = useRouter();
   const { walletState } = useWallet();
   const { progress, reset, sendBatch } = useBatchZapPayments();
+  const [step, setStep] = useState<'setup' | 'review'>('setup');
   const [amountMode, setAmountMode] = useState<BatchZapAmountMode | null>(null);
   const [amountInput, setAmountInput] = useState('');
   const [availableBalanceUSD, setAvailableBalanceUSD] = useState(0);
@@ -58,12 +59,16 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   const failedResults = progress.results.filter((result) => result.status === 'failed');
   const skippedResults = progress.results.filter((result) => result.status === 'skipped');
   const totalSentSats = sentResults.reduce((sum, result) => sum + result.amountSats, 0);
-  const recipientContextLine = useMemo(() => {
-    return `This batch will go to ${recipientSummary.eligibleRecipients.length} guest(s). A total of ${recipientSummary.excludedNoLightning.length} guest(s) without an Evento wallet can't receive this batch zap but will be notified over email of the attempt.`;
-  }, [recipientSummary]);
+
+  const recipientContextLine = useMemo(
+    () =>
+      `This batch will go to ${recipientSummary.eligibleRecipients.length} guest(s). A total of ${recipientSummary.excludedNoLightning.length} guest(s) without an Evento wallet can't receive this batch zap but will be notified over email of the attempt.`,
+    [recipientSummary]
+  );
 
   useEffect(() => {
     if (!open) {
+      setStep('setup');
       setAmountMode(null);
       setAmountInput('');
       reset();
@@ -188,10 +193,10 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
   };
 
   const sheetTitle =
-    progress.status === 'sending'
-      ? 'Sending Zaps'
-      : progress.status === 'completed'
-        ? 'Batch Zap Complete'
+    progress.status === 'completed'
+      ? 'Batch Zap Complete'
+      : step === 'review'
+        ? 'Review Batch Zap'
         : 'Zap All';
 
   const footer =
@@ -199,14 +204,26 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
       <Button className='w-full rounded-full' onClick={() => onOpenChange(false)}>
         Done
       </Button>
+    ) : step === 'review' ? (
+      <div className='flex flex-col gap-3'>
+        <Button
+          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+          onClick={handleConfirm}
+        >
+          Confirm and send
+        </Button>
+        <Button variant='outline' className='w-full rounded-full' onClick={() => setStep('setup')}>
+          Back
+        </Button>
+      </div>
     ) : (
       <div className='flex flex-col gap-3'>
         <Button
           className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
           disabled={!validation.valid}
-          onClick={handleConfirm}
+          onClick={() => setStep('review')}
         >
-          Confirm and send
+          Next
         </Button>
         <Button
           variant='outline'
@@ -219,281 +236,315 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     );
 
   return (
-    <MasterScrollableSheet
-      title={sheetTitle}
-      open={open}
-      onOpenChange={handleSheetChange}
-      headerRight={
-        progress.status === 'sending' ? (
-          <div className='flex items-center gap-3'>
-            <WalletBalanceDisplay size='sm' />
-            <div className='h-10 w-10' />
-          </div>
-        ) : undefined
-      }
-      footer={footer}
-      contentClassName='px-4 pb-6 pt-4'
-    >
-      {progress.status === 'sending' ? (
-        <div className='space-y-6'>
-          <div className='rounded-3xl border border-amber-200 bg-amber-50 p-5'>
-            <div className='flex items-start gap-3'>
-              <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
-              <div>
-                <p className='font-semibold text-amber-900'>Don&apos;t leave this screen</p>
-                <p className='mt-1 text-sm text-amber-800'>
-                  Keep Evento open and avoid switching tabs or apps. These payments are being sent
-                  directly from your self-custody wallet on this device.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className='rounded-3xl bg-black px-5 py-6 text-white'>
-            <div className='flex items-center gap-3'>
-              <Loader2 className='h-6 w-6 animate-spin text-red-400' />
-              <div>
-                <p className='text-sm uppercase tracking-[0.18em] text-white/60'>Batch Zap</p>
-                <p className='text-2xl font-semibold'>
-                  Sending payment {progress.currentIndex} of {progress.totalCount}
-                </p>
-              </div>
-            </div>
-
-            <div className='mt-6 h-2 overflow-hidden rounded-full bg-white/15'>
-              <div
-                className='h-full rounded-full bg-red-400 transition-all'
-                style={{
-                  width:
-                    progress.totalCount > 0
-                      ? `${Math.min((progress.results.length / progress.totalCount) * 100, 100)}%`
-                      : '0%',
-                }}
-              />
-            </div>
-
-            <div className='mt-6 grid grid-cols-3 gap-3 text-center text-sm'>
-              <div className='rounded-2xl bg-white/10 px-3 py-3'>
-                <div className='text-xl font-semibold'>{progress.sentCount}</div>
-                <div className='text-white/70'>Sent</div>
-              </div>
-              <div className='rounded-2xl bg-white/10 px-3 py-3'>
-                <div className='text-xl font-semibold'>{progress.failedCount}</div>
-                <div className='text-white/70'>Failed</div>
-              </div>
-              <div className='rounded-2xl bg-white/10 px-3 py-3'>
-                <div className='text-xl font-semibold'>{progress.remainingCount}</div>
-                <div className='text-white/70'>Remaining</div>
-              </div>
-            </div>
-          </div>
-
-          <div className='rounded-3xl border border-gray-200 bg-white p-5'>
-            <p className='text-xs font-semibold uppercase tracking-[0.18em] text-gray-500'>
-              Current recipient
-            </p>
-            <p className='mt-2 text-lg font-semibold text-gray-900'>
-              {progress.currentRecipient?.name || 'Preparing next payment'}
-            </p>
-            <p className='text-sm text-gray-500'>
-              {progress.currentRecipient?.username
-                ? `@${progress.currentRecipient.username}`
-                : 'Processing Lightning payment'}
-            </p>
-          </div>
-        </div>
-      ) : progress.status === 'completed' ? (
-        <div className='space-y-6'>
-          <div
-            className={`rounded-3xl p-5 ${
-              failedResults.length === 0 && skippedResults.length === 0
-                ? 'border border-green-200 bg-green-50'
-                : 'border border-amber-200 bg-amber-50'
-            }`}
-          >
-            <div className='flex items-start gap-3'>
-              {failedResults.length === 0 && skippedResults.length === 0 ? (
-                <CheckCircle2 className='mt-0.5 h-5 w-5 flex-shrink-0 text-green-600' />
-              ) : (
-                <TriangleAlert className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
-              )}
-              <div>
-                <p className='font-semibold text-gray-900'>
-                  {failedResults.length === 0 && skippedResults.length === 0
-                    ? 'All payments were sent'
-                    : 'Batch finished with some issues'}
-                </p>
-                <p className='mt-1 text-sm text-gray-700'>
-                  {sentResults.length} payment{sentResults.length === 1 ? '' : 's'} sent for{' '}
-                  {totalSentSats.toLocaleString()} sats.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className='grid gap-3 sm:grid-cols-3'>
-            <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
-              <div className='text-2xl font-semibold text-gray-900'>{sentResults.length}</div>
-              <div className='text-sm text-gray-500'>Sent</div>
-            </div>
-            <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
-              <div className='text-2xl font-semibold text-gray-900'>{failedResults.length}</div>
-              <div className='text-sm text-gray-500'>Failed</div>
-            </div>
-            <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
-              <div className='text-2xl font-semibold text-gray-900'>{skippedResults.length}</div>
-              <div className='text-sm text-gray-500'>Skipped</div>
-            </div>
-          </div>
-
-          {(failedResults.length > 0 || skippedResults.length > 0) && (
-            <div className='space-y-3'>
-              <h3 className='text-base font-semibold text-gray-900'>Needs attention</h3>
-              {failedResults.map((result) => (
-                <div
-                  key={`failed-${result.recipient.userId}`}
-                  className='rounded-2xl border border-red-100 bg-red-50 px-4 py-3'
-                >
-                  <div className='flex items-start gap-3'>
-                    <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
-                    <div>
-                      <p className='font-medium text-gray-900'>{result.recipient.name}</p>
-                      <p className='text-sm text-red-700'>{result.error || 'Payment failed'}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {skippedResults.map((result) => (
-                <div
-                  key={`skipped-${result.recipient.userId}`}
-                  className='rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3'
-                >
-                  <div className='flex items-start gap-3'>
-                    <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500' />
-                    <div>
-                      <p className='font-medium text-gray-900'>{result.recipient.name}</p>
-                      <p className='text-sm text-gray-600'>{result.error || 'Payment skipped'}</p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ) : (
-        <div className='space-y-6'>
-          <div className='rounded-3xl border border-gray-200 bg-white p-5'>
-            <div className='flex items-center justify-between gap-3'>
-              <div>
-                <p className='text-base font-semibold text-gray-900'>Amount</p>
-                <p className='text-sm text-gray-500'>Choose how to calculate the batch.</p>
-              </div>
-              <div className='text-right'>
-                <div className='text-sm font-semibold text-gray-900'>
-                  {walletState.balance.toLocaleString()} sats
-                </div>
-                {isBalanceUSDLoading ? (
-                  <Skeleton className='ml-auto mt-1 h-3 w-16' />
+    <>
+      <MasterScrollableSheet
+        title={sheetTitle}
+        open={open}
+        onOpenChange={handleSheetChange}
+        footer={footer}
+        contentClassName='px-4 pb-6 pt-4'
+      >
+        {progress.status === 'completed' ? (
+          <div className='space-y-6'>
+            <div
+              className={`rounded-3xl p-5 ${
+                failedResults.length === 0 && skippedResults.length === 0
+                  ? 'border border-green-200 bg-green-50'
+                  : 'border border-amber-200 bg-amber-50'
+              }`}
+            >
+              <div className='flex items-start gap-3'>
+                {failedResults.length === 0 && skippedResults.length === 0 ? (
+                  <CheckCircle2 className='mt-0.5 h-5 w-5 flex-shrink-0 text-green-600' />
                 ) : (
-                  <div className='text-xs text-gray-500'>
-                    ${availableBalanceUSD.toFixed(2)} available
+                  <TriangleAlert className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
+                )}
+                <div>
+                  <p className='font-semibold text-gray-900'>
+                    {failedResults.length === 0 && skippedResults.length === 0
+                      ? 'All payments were sent'
+                      : 'Batch finished with some issues'}
+                  </p>
+                  <p className='mt-1 text-sm text-gray-700'>
+                    {sentResults.length} payment{sentResults.length === 1 ? '' : 's'} sent for{' '}
+                    {totalSentSats.toLocaleString()} sats.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className='grid gap-3 sm:grid-cols-3'>
+              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
+                <div className='text-2xl font-semibold text-gray-900'>{sentResults.length}</div>
+                <div className='text-sm text-gray-500'>Sent</div>
+              </div>
+              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
+                <div className='text-2xl font-semibold text-gray-900'>{failedResults.length}</div>
+                <div className='text-sm text-gray-500'>Failed</div>
+              </div>
+              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
+                <div className='text-2xl font-semibold text-gray-900'>{skippedResults.length}</div>
+                <div className='text-sm text-gray-500'>Skipped</div>
+              </div>
+            </div>
+
+            {(failedResults.length > 0 || skippedResults.length > 0) && (
+              <div className='space-y-3'>
+                <h3 className='text-base font-semibold text-gray-900'>Needs attention</h3>
+                {failedResults.map((result) => (
+                  <div
+                    key={`failed-${result.recipient.userId}`}
+                    className='rounded-2xl border border-red-100 bg-red-50 px-4 py-3'
+                  >
+                    <div className='flex items-start gap-3'>
+                      <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
+                      <div>
+                        <p className='font-medium text-gray-900'>{result.recipient.name}</p>
+                        <p className='text-sm text-red-700'>{result.error || 'Payment failed'}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {skippedResults.map((result) => (
+                  <div
+                    key={`skipped-${result.recipient.userId}`}
+                    className='rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3'
+                  >
+                    <div className='flex items-start gap-3'>
+                      <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500' />
+                      <div>
+                        <p className='font-medium text-gray-900'>{result.recipient.name}</p>
+                        <p className='text-sm text-gray-600'>{result.error || 'Payment skipped'}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <AnimatePresence mode='wait' initial={false}>
+            {step === 'setup' ? (
+              <motion.div
+                key='batch-zap-setup'
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className='space-y-6'
+              >
+                <div className='rounded-3xl border border-gray-200 bg-white p-5'>
+                  <div className='flex items-center justify-between gap-3'>
+                    <div>
+                      <p className='text-base font-semibold text-gray-900'>Amount</p>
+                      <p className='text-sm text-gray-500'>Choose how to calculate the batch.</p>
+                    </div>
+                    <div className='text-right'>
+                      <div className='text-sm font-semibold text-gray-900'>
+                        {walletState.balance.toLocaleString()} sats
+                      </div>
+                      {isBalanceUSDLoading ? (
+                        <Skeleton className='ml-auto mt-1 h-3 w-16' />
+                      ) : (
+                        <div className='text-xs text-gray-500'>
+                          ${availableBalanceUSD.toFixed(2)} available
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className='mt-4 grid grid-cols-2 gap-3'>
+                    <button
+                      type='button'
+                      onClick={() => setAmountMode('per-person')}
+                      className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+                        amountMode === 'per-person'
+                          ? 'border-red-200 bg-red-50 text-red-900'
+                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <p className='font-medium'>Per person</p>
+                      <p className='mt-1 text-sm opacity-80'>Each guest gets the entered amount.</p>
+                    </button>
+                    <button
+                      type='button'
+                      onClick={() => setAmountMode('total-split')}
+                      className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+                        amountMode === 'total-split'
+                          ? 'border-red-200 bg-red-50 text-red-900'
+                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                      }`}
+                    >
+                      <p className='font-medium'>Total split</p>
+                      <p className='mt-1 text-sm opacity-80'>
+                        Divide the total across all recipients.
+                      </p>
+                    </button>
+                  </div>
+
+                  <div className='mt-4'>
+                    <label
+                      htmlFor='batch-zap-amount'
+                      className='mb-2 block text-sm font-medium text-gray-700'
+                    >
+                      Amount in sats
+                    </label>
+                    <input
+                      id='batch-zap-amount'
+                      inputMode='numeric'
+                      pattern='[0-9]*'
+                      placeholder='Enter sats'
+                      value={amountInput}
+                      onChange={(event) => setAmountInput(event.target.value.replace(/[^\d]/g, ''))}
+                      className='h-14 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:border-red-200'
+                    />
+                    <p className='mt-2 text-xs text-gray-500'>
+                      Minimum 5 sats per guest. Total-split keeps any remainder in your wallet.
+                    </p>
+                  </div>
+                </div>
+
+                <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+
+                {!validation.valid && amountInput && (
+                  <div className='rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800'>
+                    {validation.error}
                   </div>
                 )}
-              </div>
-            </div>
-
-            <div className='mt-4 grid grid-cols-2 gap-3'>
-              <button
-                type='button'
-                onClick={() => setAmountMode('per-person')}
-                className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
-                  amountMode === 'per-person'
-                    ? 'border-red-200 bg-red-50 text-red-900'
-                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
-                }`}
+              </motion.div>
+            ) : (
+              <motion.div
+                key='batch-zap-review'
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className='space-y-6'
               >
-                <p className='font-medium'>Per person</p>
-                <p className='mt-1 text-sm opacity-80'>Each guest gets the entered amount.</p>
-              </button>
-              <button
-                type='button'
-                onClick={() => setAmountMode('total-split')}
-                className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
-                  amountMode === 'total-split'
-                    ? 'border-red-200 bg-red-50 text-red-900'
-                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
-                }`}
-              >
-                <p className='font-medium'>Total split</p>
-                <p className='mt-1 text-sm opacity-80'>Divide the total across all recipients.</p>
-              </button>
-            </div>
+                {validation.distribution && (
+                  <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5'>
+                    <h3 className='text-base font-semibold text-gray-900'>Send summary</h3>
+                    <div className={SUMMARY_ROW_CLASS}>
+                      <span className='text-sm text-gray-500'>Recipients</span>
+                      <span className='font-semibold text-gray-900'>
+                        {validation.distribution.recipientCount}
+                      </span>
+                    </div>
+                    <div className={SUMMARY_ROW_CLASS}>
+                      <span className='text-sm text-gray-500'>Per recipient</span>
+                      <span className='font-semibold text-gray-900'>
+                        {validation.distribution.perRecipientAmountSats.toLocaleString()} sats
+                      </span>
+                    </div>
+                    <div className={SUMMARY_ROW_CLASS}>
+                      <span className='text-sm text-gray-500'>Total to send</span>
+                      <span className='font-semibold text-gray-900'>
+                        {validation.distribution.totalAmountSats.toLocaleString()} sats
+                      </span>
+                    </div>
+                    {validation.distribution.leftoverSats > 0 && (
+                      <div className={SUMMARY_ROW_CLASS}>
+                        <span className='text-sm text-gray-500'>Remainder kept in wallet</span>
+                        <span className='font-semibold text-gray-900'>
+                          {validation.distribution.leftoverSats.toLocaleString()} sats
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
 
-            <div className='mt-4'>
-              <label
-                htmlFor='batch-zap-amount'
-                className='mb-2 block text-sm font-medium text-gray-700'
-              >
-                Amount in sats
-              </label>
-              <input
-                id='batch-zap-amount'
-                inputMode='numeric'
-                pattern='[0-9]*'
-                placeholder='Enter sats'
-                value={amountInput}
-                onChange={(event) => setAmountInput(event.target.value.replace(/[^\d]/g, ''))}
-                className='h-14 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:border-red-200'
-              />
-              <p className='mt-2 text-xs text-gray-500'>
-                Minimum {5} sats per guest. Total-split keeps any remainder in your wallet.
-              </p>
-            </div>
-          </div>
+                <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        )}
+      </MasterScrollableSheet>
 
-          {recipientContextLine && (
-            <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
-          )}
-
-          {validation.distribution && (
-            <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5'>
-              <h3 className='text-base font-semibold text-gray-900'>Send summary</h3>
-              <div className={SUMMARY_ROW_CLASS}>
-                <span className='text-sm text-gray-500'>Recipients</span>
-                <span className='font-semibold text-gray-900'>
-                  {validation.distribution.recipientCount}
-                </span>
-              </div>
-              <div className={SUMMARY_ROW_CLASS}>
-                <span className='text-sm text-gray-500'>Per recipient</span>
-                <span className='font-semibold text-gray-900'>
-                  {validation.distribution.perRecipientAmountSats.toLocaleString()} sats
-                </span>
-              </div>
-              <div className={SUMMARY_ROW_CLASS}>
-                <span className='text-sm text-gray-500'>Total to send</span>
-                <span className='font-semibold text-gray-900'>
-                  {validation.distribution.totalAmountSats.toLocaleString()} sats
-                </span>
-              </div>
-              {validation.distribution.leftoverSats > 0 && (
-                <div className={SUMMARY_ROW_CLASS}>
-                  <span className='text-sm text-gray-500'>Remainder kept in wallet</span>
-                  <span className='font-semibold text-gray-900'>
-                    {validation.distribution.leftoverSats.toLocaleString()} sats
-                  </span>
+      <AnimatePresence>
+        {progress.status === 'sending' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className='fixed inset-0 z-[120] flex items-center justify-center bg-black/65 px-4 backdrop-blur-sm'
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 16, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 16, scale: 0.98 }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className='w-full max-w-sm bg-[#111111] px-6 py-7 text-white shadow-2xl rounded-[32px]'
+            >
+              <div className='rounded-3xl border border-white/10 bg-white/5 p-5'>
+                <div className='flex items-start gap-3'>
+                  <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-300' />
+                  <div>
+                    <p className='font-semibold text-white'>Don&apos;t leave this screen</p>
+                    <p className='mt-1 text-sm leading-6 text-white/75'>
+                      Keep Evento open and avoid switching tabs or apps while these self-custody
+                      wallet payments are being sent.
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
-          )}
+              </div>
 
-          {!validation.valid && amountInput && (
-            <div className='rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800'>
-              {validation.error}
-            </div>
-          )}
-        </div>
-      )}
-    </MasterScrollableSheet>
+              <div className='mt-5 rounded-3xl bg-white/5 px-5 py-6'>
+                <div className='flex items-center gap-3'>
+                  <Loader2 className='h-6 w-6 animate-spin text-red-400' />
+                  <div>
+                    <p className='text-sm uppercase tracking-[0.18em] text-white/55'>Batch Zap</p>
+                    <p className='text-2xl font-semibold'>
+                      Sending payment {progress.currentIndex} of {progress.totalCount}
+                    </p>
+                  </div>
+                </div>
+
+                <div className='mt-6 h-2 overflow-hidden rounded-full bg-white/15'>
+                  <div
+                    className='h-full rounded-full bg-red-400 transition-all'
+                    style={{
+                      width:
+                        progress.totalCount > 0
+                          ? `${Math.min((progress.results.length / progress.totalCount) * 100, 100)}%`
+                          : '0%',
+                    }}
+                  />
+                </div>
+
+                <div className='mt-6 grid grid-cols-3 gap-3 text-center text-sm'>
+                  <div className='rounded-2xl bg-white/10 px-3 py-3'>
+                    <div className='text-xl font-semibold'>{progress.sentCount}</div>
+                    <div className='text-white/65'>Sent</div>
+                  </div>
+                  <div className='rounded-2xl bg-white/10 px-3 py-3'>
+                    <div className='text-xl font-semibold'>{progress.failedCount}</div>
+                    <div className='text-white/65'>Failed</div>
+                  </div>
+                  <div className='rounded-2xl bg-white/10 px-3 py-3'>
+                    <div className='text-xl font-semibold'>{progress.remainingCount}</div>
+                    <div className='text-white/65'>Remaining</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className='mt-5 rounded-3xl border border-white/10 bg-white/5 p-5'>
+                <p className='text-xs font-semibold uppercase tracking-[0.18em] text-white/55'>
+                  Current recipient
+                </p>
+                <p className='mt-2 text-lg font-semibold text-white'>
+                  {progress.currentRecipient?.name || 'Preparing next payment'}
+                </p>
+                <p className='text-sm text-white/65'>
+                  {progress.currentRecipient?.username
+                    ? `@${progress.currentRecipient.username}`
+                    : 'Processing Lightning payment'}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
