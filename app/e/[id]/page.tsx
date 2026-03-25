@@ -1,9 +1,16 @@
 import { Env } from '@/lib/constants/env';
 import { buildEventJsonLd, serializeJsonLd } from '@/lib/seo/event-jsonld';
+import type { Event as ApiEvent } from '@/lib/types/api';
+import { getAbsoluteAppUrl } from '@/lib/utils/app-url';
+import {
+  buildEventSocialImageUrl,
+  formatEventSeoDescription,
+  formatEventSeoTitle,
+} from '@/lib/utils/event-social-metadata';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
-import type { Event as ApiEvent } from '@/lib/types/api';
 import { ResolvingMetadata } from 'next';
+import { cache } from 'react';
 import EventDetailPageClient from './page-client';
 
 function getEventMetadataClient() {
@@ -27,39 +34,16 @@ type EventSeoData = Pick<
   | 'title'
   | 'description'
   | 'cover'
+  | 'updated_at'
   | 'location'
   | 'event_locations'
-  | 'timezone'
   | 'status'
   | 'visibility'
   | 'computed_start_date'
   | 'computed_end_date'
 >;
 
-function cleanEventDescription(description: string | null | undefined): string {
-  if (!description) {
-    return '';
-  }
-
-  return description
-    .replace(/<br\s*\/?>/gi, ' ')
-    .replace(/<\/p>/gi, ' ')
-    .replace(/<[^>]*>/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-}
-
-function getEventDescriptionText(description: string | null | undefined): string {
-  const cleanDescription = cleanEventDescription(description);
-
-  if (!cleanDescription) {
-    return 'Events made social - evento.so';
-  }
-
-  return cleanDescription.slice(0, 250) + (cleanDescription.length > 250 ? '...' : '');
-}
-
-async function fetchEventSeoData(eventId: string): Promise<EventSeoData | null> {
+const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | null> => {
   const supabase = getEventMetadataClient();
 
   if (!supabase) {
@@ -74,6 +58,7 @@ async function fetchEventSeoData(eventId: string): Promise<EventSeoData | null> 
         title,
         description,
         cover,
+        updated_at,
         location,
         event_locations (
           id,
@@ -89,7 +74,6 @@ async function fetchEventSeoData(eventId: string): Promise<EventSeoData | null> 
           location_type,
           is_verified
         ),
-        timezone,
         status,
         visibility,
         computed_start_date,
@@ -104,27 +88,31 @@ async function fetchEventSeoData(eventId: string): Promise<EventSeoData | null> 
   }
 
   return data;
-}
+});
 
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata) {
-  // Get the event ID from params
   const eventId = params.id;
   const eventPath = `/e/${eventId}`;
+  const eventUrl = getAbsoluteAppUrl(eventPath);
 
-  // fallback to parent SEO metadata image details
   const previousImages = (await parent).openGraph?.images || [];
-  const eventOgImage = `${eventPath}/opengraph-image`;
+  const fallbackOgImage = buildEventSocialImageUrl(eventId);
 
   try {
     const event = await fetchEventSeoData(eventId);
 
     if (!event) {
       logger.info('No event found for ID', { eventId });
-      return getDefaultMetadata(previousImages, eventPath, eventOgImage);
+      return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
-    const title = event.title === 'Untitled Event' ? 'RSVP on Evento Now' : `${event.title} - Evento`;
-    const descText = getEventDescriptionText(event.description);
+    const title = formatEventSeoTitle(event.title);
+    const descText = formatEventSeoDescription(event.description);
+    const eventOgImage = buildEventSocialImageUrl(eventId, {
+      updatedAt: event.updated_at,
+      title: event.title,
+      cover: event.cover,
+    });
 
     return {
       title: {
@@ -132,15 +120,15 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
       keywords: ['events', 'partiful', 'social', 'evento', 'evento.so'],
       alternates: {
-        canonical: eventPath,
+        canonical: eventUrl,
       },
       description: descText,
       openGraph: {
-        url: eventPath,
+        url: eventUrl,
         locale: 'en_US',
         type: 'website',
         siteName: 'Evento',
-        title: title,
+        title,
         description: descText,
         images: [
           {
@@ -158,7 +146,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
       },
       twitter: {
         card: 'summary_large_image',
-        title: title,
+        title,
         description: descText,
         creator: '@evento_so',
         images: [eventOgImage],
@@ -168,7 +156,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     logger.error('Error fetching event data', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return getDefaultMetadata(previousImages, eventPath, eventOgImage);
+    return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
   }
 }
 
@@ -217,7 +205,9 @@ export default async function EventDetailPage({ params }: Pick<Props, 'params'>)
 
   return (
     <>
-      {jsonLd ? <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: jsonLd }} /> : null}
+      {jsonLd ? (
+        <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: jsonLd }} />
+      ) : null}
       <EventDetailPageClient />
     </>
   );

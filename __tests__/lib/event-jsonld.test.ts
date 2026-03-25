@@ -1,6 +1,7 @@
+import type { EventSeoRecord } from '@/lib/seo/event-jsonld';
 import { buildEventJsonLd, serializeJsonLd } from '@/lib/seo/event-jsonld';
 
-const baseEvent = {
+const baseEvent: EventSeoRecord = {
   id: 'evt_123',
   title: 'TabConf Vegas',
   description: '<p>Hello<br />world</p>',
@@ -22,7 +23,7 @@ const baseEvent = {
   computed_start_date: '2026-04-26T17:00:00.000Z',
   computed_end_date: '2026-04-27T01:00:00.000Z',
   status: 'published',
-  visibility: 'public' as const,
+  visibility: 'public',
 };
 
 describe('buildEventJsonLd', () => {

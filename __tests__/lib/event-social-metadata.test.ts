@@ -7,29 +7,19 @@ import {
 } from '@/lib/utils/event-social-metadata';
 
 describe('event social metadata helpers', () => {
-  const originalNodeEnv = process.env.NODE_ENV;
-  const originalVercelUrl = process.env.VERCEL_URL;
-  const originalVercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const originalEnv = process.env;
 
   beforeEach(() => {
-    process.env.NODE_ENV = 'production';
+    process.env = {
+      ...originalEnv,
+      NODE_ENV: 'production',
+    };
     delete process.env.VERCEL_URL;
     delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
   });
 
   afterAll(() => {
-    process.env.NODE_ENV = originalNodeEnv;
-    if (originalVercelUrl === undefined) {
-      delete process.env.VERCEL_URL;
-    } else {
-      process.env.VERCEL_URL = originalVercelUrl;
-    }
-
-    if (originalVercelProductionUrl === undefined) {
-      delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
-    } else {
-      process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercelProductionUrl;
-    }
+    process.env = originalEnv;
   });
 
   it('formats event SEO titles with Evento suffix', () => {

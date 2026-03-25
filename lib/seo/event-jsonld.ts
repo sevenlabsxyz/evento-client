@@ -1,10 +1,8 @@
 import type { Event as ApiEvent } from '@/lib/types/api';
+import { getAppUrl } from '@/lib/utils/app-url';
 import { formatEventLocationAddress } from '@/lib/utils/location';
 
-const APP_URL =
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3003' : 'https://app.evento.so';
-
-type EventSeoRecord = Pick<
+export type EventSeoRecord = Pick<
   ApiEvent,
   | 'id'
   | 'title'
@@ -16,6 +14,19 @@ type EventSeoRecord = Pick<
   | 'status'
   | 'visibility'
 >;
+
+function getNumericCoordinate(value: number | string | null | undefined): number | null {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : null;
+  }
+
+  if (typeof value === 'string' && value.trim() !== '') {
+    const parsedValue = Number(value);
+    return Number.isFinite(parsedValue) ? parsedValue : null;
+  }
+
+  return null;
+}
 
 function stripHtml(value: string): string {
   return value
@@ -39,6 +50,11 @@ function getLocation(event: EventSeoRecord) {
   const eventLocation = event.event_locations;
 
   if (eventLocation) {
+    const latitude = getNumericCoordinate(eventLocation.latitude);
+    const longitude = getNumericCoordinate(eventLocation.longitude);
+    const coordinates =
+      latitude !== null && longitude !== null ? { lat: latitude, lng: longitude } : undefined;
+
     const formattedAddress = formatEventLocationAddress({
       name: eventLocation.name || '',
       address: eventLocation.address || '',
@@ -46,22 +62,19 @@ function getLocation(event: EventSeoRecord) {
       state: eventLocation.state_province || '',
       country: eventLocation.country || '',
       zipCode: eventLocation.postal_code || '',
-      coordinates:
-        eventLocation.latitude !== null && eventLocation.longitude !== null
-          ? { lat: eventLocation.latitude, lng: eventLocation.longitude }
-          : undefined,
+      coordinates,
     });
 
     return {
       '@type': 'Place',
       name: eventLocation.name || event.title,
       address: formattedAddress || event.location || undefined,
-      ...(eventLocation.latitude !== null && eventLocation.longitude !== null
+      ...(coordinates
         ? {
             geo: {
               '@type': 'GeoCoordinates',
-              latitude: eventLocation.latitude,
-              longitude: eventLocation.longitude,
+              latitude,
+              longitude,
             },
           }
         : {}),
@@ -92,7 +105,8 @@ function getEventStatus(status: string | null | undefined): string {
 }
 
 export function buildEventJsonLd(event: EventSeoRecord) {
-  const url = `${APP_URL}/e/${event.id}`;
+  const appUrl = getAppUrl();
+  const url = `${appUrl}/e/${event.id}`;
   const image = `${url}/social-image`;
   const description = getDescription(event.description);
   const location = getLocation(event);
@@ -114,7 +128,7 @@ export function buildEventJsonLd(event: EventSeoRecord) {
     organizer: {
       '@type': 'Organization',
       name: 'Evento',
-      url: APP_URL,
+      url: appUrl,
     },
   };
 }
