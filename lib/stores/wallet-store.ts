@@ -2,6 +2,13 @@ import { WalletState } from '@/lib/types/wallet';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
 import { create } from 'zustand';
 
+export const INITIAL_WALLET_STATE: WalletState = {
+  isInitialized: false,
+  isConnected: false,
+  balance: 0,
+  hasBackup: false,
+};
+
 interface WalletStore {
   walletState: WalletState;
   isLoading: boolean;
@@ -14,12 +21,7 @@ interface WalletStore {
 }
 
 export const useWalletStore = create<WalletStore>((set) => ({
-  walletState: {
-    isInitialized: false,
-    isConnected: false,
-    balance: 0,
-    hasBackup: false,
-  },
+  walletState: INITIAL_WALLET_STATE,
   isLoading: true,
   error: null,
   lightningAddress: null,

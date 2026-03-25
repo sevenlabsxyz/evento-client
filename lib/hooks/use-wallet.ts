@@ -8,7 +8,7 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
-import { useWalletStore } from '@/lib/stores/wallet-store';
+import { INITIAL_WALLET_STATE, useWalletStore } from '@/lib/stores/wallet-store';
 import { BTCPrice, WalletState } from '@/lib/types/wallet';
 import {
   BREEZ_ERROR_CONTEXT,
@@ -17,6 +17,143 @@ import {
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
 import { useCallback, useEffect, useState } from 'react';
+
+let walletInitializationPromise: Promise<void> | null = null;
+let walletInitializationComplete = false;
+let walletInitializationGeneration = 0;
+
+export async function resetWalletInitialization(options?: {
+  disconnect?: boolean;
+  resetStore?: boolean;
+}): Promise<void> {
+  const { disconnect = false, resetStore = true } = options ?? {};
+
+  walletInitializationPromise = null;
+  walletInitializationComplete = false;
+  walletInitializationGeneration += 1;
+
+  useWalletSeedStore.getState().clearSeed();
+
+  if (disconnect && breezSDK.isConnected()) {
+    try {
+      await breezSDK.disconnect();
+    } catch (err) {
+      logBreezError(err, BREEZ_ERROR_CONTEXT.DISCONNECTING);
+    }
+  }
+
+  if (resetStore) {
+    useWalletStore.setState({
+      walletState: INITIAL_WALLET_STATE,
+      isLoading: true,
+      error: null,
+      lightningAddress: null,
+    });
+  }
+}
+
+function buildLockedWalletState(savedState?: WalletState | null): WalletState {
+  return {
+    isInitialized: true,
+    isConnected: false,
+    balance: 0,
+    hasBackup: savedState?.hasBackup || false,
+    lastBackupDate: savedState?.lastBackupDate,
+    lightningAddress: savedState?.lightningAddress,
+  };
+}
+
+function buildConnectedWalletState(balance: number, savedState?: WalletState | null): WalletState {
+  return {
+    isInitialized: true,
+    isConnected: true,
+    balance,
+    hasBackup: savedState?.hasBackup || false,
+    lastBackupDate: savedState?.lastBackupDate,
+    lightningAddress: savedState?.lightningAddress,
+  };
+}
+
+async function initializeWalletState({
+  getInMemorySeed,
+  getCurrentWalletState,
+  isSeedValid,
+  setError,
+  setLoading,
+  setWalletState,
+}: {
+  getInMemorySeed: () => string | null;
+  getCurrentWalletState: () => WalletState;
+  isSeedValid: () => boolean;
+  setError: (error: string | null) => void;
+  setLoading: (loading: boolean) => void;
+  setWalletState: (state: WalletState | ((prev: WalletState) => WalletState)) => void;
+}): Promise<boolean> {
+  try {
+    const encryptedSeed = WalletStorageService.getEncryptedSeed();
+    const savedState = WalletStorageService.getWalletState();
+
+    if (!encryptedSeed && savedState?.isInitialized) {
+      WalletStorageService.clearWalletData();
+      setWalletState({
+        isInitialized: false,
+        isConnected: false,
+        balance: 0,
+        hasBackup: false,
+      });
+      return true;
+    }
+
+    if (!encryptedSeed) {
+      return true;
+    }
+
+    // If the SDK is already live in this tab, preserve that session even if the
+    // in-memory seed TTL has expired. Later-mounted hooks should not downgrade
+    // the UI back to "locked" while the wallet is still connected.
+    if (breezSDK.isConnected()) {
+      try {
+        const balance = await breezSDK.getBalance();
+        setWalletState(buildConnectedWalletState(balance, savedState));
+        return true;
+      } catch (err) {
+        logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
+        const currentWalletState = getCurrentWalletState();
+        const fallbackBalance = currentWalletState.isInitialized
+          ? currentWalletState.balance
+          : (savedState?.balance ?? 0);
+
+        setWalletState(buildConnectedWalletState(fallbackBalance, savedState));
+        return true;
+      }
+    }
+
+    const inMemorySeed = getInMemorySeed();
+
+    if (inMemorySeed && isSeedValid()) {
+      try {
+        await breezSDK.connect(inMemorySeed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+        const balance = await breezSDK.getBalance();
+
+        setWalletState(buildConnectedWalletState(balance, savedState));
+      } catch (err) {
+        logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
+        setWalletState(buildLockedWalletState(savedState));
+      }
+
+      return true;
+    }
+
+    setWalletState(buildLockedWalletState(savedState));
+    return true;
+  } catch (err) {
+    logBreezError(err, BREEZ_ERROR_CONTEXT.INITIALIZING_WALLET);
+    setError('Failed to load wallet');
+    return false;
+  } finally {
+    setLoading(false);
+  }
+}
 
 export function useWallet() {
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
@@ -30,74 +167,56 @@ export function useWallet() {
 
   // Initialize wallet on mount
   useEffect(() => {
-    const initWallet = async () => {
-      try {
-        // Check if there's an encrypted seed (wallet exists)
-        const encryptedSeed = WalletStorageService.getEncryptedSeed();
-        const savedState = WalletStorageService.getWalletState();
+    if (walletInitializationComplete) {
+      return;
+    }
 
-        // Handle inconsistent state: has state but no encrypted seed
-        if (!encryptedSeed && savedState?.isInitialized) {
-          WalletStorageService.clearWalletData();
-          setWalletState({
-            isInitialized: false,
-            isConnected: false,
-            balance: 0,
-            hasBackup: false,
-          });
-        } else if (encryptedSeed) {
-          // Wallet exists, check if seed is in memory and valid
-          const inMemorySeed = getInMemorySeed();
-
-          if (inMemorySeed && isSeedValid()) {
-            // Seed is still valid in memory, auto-connect
-            try {
-              await breezSDK.connect(inMemorySeed, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
-
-              // Get current balance
-              const balance = await breezSDK.getBalance();
-
-              setWalletState({
-                isInitialized: true,
-                isConnected: true,
-                balance,
-                hasBackup: savedState?.hasBackup || false,
-                lastBackupDate: savedState?.lastBackupDate,
-                lightningAddress: savedState?.lightningAddress,
-              });
-            } catch (err) {
-              logBreezError(err, BREEZ_ERROR_CONTEXT.AUTO_CONNECTING_WALLET);
-              setWalletState({
-                isInitialized: true,
-                isConnected: false,
-                balance: 0,
-                hasBackup: savedState?.hasBackup || false,
-                lastBackupDate: savedState?.lastBackupDate,
-                lightningAddress: savedState?.lightningAddress,
-              });
-            }
-          } else {
-            // Seed expired or not in memory, show as initialized but locked
-            setWalletState({
-              isInitialized: true,
-              isConnected: false,
-              balance: 0,
-              hasBackup: savedState?.hasBackup || false,
-              lastBackupDate: savedState?.lastBackupDate,
-              lightningAddress: savedState?.lightningAddress,
-            });
-          }
-        }
-      } catch (err) {
-        logBreezError(err, BREEZ_ERROR_CONTEXT.INITIALIZING_WALLET);
-        setError('Failed to load wallet');
-      } finally {
-        setLoading(false);
+    const runGeneration = walletInitializationGeneration;
+    const guardedSetError = (nextError: string | null) => {
+      if (runGeneration !== walletInitializationGeneration) {
+        return;
       }
+
+      setError(nextError);
+    };
+    const guardedSetLoading = (loading: boolean) => {
+      if (runGeneration !== walletInitializationGeneration) {
+        return;
+      }
+
+      setLoading(loading);
+    };
+    const guardedSetWalletState = (
+      nextState: WalletState | ((prev: WalletState) => WalletState)
+    ) => {
+      if (runGeneration !== walletInitializationGeneration) {
+        return;
+      }
+
+      setWalletState(nextState);
     };
 
-    initWallet();
-  }, [getInMemorySeed, isSeedValid]);
+    walletInitializationPromise ??= initializeWalletState({
+      getInMemorySeed,
+      getCurrentWalletState: () => useWalletStore.getState().walletState,
+      isSeedValid,
+      setError: guardedSetError,
+      setLoading: guardedSetLoading,
+      setWalletState: guardedSetWalletState,
+    }).then((didInitialize) => {
+      if (runGeneration !== walletInitializationGeneration) {
+        return;
+      }
+
+      if (didInitialize) {
+        walletInitializationComplete = true;
+      } else {
+        walletInitializationPromise = null;
+      }
+    });
+
+    void walletInitializationPromise;
+  }, [getInMemorySeed, isSeedValid, setError, setLoading, setWalletState]);
 
   // Save wallet state whenever it changes
   useEffect(() => {

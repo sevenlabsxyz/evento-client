@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
-import { useWallet } from '@/lib/hooks/use-wallet';
+import { resetWalletInitialization, useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { toast } from '@/lib/utils/toast';
@@ -39,11 +39,12 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
     setPin(''); // Clear PIN when switching modes
   };
 
-  const handleRemoveWallet = () => {
+  const handleRemoveWallet = async () => {
     // Clear all wallet data from localStorage
     WalletStorageService.clearWalletData();
     // Clear in-memory seed
     clearSeed();
+    await resetWalletInitialization({ disconnect: true, resetStore: true });
     // Close sheet
     setShowRemoveSheet(false);
     // Force page reload to reset all state

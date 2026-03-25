@@ -198,8 +198,8 @@ export function TransactionHistory({
             <div className='flex min-w-0 items-start gap-3'>
               {getPaymentIcon(payment)}
 
-              <div className='min-w-0 flex-1'>
-                <div className='flex min-w-0 items-start gap-2'>
+              <div className='min-w-0 flex-1 overflow-hidden'>
+                <div className='flex w-full min-w-0 items-start gap-2 overflow-hidden'>
                   <div className='flex min-w-0 flex-1 items-center gap-2 overflow-hidden'>
                     <div className='shrink-0'>
                       {payment.status !== 'pending' && getStatusIcon(payment.status)}
@@ -213,20 +213,20 @@ export function TransactionHistory({
                     </div>
                   </div>
 
-                  <div className='flex-shrink-0 text-right'>
+                  <div className='flex max-w-[110px] flex-shrink-0 flex-col items-end text-right'>
                     {balanceHidden ? (
-                      <p className='font-semibold text-gray-900'>••••••</p>
+                      <p className='truncate font-semibold text-gray-900'>••••••</p>
                     ) : (
                       <>
                         <p
-                          className={`font-semibold ${
+                          className={`truncate font-semibold ${
                             isIncoming ? 'text-green-600' : 'text-gray-900'
                           }`}
                         >
                           {isIncoming ? '+' : '-'}
                           {amountSats.toLocaleString()} sats
                         </p>
-                        <p className='text-sm text-gray-500'>${usdAmount.toFixed(2)}</p>
+                        <p className='truncate text-sm text-gray-500'>${usdAmount.toFixed(2)}</p>
                       </>
                     )}
                   </div>

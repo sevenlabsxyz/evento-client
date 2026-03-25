@@ -1,5 +1,6 @@
 import { logger } from '@/lib/utils/logger';
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
+import { resetWalletInitialization } from '@/lib/hooks/use-wallet';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -82,11 +83,12 @@ export function useAuth() {
   // Logout mutation
   const logoutMutation = useMutation({
     mutationFn: authService.logout,
-    onSuccess: () => {
+    onSuccess: async () => {
       // Clear auth store
       clearAuth();
 
       clearAllAppStorage();
+      await resetWalletInitialization({ disconnect: true, resetStore: true });
 
       // Clear ALL React Query cache to prevent stale data
       queryClient.clear();

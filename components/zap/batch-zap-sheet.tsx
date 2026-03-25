@@ -14,8 +14,20 @@ import {
   validateBatchZap,
 } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
+import {
+  redirectToWalletUnlock,
+  showWalletUnlockToast as showWalletUnlockToastPrompt,
+} from '@/lib/utils/wallet-unlock-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertTriangle, CheckCircle2, Info, Loader2, TriangleAlert, XCircle } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Loader2,
+  MessageSquareText,
+  TriangleAlert,
+  XCircle,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -28,13 +40,16 @@ interface BatchZapSheetProps {
 const SUMMARY_ROW_CLASS =
   'flex items-center justify-between gap-4 rounded-2xl bg-gray-50 px-4 py-3';
 
+type BatchZapStep = 'setup' | 'comment' | 'review';
+
 export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZapSheetProps) {
   const router = useRouter();
   const { walletState } = useWallet();
   const { progress, reset, sendBatch } = useBatchZapPayments();
-  const [step, setStep] = useState<'setup' | 'review'>('setup');
+  const [step, setStep] = useState<BatchZapStep>('setup');
   const [amountMode, setAmountMode] = useState<BatchZapAmountMode | null>(null);
   const [amountInput, setAmountInput] = useState('');
+  const [comment, setComment] = useState('');
   const [availableBalanceUSD, setAvailableBalanceUSD] = useState(0);
   const [isBalanceUSDLoading, setIsBalanceUSDLoading] = useState(true);
 
@@ -71,6 +86,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
       setStep('setup');
       setAmountMode(null);
       setAmountInput('');
+      setComment('');
       reset();
     }
   }, [open, reset]);
@@ -107,76 +123,12 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     void fetchAvailableBalanceUSD();
   }, [walletState.balance]);
 
-  const hasExistingWallet = () => {
-    if (typeof window === 'undefined') {
-      return false;
-    }
-
-    const walletStateRaw = localStorage.getItem(STORAGE_KEYS.WALLET_STATE);
-    const encryptedSeed = localStorage.getItem(STORAGE_KEYS.ENCRYPTED_SEED);
-
-    if (encryptedSeed) {
-      return true;
-    }
-
-    if (!walletStateRaw) {
-      return false;
-    }
-
-    try {
-      const parsedState = JSON.parse(walletStateRaw);
-      return Boolean(parsedState?.isInitialized);
-    } catch {
-      return true;
-    }
-  };
-
   const handleUnlockWallet = () => {
-    if (typeof window !== 'undefined') {
-      const returnPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-      localStorage.setItem(STORAGE_KEYS.WALLET_UNLOCK_RETURN_PATH, returnPath);
-      localStorage.setItem(STORAGE_KEYS.BATCH_ZAP_RETURN_PATH, returnPath);
-    }
-    router.push('/e/wallet');
+    redirectToWalletUnlock(router, { rememberBatchZapReturnPath: true });
   };
 
   const showWalletUnlockToast = () => {
-    const walletExists = hasExistingWallet();
-    const actionLabel = walletExists ? 'Unlock wallet' : 'Create wallet';
-    const descriptionText = walletExists
-      ? 'Please unlock your Wallet to continue.'
-      : 'Please create your Wallet to continue.';
-
-    toast.custom(
-      (id) => (
-        <div className='w-full border border-blue-200 bg-blue-50 p-6 shadow-lg rounded-[28px]'>
-          <div className='flex items-start gap-3'>
-            <div className='mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-white'>
-              <Info className='h-4 w-4' />
-            </div>
-            <div className='min-w-0'>
-              <p className='text-base font-semibold leading-none tracking-tight text-slate-900'>
-                Wallet action needed
-              </p>
-              <p className='mt-3 text-[16px] leading-[1.3] text-slate-700'>{descriptionText}</p>
-            </div>
-          </div>
-          <button
-            type='button'
-            onClick={() => {
-              toast.dismiss(id);
-              handleUnlockWallet();
-            }}
-            className='mt-5 h-12 w-full rounded-full bg-blue-600 px-4 text-base font-semibold text-white transition-colors hover:bg-blue-700'
-          >
-            {actionLabel}
-          </button>
-        </div>
-      ),
-      {
-        unstyled: true,
-      }
-    );
+    showWalletUnlockToastPrompt(handleUnlockWallet);
   };
 
   const swallowOverlayEvent = (event: React.SyntheticEvent) => {
@@ -200,6 +152,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         recipients: recipientSummary.eligibleRecipients,
         amountMode,
         amountSats: enteredAmountSats,
+        comment: comment.trim().length > 0 ? comment.trim() : undefined,
       });
 
       if (batchResult.results.some((result) => result.status === 'sent')) {
@@ -223,7 +176,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
       ? 'Batch Zap Complete'
       : step === 'review'
         ? 'Review Batch Zap'
-        : 'Zap All';
+        : step === 'comment'
+          ? 'Add a Message'
+          : 'Zap All';
 
   const footer =
     progress.status === 'sending' ? null : progress.status === 'completed' ? (
@@ -238,6 +193,22 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         >
           Confirm and send
         </Button>
+        <Button
+          variant='outline'
+          className='w-full rounded-full'
+          onClick={() => setStep('comment')}
+        >
+          Back
+        </Button>
+      </div>
+    ) : step === 'comment' ? (
+      <div className='flex flex-col gap-3'>
+        <Button
+          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+          onClick={() => setStep('review')}
+        >
+          Next
+        </Button>
         <Button variant='outline' className='w-full rounded-full' onClick={() => setStep('setup')}>
           Back
         </Button>
@@ -247,7 +218,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
         <Button
           className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
           disabled={!validation.valid}
-          onClick={() => setStep('review')}
+          onClick={() => setStep('comment')}
         >
           Next
         </Button>
@@ -438,6 +409,54 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                   </div>
                 )}
               </motion.div>
+            ) : step === 'comment' ? (
+              <motion.div
+                key='batch-zap-comment'
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.18, ease: 'easeOut' }}
+                className='space-y-6'
+              >
+                <div className='rounded-3xl border border-gray-200 bg-white p-5'>
+                  <div className='flex items-start gap-3'>
+                    <div className='rounded-2xl bg-red-50 p-3 text-red-500'>
+                      <MessageSquareText className='h-5 w-5' />
+                    </div>
+                    <div>
+                      <p className='text-base font-semibold text-gray-900'>Shared comment</p>
+                      <p className='mt-1 text-sm text-gray-500'>
+                        This optional note will be attached to every payment in the batch.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className='mt-5'>
+                    <div className='space-y-2'>
+                      <label
+                        htmlFor='batch-zap-comment'
+                        className='block text-sm font-medium text-gray-700'
+                      >
+                        Add a message (optional)
+                      </label>
+                      <textarea
+                        id='batch-zap-comment'
+                        value={comment}
+                        onChange={(event) => setComment(event.target.value)}
+                        placeholder='Say something nice...'
+                        rows={4}
+                        className='w-full resize-none rounded-3xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-red-200'
+                      />
+                      <p className='text-xs text-gray-500'>
+                        This message is sent when possible. If a recipient wallet rejects comments,
+                        that payment may fail.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+              </motion.div>
             ) : (
               <motion.div
                 key='batch-zap-review'
@@ -478,6 +497,19 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     )}
                   </div>
                 )}
+
+                <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5'>
+                  <h3 className='text-base font-semibold text-gray-900'>Shared comment</h3>
+                  {comment.trim() ? (
+                    <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-700'>
+                      {comment.trim()}
+                    </div>
+                  ) : (
+                    <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-500'>
+                      No shared comment will be included.
+                    </div>
+                  )}
+                </div>
 
                 <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
               </motion.div>

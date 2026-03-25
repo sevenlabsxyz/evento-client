@@ -12,10 +12,13 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useRemoveGuest } from '@/lib/hooks/use-remove-guest';
+import { useWallet } from '@/lib/hooks/use-wallet';
+import { breezSDK } from '@/lib/services/breez-sdk';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
+import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import {
   CheckCircle,
   CircleHelp,
@@ -35,6 +38,7 @@ export default function GuestListPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { user } = useAuth();
+  const { walletState, isLoading: isWalletLoading } = useWallet();
   const { setTopBarForRoute, clearRoute, applyRouteConfig } = useTopBar();
   const eventId = params.id as string;
 
@@ -91,6 +95,21 @@ export default function GuestListPage() {
       }),
     [guests, creatorId, cohostIds, user?.id]
   );
+
+  const handleOpenBatchZap = () => {
+    if (isWalletLoading) {
+      return;
+    }
+
+    if (!walletState.isConnected || !breezSDK.isConnected()) {
+      showWalletUnlockToast(() =>
+        redirectToWalletUnlock(router, { rememberBatchZapReturnPath: true })
+      );
+      return;
+    }
+
+    setIsBatchZapOpen(true);
+  };
 
   // Configure TopBar for this route
   useEffect(() => {
@@ -254,7 +273,7 @@ export default function GuestListPage() {
               size='sm'
               className='h-12 rounded-full border-gray-200 bg-gray-50 px-4'
               disabled={batchRecipientSummary.eligibleRecipients.length === 0}
-              onClick={() => setIsBatchZapOpen(true)}
+              onClick={handleOpenBatchZap}
             >
               <Zap className='h-4 w-4' />
               Zap All
