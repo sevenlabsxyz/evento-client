@@ -3,7 +3,9 @@ import { Env } from '@/lib/constants/env';
 import { resolveEventSocialCoverUrl } from '@/lib/utils/event-social-metadata';
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
+import { readFile } from 'fs/promises';
 import { ImageResponse } from 'next/og';
+import { join } from 'path';
 
 export const EVENT_SOCIAL_IMAGE_HEADERS = {
   'Cache-Control': 'public, no-store, max-age=0, must-revalidate',
@@ -19,6 +21,7 @@ export const eventSocialImageSize = {
 const EVENT_TITLE_MAX_LENGTH = 62;
 const EVENT_SOCIAL_COVER_SIZE = 430;
 const EVENT_TITLE_WORD_BOUNDARY_BACKTRACK = 12;
+const EVENT_SOCIAL_TEXT_WIDTH = 560;
 
 type SegmenterConstructor = new (
   locales?: string | string[],
@@ -26,6 +29,32 @@ type SegmenterConstructor = new (
 ) => {
   segment(input: string): Iterable<{ segment: string }>;
 };
+
+const eventSocialFontsPromise = Promise.all([
+  readFile(join(process.cwd(), 'public/assets/fonts/WorkSans-Medium.ttf')),
+  readFile(join(process.cwd(), 'public/assets/fonts/WorkSans-SemiBold.ttf')),
+])
+  .then(([medium, semibold]) => [
+    {
+      name: 'Work Sans',
+      data: medium,
+      weight: 500 as const,
+      style: 'normal' as const,
+    },
+    {
+      name: 'Work Sans',
+      data: semibold,
+      weight: 600 as const,
+      style: 'normal' as const,
+    },
+  ])
+  .catch((error) => {
+    logger.warn('Failed to load event social image fonts', {
+      error: error instanceof Error ? error.message : String(error),
+    });
+
+    return [];
+  });
 
 function EventoWordmark({ color = '#111111' }: { color?: string }) {
   return (
@@ -116,8 +145,9 @@ function truncateEventTitle(title: string, maxLength = EVENT_TITLE_MAX_LENGTH) {
   return `${truncatedSegments.join('').trimEnd()}…`;
 }
 
-function renderFallbackEventImage(title: string) {
+async function renderFallbackEventImage(title: string) {
   const displayTitle = truncateEventTitle(title, 54);
+  const fonts = await eventSocialFontsPromise;
 
   return new ImageResponse(
     <div
@@ -146,8 +176,9 @@ function renderFallbackEventImage(title: string) {
           marginTop: 'auto',
           marginBottom: 'auto',
           width: '100%',
+          fontFamily: '"Work Sans"',
           fontSize: '58px',
-          fontWeight: 700,
+          fontWeight: 600,
           lineHeight: 1.2,
           color: '#111111',
         }}
@@ -158,12 +189,14 @@ function renderFallbackEventImage(title: string) {
     {
       ...eventSocialImageSize,
       headers: EVENT_SOCIAL_IMAGE_HEADERS,
+      fonts,
     }
   );
 }
 
-function renderEventImage(title: string, coverSrc?: string | null) {
+async function renderEventImage(title: string, coverSrc?: string | null) {
   const displayTitle = truncateEventTitle(title);
+  const fonts = await eventSocialFontsPromise;
 
   return new ImageResponse(
     <div
@@ -181,7 +214,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
           width: '100%',
           height: '100%',
           padding: '42px 48px',
-          gap: '46px',
+          gap: '30px',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
@@ -193,7 +226,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
             flex: 1,
             justifyContent: 'space-between',
             alignItems: 'flex-start',
-            maxWidth: '470px',
+            maxWidth: `${EVENT_SOCIAL_TEXT_WIDTH}px`,
             height: `${EVENT_SOCIAL_COVER_SIZE}px`,
           }}
         >
@@ -212,7 +245,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              maxWidth: '470px',
+              maxWidth: `${EVENT_SOCIAL_TEXT_WIDTH}px`,
               flex: 1,
               justifyContent: 'center',
             }}
@@ -220,11 +253,12 @@ function renderEventImage(title: string, coverSrc?: string | null) {
             <div
               style={{
                 display: 'flex',
-                maxWidth: '470px',
+                maxWidth: `${EVENT_SOCIAL_TEXT_WIDTH}px`,
+                fontFamily: '"Work Sans"',
                 fontSize: '54px',
-                fontWeight: 700,
+                fontWeight: 500,
                 lineHeight: 1.06,
-                letterSpacing: '-0.04em',
+                letterSpacing: '0em',
                 color: '#111111',
                 overflow: 'hidden',
               }}
@@ -242,8 +276,10 @@ function renderEventImage(title: string, coverSrc?: string | null) {
                 borderRadius: '999px',
                 backgroundColor: '#ef3125',
                 color: '#fff',
+                fontFamily: '"Work Sans"',
                 fontSize: '26px',
-                fontWeight: 800,
+                fontWeight: 600,
+                letterSpacing: '0.01em',
               }}
             >
               RSVP
@@ -291,6 +327,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
     {
       ...eventSocialImageSize,
       headers: EVENT_SOCIAL_IMAGE_HEADERS,
+      fonts,
     }
   );
 }
@@ -337,7 +374,7 @@ export async function renderEventSocialImage(eventId: string) {
     const supabase = getEventImageClient();
 
     if (!supabase) {
-      return renderFallbackEventImage('Evento Event');
+      return await renderFallbackEventImage('Evento Event');
     }
 
     const { data: event, error } = await supabase
@@ -351,19 +388,19 @@ export async function renderEventSocialImage(eventId: string) {
         eventId,
         error: error?.message,
       });
-      return renderFallbackEventImage('Evento Event');
+      return await renderFallbackEventImage('Evento Event');
     }
 
     const eventTitle = event.title?.trim() || 'Evento Event';
     const coverUrl = resolveEventSocialCoverUrl(event.cover || NO_COVER_FALLBACK);
     const coverDataUrl = await fetchImageAsDataUrl(coverUrl);
 
-    return renderEventImage(eventTitle, coverDataUrl);
+    return await renderEventImage(eventTitle, coverDataUrl);
   } catch (error) {
     logger.error('Unexpected error rendering event OG image', {
       eventId,
       error: error instanceof Error ? error.message : String(error),
     });
-    return renderFallbackEventImage('Evento Event');
+    return await renderFallbackEventImage('Evento Event');
   }
 }
