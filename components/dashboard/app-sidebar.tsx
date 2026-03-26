@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  BookOpen,
   Calendar1,
   MessageCircle,
   PanelRightClose,
@@ -117,6 +118,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip='Blog' asChild>
+              <Link href='/e/blog' onClick={() => setOpenMobile(false)}>
+                <BookOpen />
+                <span>Blog</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <SidebarMenuButton tooltip='Store' asChild>
               <a

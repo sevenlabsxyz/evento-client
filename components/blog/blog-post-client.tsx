@@ -8,7 +8,7 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ExternalLink, Share } from 'lucide-react';
+import { Share } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 import EnhancedBlogContent from './enhanced-blog-content';
@@ -46,8 +46,6 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
     };
   }, [post?.title, setTopBar]);
 
-  const authorName = post.authors?.[0]?.name ?? 'Evento Team';
-
   const publishedDate = new Date(post.published_at || '').toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',
@@ -79,66 +77,35 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
   };
 
   return (
-    <article className='mx-auto grid w-full max-w-[860px]'>
+    <article className='mx-auto grid w-full min-w-0 max-w-[860px] overflow-x-hidden'>
       {post.feature_image ? (
-        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden rounded-xl bg-gray-100'>
+        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden bg-gray-100 rounded-[2rem]'>
           <Image
             src={post.feature_image}
             alt={post.title}
             fill
             className='object-cover object-center'
             sizes='(max-width: 860px) 100vw, 860px'
+            quality={95}
             priority
           />
-          <div className='absolute inset-0 bg-black/30' />
         </div>
       ) : (
-        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden rounded-xl bg-gray-100' />
+        <div className='relative mx-4 mt-4 aspect-video w-[calc(100%-2rem)] overflow-hidden bg-gray-100 rounded-[2rem]' />
       )}
-      <div className='grid w-[min(calc(100%-3rem),800px)] place-content-start justify-self-center py-7 pb-8 lg:py-14'>
+      <div className='grid w-[min(calc(100%-3rem),800px)] min-w-0 place-content-start justify-self-center py-7 pb-8 lg:py-14'>
         <h1 className='mb-3 mt-0 text-balance text-3xl font-extrabold leading-tight text-gray-900 lg:mb-6 lg:text-5xl'>
           {post.title}
         </h1>
-        {post.excerpt && (
-          <h2 className='m-0 text-balance text-xl font-medium leading-snug text-gray-500 lg:text-2xl'>
-            {post.excerpt}
-          </h2>
-        )}
-        <div className='mt-4 text-sm text-gray-500 lg:mt-6'>
-          by <span className='font-medium text-gray-600'>{authorName}</span> • {publishedDate}
-        </div>
+        <div className='mt-1 text-sm text-gray-500 lg:mt-2'>{publishedDate}</div>
         <EnhancedBlogContent
           html={post.html || ''}
-          className='mt-9 max-w-none text-lg leading-relaxed text-gray-800 lg:mt-14 [&_a]:text-red-600 hover:[&_a]:text-red-700 [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-200 [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_code]:rounded [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h1]:mb-4 [&_h1]:mt-8 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:mb-4 [&_h2]:mt-8 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h3]:mb-4 [&_h3]:mt-8 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-lg [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:pl-8 [&_p]:mb-5 [&_pre]:mb-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-50 [&_pre]:p-4 [&_ul]:mb-5 [&_ul]:pl-8'
+          className='mt-9 max-w-none text-lg leading-relaxed text-gray-800 lg:mt-14 [&_a]:text-red-600 hover:[&_a]:text-red-700 [&_blockquote]:my-6 [&_blockquote]:border-l-4 [&_blockquote]:border-gray-200 [&_blockquote]:pl-6 [&_blockquote]:italic [&_blockquote]:text-gray-600 [&_code]:rounded [&_code]:bg-gray-100 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_h1]:mb-4 [&_h1]:mt-8 [&_h1]:text-4xl [&_h1]:font-bold [&_h1]:text-gray-900 [&_h2]:mb-4 [&_h2]:mt-8 [&_h2]:text-3xl [&_h2]:font-bold [&_h2]:text-gray-900 [&_h3]:mb-4 [&_h3]:mt-8 [&_h3]:text-2xl [&_h3]:font-bold [&_h3]:text-gray-900 [&_img]:my-2 [&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-3xl [&_li]:mb-2 [&_ol]:mb-5 [&_ol]:pl-8 [&_p]:mb-5 [&_pre]:mb-5 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-gray-50 [&_pre]:p-4 [&_ul]:mb-5 [&_ul]:pl-8'
         />
       </div>
 
-      {/* CTA Section */}
-      <div className='w-full px-6 py-8'>
-        <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-red-500 to-red-600 p-8 text-white'>
-          <div className='relative z-10 text-center'>
-            <h3 className='mb-3 text-2xl font-bold'>Ready to create your first event?</h3>
-            <p className='mb-6 text-red-100'>
-              Join thousands of event creators who trust Evento to bring their communities together.
-              Start planning your next memorable gathering today.
-            </p>
-            <Button
-              onClick={() =>
-                window.open('https://cal.com/evento/all', '_blank', 'noopener noreferrer')
-              }
-              className='bg-white text-red-600 hover:bg-gray-100'
-            >
-              <ExternalLink className='mr-2 h-4 w-4' />
-              Get in touch
-            </Button>
-          </div>
-          <div className='absolute -right-4 -top-4 h-24 w-24 rounded-full bg-white/10' />
-          <div className='absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-white/5' />
-        </div>
-      </div>
-
       {/* Share Button */}
-      <div className='w-full border-t border-gray-200 px-6 py-6'>
+      <div className='w-full min-w-0 border-t border-gray-200 px-6 py-6'>
         <Button
           onClick={handleShare}
           variant='secondary'
@@ -151,18 +118,21 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
 
       {/* Read More Section */}
       {relatedPosts.length > 0 && (
-        <div className='w-full border-t border-gray-200 px-6 py-8'>
+        <div className='w-full min-w-0 border-t border-gray-200 px-6 py-8'>
           <h3 className='mb-6 text-xl font-bold text-gray-900'>Read more</h3>
           {isLoadingRelated ? (
-            <div className='grid grid-cols-1 gap-6'>
+            <div className='hide-scrollbar flex min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible'>
               {['related-skeleton-1', 'related-skeleton-2', 'related-skeleton-3'].map(
                 (skeletonId) => (
-                  <Skeleton key={skeletonId} className='h-64 rounded-2xl' />
+                  <Skeleton
+                    key={skeletonId}
+                    className='h-64 w-[18rem] max-w-[calc(100vw-4rem)] flex-none rounded-[2rem] md:w-auto md:max-w-none'
+                  />
                 )
               )}
             </div>
           ) : (
-            <div className='grid grid-cols-1 gap-6'>
+            <div className='hide-scrollbar flex min-w-0 snap-x snap-mandatory gap-4 overflow-x-auto pb-2 md:grid md:grid-cols-3 md:overflow-visible'>
               {relatedPosts.map((relatedPost) => (
                 <BlogCard
                   key={relatedPost.id}
@@ -172,6 +142,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
                   image={relatedPost.feature_image ?? ''}
                   date={relatedPost.published_at}
                   category={relatedPost.tags?.length > 0 ? [relatedPost.tags[0]] : []}
+                  className='w-[18rem] max-w-[calc(100vw-4rem)] flex-none md:w-auto md:max-w-none'
                 />
               ))}
             </div>

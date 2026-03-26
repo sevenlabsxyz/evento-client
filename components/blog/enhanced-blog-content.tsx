@@ -1,5 +1,6 @@
 'use client';
 
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { ImageSizes, isGif } from '@/lib/utils/image';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -15,6 +16,12 @@ interface EnhancedBlogContentProps {
  */
 export default function EnhancedBlogContent({ html, className }: EnhancedBlogContentProps) {
   const [processedContent, setProcessedContent] = useState<React.ReactNode[]>([]);
+  const [selectedImage, setSelectedImage] = useState<{
+    src: string;
+    alt: string;
+    width: number;
+    height: number;
+  } | null>(null);
 
   useEffect(() => {
     if (!html) {
@@ -67,33 +74,52 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
             );
           }
 
-          // For normal images, use Next.js Image with blur placeholder
+          // For normal images, use Next.js Image with higher inline quality
+          // and a click-through lightbox for the original asset.
+          const imageNode = (
+            <Image
+              src={src}
+              alt={alt}
+              width={width}
+              height={height}
+              className='h-auto w-full max-w-full'
+              sizes='(max-width: 768px) calc(100vw - 3rem), (max-width: 1280px) calc(100vw - 6rem), 960px'
+              quality={95}
+              placeholder='blur'
+              blurDataURL={generateBlurDataURL(src)}
+            />
+          );
+
           return (
-            <div key={key} className='relative my-2 w-full overflow-hidden'>
-              <Image
-                src={src}
-                alt={alt}
-                width={width}
-                height={height}
-                className='h-auto w-full max-w-full'
-                sizes='(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw'
-                placeholder='blur'
-                blurDataURL={generateBlurDataURL(src)}
-              />
-            </div>
+            <button
+              key={key}
+              type='button'
+              onClick={() => setSelectedImage({ src, alt, width, height })}
+              className='relative my-2 block w-full overflow-hidden text-left transition-opacity hover:opacity-95'
+            >
+              <span className='sr-only'>{alt ? `Open image: ${alt}` : 'Open image'}</span>
+              <div className='relative w-full overflow-hidden'>{imageNode}</div>
+            </button>
           );
         }
 
         // For other elements, process their children recursively
         const childNodes: React.ReactNode[] = [];
-        element.childNodes.forEach((childNode, index) => {
+        element.childNodes.forEach((childNode) => {
           childNodes.push(
             <React.Fragment key={`child-${keyCounter++}`}>{processNode(childNode)}</React.Fragment>
           );
         });
 
+        const elementProps =
+          tagName === 'a' ? getAnchorProps(element as HTMLAnchorElement) : undefined;
+
         // Create a new element with the same tag and processed children
-        return React.createElement(tagName, { key: `el-${keyCounter++}` }, ...childNodes);
+        return React.createElement(
+          tagName,
+          { key: `el-${keyCounter++}`, ...elementProps },
+          ...childNodes
+        );
       }
 
       // For other node types, return null
@@ -144,5 +170,44 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
     return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSIjZjNmNGY2IiAvPgo8L3N2Zz4K';
   }
 
-  return <div className={`max-w-full overflow-hidden ${className || ''}`}>{processedContent}</div>;
+  return (
+    <>
+      <div className={`max-w-full overflow-hidden ${className || ''}`}>{processedContent}</div>
+      <Dialog
+        open={selectedImage !== null}
+        onOpenChange={(open) => !open && setSelectedImage(null)}
+      >
+        {selectedImage && (
+          <DialogContent className='max-h-[96vh] max-w-[min(96vw,1400px)] border-none bg-transparent p-0 shadow-none'>
+            <div className='flex items-center justify-center bg-black/40 p-2 rounded-[2rem]'>
+              <Image
+                src={selectedImage.src}
+                alt={selectedImage.alt}
+                width={selectedImage.width}
+                height={selectedImage.height}
+                quality={100}
+                unoptimized
+                className='h-auto max-h-[90vh] w-auto max-w-full object-contain rounded-[1.5rem]'
+                sizes='100vw'
+              />
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
+    </>
+  );
+}
+
+function getAnchorProps(element: HTMLAnchorElement): React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  const href = element.getAttribute('href') ?? undefined;
+  const relValues = new Set((element.getAttribute('rel') ?? '').split(/\s+/).filter(Boolean));
+
+  relValues.add('noopener');
+  relValues.add('noreferrer');
+
+  return {
+    href,
+    target: '_blank',
+    rel: Array.from(relValues).join(' '),
+  };
 }

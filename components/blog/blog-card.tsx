@@ -2,6 +2,8 @@ import { format } from 'date-fns';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { cn } from '@/lib/utils';
+
 interface BlogCardProps {
   date: string | null;
   slug: string;
@@ -9,9 +11,10 @@ interface BlogCardProps {
   title: string;
   category?: Array<{ name: string }>;
   description: string;
+  className?: string;
 }
 
-export const BlogCard = ({ date, slug, image, title, description }: BlogCardProps) => {
+export const BlogCard = ({ date, slug, image, title, description, className }: BlogCardProps) => {
   // Fallback gradient if no image
   const fallbackGradient = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
   const parsedDate = date ? new Date(date) : null;
@@ -23,7 +26,10 @@ export const BlogCard = ({ date, slug, image, title, description }: BlogCardProp
   return (
     <Link
       href={`/e/blog/${slug}`}
-      className='group block w-full cursor-pointer overflow-hidden rounded-full border bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-0.5 hover:shadow-lg'
+      className={cn(
+        'group flex h-full w-full cursor-pointer flex-col overflow-hidden border bg-white shadow-sm transition-all duration-300 ease-in-out rounded-[2rem] hover:-translate-y-0.5 hover:shadow-lg',
+        className
+      )}
     >
       <div className='relative aspect-video w-full overflow-hidden'>
         {image ? (

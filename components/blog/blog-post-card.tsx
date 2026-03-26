@@ -11,7 +11,7 @@ interface BlogPostCardProps {
 
 export function BlogPostCard({ post, className }: BlogPostCardProps) {
   const excerpt = post.custom_excerpt ?? post.excerpt ?? '';
-  const href = `/blog/${post.slug}`;
+  const href = `/e/blog/${post.slug}`;
 
   return (
     <Link href={href} className={cn('group flex flex-col', className)}>
