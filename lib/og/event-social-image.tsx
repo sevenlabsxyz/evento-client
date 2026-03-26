@@ -17,6 +17,15 @@ export const eventSocialImageSize = {
 };
 
 const EVENT_TITLE_MAX_LENGTH = 62;
+const EVENT_SOCIAL_COVER_SIZE = 430;
+const EVENT_TITLE_WORD_BOUNDARY_BACKTRACK = 12;
+
+type SegmenterConstructor = new (
+  locales?: string | string[],
+  options?: { granularity: 'grapheme' | 'word' | 'sentence' }
+) => {
+  segment(input: string): Iterable<{ segment: string }>;
+};
 
 function EventoWordmark({ color = '#111111' }: { color?: string }) {
   return (
@@ -68,21 +77,43 @@ function getEventImageClient() {
   return createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
+function getTextSegments(value: string) {
+  const intlWithSegmenter = Intl as typeof Intl & {
+    Segmenter?: SegmenterConstructor;
+  };
+
+  if (intlWithSegmenter.Segmenter) {
+    const segmenter = new intlWithSegmenter.Segmenter(undefined, {
+      granularity: 'grapheme',
+    });
+
+    return Array.from(segmenter.segment(value), ({ segment }) => segment);
+  }
+
+  return Array.from(value);
+}
+
 function truncateEventTitle(title: string, maxLength = EVENT_TITLE_MAX_LENGTH) {
   const trimmedTitle = title.trim();
+  const segments = getTextSegments(trimmedTitle);
 
-  if (trimmedTitle.length <= maxLength) {
+  if (segments.length <= maxLength) {
     return trimmedTitle;
   }
 
-  const truncatedTitle = trimmedTitle.slice(0, maxLength - 1);
-  const lastWhitespaceIndex = truncatedTitle.lastIndexOf(' ');
+  const maxVisibleSegments = maxLength - 1;
+  const truncatedSegments = segments.slice(0, maxVisibleSegments);
+  const lastWhitespaceIndex = truncatedSegments.findLastIndex((segment) => /\s/.test(segment));
+  const minWordBoundaryIndex = Math.max(
+    0,
+    maxVisibleSegments - EVENT_TITLE_WORD_BOUNDARY_BACKTRACK
+  );
 
-  if (lastWhitespaceIndex > Math.floor(maxLength * 0.6)) {
-    return `${truncatedTitle.slice(0, lastWhitespaceIndex)}…`;
+  if (lastWhitespaceIndex >= minWordBoundaryIndex) {
+    return `${truncatedSegments.slice(0, lastWhitespaceIndex).join('').trimEnd()}…`;
   }
 
-  return `${truncatedTitle}…`;
+  return `${truncatedSegments.join('').trimEnd()}…`;
 }
 
 function renderFallbackEventImage(title: string) {
@@ -158,12 +189,12 @@ function renderEventImage(title: string, coverSrc?: string | null) {
         <div
           style={{
             display: 'flex',
-            height: '100%',
             flexDirection: 'column',
             flex: 1,
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             alignItems: 'flex-start',
             maxWidth: '470px',
+            height: `${EVENT_SOCIAL_COVER_SIZE}px`,
           }}
         >
           <div
@@ -171,7 +202,6 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               display: 'flex',
               width: '242px',
               height: '34px',
-              marginBottom: '74px',
             }}
           >
             <EventoWordmark />
@@ -183,6 +213,8 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               flexDirection: 'column',
               alignItems: 'flex-start',
               maxWidth: '470px',
+              flex: 1,
+              justifyContent: 'center',
             }}
           >
             <div
@@ -222,9 +254,9 @@ function renderEventImage(title: string, coverSrc?: string | null) {
         <div
           style={{
             display: 'flex',
-            width: '430px',
-            minWidth: '430px',
-            height: '430px',
+            width: `${EVENT_SOCIAL_COVER_SIZE}px`,
+            minWidth: `${EVENT_SOCIAL_COVER_SIZE}px`,
+            height: `${EVENT_SOCIAL_COVER_SIZE}px`,
             borderRadius: '28px',
             overflow: 'hidden',
             backgroundColor: '#f3f4f6',
