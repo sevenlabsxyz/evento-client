@@ -157,6 +157,11 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       }
     : null;
 
+  const isOwnProfile = userData?.id === user?.id;
+  const profileZapAddress = userData
+    ? userData.ln_address || `${userData.username}@evento.cash`
+    : null;
+
   const handleFollowToggle = () => {
     if (!userData?.id) {
       toast.error('Unable to identify user');
@@ -720,10 +725,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               </div>
 
               {/* Zap Button */}
-              {userData?.ln_address && userData?.id !== user?.id && (
+              {userData && profileZapAddress && !isOwnProfile && (
                 <div className='mb-6'>
                   <ZapSheet
-                    recipientLightningAddress={userData.ln_address}
+                    recipientLightningAddress={profileZapAddress}
                     recipientName={userData.name || 'Unknown User'}
                     recipientUsername={userData.username}
                     recipientAvatar={userData.image}
