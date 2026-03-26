@@ -35,6 +35,9 @@ export const Env = {
 
   // Breez SDK
   NEXT_PUBLIC_BREEZ_API_KEY: process.env.NEXT_PUBLIC_BREEZ_API_KEY || '',
+
+  // Error Alerting
+  NEXT_PUBLIC_ERROR_ALERTS_ENABLED: process.env.NEXT_PUBLIC_ERROR_ALERTS_ENABLED === 'true',
 } as const;
 
 // Type representing all environment variable keys

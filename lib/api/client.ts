@@ -1,4 +1,5 @@
 import { Env } from '@/lib/constants/env';
+import { reportErrorAlert } from '@/lib/observability/error-alert-client';
 import axios, {
   AxiosError,
   AxiosRequestConfig,
@@ -92,7 +93,9 @@ apiClient.interceptors.response.use(
     const errorMessage =
       (error.response?.data as any)?.message || error.message || 'An unexpected error occurred';
 
-    const shouldLogError = !config?.suppressErrorStatuses?.includes(error.response?.status ?? -1);
+    const statusCode = error.response?.status;
+    const hasNumericStatus = typeof statusCode === 'number';
+    const shouldLogError = !config?.suppressErrorStatuses?.includes(statusCode ?? -1);
 
     if (shouldLogError) {
       console.error('API Error:', {
@@ -101,7 +104,7 @@ apiClient.interceptors.response.use(
         stack: error.stack,
         requestId,
         method: config?.method?.toUpperCase(),
-        statusCode: error.response?.status,
+        statusCode: statusCode,
         userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : undefined,
         duration,
         responseData: error.response?.data,
@@ -110,10 +113,27 @@ apiClient.interceptors.response.use(
       });
     }
 
+    // Report HTTP errors with numeric status codes to observability
+    // Only report if: has numeric status AND not suppressed
+    if (hasNumericStatus && shouldLogError) {
+      // Strip query strings from URL for privacy
+      const rawUrl = config?.url || 'unknown';
+      const sanitizedPath = rawUrl.split('?')[0];
+
+      reportErrorAlert({
+        kind: 'client-http',
+        message: errorMessage,
+        path: sanitizedPath,
+        status: statusCode,
+        method: config?.method?.toUpperCase(),
+        requestId,
+      });
+    }
+
     // Create a standardized error object
     const apiError = {
       message: errorMessage,
-      status: error.response?.status,
+      status: statusCode,
       success: false,
     };
 

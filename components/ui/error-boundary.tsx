@@ -1,9 +1,9 @@
 'use client';
 
+import { reportErrorAlert } from '@/lib/observability/error-alert-client';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Component, ErrorInfo, ReactNode } from 'react';
-
 interface Props {
   children: ReactNode;
   fallback?: ReactNode;
@@ -26,10 +26,20 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+    // Log locally (existing behavior preserved)
     logger.error('ErrorBoundary caught an error', {
       error: error.message,
       stack: error.stack,
       componentStack: errorInfo.componentStack,
+    });
+
+    // Forward to observability API (fire-and-forget)
+    reportErrorAlert({
+      kind: 'browser-error',
+      message: error.message,
+      stack: error.stack ?? undefined,
+      componentStack: errorInfo.componentStack ?? undefined,
+      path: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
     });
 
     // Call custom error handler if provided
@@ -37,7 +47,7 @@ export class ErrorBoundary extends Component<Props, State> {
       this.props.onError(error, errorInfo);
     }
 
-    // Show user-friendly error message
+    // Show user-friendly error message (existing behavior preserved)
     toast.error('Something went wrong. Please try again.');
   }
 

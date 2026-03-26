@@ -1,5 +1,7 @@
 'use client';
 
+import { reportErrorAlert } from '@/lib/observability/error-alert-client';
+import { useEffect, useRef } from 'react';
 export default function GlobalError({
   error,
   reset,
@@ -7,6 +9,22 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // Guard to prevent resending the same error on rerender
+  const reportedRef = useRef<Error | null>(null);
+
+  useEffect(() => {
+    // Only report if this is a new error object
+    if (reportedRef.current !== error) {
+      reportedRef.current = error;
+      reportErrorAlert({
+        kind: 'browser-error',
+        message: error.message,
+        stack: error.stack,
+        path: typeof window !== 'undefined' ? window.location.pathname : 'unknown',
+      });
+    }
+  }, [error]);
+
   return (
     <html lang='en'>
       <body>
