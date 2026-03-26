@@ -19,6 +19,7 @@ export const eventSocialImageSize = {
 const EVENT_TITLE_MAX_LENGTH = 62;
 const EVENT_SOCIAL_COVER_SIZE = 430;
 const EVENT_TITLE_WORD_BOUNDARY_BACKTRACK = 12;
+const EVENT_SOCIAL_TEXT_WIDTH = 640;
 
 type SegmenterConstructor = new (
   locales?: string | string[],
@@ -181,7 +182,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
           width: '100%',
           height: '100%',
           padding: '42px 48px',
-          gap: '46px',
+          gap: '18px',
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
@@ -193,7 +194,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
             flex: 1,
             justifyContent: 'space-between',
             alignItems: 'flex-start',
-            maxWidth: '470px',
+            maxWidth: `${EVENT_SOCIAL_TEXT_WIDTH}px`,
             height: `${EVENT_SOCIAL_COVER_SIZE}px`,
           }}
         >
@@ -212,7 +213,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              maxWidth: '470px',
+              maxWidth: `${EVENT_SOCIAL_TEXT_WIDTH}px`,
               flex: 1,
               justifyContent: 'center',
             }}
@@ -220,11 +221,11 @@ function renderEventImage(title: string, coverSrc?: string | null) {
             <div
               style={{
                 display: 'flex',
-                maxWidth: '470px',
+                maxWidth: `${EVENT_SOCIAL_TEXT_WIDTH}px`,
                 fontSize: '54px',
                 fontWeight: 700,
                 lineHeight: 1.06,
-                letterSpacing: '-0.04em',
+                letterSpacing: '0em',
                 color: '#111111',
                 overflow: 'hidden',
               }}
@@ -243,7 +244,8 @@ function renderEventImage(title: string, coverSrc?: string | null) {
                 backgroundColor: '#ef3125',
                 color: '#fff',
                 fontSize: '26px',
-                fontWeight: 800,
+                fontWeight: 900,
+                letterSpacing: '0em',
               }}
             >
               RSVP
