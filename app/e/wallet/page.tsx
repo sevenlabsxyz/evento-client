@@ -59,7 +59,7 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
@@ -105,8 +105,6 @@ export default function WalletPage() {
   const { setTopBarForRoute, applyRouteConfig, clearRoute } = useTopBar();
   const pathname = usePathname();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const searchParamsString = searchParams.toString();
   const { walletState, isLoading: isWalletLoading, markAsBackedUp, refreshBalance } = useWallet();
   const { payments, isLoading: isLoadingPayments, fetchPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
@@ -130,13 +128,22 @@ export default function WalletPage() {
   const [showAddContactSheet, setShowAddContactSheet] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
+  const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
+      return;
+    }
+
+    setDevLnurlWithdrawSearch(window.location.search);
+  }, []);
 
   const devLnurlWithdrawConfig = useMemo<DevLnurlWithdrawRouteConfig | null>(() => {
     if (process.env.NODE_ENV !== 'development') {
       return null;
     }
 
-    const params = new URLSearchParams(searchParamsString);
+    const params = new URLSearchParams(devLnurlWithdrawSearch);
 
     if (params.get('dev-lnurl-withdraw') !== '1') {
       return null;
@@ -182,7 +189,7 @@ export default function WalletPage() {
       mockResult,
       withdrawRequest,
     };
-  }, [searchParamsString]);
+  }, [devLnurlWithdrawSearch]);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
