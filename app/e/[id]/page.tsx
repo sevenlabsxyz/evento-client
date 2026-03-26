@@ -193,8 +193,12 @@ export default async function EventDetailPage({ params }: Pick<Props, 'params'>)
   try {
     const event = await fetchEventSeoData(params.id);
 
-    if (event && event.visibility === 'public') {
-      jsonLd = serializeJsonLd(buildEventJsonLd(event));
+    if (event) {
+      const eventJsonLd = buildEventJsonLd(event);
+
+      if (eventJsonLd) {
+        jsonLd = serializeJsonLd(eventJsonLd);
+      }
     }
   } catch (error) {
     logger.error('Error building event JSON-LD', {

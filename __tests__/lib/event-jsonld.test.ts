@@ -5,6 +5,7 @@ const baseEvent: EventSeoRecord = {
   id: 'evt_123',
   title: 'TabConf Vegas',
   description: '<p>Hello<br />world</p>',
+  cover: '/eventos/uploaded-covers/cov_123.png',
   location: 'UNLV, Las Vegas, NV, USA',
   event_locations: {
     id: 'loc_123',
@@ -22,6 +23,7 @@ const baseEvent: EventSeoRecord = {
   },
   computed_start_date: '2026-04-26T17:00:00.000Z',
   computed_end_date: '2026-04-27T01:00:00.000Z',
+  updated_at: '2026-03-23T12:34:56.000Z',
   status: 'published',
   visibility: 'public',
 };
@@ -29,6 +31,11 @@ const baseEvent: EventSeoRecord = {
 describe('buildEventJsonLd', () => {
   it('builds schema.org Event JSON-LD for a public in-person event', () => {
     const result = buildEventJsonLd(baseEvent);
+    expect(result).not.toBeNull();
+
+    if (!result) {
+      throw new Error('Expected JSON-LD for public event');
+    }
 
     expect(result).toMatchObject({
       '@context': 'https://schema.org',
@@ -57,7 +64,9 @@ describe('buildEventJsonLd', () => {
       },
     });
 
-    expect(result.image).toEqual(['https://app.evento.so/e/evt_123/social-image']);
+    expect(result.image).toEqual([
+      expect.stringMatching(/^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=1774269296000-/),
+    ]);
   });
 
   it('falls back to online attendance mode when there is no location', () => {
@@ -66,6 +75,11 @@ describe('buildEventJsonLd', () => {
       location: '',
       event_locations: null,
     });
+    expect(result).not.toBeNull();
+
+    if (!result) {
+      throw new Error('Expected JSON-LD for public event without location');
+    }
 
     expect(result.eventAttendanceMode).toBe('https://schema.org/OnlineEventAttendanceMode');
     expect(result.location).toBeUndefined();
@@ -76,8 +90,22 @@ describe('buildEventJsonLd', () => {
       ...baseEvent,
       status: 'cancelled',
     });
+    expect(result).not.toBeNull();
+
+    if (!result) {
+      throw new Error('Expected JSON-LD for cancelled public event');
+    }
 
     expect(result.eventStatus).toBe('https://schema.org/EventCancelled');
+  });
+
+  it('returns null for archived events', () => {
+    expect(
+      buildEventJsonLd({
+        ...baseEvent,
+        status: 'archived',
+      })
+    ).toBeNull();
   });
 });
 
