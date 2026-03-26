@@ -159,7 +159,14 @@ export function ReceiveLnurlWithdrawSheet({
           throw new Error('Dev-only LNURL withdraw failure');
         }
 
-        await onReceived?.();
+        try {
+          await onReceived?.();
+        } catch (refreshError) {
+          logger.error('Dev LNURL withdraw completed but wallet refresh failed', {
+            error: refreshError instanceof Error ? refreshError.message : String(refreshError),
+          });
+        }
+
         setStep('success');
         return;
       }
