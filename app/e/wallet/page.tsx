@@ -60,7 +60,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
 type DrawerContent =
@@ -77,6 +77,27 @@ type DrawerContent =
   | null;
 
 type LnurlWithdrawInput = Extract<InputType, { type: 'lnurlWithdraw' }>;
+
+type DevLnurlWithdrawState = 'details' | 'confirm' | 'success' | 'error';
+
+interface DevLnurlWithdrawConfig {
+  amountSats: number | null;
+  initialStep: DevLnurlWithdrawState;
+  mockResult: 'success' | 'error' | null;
+}
+
+interface DevLnurlWithdrawRouteConfig extends DevLnurlWithdrawConfig {
+  withdrawRequest: LnurlWithdrawInput;
+}
+
+function parsePositiveInt(value: string | null): number | null {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = Number.parseInt(value, 10);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+}
 
 export default function WalletPage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
@@ -107,6 +128,68 @@ export default function WalletPage() {
   const [showAddContactSheet, setShowAddContactSheet] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
+  const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
+      return;
+    }
+
+    setDevLnurlWithdrawSearch(window.location.search);
+  }, []);
+
+  const devLnurlWithdrawConfig = useMemo<DevLnurlWithdrawRouteConfig | null>(() => {
+    if (process.env.NODE_ENV !== 'development') {
+      return null;
+    }
+
+    const params = new URLSearchParams(devLnurlWithdrawSearch);
+
+    if (params.get('dev-lnurl-withdraw') !== '1') {
+      return null;
+    }
+
+    const minSats = parsePositiveInt(params.get('min')) ?? 1_000;
+    const maxSats = Math.max(minSats, parsePositiveInt(params.get('max')) ?? 25_000);
+    const amountSats = parsePositiveInt(params.get('amount'));
+    const initialStepParam = params.get('state');
+    const mockResultParam = params.get('result');
+
+    const initialStep: DevLnurlWithdrawState =
+      initialStepParam === 'confirm' ||
+      initialStepParam === 'success' ||
+      initialStepParam === 'error'
+        ? initialStepParam
+        : 'details';
+
+    const mockResult: DevLnurlWithdrawConfig['mockResult'] =
+      mockResultParam === 'success' || mockResultParam === 'error' ? mockResultParam : null;
+
+    const normalizedAmountSats = amountSats
+      ? Math.min(Math.max(amountSats, minSats), maxSats)
+      : initialStep === 'confirm' || initialStep === 'success' || initialStep === 'error'
+        ? minSats
+        : null;
+
+    const provider = params.get('provider') || 'demo.evento.cash';
+    const description = params.get('description') || 'Dev LNURL withdraw';
+
+    const withdrawRequest: LnurlWithdrawInput = {
+      type: 'lnurlWithdraw',
+      callback: `https://${provider}/.well-known/lnurlw/dev`,
+      k1: 'dev-lnurl-withdraw-k1',
+      defaultDescription: description,
+      minWithdrawable: minSats * 1000,
+      maxWithdrawable: maxSats * 1000,
+    };
+
+    return {
+      amountSats: normalizedAmountSats,
+      initialStep,
+      mockResult,
+      withdrawRequest,
+    };
+  }, [devLnurlWithdrawSearch]);
 
   const openDrawer = (content: DrawerContent) => {
     if (content && !openDrawers.includes(content)) {
@@ -428,6 +511,17 @@ export default function WalletPage() {
     }
   };
 
+  useEffect(() => {
+    if (!devLnurlWithdrawConfig) {
+      return;
+    }
+
+    setScannedLnurlWithdraw(devLnurlWithdrawConfig.withdrawRequest);
+    setOpenDrawers((current) =>
+      current.includes('lnurl-withdraw') ? current : [...current, 'lnurl-withdraw']
+    );
+  }, [devLnurlWithdrawConfig]);
+
   if (isCheckingAuth || isWalletLoading) {
     return (
       <div className='mx-auto max-w-sm pb-28 pt-4'>
@@ -634,6 +728,7 @@ export default function WalletPage() {
           }
         }}
         withdrawRequest={scannedLnurlWithdraw}
+        devConfig={devLnurlWithdrawConfig}
         onReceived={async () => {
           await Promise.all([refreshBalance(), fetchPayments()]);
         }}
