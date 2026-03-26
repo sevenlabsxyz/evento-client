@@ -16,6 +16,17 @@ export const eventSocialImageSize = {
   height: 630,
 };
 
+const EVENT_TITLE_MAX_LENGTH = 62;
+const EVENT_SOCIAL_COVER_SIZE = 430;
+const EVENT_TITLE_WORD_BOUNDARY_BACKTRACK = 12;
+
+type SegmenterConstructor = new (
+  locales?: string | string[],
+  options?: { granularity: 'grapheme' | 'word' | 'sentence' }
+) => {
+  segment(input: string): Iterable<{ segment: string }>;
+};
+
 function EventoWordmark({ color = '#111111' }: { color?: string }) {
   return (
     <svg
@@ -66,7 +77,48 @@ function getEventImageClient() {
   return createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
+function getTextSegments(value: string) {
+  const intlWithSegmenter = Intl as typeof Intl & {
+    Segmenter?: SegmenterConstructor;
+  };
+
+  if (intlWithSegmenter.Segmenter) {
+    const segmenter = new intlWithSegmenter.Segmenter(undefined, {
+      granularity: 'grapheme',
+    });
+
+    return Array.from(segmenter.segment(value), ({ segment }) => segment);
+  }
+
+  return Array.from(value);
+}
+
+function truncateEventTitle(title: string, maxLength = EVENT_TITLE_MAX_LENGTH) {
+  const trimmedTitle = title.trim();
+  const segments = getTextSegments(trimmedTitle);
+
+  if (segments.length <= maxLength) {
+    return trimmedTitle;
+  }
+
+  const maxVisibleSegments = maxLength - 1;
+  const truncatedSegments = segments.slice(0, maxVisibleSegments);
+  const lastWhitespaceIndex = truncatedSegments.findLastIndex((segment) => /\s/.test(segment));
+  const minWordBoundaryIndex = Math.max(
+    0,
+    maxVisibleSegments - EVENT_TITLE_WORD_BOUNDARY_BACKTRACK
+  );
+
+  if (lastWhitespaceIndex >= minWordBoundaryIndex) {
+    return `${truncatedSegments.slice(0, lastWhitespaceIndex).join('').trimEnd()}…`;
+  }
+
+  return `${truncatedSegments.join('').trimEnd()}…`;
+}
+
 function renderFallbackEventImage(title: string) {
+  const displayTitle = truncateEventTitle(title, 54);
+
   return new ImageResponse(
     <div
       style={{
@@ -100,7 +152,7 @@ function renderFallbackEventImage(title: string) {
           color: '#111111',
         }}
       >
-        {title}
+        {displayTitle}
       </div>
     </div>,
     {
@@ -111,6 +163,8 @@ function renderFallbackEventImage(title: string) {
 }
 
 function renderEventImage(title: string, coverSrc?: string | null) {
+  const displayTitle = truncateEventTitle(title);
+
   return new ImageResponse(
     <div
       style={{
@@ -127,18 +181,20 @@ function renderEventImage(title: string, coverSrc?: string | null) {
           width: '100%',
           height: '100%',
           padding: '42px 48px',
-          gap: '42px',
+          gap: '46px',
           alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
         <div
           style={{
             display: 'flex',
-            height: '100%',
             flexDirection: 'column',
             flex: 1,
-            justifyContent: 'center',
+            justifyContent: 'space-between',
             alignItems: 'flex-start',
+            maxWidth: '470px',
+            height: `${EVENT_SOCIAL_COVER_SIZE}px`,
           }}
         >
           <div
@@ -146,7 +202,6 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               display: 'flex',
               width: '242px',
               height: '34px',
-              marginBottom: '74px',
             }}
           >
             <EventoWordmark />
@@ -157,20 +212,24 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              maxWidth: '560px',
+              maxWidth: '470px',
+              flex: 1,
+              justifyContent: 'center',
             }}
           >
             <div
               style={{
                 display: 'flex',
-                fontSize: '58px',
+                maxWidth: '470px',
+                fontSize: '54px',
                 fontWeight: 700,
-                lineHeight: 1.08,
+                lineHeight: 1.06,
                 letterSpacing: '-0.04em',
                 color: '#111111',
+                overflow: 'hidden',
               }}
             >
-              {title}
+              {displayTitle}
             </div>
 
             <div
@@ -179,12 +238,12 @@ function renderEventImage(title: string, coverSrc?: string | null) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginTop: '28px',
-                padding: '16px 32px',
+                padding: '16px 42px',
                 borderRadius: '999px',
                 backgroundColor: '#ef3125',
                 color: '#fff',
                 fontSize: '26px',
-                fontWeight: 700,
+                fontWeight: 800,
               }}
             >
               RSVP
@@ -195,9 +254,9 @@ function renderEventImage(title: string, coverSrc?: string | null) {
         <div
           style={{
             display: 'flex',
-            width: '364px',
-            minWidth: '364px',
-            height: '486px',
+            width: `${EVENT_SOCIAL_COVER_SIZE}px`,
+            minWidth: `${EVENT_SOCIAL_COVER_SIZE}px`,
+            height: `${EVENT_SOCIAL_COVER_SIZE}px`,
             borderRadius: '28px',
             overflow: 'hidden',
             backgroundColor: '#f3f4f6',
