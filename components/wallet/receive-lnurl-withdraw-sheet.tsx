@@ -13,10 +13,17 @@ import { useEffect, useMemo, useState } from 'react';
 
 type LnurlWithdrawInput = Extract<InputType, { type: 'lnurlWithdraw' }>;
 
+interface DevLnurlWithdrawConfig {
+  amountSats: number | null;
+  initialStep: 'details' | 'confirm' | 'success' | 'error';
+  mockResult: 'success' | 'error' | null;
+}
+
 interface ReceiveLnurlWithdrawSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   withdrawRequest: LnurlWithdrawInput | null;
+  devConfig?: DevLnurlWithdrawConfig | null;
   onReceived?: () => Promise<void> | void;
 }
 
@@ -32,6 +39,7 @@ export function ReceiveLnurlWithdrawSheet({
   open,
   onOpenChange,
   withdrawRequest,
+  devConfig,
   onReceived,
 }: ReceiveLnurlWithdrawSheetProps) {
   const [step, setStep] = useState<'details' | 'confirm' | 'success'>('details');
@@ -61,6 +69,12 @@ export function ReceiveLnurlWithdrawSheet({
       return;
     }
 
+    if (process.env.NODE_ENV === 'development' && devConfig) {
+      setAmountSats(devConfig.amountSats);
+      setStep(devConfig.initialStep === 'error' ? 'confirm' : devConfig.initialStep);
+      return;
+    }
+
     if (constraints.isFixedAmount) {
       setAmountSats(constraints.minSats);
       setStep('confirm');
@@ -70,7 +84,7 @@ export function ReceiveLnurlWithdrawSheet({
     setAmountSats(null);
     setAmountUSD(null);
     setStep('details');
-  }, [open, withdrawRequest, constraints]);
+  }, [constraints, devConfig, open, withdrawRequest]);
 
   useEffect(() => {
     let cancelled = false;
@@ -138,6 +152,18 @@ export function ReceiveLnurlWithdrawSheet({
     setIsReceiving(true);
 
     try {
+      if (process.env.NODE_ENV === 'development' && devConfig?.mockResult) {
+        await new Promise((resolve) => setTimeout(resolve, 350));
+
+        if (devConfig.mockResult === 'error') {
+          throw new Error('Dev-only LNURL withdraw failure');
+        }
+
+        await onReceived?.();
+        setStep('success');
+        return;
+      }
+
       await breezSDK.lnurlWithdraw({
         amountSats,
         withdrawRequest: {
@@ -180,6 +206,14 @@ export function ReceiveLnurlWithdrawSheet({
       return null;
     }
   }, [withdrawRequest]);
+
+  useEffect(() => {
+    if (!open || process.env.NODE_ENV !== 'development' || devConfig?.initialStep !== 'error') {
+      return;
+    }
+
+    toast.error('Dev-only LNURL withdraw failure');
+  }, [devConfig?.initialStep, open]);
 
   const footer =
     step === 'success' ? (
