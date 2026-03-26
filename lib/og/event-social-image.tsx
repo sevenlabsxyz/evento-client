@@ -16,6 +16,8 @@ export const eventSocialImageSize = {
   height: 630,
 };
 
+const EVENT_TITLE_MAX_LENGTH = 62;
+
 function EventoWordmark({ color = '#111111' }: { color?: string }) {
   return (
     <svg
@@ -66,7 +68,26 @@ function getEventImageClient() {
   return createClient(Env.NEXT_PUBLIC_SUPABASE_URL, Env.SUPABASE_SERVICE_ROLE_KEY);
 }
 
+function truncateEventTitle(title: string, maxLength = EVENT_TITLE_MAX_LENGTH) {
+  const trimmedTitle = title.trim();
+
+  if (trimmedTitle.length <= maxLength) {
+    return trimmedTitle;
+  }
+
+  const truncatedTitle = trimmedTitle.slice(0, maxLength - 1);
+  const lastWhitespaceIndex = truncatedTitle.lastIndexOf(' ');
+
+  if (lastWhitespaceIndex > Math.floor(maxLength * 0.6)) {
+    return `${truncatedTitle.slice(0, lastWhitespaceIndex)}…`;
+  }
+
+  return `${truncatedTitle}…`;
+}
+
 function renderFallbackEventImage(title: string) {
+  const displayTitle = truncateEventTitle(title, 54);
+
   return new ImageResponse(
     <div
       style={{
@@ -100,7 +121,7 @@ function renderFallbackEventImage(title: string) {
           color: '#111111',
         }}
       >
-        {title}
+        {displayTitle}
       </div>
     </div>,
     {
@@ -111,6 +132,8 @@ function renderFallbackEventImage(title: string) {
 }
 
 function renderEventImage(title: string, coverSrc?: string | null) {
+  const displayTitle = truncateEventTitle(title);
+
   return new ImageResponse(
     <div
       style={{
@@ -127,8 +150,9 @@ function renderEventImage(title: string, coverSrc?: string | null) {
           width: '100%',
           height: '100%',
           padding: '42px 48px',
-          gap: '42px',
+          gap: '46px',
           alignItems: 'center',
+          justifyContent: 'space-between',
         }}
       >
         <div
@@ -139,6 +163,7 @@ function renderEventImage(title: string, coverSrc?: string | null) {
             flex: 1,
             justifyContent: 'center',
             alignItems: 'flex-start',
+            maxWidth: '470px',
           }}
         >
           <div
@@ -157,20 +182,22 @@ function renderEventImage(title: string, coverSrc?: string | null) {
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'flex-start',
-              maxWidth: '560px',
+              maxWidth: '470px',
             }}
           >
             <div
               style={{
                 display: 'flex',
-                fontSize: '58px',
+                maxWidth: '470px',
+                fontSize: '54px',
                 fontWeight: 700,
-                lineHeight: 1.08,
+                lineHeight: 1.06,
                 letterSpacing: '-0.04em',
                 color: '#111111',
+                overflow: 'hidden',
               }}
             >
-              {title}
+              {displayTitle}
             </div>
 
             <div
@@ -179,12 +206,12 @@ function renderEventImage(title: string, coverSrc?: string | null) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginTop: '28px',
-                padding: '16px 32px',
+                padding: '16px 42px',
                 borderRadius: '999px',
                 backgroundColor: '#ef3125',
                 color: '#fff',
                 fontSize: '26px',
-                fontWeight: 700,
+                fontWeight: 800,
               }}
             >
               RSVP
@@ -195,9 +222,9 @@ function renderEventImage(title: string, coverSrc?: string | null) {
         <div
           style={{
             display: 'flex',
-            width: '364px',
-            minWidth: '364px',
-            height: '486px',
+            width: '430px',
+            minWidth: '430px',
+            height: '430px',
             borderRadius: '28px',
             overflow: 'hidden',
             backgroundColor: '#f3f4f6',
