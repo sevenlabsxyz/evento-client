@@ -16,6 +16,47 @@ export const eventSocialImageSize = {
   height: 630,
 };
 
+function EventoWordmark({ color = '#111111' }: { color?: string }) {
+  return (
+    <svg
+      width='242'
+      height='34'
+      viewBox='0 0 242 34'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+    >
+      <path
+        d='M0 0.7323H28.2603V8.43607H10.2896V12.3955H27.3231V20.1427H10.2896V24.1891H28.4568V31.9363H0V0.7323Z'
+        fill={color}
+      />
+      <path
+        d='M39.5346 0.7323L45.9351 21.3053L52.4825 0.7323H63.4114L51.5454 31.9363H40.2711L28.3596 0.7323H39.5346Z'
+        fill={color}
+      />
+      <path
+        d='M64.5448 0.7323H92.8051V8.43607H74.8344V12.3955H91.8679V20.1427H74.8344V24.1891H93.0016V31.9363H64.5448V0.7323Z'
+        fill={color}
+      />
+      <path
+        d='M116.783 31.9363L105.854 12.0521V31.9363H96.3529V0.7323H109.005L119.983 20.573V0.7323H129.485V31.9363H116.783Z'
+        fill={color}
+      />
+      <path
+        d='M141.694 8.43607H131.059V0.7323H162.667V8.43607H151.984V31.9363H141.694V8.43607Z'
+        fill={color}
+      />
+      <path
+        d='M180.197 32.4949C169.268 32.4949 161.487 26.5557 161.487 16.2681C161.487 5.98056 169.266 0 180.197 0C191.127 0 198.906 5.98263 198.906 16.2681C198.906 26.5536 191.127 32.4949 180.197 32.4949ZM180.197 24.9628C184.332 24.9628 188.221 22.4245 188.221 16.2681C188.221 10.1117 184.332 7.53 180.197 7.53C176.061 7.53 172.172 10.1117 172.172 16.2681C172.172 22.4245 176.061 24.9628 180.197 24.9628Z'
+        fill={color}
+      />
+      <path
+        d='M238.805 8.41953L241.711 15.662L229.016 19.3318L236.98 28.5499L229.878 33.1589L221.914 23.4713L214.382 33.161L207.172 28.554L215.135 19.336L202.652 15.6682L205.557 8.42367L217.716 12.561V0.802643H226.322V12.561L238.805 8.41953Z'
+        fill={color}
+      />
+    </svg>
+  );
+}
+
 function getEventImageClient() {
   if (!Env.NEXT_PUBLIC_SUPABASE_URL || !Env.SUPABASE_SERVICE_ROLE_KEY) {
     logger.warn('Skipping event OG image lookup because Supabase env vars are missing');
@@ -27,38 +68,41 @@ function getEventImageClient() {
 
 function renderFallbackEventImage(title: string) {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#ffffff',
+        color: '#111111',
+        padding: '46px',
+        alignItems: 'center',
+      }}
+    >
+      <div
+        style={{
+          fontSize: '44px',
+          fontWeight: 700,
+          marginRight: 'auto',
+        }}
+      >
+        <EventoWordmark />
+      </div>
       <div
         style={{
           display: 'flex',
+          marginTop: 'auto',
+          marginBottom: 'auto',
           width: '100%',
-          height: '100%',
-          backgroundColor: '#111827',
-          color: '#f9fafb',
-          padding: '64px',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          fontSize: '58px',
+          fontWeight: 700,
+          lineHeight: 1.2,
+          color: '#111111',
         }}
       >
-        <div
-          style={{
-            fontSize: '44px',
-            fontWeight: 700,
-          }}
-        >
-          Evento
-        </div>
-        <div
-          style={{
-            fontSize: '58px',
-            fontWeight: 700,
-            lineHeight: 1.2,
-          }}
-        >
-          {title}
-        </div>
+        {title}
       </div>
-    ),
+    </div>,
     {
       ...eventSocialImageSize,
       headers: EVENT_SOCIAL_IMAGE_HEADERS,
@@ -68,135 +112,123 @@ function renderFallbackEventImage(title: string) {
 
 function renderEventImage(title: string, coverSrc?: string | null) {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        display: 'flex',
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#ffffff',
+        color: '#111111',
+      }}
+    >
       <div
         style={{
           display: 'flex',
           width: '100%',
           height: '100%',
-          backgroundColor: '#f4f0e8',
-          color: '#18181b',
+          padding: '42px 48px',
+          gap: '42px',
+          alignItems: 'center',
         }}
       >
         <div
           style={{
             display: 'flex',
-            width: '100%',
             height: '100%',
-            padding: '36px',
-            gap: '36px',
-            alignItems: 'stretch',
+            flexDirection: 'column',
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'flex-start',
           }}
         >
           <div
             style={{
               display: 'flex',
-              width: '45%',
-              minWidth: '45%',
-              height: '100%',
-              borderRadius: '28px',
-              overflow: 'hidden',
-              backgroundColor: '#18181b',
-              alignItems: 'center',
-              justifyContent: 'center',
+              width: '242px',
+              height: '34px',
+              marginBottom: '74px',
             }}
           >
-            {coverSrc ? (
-              <img
-                src={coverSrc}
-                alt={title}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                }}
-              />
-            ) : (
-              <div
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  height: '100%',
-                  background:
-                    'linear-gradient(135deg, rgba(24,24,27,1) 0%, rgba(127,29,29,1) 100%)',
-                }}
-              />
-            )}
+            <EventoWordmark />
           </div>
 
           <div
             style={{
               display: 'flex',
-              flex: 1,
-              height: '100%',
               flexDirection: 'column',
-              justifyContent: 'space-between',
-              padding: '8px 0',
+              alignItems: 'flex-start',
+              maxWidth: '560px',
             }}
           >
             <div
               style={{
                 display: 'flex',
-                alignSelf: 'flex-start',
-                padding: '10px 16px',
+                fontSize: '58px',
+                fontWeight: 700,
+                lineHeight: 1.08,
+                letterSpacing: '-0.04em',
+                color: '#111111',
+              }}
+            >
+              {title}
+            </div>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: '28px',
+                padding: '16px 32px',
                 borderRadius: '999px',
-                backgroundColor: '#18181b',
-                color: '#fafafa',
-                fontSize: '24px',
+                backgroundColor: '#ef3125',
+                color: '#fff',
+                fontSize: '26px',
                 fontWeight: 700,
               }}
             >
-              Evento
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '24px',
-              }}
-            >
-              <div
-                style={{
-                  fontSize: '56px',
-                  fontWeight: 700,
-                  lineHeight: 1.08,
-                  color: '#18181b',
-                }}
-              >
-                {title}
-              </div>
-
-              <div
-                style={{
-                  display: 'flex',
-                  alignSelf: 'flex-start',
-                  padding: '14px 20px',
-                  borderRadius: '16px',
-                  backgroundColor: '#dc2626',
-                  color: '#fff',
-                  fontSize: '24px',
-                  fontWeight: 700,
-                }}
-              >
-                RSVP on app.evento.so
-              </div>
-            </div>
-
-            <div
-              style={{
-                display: 'flex',
-                color: '#52525b',
-                fontSize: '24px',
-                fontWeight: 500,
-              }}
-            >
-              Events made social
+              RSVP
             </div>
           </div>
         </div>
+
+        <div
+          style={{
+            display: 'flex',
+            width: '364px',
+            minWidth: '364px',
+            height: '486px',
+            borderRadius: '28px',
+            overflow: 'hidden',
+            backgroundColor: '#f3f4f6',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 18px 44px rgba(0, 0, 0, 0.12)',
+          }}
+        >
+          {coverSrc ? (
+            <img
+              src={coverSrc}
+              alt={title}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+              }}
+            />
+          ) : (
+            <div
+              style={{
+                display: 'flex',
+                width: '100%',
+                height: '100%',
+                background: 'linear-gradient(180deg, #fafafa 0%, #e5e7eb 100%)',
+              }}
+            />
+          )}
+        </div>
       </div>
-    ),
+    </div>,
     {
       ...eventSocialImageSize,
       headers: EVENT_SOCIAL_IMAGE_HEADERS,
