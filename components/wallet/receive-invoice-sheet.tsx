@@ -69,10 +69,11 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
           return;
         }
 
-        // If we're showing lightning address (no specific invoice), any incoming payment
+        // If we're showing lightning address (no specific invoice), any incoming lightning payment
         // that doesn't match a specific invoice we're waiting for should also trigger success
         if (
           payment.paymentType === 'receive' &&
+          payment.details?.type === 'lightning' &&
           !invoiceAmount &&
           !activeInvoice &&
           activeTab === 'lightning'
