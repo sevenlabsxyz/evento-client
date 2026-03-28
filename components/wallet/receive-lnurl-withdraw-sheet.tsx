@@ -8,7 +8,8 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { InputType } from '@breeztech/breez-sdk-spark/web';
-import { CheckCircle2, Loader2, Wallet } from 'lucide-react';
+import { CheckCircle2, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 
 type LnurlWithdrawInput = Extract<InputType, { type: 'lnurlWithdraw' }>;
@@ -124,20 +125,6 @@ export function ReceiveLnurlWithdrawSheet({
   };
 
   const handleChooseAmount = async (selectedAmountSats: number) => {
-    if (!constraints) {
-      return;
-    }
-
-    if (selectedAmountSats < constraints.minSats) {
-      toast.error(`Minimum amount is ${constraints.minSats.toLocaleString()} sats`);
-      return;
-    }
-
-    if (selectedAmountSats > constraints.maxSats) {
-      toast.error(`Maximum amount is ${constraints.maxSats.toLocaleString()} sats`);
-      return;
-    }
-
     setAmountSats(selectedAmountSats);
     setAmountSheetOpen(false);
     setStep('confirm');
@@ -259,40 +246,48 @@ export function ReceiveLnurlWithdrawSheet({
         <div className='space-y-6 p-6'>
           {step === 'success' ? (
             <div className='flex flex-col items-center justify-center space-y-6 py-10 text-center'>
-              <div className='rounded-full bg-green-100 p-6'>
+              {/* Success Icon with Spring Animation */}
+              <motion.div
+                className='rounded-full bg-green-100 p-6'
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+              >
                 <CheckCircle2 className='h-16 w-16 text-green-600' />
-              </div>
-              <div className='space-y-2'>
-                <h3 className='text-2xl font-bold text-gray-900'>Funds received</h3>
+              </motion.div>
+              
+              {/* Title with Fade-in Slide-up */}
+              <motion.div
+                className='space-y-2'
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <h3 className='text-2xl font-bold text-gray-900'>Bitcoin received</h3>
                 <p className='text-sm text-muted-foreground'>
-                  {amountSats?.toLocaleString()} sats arrived in your event wallet.
+                  Your sats arrived in your Evento wallet.
                 </p>
-              </div>
+              </motion.div>
+              
+              {/* Amount Card with Fade-in Slide-up */}
               {amountUSD !== null && (
-                <div className='rounded-xl bg-gray-50 px-6 py-4'>
+                <motion.div
+                  className='rounded-xl bg-gray-50 px-6 py-4'
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
                   <p className='text-center text-3xl font-bold text-gray-900'>
                     ${amountUSD.toFixed(2)}
                   </p>
                   <p className='text-center text-sm text-gray-600'>
                     {amountSats?.toLocaleString()} sats
                   </p>
-                </div>
+                </motion.div>
               )}
             </div>
           ) : (
             <>
-              <div className='rounded-3xl border border-gray-200 bg-gray-50 p-5'>
-                <div className='mb-4 flex items-start gap-3'>
-                  <div className='rounded-full bg-white p-3 shadow-sm'>
-                    <Wallet className='h-5 w-5 text-gray-900' />
-                  </div>
-                  <div className='space-y-1'>
-                    <p className='text-sm font-medium text-gray-900'>LNURL withdraw detected</p>
-                    <p className='text-sm text-muted-foreground'>
-                      Scan confirmed. This QR will send Lightning funds into your event wallet.
-                    </p>
-                  </div>
-                </div>
 
                 <div className='space-y-3'>
                   <div className='rounded-2xl bg-white p-4'>
@@ -304,14 +299,6 @@ export function ReceiveLnurlWithdrawSheet({
                     </p>
                   </div>
 
-                  {providerHost && (
-                    <div className='rounded-2xl bg-white p-4'>
-                      <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                        Provider
-                      </p>
-                      <p className='text-sm font-medium text-gray-900'>{providerHost}</p>
-                    </div>
-                  )}
 
                   {constraints && (
                     <>
@@ -347,30 +334,34 @@ export function ReceiveLnurlWithdrawSheet({
                     </>
                   )}
                 </div>
-              </div>
 
               {step === 'confirm' && amountSats && (
                 <div className='space-y-4'>
-                  <div className='rounded-3xl border border-gray-200 bg-white p-5'>
-                    <p className='mb-2 text-xs uppercase tracking-wide text-muted-foreground'>
-                      You will receive
-                    </p>
+                  {/* Amount Card */}
+                  <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center'>
                     <p className='text-3xl font-bold text-gray-900'>
                       {amountSats.toLocaleString()} sats
                     </p>
                     {amountUSD !== null && (
-                      <p className='mt-1 text-sm text-muted-foreground'>
-                        About ${amountUSD.toFixed(2)}
+                      <p className='mt-1 text-lg text-muted-foreground'>
+                        ${amountUSD.toFixed(2)}
                       </p>
                     )}
                   </div>
 
-                  <div className='rounded-2xl bg-blue-50 p-4'>
-                    <p className='text-sm text-blue-900'>
-                      We’ll create the invoice and complete the withdraw request for you after you
-                      confirm.
+                  {/* Description */}
+                  {withdrawRequest?.defaultDescription && (
+                    <p className='text-center text-sm text-gray-700'>
+                      {withdrawRequest.defaultDescription}
                     </p>
-                  </div>
+                  )}
+
+                  {/* Provider */}
+                  {providerHost && (
+                    <p className='text-center text-sm text-muted-foreground'>
+                      from {providerHost}
+                    </p>
+                  )}
                 </div>
               )}
             </>
@@ -378,13 +369,15 @@ export function ReceiveLnurlWithdrawSheet({
         </div>
       </MasterScrollableSheet>
 
-      {!constraints?.isFixedAmount && (
-        <AmountInputSheet
-          open={amountSheetOpen}
-          onOpenChange={setAmountSheetOpen}
+{!constraints?.isFixedAmount && (
+<AmountInputSheet
+open={amountSheetOpen}
+onOpenChange={setAmountSheetOpen}
           onConfirm={handleChooseAmount}
-        />
-      )}
+          minAmount={constraints?.minSats}
+          maxAmount={constraints?.maxSats}
+/>
+)}
     </>
   );
 }

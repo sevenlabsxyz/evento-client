@@ -12,8 +12,10 @@ interface AmountInputSheetProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: (amountSats: number, sendAll?: boolean) => void;
   isLoading?: boolean;
-  /** When set, shows a "Max" button that fills in the full available balance */
+/** When set, shows a "Max" button that fills in the full available balance */
   maxAmount?: number;
+  /** Minimum amount constraint (optional) */
+  minAmount?: number;
 }
 
 export function AmountInputSheet({
@@ -22,12 +24,33 @@ export function AmountInputSheet({
   onConfirm,
   isLoading,
   maxAmount,
+  minAmount,
 }: AmountInputSheetProps) {
   const [amount, setAmount] = useState('');
   const [amountUSD, setAmountUSD] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
   const [isSendAll, setIsSendAll] = useState(false);
   const { satsToUSD, usdToSats } = useAmountConverter();
+
+  // Constraint validation logic
+  const isWithinConstraints = () => {
+    const satsAmount = Number(amount);
+    if (minAmount != null && satsAmount < minAmount) return false;
+    if (maxAmount != null && satsAmount > maxAmount) return false;
+    return true;
+  };
+
+  // Get validation message
+  const getValidationMessage = () => {
+    const satsAmount = Number(amount);
+    if (minAmount != null && satsAmount < minAmount && satsAmount > 0) {
+      return `Minimum: ${minAmount.toLocaleString()} sats`;
+    }
+    if (maxAmount != null && satsAmount > maxAmount) {
+      return `Maximum: ${maxAmount.toLocaleString()} sats`;
+    }
+    return null;
+  };
 
   // Reset amount when sheet closes
   useEffect(() => {
@@ -167,6 +190,19 @@ export function AmountInputSheet({
             </button>
           )}
 
+          {/* Constraint Indicator */}
+          {(minAmount != null || maxAmount != null) && (
+            <div className='text-center text-sm text-muted-foreground'>
+              {minAmount != null && maxAmount != null
+                ? `Range: ${minAmount.toLocaleString()} - ${maxAmount.toLocaleString()} sats`
+                : minAmount != null
+                  ? `Minimum: ${minAmount.toLocaleString()} sats`
+                  : maxAmount != null
+                    ? `Maximum: ${maxAmount.toLocaleString()} sats`
+                    : ''}
+            </div>
+          )}
+
           {/* Number Pad */}
           <NumericKeypad
             onNumberClick={handleNumberClick}
@@ -174,10 +210,17 @@ export function AmountInputSheet({
             showDecimal={true}
           />
 
+
+          {/* Validation Message */}
+          {getValidationMessage() && (
+            <div className='text-center text-sm text-red-500'>
+              {getValidationMessage()}
+            </div>
+          )}
           {/* Next Button */}
           <Button
             onClick={handleConfirm}
-            disabled={!amount || Number(amount) <= 0 || isLoading}
+            disabled={!amount || Number(amount) <= 0 || isLoading || !isWithinConstraints()}
             className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
             variant='outline'
           >
