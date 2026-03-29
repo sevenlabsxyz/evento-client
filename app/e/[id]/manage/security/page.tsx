@@ -360,8 +360,8 @@ export default function SecurityPrivacyPage() {
         currentPassword={password}
       />
 
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:mx-auto md:max-w-3xl md:border-l md:border-r md:border-t'>
-        <div className='mx-auto max-w-full md:max-w-md'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
+        <div className='mx-auto max-w-full'>
           <SubmitButton
             onClick={handleSaveChanges}
             disabled={
