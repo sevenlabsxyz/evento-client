@@ -2,7 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 // ============================================================================
 // Types
@@ -155,11 +155,19 @@ export function InterestsSelector({
   className = 'bg-white',
   contentClassName = 'mx-auto max-w-[570px]',
 }: InterestsSelectorProps) {
-  const [selectedItems, setSelectedItems] = useState<string[]>(initialSelectedInterests);
+  const [selectedItems, setSelectedItems] = useState<string[]>(
+    Array.from(new Set(initialSelectedInterests))
+  );
+
+  useEffect(() => {
+    setSelectedItems(Array.from(new Set(initialSelectedInterests)));
+  }, [initialSelectedInterests]);
 
   const toggleItem = (item: string) => {
     setSelectedItems((prev) => {
-      const newSelection = prev.includes(item) ? prev.filter((i) => i !== item) : [...prev, item];
+      const newSelection = prev.includes(item)
+        ? prev.filter((i) => i !== item)
+        : Array.from(new Set([...prev, item]));
       // Notify parent of selection change
       onChange?.(newSelection);
       return newSelection;

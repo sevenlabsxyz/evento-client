@@ -100,8 +100,10 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
 
   const handleSave = async () => {
     try {
-      // Convert slugs back to IDs
-      const selectedIds = selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean);
+      // Convert slugs back to IDs and defensively dedupe
+      const selectedIds = Array.from(
+        new Set(selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean))
+      );
       await replaceInterestsMutation.mutateAsync(selectedIds);
       toast.success('Interests updated successfully');
       setSearchQuery('');
@@ -120,11 +122,10 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
   };
 
   const hasChanges = useMemo(() => {
-    const currentIds = selectedSlugs
-      .map((slug) => slugToIdMap[slug])
-      .filter(Boolean)
-      .sort();
-    const originalIds = (userInterests?.map((i) => i.id) || []).sort();
+    const currentIds = Array.from(
+      new Set(selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean))
+    ).sort();
+    const originalIds = Array.from(new Set((userInterests?.map((i) => i.id) || []).filter(Boolean))).sort();
     return JSON.stringify(currentIds) !== JSON.stringify(originalIds);
   }, [selectedSlugs, slugToIdMap, userInterests]);
 

@@ -65,10 +65,13 @@ export const OnboardingInterests = ({ onInterestsSelected }: OnboardingInterests
 
   // Handle selection changes from InterestsSelector
   const handleSelectionChange = (selectedSlugs: string[]) => {
-    setSelectedSlugs(selectedSlugs);
+    const dedupedSlugs = Array.from(new Set(selectedSlugs));
+    setSelectedSlugs(dedupedSlugs);
 
     // Convert slugs back to IDs and notify parent
-    const selectedIds = selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean);
+    const selectedIds = Array.from(
+      new Set(dedupedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean))
+    );
     onInterestsSelected?.(selectedIds);
   };
 
