@@ -9,6 +9,7 @@ import { CampaignDetailSheet } from './campaign-detail-sheet';
 
 interface EventCampaignCardProps {
   eventId: string;
+  hasCampaign?: boolean;
   className?: string;
 }
 
@@ -22,9 +23,20 @@ function formatSats(sats: number): string {
   return sats.toLocaleString();
 }
 
-export default function EventCampaignCard({ eventId, className }: EventCampaignCardProps) {
-  const { data: campaign, isLoading } = useEventCampaign(eventId);
+export default function EventCampaignCard({
+  eventId,
+  hasCampaign,
+  className,
+}: EventCampaignCardProps) {
+  const campaignQueryEnabled = hasCampaign !== false;
+  const { data: campaign, isLoading } = useEventCampaign(eventId, {
+    enabled: campaignQueryEnabled,
+  });
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
+
+  if (!campaignQueryEnabled) {
+    return null;
+  }
 
   // Only render when campaign exists and is active
   if (isLoading || !campaign || campaign.status !== 'active') {

@@ -117,11 +117,11 @@ export async function updateEventCampaign(
   return response.data;
 }
 
-export function useEventCampaign(eventId: string) {
+export function useEventCampaign(eventId: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.eventCampaign(eventId),
     queryFn: () => getEventCampaign(eventId),
-    enabled: !!eventId,
+    enabled: !!eventId && (options?.enabled ?? true),
   });
 }
 

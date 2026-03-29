@@ -405,7 +405,7 @@ export default function EventDetailPageClient() {
     <div className='space-y-6'>
       <EventHost event={event} />
       {/* Campaign card */}
-      <EventCampaignCard eventId={eventId} />
+      <EventCampaignCard eventId={eventId} hasCampaign={event.has_campaign} />
       {eventData && <EventContributions eventData={eventData} eventId={eventId} />}
       {!isApprovedAttendee &&
       registrationSettings?.registration_required &&
