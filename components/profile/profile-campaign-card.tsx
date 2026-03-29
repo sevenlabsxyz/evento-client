@@ -28,13 +28,15 @@ export default function ProfileCampaignCard({
   hasCampaign,
   className,
 }: ProfileCampaignCardProps) {
-  const campaignQueryEnabled = hasCampaign !== false;
-  const { data: campaign, isLoading } = useProfileCampaign(userId, {
-    enabled: campaignQueryEnabled,
-  });
+  // Note: hasCampaign is a hint but we don't gate the query on it because
+  // the user metadata may be stale (1 min cache). Always fetch to avoid
+  // missing newly-created campaigns.
+  const { data: campaign, isLoading } = useProfileCampaign(userId);
   const [pledgeSheetOpen, setPledgeSheetOpen] = useState(false);
 
-  if (!campaignQueryEnabled) {
+  // Skip rendering early only when we're certain there's no campaign
+  // based on explicit hasCampaign=false from fresh data
+  if (hasCampaign === false && !campaign && !isLoading) {
     return null;
   }
 

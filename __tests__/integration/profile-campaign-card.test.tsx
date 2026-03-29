@@ -161,14 +161,18 @@ describe('Profile Campaign Card Integration', () => {
       expect(result.current.isError).toBe(false);
     });
 
-    it('does not fetch when explicitly disabled by profile metadata', () => {
-      const { result } = renderHook(() => useProfileCampaign(USER_ID, { enabled: false }), {
+    it('fetches campaign regardless of hasCampaign hint (avoids stale cache)', async () => {
+      // Even with hasCampaign=false hint, we still fetch because the metadata
+      // may be stale (1 min cache). This prevents missing newly-created campaigns.
+      mockApiClient.get.mockResolvedValueOnce({ data: fakeCampaign });
+
+      const { result } = renderHook(() => useProfileCampaign(USER_ID), {
         wrapper: createWrapper(queryClient),
       });
 
-      expect(result.current.fetchStatus).toBe('idle');
-      expect(result.current.data).toBeUndefined();
-      expect(mockApiClient.get).not.toHaveBeenCalled();
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toEqual(fakeCampaign);
+      expect(mockApiClient.get).toHaveBeenCalled();
     });
 
     it('does not query when userId is empty', () => {
