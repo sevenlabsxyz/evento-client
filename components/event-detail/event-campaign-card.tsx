@@ -28,13 +28,10 @@ export default function EventCampaignCard({
   hasCampaign,
   className,
 }: EventCampaignCardProps) {
-  const campaignQueryEnabled = hasCampaign !== false;
-  const { data: campaign, isLoading } = useEventCampaign(eventId, {
-    enabled: campaignQueryEnabled,
-  });
+  const { data: campaign, isLoading } = useEventCampaign(eventId);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
 
-  if (!campaignQueryEnabled) {
+  if (hasCampaign === false && !campaign) {
     return null;
   }
 
