@@ -147,6 +147,7 @@ export function transformApiEventToDisplay(
     isActive: apiEvent.status === 'published',
     registrationUrl: undefined, // Not in current API
     contactEnabled: true, // Default
+    has_campaign: apiEvent.has_campaign,
     owner: apiEvent.user_details
       ? {
           id: apiEvent.creator_user_id,

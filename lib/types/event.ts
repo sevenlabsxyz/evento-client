@@ -96,6 +96,7 @@ export interface EventDetail {
 
   // Password protection
   passwordProtected?: boolean;
+  has_campaign?: boolean;
 }
 
 export interface EventSummary {

@@ -152,6 +152,16 @@ describe('Event Campaign Card Integration', () => {
       expect(result.current.data).toBeNull();
       expect(result.current.isError).toBe(false);
     });
+
+    it('does not fetch when explicitly disabled by event metadata', () => {
+      const { result } = renderHook(() => useEventCampaign(EVENT_ID, { enabled: false }), {
+        wrapper: createWrapper(queryClient),
+      });
+
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockApiClient.get).not.toHaveBeenCalled();
+    });
   });
 
   // ---- Pledge Intent Creation ----
