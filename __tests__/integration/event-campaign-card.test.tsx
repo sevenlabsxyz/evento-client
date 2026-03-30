@@ -153,20 +153,14 @@ describe('Event Campaign Card Integration', () => {
       expect(result.current.isError).toBe(false);
     });
 
-    it('still fetches even when has_campaign metadata is false', async () => {
-      mockApiClient.get.mockRejectedValueOnce({
-        message: 'Campaign not found',
-        status: 404,
-        success: false,
-      });
-
-      const { result } = renderHook(() => useEventCampaign(EVENT_ID), {
+    it('does not fetch when explicitly disabled by event metadata', () => {
+      const { result } = renderHook(() => useEventCampaign(EVENT_ID, { enabled: false }), {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(result.current.isSuccess).toBe(true));
-      expect(result.current.data).toBeNull();
-      expect(mockApiClient.get).toHaveBeenCalled();
+      expect(result.current.fetchStatus).toBe('idle');
+      expect(result.current.data).toBeUndefined();
+      expect(mockApiClient.get).not.toHaveBeenCalled();
     });
   });
 
