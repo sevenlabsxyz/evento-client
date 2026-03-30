@@ -123,7 +123,9 @@ describe('campaign hooks', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/users/usr_1/campaign');
+    expect(mockApiClient.get).toHaveBeenCalledWith('/v1/users/usr_1/campaign', {
+      suppressErrorStatuses: [400, 404],
+    });
     expect(result.current.data).toEqual(campaign);
   });
 

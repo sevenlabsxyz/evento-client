@@ -156,8 +156,19 @@ describe('Profile Campaign Card Integration', () => {
         wrapper: createWrapper(queryClient),
       });
 
-      await waitFor(() => expect(result.current.isError).toBe(true));
+      await waitFor(() => expect(result.current.isSuccess).toBe(true));
+      expect(result.current.data).toBeNull();
+      expect(result.current.isError).toBe(false);
+    });
+
+    it('does not fetch when explicitly disabled by has_campaign metadata', () => {
+      const { result } = renderHook(() => useProfileCampaign(USER_ID, { enabled: false }), {
+        wrapper: createWrapper(queryClient),
+      });
+
+      expect(result.current.fetchStatus).toBe('idle');
       expect(result.current.data).toBeUndefined();
+      expect(mockApiClient.get).not.toHaveBeenCalled();
     });
 
     it('does not query when userId is empty', () => {
