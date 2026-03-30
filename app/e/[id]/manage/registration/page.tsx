@@ -13,6 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useCreateRegistrationQuestion } from '@/lib/hooks/use-create-registration-question';
 import { useDeleteRegistrationQuestion } from '@/lib/hooks/use-delete-registration-question';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { usePublishEvent } from '@/lib/hooks/use-publish-event';
 import { useRegistrationQuestions } from '@/lib/hooks/use-registration-questions';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useReorderRegistrationQuestions } from '@/lib/hooks/use-reorder-registration-questions';
@@ -415,6 +416,7 @@ export default function RegistrationQuestionsPage() {
 
   // Get existing event data from API
   const { data: existingEvent, isLoading: isLoadingEvent, error } = useEventDetails(eventId);
+  const publishEvent = usePublishEvent();
 
   // Get registration settings and questions
   const { data: settings, isLoading: isLoadingSettings } = useRegistrationSettings(eventId);
@@ -432,6 +434,7 @@ export default function RegistrationQuestionsPage() {
   const [customApprovalMessage, setCustomApprovalMessage] = useState('<p></p>');
   const [showCustomMessageSheet, setShowCustomMessageSheet] = useState(false);
   const [isUpdatingCustomMessage, setIsUpdatingCustomMessage] = useState(false);
+  const [showPublishSheet, setShowPublishSheet] = useState(false);
   const [isQuestionSheetOpen, setIsQuestionSheetOpen] = useState(false);
   const [questionSheetMode, setQuestionSheetMode] = useState<'choose' | 'create' | 'edit'>(
     'choose'
@@ -486,12 +489,32 @@ export default function RegistrationQuestionsPage() {
       onBackPress: () => router.push(`/e/${eventId}/manage`),
       showAvatar: false,
       buttons: [],
+      textButtons:
+        existingEvent?.status === 'draft'
+          ? [
+              {
+                id: 'publish-event',
+                label: 'Publish',
+                onClick: () => setShowPublishSheet(true),
+                disabled: publishEvent.isPending,
+              },
+            ]
+          : [],
     });
 
     return () => {
       clearRoute(pathname);
     };
-  }, [eventId, router, pathname, setTopBarForRoute, applyRouteConfig, clearRoute]);
+  }, [
+    eventId,
+    router,
+    pathname,
+    existingEvent?.status,
+    publishEvent.isPending,
+    setTopBarForRoute,
+    applyRouteConfig,
+    clearRoute,
+  ]);
 
   useEffect(() => {
     setLocalRegistrationRequired(settings?.registration_required ?? false);
@@ -553,6 +576,17 @@ export default function RegistrationQuestionsPage() {
   useEffect(() => {
     setLocalQuestions(questions ?? []);
   }, [questions]);
+
+  const handlePublishEvent = async () => {
+    try {
+      await publishEvent.mutateAsync(eventId);
+      toast.success('Event published successfully');
+      setShowPublishSheet(false);
+      router.push(`/e/${eventId}`);
+    } catch (error: any) {
+      toast.error(error?.message || 'Failed to publish event');
+    }
+  };
 
   const isLoading = isLoadingEvent || isLoadingSettings || isLoadingQuestions;
 
@@ -905,14 +939,14 @@ export default function RegistrationQuestionsPage() {
         {/* Registration Toggle */}
         <div className='rounded-2xl bg-gray-50 p-4'>
           <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-3'>
-                <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
-                  <ClipboardList className='h-5 w-5 text-purple-600' />
-                </div>
-                <div className='min-w-0'>
-                  <h3 className='font-medium'>Require Registration</h3>
-                  <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
-                </div>
+            <div className='flex items-center gap-3'>
+              <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
+                <ClipboardList className='h-5 w-5 text-purple-600' />
+              </div>
+              <div className='min-w-0'>
+                <h3 className='font-medium'>Require Registration</h3>
+                <p className='text-sm text-gray-500'>Guests must register to RSVP</p>
+              </div>
             </div>
             <button
               onClick={handleToggleRegistrationRequired}
@@ -1051,6 +1085,35 @@ export default function RegistrationQuestionsPage() {
         title='Custom RSVP Message'
         placeholder='Write the message approved guests will receive...'
       />
+
+      <MasterScrollableSheet
+        title='Publish Event'
+        open={showPublishSheet}
+        onOpenChange={setShowPublishSheet}
+        footer={
+          <div className='flex gap-2'>
+            <Button
+              variant='outline'
+              className='h-11 flex-1'
+              onClick={() => setShowPublishSheet(false)}
+              disabled={publishEvent.isPending}
+            >
+              Cancel
+            </Button>
+            <Button
+              className='h-11 flex-1'
+              onClick={handlePublishEvent}
+              disabled={publishEvent.isPending}
+            >
+              {publishEvent.isPending ? 'Publishing...' : 'Yes, Publish'}
+            </Button>
+          </div>
+        }
+      >
+        <div className='px-4 pb-4 text-sm text-gray-600'>
+          Are you sure you want to publish this event? It will be visible in feeds and discovery.
+        </div>
+      </MasterScrollableSheet>
 
       <MasterScrollableSheet
         title='Choose New Question'
