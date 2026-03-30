@@ -1,4 +1,6 @@
 import { Env } from '@/lib/constants/env';
+import { buildEventJsonLd, serializeJsonLd } from '@/lib/seo/event-jsonld';
+import type { Event as ApiEvent } from '@/lib/types/api';
 import { getAbsoluteAppUrl } from '@/lib/utils/app-url';
 import {
   buildEventSocialImageUrl,
@@ -8,6 +10,7 @@ import {
 import { logger } from '@/lib/utils/logger';
 import { createClient } from '@supabase/supabase-js';
 import { ResolvingMetadata } from 'next';
+import { cache } from 'react';
 import EventDetailPageClient from './page-client';
 
 function getEventMetadataClient() {
@@ -25,6 +28,68 @@ type Props = {
   searchParams: { [key: string]: string | string[] | undefined };
 };
 
+type EventSeoData = Pick<
+  ApiEvent,
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'cover'
+  | 'updated_at'
+  | 'location'
+  | 'event_locations'
+  | 'status'
+  | 'visibility'
+  | 'computed_start_date'
+  | 'computed_end_date'
+>;
+
+const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | null> => {
+  const supabase = getEventMetadataClient();
+
+  if (!supabase) {
+    return null;
+  }
+
+  const { data, error } = await supabase
+    .from('events')
+    .select(
+      `
+        id,
+        title,
+        description,
+        cover,
+        updated_at,
+        location,
+        event_locations (
+          id,
+          name,
+          address,
+          city,
+          state_province,
+          country,
+          country_code,
+          postal_code,
+          latitude,
+          longitude,
+          location_type,
+          is_verified
+        ),
+        status,
+        visibility,
+        computed_start_date,
+        computed_end_date
+      `
+    )
+    .eq('id', eventId)
+    .single<EventSeoData>();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+});
+
 export async function generateMetadata({ params }: Props, parent: ResolvingMetadata) {
   const eventId = params.id;
   const eventPath = `/e/${eventId}`;
@@ -34,26 +99,13 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   const fallbackOgImage = buildEventSocialImageUrl(eventId);
 
   try {
-    const supabase = getEventMetadataClient();
+    const event = await fetchEventSeoData(eventId);
 
-    if (!supabase) {
-      return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
-    }
-
-    const { data, error } = await supabase
-      .from('events')
-      .select('id, title, description, cover, updated_at')
-      .eq('id', eventId)
-      .single();
-
-    if (error) throw error;
-
-    if (!data) {
+    if (!event) {
       logger.info('No event found for ID', { eventId });
       return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
-    const event = data;
     const title = formatEventSeoTitle(event.title);
     const descText = formatEventSeoDescription(event.description);
     const eventOgImage = buildEventSocialImageUrl(eventId, {
@@ -76,7 +128,7 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
         locale: 'en_US',
         type: 'website',
         siteName: 'Evento',
-        title: title,
+        title,
         description: descText,
         images: [
           {
@@ -134,8 +186,33 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
 }
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
-export default async function EventDetailPage() {
-  return <EventDetailPageClient />;
+export default async function EventDetailPage({ params }: Pick<Props, 'params'>) {
+  let jsonLd: string | null = null;
+
+  try {
+    const event = await fetchEventSeoData(params.id);
+
+    if (event) {
+      const eventJsonLd = buildEventJsonLd(event);
+
+      if (eventJsonLd) {
+        jsonLd = serializeJsonLd(eventJsonLd);
+      }
+    }
+  } catch (error) {
+    logger.error('Error building event JSON-LD', {
+      error: error instanceof Error ? error.message : String(error),
+      eventId: params.id,
+    });
+  }
+
+  return (
+    <>
+      {jsonLd ? (
+        <script type='application/ld+json' dangerouslySetInnerHTML={{ __html: jsonLd }} />
+      ) : null}
+      <EventDetailPageClient />
+    </>
+  );
 }
