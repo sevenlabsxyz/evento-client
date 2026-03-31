@@ -1,12 +1,13 @@
 'use client';
 
 import { apiClient } from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, EventRSVP, RSVPStatus } from '@/lib/types/api';
 import { useQuery } from '@tanstack/react-query';
 
 export function useUserRSVP(eventId: string) {
   return useQuery<{ status: RSVPStatus | null; rsvp: EventRSVP | null }, Error>({
-    queryKey: ['event', 'user-rsvp', eventId],
+    queryKey: queryKeys.userRsvp(eventId),
     queryFn: async () => {
       const res = await apiClient.get<ApiResponse<EventRSVP[]>>(`/v1/events/${eventId}/rsvps/me`);
       const rsvp =

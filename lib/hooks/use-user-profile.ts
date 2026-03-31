@@ -51,6 +51,8 @@ export function useUserProfile() {
   React.useEffect(() => {
     if (profileData) {
       setUser(profileData);
+    } else if (!isLoading && user) {
+      clearAuth();
     } else if (error) {
       // Clear auth on 401 errors
       const apiError = error as { message?: string };
@@ -58,7 +60,7 @@ export function useUserProfile() {
         clearAuth();
       }
     }
-  }, [profileData, error, setUser, clearAuth]);
+  }, [profileData, isLoading, user, error, setUser, clearAuth]);
 
   return {
     user: profileData || user,

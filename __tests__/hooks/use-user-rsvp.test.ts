@@ -1,4 +1,5 @@
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { queryKeys } from '@/lib/query-client';
 import { QueryClient } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -76,6 +77,17 @@ describe('useUserRSVP', () => {
     expect(result.current.data).toEqual({
       status: 'going',
       rsvp: mockRSVP,
+    });
+  });
+
+  it('uses the shared user RSVP query key', async () => {
+    const mockApiClient = require('@/lib/api/client').apiClient;
+    mockApiClient.get.mockResolvedValue({ data: [] });
+
+    renderHook(() => useUserRSVP('event123'), { wrapper });
+
+    await waitFor(() => {
+      expect(queryClient.getQueryState(queryKeys.userRsvp('event123'))).toBeDefined();
     });
   });
 

@@ -1,6 +1,6 @@
+import { resetWalletInitialization } from '@/lib/hooks/use-wallet';
 import { logger } from '@/lib/utils/logger';
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
-import { resetWalletInitialization } from '@/lib/hooks/use-wallet';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -46,6 +46,8 @@ export function useAuth() {
   useEffect(() => {
     if (userData) {
       setUser(userData);
+    } else if (!isCheckingAuth && isAuthenticated) {
+      clearAuth();
     } else if (authError) {
       // Clear auth on 401 errors
       // Cast through `unknown` first to avoid the direct `Error` → `ApiError` assertion warning
@@ -54,7 +56,7 @@ export function useAuth() {
         clearAuth();
       }
     }
-  }, [userData, authError, setUser, clearAuth]);
+  }, [userData, isCheckingAuth, isAuthenticated, authError, setUser, clearAuth]);
 
   // Listen for auth state changes
   useEffect(() => {

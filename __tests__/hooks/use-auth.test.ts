@@ -167,6 +167,25 @@ describe('Authentication Hooks', () => {
       expect(result.current.user).toBe(null);
     });
 
+    it('clears stale persisted auth when current user resolves to null', async () => {
+      const staleUser = createMockUser();
+      mockAuthStore.user = staleUser;
+      mockAuthStore.isAuthenticated = true;
+      mockAuthService.getCurrentUser.mockResolvedValue(null);
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      await waitFor(() => {
+        expect(mockAuthStore.clearAuth).toHaveBeenCalled();
+      });
+    });
+
     it('calls logout and redirects on logout success', async () => {
       const mockUser = createMockUser({ bio: '', image: '' });
       mockAuthService.getCurrentUser.mockResolvedValue(mockUser);

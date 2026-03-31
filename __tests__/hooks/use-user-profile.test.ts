@@ -38,12 +38,14 @@ jest.mock('@/lib/services/auth', () => ({
 }));
 
 // Mock the auth store
+const mockAuthStore = {
+  user: null as any,
+  setUser: jest.fn(),
+  clearAuth: jest.fn(),
+};
+
 jest.mock('@/lib/stores/auth-store', () => ({
-  useAuthStore: () => ({
-    user: null,
-    setUser: jest.fn(),
-    clearAuth: jest.fn(),
-  }),
+  useAuthStore: () => mockAuthStore,
 }));
 
 // Mock environment constants
@@ -84,6 +86,7 @@ describe('User Profile Hooks', () => {
       },
     });
     jest.clearAllMocks();
+    mockAuthStore.user = null;
   });
 
   describe('useUserProfile', () => {
@@ -143,6 +146,27 @@ describe('User Profile Hooks', () => {
 
       expect(result.current.user).toBe(null);
       expect(result.current.isAuthenticated).toBe(false);
+    });
+
+    it('clears stale persisted auth when profile query resolves to null', async () => {
+      mockAuthStore.user = {
+        id: 'user1',
+        username: 'testuser',
+        name: 'Test User',
+      };
+      mockAuthServiceTyped.getCurrentUser.mockResolvedValue(null);
+
+      const { result } = renderHook(() => useUserProfile(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      await waitFor(() => {
+        expect(mockAuthStore.clearAuth).toHaveBeenCalled();
+      });
     });
   });
 
