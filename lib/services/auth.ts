@@ -15,6 +15,10 @@ export class UnauthenticatedError extends Error {
   }
 }
 
+interface GetCurrentUserOptions {
+  requireSession?: boolean;
+}
+
 export const authService = {
   /**
    * Send OTP code to email via Supabase SDK
@@ -80,7 +84,9 @@ export const authService = {
    * Get current authenticated user from your backend
    * GET /v1/user
    */
-  getCurrentUser: async (): Promise<UserDetails | null> => {
+  getCurrentUser: async (options: GetCurrentUserOptions = {}): Promise<UserDetails | null> => {
+    const { requireSession = false } = options;
+
     try {
       // Check if we have a current session
       const supabase = createClient();
@@ -88,8 +94,13 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        logger.debug('Auth: No session found, throwing unauthenticated error');
-        throw new UnauthenticatedError('No session found');
+        if (requireSession) {
+          logger.debug('Auth: No session found during required auth check, throwing');
+          throw new UnauthenticatedError('No session found');
+        }
+
+        logger.debug('Auth: No session found, returning null');
+        return null;
       }
 
       logger.debug('Auth: Fetching current user from backend');
@@ -178,7 +189,7 @@ export const authService = {
    * This is useful for checking auth status on app start
    */
   checkAuth: async (): Promise<UserDetails | null> => {
-    return await authService.getCurrentUser();
+    return await authService.getCurrentUser({ requireSession: true });
   },
 
   /**

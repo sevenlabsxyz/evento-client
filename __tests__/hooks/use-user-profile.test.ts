@@ -177,6 +177,28 @@ describe('User Profile Hooks', () => {
       });
     });
 
+    it('does not retry confirmed unauthenticated errors with custom messages', async () => {
+      mockAuthStore.user = {
+        id: 'user1',
+        username: 'testuser',
+        name: 'Test User',
+      };
+      mockAuthServiceTyped.getCurrentUser.mockRejectedValue(
+        new UnauthenticatedError('No session found')
+      );
+
+      const { result } = renderHook(() => useUserProfile(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+
+      expect(mockAuthServiceTyped.getCurrentUser).toHaveBeenCalledTimes(1);
+      expect(mockAuthStore.clearAuth).toHaveBeenCalled();
+    });
+
     it('preserves persisted auth on transient profile fetch failure', async () => {
       mockAuthStore.user = {
         id: 'user1',

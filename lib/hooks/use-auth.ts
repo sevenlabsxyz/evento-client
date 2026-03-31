@@ -30,7 +30,7 @@ export function useAuth() {
     refetch: checkAuth,
   } = useQuery({
     queryKey: USER_QUERY_KEY,
-    queryFn: authService.getCurrentUser,
+    queryFn: () => authService.getCurrentUser({ requireSession: isAuthenticated || !!user }),
     retry: (failureCount, error) => {
       // Don't retry on 401 errors
       if (error && typeof error === 'object' && 'status' in error && error.status === 401) {

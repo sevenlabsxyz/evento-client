@@ -7,10 +7,12 @@ import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { RSVPError, useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { queryKeys } from '@/lib/query-client';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -32,6 +34,7 @@ interface RsvpSheetProps {
 export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpSheetProps) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { clearAuth } = useAuthStore();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -87,6 +90,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const redirectToLogin = useCallback(
     (status: RSVPStatus, message?: string) => {
       clearAuth();
+      queryClient.removeQueries({ queryKey: ['auth', 'user'] });
+      queryClient.removeQueries({ queryKey: ['user', 'profile'] });
+      queryClient.removeQueries({ queryKey: queryKeys.userRsvp(eventId) });
+      queryClient.removeQueries({ queryKey: queryKeys.myRegistration(eventId) });
       if (message) {
         toast.error(message);
       }
@@ -94,7 +101,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
       onClose();
     },
-    [clearAuth, eventId, onClose, pathname, router]
+    [clearAuth, eventId, onClose, pathname, queryClient, router]
   );
 
   // Determine what to show when sheet opens
