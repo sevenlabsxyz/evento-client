@@ -1,5 +1,6 @@
 'use client';
 
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
@@ -8,7 +9,9 @@ import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 
 type UserAvatarSize = 'xs' | 'sm' | 'base' | 'md' | 'lg';
 
-const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
+function getAvatarImageSrc(image?: string | null): string {
+  return image?.trim() || DEFAULT_AVATAR_IMAGE;
+}
 
 interface UserAvatarProps {
   user?: {
@@ -34,10 +37,10 @@ export function UserAvatar({
   height,
   width,
 }: UserAvatarProps) {
-  const [avatarSrc, setAvatarSrc] = useState(user?.image || DEFAULT_AVATAR_IMAGE);
+  const [avatarSrc, setAvatarSrc] = useState(getAvatarImageSrc(user?.image));
 
   useEffect(() => {
-    setAvatarSrc(user?.image || DEFAULT_AVATAR_IMAGE);
+    setAvatarSrc(getAvatarImageSrc(user?.image));
   }, [user?.image]);
 
   // Size variants configuration

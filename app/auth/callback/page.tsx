@@ -97,12 +97,16 @@ function AuthCallbackContent() {
           }
         }
 
-        let user = await authService.getCurrentUser();
+        let user = await authService.getCurrentUser({
+          fallbackToNullOnTransientError: true,
+        });
 
         if (!user) {
           for (let attempt = 0; attempt < 3; attempt += 1) {
             await wait(400);
-            user = await authService.getCurrentUser();
+            user = await authService.getCurrentUser({
+              fallbackToNullOnTransientError: true,
+            });
             if (user) {
               break;
             }

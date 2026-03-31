@@ -17,6 +17,7 @@ export class UnauthenticatedError extends Error {
 
 interface GetCurrentUserOptions {
   requireSession?: boolean;
+  fallbackToNullOnTransientError?: boolean;
 }
 
 export const authService = {
@@ -85,7 +86,7 @@ export const authService = {
    * GET /v1/user
    */
   getCurrentUser: async (options: GetCurrentUserOptions = {}): Promise<UserDetails | null> => {
-    const { requireSession = false } = options;
+    const { requireSession = false, fallbackToNullOnTransientError = false } = options;
 
     try {
       // Check if we have a current session
@@ -148,6 +149,12 @@ export const authService = {
       logger.error('Auth: Failed to get current user', {
         error: error instanceof Error ? error.message : String(error),
       });
+
+      if (fallbackToNullOnTransientError) {
+        logger.debug('Auth: Falling back to null after transient current-user failure');
+        return null;
+      }
+
       throw error;
     }
   },

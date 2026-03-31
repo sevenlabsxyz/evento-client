@@ -222,7 +222,9 @@ export function RegistrationForm({
       queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
 
       // 3. Fetch fresh user data from backend
-      const freshUserData = await authService.getCurrentUser();
+      const freshUserData = await authService.getCurrentUser({
+        fallbackToNullOnTransientError: true,
+      });
 
       // 4. Update the user's name and generate username if needed
       // (for new users or users without a name/username set)
