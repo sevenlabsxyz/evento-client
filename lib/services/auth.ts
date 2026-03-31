@@ -5,6 +5,16 @@ import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
 const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
 
+export class UnauthenticatedError extends Error {
+  status: number;
+
+  constructor(message = 'Unauthorized') {
+    super(message);
+    this.name = 'UnauthenticatedError';
+    this.status = 401;
+  }
+}
+
 export const authService = {
   /**
    * Send OTP code to email via Supabase SDK
@@ -78,8 +88,8 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        logger.debug('Auth: No session found, returning null');
-        return null; // No session means not authenticated
+        logger.debug('Auth: No session found, throwing unauthenticated error');
+        throw new UnauthenticatedError('No session found');
       }
 
       logger.debug('Auth: Fetching current user from backend');
@@ -109,11 +119,25 @@ export const authService = {
       logger.debug('Auth: Returning user', { userId: firstUser?.id });
       return firstUser;
     } catch (error) {
+      const apiError = error as Partial<ApiError> | undefined;
+      if (
+        error instanceof UnauthenticatedError ||
+        apiError?.status === 401 ||
+        apiError?.message?.includes('401') ||
+        apiError?.message?.includes('Unauthorized')
+      ) {
+        logger.debug('Auth: Confirmed unauthenticated state', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error instanceof UnauthenticatedError
+          ? error
+          : new UnauthenticatedError(apiError?.message || 'Unauthorized');
+      }
+
       logger.error('Auth: Failed to get current user', {
         error: error instanceof Error ? error.message : String(error),
       });
-      // Return null if user not authenticated or error occurs
-      return null;
+      throw error;
     }
   },
 

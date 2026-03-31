@@ -1,5 +1,5 @@
 import { useAuth, useLogin, useRequireAuth, useVerifyCode } from '@/lib/hooks/use-auth';
-import { authService } from '@/lib/services/auth';
+import { authService, UnauthenticatedError } from '@/lib/services/auth';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -25,6 +25,13 @@ jest.mock('@/lib/services/auth', () => ({
     verifyCode: jest.fn(),
     logout: jest.fn(),
     loginWithGoogle: jest.fn(),
+  },
+  UnauthenticatedError: class UnauthenticatedError extends Error {
+    status = 401;
+    constructor(message = 'Unauthorized') {
+      super(message);
+      this.name = 'UnauthenticatedError';
+    }
   },
 }));
 
@@ -167,11 +174,11 @@ describe('Authentication Hooks', () => {
       expect(result.current.user).toBe(null);
     });
 
-    it('clears stale persisted auth when current user resolves to null', async () => {
+    it('clears stale persisted auth on confirmed unauthenticated error', async () => {
       const staleUser = createMockUser();
       mockAuthStore.user = staleUser;
       mockAuthStore.isAuthenticated = true;
-      mockAuthService.getCurrentUser.mockResolvedValue(null);
+      mockAuthService.getCurrentUser.mockRejectedValue(new UnauthenticatedError());
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -185,6 +192,27 @@ describe('Authentication Hooks', () => {
         expect(mockAuthStore.clearAuth).toHaveBeenCalled();
       });
     });
+
+    it('preserves persisted auth on transient auth verification failure', async () => {
+      const staleUser = createMockUser();
+      mockAuthStore.user = staleUser;
+      mockAuthStore.isAuthenticated = true;
+      mockAuthService.getCurrentUser.mockRejectedValue(new Error('Network Error'));
+
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(
+        () => {
+          expect(mockAuthService.getCurrentUser).toHaveBeenCalledTimes(3);
+        },
+        { timeout: 4000 }
+      );
+
+      expect(mockAuthStore.clearAuth).not.toHaveBeenCalled();
+      expect(result.current.isAuthenticated).toBe(true);
+    }, 10000);
 
     it('calls logout and redirects on logout success', async () => {
       const mockUser = createMockUser({ bio: '', image: '' });

@@ -4,7 +4,7 @@ import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { authService } from '../services/auth';
+import { authService, UnauthenticatedError } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
@@ -46,17 +46,20 @@ export function useAuth() {
   useEffect(() => {
     if (userData) {
       setUser(userData);
-    } else if (!isCheckingAuth && isAuthenticated) {
-      clearAuth();
     } else if (authError) {
       // Clear auth on 401 errors
       // Cast through `unknown` first to avoid the direct `Error` → `ApiError` assertion warning
       const apiError = authError as unknown as ApiError;
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      if (
+        authError instanceof UnauthenticatedError ||
+        apiError.status === 401 ||
+        apiError.message?.includes('401') ||
+        apiError.message?.includes('Unauthorized')
+      ) {
         clearAuth();
       }
     }
-  }, [userData, isCheckingAuth, isAuthenticated, authError, setUser, clearAuth]);
+  }, [userData, authError, setUser, clearAuth]);
 
   // Listen for auth state changes
   useEffect(() => {

@@ -4,7 +4,7 @@ import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { apiClient } from '../api/client';
-import { authService } from '../services/auth';
+import { authService, UnauthenticatedError } from '../services/auth';
 import { fetchUserByUsername } from '../services/user-profile';
 import { useAuthStore } from '../stores/auth-store';
 import { ApiResponse, UserDetails } from '../types/api';
@@ -51,16 +51,19 @@ export function useUserProfile() {
   React.useEffect(() => {
     if (profileData) {
       setUser(profileData);
-    } else if (!isLoading && user) {
-      clearAuth();
     } else if (error) {
       // Clear auth on 401 errors
-      const apiError = error as { message?: string };
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      const apiError = error as { message?: string; status?: number };
+      if (
+        error instanceof UnauthenticatedError ||
+        apiError.status === 401 ||
+        apiError.message?.includes('401') ||
+        apiError.message?.includes('Unauthorized')
+      ) {
         clearAuth();
       }
     }
-  }, [profileData, isLoading, user, error, setUser, clearAuth]);
+  }, [profileData, error, setUser, clearAuth]);
 
   return {
     user: profileData || user,

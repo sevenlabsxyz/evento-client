@@ -11,6 +11,7 @@ import {
   useUserFollowing,
   useUserProfile,
 } from '@/lib/hooks/use-user-profile';
+import { UnauthenticatedError } from '@/lib/services/auth';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { createTestWrapper } from '../setup/test-utils';
@@ -34,6 +35,13 @@ jest.mock('@/lib/api/client', () => {
 jest.mock('@/lib/services/auth', () => ({
   authService: {
     getCurrentUser: jest.fn(),
+  },
+  UnauthenticatedError: class UnauthenticatedError extends Error {
+    status = 401;
+    constructor(message = 'Unauthorized') {
+      super(message);
+      this.name = 'UnauthenticatedError';
+    }
   },
 }));
 
@@ -148,13 +156,13 @@ describe('User Profile Hooks', () => {
       expect(result.current.isAuthenticated).toBe(false);
     });
 
-    it('clears stale persisted auth when profile query resolves to null', async () => {
+    it('clears stale persisted auth on confirmed unauthenticated error', async () => {
       mockAuthStore.user = {
         id: 'user1',
         username: 'testuser',
         name: 'Test User',
       };
-      mockAuthServiceTyped.getCurrentUser.mockResolvedValue(null);
+      mockAuthServiceTyped.getCurrentUser.mockRejectedValue(new UnauthenticatedError());
 
       const { result } = renderHook(() => useUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
@@ -168,6 +176,29 @@ describe('User Profile Hooks', () => {
         expect(mockAuthStore.clearAuth).toHaveBeenCalled();
       });
     });
+
+    it('preserves persisted auth on transient profile fetch failure', async () => {
+      mockAuthStore.user = {
+        id: 'user1',
+        username: 'testuser',
+        name: 'Test User',
+      };
+      mockAuthServiceTyped.getCurrentUser.mockRejectedValue(new Error('Network Error'));
+
+      const { result } = renderHook(() => useUserProfile(), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      await waitFor(
+        () => {
+          expect(mockAuthServiceTyped.getCurrentUser).toHaveBeenCalledTimes(4);
+        },
+        { timeout: 8000 }
+      );
+
+      expect(mockAuthStore.clearAuth).not.toHaveBeenCalled();
+      expect(result.current.user).toEqual(mockAuthStore.user);
+    }, 10000);
   });
 
   describe('useUpdateUserProfile', () => {
