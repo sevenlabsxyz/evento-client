@@ -12,7 +12,7 @@ import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '
 // import { debugLog } from '../utils/debug';
 
 // Key for user query
-const USER_QUERY_KEY = ['auth', 'user'] as const;
+export const USER_QUERY_KEY = ['auth', 'user'] as const;
 
 /**
  * Main auth hook that provides authentication state and actions

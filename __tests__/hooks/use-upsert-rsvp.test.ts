@@ -439,7 +439,7 @@ describe('useUpsertRSVP', () => {
       queryKey: queryKeys.eventRsvps(mockArgs.eventId),
     });
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
-      queryKey: ['event', 'details', mockArgs.eventId],
+      queryKey: queryKeys.eventDetails(mockArgs.eventId),
     });
   });
 

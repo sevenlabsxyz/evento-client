@@ -1,11 +1,12 @@
 'use client';
 
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { useAuth, USER_QUERY_KEY } from '@/lib/hooks/use-auth';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { RSVPError, useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { USER_PROFILE_QUERY_KEY } from '@/lib/hooks/use-user-profile';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
 import { queryKeys } from '@/lib/query-client';
 import { useAuthStore } from '@/lib/stores/auth-store';
@@ -90,8 +91,8 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const redirectToLogin = useCallback(
     (status: RSVPStatus, message?: string) => {
       clearAuth();
-      queryClient.removeQueries({ queryKey: ['auth', 'user'] });
-      queryClient.removeQueries({ queryKey: ['user', 'profile'] });
+      queryClient.removeQueries({ queryKey: USER_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: USER_PROFILE_QUERY_KEY });
       queryClient.removeQueries({ queryKey: queryKeys.userRsvp(eventId) });
       queryClient.removeQueries({ queryKey: queryKeys.myRegistration(eventId) });
       if (message) {
@@ -239,37 +240,12 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       setRsvpPhase('loading');
 
       try {
-        await upsert.mutateAsync(
-          { eventId, status, hasExisting },
-          {
-            onSuccess: () => {
-              pendingCloseRef.current = { status, hasContributions };
-              setRsvpPhase('success');
-            },
-            onError: (error: Error) => {
-              // Check if this is an RSVPError with a redirect
-              if (error instanceof RSVPError && error.redirectTo) {
-                toast.error(error.message);
-                router.push(error.redirectTo);
-                onClose();
-                return;
-              }
-              if (error instanceof RSVPError && error.status === 401) {
-                redirectToLogin(status, 'Please sign in to RSVP.');
-                return;
-              }
-              toast.error(error.message || 'Failed to update RSVP. Please try again.');
-              setRsvpPhase('idle');
-              setSelectedStatus(null);
-            },
-          }
-        );
+        await upsert.mutateAsync({ eventId, status, hasExisting });
+        pendingCloseRef.current = { status, hasContributions };
+        setRsvpPhase('success');
       } catch (error) {
-        // Check if this is an RSVPError with a redirect
         if (error instanceof RSVPError && error.redirectTo) {
-          const message =
-            error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
-          toast.error(message);
+          toast.error(error.message);
           router.push(error.redirectTo);
           onClose();
           return;

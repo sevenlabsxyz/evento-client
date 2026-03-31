@@ -66,6 +66,7 @@ export const queryKeys = {
   // Events
   events: ['events'] as const,
   event: (id: string) => [...queryKeys.events, id] as const,
+  eventDetails: (id: string) => ['event', 'details', id] as const,
   eventsFeed: () => [...queryKeys.events, 'feed'] as const,
   eventsUser: (userId: string) => [...queryKeys.events, 'user', userId] as const,
   eventsUserMe: () => [...queryKeys.events, 'user', 'me'] as const,

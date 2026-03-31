@@ -10,7 +10,7 @@ import { useAuthStore } from '../stores/auth-store';
 import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
-const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
+export const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
 
 const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
