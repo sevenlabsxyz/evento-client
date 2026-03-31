@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { useAuth, USER_QUERY_KEY } from '@/lib/hooks/use-auth';
 import { useSubmitRegistration } from '@/lib/hooks/use-submit-registration';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { authService } from '@/lib/services/auth';
@@ -219,7 +219,7 @@ export function RegistrationForm({
       setIsCompletingRegistration(true);
 
       // 2. Invalidate auth query to pick up new session
-      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
       // 3. Fetch fresh user data from backend
       const freshUserData = await authService.getCurrentUser({

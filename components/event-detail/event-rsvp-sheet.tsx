@@ -191,10 +191,6 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   }, [rsvpPhase, closeAfterSuccess]);
 
   const handleAction = async (status: RSVPStatus) => {
-    if (!authResolved) {
-      return;
-    }
-
     if (status === 'yes' && shouldDisableYes) {
       toast.error('This event has reached its capacity.');
       return;
@@ -205,6 +201,11 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     // and complete inline OTP auth during submission
     if (status === 'yes' && registrationRequired && !hasExistingRegistration) {
       setCurrentView('registration-form');
+      return;
+    }
+
+    // For non-registration flows, wait for auth to resolve
+    if (!authResolved) {
       return;
     }
 
@@ -328,7 +329,12 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   const renderRsvpButtons = () => {
     const isBusy = rsvpPhase !== 'idle';
-    const isActionDisabled = isLoading || isBusy || !authResolved;
+    const isBaseDisabled = isLoading || isBusy;
+    // "Yes" with pending registration doesn't need auth — guests fill the form then OTP inline.
+    const needsRegistration = registrationRequired && !hasExistingRegistration;
+    const isYesDisabled =
+      isBaseDisabled || (!needsRegistration && !authResolved) || shouldDisableYes;
+    const isActionDisabled = isBaseDisabled || !authResolved;
 
     return (
       <div className='relative'>
@@ -350,7 +356,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             <button
               type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
-              disabled={isActionDisabled || shouldDisableYes}
+              disabled={isYesDisabled}
               onClick={() => handleAction('yes')}
             >
               {shouldDisableYes ? 'NO SPOTS LEFT' : renderButtonLabel('yes', buttons[0].label)}
@@ -372,7 +378,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               {renderButtonLabel('no', buttons[2].label)}
             </button>
 
-            {!authResolved && (
+            {!authResolved && !needsRegistration && (
               <p className='mt-4 text-center text-sm text-gray-500'>Checking session...</p>
             )}
 

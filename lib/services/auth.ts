@@ -1,9 +1,8 @@
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
-
-const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
 
 export class UnauthenticatedError extends Error {
   status: number;
@@ -95,13 +94,44 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        if (requireSession) {
-          logger.debug('Auth: No session found during required auth check, throwing');
+        if (!requireSession) {
+          logger.debug('Auth: No session found, returning null');
+          return null;
+        }
+
+        // getSession() reads from local cache and can miss during hard
+        // refreshes or right after OAuth callback while the session is
+        // still settling.  Fall back to the authoritative server check
+        // before treating this as a confirmed logout.
+        logger.debug('Auth: No cached session, falling back to getUser()');
+        const {
+          data: { user: supabaseUser },
+          error: getUserError,
+        } = await supabase.auth.getUser();
+
+        if (getUserError) {
+          // getUser() itself failed — this is transient, not a confirmed logout.
+          logger.warn('Auth: getUser() failed while verifying missing session', {
+            error: getUserError.message,
+          });
+
+          if (fallbackToNullOnTransientError) {
+            return null;
+          }
+
+          throw getUserError;
+        }
+
+        if (!supabaseUser) {
+          // Both getSession() and getUser() agree: no user. Confirmed logout.
+          logger.debug('Auth: getUser() also returned null, confirmed unauthenticated');
           throw new UnauthenticatedError('No session found');
         }
 
-        logger.debug('Auth: No session found, returning null');
-        return null;
+        logger.debug('Auth: getUser() found user despite missing cached session', {
+          userId: supabaseUser.id,
+        });
+        // Session is settling — continue to the backend call.
       }
 
       logger.debug('Auth: Fetching current user from backend');
@@ -131,6 +161,16 @@ export const authService = {
       logger.debug('Auth: Returning user', { userId: firstUser?.id });
       return firstUser;
     } catch (error) {
+      // When callers opt into fallback mode (bootstrap flows like OAuth
+      // callback, inline OTP), return null for ALL errors including 401s —
+      // the session may still be settling and the caller will retry.
+      if (fallbackToNullOnTransientError) {
+        logger.debug('Auth: Falling back to null after current-user failure', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        return null;
+      }
+
       const apiError = error as Partial<ApiError> | undefined;
       if (
         error instanceof UnauthenticatedError ||
@@ -149,11 +189,6 @@ export const authService = {
       logger.error('Auth: Failed to get current user', {
         error: error instanceof Error ? error.message : String(error),
       });
-
-      if (fallbackToNullOnTransientError) {
-        logger.debug('Auth: Falling back to null after transient current-user failure');
-        return null;
-      }
 
       throw error;
     }

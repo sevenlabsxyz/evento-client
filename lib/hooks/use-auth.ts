@@ -58,8 +58,13 @@ export function useAuth() {
       ) {
         clearAuth();
       }
+    } else if (userData === null && (isAuthenticated || user)) {
+      // Query succeeded with null but we have persisted auth — clear it.
+      // This handles account switches and bootstrap races where the backend
+      // has no row for the current session yet.
+      clearAuth();
     }
-  }, [userData, authError, setUser, clearAuth]);
+  }, [userData, authError, setUser, clearAuth, isAuthenticated, user]);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -190,7 +195,7 @@ export function useVerifyCode() {
 
       // Get the current user data from the backend to check onboarding status
       try {
-        const userData = await authService.getCurrentUser();
+        const userData = await authService.getCurrentUser({ fallbackToNullOnTransientError: true });
 
         // Set user data - prefer backend data, fallback to Supabase data for new users
         // This ensures isAuthenticated is true even for new users not yet in backend

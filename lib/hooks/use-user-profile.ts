@@ -69,8 +69,11 @@ export function useUserProfile() {
       ) {
         clearAuth();
       }
+    } else if (profileData === null && user) {
+      // Query succeeded with null but we have persisted auth — clear it.
+      clearAuth();
     }
-  }, [profileData, error, setUser, clearAuth]);
+  }, [profileData, error, setUser, clearAuth, user]);
 
   return {
     user: profileData || user,
