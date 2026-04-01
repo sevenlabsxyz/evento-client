@@ -60,12 +60,34 @@ function toUpdatePayload(input: UpdateProfileCampaignInput): UpdateProfileCampai
   return payload;
 }
 
-export async function getProfileCampaign(userId: string): Promise<CampaignWithProgress> {
-  const response = await apiClient.get<ApiResponse<CampaignWithProgress>>(
-    `/v1/users/${userId}/campaign`
+function isMissingCampaignError(error: unknown): boolean {
+  return (
+    !!error &&
+    typeof error === 'object' &&
+    'status' in error &&
+    ((error as { status?: number }).status === 404 ||
+      ((error as { status?: number; message?: string }).status === 400 &&
+        (error as { message?: string }).message === 'Campaign not found.'))
   );
+}
 
-  return response.data;
+export async function getProfileCampaign(userId: string): Promise<CampaignWithProgress | null> {
+  try {
+    const response = await apiClient.get<ApiResponse<CampaignWithProgress>>(
+      `/v1/users/${userId}/campaign`,
+      {
+        suppressErrorStatuses: [400, 404],
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    if (isMissingCampaignError(error)) {
+      return null;
+    }
+
+    throw error;
+  }
 }
 
 export async function getMyCampaign(): Promise<CampaignWithProgress> {
@@ -96,11 +118,11 @@ export async function updateProfileCampaign(
   return response.data;
 }
 
-export function useProfileCampaign(userId: string) {
+export function useProfileCampaign(userId: string, options?: { enabled?: boolean }) {
   return useQuery({
     queryKey: queryKeys.profileCampaign(userId),
     queryFn: () => getProfileCampaign(userId),
-    enabled: !!userId,
+    enabled: !!userId && (options?.enabled ?? true),
   });
 }
 

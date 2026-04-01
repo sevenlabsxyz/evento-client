@@ -29,6 +29,7 @@ export interface UserDetails {
   ln_address?: string; // Lightning address
   nip05?: string; // Nostr identifier
   telegram_id?: number | null; // Telegram numeric user ID (null = not linked)
+  has_campaign?: boolean;
   verification_status: VerificationStatus;
   verification_date?: string;
 }

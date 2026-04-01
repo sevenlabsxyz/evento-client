@@ -738,7 +738,11 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               )}
 
               {/* Campaign Card — shown between zap button and tabs */}
-              <ProfileCampaignCard userId={userData?.id || ''} className='mb-6' />
+              <ProfileCampaignCard
+                userId={userData?.id || ''}
+                hasCampaign={userData?.has_campaign}
+                className='mb-6'
+              />
             </div>
           </div>
 

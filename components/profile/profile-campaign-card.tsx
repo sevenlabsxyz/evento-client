@@ -9,6 +9,7 @@ import { ProfileCampaignPledgeSheet } from './campaign-pledge-sheet';
 
 interface ProfileCampaignCardProps {
   userId: string;
+  hasCampaign?: boolean;
   className?: string;
 }
 
@@ -22,9 +23,20 @@ function formatSats(sats: number): string {
   return sats.toLocaleString();
 }
 
-export default function ProfileCampaignCard({ userId, className }: ProfileCampaignCardProps) {
-  const { data: campaign, isLoading } = useProfileCampaign(userId);
+export default function ProfileCampaignCard({
+  userId,
+  hasCampaign,
+  className,
+}: ProfileCampaignCardProps) {
+  const campaignQueryEnabled = hasCampaign !== false;
+  const { data: campaign, isLoading } = useProfileCampaign(userId, {
+    enabled: campaignQueryEnabled,
+  });
   const [pledgeSheetOpen, setPledgeSheetOpen] = useState(false);
+
+  if (!campaignQueryEnabled) {
+    return null;
+  }
 
   // Only render when campaign exists and is active or paused
   if (isLoading || !campaign || (campaign.status !== 'active' && campaign.status !== 'paused')) {
