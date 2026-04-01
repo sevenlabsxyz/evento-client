@@ -29,5 +29,5 @@ jobs:
           openrouter_api_key: ${{ secrets.OPENROUTER_API_KEY }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
           bot_name: '@alfred'
-          model: 'z-ai/glm-5'
+          model: 'openai/gpt-5.4-mini'
           auto_review: 'true'
