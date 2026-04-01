@@ -177,7 +177,9 @@ Review this PR and provide helpful, actionable feedback.`;
 
     // Post the review as a comment
     const modelName = model.includes('/') ? model.split('/')[1] : model;
-    const commentBody = `## ${modelName} Review\n\n${review}\n\n---\n*Reviewed by OpenRouter AI*`;
+    const commentBody = `## ${modelName} Review
+
+${review}`;
 
     await octokit.rest.issues.createComment({
       owner,
