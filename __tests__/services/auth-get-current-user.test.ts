@@ -117,6 +117,45 @@ describe('authService.getCurrentUser – session fallback', () => {
     );
   });
 
+  it('does not convert backend 401 to UnauthenticatedError when session is settling', async () => {
+    // getSession misses, getUser confirms valid session, backend 401 is transient
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: 'usr_123' } },
+      error: null,
+    });
+
+    const mockApiClient = require('@/lib/api/client').apiClient;
+    mockApiClient.get.mockRejectedValue({ status: 401, message: 'Unauthorized' });
+
+    // Should throw the raw error, NOT UnauthenticatedError
+    await expect(authService.getCurrentUser({ requireSession: true })).rejects.not.toThrow(
+      UnauthenticatedError
+    );
+    await expect(authService.getCurrentUser({ requireSession: true })).rejects.toMatchObject({
+      status: 401,
+      message: 'Unauthorized',
+    });
+  });
+
+  it('returns null for settling-session backend 401 with fallbackToNullOnTransientError', async () => {
+    mockGetSession.mockResolvedValue({ data: { session: null } });
+    mockGetUser.mockResolvedValue({
+      data: { user: { id: 'usr_123' } },
+      error: null,
+    });
+
+    const mockApiClient = require('@/lib/api/client').apiClient;
+    mockApiClient.get.mockRejectedValue({ status: 401, message: 'Unauthorized' });
+
+    const result = await authService.getCurrentUser({
+      requireSession: true,
+      fallbackToNullOnTransientError: true,
+    });
+
+    expect(result).toBeNull();
+  });
+
   it('returns null without calling getUser when requireSession is false', async () => {
     mockGetSession.mockResolvedValue({ data: { session: null } });
 

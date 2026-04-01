@@ -58,13 +58,14 @@ export function useAuth() {
       ) {
         clearAuth();
       }
-    } else if (userData === null && (isAuthenticated || user)) {
-      // Query succeeded with null but we have persisted auth — clear it.
-      // This handles account switches and bootstrap races where the backend
-      // has no row for the current session yet.
-      clearAuth();
     }
-  }, [userData, authError, setUser, clearAuth, isAuthenticated, user]);
+    // Note: we intentionally do NOT clear auth when userData is null.
+    // A null return during bootstrap (session exists but backend row
+    // not yet created) is expected — the fallback user set by
+    // useVerifyCode or the auth callback should persist until the
+    // next successful refetch. Confirmed logouts are handled by the
+    // UnauthenticatedError / 401 path above.
+  }, [userData, authError, setUser, clearAuth]);
 
   // Listen for auth state changes
   useEffect(() => {

@@ -87,6 +87,8 @@ export const authService = {
   getCurrentUser: async (options: GetCurrentUserOptions = {}): Promise<UserDetails | null> => {
     const { requireSession = false, fallbackToNullOnTransientError = false } = options;
 
+    let sessionSettling = false;
+
     try {
       // Check if we have a current session
       const supabase = createClient();
@@ -131,7 +133,10 @@ export const authService = {
         logger.debug('Auth: getUser() found user despite missing cached session', {
           userId: supabaseUser.id,
         });
-        // Session is settling — continue to the backend call.
+        // Session is settling — continue to the backend call, but mark
+        // that any backend error should be treated as transient since we
+        // know the Supabase session is valid.
+        sessionSettling = true;
       }
 
       logger.debug('Auth: Fetching current user from backend');
@@ -169,6 +174,17 @@ export const authService = {
           error: error instanceof Error ? error.message : String(error),
         });
         return null;
+      }
+
+      // If getUser() confirmed a valid Supabase session but the backend
+      // returned an error (e.g. 401 because the cookie hasn't settled),
+      // treat it as transient — the session IS valid, the backend just
+      // hasn't caught up yet.
+      if (sessionSettling) {
+        logger.warn('Auth: Backend error during session settlement, treating as transient', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
       }
 
       const apiError = error as Partial<ApiError> | undefined;
