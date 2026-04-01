@@ -48,19 +48,44 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
 
   // Set up event listener to detect when active invoice is paid
   useEffect(() => {
-    // Only set up listener if we have an active invoice
-    if (!activeInvoice) return;
+    // Set up listener if we have an active invoice OR if we're showing lightning address (no amount)
+    const shouldListen = activeInvoice || (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
+    if (!shouldListen) return;
 
-    logger.info('Setting up payment listener for invoice', { activeInvoice });
+    logger.info('Setting up payment listener for invoice', { activeInvoice, hasLightningAddress: !!address?.lightningAddress });
 
     const handlePaymentEvent = (event: SdkEvent) => {
       if (event.type === 'paymentSucceeded') {
         const payment = (event as any).payment as Payment;
 
-        // Check if this payment matches our active invoice
-        if (payment.details?.type === 'lightning' && payment.details.invoice === activeInvoice) {
+        // Check if this payment matches our active invoice (case-insensitive comparison)
+        if (
+          payment.details?.type === 'lightning' &&
+          activeInvoice &&
+          payment.details.invoice?.toUpperCase() === activeInvoice.toUpperCase()
+        ) {
           logger.info('Payment received for active invoice', { payment });
           setShowSuccess(true);
+          return;
+        }
+
+        // If we're showing lightning address (no specific invoice), any incoming lightning payment
+        // that doesn't match a specific invoice we're waiting for should also trigger success
+        if (
+          payment.paymentType === 'receive' &&
+          payment.details?.type === 'lightning' &&
+          !invoiceAmount &&
+          !activeInvoice &&
+          activeTab === 'lightning'
+        ) {
+          logger.info('Payment received via lightning address', { payment });
+          // Update state to show the received amount
+          const amountSats = Number(payment.amount);
+          setInvoiceAmount(amountSats);
+          satsToUSD(amountSats).then((usd) => {
+            setInvoiceAmountUSD(usd);
+            setShowSuccess(true);
+          });
         }
       }
     };
@@ -73,7 +98,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       logger.info('Cleaning up payment listener');
       unsubscribe();
     };
-  }, [activeInvoice]);
+  }, [activeInvoice, open, activeTab, invoiceAmount, address?.lightningAddress, satsToUSD]);
 
   const generateBitcoinAddress = async () => {
     if (bitcoinAddress || isGeneratingBitcoin) return; // Don't generate if already exists or loading
