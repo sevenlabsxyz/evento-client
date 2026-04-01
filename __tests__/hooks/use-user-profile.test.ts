@@ -141,8 +141,7 @@ describe('User Profile Hooks', () => {
     });
 
     it('handles authentication errors gracefully', async () => {
-      const authError = { message: 'Unauthorized', status: 401 };
-      mockAuthServiceTyped.getCurrentUser.mockRejectedValue(authError);
+      mockAuthServiceTyped.getCurrentUser.mockRejectedValue(new UnauthenticatedError());
 
       const { result } = renderHook(() => useUserProfile(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

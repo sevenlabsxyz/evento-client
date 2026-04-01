@@ -32,19 +32,8 @@ export function useUserProfile() {
     queryKey: USER_PROFILE_QUERY_KEY,
     queryFn: () => authService.getCurrentUser({ requireSession: !!user }),
     retry: (failureCount, error) => {
-      // Don't retry on 401 errors
-      if (
-        error instanceof UnauthenticatedError ||
-        (error && typeof error === 'object' && 'status' in error && error.status === 401)
-      ) {
+      if (error instanceof UnauthenticatedError) {
         return false;
-      }
-
-      if (error && typeof error === 'object' && 'message' in error) {
-        const apiError = error as { message: string };
-        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
-          return false;
-        }
       }
       return failureCount < 3;
     },
@@ -59,14 +48,7 @@ export function useUserProfile() {
     if (profileData) {
       setUser(profileData);
     } else if (error) {
-      // Clear auth on 401 errors
-      const apiError = error as { message?: string; status?: number };
-      if (
-        error instanceof UnauthenticatedError ||
-        apiError.status === 401 ||
-        apiError.message?.includes('401') ||
-        apiError.message?.includes('Unauthorized')
-      ) {
+      if (error instanceof UnauthenticatedError) {
         clearAuth();
       }
     }

@@ -159,8 +159,7 @@ describe('Authentication Hooks', () => {
     });
 
     it('handles authentication errors gracefully', async () => {
-      const authError = { message: 'Unauthorized', status: 401 };
-      mockAuthService.getCurrentUser.mockRejectedValue(authError);
+      mockAuthService.getCurrentUser.mockRejectedValue(new UnauthenticatedError());
 
       const { result } = renderHook(() => useAuth(), {
         wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),

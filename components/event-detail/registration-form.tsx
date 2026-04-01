@@ -222,9 +222,7 @@ export function RegistrationForm({
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
       // 3. Fetch fresh user data from backend
-      const freshUserData = await authService.getCurrentUser({
-        fallbackToNullOnTransientError: true,
-      });
+      const { user: freshUserData, settled } = await authService.tryGetCurrentUser();
 
       // 4. Update the user's name and generate username if needed
       // (for new users or users without a name/username set)
@@ -233,7 +231,10 @@ export function RegistrationForm({
         ...(freshUserData || userData),
         image: (freshUserData || userData)?.image || DEFAULT_AVATAR_IMAGE,
       };
-      if (userToUse) {
+      // Only update name/username when we have a definitive answer from the
+      // backend. If settled is false (transient miss), skip — we don't want
+      // to overwrite an existing account's username with a generated one.
+      if (userToUse && settled) {
         // Check if we need to update name or generate username
         const needsNameUpdate = !userToUse.name || userToUse.name !== name.trim();
         const needsUsername = !userToUse.username;

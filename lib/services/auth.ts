@@ -16,7 +16,13 @@ export class UnauthenticatedError extends Error {
 
 interface GetCurrentUserOptions {
   requireSession?: boolean;
-  fallbackToNullOnTransientError?: boolean;
+}
+
+export interface TryGetCurrentUserResult {
+  /** The user, or null if not found / error occurred */
+  user: UserDetails | null;
+  /** true = definitive answer (backend responded). false = transient miss (error swallowed, may change on retry). */
+  settled: boolean;
 }
 
 export const authService = {
@@ -85,7 +91,7 @@ export const authService = {
    * GET /v1/user
    */
   getCurrentUser: async (options: GetCurrentUserOptions = {}): Promise<UserDetails | null> => {
-    const { requireSession = false, fallbackToNullOnTransientError = false } = options;
+    const { requireSession = false } = options;
 
     let sessionSettling = false;
 
@@ -116,11 +122,6 @@ export const authService = {
           logger.warn('Auth: getUser() failed while verifying missing session', {
             error: getUserError.message,
           });
-
-          if (fallbackToNullOnTransientError) {
-            return null;
-          }
-
           throw getUserError;
         }
 
@@ -166,16 +167,6 @@ export const authService = {
       logger.debug('Auth: Returning user', { userId: firstUser?.id });
       return firstUser;
     } catch (error) {
-      // When callers opt into fallback mode (bootstrap flows like OAuth
-      // callback, inline OTP), return null for ALL errors including 401s —
-      // the session may still be settling and the caller will retry.
-      if (fallbackToNullOnTransientError) {
-        logger.debug('Auth: Falling back to null after current-user failure', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-        return null;
-      }
-
       // If getUser() confirmed a valid Supabase session but the backend
       // returned an error (e.g. 401 because the cookie hasn't settled),
       // treat it as transient — the session IS valid, the backend just
@@ -248,6 +239,24 @@ export const authService = {
    */
   checkAuth: async (): Promise<UserDetails | null> => {
     return await authService.getCurrentUser({ requireSession: true });
+  },
+
+  /**
+   * Try to get the current user, returning a structured result that
+   * distinguishes "confirmed no user" from "transient miss."
+   * Use this in bootstrap flows (OTP verify, OAuth callback, registration)
+   * where callers need to know whether the result is definitive.
+   */
+  tryGetCurrentUser: async (): Promise<TryGetCurrentUserResult> => {
+    try {
+      const user = await authService.getCurrentUser({ requireSession: true });
+      return { user, settled: true };
+    } catch (error) {
+      logger.debug('Auth: tryGetCurrentUser caught error, returning unsettled', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return { user: null, settled: false };
+    }
   },
 
   /**
