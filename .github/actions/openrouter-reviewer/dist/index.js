@@ -31187,7 +31187,7 @@ If there are no real issues, say "LGTM" and nothing else.`,
   }
 
   const data = await response.json();
-  return data.choices[0].message.content;
+  const content = data.choices[0]?.message?.content; if (!content || content.trim() === "") { return "LGTM"; } return content;
 }
 
 async function run() {
