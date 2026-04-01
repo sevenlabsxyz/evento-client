@@ -80,7 +80,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
         ) {
           logger.info('Payment received via lightning address', { payment });
           // Update state to show the received amount
-          const amountSats = Number(payment.amountMsat) / 1000;
+          const amountSats = Number(payment.amount);
           setInvoiceAmount(amountSats);
           satsToUSD(amountSats).then((usd) => {
             setInvoiceAmountUSD(usd);
