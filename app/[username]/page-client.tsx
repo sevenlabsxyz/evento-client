@@ -50,6 +50,7 @@ import { UserBadge } from '@/lib/types/badges';
 import { EventHost } from '@/lib/types/event';
 import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
+import { getErrorMessage } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import {
   getProfileEventStartTimestamp,
@@ -423,7 +424,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       });
       router.push(`/e/messages/${conversationId}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to start chat');
+      toast.error(getErrorMessage(error, 'Failed to start chat'));
     }
   };
 

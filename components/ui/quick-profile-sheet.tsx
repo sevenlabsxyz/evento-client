@@ -14,6 +14,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
 import { useFollowAction } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, Loader2 } from 'lucide-react';
@@ -77,7 +78,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
       onClose();
       router.push(`/e/messages/${conversationId}`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : 'Failed to start chat');
+      toast.error(getErrorMessage(error, 'Failed to start chat'));
     }
   }, [
     chatStatus,

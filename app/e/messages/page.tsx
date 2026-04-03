@@ -1,6 +1,8 @@
 'use client';
 
 import { useChat } from '@/lib/chat/provider';
+import { getErrorMessage } from '@/lib/utils/error';
+import { toast } from '@/lib/utils/toast';
 import { MessageSquare } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
@@ -21,8 +23,8 @@ export default function MessagesPage() {
       .then((conversationId) => {
         router.replace(`/e/messages/${conversationId}`);
       })
-      .catch(() => {
-        // Leave the user on the empty state if secure chat is not ready.
+      .catch((error: unknown) => {
+        toast.error(getErrorMessage(error, 'Failed to start chat'));
       });
   }, [openDirectConversation, router, searchParams, status]);
 

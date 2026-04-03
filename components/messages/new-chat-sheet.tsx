@@ -6,6 +6,7 @@ import { useChat } from '@/lib/chat/provider';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -71,10 +72,10 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
       const conversationId = await openDirectConversation({ userId: recipientId });
       onClose();
       router.push(`/e/messages/${conversationId}`);
-    } catch (err: any) {
-      toast.error(err?.message || 'Please try again.', 'Failed to start chat');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Please try again.'), 'Failed to start chat');
       logger.error('openDirectConversation error', {
-        error: err instanceof Error ? err.message : String(err),
+        error: getErrorMessage(error, 'Unknown chat error'),
       });
     }
   };

@@ -8,6 +8,7 @@ import { useChat } from '@/lib/chat/provider';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { UserDetails } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
+import { getErrorMessage } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { MessageCircle, Zap } from 'lucide-react';
@@ -37,10 +38,10 @@ export default function EventHost({ event }: EventHostProps) {
     try {
       const conversationId = await openDirectConversation({ userId: hostId });
       router.push(`/e/messages/${conversationId}`);
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to start chat');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Failed to start chat'));
       logger.error('openDirectConversation error', {
-        error: err instanceof Error ? err.message : String(err),
+        error: getErrorMessage(error, 'Unknown chat error'),
       });
     }
   };

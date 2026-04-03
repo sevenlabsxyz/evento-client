@@ -6,6 +6,8 @@ import { useChat } from '@/lib/chat/provider';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowers } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error';
+import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -102,8 +104,8 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
         const conversationId = await openDirectConversation({ userId });
         router.push(`/e/messages/${conversationId}`);
         onClose();
-      } catch {
-        // Ignore and leave the sheet open if chat is unavailable.
+      } catch (error) {
+        toast.error(getErrorMessage(error, 'Failed to start chat'));
       }
     },
     [chatStatus, openDirectConversation, onClose, router]
