@@ -2,9 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useChat } from '@/lib/chat/provider';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
-import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
@@ -23,6 +23,7 @@ interface NewChatSheetProps {
 export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const [searchText, setSearchText] = useState('');
   const router = useRouter();
+  const { openDirectConversation, status: chatStatus } = useChat();
 
   const { user } = useUserProfile();
   const currentUserId = user?.id || '';
@@ -60,17 +61,19 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const isLoading = isLoadingFollowing || (debouncedSearch.trim().length >= 2 && isSearching);
 
   const handleStartChat = async (recipientId: string) => {
+    if (chatStatus !== 'ready') {
+      onClose();
+      router.push(`/e/messages?user=${encodeURIComponent(recipientId)}`);
+      return;
+    }
+
     try {
-      const res = await streamChatService.createDirectMessageChannel(recipientId);
-      if (res?.channel?.id) {
-        onClose();
-        router.push(`/e/messages/${res.channel.id}`);
-      } else {
-        toast.error('No channel id returned.', 'Unable to start chat');
-      }
+      const conversationId = await openDirectConversation({ userId: recipientId });
+      onClose();
+      router.push(`/e/messages/${conversationId}`);
     } catch (err: any) {
       toast.error(err?.message || 'Please try again.', 'Failed to start chat');
-      logger.error('createDirectMessageChannel error', {
+      logger.error('openDirectConversation error', {
         error: err instanceof Error ? err.message : String(err),
       });
     }

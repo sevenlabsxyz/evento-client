@@ -8,6 +8,7 @@ import { ProfileInfo } from '@/components/ui/quick-profile/profile-info';
 import { ProfileStats } from '@/components/ui/quick-profile/profile-stats';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useChat } from '@/lib/chat/provider';
 import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
@@ -28,6 +29,7 @@ interface QuickProfileSheetProps {
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
+  const { openDirectConversation, status: chatStatus } = useChat();
   const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
 
   // Use optimized hook for all profile data
@@ -55,9 +57,41 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
     );
   }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
 
-  const handleMessage = useCallback(() => {
-    toast.success('Message feature coming soon!');
-  }, []);
+  const handleMessage = useCallback(async () => {
+    if (chatStatus !== 'ready') {
+      onClose();
+      router.push(`/e/messages?user=${encodeURIComponent(user.id)}`);
+      return;
+    }
+
+    try {
+      const conversationId = await openDirectConversation({
+        userId: user.id,
+        username: user.username,
+        name: user.name,
+        image: user.image,
+        verification_status: user.verification_status,
+        nostr_pubkey: user.nostr_pubkey,
+        nip05: user.nip05,
+      });
+      onClose();
+      router.push(`/e/messages/${conversationId}`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Failed to start chat');
+    }
+  }, [
+    chatStatus,
+    onClose,
+    openDirectConversation,
+    router,
+    user.id,
+    user.image,
+    user.name,
+    user.nip05,
+    user.nostr_pubkey,
+    user.username,
+    user.verification_status,
+  ]);
 
   const handleViewFullProfile = useCallback(() => {
     // Validate username before navigation to prevent potential exploits

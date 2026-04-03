@@ -1,26 +1,22 @@
 'use client';
 
+import { ChatOnboarding } from '@/components/chat/chat-onboarding';
+import { ConversationList } from '@/components/chat/conversation-list';
 import NewChatSheet from '@/components/messages/new-chat-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useChat } from '@/lib/chat/provider';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { MessageSquarePlus, Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';
-import { ChannelList, Chat } from 'stream-chat-react';
-import 'stream-chat-react/dist/css/v2/index.css';
-import './chat-layout.css';
-import { CustomChannelPreview } from './custom-channel-preview';
 
 export default function MessagesLayout({ children }: { children: React.ReactNode }) {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
-
-  const { client, isLoading: isLoadingStream, error: streamError } = useStreamChatClient();
+  const { status, conversations, error, completeOnboarding } = useChat();
 
   const isMessageListPage = pathname === '/e/messages';
 
@@ -44,14 +40,7 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
     return () => clearRoute(pathname);
   }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig]);
 
-  const sort: ChannelSort = { last_message_at: -1 };
-  const filters: ChannelFilters = {
-    type: 'messaging',
-    members: { $in: [client?.user?.id || ''] },
-  };
-  const options: ChannelOptions = { limit: 50 };
-
-  if (isCheckingAuth || isLoadingStream) {
+  if (isCheckingAuth || status === 'idle' || status === 'initializing') {
     return (
       <div className='flex h-[calc(100vh-4rem)] w-full flex-col bg-white md:flex-row'>
         <div
@@ -59,8 +48,8 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
         >
           <div className='p-4'>
             <Skeleton className='mb-4 h-10 w-full' />
-            {[0, 1, 2, 3, 4].map((i) => (
-              <div key={i} className='mb-3 flex items-center gap-3'>
+            {[0, 1, 2, 3, 4].map((index) => (
+              <div key={index} className='mb-3 flex items-center gap-3'>
                 <Skeleton className='h-12 w-12 rounded-full' />
                 <div className='flex-1'>
                   <Skeleton className='mb-2 h-4 w-3/4' />
@@ -81,7 +70,11 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
     );
   }
 
-  if (streamError || !client) {
+  if (status === 'needs-onboarding') {
+    return <ChatOnboarding isLoading={false} onStart={completeOnboarding} />;
+  }
+
+  if (status === 'error') {
     return (
       <div className='flex h-[calc(100vh-4rem)] w-full flex-col items-center justify-center bg-white'>
         <div className='text-center'>
@@ -100,8 +93,8 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
               />
             </svg>
           </div>
-          <p className='font-medium text-red-600'>Failed to connect to chat</p>
-          <p className='mt-1 text-sm text-gray-500'>Please try refreshing the page</p>
+          <p className='font-medium text-red-600'>Failed to load secure chat</p>
+          <p className='mt-1 text-sm text-gray-500'>{error ?? 'Please try refreshing the page'}</p>
         </div>
       </div>
     );
@@ -109,26 +102,22 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
 
   return (
     <div className='flex h-[calc(100vh-4rem)] w-full flex-col bg-white md:flex-row'>
-      <Chat client={client} theme='str-chat__theme-custom'>
-        <div
-          className={`w-full border-b border-gray-200 bg-gray-50 md:block md:w-80 md:shrink-0 md:border-b-0 md:border-r ${isMessageListPage ? 'block' : 'hidden'}`}
-        >
-          <div className='h-full overflow-hidden'>
-            <ChannelList
-              filters={filters}
-              sort={sort}
-              options={options}
-              Preview={CustomChannelPreview}
-            />
-          </div>
+      <div
+        className={`w-full border-b border-gray-200 bg-gray-50 md:block md:w-80 md:shrink-0 md:border-b-0 md:border-r ${isMessageListPage ? 'block' : 'hidden'}`}
+      >
+        <div className='h-full overflow-hidden'>
+          <ConversationList
+            conversations={conversations}
+            activeConversationId={isMessageListPage ? null : pathname.split('/').pop()}
+          />
         </div>
+      </div>
 
-        <div
-          className={`flex flex-1 flex-col overflow-hidden ${isMessageListPage ? 'hidden md:flex' : 'flex'}`}
-        >
-          {children}
-        </div>
-      </Chat>
+      <div
+        className={`flex flex-1 flex-col overflow-hidden ${isMessageListPage ? 'hidden md:flex' : 'flex'}`}
+      >
+        {children}
+      </div>
 
       <button
         type='button'

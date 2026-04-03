@@ -1,10 +1,30 @@
 'use client';
 
+import { useChat } from '@/lib/chat/provider';
 import { MessageSquare } from 'lucide-react';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function MessagesPage() {
-  const [activeTab, setActiveTab] = useState('messages');
+  const { openDirectConversation, status } = useChat();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const userId = searchParams.get('user');
+
+    if (!userId || status !== 'ready') {
+      return;
+    }
+
+    void openDirectConversation({ userId })
+      .then((conversationId) => {
+        router.replace(`/e/messages/${conversationId}`);
+      })
+      .catch(() => {
+        // Leave the user on the empty state if secure chat is not ready.
+      });
+  }, [openDirectConversation, router, searchParams, status]);
 
   return (
     <>
@@ -15,7 +35,7 @@ export default function MessagesPage() {
           </div>
           <h2 className='mb-2 text-xl font-semibold text-gray-900'>Select a conversation</h2>
           <p className='text-sm text-gray-500'>
-            Choose a chat from the list on the left to start messaging
+            Choose a chat from the list on the left or start a new one
           </p>
         </div>
       </div>

@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
-import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
+import { ChatProvider } from '@/lib/chat/provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { getSessionValue, markAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { usePathname } from 'next/navigation';
@@ -44,7 +44,7 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
   }, [pathname]);
 
   return (
-    <StreamChatProvider>
+    <ChatProvider>
       <SidebarProvider
         defaultOpen={isAuthenticated}
         open={isAuthenticated ? undefined : false}
@@ -63,6 +63,6 @@ export default function EventoLayout({ children }: { children: React.ReactNode }
         </SidebarInset>
         {/* {isAuthenticated && <SidebarRight />} */}
       </SidebarProvider>
-    </StreamChatProvider>
+    </ChatProvider>
   );
 }

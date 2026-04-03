@@ -4,8 +4,8 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useChat } from '@/lib/chat/provider';
 import { useAuth } from '@/lib/hooks/use-auth';
-import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { logger } from '@/lib/utils/logger';
@@ -21,6 +21,7 @@ interface EventHostProps {
 export default function EventHost({ event }: EventHostProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
+  const { openDirectConversation, status: chatStatus } = useChat();
   const [selectedHost, setSelectedHost] = useState<UserDetails | null>(null);
 
   if (!event.hosts || event.hosts.length === 0) {
@@ -28,16 +29,17 @@ export default function EventHost({ event }: EventHostProps) {
   }
 
   const handleContactHost = async (hostId: string) => {
+    if (chatStatus !== 'ready') {
+      router.push(`/e/messages?user=${encodeURIComponent(hostId)}`);
+      return;
+    }
+
     try {
-      const res = await streamChatService.createDirectMessageChannel(hostId);
-      if (res?.channel?.id) {
-        router.push(`/e/messages/${res.channel.id}`);
-      } else {
-        toast.error('Unable to start chat');
-      }
+      const conversationId = await openDirectConversation({ userId: hostId });
+      router.push(`/e/messages/${conversationId}`);
     } catch (err: any) {
       toast.error(err?.message || 'Failed to start chat');
-      logger.error('createDirectMessageChannel error', {
+      logger.error('openDirectConversation error', {
         error: err instanceof Error ? err.message : String(err),
       });
     }

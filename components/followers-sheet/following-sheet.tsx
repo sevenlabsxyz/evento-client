@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useChat } from '@/lib/chat/provider';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
@@ -30,6 +31,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   const [allFollowing, setAllFollowing] = useState<UserDetails[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const router = useRouter();
+  const { openDirectConversation, status: chatStatus } = useChat();
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
   const {
@@ -89,11 +91,22 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   );
 
   const handleMessageClick = useCallback(
-    (userId: string) => {
-      router.push(`/e/messages?user=${userId}`);
-      onClose();
+    async (userId: string) => {
+      if (chatStatus !== 'ready') {
+        router.push(`/e/messages?user=${encodeURIComponent(userId)}`);
+        onClose();
+        return;
+      }
+
+      try {
+        const conversationId = await openDirectConversation({ userId });
+        router.push(`/e/messages/${conversationId}`);
+        onClose();
+      } catch {
+        // Ignore and leave the sheet open if chat is unavailable.
+      }
     },
-    [router, onClose]
+    [chatStatus, openDirectConversation, onClose, router]
   );
 
   return (

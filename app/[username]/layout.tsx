@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/dashboard/site-header';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useWalletEventListener } from '@/lib/hooks/use-wallet-event-listener';
-import { StreamChatProvider } from '@/lib/providers/stream-chat-provider';
+import { ChatProvider } from '@/lib/chat/provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
@@ -22,7 +22,7 @@ export default function UsernameLayout({ children }: { children: React.ReactNode
   }, [pathname, applyRouteConfig]);
 
   return (
-    <StreamChatProvider>
+    <ChatProvider>
       <SidebarProvider
         style={
           {
@@ -37,6 +37,6 @@ export default function UsernameLayout({ children }: { children: React.ReactNode
           <div className='flex-1 overflow-auto'>{children}</div>
         </SidebarInset>
       </SidebarProvider>
-    </StreamChatProvider>
+    </ChatProvider>
   );
 }
