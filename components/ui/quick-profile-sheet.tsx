@@ -8,11 +8,14 @@ import { ProfileInfo } from '@/components/ui/quick-profile/profile-info';
 import { ProfileStats } from '@/components/ui/quick-profile/profile-stats';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useChat } from '@/lib/chat/provider';
 import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
 import { useFollowAction } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, Loader2 } from 'lucide-react';
@@ -28,6 +31,12 @@ interface QuickProfileSheetProps {
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
+  const {
+    openDirectConversation,
+    status: chatStatus,
+    isOpeningDirectConversation,
+    openingDirectConversationUserIds,
+  } = useChat();
   const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
 
   // Use optimized hook for all profile data
@@ -55,9 +64,64 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
     );
   }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
 
-  const handleMessage = useCallback(() => {
-    toast.success('Message feature coming soon!');
-  }, []);
+  const handleMessage = useCallback(async () => {
+    if (isOpeningDirectConversation) {
+      return;
+    }
+
+    logger.warn('Quick profile: message click', {
+      userId: user.id,
+      username: user.username,
+      chatStatus,
+    });
+
+    if (chatStatus !== 'ready') {
+      logger.warn('Quick profile: chat not ready, redirecting to messages route', {
+        userId: user.id,
+        username: user.username,
+      });
+      onClose();
+      router.push(`/e/messages?user=${encodeURIComponent(user.id)}`);
+      return;
+    }
+
+    try {
+      const conversationId = await openDirectConversation({
+        userId: user.id,
+        username: user.username,
+        name: user.name,
+        image: user.image,
+        verification_status: user.verification_status,
+        nostr_pubkey: user.nostr_pubkey,
+        nip05: user.nip05,
+      });
+      onClose();
+      router.push(`/e/messages/${conversationId}`);
+      logger.warn('Quick profile: openDirectConversation success', {
+        userId: user.id,
+        conversationId,
+      });
+    } catch (error) {
+      logger.error('Quick profile: openDirectConversation failed', {
+        userId: user.id,
+        error,
+      });
+      toast.error(getErrorMessage(error, 'Failed to start chat'));
+    }
+  }, [
+    chatStatus,
+    isOpeningDirectConversation,
+    onClose,
+    openDirectConversation,
+    router,
+    user.id,
+    user.image,
+    user.name,
+    user.nip05,
+    user.nostr_pubkey,
+    user.username,
+    user.verification_status,
+  ]);
 
   const handleViewFullProfile = useCallback(() => {
     // Validate username before navigation to prevent potential exploits
@@ -128,6 +192,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                               isFollowing={followStatus?.isFollowing || false}
                               isLoading={isLoading}
                               isPending={followActionMutation.isPending}
+                              isMessaging={openingDirectConversationUserIds.includes(user.id)}
+                              isMessageDisabled={isOpeningDirectConversation}
                               onFollowToggle={handleFollowToggle}
                               onMessage={handleMessage}
                             />

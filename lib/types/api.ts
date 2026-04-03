@@ -28,6 +28,7 @@ export interface UserDetails {
   instagram_handle?: string;
   ln_address?: string; // Lightning address
   nip05?: string; // Nostr identifier
+  nostr_pubkey?: string; // Discoverable Nostr public key for secure chat
   telegram_id?: number | null; // Telegram numeric user ID (null = not linked)
   has_campaign?: boolean;
   verification_status: VerificationStatus;
