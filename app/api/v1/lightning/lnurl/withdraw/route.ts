@@ -43,8 +43,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Valid amount in millisats is required' }, { status: 400 });
     }
 
-    // Validate callback URL
+    // Validate callback URL is from an allowed domain
+    const ALLOWED_DOMAINS = ['api.zebedee.io', 'api.zbdpay.com'];
     let callbackUrl: URL;
+    try {
+      callbackUrl = new URL(callback);
+      const hostname = callbackUrl.hostname.toLowerCase();
+      if (!ALLOWED_DOMAINS.some(domain => hostname === domain || hostname.endsWith(`.${domain}`))) {
+        logger.warn('LNURL withdraw callback domain not in allowlist', { hostname, allowed: ALLOWED_DOMAINS });
+        return NextResponse.json({ error: 'Callback domain not allowed' }, { status: 400 });
+      }
+    } catch {
+      return NextResponse.json({ error: 'Invalid callback URL' }, { status: 400 });
+    }
     try {
       callbackUrl = new URL(callback);
     } catch {
