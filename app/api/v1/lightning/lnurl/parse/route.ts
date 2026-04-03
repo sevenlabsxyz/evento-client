@@ -76,7 +76,19 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to decode LNURL' }, { status: 400 });
     }
 
-    // Validate the decoded URL
+    // Validate the decoded URL is from an allowed domain
+    const ALLOWED_DOMAINS = ['api.zebedee.io', 'api.zbdpay.com'];
+    let validatedUrl: URL;
+    try {
+      validatedUrl = new URL(callbackUrl);
+      const hostname = validatedUrl.hostname.toLowerCase();
+      if (!ALLOWED_DOMAINS.some(domain => hostname === domain || hostname.endsWith(`.${domain}`))) {
+        logger.warn('LNURL callback domain not in allowlist', { hostname, allowed: ALLOWED_DOMAINS });
+        return NextResponse.json({ error: 'LNURL service domain not allowed' }, { status: 400 });
+      }
+    } catch {
+      return NextResponse.json({ error: 'Invalid callback URL in LNURL' }, { status: 400 });
+    }
     try {
       new URL(callbackUrl);
     } catch {
@@ -89,7 +101,7 @@ export async function POST(request: NextRequest) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(callbackUrl, {
+      const response = await fetch(validatedUrl.toString(), {
         signal: controller.signal,
         headers: {
           Accept: 'application/json',
