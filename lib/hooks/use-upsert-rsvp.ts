@@ -64,6 +64,7 @@ export function useUpsertRSVP() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.userRsvp(variables.eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventRsvps(variables.eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.event(variables.eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
   });

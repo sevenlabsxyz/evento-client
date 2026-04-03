@@ -441,6 +441,9 @@ describe('useUpsertRSVP', () => {
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: queryKeys.hub,
     });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: queryKeys.event(mockArgs.eventId),
+    });
   });
 
   it('should handle RSVP with user details', async () => {
