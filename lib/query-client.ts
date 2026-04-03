@@ -142,4 +142,13 @@ export const queryKeys = {
   blogPosts: (options?: { limit?: number; page?: number; filter?: string }) =>
     [...queryKeys.blog, 'posts', options] as const,
   blogPost: (slug: string) => [...queryKeys.blog, 'post', slug] as const,
+
+  // Hub
+  hub: ['hub'] as const,
+  hubData: (options?: {
+    myUpcomingLimit?: number;
+    discoverLimit?: number;
+    pendingInvitesLimit?: number;
+    pendingCohostLimit?: number;
+  }) => [...queryKeys.hub, 'data', options] as const,
 } as const;

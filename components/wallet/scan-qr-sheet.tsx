@@ -2,8 +2,10 @@
 
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { CameraScanner } from '@/components/wallet/qr-code-scanner';
+import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { X } from 'lucide-react';
+import { ClipboardPaste, X } from 'lucide-react';
+import { useState } from 'react';
 
 interface ScanQrSheetProps {
   open: boolean;
@@ -12,9 +14,27 @@ interface ScanQrSheetProps {
 }
 
 export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetProps) {
+  const [isPasting, setIsPasting] = useState(false);
+
   const handleScanSuccess = (decodedText: string) => {
     onScanSuccess(decodedText);
     onOpenChange(false);
+  };
+
+  const handlePasteFromClipboard = async () => {
+    setIsPasting(true);
+    try {
+      const clipboardText = await navigator.clipboard.readText();
+      if (clipboardText && clipboardText.trim()) {
+        handleScanSuccess(clipboardText.trim());
+      } else {
+        toast.error('Clipboard is empty');
+      }
+    } catch (error) {
+      toast.error('Unable to access clipboard. Please paste manually.');
+    } finally {
+      setIsPasting(false);
+    }
   };
 
   return (
@@ -38,6 +58,19 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
                 aria-label='Close scanner'
               >
                 <X className='h-6 w-6 text-white' />
+              </button>
+
+              {/* Paste Button Overlay */}
+              <button
+                onClick={handlePasteFromClipboard}
+                disabled={isPasting}
+                className='absolute left-4 top-4 z-50 flex items-center gap-2 rounded-full bg-black/50 px-4 py-2 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50'
+                aria-label='Paste from clipboard'
+              >
+                <ClipboardPaste className='h-5 w-5 text-white' />
+                <span className='text-sm font-medium text-white'>
+                  {isPasting ? 'Pasting...' : 'Paste'}
+                </span>
               </button>
 
               {/* Scanner Instructions */}

@@ -158,16 +158,64 @@ export function ReceiveLnurlWithdrawSheet({
         return;
       }
 
-      await breezSDK.lnurlWithdraw({
-        amountSats,
-        withdrawRequest: {
-          callback: withdrawRequest.callback,
-          k1: withdrawRequest.k1,
-          defaultDescription: withdrawRequest.defaultDescription,
-          minWithdrawable: withdrawRequest.minWithdrawable,
-          maxWithdrawable: withdrawRequest.maxWithdrawable,
+      // Generate invoice first using Breez
+      const invoiceResponse = await breezSDK.receivePayment({
+        paymentMethod: {
+          type: 'bolt11Invoice',
+          description: withdrawRequest.defaultDescription || 'LNURL Withdraw',
+          amountSats,
         },
       });
+
+      const bolt11Invoice = invoiceResponse.paymentRequest;
+
+      try {
+        // ATTEMPT 1: Try Breez SDK first
+        await breezSDK.lnurlWithdraw({
+          amountSats,
+          withdrawRequest: {
+            callback: withdrawRequest.callback,
+            k1: withdrawRequest.k1,
+            defaultDescription: withdrawRequest.defaultDescription,
+            minWithdrawable: withdrawRequest.minWithdrawable,
+            maxWithdrawable: withdrawRequest.maxWithdrawable,
+          },
+        });
+      } catch (breezError) {
+        // Check if error is CORS/network related
+        const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+        const isCorsError =
+          errorMessage.includes('CORS') ||
+          errorMessage.includes('Access-Control-Allow-Origin') ||
+          errorMessage.includes('Failed to fetch') ||
+          errorMessage.includes('error calling lnurl endpoint') ||
+          errorMessage.includes('error sending request') ||
+          errorMessage.includes('Request error');
+
+        if (!isCorsError) {
+          // Not a CORS error - rethrow for normal handling
+          throw breezError;
+        }
+
+        // ATTEMPT 2: Fall back to API
+        logger.info('Breez withdraw failed with CORS, trying API fallback...');
+        const response = await fetch('/api/v1/lightning/lnurl/withdraw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            callback: withdrawRequest.callback,
+            k1: withdrawRequest.k1,
+            invoice: bolt11Invoice,
+            amount: amountSats * 1000, // convert to millisats
+          }),
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.error || result.reason || 'Withdraw failed');
+        }
+      }
 
       try {
         await onReceived?.();

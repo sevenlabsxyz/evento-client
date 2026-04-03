@@ -601,6 +601,23 @@ export class BreezSDKService {
       return parsed;
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.PARSING_INPUT);
+
+      // Check if this is a CORS/network error reaching an LNURL endpoint
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isCorsNetworkError =
+        errorMessage.includes('CORS') ||
+        errorMessage.includes('Access-Control-Allow-Origin') ||
+        errorMessage.includes('Failed to fetch') ||
+        errorMessage.includes('error calling lnurl endpoint') ||
+        errorMessage.includes('error sending request') ||
+        errorMessage.includes('Request error');
+
+      // If it's a CORS/network error, throw original so caller can use fallback
+      if (isCorsNetworkError) {
+        throw error;
+      }
+
+      // Otherwise throw user-friendly error
       const userMessage = getBreezErrorMessage(error, 'parse input');
       throw new Error(userMessage);
     }

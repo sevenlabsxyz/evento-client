@@ -170,7 +170,52 @@ export function SendLightningSheet({
     // Parse input using Breez SDK
     setIsValidating(true);
     try {
-      const parsed = await breezSDK.parseInput(invoice.trim());
+      const trimmedInvoice = invoice.trim();
+      let parsed: InputType;
+
+      // Check if it's potentially an LNURL
+      const isLnurl = trimmedInvoice.match(/^lnurl1/i);
+
+      if (isLnurl) {
+        // ATTEMPT 1: Try Breez SDK first for LNURL (fast path)
+        try {
+          parsed = await breezSDK.parseInput(trimmedInvoice);
+        } catch (breezError) {
+          // Check if error is CORS/network related
+          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const isCorsError =
+            errorMessage.includes('CORS') ||
+            errorMessage.includes('Access-Control-Allow-Origin') ||
+            errorMessage.includes('Failed to fetch') ||
+            errorMessage.includes('error calling lnurl endpoint') ||
+            errorMessage.includes('error sending request') ||
+            errorMessage.includes('Request error');
+
+          if (!isCorsError) {
+            // Not a CORS error - rethrow for normal handling
+            throw breezError;
+          }
+
+          // ATTEMPT 2: CORS error - fall back to API
+          logger.info('Breez parse failed with CORS in send flow, trying API fallback...');
+          const response = await fetch('/api/v1/lightning/lnurl/parse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lnurl: trimmedInvoice }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            throw new Error(errorData.error || 'API fallback failed');
+          }
+
+          parsed = await response.json();
+        }
+      } else {
+        // For non-LNURL, continue using Breez parseInput normally
+        parsed = await breezSDK.parseInput(trimmedInvoice);
+      }
+
       setParsedInput(parsed);
 
       if (parsed.type === 'bolt11Invoice') {

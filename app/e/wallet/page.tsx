@@ -491,10 +491,53 @@ export default function WalletPage() {
       cleanedData = cleanedData.replace(pattern, '');
     }
 
-    // Validate the QR code
+    // Check if it's potentially an LNURL
+    const isLnurl = cleanedData.match(/^lnurl1/i);
+
     try {
       closeDrawer('scan');
-      const parsed = await breezSDK.parseInput(cleanedData);
+
+      let parsed;
+
+      if (isLnurl) {
+        // ATTEMPT 1: Try Breez SDK first for LNURL (fast path)
+        try {
+          parsed = await breezSDK.parseInput(cleanedData);
+        } catch (breezError) {
+          // Check if error is CORS/network related
+          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const isCorsError =
+            errorMessage.includes('CORS') ||
+            errorMessage.includes('Access-Control-Allow-Origin') ||
+            errorMessage.includes('Failed to fetch') ||
+            errorMessage.includes('error calling lnurl endpoint') ||
+            errorMessage.includes('error sending request') ||
+            errorMessage.includes('Request error');
+
+          if (!isCorsError) {
+            // Not a CORS error - rethrow for normal handling
+            throw breezError;
+          }
+
+          // ATTEMPT 2: CORS error - fall back to API
+          logger.info('Breez parse failed with CORS, trying API fallback...');
+          const response = await fetch('/api/v1/lightning/lnurl/parse', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ lnurl: cleanedData }),
+          });
+
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            throw new Error(errorData.error || 'API fallback failed');
+          }
+
+          parsed = await response.json();
+        }
+      } else {
+        // For non-LNURL, continue using Breez parseInput normally
+        parsed = await breezSDK.parseInput(cleanedData);
+      }
 
       if (parsed.type === 'lnurlWithdraw') {
         setScannedLnurlWithdraw(parsed);

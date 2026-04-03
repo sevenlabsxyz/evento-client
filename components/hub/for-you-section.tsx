@@ -5,19 +5,30 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
-import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
-import { EventWithUser } from '@/lib/types/api';
+import { EventWithUser, ForYouEvent, HubSectionError } from '@/lib/types/api';
 import { formatDateHeader } from '@/lib/utils/date';
-import { ArrowRight, Calendar, Compass, Users } from 'lucide-react';
+import { AlertTriangle, ArrowRight, Calendar, Compass, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
 type ForYouTabType = 'following' | 'discover';
 
-export function ForYouSection() {
+interface ForYouSectionProps {
+  discoverEvents?: ForYouEvent[];
+  discoverHasMore?: boolean;
+  discoverTotalCount?: number | null;
+  discoverError?: HubSectionError;
+}
+
+export function ForYouSection({
+  discoverEvents = [],
+  discoverHasMore = false,
+  discoverTotalCount,
+  discoverError,
+}: ForYouSectionProps) {
   const isMobile = useIsMobile();
   const [activeTab, setActiveTab] = useState<ForYouTabType>('discover');
-  const [loadedTabs, setLoadedTabs] = useState<ForYouTabType[]>(['discover']);
+  const [loadedTabs, setLoadedTabs] = useState<ForYouTabType[]>([]);
   const [showFollowFeedSheet, setShowFollowFeedSheet] = useState(false);
 
   // Only load data for tabs that have been opened
@@ -25,13 +36,9 @@ export function ForYouSection() {
     enabled: loadedTabs.includes('following'),
   });
 
-  const discoverQuery = useForYouEvents({
-    enabled: loadedTabs.includes('discover'),
-  });
-
   // Track when tabs are opened for lazy loading
   useEffect(() => {
-    if (!loadedTabs.includes(activeTab)) {
+    if (activeTab !== 'discover' && !loadedTabs.includes(activeTab)) {
       setLoadedTabs((prev) => [...prev, activeTab]);
     }
   }, [activeTab, loadedTabs]);
@@ -40,20 +47,17 @@ export function ForYouSection() {
     switch (activeTab) {
       case 'following':
         return followingQuery;
-      case 'discover':
-        return discoverQuery;
       default:
-        return followingQuery;
+        return null;
     }
   };
 
   const currentQuery = getCurrentQuery();
 
-  // Both queries now return simple arrays
   const followingEvents = followingQuery.data || [];
-  const discoverEvents = discoverQuery.data || [];
   const events = activeTab === 'discover' ? discoverEvents : followingEvents;
-  const isLoading = currentQuery.isLoading;
+  const isLoading = activeTab === 'discover' ? false : currentQuery?.isLoading || false;
+  const hasError = activeTab === 'discover' ? !!discoverError : false;
 
   // Discover shows up to 3, Following shows up to 3
   const displayLimit = 3;
@@ -125,6 +129,14 @@ export function ForYouSection() {
               </div>
             ))}
           </div>
+        ) : hasError ? (
+          <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900'>
+            <div className='mb-2 flex items-center gap-2 text-sm font-semibold'>
+              <AlertTriangle className='h-4 w-4' />
+              Could not load discover events
+            </div>
+            <p className='text-sm text-amber-800'>{discoverError?.message}</p>
+          </div>
         ) : events.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-12 text-center'>
             <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
@@ -154,13 +166,17 @@ export function ForYouSection() {
               </div>
             ))}
 
-            {events.length > displayLimit && (
+            {(activeTab === 'discover'
+              ? discoverHasMore || events.length > displayLimit
+              : events.length > displayLimit) && (
               <Button
                 onClick={() => setShowFollowFeedSheet(true)}
                 variant='ghost'
                 className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
               >
-                View All Events <ArrowRight className='h-4 w-4' />
+                View All Events
+                {activeTab === 'discover' && discoverTotalCount ? ` (${discoverTotalCount})` : ''}
+                <ArrowRight className='h-4 w-4' />
               </Button>
             )}
           </div>

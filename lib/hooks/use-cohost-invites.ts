@@ -124,6 +124,7 @@ export function useAcceptCohostInvite() {
       const eventId = data?.eventId;
 
       queryClient.invalidateQueries({ queryKey: queryKeys.myCohostInvites() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hub });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventsUserMe() });
       queryClient.invalidateQueries({ queryKey: ['user-events'] });
 
@@ -150,6 +151,7 @@ export function useRejectCohostInvite() {
     onSuccess: () => {
       toast.success('Invitation declined');
       queryClient.invalidateQueries({ queryKey: queryKeys.myCohostInvites() });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to decline invite');
