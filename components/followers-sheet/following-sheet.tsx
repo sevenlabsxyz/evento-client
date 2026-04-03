@@ -7,6 +7,7 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { getErrorMessage } from '@/lib/utils/error';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, MessageCircle } from 'lucide-react';
@@ -94,7 +95,16 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
 
   const handleMessageClick = useCallback(
     async (userId: string) => {
+      logger.debug('Following sheet: message click', {
+        userId,
+        chatStatus,
+      });
+
       if (chatStatus !== 'ready') {
+        logger.debug('Following sheet: chat not ready, redirecting to messages route', {
+          userId,
+          chatStatus,
+        });
         router.push(`/e/messages?user=${encodeURIComponent(userId)}`);
         onClose();
         return;
@@ -102,9 +112,17 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
 
       try {
         const conversationId = await openDirectConversation({ userId });
+        logger.debug('Following sheet: openDirectConversation success', {
+          userId,
+          conversationId,
+        });
         router.push(`/e/messages/${conversationId}`);
         onClose();
       } catch (error) {
+        logger.error('Following sheet: openDirectConversation failed', {
+          userId,
+          error,
+        });
         toast.error(getErrorMessage(error, 'Failed to start chat'));
       }
     },

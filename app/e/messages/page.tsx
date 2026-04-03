@@ -2,6 +2,7 @@
 
 import { useChat } from '@/lib/chat/provider';
 import { getErrorMessage } from '@/lib/utils/error';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { MessageSquare } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -16,14 +17,28 @@ export default function MessagesPage() {
     const userId = searchParams.get('user');
 
     if (!userId || status !== 'ready') {
+      if (userId) {
+        logger.debug('Messages page: openDirectConversation skipped; runtime not ready', {
+          userId,
+          status,
+        });
+      }
       return;
     }
 
     void openDirectConversation({ userId })
       .then((conversationId) => {
+        logger.debug('Messages page: openDirectConversation success', {
+          userId,
+          conversationId,
+        });
         router.replace(`/e/messages/${conversationId}`);
       })
       .catch((error: unknown) => {
+        logger.error('Messages page: openDirectConversation failed', {
+          userId,
+          error,
+        });
         toast.error(getErrorMessage(error, 'Failed to start chat'));
       });
   }, [openDirectConversation, router, searchParams, status]);

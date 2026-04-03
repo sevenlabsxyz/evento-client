@@ -62,7 +62,15 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const isLoading = isLoadingFollowing || (debouncedSearch.trim().length >= 2 && isSearching);
 
   const handleStartChat = async (recipientId: string) => {
+    logger.debug('New chat sheet: start chat click', {
+      recipientId,
+      chatStatus,
+    });
     if (chatStatus !== 'ready') {
+      logger.debug('New chat sheet: chat not ready, redirecting via messages route', {
+        recipientId,
+        chatStatus,
+      });
       onClose();
       router.push(`/e/messages?user=${encodeURIComponent(recipientId)}`);
       return;
@@ -70,11 +78,16 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
 
     try {
       const conversationId = await openDirectConversation({ userId: recipientId });
+      logger.debug('New chat sheet: openDirectConversation success', {
+        recipientId,
+        conversationId,
+      });
       onClose();
       router.push(`/e/messages/${conversationId}`);
     } catch (error: unknown) {
       toast.error(getErrorMessage(error, 'Please try again.'), 'Failed to start chat');
       logger.error('openDirectConversation error', {
+        recipientId,
         error: getErrorMessage(error, 'Unknown chat error'),
       });
     }

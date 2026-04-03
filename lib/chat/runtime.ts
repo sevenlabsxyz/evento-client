@@ -93,11 +93,17 @@ export class EventoChatRuntime {
   }
 
   async start(): Promise<void> {
+    logger.debug('Chat runtime: start requested');
     try {
       const storedAccount = await this.metadataStore.getAccount();
       const onboardingComplete = await this.metadataStore.getOnboardingComplete();
+      logger.debug('Chat runtime: local onboarding state', {
+        hasStoredAccount: !!storedAccount,
+        onboardingComplete,
+      });
 
       if (!storedAccount || !onboardingComplete) {
+        logger.debug('Chat runtime: needs onboarding');
         this.setSnapshot({
           ...emptySnapshot(),
           status: 'needs-onboarding',
@@ -106,6 +112,7 @@ export class EventoChatRuntime {
       }
 
       this.account = PrivateKeyAccount.fromJSON(storedAccount as SerializedAccount);
+      logger.debug('Chat runtime: account restored', { pubkey: this.account.pubkey });
       await this.initializeClient();
     } catch (error) {
       logger.error('Failed to start chat runtime', error);
@@ -118,12 +125,19 @@ export class EventoChatRuntime {
   }
 
   async completeOnboarding(): Promise<void> {
+    logger.debug('Chat runtime: completeOnboarding started');
     try {
       const account = PrivateKeyAccount.generateNew();
+      logger.debug('Chat runtime: generated account during onboarding', {
+        pubkey: account.pubkey,
+      });
       await this.metadataStore.setAccount(account.toJSON());
       await this.metadataStore.setOnboardingComplete(true);
       this.account = account;
       await this.initializeClient();
+      logger.debug('Chat runtime: completeOnboarding finished', {
+        pubkey: account.pubkey,
+      });
     } catch (error) {
       logger.error('Failed to initialize new chat identity', error);
       this.setSnapshot({
@@ -149,34 +163,81 @@ export class EventoChatRuntime {
   }
 
   async openDirectConversation(target: DirectConversationTarget): Promise<string> {
+    logger.debug('Chat runtime: openDirectConversation called', {
+      targetUserId: target.userId,
+      targetUsername: target.username,
+      hasTargetPubkey: !!target.nostr_pubkey,
+    });
+
     if (!this.client || !this.account) {
       throw new Error('Chat is not ready yet');
     }
 
-    const participant = await this.resolveDirectParticipant(target);
-    const existingConversationId = await this.findConversationIdForParticipant(participant);
+    try {
+      const participant = await this.resolveDirectParticipant(target);
+      logger.debug('Chat runtime: resolved direct participant', {
+        userId: participant.userId,
+        pubkey: participant.pubkey,
+      });
 
-    if (existingConversationId) {
-      return existingConversationId;
+      const existingConversationId = await this.findConversationIdForParticipant(participant);
+      logger.debug('Chat runtime: existing conversation lookup', {
+        userId: participant.userId,
+        existingConversationId,
+      });
+
+      if (existingConversationId) {
+        logger.debug('Chat runtime: reusing existing conversation', {
+          conversationId: existingConversationId,
+        });
+        return existingConversationId;
+      }
+
+      const keyPackageEvent = await this.fetchLatestKeyPackageEvent(participant.pubkey);
+      logger.debug('Chat runtime: fetched key package', {
+        userId: participant.userId,
+        pubkey: participant.pubkey,
+        keyPackageFound: !!keyPackageEvent,
+      });
+
+      if (!keyPackageEvent) {
+        logger.warn('Chat runtime: no key package found for participant', {
+          userId: participant.userId,
+          pubkey: participant.pubkey,
+        });
+        throw new Error(`${participant.username} has not set up chat yet`);
+      }
+
+      const group = await this.client.createGroup(participant.username, {
+        description: `Direct messages with ${participant.username}`,
+        relays: [...DEFAULT_CHAT_RELAYS],
+      });
+      logger.debug('Chat runtime: group created', {
+        conversationId: group.idStr,
+        participantUsername: participant.username,
+        relays: [...DEFAULT_CHAT_RELAYS],
+      });
+
+      await group.inviteByKeyPackageEvent(keyPackageEvent);
+      logger.debug('Chat runtime: sent invite by key package', {
+        conversationId: group.idStr,
+        pubkey: participant.pubkey,
+      });
+
+      const conversationId = await this.persistConversationRecord(group.idStr, participant);
+      await this.attachGroupHistory(group);
+      this.recomputeConversations();
+      logger.debug('Chat runtime: conversation persisted and history attached', {
+        conversationId,
+      });
+      return conversationId;
+    } catch (error) {
+      logger.error('Chat runtime: openDirectConversation failed', {
+        targetUserId: target.userId,
+        error,
+      });
+      throw error;
     }
-
-    const keyPackageEvent = await this.fetchLatestKeyPackageEvent(participant.pubkey);
-
-    if (!keyPackageEvent) {
-      throw new Error(`${participant.username} has not set up chat yet`);
-    }
-
-    const group = await this.client.createGroup(participant.username, {
-      description: `Direct messages with ${participant.username}`,
-      relays: [...DEFAULT_CHAT_RELAYS],
-    });
-
-    await group.inviteByKeyPackageEvent(keyPackageEvent);
-    const conversationId = await this.persistConversationRecord(group.idStr, participant);
-    await this.attachGroupHistory(group);
-    this.recomputeConversations();
-
-    return conversationId;
   }
 
   async sendMessage(conversationId: string, content: string): Promise<void> {
@@ -190,6 +251,10 @@ export class EventoChatRuntime {
     }
 
     const group = await this.client.getGroup(this.resolveConversationId(conversationId));
+    logger.debug('Chat runtime: sending message', {
+      conversationId: this.resolveConversationId(conversationId),
+      hasContent: !!trimmed,
+    });
     await group.sendChatMessage(trimmed);
   }
 
@@ -277,6 +342,10 @@ export class EventoChatRuntime {
     this.client = client;
     this.inviteReader = inviteReader;
     this.groupSubscriptionManager = new GroupSubscriptionManager(client, pool);
+    logger.debug('Chat runtime: marmot services initialized', {
+      accountPubkey: this.account.pubkey,
+      relays: [...DEFAULT_CHAT_RELAYS],
+    });
 
     await this.metadataStore.saveParticipant(
       this.createCurrentUserParticipant(this.account.pubkey)
@@ -287,8 +356,11 @@ export class EventoChatRuntime {
       }
     );
 
+    logger.debug('Chat runtime: loading Marmot groups');
     await client.loadAllGroups();
+    logger.debug('Chat runtime: ensuring key package');
     await this.ensureKeyPackage();
+    logger.debug('Chat runtime: restoring conversation metadata');
     await this.restoreConversationRecords();
     this.startWatchingGroups();
     this.startInviteSubscription();
@@ -308,7 +380,14 @@ export class EventoChatRuntime {
       return;
     }
 
+    logger.debug('Chat runtime: checking existing key packages');
     const existingPackages = await this.client.keyPackages.list();
+    logger.debug('Chat runtime: existing key package count', {
+      total: existingPackages.length,
+      usable: existingPackages.filter(
+        (keyPackage) => keyPackage.published.length > 0 && !keyPackage.used
+      ).length,
+    });
     const hasInvitableKeyPackage = existingPackages.some(
       (keyPackage) => keyPackage.published.length > 0 && !keyPackage.used
     );
@@ -317,8 +396,12 @@ export class EventoChatRuntime {
       return;
     }
 
+    logger.debug('Chat runtime: creating key package');
     await this.client.keyPackages.create({
       relays: [...DEFAULT_CHAT_RELAYS],
+      client: CHAT_KEY_PACKAGE_CLIENT,
+    });
+    logger.debug('Chat runtime: key package created', {
       client: CHAT_KEY_PACKAGE_CLIENT,
     });
   }
@@ -373,6 +456,10 @@ export class EventoChatRuntime {
         }
 
         for (const group of groups) {
+          logger.debug('Chat runtime: watchGroups update', {
+            groupId: group.idStr,
+            relays: [...DEFAULT_CHAT_RELAYS],
+          });
           await this.ensureConversationMetadataForGroup(group);
           await this.attachGroupHistory(group);
         }
@@ -398,6 +485,9 @@ export class EventoChatRuntime {
       .pipe(onlyEvents())
       .subscribe({
         next: (event) => {
+          logger.debug('Chat runtime: invite event received', {
+            eventId: event.id,
+          });
           void this.handleInviteEvent(event);
         },
       });
@@ -414,11 +504,16 @@ export class EventoChatRuntime {
     if (!ingested) {
       return;
     }
+    logger.debug('Chat runtime: invite ingested', { eventId: event.id });
 
     const invite = await this.inviteReader.decryptGiftWrap(event.id);
     if (!invite) {
       return;
     }
+    logger.debug('Chat runtime: invite decrypted', {
+      inviteId: invite.id,
+      eventId: event.id,
+    });
 
     const { group } = await this.client.joinGroupFromWelcome({
       welcomeRumor: invite,
@@ -456,10 +551,18 @@ export class EventoChatRuntime {
     }
 
     if (!participantPubkey) {
+      logger.debug('Chat runtime: unable to resolve participant pubkey for group history', {
+        groupId: group.idStr,
+      });
       return;
     }
 
     const participant = await this.resolveParticipantByPubkey(participantPubkey);
+    logger.debug('Chat runtime: resolving participant for group metadata', {
+      groupId: group.idStr,
+      participantId: participant.userId,
+      participantPubkey,
+    });
     await this.persistConversationRecord(group.idStr, participant);
   }
 
@@ -474,6 +577,7 @@ export class EventoChatRuntime {
     this.historyAbortControllers.set(group.idStr, abortController);
 
     void (async () => {
+      logger.debug('Chat runtime: attaching group history subscription', { groupId: group.idStr });
       for await (const rumors of group.history!.subscribe()) {
         if (abortController.signal.aborted) {
           break;
@@ -482,6 +586,11 @@ export class EventoChatRuntime {
         await this.ensureConversationMetadataForGroup(group);
         const conversationId = this.resolveConversationId(group.idStr);
         const messages = await this.mapRumorsToMessages(conversationId, rumors);
+        logger.debug('Chat runtime: received rumors', {
+          conversationId,
+          rumorCount: rumors.length,
+          messageCount: messages.length,
+        });
         const existingMessages = this.messagesByConversation.get(conversationId) ?? [];
 
         this.messagesByConversation.set(
@@ -512,6 +621,11 @@ export class EventoChatRuntime {
     const messages = await Promise.all(
       chatRumors.map(async (rumor) => {
         const sender = await this.resolveParticipantByPubkey(rumor.pubkey);
+        logger.debug('Chat runtime: mapping rumor to message', {
+          rumorId: rumor.id,
+          pubkey: rumor.pubkey,
+          kind: rumor.kind,
+        });
         return {
           id: rumor.id,
           conversationId,
@@ -531,6 +645,10 @@ export class EventoChatRuntime {
     target: DirectConversationTarget
   ): Promise<ChatParticipant> {
     if (target.nostr_pubkey) {
+      logger.debug('Chat runtime: using provided nostr pubkey from target', {
+        userId: target.userId,
+        pubkey: target.nostr_pubkey,
+      });
       return {
         userId: target.userId,
         pubkey: target.nostr_pubkey,
@@ -544,8 +662,15 @@ export class EventoChatRuntime {
 
     const fetched = await fetchMessagingUserById(target.userId);
     if (!fetched?.nostr_pubkey) {
+      logger.warn('Chat runtime: target user missing nostr pubkey after details lookup', {
+        userId: target.userId,
+      });
       throw new Error('This user does not have secure chat set up yet');
     }
+    logger.debug('Chat runtime: fetched direct participant', {
+      userId: target.userId,
+      resolvedPubkey: fetched.nostr_pubkey,
+    });
 
     return {
       userId: fetched.id,
@@ -563,6 +688,10 @@ export class EventoChatRuntime {
       return null;
     }
 
+    logger.debug('Chat runtime: fetching key package events', {
+      pubkey,
+      relays: [...DEFAULT_CHAT_RELAYS],
+    });
     const events = await this.client.network.request([...DEFAULT_CHAT_RELAYS], {
       authors: [pubkey],
       kinds: [KEY_PACKAGE_KIND],
@@ -575,6 +704,14 @@ export class EventoChatRuntime {
 
     const latest = keyPackageEvents[0] ?? null;
 
+    logger.debug('Chat runtime: key package lookup result', {
+      pubkey,
+      totalCandidates: events.length,
+      matchingKeyPackages: keyPackageEvents.length,
+      latestId: latest?.id,
+      latestCreatedAt: latest?.created_at,
+    });
+
     if (latest) {
       await this.client.keyPackages.track(latest);
     }
@@ -584,6 +721,7 @@ export class EventoChatRuntime {
 
   private async resolveParticipantByPubkey(pubkey: string): Promise<ChatParticipant> {
     if (pubkey === this.account?.pubkey) {
+      logger.debug('Chat runtime: resolveParticipantByPubkey is current user', { pubkey });
       return this.createCurrentUserParticipant(pubkey);
     }
 
@@ -595,11 +733,16 @@ export class EventoChatRuntime {
         : null;
 
     if (cached) {
+      logger.debug('Chat runtime: resolveParticipantByPubkey from memory', { pubkey });
       return cached;
     }
 
     const stored = await this.metadataStore.getParticipantByPubkey(pubkey);
     if (stored) {
+      logger.debug('Chat runtime: resolveParticipantByPubkey from metadata store', {
+        pubkey,
+        userId: stored.userId,
+      });
       return stored;
     }
 
@@ -610,6 +753,11 @@ export class EventoChatRuntime {
 
     const lookup = (async () => {
       const resolved = await fetchMessagingUserByPubkey(pubkey);
+      logger.debug('Chat runtime: resolveParticipantByPubkey API lookup result', {
+        pubkey,
+        found: !!resolved,
+        userId: resolved?.id,
+      });
       const participant: ChatParticipant = resolved
         ? {
             userId: resolved.id,
@@ -630,6 +778,10 @@ export class EventoChatRuntime {
           };
 
       await this.metadataStore.saveParticipant(participant);
+      logger.debug('Chat runtime: resolved and cached participant', {
+        pubkey,
+        userId: participant.userId,
+      });
       return participant;
     })();
 
@@ -675,6 +827,11 @@ export class EventoChatRuntime {
 
     this.conversationsById.set(conversationId, record);
     await this.metadataStore.saveConversation(record);
+    logger.debug('Chat runtime: persisted conversation record', {
+      conversationId,
+      participantUserId: participant.userId,
+      participantPubkey: participant.pubkey,
+    });
     return conversationId;
   }
 
@@ -691,6 +848,10 @@ export class EventoChatRuntime {
   }
 
   private recomputeConversations(): void {
+    logger.debug('Chat runtime: recomputing conversations', {
+      recordCount: this.conversationsById.size,
+      messageThreadCount: this.messagesByConversation.size,
+    });
     const unreadConversationIds = this.groupSubscriptionManager?.unreadConversationIds.value ?? [];
     const unreadSet = new Set(
       unreadConversationIds.map((conversationId) => this.resolveConversationId(conversationId))

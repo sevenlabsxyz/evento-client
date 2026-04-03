@@ -403,11 +403,19 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   void interestTags;
 
   const handleMessage = async () => {
+    logger.debug('Profile page: message button click', {
+      userId: userData?.id,
+      chatStatus,
+    });
+
     if (!userData) {
       return;
     }
 
     if (chatStatus !== 'ready') {
+      logger.debug('Profile page: chat not ready, redirecting to messages route', {
+        userId: userData.id,
+      });
       router.push(`/e/messages?user=${encodeURIComponent(userData.id)}`);
       return;
     }
@@ -424,6 +432,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
       });
       router.push(`/e/messages/${conversationId}`);
     } catch (error) {
+      logger.error('Profile page: openDirectConversation failed', {
+        userId: userData.id,
+        error,
+      });
       toast.error(getErrorMessage(error, 'Failed to start chat'));
     }
   };

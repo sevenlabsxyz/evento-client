@@ -15,6 +15,7 @@ import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
 import { useFollowAction } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { getErrorMessage } from '@/lib/utils/error';
+import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { ArrowRight, Loader2 } from 'lucide-react';
@@ -59,7 +60,17 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
   }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
 
   const handleMessage = useCallback(async () => {
+    logger.debug('Quick profile: message click', {
+      userId: user.id,
+      username: user.username,
+      chatStatus,
+    });
+
     if (chatStatus !== 'ready') {
+      logger.debug('Quick profile: chat not ready, redirecting to messages route', {
+        userId: user.id,
+        username: user.username,
+      });
       onClose();
       router.push(`/e/messages?user=${encodeURIComponent(user.id)}`);
       return;
@@ -77,7 +88,15 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
       });
       onClose();
       router.push(`/e/messages/${conversationId}`);
+      logger.debug('Quick profile: openDirectConversation success', {
+        userId: user.id,
+        conversationId,
+      });
     } catch (error) {
+      logger.error('Quick profile: openDirectConversation failed', {
+        userId: user.id,
+        error,
+      });
       toast.error(getErrorMessage(error, 'Failed to start chat'));
     }
   }, [

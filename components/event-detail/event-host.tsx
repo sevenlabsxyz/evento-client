@@ -30,19 +30,32 @@ export default function EventHost({ event }: EventHostProps) {
   }
 
   const handleContactHost = async (hostId: string) => {
+    logger.debug('Event host: contact button click', {
+      hostId,
+      chatStatus,
+    });
+
     if (chatStatus !== 'ready') {
+      logger.debug('Event host: chat not ready, redirecting to messages route', {
+        hostId,
+      });
       router.push(`/e/messages?user=${encodeURIComponent(hostId)}`);
       return;
     }
 
     try {
       const conversationId = await openDirectConversation({ userId: hostId });
+      logger.debug('Event host: openDirectConversation success', {
+        hostId,
+        conversationId,
+      });
       router.push(`/e/messages/${conversationId}`);
     } catch (error: unknown) {
-      toast.error(getErrorMessage(error, 'Failed to start chat'));
-      logger.error('openDirectConversation error', {
-        error: getErrorMessage(error, 'Unknown chat error'),
+      logger.error('Event host: openDirectConversation failed', {
+        hostId,
+        error,
       });
+      toast.error(getErrorMessage(error, 'Failed to start chat'));
     }
   };
 
