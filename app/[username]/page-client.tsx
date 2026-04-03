@@ -27,6 +27,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { usePublicUserBadges } from '@/lib/hooks/use-badges';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
@@ -69,7 +70,7 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 interface UserProfilePageClientProps {
   username: string;
@@ -136,12 +137,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     return hasBio || hasSocialLinks || userInterests.length > 0 || userPrompts.length > 0;
   }, [userData, userInterests.length, userPrompts.length]);
 
+  const profileImage = userData?.image?.trim() || DEFAULT_AVATAR_IMAGE;
+
   // Transform API data to match expected format (moved before useEffect)
   const userProfile = userData
     ? {
         name: userData.name || 'Unknown User',
         username: `@${userData.username}`,
-        image: userData.image || '/placeholder.svg?height=80&width=80',
+        image: profileImage,
         verification_status: userData.verification_status,
         status: userData.bio || '',
         bio: userData.bio || '',
@@ -187,11 +190,14 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     );
   };
 
+  const shareName = userProfile?.name || 'User';
+  const topBarTitle = userProfile ? `${userProfile.name} (${userProfile.username})` : '';
+
   // Share functionality
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     const shareData = {
-      title: `${userProfile?.name || 'User'} on Evento`,
-      text: `Check out ${userProfile?.name || 'User'}'s profile on Evento`,
+      title: `${shareName} on Evento`,
+      text: `Check out ${shareName}'s profile on Evento`,
       url: window.location.href,
     };
 
@@ -211,7 +217,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
         toast.error('Failed to share profile');
       }
     }
-  };
+  }, [shareName]);
 
   // Set TopBar content
   useEffect(() => {
@@ -219,7 +225,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     if (userData && userProfile) {
       setTopBar({
         leftMode: 'menu',
-        title: `${userProfile.name} (${userProfile.username})`,
+        title: topBarTitle,
         buttons: [
           {
             id: 'share',
@@ -237,7 +243,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
         buttons: [],
       });
     };
-  }, [userProfile?.name, setTopBar]);
+  }, [handleShare, setTopBar, topBarTitle, userData?.id]);
 
   // Fetch pinned event
   const { data: pinnedEvent } = usePinnedEvent(user?.username || '');
@@ -255,37 +261,35 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     enabled: activeTab === 'events',
   });
 
-  const upcomingEvents = useMemo(
-    () => {
-      const currentTimestamp = Date.now();
+  const upcomingEvents = useMemo(() => {
+    const currentTimestamp = Date.now();
 
-      return sortProfileEventsByStartDate(
-        (publicEventsData || []).filter((event: EventWithUser) => {
-          const startTimestamp = getProfileEventStartTimestamp(event);
-          return startTimestamp !== null && startTimestamp >= currentTimestamp;
-        }),
-        'asc'
-      );
-    },
-    [publicEventsData]
-  );
+    return sortProfileEventsByStartDate(
+      (publicEventsData || []).filter((event: EventWithUser) => {
+        const startTimestamp = getProfileEventStartTimestamp(event);
+        return startTimestamp !== null && startTimestamp >= currentTimestamp;
+      }),
+      'asc'
+    );
+  }, [publicEventsData]);
 
-  const pastEvents = useMemo(
-    () => {
-      const currentTimestamp = Date.now();
+  const pastEvents = useMemo(() => {
+    const currentTimestamp = Date.now();
 
-      return sortProfileEventsByStartDate(
-        (publicEventsData || []).filter((event: EventWithUser) => {
-          const startTimestamp = getProfileEventStartTimestamp(event);
-          return startTimestamp !== null && startTimestamp < currentTimestamp;
-        }),
-        'desc'
-      );
-    },
-    [publicEventsData]
-  );
+    return sortProfileEventsByStartDate(
+      (publicEventsData || []).filter((event: EventWithUser) => {
+        const startTimestamp = getProfileEventStartTimestamp(event);
+        return startTimestamp !== null && startTimestamp < currentTimestamp;
+      }),
+      'desc'
+    );
+  }, [publicEventsData]);
 
   useEffect(() => {
+    if (!username) {
+      return;
+    }
+
     setActiveTab('about');
     setTimeframe('future');
     setHasAutoSelectedInitialTab(false);
@@ -411,12 +415,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   const avatarImages = [
     {
       id: 'avatar',
-      image: userProfile?.image || '/placeholder.svg?height=80&width=80',
+      image: userProfile?.image || DEFAULT_AVATAR_IMAGE,
       user_details: {
         id: userData?.id,
         username: userProfile?.username,
         name: userProfile?.name,
-        image: userProfile?.image,
+        image: userProfile?.image || DEFAULT_AVATAR_IMAGE,
         verification_status: userData?.verification_status,
       },
       created_at: new Date().toISOString(),
@@ -486,6 +490,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
           {/* Timeframe Toggle */}
           <div className='flex items-center rounded-full bg-gray-50 p-1'>
             <button
+              type='button'
               onClick={() => setTimeframe('future')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
@@ -497,6 +502,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               Upcoming
             </button>
             <button
+              type='button'
               onClick={() => setTimeframe('past')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
@@ -519,8 +525,8 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
         <div className='space-y-8'>
           {isLoadingEvents ? (
             <div className='space-y-3'>
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton variant='event-compact-item' key={i} />
+              {Array.from({ length: 3 }, (_, index) => `event-skeleton-${index}`).map((key) => (
+                <Skeleton variant='event-compact-item' key={key} />
               ))}
             </div>
           ) : groupedEvents.length === 0 ? (

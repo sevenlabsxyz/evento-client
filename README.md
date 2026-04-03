@@ -13,6 +13,8 @@ Create Events. Connect People. Build Communities.
 
 Evento is a modern, social-first event management platform. It's designed to make event organizing friction-free and fun, whether you're bringing together five friends or five hundred attendees. It features a built-in Bitcoin Lightning wallet allowing for frictionless movement of money between event goers and hosts.
 
+This README is kept intentionally high-level and focused on local development basics.
+
 ### Key Features
 
 - 🎉 **Seamless Event Creation** - Intuitive event builder with rich text editing

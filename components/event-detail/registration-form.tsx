@@ -5,7 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { useAuth, USER_QUERY_KEY } from '@/lib/hooks/use-auth';
 import { useSubmitRegistration } from '@/lib/hooks/use-submit-registration';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { authService } from '@/lib/services/auth';
@@ -219,10 +219,10 @@ export function RegistrationForm({
       setIsCompletingRegistration(true);
 
       // 2. Invalidate auth query to pick up new session
-      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
       // 3. Fetch fresh user data from backend
-      const freshUserData = await authService.getCurrentUser();
+      const { user: freshUserData, settled } = await authService.tryGetCurrentUser();
 
       // 4. Update the user's name and generate username if needed
       // (for new users or users without a name/username set)
@@ -231,7 +231,10 @@ export function RegistrationForm({
         ...(freshUserData || userData),
         image: (freshUserData || userData)?.image || DEFAULT_AVATAR_IMAGE,
       };
-      if (userToUse) {
+      // Only update name/username when we have a definitive answer from the
+      // backend. If settled is false (transient miss), skip — we don't want
+      // to overwrite an existing account's username with a generated one.
+      if (userToUse && settled) {
         // Check if we need to update name or generate username
         const needsNameUpdate = !userToUse.name || userToUse.name !== name.trim();
         const needsUsername = !userToUse.username;

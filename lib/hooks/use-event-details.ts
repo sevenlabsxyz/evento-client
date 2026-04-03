@@ -1,4 +1,5 @@
 import { apiClient } from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { ApiResponse, Event } from '@/lib/types/api';
 import { transformApiEventResponse } from '@/lib/utils/api-transform';
 import { debugError } from '@/lib/utils/debug';
@@ -6,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 
 export function useEventDetails(eventId: string) {
   return useQuery({
-    queryKey: ['event', 'details', eventId],
+    queryKey: queryKeys.eventDetails(eventId),
     queryFn: async (): Promise<Event> => {
       try {
         const response = await apiClient.get<ApiResponse<Event>>(`/v1/events/${eventId}`);

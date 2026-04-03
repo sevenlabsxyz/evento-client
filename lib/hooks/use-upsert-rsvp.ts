@@ -20,11 +20,13 @@ interface UpsertRSVPResponse {
 // Custom error class for RSVP failures with redirect
 export class RSVPError extends Error {
   redirectTo?: string;
-  
-  constructor(message: string, redirectTo?: string) {
+  status?: number;
+
+  constructor(message: string, redirectTo?: string, status?: number) {
     super(message);
     this.name = 'RSVPError';
     this.redirectTo = redirectTo;
+    this.status = status;
   }
 }
 
@@ -43,12 +45,13 @@ export function useUpsertRSVP() {
           res = await apiClient.post<UpsertRSVPResponse>(`/v1/events/${eventId}/rsvps`, body);
         }
       } catch (error: unknown) {
-        const errorData = error as { message?: string; redirectTo?: string };
+        const errorData = error as { message?: string; redirectTo?: string; status?: number };
         const message = errorData.message || 'Failed to update RSVP';
         const redirectTo = errorData.redirectTo;
+        const statusCode = errorData.status;
 
         console.error('[RSVP] API error:', { eventId, status, hasExisting, error });
-        throw new RSVPError(message, redirectTo);
+        throw new RSVPError(message, redirectTo, statusCode);
       }
 
       if (!res?.success) {
@@ -61,6 +64,7 @@ export function useUpsertRSVP() {
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.userRsvp(variables.eventId) });
       queryClient.invalidateQueries({ queryKey: queryKeys.eventRsvps(variables.eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.eventDetails(variables.eventId) });
     },
   });
 }

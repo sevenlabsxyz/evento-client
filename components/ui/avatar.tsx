@@ -6,16 +6,28 @@ import * as React from 'react';
 import { cn } from '@/lib/utils';
 import { getOptimizedAvatarUrl } from '@/lib/utils/image';
 
+const ABSOLUTE_AVATAR_SRC_PATTERN = /^(?:[a-z][a-z\d+\-.]*:|\/\/)/i;
+const AVATAR_STORAGE_PREFIX_PATTERN = /^(?:storage\/v1\/object\/public\/cdn\/|cdn\/)+/;
+
 function resolveAvatarSrc(src?: string): string | undefined {
-  if (!src) {
-    return src;
+  const trimmedSrc = src?.trim();
+
+  if (!trimmedSrc) {
+    return undefined;
   }
 
-  if (src.startsWith('/users/') || src.startsWith('users/')) {
-    return getOptimizedAvatarUrl(src);
+  if (ABSOLUTE_AVATAR_SRC_PATTERN.test(trimmedSrc)) {
+    return trimmedSrc;
   }
 
-  return src;
+  const relativeSrc = trimmedSrc.replace(/^\/+/, '');
+  const storageRelativeSrc = relativeSrc.replace(AVATAR_STORAGE_PREFIX_PATTERN, '');
+
+  if (storageRelativeSrc.startsWith('users/')) {
+    return getOptimizedAvatarUrl(storageRelativeSrc);
+  }
+
+  return trimmedSrc;
 }
 
 const Avatar = React.forwardRef<

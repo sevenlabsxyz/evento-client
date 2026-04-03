@@ -97,19 +97,19 @@ function AuthCallbackContent() {
           }
         }
 
-        let user = await authService.getCurrentUser();
+        let result = await authService.tryGetCurrentUser();
 
-        if (!user) {
+        if (!result.user) {
           for (let attempt = 0; attempt < 3; attempt += 1) {
             await wait(400);
-            user = await authService.getCurrentUser();
-            if (user) {
+            result = await authService.tryGetCurrentUser();
+            if (result.user) {
               break;
             }
           }
         }
 
-        if (!user) {
+        if (!result.user) {
           const {
             data: { user: supabaseUser },
             error: supabaseUserError,
@@ -142,7 +142,11 @@ function AuthCallbackContent() {
             setStatus('success');
 
             setTimeout(() => {
-              router.push(getOnboardingRedirectUrl(redirectUrl));
+              if (result.settled) {
+                router.push(getOnboardingRedirectUrl(redirectUrl));
+              } else {
+                router.push(redirectUrl);
+              }
             }, 1200);
 
             return;
@@ -151,10 +155,10 @@ function AuthCallbackContent() {
           throw new Error('No authentication found');
         }
 
-        setUser(user);
+        setUser(result.user);
         setStatus('success');
 
-        const needsOnboarding = !isUserOnboarded(user);
+        const needsOnboarding = result.settled ? !isUserOnboarded(result.user) : false;
 
         setTimeout(() => {
           if (needsOnboarding) {

@@ -1,4 +1,4 @@
-import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { RSVPError, useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { queryKeys } from '@/lib/query-client';
 import { QueryClient } from '@tanstack/react-query';
 import { act, renderHook, waitFor } from '@testing-library/react';
@@ -197,6 +197,34 @@ describe('useUpsertRSVP', () => {
     });
 
     expect(result.current.error).toEqual(new Error('Network Error'));
+  });
+
+  it('should preserve 401 status on RSVP errors', async () => {
+    const mockApiClient = require('@/lib/api/client').apiClient;
+    const mockArgs = {
+      eventId: 'event123',
+      status: 'yes' as const,
+      hasExisting: false,
+    };
+
+    mockApiClient.post.mockRejectedValue({
+      message: 'Not authenticated.',
+      status: 401,
+    });
+
+    const { result } = renderHook(() => useUpsertRSVP(), { wrapper });
+
+    await act(async () => {
+      result.current.mutate(mockArgs);
+    });
+
+    await waitFor(() => {
+      expect(result.current.isError).toBe(true);
+    });
+
+    expect(result.current.error).toBeInstanceOf(RSVPError);
+    expect((result.current.error as RSVPError).status).toBe(401);
+    expect(result.current.error?.message).toBe('Not authenticated.');
   });
 
   it('should handle unsuccessful response', async () => {
@@ -409,6 +437,9 @@ describe('useUpsertRSVP', () => {
     });
     expect(invalidateQueriesSpy).toHaveBeenCalledWith({
       queryKey: queryKeys.eventRsvps(mockArgs.eventId),
+    });
+    expect(invalidateQueriesSpy).toHaveBeenCalledWith({
+      queryKey: queryKeys.eventDetails(mockArgs.eventId),
     });
   });
 

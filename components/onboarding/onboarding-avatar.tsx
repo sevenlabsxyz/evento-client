@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { motion } from 'framer-motion';
 import { Camera, Loader2, UploadCloud } from 'lucide-react';
 import { RefObject } from 'react';
@@ -39,9 +40,11 @@ export const OnboardingAvatar = ({
           style={{ display: 'none' }}
           onChange={onFileChange}
         />
-        <div
+        <button
+          type='button'
+          aria-label='Upload profile picture'
           onClick={() => inputFileRef.current?.click()}
-          className='group relative cursor-pointer rounded-full'
+          className='group relative cursor-pointer rounded-full border-0 bg-transparent p-0 text-inherit'
         >
           {isLoading ? (
             <div className='absolute inset-0 z-20 flex items-center justify-center rounded-full bg-black/60'>
@@ -53,7 +56,7 @@ export const OnboardingAvatar = ({
             </div>
           )}
           <Avatar className='h-40 w-40 border-4 border-gray-100 shadow-lg md:h-48 md:w-48'>
-            <AvatarImage src={uploadedImg || '/assets/logo/sublogo.svg'} />
+            <AvatarImage src={uploadedImg.trim() || DEFAULT_AVATAR_IMAGE} />
             <AvatarFallback className='text-xs'>Loading...</AvatarFallback>
           </Avatar>
           {!isLoading && (
@@ -61,7 +64,7 @@ export const OnboardingAvatar = ({
               <Camera className='h-5 w-5 text-white' />
             </div>
           )}
-        </div>
+        </button>
         <p className='mt-4 text-center text-sm text-gray-500'>Tap to upload</p>
       </div>
     </motion.div>

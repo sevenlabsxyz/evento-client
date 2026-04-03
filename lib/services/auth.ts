@@ -1,9 +1,29 @@
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { logger } from '@/lib/utils/logger';
 import { apiClient } from '../api/client';
 import { createClient } from '../supabase/client';
 import { ApiError, ApiResponse, UserDetails } from '../types/api';
 
-const DEFAULT_AVATAR_IMAGE = '/assets/img/evento-sublogo.svg';
+export class UnauthenticatedError extends Error {
+  status: number;
+
+  constructor(message = 'Unauthorized') {
+    super(message);
+    this.name = 'UnauthenticatedError';
+    this.status = 401;
+  }
+}
+
+interface GetCurrentUserOptions {
+  requireSession?: boolean;
+}
+
+export interface TryGetCurrentUserResult {
+  /** The user, or null if not found / error occurred */
+  user: UserDetails | null;
+  /** true = definitive answer (backend responded). false = transient miss (error swallowed, may change on retry). */
+  settled: boolean;
+}
 
 export const authService = {
   /**
@@ -70,7 +90,11 @@ export const authService = {
    * Get current authenticated user from your backend
    * GET /v1/user
    */
-  getCurrentUser: async (): Promise<UserDetails | null> => {
+  getCurrentUser: async (options: GetCurrentUserOptions = {}): Promise<UserDetails | null> => {
+    const { requireSession = false } = options;
+
+    let sessionSettling = false;
+
     try {
       // Check if we have a current session
       const supabase = createClient();
@@ -78,8 +102,42 @@ export const authService = {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) {
-        logger.debug('Auth: No session found, returning null');
-        return null; // No session means not authenticated
+        if (!requireSession) {
+          logger.debug('Auth: No session found, returning null');
+          return null;
+        }
+
+        // getSession() reads from local cache and can miss during hard
+        // refreshes or right after OAuth callback while the session is
+        // still settling.  Fall back to the authoritative server check
+        // before treating this as a confirmed logout.
+        logger.debug('Auth: No cached session, falling back to getUser()');
+        const {
+          data: { user: supabaseUser },
+          error: getUserError,
+        } = await supabase.auth.getUser();
+
+        if (getUserError) {
+          // getUser() itself failed — this is transient, not a confirmed logout.
+          logger.warn('Auth: getUser() failed while verifying missing session', {
+            error: getUserError.message,
+          });
+          throw getUserError;
+        }
+
+        if (!supabaseUser) {
+          // Both getSession() and getUser() agree: no user. Confirmed logout.
+          logger.debug('Auth: getUser() also returned null, confirmed unauthenticated');
+          throw new UnauthenticatedError('No session found');
+        }
+
+        logger.debug('Auth: getUser() found user despite missing cached session', {
+          userId: supabaseUser.id,
+        });
+        // Session is settling — continue to the backend call, but mark
+        // that any backend error should be treated as transient since we
+        // know the Supabase session is valid.
+        sessionSettling = true;
       }
 
       logger.debug('Auth: Fetching current user from backend');
@@ -109,11 +167,37 @@ export const authService = {
       logger.debug('Auth: Returning user', { userId: firstUser?.id });
       return firstUser;
     } catch (error) {
+      // If getUser() confirmed a valid Supabase session but the backend
+      // returned an error (e.g. 401 because the cookie hasn't settled),
+      // treat it as transient — the session IS valid, the backend just
+      // hasn't caught up yet.
+      if (sessionSettling) {
+        logger.warn('Auth: Backend error during session settlement, treating as transient', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error;
+      }
+
+      const apiError = error as Partial<ApiError> | undefined;
+      if (
+        error instanceof UnauthenticatedError ||
+        apiError?.status === 401 ||
+        apiError?.message?.includes('401') ||
+        apiError?.message?.includes('Unauthorized')
+      ) {
+        logger.debug('Auth: Confirmed unauthenticated state', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+        throw error instanceof UnauthenticatedError
+          ? error
+          : new UnauthenticatedError(apiError?.message || 'Unauthorized');
+      }
+
       logger.error('Auth: Failed to get current user', {
         error: error instanceof Error ? error.message : String(error),
       });
-      // Return null if user not authenticated or error occurs
-      return null;
+
+      throw error;
     }
   },
 
@@ -154,7 +238,25 @@ export const authService = {
    * This is useful for checking auth status on app start
    */
   checkAuth: async (): Promise<UserDetails | null> => {
-    return await authService.getCurrentUser();
+    return await authService.getCurrentUser({ requireSession: true });
+  },
+
+  /**
+   * Try to get the current user, returning a structured result that
+   * distinguishes "confirmed no user" from "transient miss."
+   * Use this in bootstrap flows (OTP verify, OAuth callback, registration)
+   * where callers need to know whether the result is definitive.
+   */
+  tryGetCurrentUser: async (): Promise<TryGetCurrentUserResult> => {
+    try {
+      const user = await authService.getCurrentUser({ requireSession: true });
+      return { user, settled: true };
+    } catch (error) {
+      logger.debug('Auth: tryGetCurrentUser caught error, returning unsettled', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      return { user: null, settled: false };
+    }
   },
 
   /**

@@ -1,3 +1,4 @@
+import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 
 /**
@@ -13,7 +14,7 @@ export function getOptimizedImageUrl(
   quality: number = 80
 ): string {
   if (!url) {
-    return '/assets/img/evento-sublogo.svg';
+    return DEFAULT_AVATAR_IMAGE;
   }
 
   // If URL already contains https, return as-is (external image)

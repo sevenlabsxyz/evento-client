@@ -4,13 +4,13 @@ import { logger } from '@/lib/utils/logger';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import React from 'react';
 import { apiClient } from '../api/client';
-import { authService } from '../services/auth';
+import { authService, UnauthenticatedError } from '../services/auth';
 import { fetchUserByUsername } from '../services/user-profile';
 import { useAuthStore } from '../stores/auth-store';
 import { ApiResponse, UserDetails } from '../types/api';
 
 // Query keys
-const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
+export const USER_PROFILE_QUERY_KEY = ['user', 'profile'] as const;
 
 const isApiResponse = <T>(value: unknown): value is ApiResponse<T> => {
   return !!value && typeof value === 'object' && 'data' in value;
@@ -30,14 +30,10 @@ export function useUserProfile() {
     refetch,
   } = useQuery({
     queryKey: USER_PROFILE_QUERY_KEY,
-    queryFn: authService.getCurrentUser,
+    queryFn: () => authService.getCurrentUser({ requireSession: !!user }),
     retry: (failureCount, error) => {
-      // Don't retry on 401 errors
-      if (error && typeof error === 'object' && 'message' in error) {
-        const apiError = error as { message: string };
-        if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
-          return false;
-        }
+      if (error instanceof UnauthenticatedError) {
+        return false;
       }
       return failureCount < 3;
     },
@@ -52,9 +48,7 @@ export function useUserProfile() {
     if (profileData) {
       setUser(profileData);
     } else if (error) {
-      // Clear auth on 401 errors
-      const apiError = error as { message?: string };
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      if (error instanceof UnauthenticatedError) {
         clearAuth();
       }
     }

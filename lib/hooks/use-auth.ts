@@ -1,10 +1,9 @@
-import { logger } from '@/lib/utils/logger';
-import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { resetWalletInitialization } from '@/lib/hooks/use-wallet';
+import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { authService } from '../services/auth';
+import { authService, UnauthenticatedError } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
 import { ApiError } from '../types/api';
@@ -12,7 +11,7 @@ import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '
 // import { debugLog } from '../utils/debug';
 
 // Key for user query
-const USER_QUERY_KEY = ['auth', 'user'] as const;
+export const USER_QUERY_KEY = ['auth', 'user'] as const;
 
 /**
  * Main auth hook that provides authentication state and actions
@@ -30,10 +29,9 @@ export function useAuth() {
     refetch: checkAuth,
   } = useQuery({
     queryKey: USER_QUERY_KEY,
-    queryFn: authService.getCurrentUser,
+    queryFn: () => authService.getCurrentUser({ requireSession: isAuthenticated || !!user }),
     retry: (failureCount, error) => {
-      // Don't retry on 401 errors
-      if (error && typeof error === 'object' && 'status' in error && error.status === 401) {
+      if (error instanceof UnauthenticatedError) {
         return false;
       }
       return failureCount < 2;
@@ -47,13 +45,16 @@ export function useAuth() {
     if (userData) {
       setUser(userData);
     } else if (authError) {
-      // Clear auth on 401 errors
-      // Cast through `unknown` first to avoid the direct `Error` → `ApiError` assertion warning
-      const apiError = authError as unknown as ApiError;
-      if (apiError.message?.includes('401') || apiError.message?.includes('Unauthorized')) {
+      if (authError instanceof UnauthenticatedError) {
         clearAuth();
       }
     }
+    // Note: we intentionally do NOT clear auth when userData is null.
+    // A null return during bootstrap (session exists but backend row
+    // not yet created) is expected — the fallback user set by
+    // useVerifyCode or the auth callback should persist until the
+    // next successful refetch. Confirmed logouts are handled by the
+    // UnauthenticatedError / 401 path above.
   }, [userData, authError, setUser, clearAuth]);
 
   // Listen for auth state changes
@@ -184,34 +185,26 @@ export function useVerifyCode() {
       queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
 
       // Get the current user data from the backend to check onboarding status
-      try {
-        const userData = await authService.getCurrentUser();
+      const { user: userData, settled } = await authService.tryGetCurrentUser();
 
-        // Set user data - prefer backend data, fallback to Supabase data for new users
-        // This ensures isAuthenticated is true even for new users not yet in backend
-        setUser(userData || data);
+      // Set user data - prefer backend data, fallback to Supabase data for new users
+      // This ensures isAuthenticated is true even for new users not yet in backend
+      setUser(userData || data);
 
-        // Check if user has completed onboarding
+      // Get and validate redirect URL from search params
+      const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+
+      if (settled) {
+        // Definitive answer from backend — safe to check onboarding
         const isOnboarded = isUserOnboarded(userData);
-
-        // Get and validate redirect URL from search params
-        const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
-
         if (!isOnboarded) {
-          // User needs onboarding - redirect to onboarding with original redirect
           const onboardingUrl = getOnboardingRedirectUrl(redirectUrl);
           router.push(onboardingUrl);
         } else {
-          // User is onboarded - redirect to intended destination
           router.push(redirectUrl);
         }
-      } catch (error) {
-        logger.error('Verify: Failed to check onboarding status', {
-          error: error instanceof Error ? error.message : String(error),
-        });
-        // On error, set minimal Supabase data as fallback and proceed
-        setUser(data);
-        const redirectUrl = validateRedirectUrl(searchParams.get('redirect') || '/');
+      } else {
+        // Transient miss — don't make onboarding decisions, go to intended destination
         router.push(redirectUrl);
       }
     },

@@ -1,15 +1,19 @@
 'use client';
 
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import { useAuth } from '@/lib/hooks/use-auth';
+import { useAuth, USER_QUERY_KEY } from '@/lib/hooks/use-auth';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useMyRegistration } from '@/lib/hooks/use-my-registration';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { RSVPError, useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
+import { USER_PROFILE_QUERY_KEY } from '@/lib/hooks/use-user-profile';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { queryKeys } from '@/lib/query-client';
+import { useAuthStore } from '@/lib/stores/auth-store';
 import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -29,7 +33,9 @@ interface RsvpSheetProps {
 }
 
 export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpSheetProps) {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const { clearAuth } = useAuthStore();
+  const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -80,6 +86,24 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
   const spotsRemaining = maxCapacity !== null ? Math.max(0, maxCapacity - yesRsvpCount) : null;
   const isYesRsvp = currentStatus === 'yes';
   const shouldDisableYes = isEventFull && !isYesRsvp;
+  const authResolved = !isAuthLoading;
+
+  const redirectToLogin = useCallback(
+    (status: RSVPStatus, message?: string) => {
+      clearAuth();
+      queryClient.removeQueries({ queryKey: USER_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: USER_PROFILE_QUERY_KEY });
+      queryClient.removeQueries({ queryKey: queryKeys.userRsvp(eventId) });
+      queryClient.removeQueries({ queryKey: queryKeys.myRegistration(eventId) });
+      if (message) {
+        toast.error(message);
+      }
+      const redirectUrl = `${pathname}?rsvp=${status}&eventId=${eventId}`;
+      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
+      onClose();
+    },
+    [clearAuth, eventId, onClose, pathname, queryClient, router]
+  );
 
   // Determine what to show when sheet opens
   const getInitialView = (): SheetView => {
@@ -180,11 +204,14 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       return;
     }
 
+    // For non-registration flows, wait for auth to resolve
+    if (!authResolved) {
+      return;
+    }
+
     // Auth check for non-registration flows (maybe/no buttons, or already registered)
     if (!isAuthenticated) {
-      const redirectUrl = `${pathname}?rsvp=${status}&eventId=${eventId}`;
-      router.push(`/auth/login?redirect=${encodeURIComponent(redirectUrl)}`);
-      onClose();
+      redirectToLogin(status);
       return;
     }
 
@@ -214,35 +241,18 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       setRsvpPhase('loading');
 
       try {
-        await upsert.mutateAsync(
-          { eventId, status, hasExisting },
-          {
-            onSuccess: () => {
-              pendingCloseRef.current = { status, hasContributions };
-              setRsvpPhase('success');
-            },
-            onError: (error: Error) => {
-              // Check if this is an RSVPError with a redirect
-              if (error instanceof RSVPError && error.redirectTo) {
-                toast.error(error.message);
-                router.push(error.redirectTo);
-                onClose();
-                return;
-              }
-              toast.error(error.message || 'Failed to update RSVP. Please try again.');
-              setRsvpPhase('idle');
-              setSelectedStatus(null);
-            },
-          }
-        );
+        await upsert.mutateAsync({ eventId, status, hasExisting });
+        pendingCloseRef.current = { status, hasContributions };
+        setRsvpPhase('success');
       } catch (error) {
-        // Check if this is an RSVPError with a redirect
         if (error instanceof RSVPError && error.redirectTo) {
-          const message =
-            error instanceof Error ? error.message : 'Failed to update RSVP. Please try again.';
-          toast.error(message);
+          toast.error(error.message);
           router.push(error.redirectTo);
           onClose();
+          return;
+        }
+        if (error instanceof RSVPError && error.status === 401) {
+          redirectToLogin(status, 'Please sign in to RSVP.');
           return;
         }
         const message =
@@ -319,6 +329,12 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
   const renderRsvpButtons = () => {
     const isBusy = rsvpPhase !== 'idle';
+    const isBaseDisabled = isLoading || isBusy;
+    // "Yes" with pending registration doesn't need auth — guests fill the form then OTP inline.
+    const needsRegistration = registrationRequired && !hasExistingRegistration;
+    const isYesDisabled =
+      isBaseDisabled || (!needsRegistration && !authResolved) || shouldDisableYes;
+    const isActionDisabled = isBaseDisabled || !authResolved;
 
     return (
       <div className='relative'>
@@ -340,7 +356,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             <button
               type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[0].classes}`}
-              disabled={isLoading || isBusy || shouldDisableYes}
+              disabled={isYesDisabled}
               onClick={() => handleAction('yes')}
             >
               {shouldDisableYes ? 'NO SPOTS LEFT' : renderButtonLabel('yes', buttons[0].label)}
@@ -348,7 +364,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             <button
               type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[1].classes}`}
-              disabled={isLoading || isBusy}
+              disabled={isActionDisabled}
               onClick={() => handleAction('maybe')}
             >
               {renderButtonLabel('maybe', buttons[1].label)}
@@ -356,11 +372,15 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             <button
               type='button'
               className={`w-full rounded-xl px-4 py-4 text-center text-base font-semibold ${buttons[2].classes}`}
-              disabled={isLoading || isBusy}
+              disabled={isActionDisabled}
               onClick={() => handleAction('no')}
             >
               {renderButtonLabel('no', buttons[2].label)}
             </button>
+
+            {!authResolved && !needsRegistration && (
+              <p className='mt-4 text-center text-sm text-gray-500'>Checking session...</p>
+            )}
 
             {registrationRequired && !hasExistingRegistration && (
               <p className='mt-4 text-center text-sm text-gray-500'>

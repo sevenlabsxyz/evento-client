@@ -85,9 +85,17 @@ jest.mock('next/navigation', () => ({
 jest.mock('@/lib/services/auth', () => ({
   authService: {
     getCurrentUser: jest.fn().mockResolvedValue(null),
+    tryGetCurrentUser: jest.fn().mockResolvedValue({ user: null, settled: true }),
     sendLoginCode: jest.fn(),
     verifyCode: jest.fn(),
     logout: jest.fn(),
+  },
+  UnauthenticatedError: class UnauthenticatedError extends Error {
+    status = 401;
+    constructor(message = 'Unauthorized') {
+      super(message);
+      this.name = 'UnauthenticatedError';
+    }
   },
 }));
 
