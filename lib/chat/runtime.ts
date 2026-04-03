@@ -34,6 +34,7 @@ import type { SerializedAccount } from 'applesauce-accounts';
 import { PrivateKeyAccount } from 'applesauce-accounts/accounts';
 import type { Rumor } from 'applesauce-common/helpers/gift-wrap';
 import { type NostrEvent } from 'applesauce-core/helpers';
+import { nsecEncode } from 'applesauce-core/helpers/pointers';
 import { mapEventsToTimeline } from 'applesauce-core/observable';
 import { onlyEvents, RelayPool } from 'applesauce-relay';
 import { lastValueFrom, Subscription } from 'rxjs';
@@ -131,6 +132,19 @@ export class EventoChatRuntime {
         error: 'We could not finish setting up secure chat.',
       });
       throw error;
+    }
+  }
+
+  getSecretKeyNsec(): string | null {
+    if (!this.account) {
+      return null;
+    }
+
+    try {
+      return nsecEncode(this.account.signer.key);
+    } catch (error) {
+      logger.error('Failed to encode chat secret key', error);
+      return null;
     }
   }
 

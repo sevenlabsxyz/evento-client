@@ -1,10 +1,19 @@
 'use client';
 
-import type { UserDetails } from '@/lib/types/api';
-import { useAuth } from '@/lib/hooks/use-auth';
 import { EventoChatRuntime } from '@/lib/chat/runtime';
 import type { ChatRuntimeSnapshot } from '@/lib/chat/types';
-import { createContext, startTransition, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { useAuth } from '@/lib/hooks/use-auth';
+import type { UserDetails } from '@/lib/types/api';
+import {
+  createContext,
+  startTransition,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 interface ChatContextValue extends ChatRuntimeSnapshot {
   completeOnboarding: () => Promise<void>;
@@ -19,6 +28,7 @@ interface ChatContextValue extends ChatRuntimeSnapshot {
   }) => Promise<string>;
   sendMessage: (conversationId: string, content: string) => Promise<void>;
   markConversationSeen: (conversationId: string) => void;
+  getSecretKeyNsec: () => string | null;
 }
 
 const initialSnapshot: ChatRuntimeSnapshot = {
@@ -75,24 +85,32 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     await runtimeRef.current.completeOnboarding();
   }, []);
 
-  const openDirectConversation = useCallback<
-    ChatContextValue['openDirectConversation']
-  >(async (target) => {
-    if (!runtimeRef.current) {
-      throw new Error('Chat runtime is not available');
-    }
-    return runtimeRef.current.openDirectConversation(target);
-  }, []);
+  const openDirectConversation = useCallback<ChatContextValue['openDirectConversation']>(
+    async (target) => {
+      if (!runtimeRef.current) {
+        throw new Error('Chat runtime is not available');
+      }
+      return runtimeRef.current.openDirectConversation(target);
+    },
+    []
+  );
 
-  const sendMessage = useCallback<ChatContextValue['sendMessage']>(async (conversationId, content) => {
-    if (!runtimeRef.current) {
-      throw new Error('Chat runtime is not available');
-    }
-    await runtimeRef.current.sendMessage(conversationId, content);
-  }, []);
+  const sendMessage = useCallback<ChatContextValue['sendMessage']>(
+    async (conversationId, content) => {
+      if (!runtimeRef.current) {
+        throw new Error('Chat runtime is not available');
+      }
+      await runtimeRef.current.sendMessage(conversationId, content);
+    },
+    []
+  );
 
   const markConversationSeen = useCallback((conversationId: string) => {
     runtimeRef.current?.markConversationSeen(conversationId);
+  }, []);
+
+  const getSecretKeyNsec = useCallback(() => {
+    return runtimeRef.current?.getSecretKeyNsec() ?? null;
   }, []);
 
   const value = useMemo<ChatContextValue>(
@@ -102,8 +120,16 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       openDirectConversation,
       sendMessage,
       markConversationSeen,
+      getSecretKeyNsec,
     }),
-    [snapshot, completeOnboarding, openDirectConversation, sendMessage, markConversationSeen]
+    [
+      snapshot,
+      completeOnboarding,
+      openDirectConversation,
+      sendMessage,
+      markConversationSeen,
+      getSecretKeyNsec,
+    ]
   );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

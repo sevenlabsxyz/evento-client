@@ -2,12 +2,13 @@
 
 import { ChatOnboarding } from '@/components/chat/chat-onboarding';
 import { ConversationList } from '@/components/chat/conversation-list';
+import { ChatSettingsSheet } from '@/components/messages/chat-settings-sheet';
 import NewChatSheet from '@/components/messages/new-chat-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useChat } from '@/lib/chat/provider';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { MessageSquarePlus, Plus } from 'lucide-react';
+import { MessageSquarePlus, Plus, Settings } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -16,7 +17,8 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
-  const { status, conversations, error, completeOnboarding } = useChat();
+  const [isChatSettingsOpen, setIsChatSettingsOpen] = useState(false);
+  const { status, conversations, error, completeOnboarding, getSecretKeyNsec } = useChat();
 
   const isMessageListPage = pathname === '/e/messages';
 
@@ -35,10 +37,20 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
           label: 'New Chat',
           onClick: () => setIsNewChatOpen(true),
         },
+        ...(status === 'ready'
+          ? [
+              {
+                id: 'chat-settings',
+                icon: Settings,
+                label: 'Chat Settings',
+                onClick: () => setIsChatSettingsOpen(true),
+              },
+            ]
+          : []),
       ],
     });
     return () => clearRoute(pathname);
-  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig]);
+  }, [pathname, setTopBarForRoute, clearRoute, applyRouteConfig, status]);
 
   if (isCheckingAuth || status === 'idle' || status === 'initializing') {
     return (
@@ -127,6 +139,12 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
       >
         <Plus className='h-6 w-6' />
       </button>
+
+      <ChatSettingsSheet
+        open={isChatSettingsOpen}
+        onOpenChange={setIsChatSettingsOpen}
+        getSecretKeyNsec={getSecretKeyNsec}
+      />
 
       <NewChatSheet isOpen={isNewChatOpen} onClose={() => setIsNewChatOpen(false)} />
     </div>
