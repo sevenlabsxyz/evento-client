@@ -38,7 +38,7 @@ import { type Filter } from 'applesauce-core/helpers/filter';
 import { nsecEncode } from 'applesauce-core/helpers/pointers';
 import { mapEventsToTimeline } from 'applesauce-core/observable';
 import { onlyEvents, RelayPool } from 'applesauce-relay';
-import { lastValueFrom, Subscription } from 'rxjs';
+import { lastValueFrom, Subscription, timeout, TimeoutError } from 'rxjs';
 
 const emptySnapshot = (): ChatRuntimeSnapshot => ({
   status: 'idle',
@@ -47,6 +47,15 @@ const emptySnapshot = (): ChatRuntimeSnapshot => ({
   currentUserParticipant: null,
   error: null,
 });
+
+const RELAY_REQUEST_TIMEOUT_MS = 12_000;
+
+class RelayRequestTimeoutError extends Error {
+  constructor(timeoutMs: number) {
+    super(`Secure chat relays did not respond in time (${Math.floor(timeoutMs / 1000)}s)`);
+    this.name = 'RelayRequestTimeoutError';
+  }
+}
 
 interface DirectConversationTarget {
   userId: string;
@@ -318,6 +327,76 @@ export class EventoChatRuntime {
       filters: Filter | Filter[]
     ): Promise<NostrEvent[]> => {
       const requestFilters = Array.isArray(filters) ? filters : [filters];
+      const isKeyPackageLookup = requestFilters.some((filter) =>
+        (filter.kinds ?? []).includes(KEY_PACKAGE_KIND)
+      );
+      const requestTimelineFromRelays = async (requestRelays: string[]): Promise<NostrEvent[]> => {
+        try {
+          return await lastValueFrom(
+            pool
+              .request(requestRelays, filters)
+              .pipe(mapEventsToTimeline(), timeout(RELAY_REQUEST_TIMEOUT_MS))
+          );
+        } catch (error) {
+          if (error instanceof TimeoutError) {
+            logger.warn('Chat runtime: network request timed out', {
+              relayCount: requestRelays.length,
+              kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+              timeoutMs: RELAY_REQUEST_TIMEOUT_MS,
+              relayUrl: requestRelays,
+            });
+            throw new RelayRequestTimeoutError(RELAY_REQUEST_TIMEOUT_MS);
+          }
+          throw error;
+        }
+      };
+
+      if (isKeyPackageLookup) {
+        logger.warn('Chat runtime: network request first-success mode', {
+          relayCount: relays.length,
+          kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+          authors: requestFilters.map((filter: { authors?: string[] }) => filter.authors),
+          relayUrl: relays,
+        });
+
+        try {
+          const firstSuccessfulRelay = await Promise.any(
+            relays.map(async (relay) => {
+              const relayEvents = await requestTimelineFromRelays([relay]);
+              logger.warn('Chat runtime: network request relay completed (first-success mode)', {
+                relay,
+                relayEventCount: relayEvents.length,
+                kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+              });
+              return { relay, relayEvents };
+            })
+          );
+
+          logger.warn('Chat runtime: network request first-success selected relay', {
+            selectedRelay: firstSuccessfulRelay.relay,
+            resultCount: firstSuccessfulRelay.relayEvents.length,
+            kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+          });
+          return firstSuccessfulRelay.relayEvents;
+        } catch (error) {
+          const relayErrors = error instanceof AggregateError ? error.errors : [error as unknown];
+          const allRelayFailuresTimedOut =
+            relayErrors.length > 0 &&
+            relayErrors.every((entry) => entry instanceof RelayRequestTimeoutError);
+
+          logger.error('Chat runtime: network request failed in first-success mode', {
+            relayCount: relays.length,
+            kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+            relayErrorCount: relayErrors.length,
+            relayErrors,
+          });
+
+          throw allRelayFailuresTimedOut
+            ? new Error(`Secure chat relays are timing out. Please try again in a few seconds.`)
+            : error;
+        }
+      }
+
       logger.warn('Chat runtime: network request batch requested', {
         relayCount: relays.length,
         kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
@@ -326,9 +405,7 @@ export class EventoChatRuntime {
       });
 
       try {
-        const events = await lastValueFrom(
-          pool.request(relays, filters).pipe(mapEventsToTimeline())
-        );
+        const events = await requestTimelineFromRelays(relays);
         logger.warn('Chat runtime: network request batch completed', {
           relayCount: relays.length,
           kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
@@ -348,36 +425,41 @@ export class EventoChatRuntime {
         const successfulRelays: string[] = [];
         const requestErrorMap: Array<{ relay: string; error: unknown }> = [];
 
-        for (const relay of relays) {
-          try {
-            const relayEvents = await lastValueFrom(
-              pool.request([relay], filters).pipe(mapEventsToTimeline())
-            );
-            logger.warn('Chat runtime: network request relay fallback completed', {
-              relay,
-              relayEventCount: relayEvents.length,
-              kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
-            });
-            fallbackEvents.push(...relayEvents);
-            successfulRelays.push(relay);
-          } catch (relayError) {
-            requestErrorMap.push({ relay, error: relayError });
-            logger.warn('Chat runtime: network request relay fallback failed', {
-              relay,
-              relayError,
-              kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
-            });
-          }
-        }
+        await Promise.all(
+          relays.map(async (relay) => {
+            try {
+              const relayEvents = await requestTimelineFromRelays([relay]);
+              logger.warn('Chat runtime: network request relay fallback completed', {
+                relay,
+                relayEventCount: relayEvents.length,
+                kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+              });
+              fallbackEvents.push(...relayEvents);
+              successfulRelays.push(relay);
+            } catch (relayError) {
+              requestErrorMap.push({ relay, error: relayError });
+              logger.warn('Chat runtime: network request relay fallback failed', {
+                relay,
+                relayError,
+                kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+              });
+            }
+          })
+        );
 
         if (!fallbackEvents.length) {
+          const allRelayFailuresTimedOut =
+            requestErrorMap.length > 0 &&
+            requestErrorMap.every((entry) => entry.error instanceof RelayRequestTimeoutError);
           logger.error('Chat runtime: network request failed after relay fallback', {
             relayCount: relays.length,
             kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
             relayErrorCount: requestErrorMap.length,
             relayErrors: requestErrorMap.map((entry) => entry.error),
           });
-          throw error;
+          throw allRelayFailuresTimedOut
+            ? new Error(`Secure chat relays are timing out. Please try again in a few seconds.`)
+            : error;
         }
 
         const uniqueEvents = Array.from(
@@ -401,32 +483,44 @@ export class EventoChatRuntime {
           relayCount: relays.length,
           configuredRelayCount: configuredRelays.length,
         });
-        let results: PublishResponse[] = [];
+
         try {
-          results = await pool.publish(relays, event);
+          const firstSuccessfulPublish = await Promise.any(
+            relays.map(async (relay) => {
+              const result = await pool.relay(relay).publish(event);
+              logger.warn('Chat runtime: network publish relay completed (first-success mode)', {
+                relay,
+                eventId: event.id,
+                ok: result.ok,
+              });
+              if (!result.ok) {
+                throw new Error(result.message || `Relay ${relay} rejected event`);
+              }
+              return { relay, result };
+            })
+          );
+
+          const publishResult: Record<string, PublishResponse> = {
+            [firstSuccessfulPublish.relay]: firstSuccessfulPublish.result,
+          };
+          logger.warn('Chat runtime: network publish completed', {
+            eventId: event.id,
+            relayCount: relays.length,
+            publishResponseCount: 1,
+            acceptedRelays: Object.keys(publishResult),
+          });
+          return publishResult;
         } catch (error) {
+          const relayErrors = error instanceof AggregateError ? error.errors : [error as unknown];
           logger.error('Chat runtime: network publish failed', {
             eventKind: event.kind,
             eventId: event.id,
             relays,
-            error,
+            relayErrorCount: relayErrors.length,
+            relayErrors,
           });
-          throw error;
+          throw new Error('Failed to publish to any secure chat relay');
         }
-        const publishResult = results.reduce<Record<string, PublishResponse>>(
-          (accumulator, result) => {
-            accumulator[result.from] = result;
-            return accumulator;
-          },
-          {}
-        );
-        logger.warn('Chat runtime: network publish completed', {
-          eventId: event.id,
-          relayCount: relays.length,
-          publishResponseCount: results.length,
-          acceptedRelays: Object.keys(publishResult),
-        });
-        return publishResult;
       },
       request: async (relays, filters) => requestFromRelays([...relays], filters),
       subscription: (relays, filters) => pool.subscription(relays, filters).pipe(onlyEvents()),
@@ -608,28 +702,43 @@ export class EventoChatRuntime {
       return;
     }
 
-    const ingested = await this.inviteReader.ingestEvent(event);
-    if (!ingested) {
-      return;
-    }
-    logger.debug('Chat runtime: invite ingested', { eventId: event.id });
+    try {
+      const ingested = await this.inviteReader.ingestEvent(event);
+      if (!ingested) {
+        return;
+      }
+      logger.debug('Chat runtime: invite ingested', { eventId: event.id });
 
-    const invite = await this.inviteReader.decryptGiftWrap(event.id);
-    if (!invite) {
-      return;
-    }
-    logger.debug('Chat runtime: invite decrypted', {
-      inviteId: invite.id,
-      eventId: event.id,
-    });
+      const invite = await this.inviteReader.decryptGiftWrap(event.id);
+      if (!invite) {
+        return;
+      }
+      logger.debug('Chat runtime: invite decrypted', {
+        inviteId: invite.id,
+        eventId: event.id,
+      });
 
-    const { group } = await this.client.joinGroupFromWelcome({
-      welcomeRumor: invite,
-    });
-    await this.inviteReader.markAsRead(invite.id);
-    await this.ensureConversationMetadataForGroup(group, invite.pubkey);
-    await this.attachGroupHistory(group);
-    this.recomputeConversations();
+      const { group } = await this.client.joinGroupFromWelcome({
+        welcomeRumor: invite,
+      });
+      await this.inviteReader.markAsRead(invite.id);
+      await this.ensureConversationMetadataForGroup(group, invite.pubkey);
+      await this.attachGroupHistory(group);
+      this.recomputeConversations();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '';
+      if (message.includes('No matching KeyPackage found in local store')) {
+        logger.warn('Chat runtime: ignoring invite without matching local key package', {
+          eventId: event.id,
+          message,
+        });
+        return;
+      }
+      logger.error('Chat runtime: failed to handle invite event', {
+        eventId: event.id,
+        error,
+      });
+    }
   }
 
   private async startUnreadSubscription(): Promise<void> {

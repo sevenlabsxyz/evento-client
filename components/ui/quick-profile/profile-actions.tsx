@@ -2,13 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { designTokens } from '@/lib/design-tokens/colors';
-import { MessageCircle, UserMinus, UserPlus } from 'lucide-react';
+import { Loader2, MessageCircle, UserMinus, UserPlus } from 'lucide-react';
 import { useCallback } from 'react';
 
 interface ProfileActionsProps {
   isFollowing: boolean;
   isLoading: boolean;
   isPending: boolean;
+  isMessaging: boolean;
+  isMessageDisabled: boolean;
   onFollowToggle: () => void;
   onMessage: () => void;
 }
@@ -17,6 +19,8 @@ export function ProfileActions({
   isFollowing,
   isLoading,
   isPending,
+  isMessaging,
+  isMessageDisabled,
   onFollowToggle,
   onMessage,
 }: ProfileActionsProps) {
@@ -53,10 +57,20 @@ export function ProfileActions({
       </Button>
       <Button
         onClick={handleMessageClick}
+        disabled={isMessageDisabled}
         className='h-12 flex-1 rounded-full border border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100'
       >
-        <MessageCircle className='mr-2 h-4 w-4' />
-        Message
+        {isMessaging ? (
+          <>
+            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+            Starting...
+          </>
+        ) : (
+          <>
+            <MessageCircle className='mr-2 h-4 w-4' />
+            Message
+          </>
+        )}
       </Button>
     </div>
   );

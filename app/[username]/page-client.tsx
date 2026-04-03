@@ -64,6 +64,7 @@ import {
   Award,
   BadgeCheck,
   Calendar,
+  Loader2,
   MessageCircle,
   Search,
   Share,
@@ -82,7 +83,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   // Fetch auth state but don’t enforce login – allows public profile view
   const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
-  const { openDirectConversation, status: chatStatus } = useChat();
+  const {
+    openDirectConversation,
+    status: chatStatus,
+    isOpeningDirectConversation,
+    openingDirectConversationUserIds,
+  } = useChat();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
@@ -403,6 +409,10 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   void interestTags;
 
   const handleMessage = async () => {
+    if (isOpeningDirectConversation) {
+      return;
+    }
+
     logger.warn('Profile page: message button click', {
       userId: userData?.id,
       chatStatus,
@@ -763,10 +773,20 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                   <Button
                     variant='outline'
                     onClick={handleMessage}
+                    disabled={isOpeningDirectConversation}
                     className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
                   >
-                    <MessageCircle className='h-4 w-4' />
-                    Message
+                    {userData?.id && openingDirectConversationUserIds.includes(userData.id) ? (
+                      <>
+                        <Loader2 className='h-4 w-4 animate-spin' />
+                        Starting...
+                      </>
+                    ) : (
+                      <>
+                        <MessageCircle className='h-4 w-4' />
+                        Message
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

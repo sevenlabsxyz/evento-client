@@ -2,7 +2,6 @@ export const DEFAULT_CHAT_RELAYS = [
   'wss://relay.damus.io',
   'wss://nos.lol',
   'wss://relay.primal.net',
-  'wss://nostr.wine',
   'wss://relay.snort.social',
 ] as const;
 

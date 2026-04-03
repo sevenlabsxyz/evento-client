@@ -8,7 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useChat } from '@/lib/chat/provider';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { MessageSquarePlus, Plus, Settings } from 'lucide-react';
+import { Loader2, MessageSquarePlus, Plus, Settings } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -18,7 +18,14 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
   const pathname = usePathname();
   const [isNewChatOpen, setIsNewChatOpen] = useState(false);
   const [isChatSettingsOpen, setIsChatSettingsOpen] = useState(false);
-  const { status, conversations, error, completeOnboarding, getSecretKeyNsec } = useChat();
+  const {
+    status,
+    conversations,
+    error,
+    completeOnboarding,
+    getSecretKeyNsec,
+    isOpeningDirectConversation,
+  } = useChat();
 
   const isMessageListPage = pathname === '/e/messages';
 
@@ -113,7 +120,7 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className='flex h-[calc(100vh-4rem)] w-full flex-col bg-white md:flex-row'>
+    <div className='relative flex h-[calc(100vh-4rem)] w-full flex-col bg-white md:flex-row'>
       <div
         className={`w-full border-b border-gray-200 bg-gray-50 md:block md:w-80 md:shrink-0 md:border-b-0 md:border-r ${isMessageListPage ? 'block' : 'hidden'}`}
       >
@@ -147,6 +154,16 @@ export default function MessagesLayout({ children }: { children: React.ReactNode
       />
 
       <NewChatSheet isOpen={isNewChatOpen} onClose={() => setIsNewChatOpen(false)} />
+
+      {status === 'ready' && isOpeningDirectConversation && (
+        <div className='absolute inset-0 z-40 flex items-center justify-center bg-white/65 backdrop-blur-sm'>
+          <div className='rounded-2xl border border-gray-200 bg-white px-5 py-4 text-center shadow-sm'>
+            <Loader2 className='mx-auto h-5 w-5 animate-spin text-red-500' />
+            <p className='mt-2 text-sm font-medium text-gray-900'>Creating secure chat...</p>
+            <p className='mt-1 text-xs text-gray-500'>This may take a few seconds</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

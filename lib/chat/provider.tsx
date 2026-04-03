@@ -30,6 +30,8 @@ interface ChatContextValue extends ChatRuntimeSnapshot {
   sendMessage: (conversationId: string, content: string) => Promise<void>;
   markConversationSeen: (conversationId: string) => void;
   getSecretKeyNsec: () => string | null;
+  isOpeningDirectConversation: boolean;
+  openingDirectConversationUserIds: string[];
 }
 
 const initialSnapshot: ChatRuntimeSnapshot = {
@@ -46,17 +48,22 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated } = useAuth();
   const runtimeRef = useRef<EventoChatRuntime | null>(null);
   const [snapshot, setSnapshot] = useState<ChatRuntimeSnapshot>(initialSnapshot);
+  const [openingDirectConversationCounts, setOpeningDirectConversationCounts] = useState<
+    Record<string, number>
+  >({});
 
   useEffect(() => {
     if (!isAuthenticated || !user?.id) {
       runtimeRef.current?.destroy();
       runtimeRef.current = null;
       setSnapshot(initialSnapshot);
+      setOpeningDirectConversationCounts({});
       return;
     }
 
     const runtime = new EventoChatRuntime(user);
     runtimeRef.current = runtime;
+    setOpeningDirectConversationCounts({});
 
     const unsubscribe = runtime.subscribe(() => {
       startTransition(() => {
@@ -95,6 +102,10 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
         targetUserId: target.userId,
         targetUsername: target.username,
       });
+      setOpeningDirectConversationCounts((previous) => ({
+        ...previous,
+        [target.userId]: (previous[target.userId] ?? 0) + 1,
+      }));
 
       try {
         const conversationId = await runtimeRef.current.openDirectConversation(target);
@@ -109,6 +120,19 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
           error,
         });
         throw error;
+      } finally {
+        setOpeningDirectConversationCounts((previous) => {
+          const nextCount = (previous[target.userId] ?? 0) - 1;
+          if (nextCount > 0) {
+            return {
+              ...previous,
+              [target.userId]: nextCount,
+            };
+          }
+
+          const { [target.userId]: _removed, ...remaining } = previous;
+          return remaining;
+        });
       }
     },
     []
@@ -132,6 +156,12 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     return runtimeRef.current?.getSecretKeyNsec() ?? null;
   }, []);
 
+  const openingDirectConversationUserIds = useMemo(
+    () => Object.keys(openingDirectConversationCounts),
+    [openingDirectConversationCounts]
+  );
+  const isOpeningDirectConversation = openingDirectConversationUserIds.length > 0;
+
   const value = useMemo<ChatContextValue>(
     () => ({
       ...snapshot,
@@ -140,6 +170,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       sendMessage,
       markConversationSeen,
       getSecretKeyNsec,
+      isOpeningDirectConversation,
+      openingDirectConversationUserIds,
     }),
     [
       snapshot,
@@ -148,6 +180,8 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       sendMessage,
       markConversationSeen,
       getSecretKeyNsec,
+      isOpeningDirectConversation,
+      openingDirectConversationUserIds,
     ]
   );
 

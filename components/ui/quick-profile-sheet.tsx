@@ -31,7 +31,12 @@ interface QuickProfileSheetProps {
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
-  const { openDirectConversation, status: chatStatus } = useChat();
+  const {
+    openDirectConversation,
+    status: chatStatus,
+    isOpeningDirectConversation,
+    openingDirectConversationUserIds,
+  } = useChat();
   const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
 
   // Use optimized hook for all profile data
@@ -60,6 +65,10 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
   }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
 
   const handleMessage = useCallback(async () => {
+    if (isOpeningDirectConversation) {
+      return;
+    }
+
     logger.warn('Quick profile: message click', {
       userId: user.id,
       username: user.username,
@@ -101,6 +110,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
     }
   }, [
     chatStatus,
+    isOpeningDirectConversation,
     onClose,
     openDirectConversation,
     router,
@@ -182,6 +192,8 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                               isFollowing={followStatus?.isFollowing || false}
                               isLoading={isLoading}
                               isPending={followActionMutation.isPending}
+                              isMessaging={openingDirectConversationUserIds.includes(user.id)}
+                              isMessageDisabled={isOpeningDirectConversation}
                               onFollowToggle={handleFollowToggle}
                               onMessage={handleMessage}
                             />
