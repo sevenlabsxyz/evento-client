@@ -188,7 +188,9 @@ export class EventoChatRuntime {
     }
 
     const seenAtSeconds = Math.floor(new Date(latest.createdAt).getTime() / 1000);
-    this.groupSubscriptionManager.markConversationSeen(resolvedConversationId, seenAtSeconds);
+    for (const threadConversationId of this.getConversationThreadIds(resolvedConversationId)) {
+      this.groupSubscriptionManager.markConversationSeen(threadConversationId, seenAtSeconds);
+    }
     this.recomputeConversations();
   }
 
@@ -293,7 +295,11 @@ export class EventoChatRuntime {
     }
 
     const existingPackages = await this.client.keyPackages.list();
-    if (existingPackages.length > 0) {
+    const hasInvitableKeyPackage = existingPackages.some(
+      (keyPackage) => keyPackage.published.length > 0 && !keyPackage.used
+    );
+
+    if (hasInvitableKeyPackage) {
       return;
     }
 
@@ -311,7 +317,7 @@ export class EventoChatRuntime {
     const sortedRecords = records
       .slice()
       .sort(
-        (left, right) => new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime()
+        (left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
       );
 
     for (const record of sortedRecords) {
@@ -628,8 +634,22 @@ export class EventoChatRuntime {
   ): Promise<string> {
     const existingConversationId = await this.findConversationIdForParticipant(participant);
     if (existingConversationId && existingConversationId !== conversationId) {
-      this.conversationAliases.set(conversationId, existingConversationId);
-      return existingConversationId;
+      const previousCanonicalId = this.resolveConversationId(existingConversationId);
+      if (previousCanonicalId !== conversationId) {
+        const previousMessages = this.messagesByConversation.get(previousCanonicalId) ?? [];
+        const currentMessages = this.messagesByConversation.get(conversationId) ?? [];
+
+        this.conversationAliases.set(previousCanonicalId, conversationId);
+        this.conversationsById.delete(previousCanonicalId);
+
+        if (previousMessages.length > 0 || currentMessages.length > 0) {
+          this.messagesByConversation.set(
+            conversationId,
+            this.mergeMessages(previousMessages, currentMessages)
+          );
+          this.messagesByConversation.delete(previousCanonicalId);
+        }
+      }
     }
 
     const record: ChatConversationRecord = {
@@ -658,7 +678,9 @@ export class EventoChatRuntime {
 
   private recomputeConversations(): void {
     const unreadConversationIds = this.groupSubscriptionManager?.unreadConversationIds.value ?? [];
-    const unreadSet = new Set(unreadConversationIds);
+    const unreadSet = new Set(
+      unreadConversationIds.map((conversationId) => this.resolveConversationId(conversationId))
+    );
 
     const conversations: ChatConversation[] = Array.from(this.conversationsById.values())
       .map((record) => {
@@ -695,7 +717,32 @@ export class EventoChatRuntime {
   }
 
   private resolveConversationId(conversationId: string): string {
-    return this.conversationAliases.get(conversationId) ?? conversationId;
+    let resolvedConversationId = conversationId;
+    const visited = new Set<string>();
+
+    while (!visited.has(resolvedConversationId)) {
+      visited.add(resolvedConversationId);
+      const nextConversationId = this.conversationAliases.get(resolvedConversationId);
+      if (!nextConversationId) {
+        return resolvedConversationId;
+      }
+      resolvedConversationId = nextConversationId;
+    }
+
+    return resolvedConversationId;
+  }
+
+  private getConversationThreadIds(conversationId: string): string[] {
+    const resolvedConversationId = this.resolveConversationId(conversationId);
+    const threadConversationIds = new Set([resolvedConversationId]);
+
+    for (const aliasConversationId of this.conversationAliases.keys()) {
+      if (this.resolveConversationId(aliasConversationId) === resolvedConversationId) {
+        threadConversationIds.add(aliasConversationId);
+      }
+    }
+
+    return Array.from(threadConversationIds);
   }
 
   private async findConversationIdForParticipant(
