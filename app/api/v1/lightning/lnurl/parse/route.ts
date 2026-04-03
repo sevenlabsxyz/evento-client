@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     try {
       validatedUrl = new URL(callbackUrl);
       const hostname = validatedUrl.hostname.toLowerCase();
-      if (!ALLOWED_DOMAINS.some(domain => hostname === domain || hostname.endsWith(`.${domain}`))) {
+      if (!ALLOWED_DOMAINS.some(domain => hostname === domain)) {
         logger.warn('LNURL callback domain not in allowlist', { hostname, allowed: ALLOWED_DOMAINS });
         return NextResponse.json({ error: 'LNURL service domain not allowed' }, { status: 400 });
       }
