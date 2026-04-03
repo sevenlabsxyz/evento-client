@@ -7,30 +7,41 @@ import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
-import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { EventWithUser, HubSectionError } from '@/lib/types/api';
 import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
 import { getProfileEventDateKey } from '@/lib/utils/profile-events';
-import { ArrowRight, Calendar, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
+import {
+  AlertTriangle,
+  ArrowRight,
+  Calendar,
+  MapPinHouse,
+  Search,
+  UserRoundPen,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
 type MyEventsTab = EventFilterType | 'drafts';
 
-export function MyEventsSection() {
-  const isMobile = useIsMobile();
-  const { user } = useUserProfile();
-  const [activeTab, setActiveTab] = useState<MyEventsTab>('upcoming');
-  const [loadedTabs, setLoadedTabs] = useState<MyEventsTab[]>(['upcoming']);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+interface MyEventsSectionProps {
+  username?: string;
+  upcomingEvents?: EventWithUser[];
+  upcomingTotalCount?: number | null;
+  upcomingHasMore?: boolean;
+  upcomingError?: HubSectionError;
+}
 
-  // Only load data for tabs that have been opened (6 events max, future only)
-  const upcomingQuery = useUserEvents({
-    filter: 'upcoming',
-    timeframe: 'future',
-    sortBy: 'date-asc',
-    limit: 6,
-    enabled: loadedTabs.includes('upcoming'),
-  });
+export function MyEventsSection({
+  username,
+  upcomingEvents = [],
+  upcomingTotalCount,
+  upcomingHasMore = false,
+  upcomingError,
+}: MyEventsSectionProps) {
+  const isMobile = useIsMobile();
+  const [activeTab, setActiveTab] = useState<MyEventsTab>('upcoming');
+  const [loadedTabs, setLoadedTabs] = useState<MyEventsTab[]>([]);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const hostingQuery = useUserEvents({
     filter: 'hosting',
@@ -47,27 +58,27 @@ export function MyEventsSection() {
 
   // Track when tabs are opened for lazy loading
   useEffect(() => {
-    if (!loadedTabs.includes(activeTab)) {
+    if (activeTab !== 'upcoming' && !loadedTabs.includes(activeTab)) {
       setLoadedTabs((prev) => [...prev, activeTab]);
     }
   }, [activeTab, loadedTabs]);
 
   const getCurrentQuery = () => {
     switch (activeTab) {
-      case 'upcoming':
-        return upcomingQuery;
       case 'hosting':
         return hostingQuery;
       case 'drafts':
         return draftsQuery;
       default:
-        return upcomingQuery;
+        return null;
     }
   };
 
   const currentQuery = getCurrentQuery();
-  const events = currentQuery.data?.pages?.[0]?.events || [];
-  const isLoading = currentQuery.isLoading;
+  const events =
+    activeTab === 'upcoming' ? upcomingEvents : currentQuery?.data?.pages?.[0]?.events || [];
+  const isLoading = activeTab === 'upcoming' ? false : currentQuery?.isLoading || false;
+  const hasError = activeTab === 'upcoming' ? !!upcomingError : false;
 
   // Group events by date
   const groupedEvents = events.reduce(
@@ -140,6 +151,14 @@ export function MyEventsSection() {
                 </div>
               ))}
             </div>
+          ) : hasError ? (
+            <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900'>
+              <div className='mb-2 flex items-center gap-2 text-sm font-semibold'>
+                <AlertTriangle className='h-4 w-4' />
+                Could not load upcoming events
+              </div>
+              <p className='text-sm text-amber-800'>{upcomingError?.message}</p>
+            </div>
           ) : events.length === 0 ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
@@ -178,14 +197,18 @@ export function MyEventsSection() {
                 variant='ghost'
                 className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
               >
-                View All Events <ArrowRight className='h-4 w-4' />
+                View All Events
+                {activeTab === 'upcoming' && (upcomingHasMore || upcomingTotalCount)
+                  ? ` (${upcomingTotalCount ?? upcomingEvents.length})`
+                  : ''}
+                <ArrowRight className='h-4 w-4' />
               </Button>
             </>
           )}
           <EventSearchSheet
             isOpen={isSheetOpen}
             onClose={() => setIsSheetOpen(false)}
-            username={user?.username}
+            username={username}
             isOwnProfile
             initialFilter={activeTab === 'drafts' ? 'hosting' : activeTab}
           />

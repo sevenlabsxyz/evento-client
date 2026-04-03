@@ -411,6 +411,11 @@ export interface EventWithUser extends Event {
   user_details: UserDetails;
 }
 
+export interface ForYouEvent extends EventWithUser {
+  featured_id: string;
+  featured_position: number;
+}
+
 // Email Blast
 export interface EmailBlast {
   id: string;
@@ -447,6 +452,30 @@ export interface CohostInvite {
   inviter?: UserDetails;
   invitee?: UserDetails;
   events?: EventWithUser;
+}
+
+export interface HubSectionError {
+  code: string;
+  message: string;
+}
+
+export interface HubListSection<T> {
+  status: 'ok' | 'error';
+  items: T[];
+  total_count: number | null;
+  has_more: boolean;
+  error?: HubSectionError;
+}
+
+export interface HubPayload {
+  viewer: UserDetails | null;
+  generated_at: string;
+  sections: {
+    pending_cohost_invites: HubListSection<CohostInvite>;
+    my_upcoming_events: HubListSection<EventWithUser>;
+    discover_events: HubListSection<ForYouEvent>;
+    pending_event_invites: HubListSection<EventInvite>;
+  };
 }
 
 export type CohostInviteTarget = { userId: string } | { email: string };

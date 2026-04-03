@@ -40,9 +40,9 @@ const navMain = [
     icon: Calendar1,
   },
   {
-    title: 'Lists',
-    url: '/e/lists',
-    icon: Star,
+    title: 'Wallet',
+    url: '/e/wallet',
+    icon: Zap,
   },
   {
     title: 'Search',
@@ -50,14 +50,14 @@ const navMain = [
     icon: Search,
   },
   {
-    title: 'Wallet',
-    url: '/e/wallet',
-    icon: Zap,
-  },
-  {
     title: 'Messages',
     url: '/e/messages',
     icon: MessageCircle,
+  },
+  {
+    title: 'Lists',
+    url: '/e/lists',
+    icon: Star,
   },
 ];
 

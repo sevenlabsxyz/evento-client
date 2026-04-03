@@ -34,6 +34,11 @@ const menuSections = [
         icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
+        name: 'Wallet',
+        path: '/e/wallet',
+        icon: <Zap className='h-5 w-5' strokeWidth={2.5} />,
+      },
+      {
         name: 'Lists',
         path: '/e/lists',
         icon: <Star className='h-5 w-5' strokeWidth={2.5} />,
@@ -42,11 +47,6 @@ const menuSections = [
         name: 'Search',
         path: '/e/search',
         icon: <Search className='h-5 w-5' strokeWidth={2.5} />,
-      },
-      {
-        name: 'Wallet',
-        path: '/e/wallet',
-        icon: <Zap className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Chat',
