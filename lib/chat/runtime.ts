@@ -34,6 +34,7 @@ import type { SerializedAccount } from 'applesauce-accounts';
 import { PrivateKeyAccount } from 'applesauce-accounts/accounts';
 import type { Rumor } from 'applesauce-common/helpers/gift-wrap';
 import { type NostrEvent } from 'applesauce-core/helpers';
+import { type Filter } from 'applesauce-core/helpers/filter';
 import { nsecEncode } from 'applesauce-core/helpers/pointers';
 import { mapEventsToTimeline } from 'applesauce-core/observable';
 import { onlyEvents, RelayPool } from 'applesauce-relay';
@@ -93,17 +94,17 @@ export class EventoChatRuntime {
   }
 
   async start(): Promise<void> {
-    logger.debug('Chat runtime: start requested');
+    logger.warn('Chat runtime: start requested');
     try {
       const storedAccount = await this.metadataStore.getAccount();
       const onboardingComplete = await this.metadataStore.getOnboardingComplete();
-      logger.debug('Chat runtime: local onboarding state', {
+      logger.warn('Chat runtime: local onboarding state', {
         hasStoredAccount: !!storedAccount,
         onboardingComplete,
       });
 
       if (!storedAccount || !onboardingComplete) {
-        logger.debug('Chat runtime: needs onboarding');
+        logger.warn('Chat runtime: needs onboarding');
         this.setSnapshot({
           ...emptySnapshot(),
           status: 'needs-onboarding',
@@ -112,7 +113,7 @@ export class EventoChatRuntime {
       }
 
       this.account = PrivateKeyAccount.fromJSON(storedAccount as SerializedAccount);
-      logger.debug('Chat runtime: account restored', { pubkey: this.account.pubkey });
+      logger.warn('Chat runtime: account restored', { pubkey: this.account.pubkey });
       await this.initializeClient();
     } catch (error) {
       logger.error('Failed to start chat runtime', error);
@@ -125,17 +126,17 @@ export class EventoChatRuntime {
   }
 
   async completeOnboarding(): Promise<void> {
-    logger.debug('Chat runtime: completeOnboarding started');
+    logger.warn('Chat runtime: completeOnboarding started');
     try {
       const account = PrivateKeyAccount.generateNew();
-      logger.debug('Chat runtime: generated account during onboarding', {
+      logger.warn('Chat runtime: generated account during onboarding', {
         pubkey: account.pubkey,
       });
       await this.metadataStore.setAccount(account.toJSON());
       await this.metadataStore.setOnboardingComplete(true);
       this.account = account;
       await this.initializeClient();
-      logger.debug('Chat runtime: completeOnboarding finished', {
+      logger.warn('Chat runtime: completeOnboarding finished', {
         pubkey: account.pubkey,
       });
     } catch (error) {
@@ -163,7 +164,7 @@ export class EventoChatRuntime {
   }
 
   async openDirectConversation(target: DirectConversationTarget): Promise<string> {
-    logger.debug('Chat runtime: openDirectConversation called', {
+    logger.warn('Chat runtime: openDirectConversation called', {
       targetUserId: target.userId,
       targetUsername: target.username,
       hasTargetPubkey: !!target.nostr_pubkey,
@@ -175,26 +176,26 @@ export class EventoChatRuntime {
 
     try {
       const participant = await this.resolveDirectParticipant(target);
-      logger.debug('Chat runtime: resolved direct participant', {
+      logger.warn('Chat runtime: resolved direct participant', {
         userId: participant.userId,
         pubkey: participant.pubkey,
       });
 
       const existingConversationId = await this.findConversationIdForParticipant(participant);
-      logger.debug('Chat runtime: existing conversation lookup', {
+      logger.warn('Chat runtime: existing conversation lookup', {
         userId: participant.userId,
         existingConversationId,
       });
 
       if (existingConversationId) {
-        logger.debug('Chat runtime: reusing existing conversation', {
+        logger.warn('Chat runtime: reusing existing conversation', {
           conversationId: existingConversationId,
         });
         return existingConversationId;
       }
 
       const keyPackageEvent = await this.fetchLatestKeyPackageEvent(participant.pubkey);
-      logger.debug('Chat runtime: fetched key package', {
+      logger.warn('Chat runtime: fetched key package', {
         userId: participant.userId,
         pubkey: participant.pubkey,
         keyPackageFound: !!keyPackageEvent,
@@ -212,14 +213,14 @@ export class EventoChatRuntime {
         description: `Direct messages with ${participant.username}`,
         relays: [...DEFAULT_CHAT_RELAYS],
       });
-      logger.debug('Chat runtime: group created', {
+      logger.warn('Chat runtime: group created', {
         conversationId: group.idStr,
         participantUsername: participant.username,
         relays: [...DEFAULT_CHAT_RELAYS],
       });
 
       await group.inviteByKeyPackageEvent(keyPackageEvent);
-      logger.debug('Chat runtime: sent invite by key package', {
+      logger.warn('Chat runtime: sent invite by key package', {
         conversationId: group.idStr,
         pubkey: participant.pubkey,
       });
@@ -227,7 +228,7 @@ export class EventoChatRuntime {
       const conversationId = await this.persistConversationRecord(group.idStr, participant);
       await this.attachGroupHistory(group);
       this.recomputeConversations();
-      logger.debug('Chat runtime: conversation persisted and history attached', {
+      logger.warn('Chat runtime: conversation persisted and history attached', {
         conversationId,
       });
       return conversationId;
@@ -251,7 +252,7 @@ export class EventoChatRuntime {
     }
 
     const group = await this.client.getGroup(this.resolveConversationId(conversationId));
-    logger.debug('Chat runtime: sending message', {
+    logger.warn('Chat runtime: sending message', {
       conversationId: this.resolveConversationId(conversationId),
       hasContent: !!trimmed,
     });
@@ -311,16 +312,123 @@ export class EventoChatRuntime {
 
     const storage = await chatDatabaseBroker.getStorageInterfaces(this.account.pubkey);
     const pool = new RelayPool();
+    const configuredRelays = [...DEFAULT_CHAT_RELAYS];
+    const requestFromRelays = async (
+      relays: string[],
+      filters: Filter | Filter[]
+    ): Promise<NostrEvent[]> => {
+      const requestFilters = Array.isArray(filters) ? filters : [filters];
+      logger.warn('Chat runtime: network request batch requested', {
+        relayCount: relays.length,
+        kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+        authors: requestFilters.map((filter: { authors?: string[] }) => filter.authors),
+        relayUrl: relays,
+      });
+
+      try {
+        const events = await lastValueFrom(
+          pool.request(relays, filters).pipe(mapEventsToTimeline())
+        );
+        logger.warn('Chat runtime: network request batch completed', {
+          relayCount: relays.length,
+          kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+          resultCount: events.length,
+          relayUrl: relays,
+        });
+        return events;
+      } catch (error) {
+        logger.warn('Chat runtime: network request batch failed, trying relay fallback', {
+          relayCount: relays.length,
+          kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+          error,
+          relayUrl: relays,
+        });
+
+        const fallbackEvents: NostrEvent[] = [];
+        const successfulRelays: string[] = [];
+        const requestErrorMap: Array<{ relay: string; error: unknown }> = [];
+
+        for (const relay of relays) {
+          try {
+            const relayEvents = await lastValueFrom(
+              pool.request([relay], filters).pipe(mapEventsToTimeline())
+            );
+            logger.warn('Chat runtime: network request relay fallback completed', {
+              relay,
+              relayEventCount: relayEvents.length,
+              kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+            });
+            fallbackEvents.push(...relayEvents);
+            successfulRelays.push(relay);
+          } catch (relayError) {
+            requestErrorMap.push({ relay, error: relayError });
+            logger.warn('Chat runtime: network request relay fallback failed', {
+              relay,
+              relayError,
+              kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+            });
+          }
+        }
+
+        if (!fallbackEvents.length) {
+          logger.error('Chat runtime: network request failed after relay fallback', {
+            relayCount: relays.length,
+            kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+            relayErrorCount: requestErrorMap.length,
+            relayErrors: requestErrorMap.map((entry) => entry.error),
+          });
+          throw error;
+        }
+
+        const uniqueEvents = Array.from(
+          new Map(fallbackEvents.map((event) => [event.id, event])).values()
+        );
+        logger.warn('Chat runtime: network request fallback used', {
+          relayCount: relays.length,
+          kinds: requestFilters.map((filter: { kinds?: number[] }) => filter.kinds),
+          fallbackEventCount: uniqueEvents.length,
+          successfulFallbackRelays: successfulRelays,
+        });
+        return uniqueEvents;
+      }
+    };
+
     const network: NostrNetworkInterface = {
       publish: async (relays, event) => {
-        const results = await pool.publish(relays, event);
-        return results.reduce<Record<string, PublishResponse>>((accumulator, result) => {
-          accumulator[result.from] = result;
-          return accumulator;
-        }, {});
+        logger.warn('Chat runtime: network publish requested', {
+          eventKind: event.kind,
+          eventId: event.id,
+          relayCount: relays.length,
+          configuredRelayCount: configuredRelays.length,
+        });
+        let results: PublishResponse[] = [];
+        try {
+          results = await pool.publish(relays, event);
+        } catch (error) {
+          logger.error('Chat runtime: network publish failed', {
+            eventKind: event.kind,
+            eventId: event.id,
+            relays,
+            error,
+          });
+          throw error;
+        }
+        const publishResult = results.reduce<Record<string, PublishResponse>>(
+          (accumulator, result) => {
+            accumulator[result.from] = result;
+            return accumulator;
+          },
+          {}
+        );
+        logger.warn('Chat runtime: network publish completed', {
+          eventId: event.id,
+          relayCount: relays.length,
+          publishResponseCount: results.length,
+          acceptedRelays: Object.keys(publishResult),
+        });
+        return publishResult;
       },
-      request: async (relays, filters) =>
-        lastValueFrom(pool.request(relays, filters).pipe(mapEventsToTimeline())),
+      request: async (relays, filters) => requestFromRelays([...relays], filters),
       subscription: (relays, filters) => pool.subscription(relays, filters).pipe(onlyEvents()),
       getUserInboxRelays: async () => [...DEFAULT_CHAT_RELAYS],
     };
@@ -342,7 +450,7 @@ export class EventoChatRuntime {
     this.client = client;
     this.inviteReader = inviteReader;
     this.groupSubscriptionManager = new GroupSubscriptionManager(client, pool);
-    logger.debug('Chat runtime: marmot services initialized', {
+    logger.warn('Chat runtime: marmot services initialized', {
       accountPubkey: this.account.pubkey,
       relays: [...DEFAULT_CHAT_RELAYS],
     });
@@ -356,11 +464,11 @@ export class EventoChatRuntime {
       }
     );
 
-    logger.debug('Chat runtime: loading Marmot groups');
+    logger.warn('Chat runtime: loading Marmot groups');
     await client.loadAllGroups();
-    logger.debug('Chat runtime: ensuring key package');
+    logger.warn('Chat runtime: ensuring key package');
     await this.ensureKeyPackage();
-    logger.debug('Chat runtime: restoring conversation metadata');
+    logger.warn('Chat runtime: restoring conversation metadata');
     await this.restoreConversationRecords();
     this.startWatchingGroups();
     this.startInviteSubscription();
@@ -380,9 +488,9 @@ export class EventoChatRuntime {
       return;
     }
 
-    logger.debug('Chat runtime: checking existing key packages');
+    logger.warn('Chat runtime: checking existing key packages');
     const existingPackages = await this.client.keyPackages.list();
-    logger.debug('Chat runtime: existing key package count', {
+    logger.warn('Chat runtime: existing key package count', {
       total: existingPackages.length,
       usable: existingPackages.filter(
         (keyPackage) => keyPackage.published.length > 0 && !keyPackage.used
@@ -396,12 +504,12 @@ export class EventoChatRuntime {
       return;
     }
 
-    logger.debug('Chat runtime: creating key package');
+    logger.warn('Chat runtime: creating key package');
     await this.client.keyPackages.create({
       relays: [...DEFAULT_CHAT_RELAYS],
       client: CHAT_KEY_PACKAGE_CLIENT,
     });
-    logger.debug('Chat runtime: key package created', {
+    logger.warn('Chat runtime: key package created', {
       client: CHAT_KEY_PACKAGE_CLIENT,
     });
   }
@@ -645,7 +753,7 @@ export class EventoChatRuntime {
     target: DirectConversationTarget
   ): Promise<ChatParticipant> {
     if (target.nostr_pubkey) {
-      logger.debug('Chat runtime: using provided nostr pubkey from target', {
+      logger.warn('Chat runtime: using provided nostr pubkey from target', {
         userId: target.userId,
         pubkey: target.nostr_pubkey,
       });
@@ -667,7 +775,7 @@ export class EventoChatRuntime {
       });
       throw new Error('This user does not have secure chat set up yet');
     }
-    logger.debug('Chat runtime: fetched direct participant', {
+    logger.warn('Chat runtime: fetched direct participant', {
       userId: target.userId,
       resolvedPubkey: fetched.nostr_pubkey,
     });
@@ -688,15 +796,25 @@ export class EventoChatRuntime {
       return null;
     }
 
-    logger.debug('Chat runtime: fetching key package events', {
+    logger.warn('Chat runtime: fetching key package events', {
       pubkey,
       relays: [...DEFAULT_CHAT_RELAYS],
     });
-    const events = await this.client.network.request([...DEFAULT_CHAT_RELAYS], {
-      authors: [pubkey],
-      kinds: [KEY_PACKAGE_KIND],
-      limit: 10,
-    });
+    let events: NostrEvent[] = [];
+
+    try {
+      events = await this.client.network.request([...DEFAULT_CHAT_RELAYS], {
+        authors: [pubkey],
+        kinds: [KEY_PACKAGE_KIND],
+        limit: 10,
+      });
+    } catch (error) {
+      logger.error('Chat runtime: failed to fetch key package events', {
+        pubkey,
+        error,
+      });
+      throw error;
+    }
 
     const keyPackageEvents = events
       .filter((event) => event.kind === KEY_PACKAGE_KIND)
@@ -704,7 +822,7 @@ export class EventoChatRuntime {
 
     const latest = keyPackageEvents[0] ?? null;
 
-    logger.debug('Chat runtime: key package lookup result', {
+    logger.warn('Chat runtime: key package lookup result', {
       pubkey,
       totalCandidates: events.length,
       matchingKeyPackages: keyPackageEvents.length,
@@ -885,6 +1003,18 @@ export class EventoChatRuntime {
   }
 
   private setSnapshot(next: ChatRuntimeSnapshot): void {
+    const previousStatus = this.snapshot.status;
+    const previousError = this.snapshot.error;
+    const nextError = next.error;
+    if (previousStatus !== next.status || previousError !== nextError) {
+      logger.warn('Chat runtime: snapshot updated', {
+        previousStatus,
+        nextStatus: next.status,
+        previousError,
+        nextError,
+      });
+    }
+
     this.snapshot = next;
     for (const listener of this.listeners) {
       listener();

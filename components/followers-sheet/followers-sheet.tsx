@@ -95,13 +95,13 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
 
   const handleMessageClick = useCallback(
     async (userId: string) => {
-      logger.debug('Followers sheet: message click', {
+      logger.warn('Followers sheet: message click', {
         userId,
         chatStatus,
       });
 
       if (chatStatus !== 'ready') {
-        logger.debug('Followers sheet: chat not ready, redirecting to messages route', {
+        logger.warn('Followers sheet: chat not ready, redirecting to messages route', {
           userId,
           chatStatus,
         });
@@ -112,7 +112,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
 
       try {
         const conversationId = await openDirectConversation({ userId });
-        logger.debug('Followers sheet: openDirectConversation success', {
+        logger.warn('Followers sheet: openDirectConversation success', {
           userId,
           conversationId,
         });

@@ -30,13 +30,13 @@ export default function EventHost({ event }: EventHostProps) {
   }
 
   const handleContactHost = async (hostId: string) => {
-    logger.debug('Event host: contact button click', {
+    logger.warn('Event host: contact button click', {
       hostId,
       chatStatus,
     });
 
     if (chatStatus !== 'ready') {
-      logger.debug('Event host: chat not ready, redirecting to messages route', {
+      logger.warn('Event host: chat not ready, redirecting to messages route', {
         hostId,
       });
       router.push(`/e/messages?user=${encodeURIComponent(hostId)}`);
@@ -45,7 +45,7 @@ export default function EventHost({ event }: EventHostProps) {
 
     try {
       const conversationId = await openDirectConversation({ userId: hostId });
-      logger.debug('Event host: openDirectConversation success', {
+      logger.warn('Event host: openDirectConversation success', {
         hostId,
         conversationId,
       });

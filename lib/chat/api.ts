@@ -18,12 +18,12 @@ export async function fetchMessagingUserById(userId: string): Promise<MessagingU
     return null;
   }
 
-  logger.debug('Chat API: fetching user by id', { userId });
+  logger.warn('Chat API: fetching user by id', { userId });
   const response = await apiClient.get<UserDetailsResponse>(
     `/v1/user/details?id=${encodeURIComponent(userId)}`
   );
   const user = isApiResponse<UserDetails>(response) ? response.data : response;
-  logger.debug('Chat API: fetched user by id', {
+  logger.warn('Chat API: fetched user by id', {
     userId,
     found: !!user,
     hasNostrPubkey: !!user?.nostr_pubkey,
@@ -39,7 +39,7 @@ export async function fetchMessagingUserByPubkey(
     return null;
   }
 
-  logger.debug('Chat API: fetching user by nostr pubkey', { pubkey });
+  logger.warn('Chat API: fetching user by nostr pubkey', { pubkey });
   const response = await apiClient.get<UserDetailsResponse>(
     `/v1/user/details?nostr_pubkey=${encodeURIComponent(pubkey)}`,
     {
@@ -47,7 +47,7 @@ export async function fetchMessagingUserByPubkey(
     }
   );
   const user = isApiResponse<UserDetails>(response) ? response.data : response;
-  logger.debug('Chat API: fetched user by nostr pubkey', {
+  logger.warn('Chat API: fetched user by nostr pubkey', {
     pubkey,
     found: !!user,
     userId: user?.id,
@@ -56,7 +56,7 @@ export async function fetchMessagingUserByPubkey(
 }
 
 export async function syncMessagingIdentity(participant: ChatParticipant): Promise<void> {
-  logger.debug('Chat API: syncing nostr pubkey', {
+  logger.warn('Chat API: syncing nostr pubkey', {
     userId: participant.userId,
     pubkey: participant.pubkey,
     username: participant.username,
@@ -64,7 +64,7 @@ export async function syncMessagingIdentity(participant: ChatParticipant): Promi
   await apiClient.patch('/v1/user', {
     nostr_pubkey: participant.pubkey,
   });
-  logger.debug('Chat API: synced nostr pubkey', {
+  logger.warn('Chat API: synced nostr pubkey', {
     userId: participant.userId,
     pubkey: participant.pubkey,
   });

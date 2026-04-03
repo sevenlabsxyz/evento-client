@@ -60,14 +60,14 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
   }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
 
   const handleMessage = useCallback(async () => {
-    logger.debug('Quick profile: message click', {
+    logger.warn('Quick profile: message click', {
       userId: user.id,
       username: user.username,
       chatStatus,
     });
 
     if (chatStatus !== 'ready') {
-      logger.debug('Quick profile: chat not ready, redirecting to messages route', {
+      logger.warn('Quick profile: chat not ready, redirecting to messages route', {
         userId: user.id,
         username: user.username,
       });
@@ -88,7 +88,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
       });
       onClose();
       router.push(`/e/messages/${conversationId}`);
-      logger.debug('Quick profile: openDirectConversation success', {
+      logger.warn('Quick profile: openDirectConversation success', {
         userId: user.id,
         conversationId,
       });

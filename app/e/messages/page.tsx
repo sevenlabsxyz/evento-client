@@ -18,7 +18,7 @@ export default function MessagesPage() {
 
     if (!userId || status !== 'ready') {
       if (userId) {
-        logger.debug('Messages page: openDirectConversation skipped; runtime not ready', {
+        logger.warn('Messages page: openDirectConversation skipped; runtime not ready', {
           userId,
           status,
         });
@@ -28,7 +28,7 @@ export default function MessagesPage() {
 
     void openDirectConversation({ userId })
       .then((conversationId) => {
-        logger.debug('Messages page: openDirectConversation success', {
+        logger.warn('Messages page: openDirectConversation success', {
           userId,
           conversationId,
         });

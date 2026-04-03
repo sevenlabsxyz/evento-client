@@ -91,14 +91,14 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
       if (!runtimeRef.current) {
         throw new Error('Chat runtime is not available');
       }
-      logger.debug('Chat provider: openDirectConversation', {
+      logger.warn('Chat provider: openDirectConversation', {
         targetUserId: target.userId,
         targetUsername: target.username,
       });
 
       try {
         const conversationId = await runtimeRef.current.openDirectConversation(target);
-        logger.debug('Chat provider: openDirectConversation success', {
+        logger.warn('Chat provider: openDirectConversation success', {
           conversationId,
           targetUserId: target.userId,
         });

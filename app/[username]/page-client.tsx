@@ -403,7 +403,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   void interestTags;
 
   const handleMessage = async () => {
-    logger.debug('Profile page: message button click', {
+    logger.warn('Profile page: message button click', {
       userId: userData?.id,
       chatStatus,
     });
@@ -413,7 +413,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
     }
 
     if (chatStatus !== 'ready') {
-      logger.debug('Profile page: chat not ready, redirecting to messages route', {
+      logger.warn('Profile page: chat not ready, redirecting to messages route', {
         userId: userData.id,
       });
       router.push(`/e/messages?user=${encodeURIComponent(userData.id)}`);

@@ -95,13 +95,13 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
 
   const handleMessageClick = useCallback(
     async (userId: string) => {
-      logger.debug('Following sheet: message click', {
+      logger.warn('Following sheet: message click', {
         userId,
         chatStatus,
       });
 
       if (chatStatus !== 'ready') {
-        logger.debug('Following sheet: chat not ready, redirecting to messages route', {
+        logger.warn('Following sheet: chat not ready, redirecting to messages route', {
           userId,
           chatStatus,
         });
@@ -112,7 +112,7 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
 
       try {
         const conversationId = await openDirectConversation({ userId });
-        logger.debug('Following sheet: openDirectConversation success', {
+        logger.warn('Following sheet: openDirectConversation success', {
           userId,
           conversationId,
         });

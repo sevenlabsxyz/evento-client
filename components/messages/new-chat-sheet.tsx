@@ -62,12 +62,12 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const isLoading = isLoadingFollowing || (debouncedSearch.trim().length >= 2 && isSearching);
 
   const handleStartChat = async (recipientId: string) => {
-    logger.debug('New chat sheet: start chat click', {
+    logger.warn('New chat sheet: start chat click', {
       recipientId,
       chatStatus,
     });
     if (chatStatus !== 'ready') {
-      logger.debug('New chat sheet: chat not ready, redirecting via messages route', {
+      logger.warn('New chat sheet: chat not ready, redirecting via messages route', {
         recipientId,
         chatStatus,
       });
@@ -78,7 +78,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
 
     try {
       const conversationId = await openDirectConversation({ userId: recipientId });
-      logger.debug('New chat sheet: openDirectConversation success', {
+      logger.warn('New chat sheet: openDirectConversation success', {
         recipientId,
         conversationId,
       });
