@@ -2,15 +2,19 @@
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useAuth } from '@/lib/hooks/use-auth';
 import {
   useCreateEventCampaign,
   useEventCampaign,
   useUpdateEventCampaign,
 } from '@/lib/hooks/use-event-campaign';
+import { useWallet } from '@/lib/hooks/use-wallet';
 import { campaignFormSchema, type CampaignFormData } from '@/lib/schemas/campaign';
 import { useTopBarStore } from '@/lib/stores/topbar-store';
+import { useWalletStore } from '@/lib/stores/wallet-store';
 import type { ApiError } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
+import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Check, Info, MessageCircle, Zap } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
@@ -24,6 +28,11 @@ export default function CrowdfundingManagementPage() {
   const pathname = usePathname();
   const router = useRouter();
   const eventId = params.id as string;
+  const { user } = useAuth();
+  const { walletState, isLoading: isWalletLoading } = useWallet();
+  const walletLightningAddress = useWalletStore(
+    (state) => state.lightningAddress?.lightningAddress
+  );
 
   const { data: campaign, isLoading, error } = useEventCampaign(eventId);
   const createCampaign = useCreateEventCampaign(eventId);
@@ -55,6 +64,13 @@ export default function CrowdfundingManagementPage() {
 
   const isUpdate = !!campaign;
   const isMutating = createCampaign.isPending || updateCampaign.isPending;
+  const normalizedWalletAddress = walletLightningAddress?.trim().toLowerCase() ?? '';
+  const normalizedProfileAddress = user?.ln_address?.trim().toLowerCase() ?? '';
+  const isCreateBlockedByWalletState = !isUpdate && isWalletLoading;
+  const isWalletAddressSyncPending =
+    !isUpdate &&
+    walletState.isConnected &&
+    (!normalizedWalletAddress || normalizedProfileAddress !== normalizedWalletAddress);
 
   const form = useForm<CampaignFormData>({
     resolver: zodResolver(campaignFormSchema),
@@ -82,6 +98,24 @@ export default function CrowdfundingManagementPage() {
 
   const handleSave = useCallback(
     async (data: CampaignFormData) => {
+      if (isCreateBlockedByWalletState) {
+        toast.info('Loading your wallet. Try again in a moment.', 'Wallet loading');
+        return;
+      }
+
+      if (!isUpdate && !walletState.isConnected) {
+        showWalletUnlockToast(() => redirectToWalletUnlock(router));
+        return;
+      }
+
+      if (isWalletAddressSyncPending) {
+        toast.info(
+          'Your wallet address is still syncing. Try again in a moment.',
+          'Syncing wallet'
+        );
+        return;
+      }
+
       try {
         const payload = {
           title: data.title,
@@ -102,24 +136,23 @@ export default function CrowdfundingManagementPage() {
         router.push(`/e/${eventId}/manage`);
       } catch (err: any) {
         if (isMissingDestinationAddressError(err)) {
-          toast.error(
-            'Set up your wallet Lightning address before creating a campaign.',
-            'Wallet setup required',
-            undefined,
-            {
-              action: {
-                label: 'Open Wallet',
-                onClick: () => router.push('/e/wallet'),
-              },
-            }
-          );
+          showWalletUnlockToast(() => redirectToWalletUnlock(router));
           return;
         }
 
         toast.error(err?.message || `Failed to ${isUpdate ? 'update' : 'create'} campaign`);
       }
     },
-    [isUpdate, updateCampaign, createCampaign, eventId, router]
+    [
+      createCampaign,
+      eventId,
+      isCreateBlockedByWalletState,
+      isUpdate,
+      isWalletAddressSyncPending,
+      router,
+      updateCampaign,
+      walletState.isConnected,
+    ]
   );
 
   const submitFromTopBarRef = useRef<() => void>(() => undefined);
@@ -146,11 +179,17 @@ export default function CrowdfundingManagementPage() {
           icon: Check,
           onClick: () => submitFromTopBarRef.current(),
           label: 'Save',
-          disabled: isMutating,
+          disabled: isMutating || isCreateBlockedByWalletState || isWalletAddressSyncPending,
         },
       ],
     });
-  }, [setTopBarForRoute, isMutating, pathname]);
+  }, [
+    setTopBarForRoute,
+    isCreateBlockedByWalletState,
+    isMutating,
+    isWalletAddressSyncPending,
+    pathname,
+  ]);
 
   if (isLoading) {
     return (
