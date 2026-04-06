@@ -67,10 +67,12 @@ export default function CrowdfundingManagementPage() {
   const normalizedWalletAddress = walletLightningAddress?.trim().toLowerCase() ?? '';
   const normalizedProfileAddress = user?.ln_address?.trim().toLowerCase() ?? '';
   const isCreateBlockedByWalletState = !isUpdate && isWalletLoading;
+  const isWalletAddressMissing = !isUpdate && walletState.isConnected && !normalizedWalletAddress;
   const isWalletAddressSyncPending =
     !isUpdate &&
     walletState.isConnected &&
-    (!normalizedWalletAddress || normalizedProfileAddress !== normalizedWalletAddress);
+    !!normalizedWalletAddress &&
+    normalizedProfileAddress !== normalizedWalletAddress;
 
   const form = useForm<CampaignFormData>({
     resolver: zodResolver(campaignFormSchema),
@@ -108,6 +110,15 @@ export default function CrowdfundingManagementPage() {
         return;
       }
 
+      if (isWalletAddressMissing) {
+        toast.info(
+          'Open your wallet to finish setting up your Lightning address.',
+          'Wallet setup required'
+        );
+        router.push('/e/wallet');
+        return;
+      }
+
       if (isWalletAddressSyncPending) {
         toast.info(
           'Your wallet address is still syncing. Try again in a moment.',
@@ -136,7 +147,15 @@ export default function CrowdfundingManagementPage() {
         router.push(`/e/${eventId}/manage`);
       } catch (err: any) {
         if (isMissingDestinationAddressError(err)) {
-          showWalletUnlockToast(() => redirectToWalletUnlock(router));
+          if (walletState.isConnected) {
+            toast.info(
+              'Open your wallet to finish setting up your Lightning address.',
+              'Wallet setup required'
+            );
+            router.push('/e/wallet');
+          } else {
+            showWalletUnlockToast(() => redirectToWalletUnlock(router));
+          }
           return;
         }
 
@@ -148,6 +167,7 @@ export default function CrowdfundingManagementPage() {
       eventId,
       isCreateBlockedByWalletState,
       isUpdate,
+      isWalletAddressMissing,
       isWalletAddressSyncPending,
       router,
       updateCampaign,

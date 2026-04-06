@@ -55,7 +55,11 @@ export default function LightningAddressSheet({
 
   const handleSave = async () => {
     if (isWalletManaged) {
-      redirectToWalletUnlock(router);
+      if (walletState.isConnected) {
+        router.push('/e/wallet');
+      } else {
+        redirectToWalletUnlock(router);
+      }
       return;
     }
 

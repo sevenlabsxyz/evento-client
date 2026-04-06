@@ -11,9 +11,11 @@ import { toast } from '@/lib/utils/toast';
 import { showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 
+const mockRouterPush = jest.fn();
+
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: mockRouterPush,
     replace: jest.fn(),
     prefetch: jest.fn(),
     back: jest.fn(),
@@ -164,6 +166,34 @@ describe('CrowdfundingManagementPage', () => {
         'Syncing wallet'
       );
     });
+    expect(createCampaignMutation.mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it('sends connected users without a wallet address to wallet setup', async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        ln_address: '',
+      },
+    } as any);
+    mockUseWallet.mockReturnValue({
+      walletState: {
+        ...INITIAL_WALLET_STATE,
+        isInitialized: true,
+        isConnected: true,
+      },
+      isLoading: false,
+    } as any);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(mockToast.info).toHaveBeenCalledWith(
+        'Open your wallet to finish setting up your Lightning address.',
+        'Wallet setup required'
+      );
+    });
+    expect(mockRouterPush).toHaveBeenCalledWith('/e/wallet');
+    expect(mockShowWalletUnlockToast).not.toHaveBeenCalled();
     expect(createCampaignMutation.mutateAsync).not.toHaveBeenCalled();
   });
 
