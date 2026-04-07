@@ -9,8 +9,11 @@ import {
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
 import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
+import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiClient } from '../api/client';
+import { useAuthStore } from '../stores/auth-store';
+import { USER_PROFILE_QUERY_KEY } from './use-user-profile';
 
 interface UseLightningAddressOptions {
   autoLoad?: boolean;
@@ -22,49 +25,65 @@ export function useLightningAddress(options: UseLightningAddressOptions = {}) {
   const walletState = useWalletStore((state) => state.walletState);
   const lightningAddress = useWalletStore((state) => state.lightningAddress);
   const setLightningAddress = useWalletStore((state) => state.setLightningAddress);
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastSyncedAddressRef = useRef<string | null>(null);
-  const lastAttemptedSyncRef = useRef<string | null>(null);
   const syncInFlightRef = useRef<string | null>(null);
 
-  const syncLightningAddressToBackend = useCallback(async (value: string) => {
-    const normalized = value.trim().toLowerCase();
+  useEffect(() => {
+    const normalizedProfileAddress = user?.ln_address?.trim().toLowerCase();
 
-    if (!normalized.endsWith('@evento.cash')) {
-      return;
+    if (normalizedProfileAddress?.endsWith('@evento.cash')) {
+      lastSyncedAddressRef.current = normalizedProfileAddress;
     }
+  }, [user?.ln_address]);
 
-    if (lastSyncedAddressRef.current === normalized) {
-      return;
-    }
+  const syncLightningAddressToBackend = useCallback(
+    async (value: string) => {
+      const normalized = value.trim().toLowerCase();
 
-    if (syncInFlightRef.current === normalized) {
-      return;
-    }
-
-    if (lastAttemptedSyncRef.current === normalized) {
-      return;
-    }
-
-    try {
-      lastAttemptedSyncRef.current = normalized;
-      syncInFlightRef.current = normalized;
-      await apiClient.patch('/v1/user/lightning-address', {
-        lightning_address: value,
-      });
-      lastSyncedAddressRef.current = normalized;
-    } catch (syncError) {
-      logger.warn('Failed to sync Lightning address to backend profile', {
-        error: syncError instanceof Error ? syncError.message : String(syncError),
-        lightningAddress: value,
-      });
-    } finally {
-      if (syncInFlightRef.current === normalized) {
-        syncInFlightRef.current = null;
+      if (!normalized.endsWith('@evento.cash')) {
+        return;
       }
-    }
-  }, []);
+
+      if (lastSyncedAddressRef.current === normalized) {
+        return;
+      }
+
+      if (syncInFlightRef.current === normalized) {
+        return;
+      }
+
+      try {
+        syncInFlightRef.current = normalized;
+        await apiClient.patch('/v1/user/lightning-address', {
+          lightning_address: value,
+        });
+        lastSyncedAddressRef.current = normalized;
+
+        const currentUser = useAuthStore.getState().user;
+        if (currentUser) {
+          const updatedUser = { ...currentUser, ln_address: value };
+          setUser(updatedUser);
+          queryClient.setQueryData(USER_PROFILE_QUERY_KEY, updatedUser);
+          queryClient.setQueryData(['auth', 'user'], updatedUser);
+        }
+      } catch (syncError) {
+        logger.warn('Failed to sync Lightning address to backend profile', {
+          error: syncError instanceof Error ? syncError.message : String(syncError),
+          lightningAddress: value,
+        });
+      } finally {
+        if (syncInFlightRef.current === normalized) {
+          syncInFlightRef.current = null;
+        }
+      }
+    },
+    [queryClient, setUser]
+  );
 
   const loadLightningAddress = useCallback(async () => {
     try {
@@ -123,6 +142,7 @@ export function useLightningAddress(options: UseLightningAddressOptions = {}) {
 
         const addressInfo = await breezSDK.registerLightningAddress(username, description);
         setLightningAddress(addressInfo);
+        await syncLightningAddressToBackend(addressInfo.lightningAddress);
 
         return addressInfo;
       } catch (error: any) {
@@ -134,7 +154,7 @@ export function useLightningAddress(options: UseLightningAddressOptions = {}) {
         setIsLoading(false);
       }
     },
-    [setLightningAddress]
+    [setLightningAddress, syncLightningAddressToBackend]
   );
 
   const deleteAddress = useCallback(async (): Promise<void> => {

@@ -3,11 +3,15 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
+import { useWallet } from '@/lib/hooks/use-wallet';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { redirectToWalletUnlock } from '@/lib/utils/wallet-unlock-toast';
 import { Loader2, X, Zap } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface LightningAddressSheetProps {
@@ -23,15 +27,23 @@ export default function LightningAddressSheet({
   onSave,
   currentAddress = '',
 }: LightningAddressSheetProps) {
+  const router = useRouter();
   const [address, setAddress] = useState(currentAddress);
   const updateProfileMutation = useUpdateUserProfile();
+  const { walletState } = useWallet();
+  const { address: walletAddress } = useLightningAddress({
+    autoLoad: true,
+    autoSyncToBackend: true,
+  });
+  const isWalletManaged = walletState.isInitialized;
+  const walletManagedAddress = walletAddress?.lightningAddress || currentAddress;
 
   // Reset state when sheet opens
   useEffect(() => {
     if (isOpen) {
-      setAddress(currentAddress);
+      setAddress(isWalletManaged ? walletManagedAddress : currentAddress);
     }
-  }, [isOpen, currentAddress]);
+  }, [currentAddress, isOpen, isWalletManaged, walletManagedAddress]);
 
   const validateLightningAddress = (addr: string) => {
     if (!addr) return true;
@@ -42,6 +54,15 @@ export default function LightningAddressSheet({
   };
 
   const handleSave = async () => {
+    if (isWalletManaged) {
+      if (walletState.isConnected) {
+        router.push('/e/wallet');
+      } else {
+        redirectToWalletUnlock(router);
+      }
+      return;
+    }
+
     const trimmedAddress = address.trim();
 
     if (trimmedAddress && !validateLightningAddress(trimmedAddress)) {
@@ -77,12 +98,13 @@ export default function LightningAddressSheet({
   };
 
   const handleCancel = () => {
-    setAddress(currentAddress);
+    setAddress(isWalletManaged ? walletManagedAddress : currentAddress);
     onClose();
   };
 
-  const hasChanges = address !== currentAddress;
+  const hasChanges = !isWalletManaged && address !== currentAddress;
   const isSaving = updateProfileMutation.isPending;
+  const displayedAddress = isWalletManaged ? walletManagedAddress : address;
 
   return (
     <SheetWithDetentFull.Root
@@ -105,7 +127,9 @@ export default function LightningAddressSheet({
                 </button>
               </div>
               <p className='mt-1 text-sm text-gray-500'>
-                Add your Lightning Network address to receive payments.
+                {isWalletManaged
+                  ? 'Your Lightning address is managed by your Evento wallet.'
+                  : 'Add your Lightning Network address to receive payments.'}
               </p>
             </div>
 
@@ -120,47 +144,59 @@ export default function LightningAddressSheet({
                     </div>
                     <Input
                       type='text'
-                      value={address}
+                      value={displayedAddress}
                       onChange={(e) => {
-                        setAddress(e.target.value);
+                        if (!isWalletManaged) {
+                          setAddress(e.target.value);
+                        }
                       }}
                       placeholder='andre@zbd.gg'
                       className='pl-10'
                       autoFocus
+                      disabled={isWalletManaged}
                     />
                   </div>
 
                   {/* Info text */}
                   <div className='mb-6 space-y-3'>
                     <p className='text-sm text-gray-500'>
-                      Lightning addresses allow you to receive instant Bitcoin payments from anyone
-                      attending your events or visiting your profile. Lightning addresses allow you
-                      to receive instant Bitcoin payments from anyone attending your events or
-                      visiting your profile.
+                      {isWalletManaged
+                        ? 'Evento syncs this address from your built-in wallet so crowdfunding and wallet payments always use the same destination.'
+                        : 'Lightning addresses allow you to receive instant Bitcoin payments from anyone attending your events or visiting your profile.'}
                     </p>
 
-                    <div className='rounded-xl bg-orange-50 p-4'>
-                      <p className='mb-2 text-sm font-medium text-orange-800'>
-                        Popular Lightning wallets:
-                      </p>
-                      <ul className='space-y-1 text-sm text-orange-700'>
-                        <li>• Strike</li>
-                        <li>• Cash App</li>
-                        <li>• Wallet of Satoshi</li>
-                        <li>• ZBD</li>
-                        <li>• Alby</li>
-                      </ul>
-                    </div>
+                    {isWalletManaged ? (
+                      <div className='rounded-xl bg-blue-50 p-4'>
+                        <p className='text-sm font-medium text-blue-800'>
+                          Open Wallet to unlock, create, or resync your Lightning address.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className='rounded-xl bg-orange-50 p-4'>
+                        <p className='mb-2 text-sm font-medium text-orange-800'>
+                          Popular Lightning wallets:
+                        </p>
+                        <ul className='space-y-1 text-sm text-orange-700'>
+                          <li>• Strike</li>
+                          <li>• Cash App</li>
+                          <li>• Wallet of Satoshi</li>
+                          <li>• ZBD</li>
+                          <li>• Alby</li>
+                        </ul>
+                      </div>
+                    )}
                   </div>
 
                   {/* Save/Cancel Buttons */}
                   <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
-                      disabled={!hasChanges || isSaving}
+                      disabled={isWalletManaged ? false : !hasChanges || isSaving}
                       className='flex-1 bg-red-500 text-white hover:bg-red-600'
                     >
-                      {isSaving ? (
+                      {isWalletManaged ? (
+                        'Open Wallet'
+                      ) : isSaving ? (
                         <>
                           <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                           Saving...
