@@ -66,6 +66,7 @@ export default function CrowdfundingManagementPage() {
   const isMutating = createCampaign.isPending || updateCampaign.isPending;
   const normalizedWalletAddress = walletLightningAddress?.trim().toLowerCase() ?? '';
   const normalizedProfileAddress = user?.ln_address?.trim().toLowerCase() ?? '';
+  const hasSyncedEventoCashAddress = normalizedProfileAddress.endsWith('@evento.cash');
   const isCreateBlockedByWalletState = !isUpdate && isWalletLoading;
   const isWalletAddressMissing = !isUpdate && walletState.isConnected && !normalizedWalletAddress;
   const isWalletAddressSyncPending =
@@ -105,7 +106,7 @@ export default function CrowdfundingManagementPage() {
         return;
       }
 
-      if (!isUpdate && !walletState.isConnected) {
+      if (!isUpdate && !walletState.isConnected && !hasSyncedEventoCashAddress) {
         showWalletUnlockToast(() => redirectToWalletUnlock(router));
         return;
       }
@@ -165,6 +166,7 @@ export default function CrowdfundingManagementPage() {
     [
       createCampaign,
       eventId,
+      hasSyncedEventoCashAddress,
       isCreateBlockedByWalletState,
       isUpdate,
       isWalletAddressMissing,

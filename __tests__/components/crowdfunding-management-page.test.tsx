@@ -130,6 +130,62 @@ describe('CrowdfundingManagementPage', () => {
     expect(createCampaignMutation.mutateAsync).not.toHaveBeenCalled();
   });
 
+  it('allows campaign creation with an existing synced @evento.cash address while the wallet is locked', async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        ln_address: 'alice@evento.cash',
+      },
+    } as any);
+    mockUseWallet.mockReturnValue({
+      walletState: {
+        ...INITIAL_WALLET_STATE,
+        isInitialized: true,
+        isConnected: false,
+      },
+      isLoading: false,
+    } as any);
+
+    createCampaignMutation.mutateAsync.mockResolvedValue({
+      id: 'cmp_1',
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(createCampaignMutation.mutateAsync).toHaveBeenCalledWith({
+        title: 'Fund our event',
+        description: null,
+        goalSats: null,
+        visibility: 'public',
+        status: 'active',
+      });
+    });
+    expect(mockShowWalletUnlockToast).not.toHaveBeenCalled();
+  });
+
+  it('still routes locked users with a non-evento address to wallet setup', async () => {
+    mockUseAuth.mockReturnValue({
+      user: {
+        ln_address: 'alice@getalby.com',
+      },
+    } as any);
+    mockUseWallet.mockReturnValue({
+      walletState: {
+        ...INITIAL_WALLET_STATE,
+        isInitialized: true,
+        isConnected: false,
+      },
+      isLoading: false,
+    } as any);
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(mockShowWalletUnlockToast).toHaveBeenCalledTimes(1);
+    });
+    expect(createCampaignMutation.mutateAsync).not.toHaveBeenCalled();
+  });
+
   it('blocks campaign creation while the wallet address is still syncing upstream', async () => {
     mockUseAuth.mockReturnValue({
       user: {
