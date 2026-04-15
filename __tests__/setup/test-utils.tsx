@@ -1,3 +1,4 @@
+import { AuthRecoveryProvider } from '@/lib/providers/auth-recovery-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { PropsWithChildren } from 'react';
 
@@ -51,7 +52,11 @@ export function createTestWrapper(queryClient?: QueryClient) {
     });
 
   function Wrapper({ children }: PropsWithChildren) {
-    return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
+    return (
+      <QueryClientProvider client={client}>
+        <AuthRecoveryProvider>{children}</AuthRecoveryProvider>
+      </QueryClientProvider>
+    );
   }
 
   return Wrapper;

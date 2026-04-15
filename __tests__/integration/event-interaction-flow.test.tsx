@@ -5,6 +5,7 @@ import { useEditComment } from '@/lib/hooks/use-edit-comment';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventInvites, useSendEventInvites } from '@/lib/hooks/use-event-invites';
 import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
+import { AuthRecoveryProvider } from '@/lib/providers/auth-recovery-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 
@@ -69,7 +70,9 @@ describe('Event Interaction Integration Flow', () => {
 
   const createWrapper = (client: QueryClient) => {
     return ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      <QueryClientProvider client={client}>
+        <AuthRecoveryProvider>{children}</AuthRecoveryProvider>
+      </QueryClientProvider>
     );
   };
 
