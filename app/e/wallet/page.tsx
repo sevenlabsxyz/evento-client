@@ -36,6 +36,7 @@ import { Env } from '@/lib/constants/env';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
+import { useScreenWakeLock } from '@/lib/hooks/use-screen-wake-lock';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
@@ -60,7 +61,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
 type DrawerContent =
@@ -129,6 +130,19 @@ export default function WalletPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
   const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
+  const shownWakeLockMessagesRef = useRef(new Set<string>());
+
+  const shouldKeepWalletAwake =
+    !isCheckingAuth &&
+    !isWalletLoading &&
+    step === 'main' &&
+    walletState.isInitialized &&
+    walletState.isConnected;
+
+  const { errorMessage: wakeLockErrorMessage, errorReason: wakeLockErrorReason } =
+    useScreenWakeLock({
+      enabled: shouldKeepWalletAwake,
+    });
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
@@ -505,7 +519,8 @@ export default function WalletPage() {
           parsed = await breezSDK.parseInput(cleanedData);
         } catch (breezError) {
           // Check if error is CORS/network related
-          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const errorMessage =
+            breezError instanceof Error ? breezError.message : String(breezError);
           const isCorsError =
             errorMessage.includes('CORS') ||
             errorMessage.includes('Access-Control-Allow-Origin') ||
@@ -564,6 +579,33 @@ export default function WalletPage() {
       current.includes('lnurl-withdraw') ? current : [...current, 'lnurl-withdraw']
     );
   }, [devLnurlWithdrawConfig]);
+
+  useEffect(() => {
+    if (!shouldKeepWalletAwake || !wakeLockErrorReason) {
+      return;
+    }
+
+    const messageKey = `${wakeLockErrorReason}:${wakeLockErrorMessage ?? ''}`;
+
+    if (shownWakeLockMessagesRef.current.has(messageKey)) {
+      return;
+    }
+
+    shownWakeLockMessagesRef.current.add(messageKey);
+
+    if (wakeLockErrorReason === 'unsupported') {
+      toast.info(
+        'This browser cannot keep the wallet screen awake automatically.',
+        'Keep Screen Awake Unavailable'
+      );
+      return;
+    }
+
+    toast.info(
+      'Your device would not keep the wallet screen awake right now. Battery saver or browser restrictions may be blocking it.',
+      'Keep Screen Awake Unavailable'
+    );
+  }, [shouldKeepWalletAwake, wakeLockErrorMessage, wakeLockErrorReason]);
 
   if (isCheckingAuth || isWalletLoading) {
     return (
