@@ -6,6 +6,7 @@ interface CircledIconButtonProps {
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   disabled?: boolean;
+  iconClassName?: string;
 }
 
 export function CircledIconButton({
@@ -13,6 +14,7 @@ export function CircledIconButton({
   onClick,
   className,
   disabled,
+  iconClassName,
 }: CircledIconButtonProps) {
   return (
     <Button
@@ -22,7 +24,7 @@ export function CircledIconButton({
       disabled={disabled}
       className={`rounded-full bg-gray-50 ${className || ''}`}
     >
-      <Icon className='!h-[1.25rem] !w-[1.25rem]' />
+      <Icon className={`!h-[1.25rem] !w-[1.25rem] ${iconClassName ?? ''}`} />
     </Button>
   );
 }

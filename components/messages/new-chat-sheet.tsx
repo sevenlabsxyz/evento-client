@@ -2,14 +2,15 @@
 
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useChat } from '@/lib/chat/provider';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useSearchUsers, useUserFollowing, useUserProfile } from '@/lib/hooks/use-user-profile';
-import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { MessageCircle, Search } from 'lucide-react';
+import { Loader2, MessageCircle, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
@@ -23,6 +24,12 @@ interface NewChatSheetProps {
 export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const [searchText, setSearchText] = useState('');
   const router = useRouter();
+  const {
+    openDirectConversation,
+    status: chatStatus,
+    isOpeningDirectConversation,
+    openingDirectConversationUserIds,
+  } = useChat();
 
   const { user } = useUserProfile();
   const currentUserId = user?.id || '';
@@ -60,18 +67,37 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
   const isLoading = isLoadingFollowing || (debouncedSearch.trim().length >= 2 && isSearching);
 
   const handleStartChat = async (recipientId: string) => {
+    if (isOpeningDirectConversation) {
+      return;
+    }
+
+    logger.warn('New chat sheet: start chat click', {
+      recipientId,
+      chatStatus,
+    });
+    if (chatStatus !== 'ready') {
+      logger.warn('New chat sheet: chat not ready, redirecting via messages route', {
+        recipientId,
+        chatStatus,
+      });
+      onClose();
+      router.push(`/e/messages?user=${encodeURIComponent(recipientId)}`);
+      return;
+    }
+
     try {
-      const res = await streamChatService.createDirectMessageChannel(recipientId);
-      if (res?.channel?.id) {
-        onClose();
-        router.push(`/e/messages/${res.channel.id}`);
-      } else {
-        toast.error('No channel id returned.', 'Unable to start chat');
-      }
-    } catch (err: any) {
-      toast.error(err?.message || 'Please try again.', 'Failed to start chat');
-      logger.error('createDirectMessageChannel error', {
-        error: err instanceof Error ? err.message : String(err),
+      const conversationId = await openDirectConversation({ userId: recipientId });
+      logger.warn('New chat sheet: openDirectConversation success', {
+        recipientId,
+        conversationId,
+      });
+      onClose();
+      router.push(`/e/messages/${conversationId}`);
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Please try again.'), 'Failed to start chat');
+      logger.error('openDirectConversation error', {
+        recipientId,
+        error: getErrorMessage(error, 'Unknown chat error'),
       });
     }
   };
@@ -84,7 +110,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='rounded-t-2xl bg-white'>
+          <SheetWithDetentFull.Content className='relative rounded-t-2xl bg-white'>
             <div className='sticky top-0 z-10 border-b bg-white px-4 pb-3 pt-3'>
               <div className='mb-3 flex justify-center'>
                 <SheetWithDetentFull.Handle />
@@ -103,6 +129,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                   value={searchText}
                   onChange={(e) => onSearchChange(e.target.value)}
                   aria-label='Search users'
+                  disabled={isOpeningDirectConversation}
                 />
               </div>
             </div>
@@ -128,47 +155,67 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                       </div>
                     </div>
                   ) : (
-                    listToRender.map((u: UserDetails, index: number) => (
-                      <div
-                        key={u.id || `user-${index}`}
-                        className='group flex items-center justify-between px-4 py-2 hover:bg-gray-100'
-                      >
-                        <button
-                          onClick={() => handleStartChat(u.id)}
-                          className='flex min-w-0 flex-1 items-center gap-3 text-left'
+                    listToRender.map((u: UserDetails, index: number) => {
+                      const isStartingChat = openingDirectConversationUserIds.includes(u.id);
+
+                      return (
+                        <div
+                          key={u.id || `user-${index}`}
+                          className='group flex items-center justify-between px-4 py-2 hover:bg-gray-100'
                         >
-                          <UserAvatar
-                            user={{
-                              name: u.name || undefined,
-                              username: u.username || undefined,
-                              image: u.image || undefined,
-                              verification_status: u.verification_status || null,
-                            }}
-                            size='sm'
-                          />
-                          <div className='min-w-0 flex-1'>
-                            <div className='truncate text-sm font-medium'>@{u.username}</div>
-                            <div className='truncate text-xs text-gray-500'>
-                              {u.name || u.username}
-                            </div>
-                          </div>
-                        </button>
-                        <div className='ml-2'>
-                          <Button
-                            variant='secondary'
-                            size='icon'
+                          <button
                             onClick={() => handleStartChat(u.id)}
-                            className='group-hover:bg-gray-200'
+                            disabled={isOpeningDirectConversation}
+                            className='flex min-w-0 flex-1 items-center gap-3 text-left'
                           >
-                            <MessageCircle className='h-4 w-4' />
-                          </Button>
+                            <UserAvatar
+                              user={{
+                                name: u.name || undefined,
+                                username: u.username || undefined,
+                                image: u.image || undefined,
+                                verification_status: u.verification_status || null,
+                              }}
+                              size='sm'
+                            />
+                            <div className='min-w-0 flex-1'>
+                              <div className='truncate text-sm font-medium'>@{u.username}</div>
+                              <div className='truncate text-xs text-gray-500'>
+                                {u.name || u.username}
+                              </div>
+                            </div>
+                          </button>
+                          <div className='ml-2'>
+                            <Button
+                              variant='secondary'
+                              size='icon'
+                              onClick={() => handleStartChat(u.id)}
+                              disabled={isOpeningDirectConversation}
+                              className='group-hover:bg-gray-200'
+                            >
+                              {isStartingChat ? (
+                                <Loader2 className='h-4 w-4 animate-spin' />
+                              ) : (
+                                <MessageCircle className='h-4 w-4' />
+                              )}
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   )}
                 </SheetWithDetentFull.ScrollContent>
               </SheetWithDetentFull.ScrollView>
             </SheetWithDetentFull.ScrollRoot>
+
+            {isOpeningDirectConversation && (
+              <div className='absolute inset-0 z-20 flex items-center justify-center bg-white/75 backdrop-blur-sm'>
+                <div className='rounded-2xl border border-gray-200 bg-white px-5 py-4 text-center shadow-sm'>
+                  <Loader2 className='mx-auto h-5 w-5 animate-spin text-red-500' />
+                  <p className='mt-2 text-sm font-medium text-gray-900'>Starting secure chat...</p>
+                  <p className='mt-1 text-xs text-gray-500'>Checking relay and key package</p>
+                </div>
+              </div>
+            )}
           </SheetWithDetentFull.Content>
         </SheetWithDetentFull.View>
       </SheetWithDetentFull.Portal>

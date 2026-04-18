@@ -27,6 +27,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
+import { useChat } from '@/lib/chat/provider';
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
 import { usePublicUserBadges } from '@/lib/hooks/use-badges';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
@@ -49,6 +50,7 @@ import { UserBadge } from '@/lib/types/badges';
 import { EventHost } from '@/lib/types/event';
 import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
+import { getErrorMessage } from '@/lib/utils/error';
 import { logger } from '@/lib/utils/logger';
 import {
   getProfileEventStartTimestamp,
@@ -62,6 +64,7 @@ import {
   Award,
   BadgeCheck,
   Calendar,
+  Loader2,
   MessageCircle,
   Search,
   Share,
@@ -80,6 +83,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   // Fetch auth state but don’t enforce login – allows public profile view
   const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
+  const {
+    openDirectConversation,
+    status: chatStatus,
+    isOpeningDirectConversation,
+    openingDirectConversationUserIds,
+  } = useChat();
   const { setTopBar } = useTopBar();
   const [activeTab, setActiveTab] = useState('about');
   const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
@@ -140,25 +149,29 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   const profileImage = userData?.image?.trim() || DEFAULT_AVATAR_IMAGE;
 
   // Transform API data to match expected format (moved before useEffect)
-  const userProfile = userData
-    ? {
-        name: userData.name || 'Unknown User',
-        username: `@${userData.username}`,
-        image: profileImage,
-        verification_status: userData.verification_status,
-        status: userData.bio || '',
-        bio: userData.bio || '',
-        website: userData.bio_link || '',
-        isVerified: userData.verification_status === 'verified',
-        stats: {
-          events: eventCount,
-          following: followingCount,
-          followers: followersCount,
-          countries: 0, // This would need to be calculated from events
-          mutuals: 0, // This would need to be calculated
-        },
-      }
-    : null;
+  const userProfile = useMemo(
+    () =>
+      userData
+        ? {
+            name: userData.name || 'Unknown User',
+            username: `@${userData.username}`,
+            image: profileImage,
+            verification_status: userData.verification_status,
+            status: userData.bio || '',
+            bio: userData.bio || '',
+            website: userData.bio_link || '',
+            isVerified: userData.verification_status === 'verified',
+            stats: {
+              events: eventCount,
+              following: followingCount,
+              followers: followersCount,
+              countries: 0, // This would need to be calculated from events
+              mutuals: 0, // This would need to be calculated
+            },
+          }
+        : null,
+    [eventCount, followersCount, followingCount, profileImage, userData]
+  );
 
   const isOwnProfile = userData?.id === user?.id;
   const profileZapAddress = userData
@@ -395,8 +408,46 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   ];
   void interestTags;
 
-  const handleMessage = () => {
-    toast.success('Message feature coming soon!');
+  const handleMessage = async () => {
+    if (isOpeningDirectConversation) {
+      return;
+    }
+
+    logger.warn('Profile page: message button click', {
+      userId: userData?.id,
+      chatStatus,
+    });
+
+    if (!userData) {
+      return;
+    }
+
+    if (chatStatus !== 'ready') {
+      logger.warn('Profile page: chat not ready, redirecting to messages route', {
+        userId: userData.id,
+      });
+      router.push(`/e/messages?user=${encodeURIComponent(userData.id)}`);
+      return;
+    }
+
+    try {
+      const conversationId = await openDirectConversation({
+        userId: userData.id,
+        username: userData.username,
+        name: userData.name,
+        image: userData.image,
+        verification_status: userData.verification_status,
+        nostr_pubkey: userData.nostr_pubkey,
+        nip05: userData.nip05,
+      });
+      router.push(`/e/messages/${conversationId}`);
+    } catch (error) {
+      logger.error('Profile page: openDirectConversation failed', {
+        userId: userData.id,
+        error,
+      });
+      toast.error(getErrorMessage(error, 'Failed to start chat'));
+    }
   };
 
   // Handle profile photo click for lightbox
@@ -722,10 +773,20 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                   <Button
                     variant='outline'
                     onClick={handleMessage}
+                    disabled={isOpeningDirectConversation}
                     className='h-12 flex-1 rounded-full bg-gray-50 px-6 text-base text-gray-900 hover:bg-gray-200'
                   >
-                    <MessageCircle className='h-4 w-4' />
-                    Message
+                    {userData?.id && openingDirectConversationUserIds.includes(userData.id) ? (
+                      <>
+                        <Loader2 className='h-4 w-4 animate-spin' />
+                        Starting...
+                      </>
+                    ) : (
+                      <>
+                        <MessageCircle className='h-4 w-4' />
+                        Message
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>

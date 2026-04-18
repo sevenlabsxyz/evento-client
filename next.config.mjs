@@ -51,6 +51,9 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // SWC currently panics on one of the bundled crypto dependencies during
+  // production minification, so fall back to Terser for stable builds.
+  swcMinify: false,
   typescript: {
     ignoreBuildErrors: true,
   },

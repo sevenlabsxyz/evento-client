@@ -7,14 +7,54 @@ interface ApiLogMetadata {
 }
 
 const IS_PRODUCTION = process.env.NODE_ENV === 'production';
-const DEBUG_ENABLED = !IS_PRODUCTION;
+const CHAT_DEBUG_FLAG =
+  process.env.NEXT_PUBLIC_CHAT_DEBUG === '1' || process.env.NEXT_PUBLIC_CHAT_DEBUG === 'true';
+
+function isDebugEnabled() {
+  if (CHAT_DEBUG_FLAG) {
+    return true;
+  }
+
+  if (!IS_PRODUCTION) {
+    return true;
+  }
+
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  try {
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('debugChat') === '1' || query.get('debugChat') === 'true') {
+      return true;
+    }
+  } catch {
+    // ignore query parse issues and keep defaults
+  }
+
+  return false;
+}
+
+function shouldSilenceProdWarn(message: string) {
+  if (!IS_PRODUCTION || isDebugEnabled()) {
+    return false;
+  }
+
+  return /^Chat (runtime|provider|API):/.test(message);
+}
 
 function writeLog(level: LogLevel, message: string, metadata?: unknown) {
-  if (IS_PRODUCTION && (level === 'debug' || level === 'info')) {
+  if (level === 'warn' && shouldSilenceProdWarn(message)) {
     return;
   }
 
-  if (level === 'debug' && !DEBUG_ENABLED) {
+  if (IS_PRODUCTION && (level === 'debug' || level === 'info')) {
+    if (!isDebugEnabled()) {
+      return;
+    }
+  }
+
+  if (level === 'debug' && !isDebugEnabled()) {
     return;
   }
 

@@ -2,11 +2,15 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useChat } from '@/lib/chat/provider';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
+import { getErrorMessage } from '@/lib/utils/error';
+import { logger } from '@/lib/utils/logger';
+import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowRight, MessageCircle } from 'lucide-react';
+import { ArrowRight, Loader2, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';
@@ -30,6 +34,12 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   const [allFollowing, setAllFollowing] = useState<UserDetails[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const router = useRouter();
+  const {
+    openDirectConversation,
+    status: chatStatus,
+    isOpeningDirectConversation,
+    openingDirectConversationUserIds,
+  } = useChat();
   const [selectedUser, setSelectedUser] = useState<UserDetails | null>(null);
 
   const {
@@ -89,11 +99,43 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
   );
 
   const handleMessageClick = useCallback(
-    (userId: string) => {
-      router.push(`/e/messages?user=${userId}`);
-      onClose();
+    async (userId: string) => {
+      if (isOpeningDirectConversation) {
+        return;
+      }
+
+      logger.warn('Following sheet: message click', {
+        userId,
+        chatStatus,
+      });
+
+      if (chatStatus !== 'ready') {
+        logger.warn('Following sheet: chat not ready, redirecting to messages route', {
+          userId,
+          chatStatus,
+        });
+        router.push(`/e/messages?user=${encodeURIComponent(userId)}`);
+        onClose();
+        return;
+      }
+
+      try {
+        const conversationId = await openDirectConversation({ userId });
+        logger.warn('Following sheet: openDirectConversation success', {
+          userId,
+          conversationId,
+        });
+        router.push(`/e/messages/${conversationId}`);
+        onClose();
+      } catch (error) {
+        logger.error('Following sheet: openDirectConversation failed', {
+          userId,
+          error,
+        });
+        toast.error(getErrorMessage(error, 'Failed to start chat'));
+      }
     },
-    [router, onClose]
+    [chatStatus, isOpeningDirectConversation, openDirectConversation, onClose, router]
   );
 
   return (
@@ -158,51 +200,62 @@ export default function FollowingSheet({ isOpen, onClose, userId, username }: Fo
                     ) : (
                       // Following List
                       <>
-                        {filteredFollowing.map((user, index) => (
-                          <div
-                            key={user.id || `following-${index}`}
-                            className='grid grid-cols-[1fr_auto] items-center gap-4'
-                          >
-                            <button
-                              onClick={() => handleUserClick(user.username)}
-                              className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
+                        {filteredFollowing.map((user, index) => {
+                          const isStartingChat = openingDirectConversationUserIds.includes(user.id);
+
+                          return (
+                            <div
+                              key={user.id || `following-${index}`}
+                              className='grid grid-cols-[1fr_auto] items-center gap-4'
                             >
-                              <UserAvatar
-                                user={{
-                                  name: user.name || undefined,
-                                  username: user.username || undefined,
-                                  image: user.image || undefined,
-                                  verification_status: user.verification_status || null,
-                                }}
-                                size='sm'
-                              />
-                              <div className='min-w-0 flex-1'>
-                                <div className='truncate text-sm font-medium'>@{user.username}</div>
-                                <div className='truncate text-xs text-gray-500'>
-                                  {user.name || user.username}
-                                </div>
-                              </div>
-                            </button>
-                            <div className='flex gap-2'>
-                              <Button
-                                variant='ghost'
-                                size='icon'
-                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
-                                onClick={() => handleMessageClick(user.id)}
-                              >
-                                <MessageCircle className='h-4 w-4 text-gray-500' />
-                              </Button>
-                              <Button
-                                variant='ghost'
-                                size='icon'
-                                className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                              <button
                                 onClick={() => handleUserClick(user.username)}
+                                className='grid w-full cursor-pointer grid-flow-col justify-start gap-3.5 border-none bg-transparent text-left hover:opacity-80'
                               >
-                                <ArrowRight className='h-4 w-4 text-gray-500' />
-                              </Button>
+                                <UserAvatar
+                                  user={{
+                                    name: user.name || undefined,
+                                    username: user.username || undefined,
+                                    image: user.image || undefined,
+                                    verification_status: user.verification_status || null,
+                                  }}
+                                  size='sm'
+                                />
+                                <div className='min-w-0 flex-1'>
+                                  <div className='truncate text-sm font-medium'>
+                                    @{user.username}
+                                  </div>
+                                  <div className='truncate text-xs text-gray-500'>
+                                    {user.name || user.username}
+                                  </div>
+                                </div>
+                              </button>
+                              <div className='flex gap-2'>
+                                <Button
+                                  variant='ghost'
+                                  size='icon'
+                                  className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                  onClick={() => handleMessageClick(user.id)}
+                                  disabled={isOpeningDirectConversation}
+                                >
+                                  {isStartingChat ? (
+                                    <Loader2 className='h-4 w-4 animate-spin text-gray-500' />
+                                  ) : (
+                                    <MessageCircle className='h-4 w-4 text-gray-500' />
+                                  )}
+                                </Button>
+                                <Button
+                                  variant='ghost'
+                                  size='icon'
+                                  className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
+                                  onClick={() => handleUserClick(user.username)}
+                                >
+                                  <ArrowRight className='h-4 w-4 text-gray-500' />
+                                </Button>
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                         {hasMore && currentPageFollowing.length > 0 && (
                           <Button
                             variant='outline'
