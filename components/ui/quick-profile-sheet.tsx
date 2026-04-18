@@ -10,9 +10,8 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useProtectedFollowAction } from '@/lib/hooks/use-protected-follow-action';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
-import { useFollowAction } from '@/lib/hooks/use-user-profile';
-import { useEnsureAuthenticatedAction } from '@/lib/providers/auth-recovery-provider';
 import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -29,52 +28,16 @@ interface QuickProfileSheetProps {
 export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfileSheetProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
-  const ensureAuthenticatedAction = useEnsureAuthenticatedAction();
   const [isNavigatingToProfile, setIsNavigatingToProfile] = useState(false);
 
   // Use optimized hook for all profile data
   const { followStatus, eventCount, followersCount, followingCount, isLoading } =
     useQuickProfileData(user.id);
-  const followActionMutation = useFollowAction();
-
-  const handleFollowToggle = useCallback(async () => {
-    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
-
-    if (!loggedInUser) {
-      const recovered = await ensureAuthenticatedAction({
-        reason: `action:${action}:user:${user.id}`,
-      });
-      if (!recovered) {
-        return;
-      }
-    }
-
-    try {
-      await followActionMutation.mutateAsync({ userId: user.id, action });
-      if (action === 'follow') {
-        toast.success(`You followed ${user.name || 'this user'}!`);
-      } else {
-        toast.success(`You unfollowed ${user.name || 'this user'}`);
-      }
-    } catch (error) {
-      const status =
-        error && typeof error === 'object' && 'status' in error
-          ? (error as { status?: number }).status
-          : undefined;
-      if (status === 401) {
-        await ensureAuthenticatedAction({ reason: `action:${action}:user:${user.id}` });
-        return;
-      }
-      toast.error(`Failed to ${action}. Please try again.`);
-    }
-  }, [
-    ensureAuthenticatedAction,
-    followStatus?.isFollowing,
-    followActionMutation,
-    loggedInUser,
-    user.id,
-    user.name,
-  ]);
+  const { handleFollowToggle, isPending: isFollowActionPending } = useProtectedFollowAction({
+    userId: user.id,
+    userName: user.name,
+    isFollowing: !!followStatus?.isFollowing,
+  });
 
   const handleMessage = useCallback(() => {
     toast.success('Message feature coming soon!');
@@ -148,7 +111,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                             <ProfileActions
                               isFollowing={followStatus?.isFollowing || false}
                               isLoading={isLoading}
-                              isPending={followActionMutation.isPending}
+                              isPending={isFollowActionPending}
                               onFollowToggle={handleFollowToggle}
                               onMessage={handleMessage}
                             />
