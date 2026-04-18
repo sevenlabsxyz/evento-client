@@ -35,7 +35,19 @@ function isDebugEnabled() {
   return false;
 }
 
+function shouldSilenceProdWarn(message: string) {
+  if (!IS_PRODUCTION || isDebugEnabled()) {
+    return false;
+  }
+
+  return /^Chat (runtime|provider|API):/.test(message);
+}
+
 function writeLog(level: LogLevel, message: string, metadata?: unknown) {
+  if (level === 'warn' && shouldSilenceProdWarn(message)) {
+    return;
+  }
+
   if (IS_PRODUCTION && (level === 'debug' || level === 'info')) {
     if (!isDebugEnabled()) {
       return;
