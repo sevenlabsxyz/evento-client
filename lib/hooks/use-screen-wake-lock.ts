@@ -140,11 +140,13 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
         clearInteractionRetry();
         sentinelRef.current = sentinel;
         sentinel.addEventListener('release', () => {
-          if (sentinelRef.current === sentinel) {
+          const isCurrentSentinel = sentinelRef.current === sentinel;
+
+          if (isCurrentSentinel) {
             sentinelRef.current = null;
           }
 
-          if (unmountedRef.current) {
+          if (unmountedRef.current || !isCurrentSentinel) {
             return;
           }
 

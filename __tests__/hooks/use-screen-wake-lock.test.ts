@@ -6,8 +6,11 @@ type ReleaseListener = () => void;
 
 class MockWakeLockSentinel {
   listeners = new Set<ReleaseListener>();
+  autoDispatchOnRelease = true;
   release = jest.fn(async () => {
-    this.dispatchRelease();
+    if (this.autoDispatchOnRelease) {
+      this.dispatchRelease();
+    }
   });
 
   addEventListener(_type: 'release', listener: ReleaseListener) {
@@ -184,6 +187,49 @@ describe('useScreenWakeLock', () => {
     await waitFor(() => {
       expect(result.current.active).toBe(true);
     });
+  });
+
+  it('keeps the hook active when a stale sentinel releases after a newer lock is acquired', async () => {
+    const firstSentinel = new MockWakeLockSentinel();
+    firstSentinel.autoDispatchOnRelease = false;
+
+    const secondSentinel = new MockWakeLockSentinel();
+    const request = jest
+      .fn()
+      .mockResolvedValueOnce(firstSentinel)
+      .mockResolvedValueOnce(secondSentinel);
+
+    setWakeLock({ request });
+
+    const { result, rerender } = renderHook(({ enabled }) => useScreenWakeLock({ enabled }), {
+      initialProps: { enabled: true },
+    });
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+
+    rerender({ enabled: false });
+
+    await waitFor(() => {
+      expect(firstSentinel.release).toHaveBeenCalledTimes(1);
+    });
+
+    rerender({ enabled: true });
+
+    await waitFor(() => {
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+
+    act(() => {
+      firstSentinel.dispatchRelease();
+    });
+
+    expect(result.current.active).toBe(true);
   });
 
   it('reacquires the wake lock when the page becomes visible again', async () => {
