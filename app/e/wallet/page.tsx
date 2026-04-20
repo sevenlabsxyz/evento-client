@@ -43,7 +43,6 @@ import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import type { Contact } from '@/lib/types/wallet';
 import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
@@ -52,18 +51,18 @@ import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
 import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
 import {
+  Check,
   ChevronRight,
   ChevronsRight,
   Contact as ContactIcon,
-  Eye,
-  EyeOff,
+  Gamepad2,
   HelpCircle,
   MoreHorizontal,
   Plus,
   Settings,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
 type DrawerContent =
@@ -111,7 +110,6 @@ export default function WalletPage() {
   const { walletState, isLoading: isWalletLoading, markAsBackedUp, refreshBalance } = useWallet();
   const { payments, isLoading: isLoadingPayments, fetchPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
-  const { balanceHidden, toggleBalanceVisibility } = useWalletPreferences();
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -133,6 +131,7 @@ export default function WalletPage() {
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
   const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
   const [walletEasterEggCelebrationKey, setWalletEasterEggCelebrationKey] = useState(0);
+  const [showWakeLockEnabledIndicator, setShowWakeLockEnabledIndicator] = useState(false);
 
   const shouldKeepWalletAwake =
     !isCheckingAuth &&
@@ -141,7 +140,32 @@ export default function WalletPage() {
     walletState.isInitialized &&
     walletState.isConnected;
 
-  useScreenWakeLock({ enabled: shouldKeepWalletAwake });
+  const screenWakeLock = useScreenWakeLock({ enabled: shouldKeepWalletAwake });
+  const wakeLockRequestRef = useRef(screenWakeLock.request);
+
+  useEffect(() => {
+    wakeLockRequestRef.current = screenWakeLock.request;
+  }, [screenWakeLock.request]);
+
+  useEffect(() => {
+    if (!showWakeLockEnabledIndicator || typeof window === 'undefined') {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      setShowWakeLockEnabledIndicator(false);
+    }, 1600);
+
+    return () => window.clearTimeout(timeout);
+  }, [showWakeLockEnabledIndicator]);
+
+  const handleWakeLockEnable = useCallback(async () => {
+    const wakeLockActive = await wakeLockRequestRef.current();
+
+    if (wakeLockActive) {
+      setShowWakeLockEnabledIndicator(true);
+    }
+  }, []);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
@@ -251,10 +275,10 @@ export default function WalletPage() {
       buttons: walletState.isConnected
         ? [
             {
-              id: 'toggle-balance',
-              icon: balanceHidden ? EyeOff : Eye,
-              onClick: toggleBalanceVisibility,
-              label: balanceHidden ? 'Show balance' : 'Hide balance',
+              id: 'wake-lock',
+              icon: showWakeLockEnabledIndicator ? Check : Gamepad2,
+              onClick: handleWakeLockEnable,
+              label: showWakeLockEnabledIndicator ? 'Wake lock enabled' : 'Keep screen awake',
             },
             {
               id: 'settings',
@@ -274,9 +298,9 @@ export default function WalletPage() {
     applyRouteConfig,
     clearRoute,
     router,
+    handleWakeLockEnable,
     walletState.isConnected,
-    balanceHidden,
-    toggleBalanceVisibility,
+    showWakeLockEnabledIndicator,
   ]);
 
   // Determine initial step based on wallet state

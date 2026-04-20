@@ -22,9 +22,14 @@ interface UseScreenWakeLockResult {
   supported: boolean | null;
   errorReason: WakeLockErrorReason | null;
   errorMessage: string | null;
+  request: () => Promise<boolean>;
 }
 
-const INITIAL_STATE: UseScreenWakeLockResult = {
+type ScreenWakeLockState = Omit<UseScreenWakeLockResult, 'request'>;
+
+const NOOP_REQUEST = async () => false;
+
+const INITIAL_STATE: ScreenWakeLockState = {
   active: false,
   supported: null,
   errorReason: null,
@@ -32,12 +37,12 @@ const INITIAL_STATE: UseScreenWakeLockResult = {
 };
 
 export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScreenWakeLockResult {
-  const [state, setState] = useState<UseScreenWakeLockResult>(INITIAL_STATE);
+  const [state, setState] = useState<ScreenWakeLockState>(INITIAL_STATE);
   const sentinelRef = useRef<ScreenWakeLockSentinel | null>(null);
-  const requestInFlightRef = useRef<Promise<void> | null>(null);
+  const requestInFlightRef = useRef<Promise<boolean> | null>(null);
   const enabledRef = useRef(enabled);
   const unmountedRef = useRef(false);
-  const requestWakeLockRef = useRef<(() => Promise<void | undefined>) | null>(null);
+  const requestWakeLockRef = useRef<(() => Promise<boolean>) | null>(null);
   const interactionRetryCleanupRef = useRef<(() => void) | null>(null);
 
   const clearInteractionRetry = useCallback(() => {
@@ -99,11 +104,11 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
 
   const requestWakeLock = useCallback(async () => {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
-      return;
+      return false;
     }
 
     if (!enabledRef.current || document.visibilityState !== 'visible') {
-      return;
+      return false;
     }
 
     const wakeLockNavigator = navigator as NavigatorWithWakeLock;
@@ -113,17 +118,21 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
 
       if (!unmountedRef.current) {
         setState({
+          ...INITIAL_STATE,
           active: false,
           supported: false,
           errorReason: 'unsupported',
-          errorMessage: null,
         });
       }
-      return;
+      return false;
     }
 
-    if (sentinelRef.current || requestInFlightRef.current) {
-      return requestInFlightRef.current ?? undefined;
+    if (sentinelRef.current) {
+      return true;
+    }
+
+    if (requestInFlightRef.current) {
+      return requestInFlightRef.current;
     }
 
     requestInFlightRef.current = (async () => {
@@ -134,7 +143,7 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
 
         if (!enabledRef.current || unmountedRef.current) {
           await sentinel.release().catch(() => undefined);
-          return;
+          return false;
         }
 
         clearInteractionRetry();
@@ -160,23 +169,26 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
 
         if (!unmountedRef.current) {
           setState({
+            ...INITIAL_STATE,
             active: true,
             supported: true,
             errorReason: null,
-            errorMessage: null,
           });
         }
+        return true;
       } catch (error) {
         shouldScheduleInteractionRetry = true;
 
         if (!unmountedRef.current) {
           setState({
+            ...INITIAL_STATE,
             active: false,
             supported: true,
             errorReason: 'request-failed',
             errorMessage: error instanceof Error ? error.message : 'Failed to keep screen awake',
           });
         }
+        return false;
       } finally {
         requestInFlightRef.current = null;
 
@@ -232,5 +244,8 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
     };
   }, [clearInteractionRetry]);
 
-  return state;
+  return {
+    ...state,
+    request: requestWakeLockRef.current ?? NOOP_REQUEST,
+  };
 }

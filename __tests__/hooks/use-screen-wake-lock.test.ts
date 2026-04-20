@@ -144,6 +144,33 @@ describe('useScreenWakeLock', () => {
     });
   });
 
+  it('exposes a direct request method for explicit user-gesture retries', async () => {
+    const sentinel = new MockWakeLockSentinel();
+    const request = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Not allowed'))
+      .mockResolvedValueOnce(sentinel);
+    setWakeLock({ request });
+
+    const { result } = renderHook(() => useScreenWakeLock({ enabled: true }));
+
+    await waitFor(() => {
+      expect(result.current.errorReason).toBe('request-failed');
+    });
+
+    await act(async () => {
+      await result.current.request();
+    });
+
+    await waitFor(() => {
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+  });
+
   it('retries after the page becomes visible and the user interacts again', async () => {
     const firstSentinel = new MockWakeLockSentinel();
     const secondSentinel = new MockWakeLockSentinel();

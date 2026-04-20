@@ -3,13 +3,15 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { Switch } from '@/components/ui/switch';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { resetWalletInitialization, useWallet } from '@/lib/hooks/use-wallet';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
+import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, ChevronRight, Lock, Shield, Trash2 } from 'lucide-react';
+import { AlertCircle, ChevronRight, EyeOff, Lock, Shield, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -17,6 +19,7 @@ export default function WalletSettingsPage() {
   const router = useRouter();
   const pathname = usePathname();
   const { walletState, lockWallet } = useWallet();
+  const { balanceHidden, setBalanceHidden } = useWalletPreferences();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const [showDeleteSheet, setShowDeleteSheet] = useState(false);
   const [showBetaSheet, setShowBetaSheet] = useState(false);
@@ -113,6 +116,19 @@ export default function WalletSettingsPage() {
             </div>
             <CircledIconButton icon={ChevronRight} className='bg-white' />
           </button>
+
+          <div className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200'>
+              <EyeOff className='h-5 w-5 text-gray-700' />
+            </div>
+            <div className='flex-1'>
+              <div className='font-medium'>Hide balance and values</div>
+              <div className='text-sm text-muted-foreground'>
+                Keep wallet amounts hidden across the wallet.
+              </div>
+            </div>
+            <Switch checked={balanceHidden} onCheckedChange={setBalanceHidden} />
+          </div>
         </div>
       </div>
 
