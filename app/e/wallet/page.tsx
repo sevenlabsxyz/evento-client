@@ -25,6 +25,7 @@ import { TransactionDetailsSheet } from '@/components/wallet/transaction-details
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
+import { WalletEasterEggConfetti } from '@/components/wallet/wallet-easter-egg-confetti';
 import { WalletEducationList } from '@/components/wallet/wallet-education-list';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { WalletLoadingScreen } from '@/components/wallet/wallet-loading-screen';
@@ -36,6 +37,7 @@ import { Env } from '@/lib/constants/env';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
+import { useScreenWakeLock } from '@/lib/hooks/use-screen-wake-lock';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
@@ -46,6 +48,7 @@ import type { Contact } from '@/lib/types/wallet';
 import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
 import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
 import {
@@ -129,6 +132,16 @@ export default function WalletPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
   const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
+  const [walletEasterEggCelebrationKey, setWalletEasterEggCelebrationKey] = useState(0);
+
+  const shouldKeepWalletAwake =
+    !isCheckingAuth &&
+    !isWalletLoading &&
+    step === 'main' &&
+    walletState.isInitialized &&
+    walletState.isConnected;
+
+  useScreenWakeLock({ enabled: shouldKeepWalletAwake });
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
@@ -422,6 +435,32 @@ export default function WalletPage() {
     return () => unsubscribe();
   }, [walletState.isConnected, router]);
 
+  useEffect(() => {
+    if (!walletState.isConnected || step !== 'main') {
+      return;
+    }
+
+    const unsubscribe = breezSDK.onEvent((event) => {
+      if (event.type !== 'paymentSucceeded') {
+        return;
+      }
+
+      const payment = (event as { payment?: Payment }).payment;
+
+      if (!payment || payment.paymentType !== 'receive') {
+        return;
+      }
+
+      if (!matchWalletEasterEgg(payment)) {
+        return;
+      }
+
+      setWalletEasterEggCelebrationKey((currentKey) => currentKey + 1);
+    });
+
+    return () => unsubscribe();
+  }, [step, walletState.isConnected]);
+
   // Fetch educational blog post for onchain deposits
   useEffect(() => {
     const fetchOnchainEducationalPost = async () => {
@@ -505,7 +544,8 @@ export default function WalletPage() {
           parsed = await breezSDK.parseInput(cleanedData);
         } catch (breezError) {
           // Check if error is CORS/network related
-          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const errorMessage =
+            breezError instanceof Error ? breezError.message : String(breezError);
           const isCorsError =
             errorMessage.includes('CORS') ||
             errorMessage.includes('Access-Control-Allow-Origin') ||
@@ -639,6 +679,7 @@ export default function WalletPage() {
   // Main Wallet Screen
   return (
     <div className='min-h-screen bg-white'>
+      <WalletEasterEggConfetti celebrationKey={walletEasterEggCelebrationKey} />
       <div className='mx-auto bg-white md:max-w-md'>
         <div className='px-4 pt-4'>
           <div>

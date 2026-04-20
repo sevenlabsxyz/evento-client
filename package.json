@@ -105,6 +105,7 @@
     "qrcode": "^1.5.4",
     "qrcode.react": "^4.2.0",
     "react": "^18",
+    "react-confetti": "^6.4.0",
     "react-day-picker": "^9.13.0",
     "react-dom": "^18",
     "react-hook-form": "^7.60.0",
