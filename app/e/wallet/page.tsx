@@ -25,6 +25,7 @@ import { TransactionDetailsSheet } from '@/components/wallet/transaction-details
 import { TransactionHistory } from '@/components/wallet/transaction-history';
 import { TransactionHistorySheet } from '@/components/wallet/transaction-history-sheet';
 import { WalletBalance } from '@/components/wallet/wallet-balance';
+import { WalletEasterEggConfetti } from '@/components/wallet/wallet-easter-egg-confetti';
 import { WalletEducationList } from '@/components/wallet/wallet-education-list';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
 import { WalletLoadingScreen } from '@/components/wallet/wallet-loading-screen';
@@ -47,6 +48,7 @@ import type { Contact } from '@/lib/types/wallet';
 import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
+import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
 import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
 import {
@@ -130,6 +132,7 @@ export default function WalletPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
   const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
+  const [walletEasterEggCelebrationKey, setWalletEasterEggCelebrationKey] = useState(0);
 
   const shouldKeepWalletAwake =
     !isCheckingAuth &&
@@ -432,6 +435,32 @@ export default function WalletPage() {
     return () => unsubscribe();
   }, [walletState.isConnected, router]);
 
+  useEffect(() => {
+    if (!walletState.isConnected || step !== 'main') {
+      return;
+    }
+
+    const unsubscribe = breezSDK.onEvent((event) => {
+      if (event.type !== 'paymentSucceeded') {
+        return;
+      }
+
+      const payment = (event as { payment?: Payment }).payment;
+
+      if (!payment || payment.paymentType !== 'receive') {
+        return;
+      }
+
+      if (!matchWalletEasterEgg(payment)) {
+        return;
+      }
+
+      setWalletEasterEggCelebrationKey((currentKey) => currentKey + 1);
+    });
+
+    return () => unsubscribe();
+  }, [step, walletState.isConnected]);
+
   // Fetch educational blog post for onchain deposits
   useEffect(() => {
     const fetchOnchainEducationalPost = async () => {
@@ -650,6 +679,7 @@ export default function WalletPage() {
   // Main Wallet Screen
   return (
     <div className='min-h-screen bg-white'>
+      <WalletEasterEggConfetti celebrationKey={walletEasterEggCelebrationKey} />
       <div className='mx-auto bg-white md:max-w-md'>
         <div className='px-4 pt-4'>
           <div>
