@@ -97,8 +97,8 @@ export function BackupChoiceSheet({
     setSeedPin('');
   };
 
-  const handleGetBackup = async () => {
-    const credential = isPasswordMode ? password : pin;
+  const handleGetBackup = async (pinToUse = pin) => {
+    const credential = isPasswordMode ? password : pinToUse;
 
     if (!credential || credential.length < 4) {
       toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
@@ -174,8 +174,8 @@ export function BackupChoiceSheet({
   };
 
   // Seed phrase handlers
-  const handleSeedPinVerify = async () => {
-    const credential = isSeedPasswordMode ? seedPassword : seedPin;
+  const handleSeedPinVerify = async (pinToUse = seedPin) => {
+    const credential = isSeedPasswordMode ? seedPassword : pinToUse;
 
     if (!credential || credential.length < 4) {
       toast.error(isSeedPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
@@ -378,15 +378,17 @@ export function BackupChoiceSheet({
               </div>
 
               <NumericKeypad
+                value={pin}
                 onNumberClick={(num) => {
-                  if (pin.length < 6) {
-                    setPin(pin + num);
-                  }
+                  setPin((current) => (current.length < 6 ? current + num : current));
                 }}
-                onDelete={() => setPin(pin.slice(0, -1))}
+                onDelete={() => setPin((current) => current.slice(0, -1))}
                 onLongPressDelete={handleLongPressDelete}
+                onComplete={handleGetBackup}
                 showDecimal={false}
                 disabled={isLoading}
+                enableKeyboard={open}
+                maxLength={6}
               />
             </>
           )}
@@ -394,7 +396,7 @@ export function BackupChoiceSheet({
           {/* Buttons */}
           <div className='flex flex-col gap-3'>
             <Button
-              onClick={handleGetBackup}
+              onClick={() => handleGetBackup()}
               className='w-full rounded-full'
               size='lg'
               disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isLoading}
@@ -558,15 +560,17 @@ export function BackupChoiceSheet({
               </div>
 
               <NumericKeypad
+                value={seedPin}
                 onNumberClick={(num) => {
-                  if (seedPin.length < 6) {
-                    setSeedPin(seedPin + num);
-                  }
+                  setSeedPin((current) => (current.length < 6 ? current + num : current));
                 }}
-                onDelete={() => setSeedPin(seedPin.slice(0, -1))}
+                onDelete={() => setSeedPin((current) => current.slice(0, -1))}
                 onLongPressDelete={handleSeedLongPressDelete}
+                onComplete={handleSeedPinVerify}
                 showDecimal={false}
                 disabled={isVerifying}
+                enableKeyboard={open}
+                maxLength={6}
               />
             </>
           )}
@@ -574,7 +578,7 @@ export function BackupChoiceSheet({
           {/* Buttons */}
           <div className='flex flex-col gap-3'>
             <Button
-              onClick={handleSeedPinVerify}
+              onClick={() => handleSeedPinVerify()}
               className='w-full rounded-full'
               size='lg'
               disabled={
