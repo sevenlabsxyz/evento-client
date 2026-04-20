@@ -61,7 +61,7 @@ import {
   Settings,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 type WalletStep = 'welcome' | 'setup' | 'restore' | 'backup' | 'main';
 type DrawerContent =
@@ -130,7 +130,6 @@ export default function WalletPage() {
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
   const [actionMenuContact, setActionMenuContact] = useState<Contact | null>(null);
   const [devLnurlWithdrawSearch, setDevLnurlWithdrawSearch] = useState('');
-  const shownWakeLockMessagesRef = useRef(new Set<string>());
 
   const shouldKeepWalletAwake =
     !isCheckingAuth &&
@@ -139,10 +138,7 @@ export default function WalletPage() {
     walletState.isInitialized &&
     walletState.isConnected;
 
-  const { errorMessage: wakeLockErrorMessage, errorReason: wakeLockErrorReason } =
-    useScreenWakeLock({
-      enabled: shouldKeepWalletAwake,
-    });
+  useScreenWakeLock({ enabled: shouldKeepWalletAwake });
 
   useEffect(() => {
     if (process.env.NODE_ENV !== 'development' || typeof window === 'undefined') {
@@ -579,33 +575,6 @@ export default function WalletPage() {
       current.includes('lnurl-withdraw') ? current : [...current, 'lnurl-withdraw']
     );
   }, [devLnurlWithdrawConfig]);
-
-  useEffect(() => {
-    if (!shouldKeepWalletAwake || !wakeLockErrorReason) {
-      return;
-    }
-
-    const messageKey = `${wakeLockErrorReason}:${wakeLockErrorMessage ?? ''}`;
-
-    if (shownWakeLockMessagesRef.current.has(messageKey)) {
-      return;
-    }
-
-    shownWakeLockMessagesRef.current.add(messageKey);
-
-    if (wakeLockErrorReason === 'unsupported') {
-      toast.info(
-        'This browser cannot keep the wallet screen awake automatically.',
-        'Keep Screen Awake Unavailable'
-      );
-      return;
-    }
-
-    toast.info(
-      'Your device would not keep the wallet screen awake right now. Battery saver or browser restrictions may be blocking it.',
-      'Keep Screen Awake Unavailable'
-    );
-  }, [shouldKeepWalletAwake, wakeLockErrorMessage, wakeLockErrorReason]);
 
   if (isCheckingAuth || isWalletLoading) {
     return (
