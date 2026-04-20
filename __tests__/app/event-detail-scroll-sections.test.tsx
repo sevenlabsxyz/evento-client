@@ -12,12 +12,13 @@ const mockClearRoute = jest.fn();
 const detailsScrollIntoView = jest.fn();
 const commentsScrollIntoView = jest.fn();
 const galleryScrollIntoView = jest.fn();
+const mockSearchParams = new URLSearchParams();
 
 jest.mock('next/navigation', () => ({
   useParams: () => ({ id: 'event-123' }),
   useRouter: () => ({ replace: mockReplace, push: mockPush, back: mockBack }),
   usePathname: () => '/e/event-123',
-  useSearchParams: () => new URLSearchParams(),
+  useSearchParams: () => mockSearchParams,
 }));
 
 jest.mock('@/lib/hooks/use-auth', () => ({
@@ -209,6 +210,7 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     detailsScrollIntoView.mockClear();
     commentsScrollIntoView.mockClear();
     galleryScrollIntoView.mockClear();
+    mockSearchParams.delete('tab');
   });
 
   afterEach(() => {
@@ -221,6 +223,27 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     expect(screen.getByTestId('details-section-content')).toBeInTheDocument();
     expect(screen.getByTestId('comments-section-content')).toBeInTheDocument();
     expect(screen.getByTestId('gallery-section-content')).toBeInTheDocument();
+  });
+
+  it('preserves a deep-linked non-default tab on first render', async () => {
+    mockSearchParams.set('tab', 'gallery');
+
+    render(<EventDetailPageClient />);
+
+    Object.defineProperty(
+      screen.getByText('Gallery Section').closest('section'),
+      'scrollIntoView',
+      {
+        value: galleryScrollIntoView,
+        configurable: true,
+      }
+    );
+
+    await waitFor(() => {
+      expect(galleryScrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'start' });
+    });
+
+    expect(mockReplace).not.toHaveBeenCalledWith('/e/event-123', { scroll: false });
   });
 
   it('scrolls to the requested section instead of swapping page content when a tab is clicked', async () => {

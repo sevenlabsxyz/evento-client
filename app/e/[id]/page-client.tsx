@@ -61,6 +61,7 @@ export default function EventDetailPageClient() {
   const commentsSectionRef = useRef<HTMLElement | null>(null);
   const gallerySectionRef = useRef<HTMLElement | null>(null);
   const isProgrammaticScrollRef = useRef(false);
+  const isApplyingInitialDeepLinkRef = useRef(false);
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -127,6 +128,8 @@ export default function EventDetailPageClient() {
 
     setActiveTab(nextTab);
 
+    isApplyingInitialDeepLinkRef.current = nextTab !== 'details';
+
     if (nextTab === 'details') {
       return;
     }
@@ -134,6 +137,7 @@ export default function EventDetailPageClient() {
     const timeoutId = window.setTimeout(() => {
       const sectionElement = getSectionElement(nextTab);
       if (!sectionElement) {
+        isApplyingInitialDeepLinkRef.current = false;
         return;
       }
 
@@ -141,10 +145,14 @@ export default function EventDetailPageClient() {
       sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
       window.setTimeout(() => {
         isProgrammaticScrollRef.current = false;
+        isApplyingInitialDeepLinkRef.current = false;
       }, 400);
     }, 0);
 
-    return () => window.clearTimeout(timeoutId);
+    return () => {
+      isApplyingInitialDeepLinkRef.current = false;
+      window.clearTimeout(timeoutId);
+    };
   }, [getSectionElement, searchParams, sectionIds]);
 
   // Keep the selected tab in sync with the section nearest the top of the viewport.
@@ -162,7 +170,7 @@ export default function EventDetailPageClient() {
     }
 
     const handleScroll = () => {
-      if (isProgrammaticScrollRef.current) {
+      if (isProgrammaticScrollRef.current || isApplyingInitialDeepLinkRef.current) {
         return;
       }
 
