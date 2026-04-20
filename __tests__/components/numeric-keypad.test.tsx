@@ -83,4 +83,18 @@ describe('NumericKeypad', () => {
 
     expect(onNumberClick).not.toHaveBeenCalled();
   });
+
+  it('ignores keyboard input when modifier keys are pressed', () => {
+    const onNumberClick = jest.fn();
+    const onDelete = jest.fn();
+
+    render(<NumericKeypad value='' onNumberClick={onNumberClick} onDelete={onDelete} />);
+
+    fireEvent.keyDown(window, { key: '1', metaKey: true });
+    fireEvent.keyDown(window, { key: '2', ctrlKey: true });
+    fireEvent.keyDown(window, { key: 'Backspace', altKey: true });
+
+    expect(onNumberClick).not.toHaveBeenCalled();
+    expect(onDelete).not.toHaveBeenCalled();
+  });
 });
