@@ -88,12 +88,10 @@ export function useScreenWakeLock({ enabled }: UseScreenWakeLockOptions): UseScr
       passive: true,
     };
 
-    document.addEventListener('pointerdown', retryOnInteraction, addOptions);
     document.addEventListener('touchstart', retryOnInteraction, addOptions);
     document.addEventListener('click', retryOnInteraction, addOptions);
 
     interactionRetryCleanupRef.current = () => {
-      document.removeEventListener('pointerdown', retryOnInteraction);
       document.removeEventListener('touchstart', retryOnInteraction);
       document.removeEventListener('click', retryOnInteraction);
     };

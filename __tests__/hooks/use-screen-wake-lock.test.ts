@@ -81,7 +81,7 @@ describe('useScreenWakeLock', () => {
     expect(result.current.supported).toBe(true);
   });
 
-  it('retries the wake lock request after a user interaction when the initial request fails', async () => {
+  it('retries the wake lock request after a click when the initial request fails', async () => {
     const sentinel = new MockWakeLockSentinel();
     const request = jest
       .fn()
@@ -97,6 +97,39 @@ describe('useScreenWakeLock', () => {
 
     act(() => {
       document.dispatchEvent(new MouseEvent('click'));
+    });
+
+    await waitFor(() => {
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+  });
+
+  it('retries the wake lock request after a touchstart when the initial request fails', async () => {
+    const sentinel = new MockWakeLockSentinel();
+    const request = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Not allowed'))
+      .mockResolvedValueOnce(sentinel);
+    setWakeLock({ request });
+
+    const { result } = renderHook(() => useScreenWakeLock({ enabled: true }));
+
+    await waitFor(() => {
+      expect(result.current.errorReason).toBe('request-failed');
+    });
+
+    act(() => {
+      document.dispatchEvent(new Event('pointerdown'));
+    });
+
+    expect(request).toHaveBeenCalledTimes(1);
+
+    act(() => {
+      document.dispatchEvent(new Event('touchstart'));
     });
 
     await waitFor(() => {
