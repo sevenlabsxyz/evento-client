@@ -62,6 +62,7 @@ export default function EventDetailPageClient() {
   const gallerySectionRef = useRef<HTMLElement | null>(null);
   const isProgrammaticScrollRef = useRef(false);
   const isApplyingInitialDeepLinkRef = useRef(false);
+  const resetTabHighlightTimeoutRef = useRef<number | null>(null);
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -98,6 +99,17 @@ export default function EventDetailPageClient() {
     return gallerySectionRef.current ?? document.querySelector('#event-section-gallery');
   }, []);
 
+  const scheduleDetailsTabReset = useCallback(() => {
+    if (resetTabHighlightTimeoutRef.current !== null) {
+      window.clearTimeout(resetTabHighlightTimeoutRef.current);
+    }
+
+    resetTabHighlightTimeoutRef.current = window.setTimeout(() => {
+      setActiveTab('details');
+      resetTabHighlightTimeoutRef.current = null;
+    }, 1000);
+  }, []);
+
   // Handle tab changes by scrolling to the matching section and updating the URL.
   const handleTabChange = useCallback(
     (tab: (typeof sectionIds)[number]) => {
@@ -114,8 +126,11 @@ export default function EventDetailPageClient() {
       window.setTimeout(() => {
         isProgrammaticScrollRef.current = false;
       }, 400);
+      if (tab !== 'details') {
+        scheduleDetailsTabReset();
+      }
     },
-    [getSectionElement, updateTabUrl]
+    [getSectionElement, scheduleDetailsTabReset, updateTabUrl]
   );
 
   // Sync active tab from the URL and keep deep links working.
@@ -146,62 +161,28 @@ export default function EventDetailPageClient() {
       window.setTimeout(() => {
         isProgrammaticScrollRef.current = false;
         isApplyingInitialDeepLinkRef.current = false;
+        scheduleDetailsTabReset();
       }, 400);
     }, 0);
 
     return () => {
       isApplyingInitialDeepLinkRef.current = false;
+      if (resetTabHighlightTimeoutRef.current !== null) {
+        window.clearTimeout(resetTabHighlightTimeoutRef.current);
+        resetTabHighlightTimeoutRef.current = null;
+      }
       window.clearTimeout(timeoutId);
     };
-  }, [getSectionElement, searchParams, sectionIds]);
+  }, [getSectionElement, scheduleDetailsTabReset, searchParams, sectionIds]);
 
-  // Keep the selected tab in sync with the section nearest the top of the viewport.
+  // The tabs now act as section jump links, so reset their visual state back to Details after navigation.
   useEffect(() => {
-    const sections = [
-      { id: 'details' as const, element: detailsSectionRef.current },
-      { id: 'comments' as const, element: commentsSectionRef.current },
-      { id: 'gallery' as const, element: gallerySectionRef.current },
-    ].filter((section): section is { id: (typeof sectionIds)[number]; element: HTMLElement } =>
-      Boolean(section.element)
-    );
-
-    if (sections.length === 0) {
-      return;
-    }
-
-    const handleScroll = () => {
-      if (isProgrammaticScrollRef.current || isApplyingInitialDeepLinkRef.current) {
-        return;
-      }
-
-      const nextActiveSection = sections.reduce(
-        (closest, section) => {
-          const distanceFromTop = Math.abs(section.element.getBoundingClientRect().top - 96);
-
-          if (!closest || distanceFromTop < closest.distanceFromTop) {
-            return { id: section.id, distanceFromTop };
-          }
-
-          return closest;
-        },
-        null as { id: (typeof sectionIds)[number]; distanceFromTop: number } | null
-      );
-
-      if (!nextActiveSection || nextActiveSection.id === activeTab) {
-        return;
-      }
-
-      setActiveTab(nextActiveSection.id);
-      updateTabUrl(nextActiveSection.id);
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
-
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      if (resetTabHighlightTimeoutRef.current !== null) {
+        window.clearTimeout(resetTabHighlightTimeoutRef.current);
+      }
     };
-  }, [activeTab, sectionIds, updateTabUrl]);
+  }, []);
 
   // Handle post-authentication RSVP processing
   useEffect(() => {

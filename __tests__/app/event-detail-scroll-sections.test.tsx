@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 
 import EventDetailPageClient from '@/app/e/[id]/page-client';
 
@@ -189,10 +189,21 @@ jest.mock('@/components/lightbox-viewer', () => ({
 }));
 
 jest.mock('@/components/ui/animated-tabs', () => ({
-  AnimatedTabs: ({ tabs }: { tabs: Array<{ title: string; onClick?: () => void }> }) => (
+  AnimatedTabs: ({
+    tabs,
+    selected,
+  }: {
+    tabs: Array<{ title: string; onClick?: () => void }>;
+    selected?: number | null;
+  }) => (
     <div>
-      {tabs.map((tab) => (
-        <button key={tab.title} onClick={tab.onClick} type='button'>
+      {tabs.map((tab, index) => (
+        <button
+          key={tab.title}
+          onClick={tab.onClick}
+          type='button'
+          data-selected={selected === index ? 'true' : 'false'}
+        >
           {tab.title}
         </button>
       ))}
@@ -206,6 +217,7 @@ jest.mock('@/components/ui/skeleton', () => ({
 
 describe('EventDetailPageClient section scrolling tabs', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
     detailsScrollIntoView.mockClear();
     commentsScrollIntoView.mockClear();
@@ -214,6 +226,10 @@ describe('EventDetailPageClient section scrolling tabs', () => {
   });
 
   afterEach(() => {
+    act(() => {
+      jest.runOnlyPendingTimers();
+    });
+    jest.useRealTimers();
     jest.restoreAllMocks();
   });
 
@@ -246,6 +262,35 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     });
 
     expect(mockReplace).not.toHaveBeenCalledWith('/e/event-123', { scroll: false });
+  });
+
+  it('returns the tab highlight to Details shortly after section navigation', async () => {
+    render(<EventDetailPageClient />);
+
+    Object.defineProperty(
+      screen.getByText('Gallery Section').closest('section'),
+      'scrollIntoView',
+      {
+        value: galleryScrollIntoView,
+        configurable: true,
+      }
+    );
+
+    const detailsTab = screen.getByRole('button', { name: 'Details' });
+    const galleryTab = screen.getByRole('button', { name: 'Gallery' });
+
+    fireEvent.click(galleryTab);
+
+    expect(galleryTab).toHaveAttribute('data-selected', 'true');
+
+    act(() => {
+      jest.advanceTimersByTime(1100);
+    });
+
+    await waitFor(() => {
+      expect(detailsTab).toHaveAttribute('data-selected', 'true');
+    });
+    expect(galleryTab).toHaveAttribute('data-selected', 'false');
   });
 
   it('scrolls to the requested section instead of swapping page content when a tab is clicked', async () => {
