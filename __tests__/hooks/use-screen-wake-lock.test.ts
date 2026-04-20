@@ -81,6 +81,78 @@ describe('useScreenWakeLock', () => {
     expect(result.current.supported).toBe(true);
   });
 
+  it('retries the wake lock request after a user interaction when the initial request fails', async () => {
+    const sentinel = new MockWakeLockSentinel();
+    const request = jest
+      .fn()
+      .mockRejectedValueOnce(new Error('Not allowed'))
+      .mockResolvedValueOnce(sentinel);
+    setWakeLock({ request });
+
+    const { result } = renderHook(() => useScreenWakeLock({ enabled: true }));
+
+    await waitFor(() => {
+      expect(result.current.errorReason).toBe('request-failed');
+    });
+
+    act(() => {
+      document.dispatchEvent(new MouseEvent('click'));
+    });
+
+    await waitFor(() => {
+      expect(request).toHaveBeenCalledTimes(2);
+    });
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+  });
+
+  it('retries after the page becomes visible and the user interacts again', async () => {
+    const firstSentinel = new MockWakeLockSentinel();
+    const secondSentinel = new MockWakeLockSentinel();
+    const request = jest
+      .fn()
+      .mockResolvedValueOnce(firstSentinel)
+      .mockRejectedValueOnce(new Error('Not allowed'))
+      .mockResolvedValueOnce(secondSentinel);
+
+    setWakeLock({ request });
+
+    const { result } = renderHook(() => useScreenWakeLock({ enabled: true }));
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+
+    act(() => {
+      setVisibilityState('hidden');
+      firstSentinel.dispatchRelease();
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    act(() => {
+      setVisibilityState('visible');
+      document.dispatchEvent(new Event('visibilitychange'));
+    });
+
+    await waitFor(() => {
+      expect(result.current.errorReason).toBe('request-failed');
+    });
+
+    act(() => {
+      document.dispatchEvent(new MouseEvent('click'));
+    });
+
+    await waitFor(() => {
+      expect(request).toHaveBeenCalledTimes(3);
+    });
+
+    await waitFor(() => {
+      expect(result.current.active).toBe(true);
+    });
+  });
+
   it('reacquires the wake lock when the page becomes visible again', async () => {
     const firstSentinel = new MockWakeLockSentinel();
     const secondSentinel = new MockWakeLockSentinel();
