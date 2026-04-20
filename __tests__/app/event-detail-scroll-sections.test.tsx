@@ -223,6 +223,8 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     expect(screen.getByTestId('details-section-content')).toBeInTheDocument();
     expect(screen.getByTestId('comments-section-content')).toBeInTheDocument();
     expect(screen.getByTestId('gallery-section-content')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Comments' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Gallery' })).toBeInTheDocument();
   });
 
   it('preserves a deep-linked non-default tab on first render', async () => {

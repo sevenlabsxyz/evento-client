@@ -560,17 +560,25 @@ export default function EventDetailPageClient() {
     </div>
   );
 
-  const renderCommentsTab = () => <EventComments eventId={event.id} />;
+  const renderCommentsTab = () => (
+    <div className='border-t border-gray-100 py-6'>
+      <h2 className='mb-4 text-lg font-semibold text-gray-900'>Comments</h2>
+      <EventComments eventId={event.id} />
+    </div>
+  );
 
   const renderGalleryTab = () => {
     return (
-      <EventGallery
-        event={event}
-        onImageClick={(index) => {
-          setLightboxImages(event.galleryImages || []);
-          setSelectedImageIndex(index);
-        }}
-      />
+      <div className='border-t border-gray-100 py-6'>
+        <h2 className='mb-4 text-lg font-semibold text-gray-900'>Gallery</h2>
+        <EventGallery
+          event={event}
+          onImageClick={(index) => {
+            setLightboxImages(event.galleryImages || []);
+            setSelectedImageIndex(index);
+          }}
+        />
+      </div>
     );
   };
 
