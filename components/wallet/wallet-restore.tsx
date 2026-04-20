@@ -73,20 +73,18 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
 
   // Handle PIN entry for encrypted backup
   const handleNumberClick = (num: string) => {
-    if (step === 'enter-pin' && pin.length < 6) {
-      setPin(pin + num);
-    } else if (step === 'create-pin' && pin.length < 6) {
-      setPin(pin + num);
-    } else if (step === 'confirm-pin' && confirmPin.length < 6) {
-      setConfirmPin(confirmPin + num);
+    if (step === 'enter-pin' || step === 'create-pin') {
+      setPin((current) => (current.length < 6 ? current + num : current));
+    } else if (step === 'confirm-pin') {
+      setConfirmPin((current) => (current.length < 6 ? current + num : current));
     }
   };
 
   const handleDelete = () => {
     if (step === 'enter-pin' || step === 'create-pin') {
-      setPin(pin.slice(0, -1));
+      setPin((current) => current.slice(0, -1));
     } else if (step === 'confirm-pin') {
-      setConfirmPin(confirmPin.slice(0, -1));
+      setConfirmPin((current) => current.slice(0, -1));
     }
   };
 
@@ -96,8 +94,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   };
 
   // Restore encrypted backup with PIN
-  const handleRestoreEncrypted = async () => {
-    const credential = isPasswordMode ? password : pin;
+  const handleRestoreEncrypted = async (pinToUse = pin) => {
+    const credential = isPasswordMode ? password : pinToUse;
 
     if (!credential || credential.length < 4) {
       toast.error(isPasswordMode ? 'Please enter your password' : 'Please enter your PIN');
@@ -124,8 +122,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   };
 
   // Move to confirm PIN step
-  const handleCreatePinNext = () => {
-    if (pin.length < 4) {
+  const handleCreatePinNext = (pinToConfirm = pin) => {
+    if (pinToConfirm.length < 4) {
       toast.error('PIN must be at least 4 digits');
       return;
     }
@@ -133,8 +131,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
   };
 
   // Finalize mnemonic restore with new PIN
-  const handleConfirmPin = async () => {
-    if (confirmPin !== pin) {
+  const handleConfirmPin = async (confirmedPin = confirmPin) => {
+    if (confirmedPin !== pin) {
       toast.error('PINs do not match');
       setConfirmPin('');
       return;
@@ -289,11 +287,14 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
               {renderPinDots(pin)}
 
               <NumericKeypad
+                value={pin}
                 onNumberClick={handleNumberClick}
                 onDelete={handleDelete}
                 onLongPressDelete={handleLongPressDelete}
+                onComplete={handleRestoreEncrypted}
                 showDecimal={false}
                 disabled={isRestoring}
+                maxLength={6}
               />
             </>
           )}
@@ -308,7 +309,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           )}
 
           <Button
-            onClick={handleRestoreEncrypted}
+            onClick={() => handleRestoreEncrypted()}
             className='mt-6 w-full rounded-full'
             size='lg'
             disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isRestoring}
@@ -358,9 +359,12 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           {renderPinDots(pin)}
 
           <NumericKeypad
+            value={pin}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
+            onComplete={handleCreatePinNext}
             showDecimal={false}
+            maxLength={6}
           />
 
           {error && (
@@ -373,7 +377,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           )}
 
           <Button
-            onClick={handleCreatePinNext}
+            onClick={() => handleCreatePinNext()}
             className='mt-6 w-full rounded-full'
             size='lg'
             disabled={pin.length < 4}
@@ -413,10 +417,13 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           {renderPinDots(confirmPin)}
 
           <NumericKeypad
+            value={confirmPin}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
+            onComplete={handleConfirmPin}
             showDecimal={false}
             disabled={isRestoring}
+            maxLength={6}
           />
 
           {error && (
@@ -429,7 +436,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           )}
 
           <Button
-            onClick={handleConfirmPin}
+            onClick={() => handleConfirmPin()}
             className='mt-6 w-full rounded-full'
             size='lg'
             disabled={confirmPin.length < 4 || isRestoring}

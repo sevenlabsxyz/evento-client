@@ -9,7 +9,7 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { toast } from '@/lib/utils/toast';
 import { AlertCircle, AlertTriangle, KeyRound, Lock } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface WalletUnlockProps {
   onUnlock?: () => void;
@@ -25,47 +25,12 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
   const clearSeed = useWalletSeedStore((state) => state.clearSeed);
 
   const handleNumberClick = (number: string) => {
-    if (pin.length < 6) {
-      setPin(pin + number);
-    }
+    setPin((current) => (current.length < 6 ? current + number : current));
   };
 
   const handleDelete = () => {
-    setPin(pin.slice(0, -1));
+    setPin((current) => current.slice(0, -1));
   };
-
-  // Handle keyboard input for PIN entry
-  useEffect(() => {
-    if (isPasswordMode || isLoading) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Handle digit keys (0-9)
-      if (/^[0-9]$/.test(e.key)) {
-        e.preventDefault();
-        if (pin.length < 6) {
-          const newPin = pin + e.key;
-          setPin(newPin);
-
-          // Auto-submit when 6 digits are entered
-          if (newPin.length === 6) {
-            // Use setTimeout to allow state update before unlocking
-            setTimeout(() => {
-              handleUnlockWithPin(newPin);
-            }, 100);
-          }
-        }
-      }
-
-      // Handle backspace/delete
-      if (e.key === 'Backspace' || e.key === 'Delete') {
-        e.preventDefault();
-        setPin((current) => current.slice(0, -1));
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [pin, isPasswordMode, isLoading]);
 
   // Separate unlock function that accepts a PIN parameter for auto-submit
   const handleUnlockWithPin = async (pinToUse: string) => {
@@ -172,11 +137,14 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
 
             {/* Number Keypad - only shown in PIN mode */}
             <NumericKeypad
+              value={pin}
               onNumberClick={handleNumberClick}
               onDelete={handleDelete}
               onLongPressDelete={handleLongPressDelete}
+              onComplete={handleUnlockWithPin}
               showDecimal={false}
               disabled={isLoading}
+              maxLength={6}
             />
           </>
         )}

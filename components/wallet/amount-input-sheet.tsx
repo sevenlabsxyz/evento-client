@@ -12,7 +12,7 @@ interface AmountInputSheetProps {
   onOpenChange: (open: boolean) => void;
   onConfirm: (amountSats: number, sendAll?: boolean) => void;
   isLoading?: boolean;
-/** When set, shows a "Max" button that fills in the full available balance */
+  /** When set, shows a "Max" button that fills in the full available balance */
   maxAmount?: number;
   /** Minimum amount constraint (optional) */
   minAmount?: number;
@@ -205,17 +205,16 @@ export function AmountInputSheet({
 
           {/* Number Pad */}
           <NumericKeypad
+            value={inputMode === 'usd' ? amountUSD : amount}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
+            enableKeyboard={open}
             showDecimal={true}
           />
 
-
           {/* Validation Message */}
           {getValidationMessage() && (
-            <div className='text-center text-sm text-red-500'>
-              {getValidationMessage()}
-            </div>
+            <div className='text-center text-sm text-red-500'>{getValidationMessage()}</div>
           )}
           {/* Next Button */}
           <Button

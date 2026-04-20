@@ -28,31 +28,31 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
   const { checkAvailability, registerAddress } = useLightningAddress();
 
   const handleNumberClick = (num: string) => {
-    if (step === 'create-pin' && pin.length < 6) {
-      setPin(pin + num);
-    } else if (step === 'confirm-pin' && confirmPin.length < 6) {
-      setConfirmPin(confirmPin + num);
+    if (step === 'create-pin') {
+      setPin((current) => (current.length < 6 ? current + num : current));
+    } else if (step === 'confirm-pin') {
+      setConfirmPin((current) => (current.length < 6 ? current + num : current));
     }
   };
 
   const handleDelete = () => {
     if (step === 'create-pin') {
-      setPin(pin.slice(0, -1));
+      setPin((current) => current.slice(0, -1));
     } else if (step === 'confirm-pin') {
-      setConfirmPin(confirmPin.slice(0, -1));
+      setConfirmPin((current) => current.slice(0, -1));
     }
   };
 
-  const handleCreatePinNext = () => {
-    if (pin.length < 4) {
+  const handleCreatePinNext = (pinToConfirm = pin) => {
+    if (pinToConfirm.length < 4) {
       toast.error('PIN must be at least 4 digits');
       return;
     }
     setStep('confirm-pin');
   };
 
-  const handleConfirmAndCreate = async () => {
-    if (confirmPin !== pin) {
+  const handleConfirmAndCreate = async (confirmedPin = confirmPin) => {
+    if (confirmedPin !== pin) {
       toast.error('PINs do not match');
       setConfirmPin('');
       return;
@@ -193,9 +193,12 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           {renderPinDots(pin)}
 
           <NumericKeypad
+            value={pin}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
+            onComplete={handleCreatePinNext}
             showDecimal={false}
+            maxLength={6}
           />
 
           <div className='rounded-lg bg-amber-50 p-4'>
@@ -211,7 +214,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           </div>
 
           <Button
-            onClick={handleCreatePinNext}
+            onClick={() => handleCreatePinNext()}
             className='mt-6 w-full rounded-full'
             size='lg'
             disabled={pin.length < 4}
@@ -245,13 +248,16 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
           {renderPinDots(confirmPin)}
 
           <NumericKeypad
+            value={confirmPin}
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
+            onComplete={handleConfirmAndCreate}
             showDecimal={false}
+            maxLength={6}
           />
 
           <Button
-            onClick={handleConfirmAndCreate}
+            onClick={() => handleConfirmAndCreate()}
             className='mt-6 w-full rounded-full'
             size='lg'
             disabled={confirmPin.length < 4}

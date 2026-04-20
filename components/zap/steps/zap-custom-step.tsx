@@ -76,7 +76,12 @@ export function ZapCustomStep({
           </div>
 
           {/* Number Pad */}
-          <NumericKeypad onNumberClick={onNumberClick} onDelete={onDelete} showDecimal={true} />
+          <NumericKeypad
+            value={inputMode === 'usd' ? customAmountUSD : customAmount}
+            onNumberClick={onNumberClick}
+            onDelete={onDelete}
+            showDecimal={true}
+          />
 
           {/* Confirm Button */}
           <Button
