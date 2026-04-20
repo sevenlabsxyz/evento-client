@@ -37,7 +37,9 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+const EVENT_DETAIL_SECTION_IDS = ['details', 'comments', 'gallery'] as const;
 
 export default function EventDetailPageClient() {
   const params = useParams();
@@ -55,6 +57,12 @@ export default function EventDetailPageClient() {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'details');
   const [passwordAccessGranted, setPasswordAccessGranted] = useState(false);
   const cameFromManage = searchParams.get('from') === 'manage';
+  const detailsSectionRef = useRef<HTMLElement | null>(null);
+  const commentsSectionRef = useRef<HTMLElement | null>(null);
+  const gallerySectionRef = useRef<HTMLElement | null>(null);
+  const isProgrammaticScrollRef = useRef(false);
+  const isApplyingInitialDeepLinkRef = useRef(false);
+  const resetTabHighlightTimeoutRef = useRef<number | null>(null);
 
   // RSVP hooks for handling post-auth RSVP processing
   const {
@@ -65,33 +73,116 @@ export default function EventDetailPageClient() {
   const upsertRsvp = useUpsertRSVP();
   const hasProcessedPendingRsvpRef = useRef(false);
 
-  // Handle tab changes and update URL
-  const handleTabChange = (tab: string) => {
-    setActiveTab(tab);
+  const sectionIds = EVENT_DETAIL_SECTION_IDS;
 
-    // Create new URL with updated tab parameter
-    const newParams = new URLSearchParams(searchParams);
-    if (tab === 'details') {
-      // Remove tab param for the default tab to keep URL clean
-      newParams.delete('tab');
-    } else {
-      newParams.set('tab', tab);
+  const updateTabUrl = useCallback(
+    (tab: (typeof sectionIds)[number]) => {
+      const newParams = new URLSearchParams(searchParams);
+      if (tab === 'details') {
+        newParams.delete('tab');
+      } else {
+        newParams.set('tab', tab);
+      }
+
+      const queryString = newParams.toString();
+      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+      router.replace(newUrl, { scroll: false });
+    },
+    [pathname, router, searchParams]
+  );
+
+  const getSectionElement = useCallback((tab: (typeof sectionIds)[number]) => {
+    if (tab === 'details')
+      return detailsSectionRef.current ?? document.querySelector('#event-section-details');
+    if (tab === 'comments')
+      return commentsSectionRef.current ?? document.querySelector('#event-section-comments');
+    return gallerySectionRef.current ?? document.querySelector('#event-section-gallery');
+  }, []);
+
+  const scheduleDetailsTabReset = useCallback(() => {
+    if (resetTabHighlightTimeoutRef.current !== null) {
+      window.clearTimeout(resetTabHighlightTimeoutRef.current);
     }
 
-    // Update URL without causing navigation/reload
-    const newUrl = `${pathname}?${newParams.toString()}`;
-    router.replace(newUrl, { scroll: false });
-  };
+    resetTabHighlightTimeoutRef.current = window.setTimeout(() => {
+      setActiveTab('details');
+      resetTabHighlightTimeoutRef.current = null;
+    }, 1000);
+  }, []);
 
-  // Sync tab with URL when searchParams change
+  // Handle tab changes by scrolling to the matching section and updating the URL.
+  const handleTabChange = useCallback(
+    (tab: (typeof sectionIds)[number]) => {
+      setActiveTab(tab);
+      updateTabUrl(tab);
+
+      const sectionElement = getSectionElement(tab);
+      if (!sectionElement) {
+        return;
+      }
+
+      isProgrammaticScrollRef.current = true;
+      sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 400);
+      if (tab !== 'details') {
+        scheduleDetailsTabReset();
+      }
+    },
+    [getSectionElement, scheduleDetailsTabReset, updateTabUrl]
+  );
+
+  // Sync active tab from the URL and keep deep links working.
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['details', 'comments', 'gallery'].includes(tabParam)) {
-      setActiveTab(tabParam);
-    } else if (!tabParam) {
-      setActiveTab('details');
+    const nextTab =
+      tabParam && sectionIds.includes(tabParam as (typeof sectionIds)[number])
+        ? (tabParam as (typeof sectionIds)[number])
+        : 'details';
+
+    setActiveTab(nextTab);
+
+    isApplyingInitialDeepLinkRef.current = nextTab !== 'details';
+
+    if (nextTab === 'details') {
+      return;
     }
-  }, [searchParams]);
+
+    const timeoutId = window.setTimeout(() => {
+      const sectionElement = getSectionElement(nextTab);
+      if (!sectionElement) {
+        isApplyingInitialDeepLinkRef.current = false;
+        return;
+      }
+
+      isProgrammaticScrollRef.current = true;
+      sectionElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+        isApplyingInitialDeepLinkRef.current = false;
+        scheduleDetailsTabReset();
+      }, 400);
+    }, 0);
+
+    return () => {
+      isApplyingInitialDeepLinkRef.current = false;
+      if (resetTabHighlightTimeoutRef.current !== null) {
+        window.clearTimeout(resetTabHighlightTimeoutRef.current);
+        resetTabHighlightTimeoutRef.current = null;
+      }
+      window.clearTimeout(timeoutId);
+    };
+  }, [getSectionElement, scheduleDetailsTabReset, searchParams, sectionIds]);
+
+  // The tabs now act as section jump links, so reset their visual state back to Details after navigation.
+  useEffect(() => {
+    return () => {
+      if (resetTabHighlightTimeoutRef.current !== null) {
+        window.clearTimeout(resetTabHighlightTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Handle post-authentication RSVP processing
   useEffect(() => {
@@ -450,17 +541,25 @@ export default function EventDetailPageClient() {
     </div>
   );
 
-  const renderCommentsTab = () => <EventComments eventId={event.id} />;
+  const renderCommentsTab = () => (
+    <div className='border-t border-gray-100 py-6'>
+      <h2 className='mb-4 text-lg font-semibold text-gray-900'>Comments</h2>
+      <EventComments eventId={event.id} />
+    </div>
+  );
 
   const renderGalleryTab = () => {
     return (
-      <EventGallery
-        event={event}
-        onImageClick={(index) => {
-          setLightboxImages(event.galleryImages || []);
-          setSelectedImageIndex(index);
-        }}
-      />
+      <div className='border-t border-gray-100 py-6'>
+        <h2 className='mb-4 text-lg font-semibold text-gray-900'>Gallery</h2>
+        <EventGallery
+          event={event}
+          onImageClick={(index) => {
+            setLightboxImages(event.galleryImages || []);
+            setSelectedImageIndex(index);
+          }}
+        />
+      </div>
     );
   };
 
@@ -488,11 +587,9 @@ export default function EventDetailPageClient() {
             </div>
           </div>
 
-          {/* Right Column - Tabs */}
+          {/* Right Column - Section navigation */}
           <div className='pb-20 lg:w-1/2'>
-            {/* Tabbed Section */}
             <div className='mb-4 w-full bg-white'>
-              {/* Tab Headers */}
               <AnimatedTabs
                 expanded
                 className='mx-auto'
@@ -505,14 +602,39 @@ export default function EventDetailPageClient() {
                   },
                   { title: 'Gallery', icon: Image, onClick: () => handleTabChange('gallery') },
                 ]}
-                selected={['details', 'comments', 'gallery'].indexOf(activeTab)}
+                selected={sectionIds.indexOf(activeTab as (typeof sectionIds)[number])}
               />
 
-              {/* Tab Content */}
-              <div className='px-4'>
-                {activeTab === 'details' && renderDetailsTab()}
-                {activeTab === 'comments' && renderCommentsTab()}
-                {activeTab === 'gallery' && renderGalleryTab()}
+              <div className='space-y-6 px-4'>
+                <section
+                  id='event-section-details'
+                  ref={(element) => {
+                    detailsSectionRef.current = element;
+                  }}
+                  className='scroll-mt-24 space-y-6'
+                >
+                  {renderDetailsTab()}
+                </section>
+
+                <section
+                  id='event-section-comments'
+                  ref={(element) => {
+                    commentsSectionRef.current = element;
+                  }}
+                  className='scroll-mt-24'
+                >
+                  {renderCommentsTab()}
+                </section>
+
+                <section
+                  id='event-section-gallery'
+                  ref={(element) => {
+                    gallerySectionRef.current = element;
+                  }}
+                  className='scroll-mt-24'
+                >
+                  {renderGalleryTab()}
+                </section>
               </div>
             </div>
           </div>
