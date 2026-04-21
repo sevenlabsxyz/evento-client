@@ -2,8 +2,17 @@
 
 // Set to true to enable verbose wallet logging
 const DEBUG_WALLET = false;
+const DEFAULT_PASSKEY_RP_ID = 'evento.cash';
 
 import { Env } from '@/lib/constants/env';
+import { PasskeyStorageService } from '@/lib/services/passkey-storage';
+import {
+  authenticateWithPRF,
+  decryptMnemonicWithPRF,
+  isPRFDerivedWallet,
+  isPRFEncryptedWallet,
+} from '@/lib/services/passkey-service';
+import { prfOutputToMnemonic } from '@/lib/services/prf-to-mnemonic';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
@@ -94,6 +103,43 @@ async function initializeWalletState({
     const savedState = WalletStorageService.getWalletState();
 
     if (!encryptedSeed && savedState?.isInitialized) {
+      const passkeyCredentialId = PasskeyStorageService.getCredentialId();
+      const passkeyWalletData = passkeyCredentialId
+        ? PasskeyStorageService.getPasskeyWallet(passkeyCredentialId)
+        : null;
+
+      if (passkeyCredentialId && passkeyWalletData) {
+        try {
+          const authResult = await authenticateWithPRF(DEFAULT_PASSKEY_RP_ID, passkeyCredentialId, {
+            credentialId: passkeyCredentialId,
+          });
+
+          let mnemonic: string;
+          if (isPRFDerivedWallet(passkeyWalletData)) {
+            mnemonic = prfOutputToMnemonic(authResult.prfOutput);
+          } else if (isPRFEncryptedWallet(passkeyWalletData)) {
+            mnemonic = await decryptMnemonicWithPRF(passkeyWalletData, authResult.prfOutput);
+          } else {
+            throw new Error('Unsupported passkey wallet format');
+          }
+
+          await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+          const balance = await breezSDK.getBalance();
+
+          setWalletState(buildConnectedWalletState(balance, savedState));
+          return true;
+        } catch (err) {
+          if (DEBUG_WALLET) {
+            logger.warn('Passkey auto-unlock failed during init', {
+              error: err instanceof Error ? err.message : String(err),
+            });
+          }
+
+          setWalletState(buildLockedWalletState(savedState));
+          return true;
+        }
+      }
+
       WalletStorageService.clearWalletData();
       setWalletState({
         isInitialized: false,
@@ -382,6 +428,39 @@ export function useWallet() {
     [setInMemorySeed, clearSeed]
   );
 
+  const connectWithMnemonic = useCallback(
+    async (mnemonic: string, options: { hasBackup?: boolean } = {}): Promise<void> => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        await breezSDK.connect(mnemonic, Env.NEXT_PUBLIC_BREEZ_API_KEY, 'mainnet');
+        const balance = await breezSDK.getBalance();
+
+        setInMemorySeed(mnemonic);
+
+        const newState: WalletState = {
+          isInitialized: true,
+          isConnected: true,
+          balance,
+          hasBackup: options.hasBackup ?? false,
+          lastBackupDate: options.hasBackup ? new Date() : undefined,
+        };
+
+        setWalletState(newState);
+        WalletStorageService.saveWalletState(newState);
+      } catch (err: unknown) {
+        logBreezError(err, BREEZ_ERROR_CONTEXT.RESTORING_FROM_MNEMONIC);
+        const userMessage = getBreezErrorMessage(err, 'connect wallet');
+        setError(userMessage);
+        throw new Error(userMessage);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [setInMemorySeed]
+  );
+
   /**
    * Unlock wallet with password
    */
@@ -522,6 +601,7 @@ export function useWallet() {
     createWallet,
     restoreWallet,
     restoreFromMnemonic,
+    connectWithMnemonic,
     unlockWallet,
     lockWallet,
     refreshBalance,
