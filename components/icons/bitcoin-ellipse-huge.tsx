@@ -9,7 +9,7 @@ type BitcoinEllipseHugeIconProps = React.SVGProps<SVGSVGElement> & {
 };
 
 const BitcoinEllipseHugeIconBase = React.forwardRef<SVGSVGElement, BitcoinEllipseHugeIconProps>(
-  ({ size = 24, color, strokeWidth, absoluteStrokeWidth, className, ...rest }, ref) => {
+  ({ size = 24, color, strokeWidth = 1.5, absoluteStrokeWidth, className, ...rest }, ref) => {
     const resolvedStrokeWidth =
       typeof strokeWidth === 'number'
         ? strokeWidth
