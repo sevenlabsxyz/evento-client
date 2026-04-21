@@ -1,6 +1,6 @@
 'use client';
 
-import { BitcoinEllipseHugeIcon } from '@/components/icons/bitcoin-ellipse-huge';
+import { BitcoinCpuHugeIcon } from '@/components/icons/bitcoin-cpu-huge';
 import {
   BookOpen,
   Calendar1,
@@ -42,7 +42,7 @@ const navMain = [
   {
     title: 'Wallet',
     url: '/e/wallet',
-    icon: BitcoinEllipseHugeIcon,
+    icon: BitcoinCpuHugeIcon,
   },
   {
     title: 'Search',
