@@ -1,10 +1,11 @@
 'use client';
 
+import { Bitcoin01HugeIcon } from '@/components/icons/bitcoin01-huge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { Calendar1, type LucideIcon, Plus, Search, Zap } from 'lucide-react';
+import { Calendar1, type LucideIcon, Plus, Search } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -54,7 +55,7 @@ interface NavTab {
 
 const NAV_ITEMS: NavTab[] = [
   { title: 'Events', icon: Calendar1, path: '/e/hub' },
-  { title: 'Wallet', icon: Zap, path: '/e/wallet' },
+  { title: 'Wallet', icon: Bitcoin01HugeIcon, path: '/e/wallet' },
   { title: 'Create', icon: Plus, path: '/e/create', isCreate: true },
   { title: 'Search', icon: Search, path: '/e/search' },
   // icon unused — avatar renders instead

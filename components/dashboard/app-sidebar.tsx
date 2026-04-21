@@ -1,5 +1,6 @@
 'use client';
 
+import { Bitcoin01HugeIcon } from '@/components/icons/bitcoin01-huge';
 import {
   BookOpen,
   Calendar1,
@@ -10,7 +11,6 @@ import {
   Search,
   Shirt,
   Star,
-  Zap,
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -42,7 +42,7 @@ const navMain = [
   {
     title: 'Wallet',
     url: '/e/wallet',
-    icon: Zap,
+    icon: Bitcoin01HugeIcon,
   },
   {
     title: 'Search',
