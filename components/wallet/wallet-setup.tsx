@@ -141,7 +141,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6 px-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-            <AlertCircle className='h-8 w-8 text-red-600' />
+            <AlertCircle className='h-8 w-9 text-red-600' />
           </div>
           <h2 className='text-2xl font-bold'>Setup Failed</h2>
           <p className='mt-2 text-sm text-muted-foreground'>{error}</p>
@@ -166,7 +166,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       <div className='flex min-h-[60vh] flex-col items-center justify-center space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-            <Loader2 className='h-8 w-8 animate-spin text-orange-600' />
+            <Loader2 className='h-8 w-9 animate-spin text-orange-600' />
           </div>
           <h2 className='text-2xl font-bold'>Creating Wallet</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Setting up your wallet...</p>
@@ -181,7 +181,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       <div className='space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
-            <Wallet className='h-8 w-8 text-orange-600' />
+            <Wallet className='h-8 w-9 text-orange-600' />
           </div>
           <h2 className='text-2xl font-bold'>Create a PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
@@ -203,7 +203,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
 
           <div className='rounded-lg bg-amber-50 p-4'>
             <div className='flex items-start gap-2'>
-              <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
+              <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-amber-600' />
               <div className='text-sm text-amber-900'>
                 <p className='font-medium'>Important</p>
                 <p className='mt-1'>
@@ -238,7 +238,7 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       <div className='space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
-            <Key className='h-8 w-8 text-black' />
+            <Key className='h-8 w-9 text-black' />
           </div>
           <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>

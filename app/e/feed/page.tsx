@@ -304,7 +304,7 @@ export default function FeedPage() {
               onClick={() => setSortMenuOpen(!sortMenuOpen)}
               className='flex items-center rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200'
             >
-              <ArrowDownAZ className='mr-1.5 h-3.5 w-3.5' />
+              <ArrowDownAZ className='mr-1.5 h-5 w-3.5' />
               Sort
             </button>
 
@@ -319,7 +319,7 @@ export default function FeedPage() {
                     sortOption === 'date-desc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'
                   }`}
                 >
-                  <Clock className='mr-2 h-3.5 w-3.5' />
+                  <Clock className='mr-2 h-5 w-3.5' />
                   Newest first
                 </button>
                 <button
@@ -331,7 +331,7 @@ export default function FeedPage() {
                     sortOption === 'date-asc' ? 'bg-gray-100 font-medium' : 'hover:bg-gray-50'
                   }`}
                 >
-                  <Clock className='mr-2 h-3.5 w-3.5' />
+                  <Clock className='mr-2 h-5 w-3.5' />
                   Oldest first
                 </button>
               </div>
@@ -346,7 +346,7 @@ export default function FeedPage() {
                 feedViewMode === 'card' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              <LayoutGrid className='mr-1.5 h-3.5 w-3.5' />
+              <LayoutGrid className='mr-1.5 h-5 w-3.5' />
               Card
             </button>
             <button
@@ -355,7 +355,7 @@ export default function FeedPage() {
                 feedViewMode === 'compact' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              <LayoutList className='mr-1.5 h-3.5 w-3.5' />
+              <LayoutList className='mr-1.5 h-5 w-3.5' />
               List
             </button>
           </div>
@@ -419,7 +419,7 @@ export default function FeedPage() {
                 >
                   <div className='flex items-center gap-3'>
                     <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                      <Bookmark className='h-4 w-4 text-red-600' />
+                      <Bookmark className='h-4 w-5 text-red-600' />
                     </div>
                     <span className='font-medium'>{list.name}</span>
                     {list.isDefault && (
@@ -428,7 +428,7 @@ export default function FeedPage() {
                       </span>
                     )}
                   </div>
-                  <Check className='h-4 w-4 text-gray-400' />
+                  <Check className='h-4 w-5 text-gray-400' />
                 </button>
               ))}
             </div>
@@ -464,7 +464,7 @@ export default function FeedPage() {
               {/* Search Input */}
               <div className='relative mb-6 flex items-center gap-3'>
                 <div className='relative flex-1'>
-                  <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
+                  <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
                   <input
                     type='text'
                     value={searchText}

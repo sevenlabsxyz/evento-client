@@ -255,7 +255,7 @@ export default function ProfilePage() {
           ) : groupedProfileEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
               <div className='rounded-full bg-gray-100 p-3'>
-                <MessageCircle className='h-6 w-6 text-gray-400' />
+                <MessageCircle className='h-6 w-7 text-gray-400' />
               </div>
               <p className='text-sm text-gray-500'>No events found</p>
             </div>
@@ -285,7 +285,7 @@ export default function ProfilePage() {
               >
                 {isFetchingNextPage ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                     Loading...
                   </>
                 ) : (
@@ -517,7 +517,7 @@ export default function ProfilePage() {
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
-              <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
+              <BadgeCheck className='h-8 w-9 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
             <h3 className='mb-4 text-xl font-bold text-gray-900'>You are verified</h3>
             <p className='mb-6 text-gray-600'>

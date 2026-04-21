@@ -211,7 +211,7 @@ export default function EditQuestionPage() {
   if (isLoadingSettings) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-white'>
-        <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+        <Loader2 className='h-8 w-9 animate-spin text-gray-400' />
       </div>
     );
   }
@@ -277,7 +277,7 @@ export default function EditQuestionPage() {
         >
           {updateQuestion.isPending ? (
             <>
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              <Loader2 className='mr-2 h-5 w-5 animate-spin' />
               Saving...
             </>
           ) : (

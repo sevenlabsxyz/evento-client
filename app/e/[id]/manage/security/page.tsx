@@ -226,9 +226,9 @@ export default function SecurityPrivacyPage() {
             >
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
                 {visibility === 'public' ? (
-                  <Globe className='h-4 w-4 text-gray-600' />
+                  <Globe className='h-4 w-5 text-gray-600' />
                 ) : (
-                  <Lock className='h-4 w-4 text-gray-600' />
+                  <Lock className='h-4 w-5 text-gray-600' />
                 )}
               </div>
               <div className='flex-1'>
@@ -239,7 +239,7 @@ export default function SecurityPrivacyPage() {
                   <span className='font-medium text-gray-900'>
                     {visibility === 'public' ? 'Public' : 'Private'}
                   </span>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                  <ChevronRight className='h-4 w-5 text-gray-400' />
                 </div>
               </div>
             </button>
@@ -250,7 +250,7 @@ export default function SecurityPrivacyPage() {
                 <div className='p-4'>
                   <div className='mb-3 flex items-start gap-4'>
                     <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                      <EyeOff className='h-4 w-4 text-gray-600' />
+                      <EyeOff className='h-4 w-5 text-gray-600' />
                     </div>
                     <div>
                       <p className='text-sm font-medium text-gray-900'>Registration Visibility</p>
@@ -305,9 +305,9 @@ export default function SecurityPrivacyPage() {
                 className={`flex h-8 w-8 items-center justify-center rounded-lg ${passwordProtected ? 'bg-red-100' : 'bg-gray-100'}`}
               >
                 {passwordProtected ? (
-                  <ShieldCheck className='h-4 w-4 text-red-600' />
+                  <ShieldCheck className='h-4 w-5 text-red-600' />
                 ) : (
-                  <ShieldOff className='h-4 w-4 text-gray-600' />
+                  <ShieldOff className='h-4 w-5 text-gray-600' />
                 )}
               </div>
               <div className='flex-1'>
@@ -320,7 +320,7 @@ export default function SecurityPrivacyPage() {
                   >
                     {passwordProtected ? 'Protected' : 'Not Protected'}
                   </span>
-                  <ChevronRight className='h-4 w-4 text-gray-400' />
+                  <ChevronRight className='h-4 w-5 text-gray-400' />
                 </div>
               </div>
             </button>
@@ -329,7 +329,7 @@ export default function SecurityPrivacyPage() {
             <div className='flex items-center justify-between p-4'>
               <div className='flex items-center gap-3'>
                 <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                  <EyeOff className='h-4 w-4 text-gray-600' />
+                  <EyeOff className='h-4 w-5 text-gray-600' />
                 </div>
                 <div>
                   <p className='text-sm font-medium text-gray-900'>Guest List Visibility</p>

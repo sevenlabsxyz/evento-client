@@ -144,13 +144,13 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                         >
                           {isNavigatingToProfile ? (
                             <>
-                              <Loader2 className='h-4 w-4 animate-spin' />
+                              <Loader2 className='h-4 w-5 animate-spin' />
                               Opening Profile...
                             </>
                           ) : (
                             <>
                               View Full Profile
-                              <ArrowRight className='ml-2 h-4 w-4' />
+                              <ArrowRight className='ml-2 h-5 w-4' />
                             </>
                           )}
                         </Button>

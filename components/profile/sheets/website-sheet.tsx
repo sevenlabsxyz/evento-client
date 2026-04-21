@@ -47,7 +47,7 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
               {/* Website Info */}
               <div className='mb-6 flex items-center gap-3'>
                 <div className='flex h-12 w-12 items-center justify-center rounded-full bg-blue-100'>
-                  <Globe className='h-6 w-6 text-blue-600' />
+                  <Globe className='h-6 w-7 text-blue-600' />
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-900'>{getDomainFromUrl(url)}</h3>
@@ -71,7 +71,7 @@ export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps
                   onClick={handleOpenWebsite}
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
-                  <ExternalLink className='mr-2 h-4 w-4' />
+                  <ExternalLink className='mr-2 h-5 w-4' />
                   Open Website
                 </Button>
                 <Button variant='outline' onClick={onClose} className='w-full'>

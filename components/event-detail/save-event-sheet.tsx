@@ -125,12 +125,12 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
       ) : lists.length === 0 && !showCreateForm ? (
         <div className='flex flex-col items-center justify-center py-12 text-center'>
           <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-            <Plus className='h-8 w-8 text-gray-400' />
+            <Plus className='h-8 w-9 text-gray-400' />
           </div>
           <h3 className='mb-1 text-base font-semibold text-gray-900'>No lists yet</h3>
           <p className='mb-4 text-sm text-gray-500'>Create your first list to save events</p>
           <Button onClick={() => setShowCreateForm(true)} variant='default'>
-            <Plus className='mr-2 h-4 w-4' />
+            <Plus className='mr-2 h-5 w-4' />
             Create List
           </Button>
         </div>
@@ -139,7 +139,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
           {/* Create new list button - now at the top */}
           {!showCreateForm ? (
             <Button onClick={() => setShowCreateForm(true)} variant='outline' className='w-full'>
-              <Plus className='mr-2 h-4 w-4' />
+              <Plus className='mr-2 h-5 w-4' />
               Create New List
             </Button>
           ) : (
@@ -168,7 +168,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                 >
                   {createListMutation.isPending ? (
                     <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                       Creating...
                     </>
                   ) : (
@@ -209,9 +209,9 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                       }`}
                     >
                       {isProcessing ? (
-                        <Loader2 className='h-3 w-3 animate-spin text-white' />
+                        <Loader2 className='h-3 w-4 animate-spin text-white' />
                       ) : checked ? (
-                        <Check className='h-3 w-3 text-white' />
+                        <Check className='h-3 w-4 text-white' />
                       ) : null}
                     </div>
                     <div className='text-left'>

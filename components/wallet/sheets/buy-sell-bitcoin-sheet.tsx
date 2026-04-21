@@ -91,7 +91,7 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
                     <div className='flex items-center gap-3'>
                       <WalletBalanceDisplay />
                       <button onClick={() => onOpenChange(false)}>
-                        <X className='h-5 w-5 text-gray-500' />
+                        <X className='h-5 w-6 text-gray-500' />
                       </button>
                     </div>
                   </div>
@@ -102,7 +102,7 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
                       {/* Regional Exchanges */}
                       <div className='space-y-3'>
                         <div className='flex items-center gap-2'>
-                          <MapPin className='h-4 w-4 text-gray-500' />
+                          <MapPin className='h-4 w-5 text-gray-500' />
                           <h3 className='font-semibold text-gray-900'>Available in Your Region</h3>
                           {!isDetecting && (
                             <span className='text-sm text-gray-500'>({countryCode})</span>
@@ -111,7 +111,7 @@ export function BuySellBitcoinSheet({ open, onOpenChange }: BuySellBitcoinSheetP
 
                         {isDetecting ? (
                           <div className='flex items-center justify-center py-8'>
-                            <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+                            <Loader2 className='h-6 w-7 animate-spin text-gray-400' />
                             <span className='ml-2 text-sm text-gray-500'>
                               Detecting your location...
                             </span>

@@ -90,7 +90,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
             className='flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50'
           >
             {acceptMutation.isPending ? (
-              <Loader2 className='h-4 w-4 animate-spin' />
+              <Loader2 className='h-4 w-5 animate-spin' />
             ) : (
               <Check className='h-4 w-4' />
             )}
@@ -102,7 +102,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
             className='flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
           >
             {rejectMutation.isPending ? (
-              <Loader2 className='h-4 w-4 animate-spin' />
+              <Loader2 className='h-4 w-5 animate-spin' />
             ) : (
               <X className='h-4 w-4' />
             )}

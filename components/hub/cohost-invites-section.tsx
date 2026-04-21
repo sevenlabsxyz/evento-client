@@ -34,7 +34,7 @@ export function CohostInvitesSection({
   return (
     <div className='mb-6'>
       <div className='mb-3 flex items-center gap-2'>
-        <Users className='h-5 w-5 text-red-600' />
+        <Users className='h-5 w-6 text-red-600' />
         <h2 className='text-lg font-semibold'>Cohost Invitations</h2>
         <span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-600'>
           {totalCount ?? invites.length}

@@ -213,7 +213,7 @@ export default function EventSearchSheet({
         <div className='space-y-3 px-4 pb-4'>
           {/* Search Input */}
           <div className='relative'>
-            <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+            <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
             <input
               ref={searchInputRef}
               className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none'

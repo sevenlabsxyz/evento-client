@@ -155,7 +155,7 @@ export default function AttachmentSheet({
                       </div>
                       {option.filled && (
                         <div className='flex h-6 w-6 items-center justify-center rounded-full bg-green-500'>
-                          <Check className='h-4 w-4 text-white' />
+                          <Check className='h-4 w-5 text-white' />
                         </div>
                       )}
                     </button>

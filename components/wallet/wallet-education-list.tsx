@@ -102,7 +102,7 @@ export function WalletEducationList() {
           >
             <CardContent className='flex items-center justify-between p-4'>
               <span className='text-left font-medium'>{post.title}</span>
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-muted-foreground' />
+              <ChevronRight className='h-5 w-6 flex-shrink-0 text-muted-foreground' />
             </CardContent>
           </Card>
         ))}

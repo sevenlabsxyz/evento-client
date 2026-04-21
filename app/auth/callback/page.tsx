@@ -206,7 +206,7 @@ function AuthCallbackContent() {
         <CardContent className='flex flex-col items-center space-y-4'>
           {status === 'loading' && (
             <>
-              <Loader2 className='h-8 w-8 animate-spin text-blue-600' />
+              <Loader2 className='h-8 w-9 animate-spin text-blue-600' />
               <p className='text-center text-gray-600'>
                 Please wait while we complete your sign in...
               </p>
@@ -215,7 +215,7 @@ function AuthCallbackContent() {
 
           {status === 'success' && (
             <>
-              <CheckCircle className='h-8 w-8 text-green-600' />
+              <CheckCircle className='h-8 w-9 text-green-600' />
               <p className='text-center text-gray-600'>
                 Sign in successful! Redirecting to home...
               </p>
@@ -224,7 +224,7 @@ function AuthCallbackContent() {
 
           {status === 'error' && (
             <>
-              <XCircle className='h-8 w-8 text-red-600' />
+              <XCircle className='h-8 w-9 text-red-600' />
               <p className='text-center text-gray-600'>
                 {error || 'An error occurred during sign in'}
               </p>
@@ -247,7 +247,7 @@ export default function AuthCallbackPage() {
               <CardTitle className='text-center'>Loading...</CardTitle>
             </CardHeader>
             <CardContent className='flex flex-col items-center space-y-4'>
-              <Loader2 className='h-8 w-8 animate-spin text-blue-600' />
+              <Loader2 className='h-8 w-9 animate-spin text-blue-600' />
               <p className='text-center text-gray-600'>Please wait...</p>
             </CardContent>
           </Card>

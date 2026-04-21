@@ -308,9 +308,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
             >
               <div className='flex items-start gap-3'>
                 {failedResults.length === 0 && skippedResults.length === 0 ? (
-                  <CheckCircle2 className='mt-0.5 h-5 w-5 flex-shrink-0 text-green-600' />
+                  <CheckCircle2 className='mt-0.5 h-6 w-6 flex-shrink-0 text-green-600' />
                 ) : (
-                  <TriangleAlert className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
+                  <TriangleAlert className='mt-0.5 h-6 w-6 flex-shrink-0 text-amber-600' />
                 )}
                 <div>
                   <p className='font-semibold text-gray-900'>
@@ -336,9 +336,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
               >
                 <div className='flex items-start gap-3'>
                   {walletNotifyError ? (
-                    <XCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                    <XCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-red-600' />
                   ) : (
-                    <Info className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                    <Info className='mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600' />
                   )}
                   <div>
                     <p className='font-semibold text-gray-900'>Wallet reminder emails</p>
@@ -389,7 +389,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     className='rounded-2xl border border-red-100 bg-red-50 px-4 py-3'
                   >
                     <div className='flex items-start gap-3'>
-                      <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
+                      <XCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-500' />
                       <div>
                         <p className='font-medium text-gray-900'>{result.recipient.name}</p>
                         <p className='text-sm text-red-700'>{result.error || 'Payment failed'}</p>
@@ -403,7 +403,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     className='rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3'
                   >
                     <div className='flex items-start gap-3'>
-                      <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500' />
+                      <Info className='mt-0.5 h-5 w-5 flex-shrink-0 text-gray-500' />
                       <div>
                         <p className='font-medium text-gray-900'>{result.recipient.name}</p>
                         <p className='text-sm text-gray-600'>{result.error || 'Payment skipped'}</p>
@@ -637,7 +637,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
             >
               <div className='rounded-3xl border border-white/10 bg-white/5 p-5'>
                 <div className='flex items-start gap-3'>
-                  <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-300' />
+                  <AlertTriangle className='mt-0.5 h-6 w-6 flex-shrink-0 text-amber-300' />
                   <div>
                     <p className='font-semibold text-white'>Don&apos;t leave this screen</p>
                     <p className='mt-1 text-sm leading-6 text-white/75'>
@@ -650,7 +650,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
 
               <div className='mt-5 rounded-3xl bg-white/5 px-5 py-6'>
                 <div className='flex items-center gap-3'>
-                  <Loader2 className='h-6 w-6 animate-spin text-red-400' />
+                  <Loader2 className='h-6 w-7 animate-spin text-red-400' />
                   <div>
                     <p className='text-sm uppercase tracking-[0.18em] text-white/55'>Batch Zap</p>
                     <p className='text-2xl font-semibold'>

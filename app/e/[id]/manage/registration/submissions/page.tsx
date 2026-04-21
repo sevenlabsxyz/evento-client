@@ -221,7 +221,7 @@ export default function RegistrationSubmissionsPage() {
         ) : (
           <div className='py-16 text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-              <ClipboardList className='h-8 w-8 text-gray-400' />
+              <ClipboardList className='h-8 w-9 text-gray-400' />
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900'>No Submissions</h3>
             <p className='text-sm text-gray-500'>
@@ -302,7 +302,7 @@ function RegistrationCard({ registration, onClick, getStatusBadge }: Registratio
             </div>
             <div className='flex flex-shrink-0 items-center gap-2'>
               {getStatusBadge(registration.approval_status)}
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </div>
           </div>
           <p className='mt-1 text-xs text-gray-400'>

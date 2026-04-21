@@ -101,7 +101,7 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
               className='absolute right-0'
             >
               <div className='flex h-3.5 w-3.5 items-center justify-center rounded-full bg-red-600'>
-                <Check className='h-2.5 w-2.5 text-white' strokeWidth={2} />
+                <Check className='h-2.5 w-3.5 text-white' strokeWidth={2} />
               </div>
             </motion.span>
           )}

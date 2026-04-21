@@ -145,7 +145,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                     // Loading State
                     <div className='flex items-center justify-center py-12'>
                       <div className='text-center'>
-                        <Loader2 className='mx-auto h-8 w-8 animate-spin text-gray-400' />
+                        <Loader2 className='mx-auto h-9 w-9 animate-spin text-gray-400' />
                         <p className='mt-4 text-sm text-gray-600'>Loading...</p>
                       </div>
                     </div>
@@ -153,7 +153,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                     // Empty State
                     <div className='flex flex-col items-center justify-center py-12'>
                       <div className='rounded-full bg-green-100 p-4'>
-                        <CheckCircle2 className='h-12 w-12 text-green-600' />
+                        <CheckCircle2 className='h-12 w-14 text-green-600' />
                       </div>
                       <h3 className='mt-4 text-lg font-semibold text-gray-900'>All Set!</h3>
                       <p className='mt-2 max-w-sm text-center text-sm text-gray-600'>
@@ -167,7 +167,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                       {/* Info Banner */}
                       <div className='rounded-xl border border-gray-200 bg-gray-50 p-4'>
                         <div className='flex items-start gap-3'>
-                          <ChevronsRight className='mt-0.5 h-7 w-7 flex-shrink-0 text-muted-foreground/80' />
+                          <ChevronsRight className='mt-0.5 h-8 w-8 flex-shrink-0 text-muted-foreground/80' />
                           <p className='text-sm text-muted-foreground'>
                             Your Bitcoin is on its way! It will be added to your balance
                             automatically when the network clears up. Want it faster? Pay a small
@@ -196,7 +196,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                                   </span>
                                 ) : (
                                   <span className='inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white px-2 py-0.5 text-xs font-medium text-gray-700'>
-                                    <Loader2 className='h-3 w-3 animate-spin' />
+                                    <Loader2 className='h-3 w-4 animate-spin' />
                                     Pending
                                   </span>
                                 )}
@@ -226,7 +226,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                             >
                               {processingTxid === deposit.txid ? (
                                 <>
-                                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                  <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                                   Swapping...
                                 </>
                               ) : (
@@ -242,7 +242,7 @@ export function IncomingFundsSheet({ open, onOpenChange, onRefresh }: IncomingFu
                           {deposit.claimError && (
                             <div className='mt-3 rounded-lg border border-orange-200 bg-orange-50 p-3'>
                               <div className='flex items-start gap-2'>
-                                <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-orange-600' />
+                                <XCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-orange-600' />
                                 <div className='flex-1'>
                                   <p className='text-xs font-medium text-orange-900'>
                                     Auto-swap delayed

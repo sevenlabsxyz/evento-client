@@ -160,7 +160,7 @@ export default function SavedListsPage() {
                       {formatLastUpdated(list.updated_at)}
                     </p>
                   </div>
-                  <ChevronRight className='h-5 w-5 text-gray-400' />
+                  <ChevronRight className='h-5 w-6 text-gray-400' />
                 </div>
               </div>
             ))}
@@ -203,7 +203,7 @@ export default function SavedListsPage() {
               >
                 {createListMutation.isPending ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                     Creating...
                   </>
                 ) : (

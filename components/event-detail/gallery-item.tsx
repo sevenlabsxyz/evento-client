@@ -112,9 +112,7 @@ export default function GalleryItem({
             showControls || hasLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
         >
-          <Heart
-            className={`h-3.5 w-3.5 ${hasLiked ? 'fill-red-500 text-red-500' : 'text-white'}`}
-          />
+          <Heart className={`h-3.5 w-5 ${hasLiked ? 'fill-red-500 text-red-500' : 'text-white'}`} />
           <span className='text-xs'>{likes}</span>
         </button>
 
@@ -139,7 +137,7 @@ export default function GalleryItem({
                   }}
                   className='cursor-pointer text-red-600 focus:text-red-700'
                 >
-                  <Trash2 className='mr-2 h-4 w-4' />
+                  <Trash2 className='mr-2 h-5 w-4' />
                   Delete Photo
                 </DropdownMenuItem>
               </DropdownMenuContent>

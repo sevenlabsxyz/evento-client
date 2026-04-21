@@ -146,7 +146,7 @@ export function ForYouSection({
         ) : events.length === 0 ? (
           <div className='flex flex-col items-center justify-center py-12 text-center'>
             <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-              <Calendar className='h-8 w-8 text-gray-400' />
+              <Calendar className='h-8 w-9 text-gray-400' />
             </div>
             <h3 className='mb-2 text-base font-semibold text-gray-900'>
               {activeTab === 'following' && 'No events from people you follow'}
@@ -230,7 +230,7 @@ export function ForYouSection({
           ) : groupedSheetEvents.length === 0 ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                <Calendar className='h-8 w-8 text-gray-400' />
+                <Calendar className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-base font-semibold text-gray-900'>
                 {activeTab === 'following'

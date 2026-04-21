@@ -25,7 +25,7 @@ export function PinnedMessageBanner({
       onClick={pinnedCount > 1 ? onNext : undefined}
     >
       <div className='flex items-center gap-2'>
-        <Pin className='h-4 w-4 text-blue-600' />
+        <Pin className='h-4 w-5 text-blue-600' />
         <div className='min-w-0 flex-1'>
           <div className='flex items-center gap-2 text-xs font-medium text-blue-600'>
             <span>Pinned Message</span>

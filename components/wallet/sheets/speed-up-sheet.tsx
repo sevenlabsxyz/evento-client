@@ -257,7 +257,7 @@ export function SpeedUpSheet({
               <div className='px-4'>
                 {isLoadingFees ? (
                   <div className='flex items-center justify-center py-8'>
-                    <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+                    <Loader2 className='h-6 w-7 animate-spin text-gray-400' />
                   </div>
                 ) : (
                   <AnimatePresence mode='wait'>
@@ -281,7 +281,7 @@ export function SpeedUpSheet({
                         >
                           <div className='flex items-center gap-3'>
                             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-orange-100'>
-                              <Rocket className='h-5 w-5 text-orange-600' />
+                              <Rocket className='h-5 w-6 text-orange-600' />
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900'>Fast</div>
@@ -309,7 +309,7 @@ export function SpeedUpSheet({
                         >
                           <div className='flex items-center gap-3'>
                             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
-                              <Clock className='h-5 w-5 text-blue-600' />
+                              <Clock className='h-5 w-6 text-blue-600' />
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900'>Normal</div>
@@ -337,7 +337,7 @@ export function SpeedUpSheet({
                         >
                           <div className='flex items-center gap-3'>
                             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-green-100'>
-                              <Turtle className='h-5 w-5 text-green-600' />
+                              <Turtle className='h-5 w-6 text-green-600' />
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900'>Slow</div>
@@ -365,7 +365,7 @@ export function SpeedUpSheet({
                         >
                           <div className='flex items-center gap-3'>
                             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-purple-100'>
-                              <Settings className='h-5 w-5 text-purple-600' />
+                              <Settings className='h-5 w-6 text-purple-600' />
                             </div>
                             <div className='flex-1'>
                               <div className='font-semibold text-gray-900'>Custom</div>
@@ -459,7 +459,7 @@ export function SpeedUpSheet({
                 >
                   {isProcessing ? (
                     <>
-                      <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                      <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                       Processing...
                     </>
                   ) : (

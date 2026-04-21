@@ -81,19 +81,19 @@ export function TransactionDetailsSheet({
     if (status === 'completed') {
       return {
         label: 'Completed',
-        icon: <Check className='h-4 w-4 text-green-600' />,
+        icon: <Check className='h-4 w-5 text-green-600' />,
         color: 'text-green-600',
       };
     } else if (status === 'pending') {
       return {
         label: 'Pending',
-        icon: <Clock className='h-4 w-4 text-amber-600' />,
+        icon: <Clock className='h-4 w-5 text-amber-600' />,
         color: 'text-amber-600',
       };
     } else {
       return {
         label: 'Failed',
-        icon: <XCircle className='h-4 w-4 text-red-600' />,
+        icon: <XCircle className='h-4 w-5 text-red-600' />,
         color: 'text-red-600',
       };
     }
@@ -200,12 +200,12 @@ export function TransactionDetailsSheet({
             >
               {payment.paymentType === 'receive' ? (
                 <ArrowDownLeft
-                  className={`h-5 w-5 ${
+                  className={`h-5 w-6 ${
                     payment.paymentType === 'receive' ? 'text-green-600' : 'text-blue-600'
                   }`}
                 />
               ) : (
-                <ArrowUpRight className='h-5 w-5 text-blue-600' />
+                <ArrowUpRight className='h-5 w-6 text-blue-600' />
               )}
             </div>
             <div className='space-y-1'>
@@ -260,7 +260,7 @@ export function TransactionDetailsSheet({
                 <div className='flex items-center gap-1'>
                   <span className='text-sm font-medium text-gray-600'>Total Fees</span>
                   <InfoTooltip text='Network fees paid to process this Lightning transaction.'>
-                    <Info className='h-3 w-3 text-gray-400' />
+                    <Info className='h-3 w-4 text-gray-400' />
                   </InfoTooltip>
                 </div>
                 <div className='text-right'>
@@ -318,7 +318,7 @@ export function TransactionDetailsSheet({
                     Invoice
                   </span>
                   <InfoTooltip text='A Lightning invoice is a payment request that contains the amount, destination, and other payment details.'>
-                    <Info className='h-3 w-3 text-gray-400' />
+                    <Info className='h-3 w-4 text-gray-400' />
                   </InfoTooltip>
                 </div>
                 <div className='flex items-start gap-2'>
@@ -378,7 +378,7 @@ export function TransactionDetailsSheet({
                           Payment Hash
                         </span>
                         <InfoTooltip text='A unique identifier for this Lightning payment, derived from the preimage.'>
-                          <Info className='h-3 w-3 text-gray-400' />
+                          <Info className='h-3 w-4 text-gray-400' />
                         </InfoTooltip>
                       </div>
                       <div className='flex items-start gap-2'>
@@ -407,7 +407,7 @@ export function TransactionDetailsSheet({
                           Preimage
                         </span>
                         <InfoTooltip text="The secret value that proves this payment was completed. It's the cryptographic proof of payment.">
-                          <Info className='h-3 w-3 text-gray-400' />
+                          <Info className='h-3 w-4 text-gray-400' />
                         </InfoTooltip>
                       </div>
                       <div className='flex items-start gap-2'>
@@ -432,7 +432,7 @@ export function TransactionDetailsSheet({
                           Destination Node
                         </span>
                         <InfoTooltip text='The public key of the Lightning node that received this payment.'>
-                          <Info className='h-3 w-3 text-gray-400' />
+                          <Info className='h-3 w-4 text-gray-400' />
                         </InfoTooltip>
                       </div>
                       <div className='flex items-start gap-2'>
@@ -458,7 +458,7 @@ export function TransactionDetailsSheet({
                         Transaction ID
                       </span>
                       <InfoTooltip text='The unique identifier for this transaction in your wallet.'>
-                        <Info className='h-3 w-3 text-gray-400' />
+                        <Info className='h-3 w-4 text-gray-400' />
                       </InfoTooltip>
                     </div>
                     <div className='flex items-start gap-2'>

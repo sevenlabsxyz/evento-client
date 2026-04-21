@@ -123,7 +123,7 @@ export function ContactItem({
                 )}
               </div>
             )}
-            <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+            <ChevronRight className='h-5 w-6 flex-shrink-0 text-gray-400' />
           </div>
         )}
       </div>

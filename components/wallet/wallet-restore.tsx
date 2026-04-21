@@ -175,7 +175,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
       <div className='space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10'>
-            <RefreshCw className='h-8 w-8 text-primary' />
+            <RefreshCw className='h-8 w-9 text-primary' />
           </div>
           <h2 className='text-2xl font-bold'>Sign in to your wallet</h2>
           <p className='mt-2 text-sm text-muted-foreground'>
@@ -227,7 +227,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           {error && (
             <div className='rounded-lg bg-red-50 p-3'>
               <div className='flex items-start gap-2'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-red-600' />
                 <p className='text-sm text-red-900'>{error}</p>
               </div>
             </div>
@@ -258,9 +258,9 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
             {isPasswordMode ? (
-              <KeyRound className='h-8 w-8 text-black' />
+              <KeyRound className='h-8 w-9 text-black' />
             ) : (
-              <Key className='h-8 w-8 text-black' />
+              <Key className='h-8 w-9 text-black' />
             )}
           </div>
           <h2 className='text-2xl font-bold'>Enter Your PIN</h2>
@@ -302,7 +302,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           {error && (
             <div className='rounded-lg bg-red-50 p-3'>
               <div className='flex items-start gap-2'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-red-600' />
                 <p className='text-sm text-red-900'>{error}</p>
               </div>
             </div>
@@ -316,7 +316,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           >
             {isRestoring ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                 Restoring...
               </>
             ) : (
@@ -349,7 +349,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
       <div className='space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
-            <Key className='h-8 w-8 text-black' />
+            <Key className='h-8 w-9 text-black' />
           </div>
           <h2 className='text-2xl font-bold'>Create a PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Create a PIN to protect your wallet</p>
@@ -370,7 +370,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           {error && (
             <div className='rounded-lg bg-red-50 p-3'>
               <div className='flex items-start gap-2'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-red-600' />
                 <p className='text-sm text-red-900'>{error}</p>
               </div>
             </div>
@@ -407,7 +407,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
       <div className='space-y-6'>
         <div className='text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
-            <Key className='h-8 w-8 text-black' />
+            <Key className='h-8 w-9 text-black' />
           </div>
           <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>
@@ -429,7 +429,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           {error && (
             <div className='rounded-lg bg-red-50 p-3'>
               <div className='flex items-start gap-2'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-red-600' />
                 <p className='text-sm text-red-900'>{error}</p>
               </div>
             </div>
@@ -443,7 +443,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           >
             {isRestoring ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                 Restoring...
               </>
             ) : (

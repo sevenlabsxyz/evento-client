@@ -192,7 +192,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                                 className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
                                 onClick={() => handleMessageClick(follower.id)}
                               >
-                                <MessageCircle className='h-4 w-4 text-gray-500' />
+                                <MessageCircle className='h-4 w-5 text-gray-500' />
                               </Button>
                               <Button
                                 variant='ghost'
@@ -200,7 +200,7 @@ export default function FollowersSheet({ isOpen, onClose, userId, username }: Fo
                                 className='h-10 w-10 border border-gray-200 bg-gray-100 hover:bg-gray-200'
                                 onClick={() => handleUserClick(follower.username)}
                               >
-                                <ArrowRight className='h-4 w-4 text-gray-500' />
+                                <ArrowRight className='h-4 w-5 text-gray-500' />
                               </Button>
                             </div>
                           </div>

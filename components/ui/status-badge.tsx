@@ -43,7 +43,7 @@ export function StatusBadge({
         {LeftIcon && (
           <LeftIcon
             className={cn(
-              'size-3 shrink-0',
+              'size-4 shrink-0',
               status === 'success' && 'text-green-600',
               status === 'error' && 'text-red-600'
             )}
@@ -56,7 +56,7 @@ export function StatusBadge({
         <>
           <span className='mx-2 h-3.5 w-px bg-border' />
           <span className='inline-flex items-center gap-1.5 text-muted-foreground'>
-            {RightIcon && <RightIcon className='size-3 shrink-0' aria-hidden={true} />}
+            {RightIcon && <RightIcon className='size-4 shrink-0' aria-hidden={true} />}
             {rightLabel}
           </span>
         </>

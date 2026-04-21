@@ -43,7 +43,7 @@ export function CommentReactionButton({
         className
       )}
     >
-      <Icon className='h-4 w-4' fill={fillWhenActive && isActive ? 'currentColor' : 'none'} />
+      <Icon className='h-5 w-5' fill={fillWhenActive && isActive ? 'currentColor' : 'none'} />
       {showCount && <span className='text-xs font-medium'>{count}</span>}
       {label && <span className='text-xs font-medium'>{label}</span>}
     </button>

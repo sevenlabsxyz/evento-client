@@ -13,7 +13,7 @@ export default function EventPerks({ event }: EventPerksProps) {
   return (
     <div className='border-t border-gray-100 py-6'>
       <div className='mb-4 flex items-center gap-2'>
-        <Gift className='h-5 w-5 text-red-500' />
+        <Gift className='h-5 w-6 text-red-500' />
         <h2 className='text-lg font-semibold text-gray-900'>Guest Perks</h2>
         {event.perks.some((perk) => perk.isLimited) && (
           <span className='rounded-full bg-red-100 px-2 py-1 text-xs font-semibold text-red-600'>
@@ -26,7 +26,7 @@ export default function EventPerks({ event }: EventPerksProps) {
         {event.perks.map((perk) => (
           <div key={perk.id} className='flex items-start gap-3'>
             <div className='mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-green-100'>
-              <Check className='h-3 w-3 text-green-600' />
+              <Check className='h-3 w-4 text-green-600' />
             </div>
 
             <div className='flex-1'>

@@ -230,7 +230,7 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100'>
-                <Camera className='h-6 w-6 text-gray-600' />
+                <Camera className='h-6 w-7 text-gray-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Profile Picture</h3>
@@ -238,7 +238,7 @@ export default function EditProfilePage() {
                   {image ? 'Tap to change photo' : 'Add a profile photo'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
 
             {/* Username */}
@@ -247,13 +247,13 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
-                <AtSign className='h-6 w-6 text-blue-600' />
+                <AtSign className='h-6 w-7 text-blue-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Username</h3>
                 <p className='text-sm text-gray-500'>{username || 'Choose a username'}</p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
 
             {/* Name */}
@@ -262,13 +262,13 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
-                <User className='h-6 w-6 text-blue-600' />
+                <User className='h-6 w-7 text-blue-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Name</h3>
                 <p className='text-sm text-gray-500'>{name || 'Add your name'}</p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
 
             {/* Biography */}
@@ -277,7 +277,7 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-green-100'>
-                <Type className='h-6 w-6 text-green-600' />
+                <Type className='h-6 w-7 text-green-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Biography</h3>
@@ -287,7 +287,7 @@ export default function EditProfilePage() {
                     : 'Tell us about yourself'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
           </div>
 
@@ -299,7 +299,7 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
-                <Instagram className='h-6 w-6 text-purple-600' />
+                <Instagram className='h-6 w-7 text-purple-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Social Links</h3>
@@ -309,7 +309,7 @@ export default function EditProfilePage() {
                     .join(', ') || 'Add your social profiles'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
 
             {/* Nostr */}
@@ -318,13 +318,13 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
-                <Hash className='h-6 w-6 text-pink-600' />
+                <Hash className='h-6 w-7 text-pink-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Nostr</h3>
                 <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
           </div>
 
@@ -336,13 +336,13 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100'>
-                <Heart className='h-6 w-6 text-teal-600' />
+                <Heart className='h-6 w-7 text-teal-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Interests</h3>
                 <p className='text-sm text-gray-500'>Share what you love</p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
 
             {/* Prompts */}
@@ -351,13 +351,13 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100'>
-                <MessageSquare className='h-6 w-6 text-indigo-600' />
+                <MessageSquare className='h-6 w-7 text-indigo-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Prompts</h3>
                 <p className='text-sm text-gray-500'>Showcase your personality</p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
 
             {/* Badges */}
@@ -366,7 +366,7 @@ export default function EditProfilePage() {
               className='flex w-full items-center gap-4 text-left'
             >
               <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100'>
-                <Award className='h-6 w-6 text-amber-600' />
+                <Award className='h-6 w-7 text-amber-600' />
               </div>
               <div className='flex-1'>
                 <h3 className='font-semibold text-gray-900'>Badges</h3>
@@ -376,7 +376,7 @@ export default function EditProfilePage() {
                     : 'Showcase your achievements'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-6 text-gray-400' />
             </button>
           </div>
         </div>

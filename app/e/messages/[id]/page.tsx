@@ -373,7 +373,7 @@ export default function SingleChatPage() {
           <p className='font-medium text-red-600'>Failed to connect to chat</p>
           <p className='mt-1 text-sm text-gray-500'>Please try refreshing the page</p>
           <Button variant='outline' className='mt-4' onClick={() => router.back()}>
-            <ArrowLeft className='mr-2 h-4 w-4' />
+            <ArrowLeft className='mr-2 h-5 w-4' />
             Go Back
           </Button>
         </div>
@@ -404,7 +404,7 @@ export default function SingleChatPage() {
             Chat could not be loaded. Please try reloading the page.
           </p>
           <Button variant='outline' className='mt-4' onClick={() => router.back()}>
-            <ArrowLeft className='mr-2 h-4 w-4' />
+            <ArrowLeft className='mr-2 h-5 w-4' />
             Go Back
           </Button>
         </div>

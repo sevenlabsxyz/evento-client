@@ -51,7 +51,7 @@ export function ZapConfirmStep({
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
           <div className='rounded-xl border border-red-200 bg-red-50 p-8 text-center'>
-            <Zap className='mx-auto h-12 w-12 text-red-500' />
+            <Zap className='mx-auto h-14 w-14 text-red-500' />
             <p className='mt-4 text-4xl font-bold text-gray-900'>
               {selectedAmount.toLocaleString()} sats
             </p>

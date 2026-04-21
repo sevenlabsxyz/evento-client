@@ -97,7 +97,7 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href='/e/settings'>
-                    <Settings className='mr-2 h-4 w-4' />
+                    <Settings className='mr-2 h-5 w-4' />
                     Settings
                   </Link>
                 </DropdownMenuItem>
@@ -106,13 +106,13 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href='https://docs.evento.so' target='_blank' rel='noopener noreferrer'>
-                    <Code2 className='mr-2 h-4 w-4' />
+                    <Code2 className='mr-2 h-5 w-4' />
                     API & Docs
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href='https://docs.evento.so' target='_blank' rel='noopener noreferrer'>
-                    <Bot className='mr-2 h-4 w-4' />
+                    <Bot className='mr-2 h-5 w-4' />
                     AI Agents
                   </Link>
                 </DropdownMenuItem>
@@ -121,14 +121,14 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href='/e/blog'>
-                    <BookOpen className='mr-2 h-4 w-4' />
+                    <BookOpen className='mr-2 h-5 w-4' />
                     Blog
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogoutClick} className='text-destructive'>
-                <LogOut className='mr-2 h-4 w-4' />
+                <LogOut className='mr-2 h-5 w-4' />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

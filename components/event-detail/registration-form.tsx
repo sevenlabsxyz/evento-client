@@ -445,7 +445,7 @@ export function RegistrationForm({
   if (isCompletingRegistration) {
     return (
       <div className='flex min-h-[280px] flex-col items-center justify-center gap-3 py-8 text-center'>
-        <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
+        <Loader2 className='h-8 w-9 animate-spin text-gray-500' />
         <p className='text-sm font-medium text-gray-700'>Completing your registration...</p>
         <p className='text-xs text-gray-500'>
           Please wait while we finalize your account and RSVP.
@@ -554,7 +554,7 @@ export function RegistrationForm({
         >
           {isSubmitting ? (
             <>
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              <Loader2 className='mr-2 h-5 w-5 animate-spin' />
               {isSendingOtp ? 'Sending code...' : 'Submitting...'}
             </>
           ) : isAuthenticated ? (

@@ -43,7 +43,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             onClick={() => setActiveSheet('qr')}
             className='h-12 w-12 rounded-full'
           >
-            <QrCode className='h-6 w-6 text-gray-600' />
+            <QrCode className='h-6 w-7 text-gray-600' />
           </Button>
         )}
 
@@ -54,7 +54,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             onClick={() => setActiveSheet('website')}
             className='h-12 w-12 rounded-full'
           >
-            <Globe className='h-6 w-6 text-gray-600' />
+            <Globe className='h-6 w-7 text-gray-600' />
           </Button>
         )}
 
@@ -65,7 +65,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             onClick={() => setActiveSheet('instagram')}
             className='h-12 w-12 rounded-full'
           >
-            <Instagram className='h-6 w-6 text-pink-500' />
+            <Instagram className='h-6 w-7 text-pink-500' />
           </Button>
         )}
 

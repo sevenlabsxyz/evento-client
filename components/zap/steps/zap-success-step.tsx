@@ -21,7 +21,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
           transition={{ type: 'spring', stiffness: 200, damping: 15 }}
           className='flex h-24 w-24 items-center justify-center rounded-full bg-green-100'
         >
-          <Check className='h-12 w-12 text-green-600' />
+          <Check className='h-12 w-14 text-green-600' />
         </motion.div>
         <motion.p
           initial={{ opacity: 0, y: 10 }}

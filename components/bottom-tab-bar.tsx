@@ -123,7 +123,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                     className='relative flex items-center justify-center rounded-xl bg-primary-foreground px-5 py-2.5 text-foreground shadow-sm'
                   >
-                    <Plus size={24} strokeWidth={2.5} />
+                    <Plus size={28} strokeWidth={2} />
                   </motion.button>
                 );
               }
@@ -194,7 +194,7 @@ export function BottomTabBar({ className }: BottomTabBarProps) {
                       : 'text-muted-foreground hover:text-primary-foreground/80'
                   )}
                 >
-                  <Icon size={24} />
+                  <Icon size={28} />
                   <AnimatePresence initial={false}>
                     {isSelected && (
                       <motion.span

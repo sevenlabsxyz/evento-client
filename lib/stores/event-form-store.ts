@@ -125,10 +125,7 @@ const getAutoAdjustedEndTime = (startTime: TimeFormat): TimeFormat => {
   const startApiTime = timeToApiFormat(startTime);
   const newEndTotalMinutes = startApiTime.hours * 60 + startApiTime.minutes + 60;
 
-  return apiToTime(
-    Math.floor(newEndTotalMinutes / 60) % 24,
-    newEndTotalMinutes % 60
-  );
+  return apiToTime(Math.floor(newEndTotalMinutes / 60) % 24, newEndTotalMinutes % 60);
 };
 
 const initialState = {

@@ -63,7 +63,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
           <div className='text-right'>
             <div className='text-sm font-medium text-gray-900'>{eventDate}</div>
             <div className='text-xs text-gray-500'>
-              <Clock className='mr-1 inline h-3 w-3' />
+              <Clock className='mr-1 inline h-4 w-3' />
               {eventTime}
             </div>
           </div>
@@ -77,7 +77,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
               invite.events.location ? '' : 'text-gray-400'
             )}
           >
-            <MapPin className='mr-1 h-3 w-3' />
+            <MapPin className='mr-1 h-4 w-3' />
             <span className='line-clamp-1'>{invite.events.location || 'TBD'}</span>
           </div>
           {invite.message && (
@@ -92,11 +92,11 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
               onClick={onRSVP}
               className='flex-1 bg-red-500 text-white hover:bg-red-600'
             >
-              <Users className='mr-1 h-4 w-4' />
+              <Users className='mr-1 h-5 w-4' />
               RSVP
             </Button>
             <Button size='sm' variant='outline' onClick={handleViewEvent} className='flex-1'>
-              <Eye className='mr-1 h-4 w-4' />
+              <Eye className='mr-1 h-5 w-4' />
               View
             </Button>
           </div>
@@ -112,8 +112,8 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
                 invite.response === 'not_going' && 'bg-red-100 text-red-800'
               )}
             >
-              {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}
-              {invite.response === 'not_going' && <X className='mr-1 h-3 w-3' />}
+              {invite.response === 'going' && <Check className='mr-1 h-4 w-3' />}
+              {invite.response === 'not_going' && <X className='mr-1 h-4 w-3' />}
               {invite.response === 'going'
                 ? 'Going'
                 : invite.response === 'maybe'
@@ -121,7 +121,7 @@ export function EventInviteCard({ invite, onRSVP, className }: EventInviteCardPr
                   : 'Not Going'}
             </span>
             <Button size='sm' variant='outline' onClick={handleViewEvent} className='ml-2'>
-              <Eye className='mr-1 h-4 w-4' />
+              <Eye className='mr-1 h-5 w-4' />
               View
             </Button>
           </div>

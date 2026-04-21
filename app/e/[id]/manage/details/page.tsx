@@ -290,7 +290,7 @@ export default function EditEventDetailsPage() {
         <div className='space-y-4 rounded-2xl bg-white p-4'>
           <div className='flex items-center gap-4'>
             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <Calendar className='h-4 w-4 text-gray-600' />
+              <Calendar className='h-4 w-5 text-gray-600' />
             </div>
             <span className='w-16 font-medium text-gray-700'>Starts</span>
             <div className='flex flex-1 gap-2'>
@@ -311,7 +311,7 @@ export default function EditEventDetailsPage() {
 
           <div className='flex items-center gap-4'>
             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <Calendar className='h-4 w-4 text-gray-600' />
+              <Calendar className='h-4 w-5 text-gray-600' />
             </div>
             <span className='w-16 font-medium text-gray-700'>Ends</span>
             <div className='flex flex-1 gap-2'>
@@ -338,7 +338,7 @@ export default function EditEventDetailsPage() {
             className='flex w-full items-center gap-4 text-left'
           >
             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <MapPin className='h-4 w-4 text-gray-600' />
+              <MapPin className='h-4 w-5 text-gray-600' />
             </div>
             <div className='flex-1'>
               <label className='mb-1 block text-sm font-medium text-gray-500'>Address</label>
@@ -346,7 +346,7 @@ export default function EditEventDetailsPage() {
                 <span className={`font-medium ${location ? 'text-gray-900' : 'text-gray-400'}`}>
                   {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               </div>
             </div>
           </button>
@@ -359,7 +359,7 @@ export default function EditEventDetailsPage() {
             className='flex w-full items-start gap-4 text-left'
           >
             <div className='mt-1 flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-              <Edit3 className='h-4 w-4 text-gray-600' />
+              <Edit3 className='h-4 w-5 text-gray-600' />
             </div>
             <div className='flex-1'>
               <label className='mb-2 block text-sm font-medium text-gray-500'>Description</label>
@@ -371,7 +371,7 @@ export default function EditEventDetailsPage() {
                     ? 'Add description about this event...'
                     : getContentPreview(description, 80)}
                 </span>
-                <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+                <ChevronRight className='h-4 w-5 flex-shrink-0 text-gray-400' />
               </div>
             </div>
           </button>
@@ -381,7 +381,7 @@ export default function EditEventDetailsPage() {
           <div className='space-y-3'>
             <div className='flex items-center gap-4'>
               <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                <Users className='h-4 w-4 text-gray-600' />
+                <Users className='h-4 w-5 text-gray-600' />
               </div>
               <div className='flex-1'>
                 <div className='flex items-center justify-between'>

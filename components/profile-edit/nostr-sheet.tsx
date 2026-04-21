@@ -114,7 +114,7 @@ export default function NostrSheet({
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <Hash className='h-5 w-5 text-pink-600' />
+                      <Hash className='h-5 w-6 text-pink-600' />
                     </div>
                     <Input
                       type='text'
@@ -159,7 +159,7 @@ export default function NostrSheet({
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                          <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                           Saving...
                         </>
                       ) : (

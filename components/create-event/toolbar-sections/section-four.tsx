@@ -128,7 +128,7 @@ export default function SectionFour({
             <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg'>
               <button onClick={insertDivider} className={cn(DropdownMenuItemClass)}>
                 <span className='flex grow items-center'>
-                  <Minus className='mr-2 h-4 w-4' />
+                  <Minus className='mr-2 h-5 w-4' />
                   Divider
                 </span>
               </button>

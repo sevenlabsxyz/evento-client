@@ -183,7 +183,7 @@ export default function ContributionPaymentSheet({
                           <p className='text-sm text-gray-500'>{method.value}</p>
                         </div>
                       </div>
-                      <ExternalLink className='h-5 w-5 text-gray-400' />
+                      <ExternalLink className='h-5 w-6 text-gray-400' />
                     </a>
                   );
                 })}

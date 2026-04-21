@@ -96,9 +96,9 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
       <div className='text-center'>
         <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50'>
           {isPasswordMode ? (
-            <KeyRound className='h-8 w-8 text-black' />
+            <KeyRound className='h-8 w-9 text-black' />
           ) : (
-            <Lock className='h-8 w-8 text-black' />
+            <Lock className='h-8 w-9 text-black' />
           )}
         </div>
         <h2 className='text-2xl font-bold'>
@@ -152,7 +152,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
         {error && (
           <div className='rounded-lg bg-red-50 p-3'>
             <div className='flex items-start gap-2'>
-              <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+              <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-red-600' />
               <p className='text-sm text-red-900'>{error}</p>
             </div>
           </div>
@@ -210,7 +210,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
             <div className='space-y-6'>
               <div className='flex flex-col items-center space-y-4 text-center'>
                 <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-                  <AlertTriangle className='h-8 w-8 text-red-600' />
+                  <AlertTriangle className='h-8 w-9 text-red-600' />
                 </div>
                 <h3 className='text-lg font-semibold'>Are you sure?</h3>
                 <p className='text-gray-600'>

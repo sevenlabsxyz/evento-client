@@ -4,10 +4,7 @@ export const runtime = 'edge';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
   const response = await renderEventSocialImage(params.id);
 
   Object.entries(EVENT_SOCIAL_IMAGE_HEADERS).forEach(([key, value]) => {

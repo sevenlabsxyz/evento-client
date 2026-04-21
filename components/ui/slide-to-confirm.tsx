@@ -89,14 +89,14 @@ export function SlideToConfirm({
           className='absolute left-1 top-1 flex h-12 w-12 cursor-grab items-center justify-center rounded-full bg-green-500 shadow-lg active:cursor-grabbing'
           whileTap={{ scale: 1.05 }}
         >
-          <ChevronRight className='h-6 w-6 text-white' strokeWidth={3} />
+          <ChevronRight className='h-6 w-7 text-white' strokeWidth={2} />
         </motion.div>
       )}
 
       {/* Loading spinner */}
       {isLoading && (
         <div className='absolute inset-0 flex items-center justify-center'>
-          <Loader2 className='h-6 w-6 animate-spin text-gray-600' />
+          <Loader2 className='h-6 w-7 animate-spin text-gray-600' />
         </div>
       )}
     </div>

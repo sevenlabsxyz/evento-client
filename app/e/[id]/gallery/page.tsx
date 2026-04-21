@@ -131,7 +131,7 @@ export default function GalleryPage() {
             className='rounded-full p-2 hover:bg-gray-100'
             title='Share Gallery'
           >
-            <Share className='h-5 w-5 text-gray-600' />
+            <Share className='h-5 w-6 text-gray-600' />
           </button>
           {isOwner && (
             <button
@@ -139,7 +139,7 @@ export default function GalleryPage() {
               className='rounded-full p-2 hover:bg-gray-100'
               title='Add Photos'
             >
-              <Plus className='h-5 w-5 text-gray-600' />
+              <Plus className='h-5 w-6 text-gray-600' />
             </button>
           )}
         </div>

@@ -61,7 +61,7 @@ export function QuickToolsSection({ onToolClick }: QuickToolsSectionProps) {
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
-                <Icon className={`h-6 w-6 ${tool.iconColor}`} />
+                <Icon className={`h-7 w-7 ${tool.iconColor}`} />
               </motion.div>
               <span className='text-sm font-semibold text-gray-500'>{tool.label}</span>
             </div>

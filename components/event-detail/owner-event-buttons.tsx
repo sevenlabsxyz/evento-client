@@ -57,7 +57,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         onClick={handleInvite}
         className='flex h-16 flex-col items-center justify-center rounded-2xl bg-red-500 text-white transition-colors hover:bg-red-600'
       >
-        <UserPlus className='mb-1 h-5 w-5' />
+        <UserPlus className='mb-1 h-6 w-5' />
         <span className='text-xs font-medium'>Invite</span>
       </button>
 
@@ -66,7 +66,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         onClick={handleManage}
         className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
-        <Settings className='mb-1 h-5 w-5' />
+        <Settings className='mb-1 h-6 w-5' />
         <span className='text-xs font-medium'>Manage</span>
       </button>
 
@@ -75,7 +75,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         onClick={handleEmailBlasts}
         className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
-        <Mail className='mb-1 h-5 w-5' />
+        <Mail className='mb-1 h-6 w-5' />
         <span className='text-xs font-medium'>Blasts</span>
       </button>
 
@@ -84,7 +84,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
         onClick={() => setMoreOptionsOpen(true)}
         className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
       >
-        <MoreHorizontal className='mb-1 h-5 w-5' />
+        <MoreHorizontal className='mb-1 h-6 w-5' />
         <span className='text-xs font-medium'>More</span>
       </button>
 

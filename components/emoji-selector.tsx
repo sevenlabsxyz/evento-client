@@ -73,7 +73,7 @@ export function EmojiSelector({ selectedEmoji, onEmojiSelect, className }: Emoji
             </button>
           </div>
         ) : (
-          <Smile className='h-5 w-5 text-gray-400' />
+          <Smile className='h-5 w-6 text-gray-400' />
         )}
       </button>
 

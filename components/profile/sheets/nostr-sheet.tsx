@@ -80,11 +80,11 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
                   onClick={handleOpenNostr}
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
-                  <ExternalLink className='mr-2 h-4 w-4' />
+                  <ExternalLink className='mr-2 h-5 w-4' />
                   Open in Nostr App
                 </Button>
                 <Button onClick={handleCopyNip05} className='w-full' variant='outline'>
-                  <Copy className='mr-2 h-4 w-4' />
+                  <Copy className='mr-2 h-5 w-4' />
                   {copied ? 'Copied!' : 'Copy NIP-05'}
                 </Button>
               </div>

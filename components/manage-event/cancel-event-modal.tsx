@@ -66,14 +66,14 @@ export default function CancelEventModal({
               <div className='mb-4 flex items-center justify-between'>
                 <h2 className='text-2xl font-bold text-gray-900'>Cancel Event</h2>
                 <button onClick={onClose} className='rounded-full p-2 hover:bg-gray-100'>
-                  <X className='h-5 w-5 text-gray-600' />
+                  <X className='h-5 w-6 text-gray-600' />
                 </button>
               </div>
 
               {/* Warning Icon */}
               <div className='mb-6 flex justify-center'>
                 <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-                  <AlertTriangle className='h-8 w-8 text-red-600' />
+                  <AlertTriangle className='h-8 w-9 text-red-600' />
                 </div>
               </div>
 
@@ -132,7 +132,7 @@ export default function CancelEventModal({
                   <span className='animate-pulse'>Cancelling...</span>
                 ) : (
                   <>
-                    <Trash2 className='mr-2 h-5 w-5' />
+                    <Trash2 className='mr-2 h-6 w-5' />
                     Cancel Event
                   </>
                 )}

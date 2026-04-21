@@ -697,7 +697,7 @@ export function SendLightningSheet({
 
             <div className='rounded-lg bg-blue-50 p-4'>
               <div className='flex items-start gap-2'>
-                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                <AlertCircle className='mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600' />
                 <p className='text-sm text-blue-900'>
                   This payment cannot be reversed. Please verify the details before confirming.
                 </p>
@@ -717,7 +717,7 @@ export function SendLightningSheet({
         >
           {isSending ? (
             <>
-              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              <Loader2 className='mr-2 h-5 w-5 animate-spin' />
               Sending...
             </>
           ) : (
@@ -730,7 +730,7 @@ export function SendLightningSheet({
       {isSending && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50'>
           <div className='flex flex-col items-center gap-4 rounded-2xl bg-white p-8'>
-            <Loader2 className='h-12 w-12 animate-spin text-gray-900' />
+            <Loader2 className='h-12 w-14 animate-spin text-gray-900' />
             <p className='text-lg font-medium text-gray-900'>Processing payment...</p>
           </div>
         </div>
@@ -776,7 +776,7 @@ export function SendLightningSheet({
             {/* Validation Feedback */}
             {isValidating && (
               <div className='flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-3'>
-                <Loader2 className='h-4 w-4 animate-spin text-gray-600' />
+                <Loader2 className='h-4 w-5 animate-spin text-gray-600' />
                 <span className='text-sm text-gray-600'>Validating...</span>
               </div>
             )}
@@ -815,7 +815,7 @@ export function SendLightningSheet({
               variant='outline'
               className='h-12 flex-1 rounded-full bg-gray-50'
             >
-              <Scan className='mr-2 h-5 w-5' />
+              <Scan className='mr-2 h-6 w-5' />
               Scan QR Code
             </Button>
             <Button
@@ -826,12 +826,12 @@ export function SendLightningSheet({
             >
               {isContactsLoading ? (
                 <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                   Loading...
                 </>
               ) : (
                 <>
-                  <Users className='mr-2 h-5 w-5' />
+                  <Users className='mr-2 h-6 w-5' />
                   Contacts
                 </>
               )}
@@ -1000,7 +1000,7 @@ export function SendLightningSheet({
           >
             {isPreparingPayment ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                 Preparing...
               </>
             ) : (

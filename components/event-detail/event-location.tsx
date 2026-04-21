@@ -95,7 +95,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             {/* Map Pin */}
             <div className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
               <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2'>
-                <MapPin className='h-4 w-4 text-white' />
+                <MapPin className='h-4 w-5 text-white' />
               </div>
             </div>
 
@@ -110,7 +110,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
               className='absolute right-2 top-2 z-20 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100'
               type='button'
             >
-              <ExternalLink className='h-4 w-4 text-gray-700' />
+              <ExternalLink className='h-4 w-5 text-gray-700' />
             </button>
           </div>
         )}

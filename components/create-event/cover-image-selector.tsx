@@ -53,7 +53,7 @@ export default function CoverImageSelector({
 
       {/* Camera icon in bottom right */}
       <div className='absolute bottom-4 right-4 flex h-10 w-10 items-center justify-center rounded-full bg-black bg-opacity-50'>
-        <Camera className='h-5 w-5 text-white' />
+        <Camera className='h-5 w-6 text-white' />
       </div>
     </div>
   );

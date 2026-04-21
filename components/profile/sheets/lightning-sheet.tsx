@@ -53,7 +53,7 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
               {/* Lightning Info */}
               <div className='mb-6 flex items-center gap-3'>
                 <div className='flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100'>
-                  <Zap className='h-6 w-6 text-yellow-600' />
+                  <Zap className='h-6 w-7 text-yellow-600' />
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-900'>{address}</h3>
@@ -78,11 +78,11 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
                   onClick={handleOpenLightning}
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
-                  <ExternalLink className='mr-2 h-4 w-4' />
+                  <ExternalLink className='mr-2 h-5 w-4' />
                   Open in Wallet
                 </Button>
                 <Button onClick={handleCopyAddress} className='w-full' variant='outline'>
-                  <Copy className='mr-2 h-4 w-4' />
+                  <Copy className='mr-2 h-5 w-4' />
                   {copied ? 'Copied!' : 'Copy Address'}
                 </Button>
               </div>

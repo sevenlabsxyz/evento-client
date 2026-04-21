@@ -280,7 +280,7 @@ export function BackupChoiceSheet({
               className='flex w-full items-center gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100'
             >
               <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-green-300 bg-green-100'>
-                <Shield className='h-6 w-6 text-green-600' />
+                <Shield className='h-6 w-7 text-green-600' />
               </div>
               <div className='min-w-0 flex-1'>
                 <div className='flex items-center gap-2'>
@@ -293,7 +293,7 @@ export function BackupChoiceSheet({
                   PIN-protected backup that you can save to cloud storage.
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-5 w-6 flex-shrink-0 text-gray-400' />
             </button>
 
             {/* Recovery Phrase Option */}
@@ -302,7 +302,7 @@ export function BackupChoiceSheet({
               className='flex w-full items-center gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100'
             >
               <div className='flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full border border-orange-300 bg-orange-100'>
-                <Key className='h-6 w-6 text-orange-600' />
+                <Key className='h-6 w-7 text-orange-600' />
               </div>
               <div className='min-w-0 flex-1'>
                 <div className='flex items-center gap-2'>
@@ -315,7 +315,7 @@ export function BackupChoiceSheet({
                   Write down your 12-word recovery phrase (also known as seed phrase)
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-5 w-6 flex-shrink-0 text-gray-400' />
             </button>
           </div>
 
@@ -335,9 +335,9 @@ export function BackupChoiceSheet({
           <div className='text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
               {isPasswordMode ? (
-                <KeyRound className='h-8 w-8 text-orange-600' />
+                <KeyRound className='h-8 w-9 text-orange-600' />
               ) : (
-                <Shield className='h-8 w-8 text-orange-600' />
+                <Shield className='h-8 w-9 text-orange-600' />
               )}
             </div>
             <p className='text-sm text-muted-foreground'>
@@ -402,7 +402,7 @@ export function BackupChoiceSheet({
               disabled={(isPasswordMode ? password.length < 4 : pin.length < 4) || isLoading}
             >
               {isLoading ? 'Verifying...' : 'Continue'}
-              {!isLoading && <ArrowRight className='ml-2 h-4 w-4' />}
+              {!isLoading && <ArrowRight className='ml-2 h-5 w-4' />}
             </Button>
             <Button
               onClick={() => setStep('choice')}
@@ -422,7 +422,7 @@ export function BackupChoiceSheet({
         <div className='space-y-6 px-4 pb-8'>
           <div className='text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-50'>
-              <Shield className='h-8 w-8 text-green-600' />
+              <Shield className='h-8 w-9 text-green-600' />
             </div>
             <p className='text-sm text-muted-foreground'>
               Save this encrypted backup to a secure location
@@ -450,12 +450,12 @@ export function BackupChoiceSheet({
               >
                 {copied ? (
                   <>
-                    <Check className='mr-2 h-4 w-4' />
+                    <Check className='mr-2 h-5 w-4' />
                     Copied!
                   </>
                 ) : (
                   <>
-                    <Copy className='mr-2 h-4 w-4' />
+                    <Copy className='mr-2 h-5 w-4' />
                     Copy
                   </>
                 )}
@@ -466,14 +466,14 @@ export function BackupChoiceSheet({
                 className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
                 size='lg'
               >
-                <Download className='mr-2 h-4 w-4' />
+                <Download className='mr-2 h-5 w-4' />
                 Save
               </Button>
             </div>
 
             <div className='rounded-2xl border border-blue-300 bg-blue-50 p-4'>
               <div className='flex items-start gap-2'>
-                <Shield className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                <Shield className='mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600' />
                 <div className='text-sm text-blue-900'>
                   <p className='font-medium'>Why Backup?</p>
                   <p className='mt-1'>
@@ -517,9 +517,9 @@ export function BackupChoiceSheet({
           <div className='text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-orange-50'>
               {isSeedPasswordMode ? (
-                <KeyRound className='h-8 w-8 text-orange-600' />
+                <KeyRound className='h-8 w-9 text-orange-600' />
               ) : (
-                <Key className='h-8 w-8 text-orange-600' />
+                <Key className='h-8 w-9 text-orange-600' />
               )}
             </div>
             <p className='text-sm text-muted-foreground'>
@@ -586,7 +586,7 @@ export function BackupChoiceSheet({
               }
             >
               {isVerifying ? 'Verifying...' : 'Continue'}
-              {!isVerifying && <ArrowRight className='ml-2 h-4 w-4' />}
+              {!isVerifying && <ArrowRight className='ml-2 h-5 w-4' />}
             </Button>
             <Button
               onClick={() => {
@@ -617,7 +617,7 @@ export function BackupChoiceSheet({
 
           <div className='rounded-2xl bg-red-50 p-4'>
             <div className='flex gap-3'>
-              <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
+              <AlertCircle className='h-5 w-6 flex-shrink-0 text-red-600' />
               <div className='text-sm text-red-900'>
                 <p className='font-medium'>Keep this private</p>
                 <p className='mt-1'>
@@ -633,12 +633,12 @@ export function BackupChoiceSheet({
               <Button variant='ghost' size='sm' onClick={() => setShowSeed(!showSeed)}>
                 {showSeed ? (
                   <>
-                    <EyeOff className='mr-2 h-4 w-4' />
+                    <EyeOff className='mr-2 h-5 w-4' />
                     Hide
                   </>
                 ) : (
                   <>
-                    <Eye className='mr-2 h-4 w-4' />
+                    <Eye className='mr-2 h-5 w-4' />
                     Show
                   </>
                 )}
@@ -665,12 +665,12 @@ export function BackupChoiceSheet({
                 >
                   {seedCopied ? (
                     <>
-                      <Check className='mr-2 h-4 w-4' />
+                      <Check className='mr-2 h-5 w-4' />
                       Copied!
                     </>
                   ) : (
                     <>
-                      <Copy className='mr-2 h-4 w-4' />
+                      <Copy className='mr-2 h-5 w-4' />
                       Copy
                     </>
                   )}
@@ -680,7 +680,7 @@ export function BackupChoiceSheet({
                   onClick={handleSeedSave}
                   className='flex-1 rounded-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
                 >
-                  <Download className='mr-2 h-4 w-4' />
+                  <Download className='mr-2 h-5 w-4' />
                   Save
                 </Button>
               </div>

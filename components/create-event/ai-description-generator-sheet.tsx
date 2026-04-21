@@ -180,7 +180,7 @@ export function AIDescriptionGeneratorSheet({
               <div className='bg-gray-50 px-4 py-2'>
                 <div className='mx-auto flex max-w-md items-center justify-center gap-2'>
                   <div className='flex items-center gap-1'>
-                    <Sparkles className='h-4 w-4 text-red-600' />
+                    <Sparkles className='h-4 w-5 text-red-600' />
                     <span className='text-sm font-medium'>AI-powered description generator</span>
                   </div>
                 </div>
@@ -290,12 +290,12 @@ export function AIDescriptionGeneratorSheet({
                           >
                             {generateDescriptionMutation.isPending ? (
                               <>
-                                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                                 Generating...
                               </>
                             ) : (
                               <>
-                                <Sparkles className='mr-2 h-4 w-4' />
+                                <Sparkles className='mr-2 h-5 w-4' />
                                 Generate Description
                               </>
                             )}

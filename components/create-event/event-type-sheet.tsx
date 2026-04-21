@@ -76,7 +76,7 @@ export default function EventTypeSheet({
                         Guests RSVP directly.
                       </p>
                     </div>
-                    {currentType === 'rsvp' && <Check className='h-5 w-5 text-red-600' />}
+                    {currentType === 'rsvp' && <Check className='h-5 w-6 text-red-600' />}
                   </div>
                 </button>
 
@@ -114,7 +114,7 @@ export default function EventTypeSheet({
                         Guests submit registration before attending.
                       </p>
                     </div>
-                    {currentType === 'registration' && <Check className='h-5 w-5 text-red-600' />}
+                    {currentType === 'registration' && <Check className='h-5 w-6 text-red-600' />}
                   </div>
                 </button>
               </div>

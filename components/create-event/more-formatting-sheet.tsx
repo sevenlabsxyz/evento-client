@@ -44,7 +44,7 @@ export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFor
                   })}
                   aria-label='Strikethrough'
                 >
-                  <Strikethrough className='mr-2 h-4 w-4' />
+                  <Strikethrough className='mr-2 h-5 w-4' />
                   <span className='grow'>Strikethrough</span>
                 </button>
                 <button
@@ -60,7 +60,7 @@ export default function MoreFormattingSheet({ isOpen, onClose, editor }: MoreFor
                   })}
                   aria-label='Code'
                 >
-                  <Code className='mr-2 h-4 w-4' />
+                  <Code className='mr-2 h-5 w-4' />
                   <span className='grow'>Code</span>
                 </button>
                 <button

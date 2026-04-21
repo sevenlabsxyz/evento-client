@@ -125,7 +125,7 @@ export function TelegramConnectSheet({
               </div>
               <div className='flex items-center gap-3'>
                 <div className='flex h-10 w-10 items-center justify-center rounded-full bg-[#2AABEE]'>
-                  <Send className='h-5 w-5 text-white' />
+                  <Send className='h-5 w-6 text-white' />
                 </div>
                 <div>
                   <h2 className='text-xl font-bold text-gray-900'>Telegram</h2>
@@ -144,7 +144,7 @@ export function TelegramConnectSheet({
                   {isConnected ? (
                     <div className='space-y-6'>
                       <div className='flex items-center gap-3 rounded-2xl bg-green-50 p-4'>
-                        <CheckCircle className='h-5 w-5 flex-shrink-0 text-green-600' />
+                        <CheckCircle className='h-5 w-6 flex-shrink-0 text-green-600' />
                         <p className='text-sm text-green-800'>
                           Telegram is connected. You can log in with Telegram and receive
                           notifications there.
@@ -158,12 +158,12 @@ export function TelegramConnectSheet({
                       >
                         {isDisconnecting ? (
                           <>
-                            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                            <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                             Disconnecting...
                           </>
                         ) : (
                           <>
-                            <Unlink className='mr-2 h-4 w-4' />
+                            <Unlink className='mr-2 h-5 w-4' />
                             Disconnect Telegram
                           </>
                         )}
@@ -177,7 +177,7 @@ export function TelegramConnectSheet({
                       </p>
                       <div className='flex min-h-[56px] items-center justify-center'>
                         {!widgetLoaded && (
-                          <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+                          <Loader2 className='h-6 w-7 animate-spin text-gray-400' />
                         )}
                         <div
                           ref={widgetContainerRef}

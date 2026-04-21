@@ -67,7 +67,7 @@ export default function ImageSelectionSheet({
                 isActive ? 'text-gray-900' : 'text-gray-400'
               }`}
             >
-              <IconComponent className='h-6 w-6' />
+              <IconComponent className='h-7 w-7' />
               <span className='text-center text-xs font-medium leading-tight'>{category.name}</span>
               {isActive && (
                 <div className='absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gray-900' />

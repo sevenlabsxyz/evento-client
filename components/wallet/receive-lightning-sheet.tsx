@@ -73,11 +73,11 @@ export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLigh
             {/* Action Buttons */}
             <div className='grid grid-cols-2 gap-3'>
               <Button onClick={handleCopy} variant='outline' size='lg' className='w-full'>
-                <Copy className='mr-2 h-4 w-4' />
+                <Copy className='mr-2 h-5 w-4' />
                 Copy
               </Button>
               <Button onClick={handleShare} variant='outline' size='lg' className='w-full'>
-                <Share2 className='mr-2 h-4 w-4' />
+                <Share2 className='mr-2 h-5 w-4' />
                 Share
               </Button>
             </div>
@@ -89,7 +89,7 @@ export function ReceiveLightningSheet({ lightningAddress, onClose }: ReceiveLigh
               size='lg'
               className='w-full'
             >
-              <Edit3 className='mr-2 h-4 w-4' />
+              <Edit3 className='mr-2 h-5 w-4' />
               Amount / Note
             </Button>
           </div>

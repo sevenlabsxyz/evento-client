@@ -56,7 +56,7 @@ export default function EventCampaignCard({
         <div className='flex items-center gap-3'>
           {/* Zap icon in amber circle */}
           <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100'>
-            <Zap className='h-5 w-5 text-amber-600' />
+            <Zap className='h-5 w-6 text-amber-600' />
           </div>
           {/* Text block */}
           <div className='min-w-0 flex-1 text-left'>
@@ -75,7 +75,7 @@ export default function EventCampaignCard({
             </div>
           </div>
         </div>
-        <ChevronRight className='h-5 w-5 shrink-0 text-gray-400' />
+        <ChevronRight className='h-5 w-6 shrink-0 text-gray-400' />
       </button>
 
       <CampaignDetailSheet

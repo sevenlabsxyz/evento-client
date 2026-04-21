@@ -107,7 +107,7 @@ export function BlogSection() {
       <div className='flex justify-center pb-6 pt-4'>
         <Button asChild variant='outline' className='w-full md:w-auto'>
           <Link href='/e/blog'>
-            View more posts <ArrowRight className='ml-2 h-4 w-4' />
+            View more posts <ArrowRight className='ml-2 h-5 w-4' />
           </Link>
         </Button>
       </div>

@@ -15,7 +15,7 @@ function OnboardingContent() {
   if (isLoading) {
     return (
       <div className='flex min-h-screen items-center justify-center'>
-        <Loader2 className='h-8 w-8 animate-spin' />
+        <Loader2 className='h-8 w-9 animate-spin' />
       </div>
     );
   }
@@ -34,7 +34,7 @@ export default function OnboardingPage() {
     <Suspense
       fallback={
         <div className='flex min-h-screen items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin' />
+          <Loader2 className='h-8 w-9 animate-spin' />
         </div>
       }
     >

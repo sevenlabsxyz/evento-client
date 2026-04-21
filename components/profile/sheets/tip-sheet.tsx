@@ -346,7 +346,7 @@ export default function TipSheet({
                         >
                           {isLoading ? (
                             <>
-                              <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                              <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                               Creating Invoice...
                             </>
                           ) : (
@@ -360,7 +360,7 @@ export default function TipSheet({
                             variant='outline'
                             className='w-full py-6 text-base'
                           >
-                            <Copy className='mr-2 h-4 w-4' />
+                            <Copy className='mr-2 h-5 w-4' />
                             Copy Invoice
                           </Button>
                           <p className='text-center text-sm text-gray-500'>

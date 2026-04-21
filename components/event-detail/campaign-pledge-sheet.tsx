@@ -172,7 +172,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       >
         {createPledge.isPending ? (
           <>
-            <Loader2 className='h-4 w-4 animate-spin' />
+            <Loader2 className='h-4 w-5 animate-spin' />
             Creating invoice…
           </>
         ) : (
@@ -214,9 +214,9 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       >
         <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100'>
           {isWalletPaying ? (
-            <Loader2 className='h-5 w-5 animate-spin text-amber-600' />
+            <Loader2 className='h-5 w-6 animate-spin text-amber-600' />
           ) : (
-            <Wallet className='h-5 w-5 text-amber-600' />
+            <Wallet className='h-5 w-6 text-amber-600' />
           )}
         </div>
         <div>
@@ -235,7 +235,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         className='flex w-full items-center gap-4 rounded-2xl border-2 border-gray-200 bg-white px-4 py-4 text-left transition-all hover:border-gray-300 hover:bg-gray-50'
       >
         <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100'>
-          <QrCode className='h-5 w-5 text-gray-600' />
+          <QrCode className='h-5 w-6 text-gray-600' />
         </div>
         <div>
           <p className='text-sm font-semibold text-gray-900'>View QR code</p>
@@ -245,7 +245,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
       {/* Waiting indicator */}
       <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400'>
-        <Loader2 className='h-4 w-4 animate-spin' />
+        <Loader2 className='h-4 w-5 animate-spin' />
         Waiting for payment…
       </div>
     </div>
@@ -276,7 +276,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       >
         {copied ? (
           <>
-            <CheckCircle2 className='h-4 w-4 text-emerald-500' />
+            <CheckCircle2 className='h-4 w-5 text-emerald-500' />
             Copied!
           </>
         ) : (
@@ -289,7 +289,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
       {/* Waiting indicator */}
       <div className='flex items-center gap-2 text-sm text-gray-500'>
-        <Loader2 className='h-4 w-4 animate-spin' />
+        <Loader2 className='h-4 w-5 animate-spin' />
         Waiting for payment…
       </div>
     </div>
@@ -301,7 +301,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
   const renderSettledStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100'>
-        <CheckCircle2 className='h-8 w-8 text-emerald-600' />
+        <CheckCircle2 className='h-8 w-9 text-emerald-600' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Thank you!</h3>
       <p className='text-center text-sm text-gray-600'>
@@ -315,7 +315,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
   const renderExpiredStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-        <RotateCcw className='h-8 w-8 text-red-500' />
+        <RotateCcw className='h-8 w-9 text-red-500' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Invoice expired</h3>
       <p className='mb-6 text-center text-sm text-gray-600'>
@@ -334,7 +334,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
   const renderFailedStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-        <RotateCcw className='h-8 w-8 text-red-500' />
+        <RotateCcw className='h-8 w-9 text-red-500' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Payment failed</h3>
       <p className='mb-6 text-center text-sm text-gray-600'>

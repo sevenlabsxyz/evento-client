@@ -22,7 +22,7 @@ export function CircledIconButton({
       disabled={disabled}
       className={`rounded-full bg-gray-50 ${className || ''}`}
     >
-      <Icon className='!h-[1.25rem] !w-[1.25rem]' />
+      <Icon className='!h-[1.5rem] !w-[1.5rem]' />
     </Button>
   );
 }

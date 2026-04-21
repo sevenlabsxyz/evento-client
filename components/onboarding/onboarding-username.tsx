@@ -125,11 +125,11 @@ export const OnboardingUsername = ({
           {/* Status indicator */}
           <div className='absolute right-3 top-1/2 -translate-y-1/2'>
             {isCheckingAvailability || isLoading ? (
-              <Loader2 className='h-5 w-5 animate-spin text-gray-400' />
+              <Loader2 className='h-5 w-6 animate-spin text-gray-400' />
             ) : isAvailable === true && !validationError && showValidation ? (
-              <CheckCircle className='h-5 w-5 text-green-500' />
+              <CheckCircle className='h-5 w-6 text-green-500' />
             ) : isAvailable === false && showValidation ? (
-              <XCircle className='h-5 w-5 text-red-500' />
+              <XCircle className='h-5 w-6 text-red-500' />
             ) : null}
           </div>
         </div>

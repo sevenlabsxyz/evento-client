@@ -123,14 +123,14 @@ export function RegistrationDetailSheet({
             disabled={isApproving}
             className='flex-1 bg-green-500 text-white hover:bg-green-600'
           >
-            <Check className='mr-2 h-4 w-4' />
+            <Check className='mr-2 h-5 w-4' />
             Approve
           </Button>
           <Button
             onClick={handleStartDeny}
             className='flex-1 bg-red-500 text-white hover:bg-red-600'
           >
-            <X className='mr-2 h-4 w-4' />
+            <X className='mr-2 h-5 w-4' />
             Deny
           </Button>
         </div>

@@ -118,7 +118,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
         {/* Location */}
         {event.location && (
           <div className='flex items-center gap-1 py-1 text-sm text-gray-600'>
-            <MapPin className='mx-0.5 h-4 w-4 shrink-0' />
+            <MapPin className='mx-0.5 h-5 w-5 shrink-0' />
             <span className='truncate'>{event.location}</span>
           </div>
         )}

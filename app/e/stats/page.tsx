@@ -125,7 +125,7 @@ export default function StatsPage() {
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-2xl font-bold'>Total</h2>
             <Button variant='ghost' size='icon' className='h-8 w-8'>
-              <Share className='h-5 w-5 text-gray-600' />
+              <Share className='h-5 w-6 text-gray-600' />
             </Button>
           </div>
 
@@ -162,7 +162,7 @@ export default function StatsPage() {
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-2xl font-bold'>Countries</h2>
             <Button variant='ghost' size='icon' className='h-8 w-8'>
-              <Share className='h-5 w-5 text-gray-600' />
+              <Share className='h-5 w-6 text-gray-600' />
             </Button>
           </div>
 
@@ -200,7 +200,7 @@ export default function StatsPage() {
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-2xl font-bold'>Event Categories</h2>
             <Button variant='ghost' size='icon' className='h-8 w-8'>
-              <Share className='h-5 w-5 text-gray-600' />
+              <Share className='h-5 w-6 text-gray-600' />
             </Button>
           </div>
 

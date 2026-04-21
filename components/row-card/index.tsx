@@ -49,7 +49,7 @@ export default function RowCard({
         {/* Chevron right - only show if clickable */}
         {isClickable && (
           <div className='flex-shrink-0'>
-            <ChevronRight className='h-5 w-5 text-gray-400' />
+            <ChevronRight className='h-5 w-6 text-gray-400' />
           </div>
         )}
       </div>

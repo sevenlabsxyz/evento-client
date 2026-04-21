@@ -217,7 +217,7 @@ export default function SettingsPage() {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Languages className='h-4 w-4 text-red-600' />
+                    <Languages className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>Language</span>
                 </div>
@@ -231,7 +231,7 @@ export default function SettingsPage() {
               <div className='flex items-center justify-between'>
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <DollarSign className='h-4 w-4 text-red-600' />
+                    <DollarSign className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>Currency</span>
                 </div>
@@ -253,7 +253,7 @@ export default function SettingsPage() {
             >
               <div className='flex items-center gap-3'>
                 <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF7FD]'>
-                  <Send className='h-4 w-4 text-[#2AABEE]' />
+                  <Send className='h-4 w-5 text-[#2AABEE]' />
                 </div>
                 <span className='font-medium'>Telegram</span>
               </div>
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                   <span>Connected</span>
                 </div>
               ) : (
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               )}
             </button>
           </div>
@@ -282,11 +282,11 @@ export default function SettingsPage() {
               >
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Mail className='h-4 w-4 text-red-600' />
+                    <Mail className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>Talk to us</span>
                 </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               </button>
             </div>
           </div>
@@ -303,11 +303,11 @@ export default function SettingsPage() {
               >
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Info className='h-4 w-4 text-red-600' />
+                    <Info className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>About Evento</span>
                 </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               </button>
             </div>
 
@@ -318,11 +318,11 @@ export default function SettingsPage() {
               >
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Scale className='h-4 w-4 text-red-600' />
+                    <Scale className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>Terms of Service</span>
                 </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               </button>
             </div>
 
@@ -333,11 +333,11 @@ export default function SettingsPage() {
               >
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Shield className='h-4 w-4 text-red-600' />
+                    <Shield className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>Privacy Policy</span>
                 </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               </button>
             </div>
 
@@ -348,11 +348,11 @@ export default function SettingsPage() {
               >
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                    <Share className='h-4 w-4 text-red-600' />
+                    <Share className='h-4 w-5 text-red-600' />
                   </div>
                   <span className='font-medium'>Share to a Friend</span>
                 </div>
-                <ChevronRight className='h-4 w-4 text-gray-400' />
+                <ChevronRight className='h-4 w-5 text-gray-400' />
               </button>
             </div>
           </div>
@@ -366,7 +366,7 @@ export default function SettingsPage() {
               <div className='flex w-full items-center justify-between p-4'>
                 <div className='flex items-center gap-3'>
                   <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100'>
-                    <Terminal className='h-4 w-4 text-gray-600' />
+                    <Terminal className='h-4 w-5 text-gray-600' />
                   </div>
                   <span className='font-medium'>Developer Mode</span>
                 </div>
@@ -391,11 +391,11 @@ export default function SettingsPage() {
                   >
                     <div className='flex items-center gap-3'>
                       <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                        <Key className='h-4 w-4 text-red-600' />
+                        <Key className='h-4 w-5 text-red-600' />
                       </div>
                       <span className='font-medium'>API Keys</span>
                     </div>
-                    <ChevronRight className='h-4 w-4 text-gray-400' />
+                    <ChevronRight className='h-4 w-5 text-gray-400' />
                   </button>
                 </div>
               </div>

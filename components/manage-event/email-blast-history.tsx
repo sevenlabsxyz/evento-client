@@ -23,7 +23,7 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
   if (isLoading) {
     return (
       <div className='EmailBlastHistory-loading'>
-        <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+        <Loader2 className='h-6 w-7 animate-spin text-gray-400' />
         <p className='mt-2 text-sm text-gray-500'>Loading email blast history...</p>
       </div>
     );
@@ -33,7 +33,7 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
   if (error) {
     return (
       <div className='EmailBlastHistory-error'>
-        <AlertCircle className='h-6 w-6 text-red-400' />
+        <AlertCircle className='h-6 w-7 text-red-400' />
         <p className='mt-2 text-sm text-red-600'>Failed to load email blast history</p>
         <p className='mt-1 text-xs text-gray-500'>{error.message}</p>
       </div>
@@ -45,7 +45,7 @@ export default function EmailBlastHistory({ eventId }: EmailBlastHistoryProps) {
     return (
       <div className='EmailBlastHistory-empty'>
         <div className='EmailBlastHistory-emptyIcon'>
-          <Mail className='h-8 w-8 text-gray-400' />
+          <Mail className='h-8 w-9 text-gray-400' />
         </div>
         <h3 className='EmailBlastHistory-emptyTitle'>No email blasts yet</h3>
         <p className='EmailBlastHistory-emptyDescription'>

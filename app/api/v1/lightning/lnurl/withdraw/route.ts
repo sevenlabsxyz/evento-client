@@ -49,8 +49,11 @@ export async function POST(request: NextRequest) {
     try {
       callbackUrl = new URL(callback);
       const hostname = callbackUrl.hostname.toLowerCase();
-      if (!ALLOWED_DOMAINS.some(domain => hostname === domain)) {
-        logger.warn('LNURL withdraw callback domain not in allowlist', { hostname, allowed: ALLOWED_DOMAINS });
+      if (!ALLOWED_DOMAINS.some((domain) => hostname === domain)) {
+        logger.warn('LNURL withdraw callback domain not in allowlist', {
+          hostname,
+          allowed: ALLOWED_DOMAINS,
+        });
         return NextResponse.json({ error: 'Callback domain not allowed' }, { status: 400 });
       }
     } catch {

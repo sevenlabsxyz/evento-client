@@ -73,7 +73,7 @@ export function ContactsList({
         {showAddButton && onAddContact && (
           <EmptyContent>
             <Button onClick={onAddContact} className='h-11'>
-              <UserPlus className='mr-2 h-4 w-4' />
+              <UserPlus className='mr-2 h-5 w-4' />
               Add Contact
             </Button>
           </EmptyContent>

@@ -12,21 +12,21 @@ interface RegistrationStatusProps {
 export function RegistrationStatus({ registration, onShowRsvp }: RegistrationStatusProps) {
   const statusConfig = {
     pending: {
-      icon: <Clock className='h-6 w-6 text-yellow-500' />,
+      icon: <Clock className='h-6 w-7 text-yellow-500' />,
       title: 'Registration Pending',
       description: "You're on the list! We're waiting for the host to approve your registration.",
       bgColor: 'bg-yellow-50',
       borderColor: 'border-yellow-200',
     },
     approved: {
-      icon: <CheckCircle className='h-6 w-6 text-green-500' />,
+      icon: <CheckCircle className='h-6 w-7 text-green-500' />,
       title: "You're Registered!",
       description: 'Your registration has been approved.',
       bgColor: 'bg-green-50',
       borderColor: 'border-green-200',
     },
     denied: {
-      icon: <XCircle className='h-6 w-6 text-red-500' />,
+      icon: <XCircle className='h-6 w-7 text-red-500' />,
       title: 'Registration Not Approved',
       description: registration.denial_reason
         ? `Reason: ${registration.denial_reason}`

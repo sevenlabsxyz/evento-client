@@ -274,7 +274,7 @@ export function ReceiveLnurlWithdrawSheet({
       >
         {isReceiving ? (
           <>
-            <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+            <Loader2 className='mr-2 h-5 w-5 animate-spin' />
             Receiving...
           </>
         ) : (
@@ -301,7 +301,7 @@ export function ReceiveLnurlWithdrawSheet({
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                <CheckCircle2 className='h-16 w-16 text-green-600' />
+                <CheckCircle2 className='h-16 w-20 text-green-600' />
               </motion.div>
 
               {/* Title with Fade-in Slide-up */}

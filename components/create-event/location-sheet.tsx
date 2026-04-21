@@ -102,7 +102,7 @@ export default function LocationSheet({
   // Search input as secondary header
   const searchHeader = (
     <div className='relative px-4 pb-4'>
-      <Search className='absolute left-7 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+      <Search className='absolute left-7 top-1/2 h-6 w-6 -translate-y-1/2 text-gray-400' />
       <input
         type='text'
         placeholder='Search for a place or address'
@@ -129,7 +129,7 @@ export default function LocationSheet({
             className='flex w-full min-w-0 items-center gap-3 overflow-hidden border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-              <Check className='h-5 w-5 text-red-600' />
+              <Check className='h-5 w-6 text-red-600' />
             </div>
             <div className='min-w-0 flex-1 overflow-hidden'>
               <div className='truncate font-medium text-gray-900'>
@@ -148,9 +148,9 @@ export default function LocationSheet({
           >
             <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100'>
               {isGettingCurrentLocation ? (
-                <Loader2 className='h-5 w-5 animate-spin text-blue-600' />
+                <Loader2 className='h-5 w-6 animate-spin text-blue-600' />
               ) : (
-                <MapPin className='h-5 w-5 text-blue-600' />
+                <MapPin className='h-5 w-6 text-blue-600' />
               )}
             </div>
             <div className='min-w-0 flex-1'>
@@ -167,7 +167,7 @@ export default function LocationSheet({
         {/* Loading State */}
         {(isLoading || isSelectingPlace) && (
           <div className='flex items-center justify-center gap-2 py-4'>
-            <Loader2 className='h-5 w-5 animate-spin text-gray-400' />
+            <Loader2 className='h-5 w-6 animate-spin text-gray-400' />
             <span className='text-sm text-gray-500'>
               {isSelectingPlace ? 'Loading place details...' : 'Searching...'}
             </span>
@@ -186,7 +186,7 @@ export default function LocationSheet({
                 className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
               >
                 <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100'>
-                  <MapPin className='h-5 w-5 text-gray-500' />
+                  <MapPin className='h-5 w-6 text-gray-500' />
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='truncate font-medium text-gray-900'>{prediction.mainText}</div>
@@ -202,7 +202,7 @@ export default function LocationSheet({
                 className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
               >
                 <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-                  <Plus className='h-5 w-5 text-red-500' />
+                  <Plus className='h-5 w-6 text-red-500' />
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='truncate font-medium text-gray-900'>

@@ -21,42 +21,42 @@ const menuSections = [
       {
         name: 'Events',
         path: '/',
-        icon: <navigationIcons.events className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.events className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Wallet',
         path: '/e/wallet',
-        icon: <navigationIcons.wallet className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.wallet className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Lists',
         path: '/e/lists',
-        icon: <navigationIcons.lists className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.lists className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Search',
         path: '/e/search',
-        icon: <navigationIcons.search className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.search className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Chat',
         path: '/e/messages',
-        icon: <navigationIcons.messages className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.messages className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Profile',
         path: '/e/profile',
-        icon: <navigationIcons.profile className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.profile className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Settings',
         path: '/e/settings',
-        icon: <navigationIcons.settings className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.settings className='h-5 w-5' strokeWidth={2} />,
       },
       {
         name: 'Blog',
         path: '/e/blog',
-        icon: <navigationIcons.blog className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.blog className='h-5 w-5' strokeWidth={2} />,
       },
     ],
   },
@@ -162,7 +162,7 @@ function SidebarContent({
                 className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-destructive transition-colors hover:bg-red-500/10'
               >
                 <span className='text-[0]'>
-                  <LogOut className='h-5 w-5' strokeWidth={2.5} />
+                  <LogOut className='h-5 w-5' strokeWidth={2} />
                 </span>
                 <span className='text-lg font-medium'>Log Out</span>
               </button>
@@ -276,7 +276,7 @@ function MobileSidebarContent({
                   className='-mx-3 grid w-full grid-cols-[auto_1fr] items-center gap-3 rounded-lg px-3 py-2 text-left text-destructive transition-colors hover:bg-red-500/10'
                 >
                   <span className='text-[0]'>
-                    <LogOut className='h-5 w-5' strokeWidth={2.5} />
+                    <LogOut className='h-5 w-5' strokeWidth={2} />
                   </span>
                   <span className='text-lg font-medium'>Log Out</span>
                 </button>

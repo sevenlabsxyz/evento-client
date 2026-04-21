@@ -82,7 +82,7 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
                 />
               ) : (
                 <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100'>
-                  <Zap className='h-4 w-4 text-amber-600' />
+                  <Zap className='h-4 w-5 text-amber-600' />
                 </div>
               )}
               <div className='min-w-0'>

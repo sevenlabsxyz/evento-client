@@ -79,7 +79,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
   if (isLoading) {
     return (
       <div className='flex items-center justify-center py-12'>
-        <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+        <Loader2 className='h-8 w-9 animate-spin text-gray-400' />
       </div>
     );
   }
@@ -87,7 +87,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
   if (error) {
     return (
       <div className='flex flex-col items-center justify-center py-12'>
-        <MessageCircle className='mb-4 h-12 w-12 text-gray-300' />
+        <MessageCircle className='mb-4 h-14 w-14 text-gray-300' />
         <h3 className='mb-2 text-lg font-medium text-gray-900'>Could not load comments</h3>
         <p className='text-center text-sm text-gray-500'>
           There was a problem loading comments. Please try again later.

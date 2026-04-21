@@ -42,9 +42,9 @@ export function LogoutConfirmationSheet({
             }`}
           >
             {showWalletWarning ? (
-              <AlertTriangle className='h-5 w-5 text-amber-500' />
+              <AlertTriangle className='h-5 w-6 text-amber-500' />
             ) : (
-              <LogOut className='h-5 w-5 text-gray-500' />
+              <LogOut className='h-5 w-6 text-gray-500' />
             )}
           </div>
           <h2 className='text-xl font-semibold'>{title}</h2>
@@ -83,7 +83,7 @@ export function LogoutConfirmationSheet({
         <div className='flex flex-col gap-3'>
           {showWalletWarning && (
             <Button onClick={handleBackupFirst} className='w-full'>
-              <Shield className='mr-2 h-4 w-4' />
+              <Shield className='mr-2 h-5 w-4' />
               Back Up Wallet First
             </Button>
           )}

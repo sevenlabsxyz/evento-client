@@ -227,7 +227,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
             <div className='flex flex-col items-center justify-center space-y-6 py-12'>
               {/* Success Icon */}
               <div className='rounded-full bg-green-100 p-6'>
-                <CheckCircle2 className='h-16 w-16 text-green-600' />
+                <CheckCircle2 className='h-16 w-20 text-green-600' />
               </div>
 
               {/* Success Message */}
@@ -273,7 +273,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                   {/* Registering State - Show when address is not yet available */}
                   {!address?.lightningAddress && !invoiceAmount && (
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
-                      <Loader2 className='mb-4 h-8 w-8 animate-spin text-gray-400' />
+                      <Loader2 className='mb-4 h-9 w-9 animate-spin text-gray-400' />
                       <p className='text-sm font-medium text-gray-600'>
                         Registering your Lightning address...
                       </p>

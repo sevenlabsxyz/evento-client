@@ -60,9 +60,9 @@ function Calendar({
   const defaultComponents = {
     Chevron: (chevronProps: { orientation?: string }) => {
       if (chevronProps.orientation === 'left') {
-        return <ChevronLeft size={16} strokeWidth={2} aria-hidden='true' />;
+        return <ChevronLeft size={20} strokeWidth={2} aria-hidden='true' />;
       }
-      return <ChevronRight size={16} strokeWidth={2} aria-hidden='true' />;
+      return <ChevronRight size={20} strokeWidth={2} aria-hidden='true' />;
     },
   };
 

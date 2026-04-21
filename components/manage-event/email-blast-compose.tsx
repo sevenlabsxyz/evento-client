@@ -445,7 +445,7 @@ export default function EmailBlastCompose({
           <div key='details' className='EmailBlastCompose-step'>
             <div className='EmailBlastCompose-field'>
               <label className='EmailBlastCompose-label'>
-                <Users className='mr-2 inline h-4 w-4' />
+                <Users className='mr-2 inline h-5 w-4' />
                 Recipients
               </label>
               <select
@@ -472,7 +472,7 @@ export default function EmailBlastCompose({
 
             <div className='EmailBlastCompose-field'>
               <label className='EmailBlastCompose-label'>
-                <Mail className='mr-2 inline h-4 w-4' />
+                <Mail className='mr-2 inline h-5 w-4' />
                 Subject
               </label>
               <input
@@ -581,7 +581,7 @@ export default function EmailBlastCompose({
                 <div className='mt-1 flex flex-col gap-4'>
                   <div>
                     <label className='mb-1 block text-sm font-medium' htmlFor='schedule-date'>
-                      <Clock className='mr-2 inline h-4 w-4' />
+                      <Clock className='mr-2 inline h-5 w-4' />
                       Date
                     </label>
                     <button
@@ -590,12 +590,12 @@ export default function EmailBlastCompose({
                       className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
                     >
                       {scheduledDate ? formattedDate : 'Select date'}
-                      <CalendarClock className='h-4 w-4 text-gray-400' />
+                      <CalendarClock className='h-4 w-5 text-gray-400' />
                     </button>
                   </div>
                   <div>
                     <label className='mb-1 block text-sm font-medium' htmlFor='schedule-time'>
-                      <Clock className='mr-2 inline h-4 w-4' />
+                      <Clock className='mr-2 inline h-5 w-4' />
                       Time
                     </label>
                     <button
@@ -608,7 +608,7 @@ export default function EmailBlastCompose({
                             .minute.toString()
                             .padStart(2, '0')} ${getTimeComponents().period}`
                         : 'Select time'}
-                      <Clock className='h-4 w-4 text-gray-400' />
+                      <Clock className='h-4 w-5 text-gray-400' />
                     </button>
                   </div>
                 </div>
@@ -634,7 +634,7 @@ export default function EmailBlastCompose({
             <div className='rounded-xl border border-gray-200 bg-white p-4 shadow-sm'>
               <div className='mb-3 flex items-center justify-between text-xs text-gray-500'>
                 <span>Inbox Preview</span>
-                <CheckCircle2 className='h-4 w-4 text-green-600' />
+                <CheckCircle2 className='h-4 w-5 text-green-600' />
               </div>
               <div className='mb-2 text-sm font-semibold text-gray-900'>From: Evento Host</div>
               <div className='mb-1 text-sm text-gray-900'>Subject: {subject || 'No subject'}</div>
@@ -656,16 +656,16 @@ export default function EmailBlastCompose({
           >
             {isPreviewStep && isLoading ? (
               <>
-                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
+                <Loader2 className='mr-2 h-6 w-6 animate-spin' />
                 {isEditMode ? 'Updating...' : scheduled ? 'Scheduling...' : 'Sending...'}
               </>
             ) : (
               <>
                 {primaryActionLabel}
                 {isPreviewStep ? (
-                  <Send className='ml-2 h-5 w-5' />
+                  <Send className='ml-2 h-6 w-5' />
                 ) : (
-                  <ArrowRight className='ml-2 h-5 w-5' />
+                  <ArrowRight className='ml-2 h-6 w-5' />
                 )}
               </>
             )}

@@ -109,7 +109,7 @@ export function EventInviteDetailSheet({
                         invite.events.location ? '' : 'text-gray-400'
                       )}
                     >
-                      <MapPin className='mr-1 h-4 w-4' />
+                      <MapPin className='mr-1 h-5 w-4' />
                       <span>{invite.events.location || 'TBD'}</span>
                     </div>
                     {invite.message && (
@@ -127,7 +127,7 @@ export function EventInviteDetailSheet({
                         }}
                         className='flex-1 bg-red-500 text-white hover:bg-red-600'
                       >
-                        <Users className='mr-2 h-4 w-4' />
+                        <Users className='mr-2 h-5 w-4' />
                         RSVP
                       </Button>
                       <Button
@@ -136,7 +136,7 @@ export function EventInviteDetailSheet({
                         onClick={handleViewEvent}
                         className='flex-1'
                       >
-                        <Eye className='mr-2 h-4 w-4' />
+                        <Eye className='mr-2 h-5 w-4' />
                         View
                       </Button>
                     </div>
@@ -152,8 +152,8 @@ export function EventInviteDetailSheet({
                           invite.response === 'not_going' && 'bg-red-100 text-red-800'
                         )}
                       >
-                        {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}
-                        {invite.response === 'not_going' && <X className='mr-1 h-3 w-3' />}
+                        {invite.response === 'going' && <Check className='mr-1 h-4 w-3' />}
+                        {invite.response === 'not_going' && <X className='mr-1 h-4 w-3' />}
                         {invite.response === 'going'
                           ? 'Going'
                           : invite.response === 'maybe'
@@ -161,7 +161,7 @@ export function EventInviteDetailSheet({
                             : 'Not Going'}
                       </span>
                       <Button size='default' variant='outline' onClick={handleViewEvent}>
-                        <Eye className='mr-2 h-4 w-4' />
+                        <Eye className='mr-2 h-5 w-4' />
                         View
                       </Button>
                     </div>

@@ -3,8 +3,8 @@ import * as React from 'react';
 
 import type { AppIconComponent, AppIconProps, CreateHugeIconOptions } from '@/lib/icons/types';
 
-const DEFAULT_ICON_SIZE = 24;
-const DEFAULT_STROKE_WIDTH = 1.5;
+const DEFAULT_ICON_SIZE = 28;
+const DEFAULT_STROKE_WIDTH = 2;
 
 function resolveStrokeWidth(strokeWidth: AppIconProps['strokeWidth']) {
   if (typeof strokeWidth === 'number') return strokeWidth;

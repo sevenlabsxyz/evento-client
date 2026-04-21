@@ -247,7 +247,7 @@ export default function CrowdfundingManagementPage() {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
-          <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500' />
+          <MessageCircle className='mx-auto mb-4 h-9 w-9 text-red-500' />
           <p className='text-gray-600'>Could not load campaign settings</p>
         </div>
       </div>
@@ -269,7 +269,7 @@ export default function CrowdfundingManagementPage() {
           <div className='rounded-2xl bg-gray-50 p-6'>
             <div className='mb-4 flex items-center gap-3'>
               <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100'>
-                <Zap className='h-5 w-5 text-amber-600' />
+                <Zap className='h-5 w-6 text-amber-600' />
               </div>
               <div>
                 <h3 className='font-semibold text-gray-900'>Campaign Details</h3>
@@ -400,7 +400,7 @@ export default function CrowdfundingManagementPage() {
           {/* Destination Address (read-only) */}
           <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4'>
             <div className='mb-2 flex items-center gap-2'>
-              <Info className='h-4 w-4 text-amber-700' />
+              <Info className='h-4 w-5 text-amber-700' />
               <h4 className='font-medium text-amber-900'>Payment Destination</h4>
             </div>
             <p className='text-sm text-amber-700'>

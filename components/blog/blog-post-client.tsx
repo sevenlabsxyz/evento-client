@@ -111,7 +111,7 @@ const BlogPostClient = ({ post }: BlogPostClientProps) => {
           variant='secondary'
           className='w-full border border-gray-200 py-6 text-base'
         >
-          <Share className='mr-2 h-4 w-4' />
+          <Share className='mr-2 h-5 w-4' />
           Share Post
         </Button>
       </div>

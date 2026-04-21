@@ -132,7 +132,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                     disabled={isUploading}
                     className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-50'
                   >
-                    <X className='h-5 w-5 text-gray-600' />
+                    <X className='h-5 w-6 text-gray-600' />
                   </button>
                 </div>
               </div>
@@ -143,7 +143,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                 {selectedFilesData.length === 0 ? (
                   <div className='mb-6'>
                     <div className='flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 p-8 text-center'>
-                      <Camera className='mb-3 h-12 w-12 text-gray-400' />
+                      <Camera className='mb-3 h-14 w-14 text-gray-400' />
                       <p className='mb-4 text-sm text-gray-500'>
                         Select up to {MAX_PHOTOS} photos to upload to this event&apos;s gallery
                       </p>

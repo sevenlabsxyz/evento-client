@@ -92,7 +92,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
               <div className='mb-6 space-y-4'>
                 <div className='flex items-start gap-3'>
                   <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2'>
-                    <AtSignIcon size={16} />
+                    <AtSignIcon size={20} />
                   </div>
                   <div>
                     <h3 className='font-medium'>Emails Only</h3>
@@ -103,7 +103,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 </div>
                 <div className='flex items-start gap-3'>
                   <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2'>
-                    <EyeIcon size={16} />
+                    <EyeIcon size={20} />
                   </div>
                   <div>
                     <h3 className='font-medium'>Header Item</h3>
@@ -114,7 +114,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 </div>
                 <div className='flex items-start gap-3'>
                   <div className='flex h-8 w-8 rounded-full bg-gray-100 p-2'>
-                    <FileIcon size={16} />
+                    <FileIcon size={20} />
                   </div>
                   <div>
                     <h3 className='font-medium'>Use Our Template</h3>
@@ -165,7 +165,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   isDragging ? 'border-red-500 bg-red-50' : 'border-gray-300'
                 }`}
               >
-                <Upload className='mb-3 h-10 w-10 text-gray-400' />
+                <Upload className='mb-3 h-11 w-11 text-gray-400' />
                 <h3 className='mb-1 text-lg font-medium'>Drag and drop your CSV file here</h3>
                 <p className='mb-4 text-sm text-gray-500'>or</p>
                 <label className='cursor-pointer rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800'>
@@ -212,7 +212,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   className='w-full'
                   disabled={isLoading}
                 >
-                  <Download className='mr-2 h-4 w-4' />
+                  <Download className='mr-2 h-5 w-4' />
                   Download Example CSV
                 </Button>
                 <Button
@@ -220,7 +220,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                   className='w-full'
                   disabled={emails.length === 0 || isLoading}
                 >
-                  <Upload className='mr-2 h-4 w-4' />
+                  <Upload className='mr-2 h-5 w-4' />
                   Import CSV
                 </Button>
               </div>

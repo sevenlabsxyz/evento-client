@@ -150,7 +150,7 @@ export function BitrefillPaymentConfirmationSheet({
 
                 <div className='mb-6 flex justify-center'>
                   <div className='flex h-16 w-16 items-center justify-center rounded-full bg-amber-100'>
-                    <ShieldAlert className='h-8 w-8 text-amber-600' />
+                    <ShieldAlert className='h-8 w-9 text-amber-600' />
                   </div>
                 </div>
 
@@ -253,7 +253,7 @@ export function BitrefillPaymentConfirmationSheet({
                   {/* Insufficient Balance Warning */}
                   {hasInsufficientBalance && (
                     <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3'>
-                      <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
+                      <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-500' />
                       <p className='text-sm text-red-600'>
                         Insufficient balance. You need {totalAmount.toLocaleString()} sats but only
                         have {walletState.balance.toLocaleString()} sats.
@@ -264,7 +264,7 @@ export function BitrefillPaymentConfirmationSheet({
                   {/* Payment Error */}
                   {paymentError && (
                     <div className='mb-4 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3'>
-                      <AlertTriangle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
+                      <AlertTriangle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-500' />
                       <p className='text-sm text-red-600'>{paymentError}</p>
                     </div>
                   )}

@@ -90,7 +90,7 @@ function VerifyContent() {
   if (!email) {
     return (
       <div className='flex min-h-[100dvh] items-center justify-center'>
-        <Loader2 className='h-8 w-8 animate-spin' />
+        <Loader2 className='h-8 w-9 animate-spin' />
       </div>
     );
   }
@@ -196,7 +196,7 @@ function VerifyContent() {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                   Verifying...
                 </>
               ) : (
@@ -231,7 +231,7 @@ export default function VerifyPage() {
     <Suspense
       fallback={
         <div className='flex min-h-[100dvh] items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin' />
+          <Loader2 className='h-8 w-9 animate-spin' />
         </div>
       }
     >

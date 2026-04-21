@@ -57,7 +57,7 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
                 className='absolute right-4 top-4 z-50 flex h-10 w-10 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70'
                 aria-label='Close scanner'
               >
-                <X className='h-6 w-6 text-white' />
+                <X className='h-6 w-7 text-white' />
               </button>
 
               {/* Paste Button Overlay */}
@@ -67,7 +67,7 @@ export function ScanQrSheet({ open, onOpenChange, onScanSuccess }: ScanQrSheetPr
                 className='absolute left-4 top-4 z-50 flex items-center gap-2 rounded-full bg-black/50 px-4 py-2 backdrop-blur-sm transition-colors hover:bg-black/70 disabled:opacity-50'
                 aria-label='Paste from clipboard'
               >
-                <ClipboardPaste className='h-5 w-5 text-white' />
+                <ClipboardPaste className='h-5 w-6 text-white' />
                 <span className='text-sm font-medium text-white'>
                   {isPasting ? 'Pasting...' : 'Paste'}
                 </span>

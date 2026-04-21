@@ -41,7 +41,7 @@ export default function DeleteConfirmationSheet({
               {/* Header */}
               <div className='mb-6 flex items-center gap-3'>
                 <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
-                  <AlertTriangle className='h-5 w-5 text-red-500' />
+                  <AlertTriangle className='h-5 w-6 text-red-500' />
                 </div>
                 <h2 className='text-xl font-semibold'>Delete {itemType}</h2>
               </div>

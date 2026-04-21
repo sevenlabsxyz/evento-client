@@ -347,7 +347,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 <span className='text-sm text-gray-500'>{dateTimeSubtitle}</span>
               </div>
             </div>
-            <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+            <ChevronRight className='h-5 w-6 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
           </button>
 
           {/* Location */}
@@ -373,7 +373,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                 </div>
               </div>
               {!isTBDLocation && (
-                <ChevronRight className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
+                <ChevronRight className='h-5 w-6 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600' />
               )}
             </button>
           )}
@@ -390,7 +390,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   onClick={handlePendingClick}
                   className='flex h-16 flex-col items-center justify-center rounded-full bg-yellow-100 text-yellow-700 transition-colors hover:bg-yellow-200'
                 >
-                  <Clock className='mb-1 h-5 w-5' />
+                  <Clock className='mb-1 h-6 w-5' />
                   <span className='text-xs font-medium'>Pending</span>
                 </button>
               ) : hasDeniedRegistration ? (
@@ -399,7 +399,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   onClick={handleDeniedClick}
                   className='flex h-16 flex-col items-center justify-center rounded-full bg-red-100 text-red-700 transition-colors hover:bg-red-200'
                 >
-                  <XCircle className='mb-1 h-5 w-5' />
+                  <XCircle className='mb-1 h-6 w-5' />
                   <span className='text-xs font-medium'>Denied</span>
                 </button>
               ) : (
@@ -409,7 +409,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
                   disabled={shouldDisableRsvpButton}
                   className={`flex h-16 flex-col items-center justify-center rounded-full transition-colors ${rsvpButton.className} ${shouldDisableRsvpButton ? 'cursor-not-allowed' : ''}`}
                 >
-                  <Star className='mb-1 h-5 w-5' />
+                  <Star className='mb-1 h-6 w-5' />
                   <span className='text-xs font-medium'>{rsvpButton.label}</span>
                 </button>
               )}

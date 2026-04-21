@@ -160,7 +160,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     className='absolute right-0 top-0 h-full w-10 origin-center rounded-l-none rounded-r-md'
                   >
                     {copied ? (
-                      <Check className='h-4 w-4 text-green-600' />
+                      <Check className='h-4 w-5 text-green-600' />
                     ) : (
                       <Copy className='h-4 w-4' />
                     )}

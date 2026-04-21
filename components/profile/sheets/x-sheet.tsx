@@ -64,7 +64,7 @@ export default function XSheet({ isOpen, onClose, handle }: XSheetProps) {
                   onClick={handleOpenX}
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
-                  <ExternalLink className='mr-2 h-4 w-4' />
+                  <ExternalLink className='mr-2 h-5 w-4' />
                   Open X Profile
                 </Button>
                 <Button variant='outline' onClick={onClose} className='w-full'>

@@ -123,13 +123,13 @@ export default function EmailBlastPage() {
         <div className='space-y-3'>
           {isLoading ? (
             <div className='py-12 text-center'>
-              <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
+              <Loader2 className='mx-auto mb-4 h-9 w-9 animate-spin text-red-500' />
               <p className='text-gray-600'>Loading email blasts...</p>
             </div>
           ) : error ? (
             <div className='py-12 text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-                <Mail className='h-8 w-8 text-red-400' />
+                <Mail className='h-8 w-9 text-red-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900'>
                 Failed to load email blasts
@@ -147,7 +147,7 @@ export default function EmailBlastPage() {
           ) : transformedBlasts.length === 0 ? (
             <div className='py-12 text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Mail className='h-8 w-8 text-gray-400' />
+                <Mail className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900'>No email blasts yet</h3>
               <p className='mb-6 text-gray-500'>

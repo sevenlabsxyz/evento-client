@@ -109,7 +109,7 @@ export default function WeatherDetailSheet({
                         onClick={() => setShowUnitMenu(!showUnitMenu)}
                         className='rounded-full p-2 transition-colors hover:bg-gray-100'
                       >
-                        <MoreHorizontal className='h-5 w-5 text-gray-600' />
+                        <MoreHorizontal className='h-5 w-6 text-gray-600' />
                       </button>
 
                       {showUnitMenu && (
@@ -166,7 +166,7 @@ export default function WeatherDetailSheet({
                       />
                     ) : (
                       <div className='flex h-20 w-20 items-center justify-center rounded-full bg-blue-50'>
-                        <Sun className='h-10 w-10 text-blue-400' />
+                        <Sun className='h-10 w-11 text-blue-400' />
                       </div>
                     )}
                   </div>
@@ -182,7 +182,7 @@ export default function WeatherDetailSheet({
               <div className='grid grid-cols-3 gap-4'>
                 {weather.feelsLike && (
                   <div className='rounded-lg bg-gray-50 p-4 text-center'>
-                    <Thermometer className='mx-auto mb-2 h-6 w-6 text-gray-600' />
+                    <Thermometer className='mx-auto mb-2 h-7 w-7 text-gray-600' />
                     <div className='mb-1 text-xs font-medium text-gray-900'>Feels like</div>
                     <div className='text-sm font-semibold text-gray-700'>
                       {getTemperature(weather.feelsLike, weather.unit, displayUnit)}°{displayUnit}
@@ -192,7 +192,7 @@ export default function WeatherDetailSheet({
 
                 {weather.humidity && (
                   <div className='rounded-lg bg-gray-50 p-4 text-center'>
-                    <Droplets className='mx-auto mb-2 h-6 w-6 text-gray-600' />
+                    <Droplets className='mx-auto mb-2 h-7 w-7 text-gray-600' />
                     <div className='mb-1 text-xs font-medium text-gray-900'>Humidity</div>
                     <div className='text-sm font-semibold text-gray-700'>{weather.humidity}%</div>
                   </div>
@@ -200,7 +200,7 @@ export default function WeatherDetailSheet({
 
                 {weather.windSpeed && (
                   <div className='rounded-lg bg-gray-50 p-4 text-center'>
-                    <Wind className='mx-auto mb-2 h-6 w-6 text-gray-600' />
+                    <Wind className='mx-auto mb-2 h-7 w-7 text-gray-600' />
                     <div className='mb-1 text-xs font-medium text-gray-900'>Wind</div>
                     <div className='text-sm font-semibold text-gray-700'>
                       {getWindSpeed(weather.windSpeed, displayUnit).speed}{' '}

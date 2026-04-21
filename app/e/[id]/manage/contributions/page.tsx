@@ -307,7 +307,7 @@ export default function ContributionsManagementPage() {
         <div className='rounded-2xl bg-gray-50 p-6'>
           <div className='mb-4 flex items-center gap-3'>
             <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-green-100'>
-              <DollarSign className='h-5 w-5 text-green-600' />
+              <DollarSign className='h-5 w-6 text-green-600' />
             </div>
             <div>
               <h3 className='font-semibold text-gray-900'>Suggested Amount</h3>

@@ -94,7 +94,7 @@ export default function InviteCohostsStep1({
       >
         {isEmailInvite ? (
           <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
-            <MailIcon size={16} />
+            <MailIcon size={20} />
           </div>
         ) : (
           <UserAvatar
@@ -127,7 +127,7 @@ export default function InviteCohostsStep1({
     <>
       <div className='flex items-center gap-2 px-4 pt-2'>
         <div className='relative flex-1'>
-          <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+          <Search className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
           <input
             className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500'
             type='text'
@@ -148,7 +148,7 @@ export default function InviteCohostsStep1({
                 className='flex items-center gap-3 rounded-3xl border border-amber-200 bg-amber-50 p-3'
               >
                 <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100'>
-                  <Clock size={16} className='text-amber-600' />
+                  <Clock size={20} className='text-amber-600' />
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='truncate text-sm font-medium text-gray-900'>
@@ -163,7 +163,7 @@ export default function InviteCohostsStep1({
                   className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full hover:bg-amber-200'
                   disabled={cancelInviteMutation.isPending}
                 >
-                  <X className='h-4 w-4 text-gray-500' />
+                  <X className='h-4 w-5 text-gray-500' />
                 </button>
               </div>
             ))}
@@ -187,7 +187,7 @@ export default function InviteCohostsStep1({
           ) : (
             <div className='flex flex-col items-center justify-center py-16 text-center'>
               <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                <Users className='h-8 w-8 text-gray-400' />
+                <Users className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-base font-semibold text-gray-900'>Invite Cohosts</h3>
               <p className='text-sm text-gray-500'>Search by @username or enter an email</p>
@@ -211,7 +211,7 @@ export default function InviteCohostsStep1({
         ) : !hasResults && !isValidEmail(debouncedSearch.trim()) ? (
           <div className='flex flex-col items-center justify-center py-16 text-center'>
             <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-              <Search className='h-8 w-8 text-gray-400' />
+              <Search className='h-8 w-9 text-gray-400' />
             </div>
             <h3 className='mb-2 text-base font-semibold text-gray-900'>No users found</h3>
             <p className='text-sm text-gray-500'>No users matching &quot;{searchText}&quot;</p>

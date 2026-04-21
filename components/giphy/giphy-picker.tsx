@@ -89,7 +89,7 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
     <div className='flex h-full w-full flex-col'>
       {/* Search bar */}
       <div className='relative mb-4 mt-2'>
-        <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 transform text-gray-400' />
+        <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
         <Input
           type='text'
           placeholder='Search GIFs...'
@@ -102,7 +102,7 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
       {/* Loading state */}
       {isLoading && (
         <div className='flex flex-1 items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+          <Loader2 className='h-8 w-9 animate-spin text-gray-400' />
         </div>
       )}
 

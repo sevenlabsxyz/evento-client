@@ -779,7 +779,7 @@ export default function WalletPage() {
                   {/* Header Row */}
                   <div className='mb-1 flex items-center justify-between gap-3'>
                     <div className='flex flex-row items-center gap-1'>
-                      <ChevronsRight className='h-7 w-7 text-amber-600' />
+                      <ChevronsRight className='h-7 w-8 text-amber-600' />
                       <div className='text-lg font-semibold'>Money Incoming</div>
                     </div>
                     <motion.button
@@ -792,7 +792,7 @@ export default function WalletPage() {
                         damping: 17,
                       }}
                     >
-                      <HelpCircle className='h-5 w-5 text-gray-600' />
+                      <HelpCircle className='h-5 w-6 text-gray-600' />
                     </motion.button>
                   </div>
 

@@ -182,7 +182,7 @@ export default function SavedListDetailPage() {
           <div className='flex flex-1 items-center justify-center px-4 py-12'>
             <div className='text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Bookmark className='h-8 w-8 text-gray-400' />
+                <Bookmark className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-lg font-semibold text-gray-900'>No events in this list</h3>
               <p className='text-sm text-gray-500'>
@@ -259,7 +259,7 @@ export default function SavedListDetailPage() {
               >
                 {updateListMutation.isPending ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                     Saving...
                   </>
                 ) : (
@@ -296,7 +296,7 @@ export default function SavedListDetailPage() {
               >
                 {deleteListMutation.isPending ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                     Deleting...
                   </>
                 ) : (
@@ -336,7 +336,7 @@ export default function SavedListDetailPage() {
               >
                 {removingEventId === eventToRemove ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                     Removing...
                   </>
                 ) : (

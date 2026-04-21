@@ -409,7 +409,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               rsvpPhase === 'loading' ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
+            <Loader2 className='h-8 w-9 animate-spin text-gray-500' />
             <p className='mt-3 text-sm font-medium text-gray-500'>Updating RSVP...</p>
           </div>
         )}
@@ -418,7 +418,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
         {rsvpPhase === 'success' && (
           <div className='duration-400 absolute inset-0 flex flex-col items-center justify-center animate-in fade-in'>
             <div className='flex h-14 w-14 items-center justify-center rounded-full bg-green-100'>
-              <Check className='h-7 w-7 text-green-600' strokeWidth={3} />
+              <Check className='h-7 w-8 text-green-600' strokeWidth={2} />
             </div>
             <p className='mt-3 text-sm font-medium text-gray-700'>{rsvpStatusLabel}</p>
           </div>
@@ -431,7 +431,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     if (isLoading && currentView !== 'registration-form') {
       return (
         <div className='flex items-center justify-center py-12'>
-          <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+          <Loader2 className='h-8 w-9 animate-spin text-gray-400' />
         </div>
       );
     }

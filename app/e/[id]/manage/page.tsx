@@ -240,7 +240,7 @@ export default function ManageEventPage() {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
-          <MessageCircle className='mx-auto mb-4 h-8 w-8 text-red-500' />
+          <MessageCircle className='mx-auto mb-4 h-9 w-9 text-red-500' />
           <p className='text-gray-600'>Event not found</p>
         </div>
       </div>

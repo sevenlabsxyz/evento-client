@@ -43,7 +43,7 @@ export function BetaSheet({ open, onOpenChange }: BetaSheetProps) {
                     {/* Warning Banner */}
                     <div className='rounded-xl border border-amber-200 bg-amber-50 p-4'>
                       <div className='flex items-start gap-3'>
-                        <AlertTriangle className='h-5 w-5 flex-shrink-0 text-amber-600' />
+                        <AlertTriangle className='h-5 w-6 flex-shrink-0 text-amber-600' />
                         <div>
                           <h3 className='mb-1 font-semibold text-amber-900'>
                             Use at Your Own Risk
@@ -60,7 +60,7 @@ export function BetaSheet({ open, onOpenChange }: BetaSheetProps) {
                     <div className='space-y-4'>
                       <div className='rounded-xl bg-white p-4 shadow-sm'>
                         <div className='mb-3 flex items-center gap-2'>
-                          <Info className='h-5 w-5 text-blue-600' />
+                          <Info className='h-5 w-6 text-blue-600' />
                           <h3 className='font-semibold text-gray-900'>What is Beta?</h3>
                         </div>
                         <p className='text-sm text-gray-700'>
@@ -72,7 +72,7 @@ export function BetaSheet({ open, onOpenChange }: BetaSheetProps) {
 
                       <div className='rounded-xl bg-white p-4 shadow-sm'>
                         <div className='mb-3 flex items-center gap-2'>
-                          <Shield className='h-5 w-5 text-green-600' />
+                          <Shield className='h-5 w-6 text-green-600' />
                           <h3 className='font-semibold text-gray-900'>Best Practices</h3>
                         </div>
                         <ul className='space-y-2 text-sm text-gray-700'>

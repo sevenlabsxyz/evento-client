@@ -31,7 +31,7 @@ export function ZapNoWalletStep({
     if (isNotifying) {
       return (
         <>
-          <Loader2 className='h-4 w-4 animate-spin' />
+          <Loader2 className='h-4 w-5 animate-spin' />
           Sending...
         </>
       );
@@ -53,7 +53,7 @@ export function ZapNoWalletStep({
   return (
     <div className='flex flex-col items-center justify-center p-12 text-center'>
       <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-        <Zap className='h-8 w-8 text-gray-400' />
+        <Zap className='h-8 w-9 text-gray-400' />
       </div>
       <h3 className='mb-2 text-xl font-semibold text-gray-900'>{heading}</h3>
       <p className='mb-8 text-gray-600'>

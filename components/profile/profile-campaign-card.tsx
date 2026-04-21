@@ -52,7 +52,7 @@ export default function ProfileCampaignCard({
     <>
       <div data-testid='profile-campaign-card' className={cn('', className)}>
         <div className='mb-3 flex items-center gap-2'>
-          <Zap className='h-4 w-4 text-amber-500' />
+          <Zap className='h-4 w-5 text-amber-500' />
           <span className='text-lg font-semibold text-gray-900'>
             {campaign.title || 'Crowdfunding'}
           </span>

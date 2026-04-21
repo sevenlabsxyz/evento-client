@@ -188,7 +188,7 @@ export default function SearchPage() {
               ) : !hasResults ? (
                 <div className='flex flex-col items-center justify-center py-16 text-center'>
                   <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                    <Search className='h-8 w-8 text-gray-400' />
+                    <Search className='h-8 w-9 text-gray-400' />
                   </div>
                   <h3 className='mb-2 text-base font-semibold text-gray-900'>No users found</h3>
                   <p className='text-sm text-gray-500'>

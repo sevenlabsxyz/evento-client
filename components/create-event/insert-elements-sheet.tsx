@@ -38,7 +38,7 @@ export default function InsertElementsSheet({ isOpen, onClose, editor }: InsertE
                   }}
                   className='InsertSheet-option'
                 >
-                  <Minus className='mr-2 h-4 w-4' />
+                  <Minus className='mr-2 h-5 w-4' />
                   <span className='grow'>Divider</span>
                 </button>
               </div>

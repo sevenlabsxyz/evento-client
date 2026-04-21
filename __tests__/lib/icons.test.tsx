@@ -8,11 +8,11 @@ import { navigationIcons } from '@/lib/icons/semantic';
 describe('createHugeIcon', () => {
   const TestIcon = createHugeIcon(Heart, { displayName: 'TestIcon' });
 
-  it('defaults to a 1.5 stroke width', () => {
+  it('defaults to a 2 stroke width', () => {
     const { container } = render(<TestIcon data-testid='icon' />);
     const iconChild = container.querySelector('svg > *');
 
-    expect(iconChild).toHaveAttribute('stroke-width', '1.5');
+    expect(iconChild).toHaveAttribute('stroke-width', '2');
   });
 
   it('lets call sites override stroke width', () => {

@@ -119,7 +119,7 @@ export function AnimatedTabs({
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             )}
           >
-            <Icon size={20} />
+            <Icon size={24} />
             {expanded ? (
               <span className='whitespace-nowrap'>{tab.title}</span>
             ) : (

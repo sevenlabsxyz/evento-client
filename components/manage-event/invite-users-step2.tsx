@@ -103,7 +103,7 @@ export default function Step2SendInvites({
                 className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-3'
               >
                 <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
-                  <MailIcon size={16} />
+                  <MailIcon size={20} />
                 </div>
                 <div className='min-w-0 flex-1'>
                   <div className='truncate text-sm font-medium text-gray-900'>{email}</div>
@@ -114,7 +114,7 @@ export default function Step2SendInvites({
                   className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full hover:bg-gray-200'
                   aria-label={`Remove ${email}`}
                 >
-                  <X className='h-4 w-4 text-gray-500' />
+                  <X className='h-4 w-5 text-gray-500' />
                 </button>
               </div>
             ))}
@@ -141,7 +141,7 @@ export default function Step2SendInvites({
                   className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full hover:bg-gray-200'
                   aria-label={`Remove ${user.username}`}
                 >
-                  <X className='h-4 w-4 text-gray-500' />
+                  <X className='h-4 w-5 text-gray-500' />
                 </button>
               </div>
             ))}
@@ -158,7 +158,7 @@ export default function Step2SendInvites({
         >
           {sendInvitesMutation.isPending ? (
             <>
-              <Loader2 className='h-4 w-4 animate-spin' />
+              <Loader2 className='h-4 w-5 animate-spin' />
               Sending...
             </>
           ) : (

@@ -18,7 +18,7 @@ export function BackupCallout({ onBackup }: BackupCalloutProps) {
         <p className='font-medium text-red-900'>Secure your wallet</p>
         <p className='text-sm text-red-600'>Back up to protect your funds</p>
       </div>
-      <ChevronRight className='h-5 w-5 flex-shrink-0 text-red-400' />
+      <ChevronRight className='h-5 w-6 flex-shrink-0 text-red-400' />
     </button>
   );
 }

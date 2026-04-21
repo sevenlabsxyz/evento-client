@@ -56,7 +56,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                   <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0'>
                     <h2 className='text-xl font-semibold'>Earn Bitcoin</h2>
                     <button onClick={() => onOpenChange(false)}>
-                      <X className='h-5 w-5 text-gray-500' />
+                      <X className='h-5 w-6 text-gray-500' />
                     </button>
                   </div>
 

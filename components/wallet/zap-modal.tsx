@@ -192,7 +192,7 @@ export function ZapModal({
               'Sending Zap...'
             ) : (
               <>
-                <ZapIcon className='mr-2 h-5 w-5 fill-current' />
+                <ZapIcon className='mr-2 h-6 w-6 fill-current' />
                 Send Zap
               </>
             )}

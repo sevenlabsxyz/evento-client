@@ -45,7 +45,7 @@ function LoginContent() {
   if (isCheckingAuth) {
     return (
       <div className='flex min-h-[100dvh] items-center justify-center'>
-        <Loader2 className='h-8 w-8 animate-spin' />
+        <Loader2 className='h-8 w-9 animate-spin' />
       </div>
     );
   }
@@ -76,7 +76,7 @@ function LoginContent() {
                 Email
               </label>
               <div className='relative'>
-                <Mail className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+                <Mail className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
                 <Input
                   {...register('email')}
                   id='email'
@@ -96,7 +96,7 @@ function LoginContent() {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                   Sending code...
                 </>
               ) : (
@@ -122,12 +122,12 @@ function LoginContent() {
           >
             {isGoogleLoading ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                 Redirecting to Google...
               </>
             ) : (
               <>
-                <Google className='mr-1 h-5 w-5' />
+                <Google className='mr-1 h-6 w-5' />
                 Continue with Google
               </>
             )}
@@ -161,7 +161,7 @@ export default function LoginPage() {
     <Suspense
       fallback={
         <div className='flex min-h-[100dvh] items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin' />
+          <Loader2 className='h-8 w-9 animate-spin' />
         </div>
       }
     >

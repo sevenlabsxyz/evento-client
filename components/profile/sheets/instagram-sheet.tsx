@@ -38,7 +38,7 @@ export default function InstagramSheet({ isOpen, onClose, handle }: InstagramShe
               {/* Instagram Info */}
               <div className='mb-6 flex items-center gap-3'>
                 <div className='flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400'>
-                  <Instagram className='h-6 w-6 text-white' />
+                  <Instagram className='h-6 w-7 text-white' />
                 </div>
                 <div>
                   <h3 className='font-semibold text-gray-900'>@{handle}</h3>
@@ -62,7 +62,7 @@ export default function InstagramSheet({ isOpen, onClose, handle }: InstagramShe
                   onClick={handleOpenInstagram}
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
-                  <ExternalLink className='mr-2 h-4 w-4' />
+                  <ExternalLink className='mr-2 h-5 w-4' />
                   Open Instagram
                 </Button>
                 <Button variant='outline' onClick={onClose} className='w-full'>

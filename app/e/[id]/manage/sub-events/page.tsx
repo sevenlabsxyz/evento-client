@@ -106,7 +106,7 @@ export default function SubEventsManagementPage() {
         ) : (
           <div className='py-12 text-center'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-              <Plus className='h-8 w-8 text-gray-400' />
+              <Plus className='h-8 w-9 text-gray-400' />
             </div>
             <h3 className='mb-2 text-lg font-medium text-gray-900'>No Sub Events</h3>
             <p className='mb-6 text-sm text-gray-500'>Add sub events to your event</p>

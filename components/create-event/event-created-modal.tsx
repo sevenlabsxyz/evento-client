@@ -62,7 +62,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
             disabled={isNavigating}
             className='rounded-full p-2 hover:bg-gray-100 disabled:opacity-60'
           >
-            <X className='h-6 w-6 text-gray-400' />
+            <X className='h-6 w-7 text-gray-400' />
           </button>
         </div>
 
@@ -74,7 +74,7 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
               isDraft ? 'bg-blue-500' : 'bg-green-500'
             }`}
           >
-            <Check className='h-10 w-10 text-white' />
+            <Check className='h-10 w-11 text-white' />
           </div>
 
           {/* Title */}
@@ -110,9 +110,9 @@ export default function EventCreatedModal({ isOpen, onClose, eventData }: EventC
                 ? 'Opening...'
                 : eventData.ctaLabel || (isDraft ? 'Continue Setup' : 'View Event Page')}
               {isNavigating ? (
-                <Loader2 className='ml-2 h-4 w-4 animate-spin' />
+                <Loader2 className='ml-2 h-5 w-5 animate-spin' />
               ) : (
-                <ArrowRight className='ml-2 h-4 w-4' />
+                <ArrowRight className='ml-2 h-5 w-4' />
               )}
             </Button>
 

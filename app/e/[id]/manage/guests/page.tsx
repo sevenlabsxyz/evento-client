@@ -259,7 +259,7 @@ export default function GuestListPage() {
         <div className='p-4 pb-0'>
           <div className='flex items-center gap-2'>
             <div className='relative flex-1'>
-              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+              <Search className='absolute left-3 top-1/2 h-6 w-6 -translate-y-1/2 transform text-gray-400' />
               <input
                 type='text'
                 placeholder='Search event guests...'
@@ -350,7 +350,7 @@ export default function GuestListPage() {
                         aria-label={`Remove ${guest.user_details?.name || guest.user_details?.username || 'guest'}`}
                       >
                         {removingUserId === guest.user_id ? (
-                          <Loader2 className='h-4 w-4 animate-spin' />
+                          <Loader2 className='h-4 w-5 animate-spin' />
                         ) : (
                           <X className='h-4 w-4' />
                         )}
@@ -371,7 +371,7 @@ export default function GuestListPage() {
           ) : (
             <div className='py-16 text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Users className='h-8 w-8 text-gray-400' />
+                <Users className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900'>No Guests</h3>
               <p className='text-sm text-gray-500'>

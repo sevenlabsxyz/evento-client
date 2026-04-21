@@ -80,7 +80,7 @@ export default function WalletSettingsPage() {
             className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
           >
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
-              <Lock className='h-5 w-5 text-blue-600' />
+              <Lock className='h-5 w-6 text-blue-600' />
             </div>
             <div className='flex-1'>
               <div className='font-medium'>Lock Wallet</div>
@@ -101,7 +101,7 @@ export default function WalletSettingsPage() {
               }`}
             >
               <Shield
-                className={`h-5 w-5 ${walletState.hasBackup ? 'text-green-600' : 'text-amber-600'}`}
+                className={`h-5 w-6 ${walletState.hasBackup ? 'text-green-600' : 'text-amber-600'}`}
               />
             </div>
             <div className='flex-1'>
@@ -119,7 +119,7 @@ export default function WalletSettingsPage() {
 
           <div className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4'>
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200'>
-              <EyeOff className='h-5 w-5 text-gray-700' />
+              <EyeOff className='h-5 w-6 text-gray-700' />
             </div>
             <div className='flex-1'>
               <div className='font-medium'>Hide balance and values</div>
@@ -138,7 +138,7 @@ export default function WalletSettingsPage() {
 
         <div className='rounded-3xl border border-red-200 bg-red-50 p-4'>
           <div className='mb-4 flex items-start gap-3'>
-            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
+            <AlertCircle className='h-5 w-6 flex-shrink-0 text-red-600' />
             <div className='text-sm text-red-900'>
               <p className='font-medium'>Delete Wallet</p>
               <p className='mt-1'>
@@ -149,7 +149,7 @@ export default function WalletSettingsPage() {
           </div>
 
           <Button onClick={() => setShowDeleteSheet(true)} variant='destructive' className='w-full'>
-            <Trash2 className='mr-2 h-4 w-4' />
+            <Trash2 className='mr-2 h-5 w-4' />
             Delete Wallet
           </Button>
         </div>
@@ -175,7 +175,7 @@ export default function WalletSettingsPage() {
       >
         <div className='space-y-6 px-4 pb-8'>
           <div className='flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4'>
-            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
+            <AlertCircle className='h-5 w-6 flex-shrink-0 text-red-600' />
             <div className='text-sm text-red-900'>
               <p className='font-medium'>This action cannot be undone</p>
               <p className='mt-1'>
@@ -187,7 +187,7 @@ export default function WalletSettingsPage() {
 
           <div className='space-y-3'>
             <Button onClick={handleDeleteWallet} variant='destructive' className='w-full'>
-              <Trash2 className='mr-2 h-4 w-4' />
+              <Trash2 className='mr-2 h-5 w-4' />
               Yes, Delete Wallet
             </Button>
             <Button onClick={() => setShowDeleteSheet(false)} variant='outline' className='w-full'>

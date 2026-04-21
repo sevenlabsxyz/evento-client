@@ -89,7 +89,7 @@ export default function EventContributions({ eventData, eventId }: EventContribu
               </p>
             </div>
           </div>
-          <ChevronRight className='h-5 w-5 text-gray-400' />
+          <ChevronRight className='h-5 w-6 text-gray-400' />
         </button>
       </div>
 

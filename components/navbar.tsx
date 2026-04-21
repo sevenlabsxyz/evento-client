@@ -52,7 +52,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                   whileTap={{ scale: 0.95 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 >
-                  <Icon className='h-6 w-6 text-gray-500' strokeWidth={2.5} />
+                  <Icon className='h-7 w-7 text-gray-500' strokeWidth={2} />
                 </motion.div>
               </div>
             );
@@ -103,7 +103,7 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                 style={{ display: 'inline-block' }}
               >
-                <Icon className={`h-6 w-6 ${isActive ? 'text-red-600' : ''}`} strokeWidth={2.5} />
+                <Icon className={`h-7 w-7 ${isActive ? 'text-red-600' : ''}`} strokeWidth={2} />
               </motion.div>
             </button>
           );

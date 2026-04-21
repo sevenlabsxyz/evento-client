@@ -229,7 +229,7 @@ export default function HostsManagementPage() {
           ) : (
             <div className='py-12 text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Plus className='h-8 w-8 text-gray-400' />
+                <Plus className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900'>No Hosts</h3>
               <p className='mb-6 text-sm text-gray-500'>
@@ -259,9 +259,9 @@ export default function HostsManagementPage() {
                     >
                       <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100'>
                         {isCancelling ? (
-                          <Loader2 className='h-4 w-4 animate-spin text-amber-600' />
+                          <Loader2 className='h-4 w-5 animate-spin text-amber-600' />
                         ) : (
-                          <Clock className='h-4 w-4 text-amber-600' />
+                          <Clock className='h-4 w-5 text-amber-600' />
                         )}
                       </div>
                       <div className='min-w-0 flex-1'>
@@ -279,7 +279,7 @@ export default function HostsManagementPage() {
                         disabled={isCancelling || cancelInviteMutation.isPending}
                         className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50'
                       >
-                        <X className='h-4 w-4 text-gray-500' />
+                        <X className='h-4 w-5 text-gray-500' />
                       </button>
                     </div>
                   );

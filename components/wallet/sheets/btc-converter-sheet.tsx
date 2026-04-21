@@ -145,7 +145,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                     <div className='flex items-center gap-3'>
                       <WalletBalanceDisplay />
                       <button onClick={() => onOpenChange(false)}>
-                        <X className='h-5 w-5 text-gray-500' />
+                        <X className='h-5 w-6 text-gray-500' />
                       </button>
                     </div>
                   </div>

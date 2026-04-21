@@ -48,11 +48,11 @@ export const OnboardingAvatar = ({
         >
           {isLoading ? (
             <div className='absolute inset-0 z-20 flex items-center justify-center rounded-full bg-black/60'>
-              <Loader2 className='h-10 w-10 animate-spin text-white' />
+              <Loader2 className='h-10 w-11 animate-spin text-white' />
             </div>
           ) : (
             <div className='absolute inset-0 z-20 flex items-center justify-center rounded-full bg-black/0 transition-all duration-200 md:group-hover:bg-black/40'>
-              <UploadCloud className='h-10 w-10 text-white opacity-0 transition-opacity md:group-hover:opacity-100' />
+              <UploadCloud className='h-10 w-11 text-white opacity-0 transition-opacity md:group-hover:opacity-100' />
             </div>
           )}
           <Avatar className='h-40 w-40 border-4 border-gray-100 shadow-lg md:h-48 md:w-48'>
@@ -61,7 +61,7 @@ export const OnboardingAvatar = ({
           </Avatar>
           {!isLoading && (
             <div className='absolute -bottom-1 -right-1 z-30 rounded-full border-2 border-white bg-red-600 p-2 shadow-md'>
-              <Camera className='h-5 w-5 text-white' />
+              <Camera className='h-5 w-6 text-white' />
             </div>
           )}
         </button>

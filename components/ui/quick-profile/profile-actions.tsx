@@ -41,12 +41,12 @@ export function ProfileActions({
       >
         {isFollowing ? (
           <>
-            <UserMinus className='mr-2 h-4 w-4' />
+            <UserMinus className='mr-2 h-5 w-4' />
             {isPending ? 'Unfollowing...' : 'Following'}
           </>
         ) : (
           <>
-            <UserPlus className='mr-2 h-4 w-4' />
+            <UserPlus className='mr-2 h-5 w-4' />
             {isPending ? 'Following...' : 'Follow'}
           </>
         )}
@@ -55,7 +55,7 @@ export function ProfileActions({
         onClick={handleMessageClick}
         className='h-12 flex-1 rounded-full border border-gray-200 bg-gray-50 text-gray-900 hover:bg-gray-100'
       >
-        <MessageCircle className='mr-2 h-4 w-4' />
+        <MessageCircle className='mr-2 h-5 w-4' />
         Message
       </Button>
     </div>

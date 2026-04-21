@@ -74,9 +74,9 @@ export function EventCompactItem({
                 }}
               >
                 {isPinning ? (
-                  <Loader className='h-4 w-4 animate-spin text-gray-900' />
+                  <Loader className='h-4 w-5 animate-spin text-gray-900' />
                 ) : isPinned ? (
-                  <PinOff className='h-4 w-4 text-gray-900' />
+                  <PinOff className='h-4 w-5 text-gray-900' />
                 ) : (
                   <Pin className='h-4 w-4' />
                 )}
@@ -98,15 +98,15 @@ export function EventCompactItem({
 
         <div className='mt-1 flex items-center text-xs text-gray-500'>
           <div className='mr-2 flex w-fit items-center'>
-            <Calendar className='mr-1 h-3 w-3' />
+            <Calendar className='mr-1 h-4 w-3' />
             <span className='w-max'>{date}</span>
           </div>
           <div className='mr-2 flex items-center'>
-            <Clock className='mr-1 h-3 w-3' />
+            <Clock className='mr-1 h-4 w-3' />
             <span className='line-clamp-1'>{timeWithTz?.split(' ')[0] || '--:--'}</span>
           </div>
           <div className='flex items-center'>
-            <MapPin className='mr-1 h-3 w-3' />
+            <MapPin className='mr-1 h-4 w-3' />
             <span className='line-clamp-1'>{event.location}</span>
           </div>
         </div>

@@ -140,7 +140,7 @@ export function ContactSheet({
                         <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3'>
                           <div className='flex items-center gap-3'>
                             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                              <Upload className='h-4 w-4 text-red-600' />
+                              <Upload className='h-4 w-5 text-red-600' />
                             </div>
                             <div>
                               <p className='text-sm font-medium text-gray-900'>
@@ -171,7 +171,7 @@ export function ContactSheet({
                           />
                           <div className='flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-red-500'>
                             <div className='text-center'>
-                              <Upload className='mx-auto mb-2 h-8 w-8 text-gray-400' />
+                              <Upload className='mx-auto mb-2 h-9 w-9 text-gray-400' />
                               <p className='text-sm text-gray-600'>
                                 Click to upload a file or screenshot
                               </p>

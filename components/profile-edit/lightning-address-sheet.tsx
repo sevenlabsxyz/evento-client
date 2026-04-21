@@ -140,7 +140,7 @@ export default function LightningAddressSheet({
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <Zap className='h-5 w-5 text-orange-500' />
+                      <Zap className='h-5 w-6 text-orange-500' />
                     </div>
                     <Input
                       type='text'
@@ -198,7 +198,7 @@ export default function LightningAddressSheet({
                         'Open Wallet'
                       ) : isSaving ? (
                         <>
-                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                          <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                           Saving...
                         </>
                       ) : (

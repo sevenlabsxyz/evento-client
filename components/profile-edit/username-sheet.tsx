@@ -134,7 +134,7 @@ export default function UsernameSheet({
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <AtSign className='h-5 w-5 text-gray-400' />
+                      <AtSign className='h-5 w-6 text-gray-400' />
                     </div>
                     <Input
                       type='text'
@@ -154,12 +154,12 @@ export default function UsernameSheet({
                       isAvailable === true &&
                       username !== currentUsername && (
                         <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                          <CheckCircle className='h-5 w-5 text-green-500' />
+                          <CheckCircle className='h-5 w-6 text-green-500' />
                         </div>
                       )}
                     {!checkUsernameMutation.isPending && isAvailable === false && (
                       <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                        <XCircle className='h-5 w-5 text-red-500' />
+                        <XCircle className='h-5 w-6 text-red-500' />
                       </div>
                     )}
                   </div>
@@ -189,7 +189,7 @@ export default function UsernameSheet({
                     >
                       {isSaving ? (
                         <>
-                          <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                          <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                           Saving...
                         </>
                       ) : (

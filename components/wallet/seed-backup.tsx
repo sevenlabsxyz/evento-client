@@ -52,7 +52,7 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
 
       <div className='rounded-2xl bg-red-50 p-4'>
         <div className='flex gap-3'>
-          <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
+          <AlertCircle className='h-5 w-6 flex-shrink-0 text-red-600' />
           <div className='text-sm text-red-900'>
             <p className='font-medium'>Keep this private</p>
             <p className='mt-1'>
@@ -68,12 +68,12 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
           <Button variant='ghost' size='sm' onClick={() => setShowSeed(!showSeed)}>
             {showSeed ? (
               <>
-                <EyeOff className='mr-2 h-4 w-4' />
+                <EyeOff className='mr-2 h-5 w-4' />
                 Hide
               </>
             ) : (
               <>
-                <Eye className='mr-2 h-4 w-4' />
+                <Eye className='mr-2 h-5 w-4' />
                 Show
               </>
             )}
@@ -95,12 +95,12 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
           <Button variant='outline' onClick={handleCopy} className='w-full rounded-full'>
             {copied ? (
               <>
-                <Check className='mr-2 h-4 w-4' />
+                <Check className='mr-2 h-5 w-4' />
                 Copied!
               </>
             ) : (
               <>
-                <Copy className='mr-2 h-4 w-4' />
+                <Copy className='mr-2 h-5 w-4' />
                 Copy to Clipboard
               </>
             )}

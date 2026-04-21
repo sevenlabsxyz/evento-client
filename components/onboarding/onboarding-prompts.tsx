@@ -231,14 +231,14 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                                     disabled={index === 0}
                                     className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
                                   >
-                                    <ArrowUp className='h-3.5 w-3.5 text-gray-500' />
+                                    <ArrowUp className='h-3.5 w-5 text-gray-500' />
                                   </button>
                                   <button
                                     onClick={() => handleMoveDown(index)}
                                     disabled={index === answeredPrompts.length - 1}
                                     className='rounded p-1 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
                                   >
-                                    <ArrowDown className='h-3.5 w-3.5 text-gray-500' />
+                                    <ArrowDown className='h-3.5 w-5 text-gray-500' />
                                   </button>
                                 </>
                               )}
@@ -246,7 +246,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                                 onClick={() => handleRemovePrompt(prompt.prompt_id)}
                                 className='rounded p-1 hover:bg-gray-100'
                               >
-                                <X className='h-3.5 w-3.5 text-gray-400 hover:text-red-500' />
+                                <X className='h-3.5 w-5 text-gray-400 hover:text-red-500' />
                               </button>
                             </div>
                           </div>
@@ -290,7 +290,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                               onClick={() => handleAddPrompt(prompt)}
                               className='flex w-full items-center gap-2.5 rounded-xl border border-gray-200 bg-white p-2.5 text-left transition-all hover:border-red-200 hover:bg-red-50/50'
                             >
-                              <Plus className='h-4 w-4 flex-shrink-0 text-gray-400' />
+                              <Plus className='h-4 w-5 flex-shrink-0 text-gray-400' />
                               <p className='flex-1 text-sm text-gray-700'>{prompt.question}</p>
                             </button>
                           ))}

@@ -941,7 +941,7 @@ export default function RegistrationQuestionsPage() {
           <div className='flex items-center justify-between'>
             <div className='flex items-center gap-3'>
               <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100'>
-                <ClipboardList className='h-5 w-5 text-purple-600' />
+                <ClipboardList className='h-5 w-6 text-purple-600' />
               </div>
               <div className='min-w-0'>
                 <h3 className='font-medium'>Require Registration</h3>
@@ -969,7 +969,7 @@ export default function RegistrationQuestionsPage() {
             <div className='flex items-center justify-between'>
               <div className='flex items-center gap-3'>
                 <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100'>
-                  <MessageSquareText className='h-5 w-5 text-blue-600' />
+                  <MessageSquareText className='h-5 w-6 text-blue-600' />
                 </div>
                 <div className='min-w-0'>
                   <h3 className='font-medium'>Custom RSVP Message</h3>
@@ -1057,7 +1057,7 @@ export default function RegistrationQuestionsPage() {
             ) : (
               <div className='py-16 text-center'>
                 <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                  <Settings className='h-8 w-8 text-gray-400' />
+                  <Settings className='h-8 w-9 text-gray-400' />
                 </div>
                 <h3 className='mb-2 text-lg font-medium text-gray-900'>Registration Questions</h3>
                 <p className='mb-6 text-sm text-gray-500'>
@@ -1152,7 +1152,7 @@ export default function RegistrationQuestionsPage() {
             >
               {createQuestion.isPending || updateQuestion.isPending ? (
                 <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                   {questionSheetMode === 'edit' ? 'Updating...' : 'Saving...'}
                 </>
               ) : questionSheetMode === 'edit' ? (
@@ -1301,7 +1301,7 @@ export default function RegistrationQuestionsPage() {
       >
         <div className='p-4 text-center'>
           <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-            <Trash2 className='h-8 w-8 text-red-600' />
+            <Trash2 className='h-8 w-9 text-red-600' />
           </div>
           <h3 className='mb-2 text-lg font-semibold'>Delete this question?</h3>
           <p className='text-gray-600'>

@@ -18,12 +18,12 @@ export function BackupReminder({ onBackup, onDismiss }: BackupReminderProps) {
   return (
     <div className='rounded-xl border-2 border-amber-200 bg-amber-50 p-4'>
       <div className='flex gap-3'>
-        <AlertTriangle className='h-5 w-5 flex-shrink-0 text-amber-600' />
+        <AlertTriangle className='h-5 w-6 flex-shrink-0 text-amber-600' />
         <div className='flex-1'>
           <div className='flex items-start justify-between'>
             <h4 className='font-semibold text-amber-900'>Backup Your Wallet</h4>
             <button onClick={handleDismiss} className='rounded-full p-1 hover:bg-amber-100'>
-              <X className='h-4 w-4 text-amber-600' />
+              <X className='h-4 w-5 text-amber-600' />
             </button>
           </div>
           <p className='mt-1 text-sm text-amber-800'>

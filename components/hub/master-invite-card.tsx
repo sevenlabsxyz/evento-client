@@ -98,7 +98,7 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
           {/* Location */}
           {event.location && (
             <div className='flex items-center gap-1 text-sm text-gray-600'>
-              <MapPin className='h-3.5 w-3.5 shrink-0' />
+              <MapPin className='h-3.5 w-5 shrink-0' />
               <span className='truncate'>{event.location}</span>
             </div>
           )}
@@ -126,7 +126,7 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
             onClick={onRSVP}
             className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
           >
-            <Users className='mr-1.5 h-4 w-4' />
+            <Users className='mr-1.5 h-5 w-4' />
             RSVP
           </Button>
           <Button variant='outline' onClick={handleViewEvent} className='w-full rounded-full'>
@@ -143,8 +143,8 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
               invite.response === 'not_going' && 'bg-red-100 text-red-800'
             )}
           >
-            {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}
-            {invite.response === 'not_going' && <X className='mr-1 h-3 w-3' />}
+            {invite.response === 'going' && <Check className='mr-1 h-4 w-3' />}
+            {invite.response === 'not_going' && <X className='mr-1 h-4 w-3' />}
             {invite.response === 'going'
               ? 'Going'
               : invite.response === 'maybe'

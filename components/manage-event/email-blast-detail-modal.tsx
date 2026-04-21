@@ -156,7 +156,7 @@ export default function EmailBlastDetailModal({
         <div className='mb-4 grid grid-cols-2 gap-4'>
           <div className='rounded-lg border border-green-200 bg-green-50 p-4'>
             <div className='mb-1 flex items-center gap-2'>
-              <CheckCircle className='h-4 w-4 text-green-600' />
+              <CheckCircle className='h-4 w-5 text-green-600' />
               <span className='text-sm font-medium text-green-900'>Delivered</span>
             </div>
             <p className='text-2xl font-bold text-green-600'>{blast.delivered ?? 0}</p>
@@ -165,7 +165,7 @@ export default function EmailBlastDetailModal({
           {(blast.failed ?? 0) > 0 && (
             <div className='rounded-lg border border-red-200 bg-red-50 p-4'>
               <div className='mb-1 flex items-center gap-2'>
-                <XCircle className='h-4 w-4 text-red-600' />
+                <XCircle className='h-4 w-5 text-red-600' />
                 <span className='text-sm font-medium text-red-900'>Failed</span>
               </div>
               <p className='text-2xl font-bold text-red-600'>{blast.failed ?? 0}</p>
@@ -175,7 +175,7 @@ export default function EmailBlastDetailModal({
           {(blast.pending ?? 0) > 0 && (
             <div className='rounded-lg border border-yellow-200 bg-yellow-50 p-4'>
               <div className='mb-1 flex items-center gap-2'>
-                <AlertCircle className='h-4 w-4 text-yellow-600' />
+                <AlertCircle className='h-4 w-5 text-yellow-600' />
                 <span className='text-sm font-medium text-yellow-900'>Pending</span>
               </div>
               <p className='text-2xl font-bold text-yellow-600'>{blast.pending ?? 0}</p>

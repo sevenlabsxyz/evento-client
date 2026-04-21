@@ -123,10 +123,10 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
               transition={{ type: 'spring', stiffness: 400, damping: 17 }}
             >
               <div className='flex min-w-0 flex-1 items-center gap-2'>
-                <Zap className='h-4 w-4 flex-shrink-0 text-black' />
+                <Zap className='h-4 w-5 flex-shrink-0 text-black' />
                 {isAddressLoading || !address ? (
                   <div className='flex items-center gap-2'>
-                    <Loader2 className='h-4 w-4 animate-spin text-gray-400' />
+                    <Loader2 className='h-4 w-5 animate-spin text-gray-400' />
                     <span className='text-sm text-gray-500'>Registering...</span>
                   </div>
                 ) : (
@@ -135,7 +135,7 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
                   </div>
                 )}
               </div>
-              <ChevronRight className='h-4 w-4 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-4 w-5 flex-shrink-0 text-gray-400' />
             </motion.button>
             <CircledIconButton icon={HelpCircle} onClick={() => setShowEducationalSheet(true)} />
           </div>

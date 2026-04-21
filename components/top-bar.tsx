@@ -257,7 +257,7 @@ export function TopBar() {
                       disabled={button.disabled}
                       className='h-8 rounded-full px-3 text-sm font-medium'
                     >
-                      {Icon && <Icon className='mr-1.5 h-4 w-4' />}
+                      {Icon && <Icon className='mr-1.5 h-5 w-5' />}
                       {button.label}
                     </Button>
                   );

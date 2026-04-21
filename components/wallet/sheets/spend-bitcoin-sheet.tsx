@@ -229,7 +229,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
                     onClick={() => onOpenChange(false)}
                     className='rounded-full p-1 hover:bg-gray-100'
                   >
-                    <X className='h-5 w-5 text-gray-500' />
+                    <X className='h-5 w-6 text-gray-500' />
                   </button>
                 </div>
               </div>
@@ -238,7 +238,7 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
               <div className='relative min-h-0 flex-1'>
                 {!iframeLoaded && (
                   <div className='absolute inset-0 flex items-center justify-center bg-white'>
-                    <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+                    <Loader2 className='h-8 w-9 animate-spin text-gray-400' />
                   </div>
                 )}
                 <iframe

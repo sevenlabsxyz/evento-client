@@ -98,7 +98,7 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
         <div className='space-y-4'>
           <div className='flex justify-center'>
             <div className='flex h-20 w-20 items-center justify-center rounded-full bg-amber-100'>
-              <ShieldAlert className='h-10 w-10 text-amber-600' />
+              <ShieldAlert className='h-10 w-11 text-amber-600' />
             </div>
           </div>
 
@@ -112,7 +112,7 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
 
           <div className='rounded-lg bg-amber-50 p-4'>
             <div className='flex gap-3'>
-              <AlertCircle className='h-5 w-5 flex-shrink-0 text-amber-600' />
+              <AlertCircle className='h-5 w-6 flex-shrink-0 text-amber-600' />
               <div className='text-sm text-amber-900'>
                 <p className='font-medium'>Why is this important?</p>
                 <p className='mt-1'>
@@ -159,7 +159,7 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
           <div className='rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 p-6 text-white'>
             <div className='mb-2 text-sm opacity-90'>You&apos;re sending</div>
             <div className='flex items-baseline gap-2'>
-              <Zap className='h-6 w-6 fill-current' />
+              <Zap className='h-6 w-7 fill-current' />
               <span className='text-4xl font-bold'>{Number(amount).toLocaleString()}</span>
               <span className='text-lg opacity-90'>sats</span>
             </div>
@@ -185,7 +185,7 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
 
           <div className='rounded-lg bg-amber-50 p-4'>
             <div className='flex gap-3'>
-              <AlertCircle className='h-5 w-5 flex-shrink-0 text-amber-600' />
+              <AlertCircle className='h-5 w-6 flex-shrink-0 text-amber-600' />
               <div className='text-sm text-amber-900'>
                 <p className='font-medium'>Double check before sending</p>
                 <p className='mt-1'>Lightning payments are instant and cannot be reversed.</p>
@@ -200,7 +200,7 @@ export function SendPayment({ onClose, onSuccess, onBackupRequired }: SendPaymen
               'Sending...'
             ) : (
               <>
-                <ArrowRight className='mr-2 h-5 w-5' />
+                <ArrowRight className='mr-2 h-6 w-5' />
                 Confirm & Send
               </>
             )}

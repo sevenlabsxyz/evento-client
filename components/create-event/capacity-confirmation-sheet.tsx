@@ -52,7 +52,7 @@ export default function CapacityConfirmationSheet({
               {/* Content */}
               <div className='space-y-4 text-center'>
                 <div className='mb-4 flex justify-center'>
-                  <AlertTriangle className='h-12 w-12 text-amber-500' />
+                  <AlertTriangle className='h-12 w-14 text-amber-500' />
                 </div>
 
                 <div className='space-y-3 text-left'>

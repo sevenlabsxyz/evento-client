@@ -102,7 +102,7 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
                 className='absolute right-2 top-2 rounded-md p-2 hover:bg-gray-100'
               >
                 {copied ? (
-                  <Check className='h-4 w-4 text-green-600' />
+                  <Check className='h-4 w-5 text-green-600' />
                 ) : (
                   <Copy className='h-4 w-4' />
                 )}
@@ -187,7 +187,7 @@ export function ReceivePayment({ onClose }: ReceivePaymentProps) {
           'Creating Invoice...'
         ) : (
           <>
-            <QrCode className='mr-2 h-5 w-5' />
+            <QrCode className='mr-2 h-6 w-5' />
             Create Invoice
           </>
         )}

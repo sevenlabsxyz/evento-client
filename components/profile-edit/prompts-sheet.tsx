@@ -304,7 +304,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                   className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
                                   title='Move up'
                                 >
-                                  <ArrowUp className='h-4 w-4 text-gray-600' />
+                                  <ArrowUp className='h-4 w-5 text-gray-600' />
                                 </button>
                                 <button
                                   onClick={() => handleMoveDown(index)}
@@ -312,7 +312,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                   className='rounded-lg p-1.5 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-30'
                                   title='Move down'
                                 >
-                                  <ArrowDown className='h-4 w-4 text-gray-600' />
+                                  <ArrowDown className='h-4 w-5 text-gray-600' />
                                 </button>
                               </>
                             )}
@@ -324,9 +324,9 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                               }
                             >
                               {userPrompt.is_visible ? (
-                                <Eye className='h-4 w-4 text-blue-600' />
+                                <Eye className='h-4 w-5 text-blue-600' />
                               ) : (
-                                <EyeOff className='h-4 w-4 text-gray-400' />
+                                <EyeOff className='h-4 w-5 text-gray-400' />
                               )}
                             </button>
                             <button
@@ -334,7 +334,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                               className='rounded-lg p-2 hover:bg-gray-100'
                               title='Delete prompt'
                             >
-                              <Trash2 className='h-4 w-4 text-red-600' />
+                              <Trash2 className='h-4 w-5 text-red-600' />
                             </button>
                           </div>
                         </div>
@@ -387,7 +387,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                             onClick={() => handleAddPrompt(prompt)}
                             className='flex w-full items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 text-left transition-colors hover:border-blue-300 hover:bg-blue-50'
                           >
-                            <MessageSquare className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                            <MessageSquare className='mt-0.5 h-6 w-6 flex-shrink-0 text-blue-600' />
                             <div className='flex-1'>
                               <p className='font-medium text-gray-900'>{prompt.question}</p>
                               {prompt.placeholder_text && (
@@ -396,7 +396,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                                 </p>
                               )}
                             </div>
-                            <Plus className='mt-0.5 h-5 w-5 flex-shrink-0 text-gray-400' />
+                            <Plus className='mt-0.5 h-6 w-6 flex-shrink-0 text-gray-400' />
                           </button>
                         ))}
                       </div>
@@ -491,7 +491,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
               >
                 {isSaving ? (
                   <>
-                    <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                    <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                     Saving...
                   </>
                 ) : (
@@ -524,7 +524,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 {/* Header */}
                 <div className='mb-6 flex items-center gap-3'>
                   <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
-                    <AlertTriangle className='h-5 w-5 text-red-500' />
+                    <AlertTriangle className='h-5 w-6 text-red-500' />
                   </div>
                   <h2 className='text-xl font-semibold'>Delete Prompt</h2>
                 </div>

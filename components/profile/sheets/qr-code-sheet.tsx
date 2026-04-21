@@ -126,18 +126,18 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
                   onClick={handleDownload}
                   className='w-full bg-red-600 text-white hover:bg-red-700'
                 >
-                  <Download className='mr-2 h-4 w-4' />
+                  <Download className='mr-2 h-5 w-4' />
                   Download QR Code
                 </Button>
                 <Button variant='outline' onClick={handleCopyLink} className='w-full'>
                   {isCopied ? (
                     <>
-                      <Check className='mr-2 h-4 w-4' />
+                      <Check className='mr-2 h-5 w-4' />
                       Copied!
                     </>
                   ) : (
                     <>
-                      <Copy className='mr-2 h-4 w-4' />
+                      <Copy className='mr-2 h-5 w-4' />
                       Copy Link
                     </>
                   )}

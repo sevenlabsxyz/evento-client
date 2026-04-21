@@ -105,7 +105,7 @@ export function ContactActionsSheet({
               <p className='truncate text-sm text-gray-500'>{contact.paymentIdentifier}</p>
             </div>
             {canOpenProfile ? (
-              <ChevronRight className='h-5 w-5 flex-shrink-0 text-gray-400' />
+              <ChevronRight className='h-5 w-6 flex-shrink-0 text-gray-400' />
             ) : null}
           </button>
 
@@ -116,7 +116,7 @@ export function ContactActionsSheet({
               className='h-14 w-full justify-start text-base font-medium'
               onClick={handleEdit}
             >
-              <Pencil className='mr-3 h-4 w-4' />
+              <Pencil className='mr-3 h-5 w-4' />
               Edit Contact
             </Button>
 
@@ -126,7 +126,7 @@ export function ContactActionsSheet({
               className='h-14 w-full justify-start text-base font-medium text-red-600 hover:bg-red-50 hover:text-red-700'
               onClick={() => setShowDeleteDialog(true)}
             >
-              <Trash2 className='mr-3 h-4 w-4' />
+              <Trash2 className='mr-3 h-5 w-4' />
               Remove Wallet Contact
             </Button>
 
@@ -160,7 +160,7 @@ export function ContactActionsSheet({
             >
               {isDeletingContact ? (
                 <>
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                  <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                   Removing...
                 </>
               ) : (

@@ -1511,7 +1511,7 @@ export default function TimezoneModal({
       {/* Search Bar */}
       <div className='border-b border-gray-100 px-4 py-3'>
         <div className='relative'>
-          <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+          <Search className='absolute left-3 top-1/2 h-6 w-6 -translate-y-1/2 transform text-gray-400' />
           <input
             type='text'
             placeholder='Search'

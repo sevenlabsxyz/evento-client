@@ -42,7 +42,7 @@ export default function ListsSheet({ isOpen, onClose, editor }: ListsSheetProps)
                   })}
                   aria-label='Bullet list'
                 >
-                  <List className='mr-2 h-4 w-4' />
+                  <List className='mr-2 h-5 w-4' />
                   <span className='grow'>Bullet list</span>
                 </button>
               </div>

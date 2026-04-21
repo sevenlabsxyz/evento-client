@@ -30,7 +30,7 @@ export function BitrefillPaymentStatusSheet({
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             >
-              <Loader2 className='h-10 w-10 text-blue-500' />
+              <Loader2 className='h-10 w-11 text-blue-500' />
             </motion.div>
           ),
           iconBg: 'bg-blue-100 border border-blue-200',
@@ -40,7 +40,7 @@ export function BitrefillPaymentStatusSheet({
         };
       case 'success':
         return {
-          icon: <CheckCircle2 className='h-10 w-10 text-green-500' />,
+          icon: <CheckCircle2 className='h-10 w-11 text-green-500' />,
           iconBg: 'bg-green-100 border border-green-200',
           title: 'Purchase Complete!',
           message: getSuccessMessage(deliveryStatus),
@@ -48,7 +48,7 @@ export function BitrefillPaymentStatusSheet({
         };
       case 'error':
         return {
-          icon: <XCircle className='h-10 w-10 text-red-500' />,
+          icon: <XCircle className='h-10 w-11 text-red-500' />,
           iconBg: 'bg-red-100 border border-red-200',
           title: 'Payment Failed',
           message: getErrorMessage(deliveryStatus),

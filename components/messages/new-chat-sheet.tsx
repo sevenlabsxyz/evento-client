@@ -95,7 +95,7 @@ export default function NewChatSheet({ isOpen, onClose }: NewChatSheetProps) {
                 </SheetWithDetentFull.Title>
               </VisuallyHidden.Root>
               <div className='relative'>
-                <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+                <Search className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
                 <input
                   className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500'
                   type='text'

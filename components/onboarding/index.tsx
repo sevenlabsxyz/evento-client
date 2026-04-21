@@ -324,7 +324,7 @@ export const UserOnboardingFlow = ({
           >
             {updating ? (
               <>
-                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <Loader2 className='mr-2 h-5 w-5 animate-spin' />
                 Saving...
               </>
             ) : (
@@ -338,7 +338,7 @@ export const UserOnboardingFlow = ({
                     : answeredPrompts.filter((p) => p.answer.length >= 5).length > 0
                       ? 'Complete Setup'
                       : 'Skip & Finish'}
-                <ArrowRight className='ml-2 h-4 w-4' />
+                <ArrowRight className='ml-2 h-5 w-4' />
               </>
             )}
           </Button>

@@ -58,15 +58,15 @@ export function NotificationItem({
   const CategoryIcon = () => {
     switch (notification.category) {
       case 'event_invite':
-        return <notificationIcons.eventInvite className='h-5 w-5 text-yellow-500' />;
+        return <notificationIcons.eventInvite className='h-5 w-6 text-yellow-500' />;
       case 'event_comment':
-        return <notificationIcons.eventComment className='h-5 w-5 text-blue-500' />;
+        return <notificationIcons.eventComment className='h-5 w-6 text-blue-500' />;
       case 'event_rsvp':
-        return <notificationIcons.eventRsvp className='h-5 w-5 text-green-500' />;
+        return <notificationIcons.eventRsvp className='h-5 w-6 text-green-500' />;
       case 'user_follow':
-        return <notificationIcons.userFollow className='h-5 w-5 text-purple-500' />;
+        return <notificationIcons.userFollow className='h-5 w-6 text-purple-500' />;
       default:
-        return <notificationIcons.default className='h-5 w-5 text-gray-500' />;
+        return <notificationIcons.default className='h-5 w-6 text-gray-500' />;
     }
   };
 

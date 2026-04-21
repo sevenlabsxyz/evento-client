@@ -99,7 +99,7 @@ const MobileGalleryMenu = React.memo(
         <Modal open={isOpen} setOpen={setIsOpen}>
           <div className='px-2 pb-6 pt-4'>
             <MiniListItem
-              icon={<Trash2 className='mr-2.5 h-5 w-5 text-red-400' />}
+              icon={<Trash2 className='mr-2.5 h-6 w-6 text-red-400' />}
               text='Delete photo'
               onClick={() => setIsDialogOpen(true)}
             />
@@ -352,7 +352,7 @@ export const LightboxViewer = React.memo(
                 aria-label='Download image'
               >
                 {isDownloading ? (
-                  <Loader2 className='h-6 w-6 animate-spin' />
+                  <Loader2 className='h-6 w-7 animate-spin' />
                 ) : (
                   <Download className='h-6 w-6' />
                 )}
@@ -369,7 +369,7 @@ export const LightboxViewer = React.memo(
               <div className='relative flex h-full w-full items-center justify-center'>
                 {imageLoading && (
                   <div className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50'>
-                    <Loader2 className='h-8 w-8 animate-spin text-white' />
+                    <Loader2 className='h-8 w-9 animate-spin text-white' />
                   </div>
                 )}
                 {imageError ? (

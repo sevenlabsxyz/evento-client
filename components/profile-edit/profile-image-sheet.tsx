@@ -147,13 +147,13 @@ export default function ProfileImageSheet({
                       onClick={triggerFileInput}
                       className='absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg'
                     >
-                      <Camera className='h-6 w-6 text-gray-600' />
+                      <Camera className='h-6 w-7 text-gray-600' />
                     </button>
                   </div>
 
                   {/* Upload Button */}
                   <Button onClick={triggerFileInput} variant='outline' className='mb-6 w-full'>
-                    <Upload className='mr-2 h-5 w-5' />
+                    <Upload className='mr-2 h-6 w-5' />
                     Choose from Library
                   </Button>
 

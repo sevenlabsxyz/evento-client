@@ -224,7 +224,7 @@ export function EventCard({
             className='h-8 w-8 rounded-full bg-gray-100 p-0'
             onClick={() => onBookmark?.(event.id)}
           >
-            <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
+            <Bookmark className={`h-5 w-6 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
           </Button>
         </div>
       </div>

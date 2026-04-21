@@ -162,7 +162,7 @@ export function ProfileCampaignPledgeSheet({
       >
         {createPledge.isPending ? (
           <>
-            <Loader2 className='h-4 w-4 animate-spin' />
+            <Loader2 className='h-4 w-5 animate-spin' />
             Creating invoice…
           </>
         ) : (
@@ -194,7 +194,7 @@ export function ProfileCampaignPledgeSheet({
       >
         {copied ? (
           <>
-            <CheckCircle2 className='h-4 w-4 text-emerald-500' />
+            <CheckCircle2 className='h-4 w-5 text-emerald-500' />
             Copied!
           </>
         ) : (
@@ -207,7 +207,7 @@ export function ProfileCampaignPledgeSheet({
 
       {/* Waiting indicator */}
       <div className='flex items-center gap-2 text-sm text-gray-500'>
-        <Loader2 className='h-4 w-4 animate-spin' />
+        <Loader2 className='h-4 w-5 animate-spin' />
         Waiting for payment…
       </div>
     </div>
@@ -216,7 +216,7 @@ export function ProfileCampaignPledgeSheet({
   const renderSettledStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100'>
-        <CheckCircle2 className='h-8 w-8 text-emerald-600' />
+        <CheckCircle2 className='h-8 w-9 text-emerald-600' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Thank you!</h3>
       <p className='text-center text-sm text-gray-600'>
@@ -230,7 +230,7 @@ export function ProfileCampaignPledgeSheet({
   const renderExpiredStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
       <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-        <RotateCcw className='h-8 w-8 text-red-500' />
+        <RotateCcw className='h-8 w-9 text-red-500' />
       </div>
       <h3 className='mb-1 text-xl font-bold text-gray-900'>Invoice expired</h3>
       <p className='mb-6 text-center text-sm text-gray-600'>

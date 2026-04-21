@@ -166,7 +166,7 @@ export default function Step1SearchUsers({
       {/* Search Bar */}
       <div className='mt-3 flex items-center gap-2 px-4'>
         <div className='relative flex-1'>
-          <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+          <Search className='pointer-events-none absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
           <input
             className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500'
             type='text'
@@ -204,7 +204,7 @@ export default function Step1SearchUsers({
                   >
                     {'isEmailInvite' in u && u.isEmailInvite ? (
                       <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
-                        <MailIcon size={16} />
+                        <MailIcon size={20} />
                       </div>
                     ) : (
                       <UserAvatar
@@ -240,7 +240,7 @@ export default function Step1SearchUsers({
           ) : (
             <div className='flex flex-col items-center justify-center py-16 text-center'>
               <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                <Users className='h-8 w-8 text-gray-400' />
+                <Users className='h-8 w-9 text-gray-400' />
               </div>
               <h3 className='mb-2 text-base font-semibold text-gray-900'>Find Evento Users</h3>
               <p className='text-sm text-gray-500'>Search by @username or import a CSV</p>
@@ -266,7 +266,7 @@ export default function Step1SearchUsers({
           // No results state
           <div className='flex flex-col items-center justify-center py-16 text-center'>
             <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-              <Search className='h-8 w-8 text-gray-400' />
+              <Search className='h-8 w-9 text-gray-400' />
             </div>
             <h3 className='mb-2 text-base font-semibold text-gray-900'>No users found</h3>
             <p className='text-sm text-gray-500'>No users matching &quot;{searchText}&quot;</p>
@@ -288,7 +288,7 @@ export default function Step1SearchUsers({
                 >
                   {'isEmailInvite' in u && u.isEmailInvite ? (
                     <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
-                      <MailIcon size={16} />
+                      <MailIcon size={20} />
                     </div>
                   ) : (
                     <UserAvatar

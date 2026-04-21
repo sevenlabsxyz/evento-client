@@ -76,14 +76,14 @@ export function TransactionHistory({
       if (isIncoming) {
         return (
           <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100'>
-            <ArrowDownLeft className='h-5 w-5 text-orange-600' />
+            <ArrowDownLeft className='h-5 w-6 text-orange-600' />
           </div>
         );
       }
 
       return (
         <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100'>
-          <ArrowUpRight className='h-5 w-5 text-orange-600' />
+          <ArrowUpRight className='h-5 w-6 text-orange-600' />
         </div>
       );
     }
@@ -92,14 +92,14 @@ export function TransactionHistory({
     if (isIncoming) {
       return (
         <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100'>
-          <ArrowDownLeft className='h-5 w-5 text-green-600' />
+          <ArrowDownLeft className='h-5 w-6 text-green-600' />
         </div>
       );
     }
 
     return (
       <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-blue-100'>
-        <ArrowUpRight className='h-5 w-5 text-blue-600' />
+        <ArrowUpRight className='h-5 w-6 text-blue-600' />
       </div>
     );
   };
@@ -108,11 +108,11 @@ export function TransactionHistory({
     switch (status) {
       case 'complete':
       case 'succeeded':
-        return <CheckCircle2 className='h-4 w-4 text-green-600' />;
+        return <CheckCircle2 className='h-4 w-5 text-green-600' />;
       case 'pending':
-        return <Clock className='h-4 w-4 text-yellow-600' />;
+        return <Clock className='h-4 w-5 text-yellow-600' />;
       case 'failed':
-        return <XCircle className='h-4 w-4 text-red-600' />;
+        return <XCircle className='h-4 w-5 text-red-600' />;
       default:
         return null;
     }
