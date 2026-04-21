@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink } from '@/lib/icons';
 
 interface XSheetProps {
   isOpen: boolean;

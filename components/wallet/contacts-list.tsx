@@ -11,8 +11,8 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
+import { UserPlus, Users } from '@/lib/icons';
 import type { Contact } from '@/lib/types/wallet';
-import { UserPlus, Users } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { ContactItem } from './contact-item';
 

@@ -13,9 +13,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
+import { Search, Users } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { UserDetails, UserSearchResult } from '@/lib/types/api';
-import { Search, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

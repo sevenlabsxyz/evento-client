@@ -4,6 +4,7 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useSaveContactPrompt } from '@/components/wallet/save-contact-prompt';
 import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
+import { Zap } from '@/lib/icons';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
@@ -13,7 +14,6 @@ import {
 } from '@/lib/utils/wallet-unlock-toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';

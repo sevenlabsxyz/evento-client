@@ -1,8 +1,8 @@
 'use client';
 
 import { useSendCohostInvites } from '@/lib/hooks/use-cohost-invites';
+import { Loader2, MailIcon, Send, X } from '@/lib/icons';
 import { CohostInviteTarget, UserDetails } from '@/lib/types/api';
-import { Loader2, MailIcon, Send, X } from 'lucide-react';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface InviteCohostsStep2Props {

@@ -6,9 +6,9 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useFollowingEvents } from '@/lib/hooks/use-following-events';
 import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
+import { AlertTriangle, ArrowRight, Calendar, Compass, Users } from '@/lib/icons';
 import { EventWithUser, ForYouEvent, HubSectionError } from '@/lib/types/api';
 import { formatDateHeader } from '@/lib/utils/date';
-import { AlertTriangle, ArrowRight, Calendar, Compass, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 

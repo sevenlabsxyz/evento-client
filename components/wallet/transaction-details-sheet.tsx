@@ -11,11 +11,11 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
+import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from '@/lib/icons';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface TransactionDetailsSheetProps {

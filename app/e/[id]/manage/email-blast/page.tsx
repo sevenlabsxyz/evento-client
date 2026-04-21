@@ -10,10 +10,10 @@ import {
   useCancelEmailBlast,
   useEmailBlasts,
 } from '@/lib/hooks/use-email-blasts';
+import { Loader2, Mail, Plus } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EmailBlast } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, Mail, Plus } from 'lucide-react';
 import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

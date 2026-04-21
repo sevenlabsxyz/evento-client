@@ -1,10 +1,10 @@
 'use client';
 
 import { Env } from '@/lib/constants/env';
+import { ExternalLink, MapPin, Sun } from '@/lib/icons';
 import { EventDetail } from '@/lib/types/event';
 import { WeatherData } from '@/lib/types/weather';
 import { formatEventLocationAddress } from '@/lib/utils/location';
-import { ExternalLink, MapPin, Sun } from 'lucide-react';
 import { useState } from 'react';
 import { LocationActionsSheet } from './location-actions-sheet';
 import WeatherDetailSheet from './weather-detail-sheet';

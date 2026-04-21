@@ -7,9 +7,6 @@ import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useMyDraftEvents } from '@/lib/hooks/use-my-draft-events';
 import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
-import { EventWithUser, HubSectionError } from '@/lib/types/api';
-import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
-import { getProfileEventDateKey } from '@/lib/utils/profile-events';
 import {
   AlertTriangle,
   ArrowRight,
@@ -17,7 +14,10 @@ import {
   MapPinHouse,
   Search,
   UserRoundPen,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { EventWithUser, HubSectionError } from '@/lib/types/api';
+import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
+import { getProfileEventDateKey } from '@/lib/utils/profile-events';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 

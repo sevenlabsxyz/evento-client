@@ -2,9 +2,9 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { ArrowLeft } from '@/lib/icons';
 import { InviteItem, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import CsvImportSheet from './csv-import-sheet';
 import Step1SearchUsers from './invite-users-step1';

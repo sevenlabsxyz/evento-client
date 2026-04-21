@@ -7,6 +7,16 @@ import {
 } from '@/lib/hooks/use-email-blasts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import {
+  ArrowRight,
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Mail,
+  Send,
+  Users,
+} from '@/lib/icons';
+import {
   CreateEmailBlastForm,
   EmailBlast,
   EmailBlastRecipientFilter,
@@ -21,16 +31,6 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import {
-  ArrowRight,
-  CalendarClock,
-  CheckCircle2,
-  Clock,
-  Loader2,
-  Mail,
-  Send,
-  Users,
-} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';

@@ -7,10 +7,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
-import { BTCPriceService } from '@/lib/services/btc-price';
-import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
-import { logger } from '@/lib/utils/logger';
-import { motion } from 'framer-motion';
 import {
   ArrowDownLeft,
   ArrowUpRight,
@@ -19,7 +15,11 @@ import {
   Loader2,
   Scan,
   Zap,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { BTCPriceService } from '@/lib/services/btc-price';
+import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
+import { logger } from '@/lib/utils/logger';
+import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 

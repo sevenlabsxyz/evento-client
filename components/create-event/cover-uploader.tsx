@@ -1,9 +1,9 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Loader2, UploadCloud } from '@/lib/icons';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, UploadCloud } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 interface CoverUploaderProps {

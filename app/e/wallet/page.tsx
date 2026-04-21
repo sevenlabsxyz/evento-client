@@ -40,16 +40,6 @@ import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useScreenWakeLock } from '@/lib/hooks/use-screen-wake-lock';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { usePaymentHistory } from '@/lib/hooks/use-wallet-payments';
-import { breezSDK } from '@/lib/services/breez-sdk';
-import { WalletStorageService } from '@/lib/services/wallet-storage';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import type { Contact } from '@/lib/types/wallet';
-import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
-import { logger } from '@/lib/utils/logger';
-import { toast } from '@/lib/utils/toast';
-import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
-import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
-import { motion } from 'framer-motion';
 import {
   Check,
   ChevronRight,
@@ -60,7 +50,17 @@ import {
   MoreHorizontal,
   Plus,
   Settings,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { breezSDK } from '@/lib/services/breez-sdk';
+import { WalletStorageService } from '@/lib/services/wallet-storage';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import type { Contact } from '@/lib/types/wallet';
+import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration';
+import { logger } from '@/lib/utils/logger';
+import { toast } from '@/lib/utils/toast';
+import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
+import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
+import { motion } from 'framer-motion';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

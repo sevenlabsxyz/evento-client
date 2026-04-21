@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Check } from '@/lib/icons';
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
 
 interface ZapSuccessStepProps {
   selectedAmount: number;

@@ -4,10 +4,10 @@ import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { Textarea } from '@/components/ui/textarea';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
+import { Loader2, X } from '@/lib/icons';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface BiographySheetProps {

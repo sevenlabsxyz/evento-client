@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowRight, Check, Clock, Loader2, X } from 'lucide-react';
+import { ArrowRight, Check, Clock, Loader2, X } from '@/lib/icons';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';

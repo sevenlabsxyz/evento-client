@@ -9,8 +9,8 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Inbox } from '@/lib/icons';
 import { UINotification } from '@/lib/types/notifications';
-import { Inbox } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { NotificationItem } from './notification-item';

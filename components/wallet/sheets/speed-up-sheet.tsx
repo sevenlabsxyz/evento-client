@@ -2,11 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { Clock, Loader2, Rocket, Settings, Turtle, X } from '@/lib/icons';
 import { type DepositInfo } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Clock, Loader2, Rocket, Settings, Turtle, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface SpeedUpSheetProps {

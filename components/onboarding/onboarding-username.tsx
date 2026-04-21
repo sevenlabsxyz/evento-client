@@ -1,9 +1,9 @@
 import { Input } from '@/components/ui/input';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserByUsername, useUserProfile } from '@/lib/hooks/use-user-profile';
+import { CheckCircle, Loader2, XCircle } from '@/lib/icons';
 import { updateUserProfileSchema } from '@/lib/schemas/user';
 import { motion } from 'framer-motion';
-import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { z } from 'zod';
 import { OnboardingHeader } from './onboarding-header';
@@ -48,22 +48,22 @@ export const OnboardingUsername = ({
     // Use the username schema from user.ts
     const usernameSchema = updateUserProfileSchema.pick({ username: true }).shape.username;
 
-try {
+    try {
       usernameSchema.parse(username);
-      
+
       // Check if username is reserved
       if (RESERVED_USERNAMES.includes(username.toLowerCase())) {
         setValidationError('This username is reserved and cannot be used');
         setIsAvailable(null);
         return;
       }
-setValidationError('');
-} catch (error) {
-if (error instanceof z.ZodError) {
-setValidationError(error.issues?.[0]?.message || 'Invalid username');
-setIsAvailable(null);
-}
-}
+      setValidationError('');
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        setValidationError(error.issues?.[0]?.message || 'Invalid username');
+        setIsAvailable(null);
+      }
+    }
   }, [username]);
 
   // Check availability when debounced username changes

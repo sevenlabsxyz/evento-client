@@ -2,12 +2,12 @@
 
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
+import { Check, MapPin, Users, X } from '@/lib/icons';
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { formatDistanceToNowStrict } from 'date-fns';
-import { Check, MapPin, Users, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface MasterInviteCardProps {

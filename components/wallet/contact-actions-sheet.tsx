@@ -15,9 +15,9 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
+import { ChevronRight, Loader2, Pencil, Trash2 } from '@/lib/icons';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
-import { ChevronRight, Loader2, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

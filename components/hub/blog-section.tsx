@@ -4,8 +4,8 @@ import { BlogCard } from '@/components/blog/blog-card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
+import { ArrowRight } from '@/lib/icons';
 import { logger } from '@/lib/utils/logger';
-import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 

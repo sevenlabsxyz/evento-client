@@ -2,9 +2,9 @@
 
 import { Button } from '@/components/ui/button';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
+import { Copy, Edit3, Share2, X } from '@/lib/icons';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Copy, Edit3, Share2, X } from 'lucide-react';
 import { useState } from 'react';
 import { Drawer } from 'vaul';
 import { ReceiveLightningSheet as ReceiveInvoiceSheet } from './receive-invoice-sheet';

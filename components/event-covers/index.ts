@@ -1,5 +1,5 @@
 import { NO_COVER_FALLBACK } from '@/lib/constants/default-covers';
-import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from 'lucide-react';
+import { Cpu, Crown, MessagesSquare, PartyPopper, Sparkles } from '@/lib/icons';
 import COVERS from './categories';
 
 export { NO_COVER_FALLBACK };

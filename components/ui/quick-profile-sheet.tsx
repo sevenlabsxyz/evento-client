@@ -12,10 +12,10 @@ import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
 import { useFollowAction } from '@/lib/hooks/use-user-profile';
+import { ArrowRight, Loader2 } from '@/lib/icons';
 import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowRight, Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 

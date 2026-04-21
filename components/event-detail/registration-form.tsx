@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useAuth, USER_QUERY_KEY } from '@/lib/hooks/use-auth';
 import { useSubmitRegistration } from '@/lib/hooks/use-submit-registration';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
+import { Loader2 } from '@/lib/icons';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import type { RegistrationQuestion, UserRegistration } from '@/lib/types/api';
@@ -15,7 +16,6 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { generateAvailableUsername } from '@/lib/utils/username';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { RegistrationOtpInput } from './registration-otp-input';
 

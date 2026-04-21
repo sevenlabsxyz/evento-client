@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Loader2Icon, SendIcon } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { Loader2Icon, SendIcon } from 'lucide-react';
 import type { ComponentProps, HTMLAttributes, KeyboardEventHandler } from 'react';
 import { Children } from 'react';
 

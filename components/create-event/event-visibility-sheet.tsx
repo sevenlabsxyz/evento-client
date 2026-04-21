@@ -1,7 +1,7 @@
 'use client';
 
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { Globe, Lock } from 'lucide-react';
+import { Globe, Lock } from '@/lib/icons';
 
 interface EventVisibilitySheetProps {
   isOpen: boolean;

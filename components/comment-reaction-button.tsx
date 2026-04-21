@@ -1,10 +1,10 @@
 'use client';
 
+import { AppIconComponent } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
 
 interface CommentReactionButtonProps {
-  icon: LucideIcon;
+  icon: AppIconComponent;
   count?: number;
   label?: string;
   isActive?: boolean;

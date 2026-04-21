@@ -2,10 +2,10 @@
 
 import { Input } from '@/components/ui/input';
 import { Env } from '@/lib/constants/env';
+import { Loader2, Search } from '@/lib/icons';
 import { logger } from '@/lib/utils/logger';
 import { GiphyFetch } from '@giphy/js-fetch-api';
 import { IGif } from '@giphy/js-types';
-import { Loader2, Search } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 const gf = new GiphyFetch(Env.NEXT_PUBLIC_GIPHY_API_KEY);

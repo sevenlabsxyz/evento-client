@@ -1,10 +1,10 @@
 'use client';
 
+import { MapPin } from '@/lib/icons';
 import { EventWithUser } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
-import { MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useRef } from 'react';

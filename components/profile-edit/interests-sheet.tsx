@@ -9,10 +9,10 @@ import {
   useReplaceInterests,
   useUserInterests,
 } from '@/lib/hooks/use-user-interests';
+import { Loader2 } from '@/lib/icons';
 import { Interest } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface InterestsSheetProps {

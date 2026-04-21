@@ -2,8 +2,8 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { ArrowLeft } from '@/lib/icons';
 import { UserDetails } from '@/lib/types/api';
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import InviteCohostsStep1 from './invite-cohosts-step1';
 import InviteCohostsStep2 from './invite-cohosts-step2';

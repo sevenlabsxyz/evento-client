@@ -1,7 +1,7 @@
 'use client';
 
+import { Delete } from '@/lib/icons';
 import { motion } from 'framer-motion';
-import { Delete } from 'lucide-react';
 import { useCallback, useEffect, useRef } from 'react';
 
 interface NumericKeypadProps {

@@ -1,13 +1,13 @@
 'use client';
 
+import { AppIconComponent } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
 interface Tab {
   title: string;
-  icon: LucideIcon;
+  icon: AppIconComponent;
   onClick?: () => void;
   type?: never;
 }

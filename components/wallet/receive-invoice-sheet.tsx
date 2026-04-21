@@ -6,11 +6,11 @@ import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-payments';
+import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from '@/lib/icons';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
-import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
 
@@ -49,10 +49,15 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   // Set up event listener to detect when active invoice is paid
   useEffect(() => {
     // Set up listener if we have an active invoice OR if we're showing lightning address (no amount)
-    const shouldListen = activeInvoice || (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
+    const shouldListen =
+      activeInvoice ||
+      (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
     if (!shouldListen) return;
 
-    logger.info('Setting up payment listener for invoice', { activeInvoice, hasLightningAddress: !!address?.lightningAddress });
+    logger.info('Setting up payment listener for invoice', {
+      activeInvoice,
+      hasLightningAddress: !!address?.lightningAddress,
+    });
 
     const handlePaymentEvent = (event: SdkEvent) => {
       if (event.type === 'paymentSucceeded') {

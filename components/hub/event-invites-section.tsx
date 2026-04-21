@@ -10,8 +10,8 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
+import { AlertTriangle, ArrowRight, Calendar } from '@/lib/icons';
 import { EventInvite, HubSectionError } from '@/lib/types/api';
-import { AlertTriangle, ArrowRight, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { EventInviteDetailSheet } from './event-invite-detail-sheet';
 import { EventInviteStoryThumbnail } from './event-invite-story-thumbnail';

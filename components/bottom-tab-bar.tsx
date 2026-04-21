@@ -1,11 +1,11 @@
 'use client';
 
-import { BitcoinEllipseHugeIcon } from '@/components/icons/bitcoin-ellipse-huge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { Plus, type AppIconComponent } from '@/lib/icons';
+import { navigationIcons } from '@/lib/icons/semantic';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { Calendar1, type LucideIcon, Plus, Search } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';
@@ -47,17 +47,17 @@ const barTransition: Transition = { type: 'spring', damping: 26, stiffness: 300 
 
 interface NavTab {
   title: string;
-  icon: LucideIcon;
+  icon: AppIconComponent;
   path: string;
   isCreate?: boolean;
   isProfile?: boolean;
 }
 
 const NAV_ITEMS: NavTab[] = [
-  { title: 'Events', icon: Calendar1, path: '/e/hub' },
-  { title: 'Wallet', icon: BitcoinEllipseHugeIcon, path: '/e/wallet' },
-  { title: 'Create', icon: Plus, path: '/e/create', isCreate: true },
-  { title: 'Search', icon: Search, path: '/e/search' },
+  { title: 'Events', icon: navigationIcons.events, path: '/e/hub' },
+  { title: 'Wallet', icon: navigationIcons.wallet, path: '/e/wallet' },
+  { title: 'Create', icon: navigationIcons.create, path: '/e/create', isCreate: true },
+  { title: 'Search', icon: navigationIcons.search, path: '/e/search' },
   // icon unused — avatar renders instead
   { title: 'Profile', icon: Plus, path: '/e/profile', isProfile: true },
 ];

@@ -5,9 +5,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
+import { ArrowLeft, Plus, Share } from '@/lib/icons';
 import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
-import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useState } from 'react';
 

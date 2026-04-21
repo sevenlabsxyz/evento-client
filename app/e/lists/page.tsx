@@ -15,10 +15,10 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useCreateList } from '@/lib/hooks/use-create-list';
 import { useEnsureDefaultList } from '@/lib/hooks/use-ensure-default-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
+import { Bookmark, ChevronRight, Loader2, Plus } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { formatDistanceToNow } from 'date-fns';
-import { Bookmark, ChevronRight, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 

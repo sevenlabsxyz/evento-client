@@ -23,6 +23,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useCreateEventWithCallbacks } from '@/lib/hooks/use-create-event';
+import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from '@/lib/icons';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
@@ -31,7 +32,6 @@ import { getLocationDisplayName } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
-import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

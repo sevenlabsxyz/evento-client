@@ -1,9 +1,9 @@
 import { Button } from '@/components/ui/button';
+import { AppIconComponent } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
 
 interface CircleIconButtonProps {
-  icon: LucideIcon;
+  icon: AppIconComponent;
   onClick: () => void;
   disabled?: boolean;
   iconSize?: 'sm' | 'md' | 'lg';

@@ -2,8 +2,8 @@
 
 import { Progress } from '@/components/ui/progress';
 import { useProfileCampaign } from '@/lib/hooks/use-profile-campaign';
+import { Zap } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { Zap } from 'lucide-react';
 import { useState } from 'react';
 import { ProfileCampaignPledgeSheet } from './campaign-pledge-sheet';
 

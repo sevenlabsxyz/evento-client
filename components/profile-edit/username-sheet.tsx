@@ -6,10 +6,10 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useCheckUsername } from '@/lib/hooks/use-check-username';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
+import { AtSign, CheckCircle, Loader2, X, XCircle } from '@/lib/icons';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { AtSign, CheckCircle, Loader2, X, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface UsernameSheetProps {

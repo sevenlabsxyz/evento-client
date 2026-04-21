@@ -8,6 +8,7 @@ import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
+import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from '@/lib/icons';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import {
   BREEZ_ERROR_CONTEXT,
@@ -18,7 +19,6 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
-import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AddContactSheet } from './add-contact-sheet';
 import { AmountInputSheet } from './amount-input-sheet';
@@ -182,7 +182,8 @@ export function SendLightningSheet({
           parsed = await breezSDK.parseInput(trimmedInvoice);
         } catch (breezError) {
           // Check if error is CORS/network related
-          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const errorMessage =
+            breezError instanceof Error ? breezError.message : String(breezError);
           const isCorsError =
             errorMessage.includes('CORS') ||
             errorMessage.includes('Access-Control-Allow-Origin') ||

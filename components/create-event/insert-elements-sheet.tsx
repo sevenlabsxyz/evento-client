@@ -1,7 +1,7 @@
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { Minus } from '@/lib/icons';
 import { VisuallyHidden } from '@silk-hq/components';
 import type { Editor } from '@tiptap/core';
-import { Minus } from 'lucide-react';
 
 interface InsertElementsSheetProps {
   isOpen: boolean;

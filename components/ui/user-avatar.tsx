@@ -1,9 +1,9 @@
 'use client';
 
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
+import { Check } from '@/lib/icons';
 import { VerificationStatus } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
-import { Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from './avatar';
 

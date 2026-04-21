@@ -1,9 +1,9 @@
 'use client';
 
 import { BadgeItem } from '@/components/badges/badge-item';
+import { ChevronRight, Settings2 } from '@/lib/icons';
 import { UserBadge } from '@/lib/types/badges';
 import { cn } from '@/lib/utils';
-import { ChevronRight, Settings2 } from 'lucide-react';
 
 interface UserBadgesDisplayProps {
   badges: UserBadge[];

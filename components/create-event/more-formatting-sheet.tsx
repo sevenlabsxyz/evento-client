@@ -1,8 +1,8 @@
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { Code, Strikethrough } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import type { Editor } from '@tiptap/core';
-import { Code, Strikethrough } from 'lucide-react';
 
 interface MoreFormattingSheetProps {
   isOpen: boolean;

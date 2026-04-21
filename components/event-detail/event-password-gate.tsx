@@ -5,10 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useVerifyEventPassword } from '@/lib/hooks/use-verify-event-password';
+import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from '@/lib/icons';
 import { PasswordProtectedEventResponse } from '@/lib/types/api';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 

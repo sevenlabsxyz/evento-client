@@ -7,9 +7,6 @@ import { TelegramConnectSheet } from '@/components/settings/telegram-connect-she
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
-import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
 import {
   CheckCircle,
   ChevronRight,
@@ -23,7 +20,10 @@ import {
   Share,
   Shield,
   Terminal,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

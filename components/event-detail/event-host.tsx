@@ -5,12 +5,12 @@ import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { MessageCircle, Zap } from '@/lib/icons';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { MessageCircle, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

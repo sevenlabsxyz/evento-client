@@ -1,7 +1,7 @@
 'use client';
 
 import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2 } from '@/lib/icons';
 
 interface CommentActionsSheetProps {
   isOpen: boolean;

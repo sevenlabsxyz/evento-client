@@ -3,9 +3,9 @@
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
+import { ChevronRight } from '@/lib/icons';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
-import { ChevronRight } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 

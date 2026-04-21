@@ -9,12 +9,12 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
 import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
+import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from '@/lib/icons';
 import { apiEventSchema } from '@/lib/schemas/event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

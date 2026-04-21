@@ -9,10 +9,10 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
+import { Camera, Share2 } from '@/lib/icons';
 import { EventDetail } from '@/lib/types/event';
 import { isGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
-import { Camera, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import PhotoUploadSheet from './photo-upload-sheet';

@@ -3,8 +3,8 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
 import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
+import { onboardingIcons } from '@/lib/icons/semantic';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Calendar, Sparkles, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface CarouselSlide {
@@ -16,21 +16,21 @@ interface CarouselSlide {
 
 const slides: CarouselSlide[] = [
   {
-    icon: <Calendar className='h-16 w-16' />,
+    icon: <onboardingIcons.discover className='h-16 w-16' />,
     title: 'Discover Amazing Events',
     description:
       "Find and attend events that match your interests. From concerts to conferences, discover what's happening around you.",
     color: 'text-blue-600',
   },
   {
-    icon: <Zap className='h-16 w-16' />,
+    icon: <onboardingIcons.wallet className='h-16 w-16' />,
     title: 'Built-in Lightning Wallet',
     description:
       'Send and receive Bitcoin instantly with your built-in Lightning wallet. Pay for tickets, tip creators, and manage your funds seamlessly.',
     color: 'text-orange-600',
   },
   {
-    icon: <Sparkles className='h-16 w-16' />,
+    icon: <onboardingIcons.connect className='h-16 w-16' />,
     title: 'Connect & Share',
     description:
       'Connect with friends, share your experiences, and build your community. Evento brings people together through shared experiences.',
@@ -77,12 +77,12 @@ export const OnboardingWelcomeCarousel = () => {
       {/* Navigation Arrows */}
       <div className='mb-4 flex items-center gap-2'>
         <CircledIconButton
-          icon={ArrowLeft}
+          icon={onboardingIcons.previous}
           onClick={() => carouselApi?.scrollPrev()}
           disabled={!canScrollPrev}
         />
         <CircledIconButton
-          icon={ArrowRight}
+          icon={onboardingIcons.next}
           onClick={() => carouselApi?.scrollNext()}
           disabled={!canScrollNext}
         />

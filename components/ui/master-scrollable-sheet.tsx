@@ -2,9 +2,9 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { X } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
-import { X } from 'lucide-react';
 import { useState } from 'react';
 
 interface MasterScrollableSheetProps {

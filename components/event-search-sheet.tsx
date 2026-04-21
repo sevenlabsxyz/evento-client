@@ -13,11 +13,11 @@ import {
   EventTimeframe,
   useUserEvents,
 } from '@/lib/hooks/use-user-events';
+import { Calendar, List, MapPinHouse, Search, UserRoundPen } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
 import { getProfileEventDateKey } from '@/lib/utils/profile-events';
 import debounce from 'lodash.debounce';
-import { Calendar, List, MapPinHouse, Search, UserRoundPen } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 function hasValidEventDate(eventDate: unknown): eventDate is string {

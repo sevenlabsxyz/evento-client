@@ -4,11 +4,11 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { AmountInputSheet } from '@/components/wallet/amount-input-sheet';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
+import { CheckCircle2, Loader2 } from '@/lib/icons';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { InputType } from '@breeztech/breez-sdk-spark/web';
-import { CheckCircle2, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -303,7 +303,7 @@ export function ReceiveLnurlWithdrawSheet({
               >
                 <CheckCircle2 className='h-16 w-16 text-green-600' />
               </motion.div>
-              
+
               {/* Title with Fade-in Slide-up */}
               <motion.div
                 className='space-y-2'
@@ -316,7 +316,7 @@ export function ReceiveLnurlWithdrawSheet({
                   Your sats arrived in your Evento wallet.
                 </p>
               </motion.div>
-              
+
               {/* Amount Card with Fade-in Slide-up */}
               {amountUSD !== null && (
                 <motion.div
@@ -336,52 +336,50 @@ export function ReceiveLnurlWithdrawSheet({
             </div>
           ) : (
             <>
+              <div className='space-y-3'>
+                <div className='rounded-2xl bg-white p-4'>
+                  <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
+                    Description
+                  </p>
+                  <p className='text-sm font-medium text-gray-900'>
+                    {withdrawRequest?.defaultDescription || 'Receive funds'}
+                  </p>
+                </div>
 
-                <div className='space-y-3'>
-                  <div className='rounded-2xl bg-white p-4'>
-                    <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                      Description
-                    </p>
-                    <p className='text-sm font-medium text-gray-900'>
-                      {withdrawRequest?.defaultDescription || 'Receive funds'}
-                    </p>
-                  </div>
-
-
-                  {constraints && (
-                    <>
-                      {constraints.isFixedAmount ? (
+                {constraints && (
+                  <>
+                    {constraints.isFixedAmount ? (
+                      <div className='rounded-2xl bg-white p-4'>
+                        <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
+                          Amount
+                        </p>
+                        <p className='text-2xl font-semibold text-gray-900'>
+                          {constraints.minSats.toLocaleString()} sats
+                        </p>
+                      </div>
+                    ) : (
+                      <div className='grid grid-cols-2 gap-3'>
                         <div className='rounded-2xl bg-white p-4'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                            Amount
+                            Minimum
                           </p>
-                          <p className='text-2xl font-semibold text-gray-900'>
+                          <p className='text-lg font-semibold text-gray-900'>
                             {constraints.minSats.toLocaleString()} sats
                           </p>
                         </div>
-                      ) : (
-                        <div className='grid grid-cols-2 gap-3'>
-                          <div className='rounded-2xl bg-white p-4'>
-                            <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                              Minimum
-                            </p>
-                            <p className='text-lg font-semibold text-gray-900'>
-                              {constraints.minSats.toLocaleString()} sats
-                            </p>
-                          </div>
-                          <div className='rounded-2xl bg-white p-4'>
-                            <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
-                              Maximum
-                            </p>
-                            <p className='text-lg font-semibold text-gray-900'>
-                              {constraints.maxSats.toLocaleString()} sats
-                            </p>
-                          </div>
+                        <div className='rounded-2xl bg-white p-4'>
+                          <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
+                            Maximum
+                          </p>
+                          <p className='text-lg font-semibold text-gray-900'>
+                            {constraints.maxSats.toLocaleString()} sats
+                          </p>
                         </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
 
               {step === 'confirm' && amountSats && (
                 <div className='space-y-4'>
@@ -391,9 +389,7 @@ export function ReceiveLnurlWithdrawSheet({
                       {amountSats.toLocaleString()} sats
                     </p>
                     {amountUSD !== null && (
-                      <p className='mt-1 text-lg text-muted-foreground'>
-                        ${amountUSD.toFixed(2)}
-                      </p>
+                      <p className='mt-1 text-lg text-muted-foreground'>${amountUSD.toFixed(2)}</p>
                     )}
                   </div>
 
@@ -406,9 +402,7 @@ export function ReceiveLnurlWithdrawSheet({
 
                   {/* Provider */}
                   {providerHost && (
-                    <p className='text-center text-sm text-muted-foreground'>
-                      from {providerHost}
-                    </p>
+                    <p className='text-center text-sm text-muted-foreground'>from {providerHost}</p>
                   )}
                 </div>
               )}
@@ -417,15 +411,15 @@ export function ReceiveLnurlWithdrawSheet({
         </div>
       </MasterScrollableSheet>
 
-{!constraints?.isFixedAmount && (
-<AmountInputSheet
-open={amountSheetOpen}
-onOpenChange={setAmountSheetOpen}
+      {!constraints?.isFixedAmount && (
+        <AmountInputSheet
+          open={amountSheetOpen}
+          onOpenChange={setAmountSheetOpen}
           onConfirm={handleChooseAmount}
           minAmount={constraints?.minSats}
           maxAmount={constraints?.maxSats}
-/>
-)}
+        />
+      )}
     </>
   );
 }

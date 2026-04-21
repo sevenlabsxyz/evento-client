@@ -4,8 +4,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useUpdateUserProfile, useUploadProfileImage } from '@/lib/hooks/use-user-profile';
+import { Camera, Upload, X } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { Camera, Upload, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRef, useState } from 'react';
 

@@ -3,8 +3,8 @@
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { useCancelEvent } from '@/lib/hooks/use-cancel-event';
+import { AlertTriangle, Trash2, X } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

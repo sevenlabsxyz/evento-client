@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEventCampaignFeed } from '@/lib/hooks/use-campaign-feed';
-import { Zap } from 'lucide-react';
+import { Zap } from '@/lib/icons';
 
 interface CampaignContributorsProps {
   eventId: string;

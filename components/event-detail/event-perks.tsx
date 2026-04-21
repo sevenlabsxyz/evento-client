@@ -1,5 +1,5 @@
+import { Check, Gift } from '@/lib/icons';
 import { EventDetail } from '@/lib/types/event';
-import { Check, Gift } from 'lucide-react';
 
 interface EventPerksProps {
   event: EventDetail;

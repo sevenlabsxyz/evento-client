@@ -4,10 +4,10 @@ import { CashAppSVGIcon } from '@/components/icons/cashapp';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { useMediaQuery } from '@/lib/hooks/use-media-query';
+import { ExternalLink } from '@/lib/icons';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ExternalLink } from 'lucide-react';
 import { ReactNode, useEffect, useState } from 'react';
 import { DetachedSheet } from '../ui/detached-sheet';
 

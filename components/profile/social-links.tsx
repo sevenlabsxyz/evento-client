@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Globe, Instagram, QrCode } from 'lucide-react';
+import { Globe, Instagram, QrCode } from '@/lib/icons';
 import { useState } from 'react';
 import InstagramSheet from './sheets/instagram-sheet';
 import NostrSheet from './sheets/nostr-sheet';

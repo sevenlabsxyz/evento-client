@@ -6,11 +6,11 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { Loader2, X, Zap } from '@/lib/icons';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { redirectToWalletUnlock } from '@/lib/utils/wallet-unlock-toast';
-import { Loader2, X, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

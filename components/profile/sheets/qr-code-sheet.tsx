@@ -1,7 +1,7 @@
 'use client';
 
+import { Check, Copy, Download } from '@/lib/icons';
 import { toPng } from 'html-to-image';
-import { Check, Copy, Download } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 

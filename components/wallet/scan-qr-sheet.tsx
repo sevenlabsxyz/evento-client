@@ -2,9 +2,9 @@
 
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { CameraScanner } from '@/components/wallet/qr-code-scanner';
+import { ClipboardPaste, X } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ClipboardPaste, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface ScanQrSheetProps {

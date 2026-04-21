@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useBatchUpdateUserBadges, useUserBadges } from '@/lib/hooks/use-badges';
+import { Check, Loader2, X } from '@/lib/icons';
 import { UserBadge } from '@/lib/types/badges';
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Check, Loader2, X } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface BadgesManagementSheetProps {

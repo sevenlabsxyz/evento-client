@@ -1,8 +1,8 @@
 'use client';
 
+import { CheckCircle, Clock, XCircle } from '@/lib/icons';
 import type { UserRegistration } from '@/lib/types/api';
 import { formatDistanceToNow } from 'date-fns';
-import { CheckCircle, Clock, XCircle } from 'lucide-react';
 
 interface RegistrationStatusProps {
   registration: UserRegistration;

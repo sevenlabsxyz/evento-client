@@ -1,9 +1,9 @@
 'use client';
 
+import { notificationIcons } from '@/lib/icons/semantic';
 import { UINotification } from '@/lib/types/notifications';
 import { cn } from '@/lib/utils';
 import { formatDistance } from 'date-fns';
-import { CheckCheck, Clock, MessageCircle, Star, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface NotificationItemProps {
@@ -58,15 +58,15 @@ export function NotificationItem({
   const CategoryIcon = () => {
     switch (notification.category) {
       case 'event_invite':
-        return <Star className='h-5 w-5 text-yellow-500' />;
+        return <notificationIcons.eventInvite className='h-5 w-5 text-yellow-500' />;
       case 'event_comment':
-        return <MessageCircle className='h-5 w-5 text-blue-500' />;
+        return <notificationIcons.eventComment className='h-5 w-5 text-blue-500' />;
       case 'event_rsvp':
-        return <Clock className='h-5 w-5 text-green-500' />;
+        return <notificationIcons.eventRsvp className='h-5 w-5 text-green-500' />;
       case 'user_follow':
-        return <User className='h-5 w-5 text-purple-500' />;
+        return <notificationIcons.userFollow className='h-5 w-5 text-purple-500' />;
       default:
-        return <Clock className='h-5 w-5 text-gray-500' />;
+        return <notificationIcons.default className='h-5 w-5 text-gray-500' />;
     }
   };
 
@@ -94,7 +94,7 @@ export function NotificationItem({
               )}
               onClick={handleSelect}
             >
-              {selected && <CheckCheck className='h-3.5 w-3.5' />}
+              {selected && <notificationIcons.read className='h-3.5 w-3.5' />}
             </div>
           )}
           <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-100'>
@@ -124,7 +124,7 @@ export function NotificationItem({
             aria-label={notification.status === 'read' ? 'Mark as unread' : 'Mark as read'}
             title={notification.status === 'read' ? 'Mark as unread' : 'Mark as read'}
           >
-            <CheckCheck className='h-4 w-4' />
+            <notificationIcons.read className='h-4 w-4' />
           </button>
           <button
             onClick={handleArchive}
@@ -132,7 +132,7 @@ export function NotificationItem({
             aria-label='Archive'
             title='Archive'
           >
-            <Trash2 className='h-4 w-4' />
+            <notificationIcons.archive className='h-4 w-4' />
           </button>
         </div>
       )}

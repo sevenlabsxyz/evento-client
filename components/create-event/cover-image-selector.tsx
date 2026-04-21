@@ -2,9 +2,9 @@
 
 import ProgressiveImage from '@/components/ui/progressive-image';
 import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
+import { Camera } from '@/lib/icons';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { isGif } from '@/lib/utils/image';
-import { Camera } from 'lucide-react';
 
 interface CoverImageSelectorProps {
   selectedImage?: string;

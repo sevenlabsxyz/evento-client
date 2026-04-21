@@ -7,11 +7,11 @@ import { Switch } from '@/components/ui/switch';
 import { BackupChoiceSheet } from '@/components/wallet/backup-choice-sheet';
 import { BetaSheet } from '@/components/wallet/beta-sheet';
 import { resetWalletInitialization, useWallet } from '@/lib/hooks/use-wallet';
+import { AlertCircle, ChevronRight, EyeOff, Lock, Shield, Trash2 } from '@/lib/icons';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, ChevronRight, EyeOff, Lock, Shield, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

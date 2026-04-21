@@ -42,6 +42,18 @@ import {
   useUserFollowingCount,
 } from '@/lib/hooks/use-user-profile';
 import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
+import {
+  ArrowLeft,
+  Award,
+  BadgeCheck,
+  Calendar,
+  MessageCircle,
+  Search,
+  Share,
+  User,
+  UserMinus,
+  UserPlus,
+} from '@/lib/icons';
 import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
@@ -57,18 +69,6 @@ import {
 } from '@/lib/utils/profile-events';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
-import {
-  ArrowLeft,
-  Award,
-  BadgeCheck,
-  Calendar,
-  MessageCircle,
-  Search,
-  Share,
-  User,
-  UserMinus,
-  UserPlus,
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 

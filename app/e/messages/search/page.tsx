@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { ArrowLeft, Search } from 'lucide-react';
+import { ArrowLeft, Search } from '@/lib/icons';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

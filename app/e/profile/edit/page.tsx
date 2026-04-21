@@ -13,8 +13,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useUserBadges } from '@/lib/hooks/use-badges';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
-import { useProfileFormStore } from '@/lib/stores/profile-form-store';
-import { useTopBar } from '@/lib/stores/topbar-store';
 import {
   AtSign,
   Award,
@@ -26,7 +24,9 @@ import {
   MessageSquare,
   Type,
   User,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { useProfileFormStore } from '@/lib/stores/profile-form-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

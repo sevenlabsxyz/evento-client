@@ -2,9 +2,9 @@
 
 import { ReusableDropdown } from '@/components/reusable-dropdown';
 import { Button } from '@/components/ui/button';
+import { MoreHorizontal, Trash2 } from '@/lib/icons';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { MoreHorizontal, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { DeleteConfirmation } from './delete-confirmation';
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { BookOpen, Bot, Code2, LogOut, MoreVertical, Settings } from 'lucide-react';
+import { BookOpen, Bot, Code2, LogOut, MoreVertical, Settings } from '@/lib/icons';
 
 import Link from 'next/link';
 import { useState } from 'react';

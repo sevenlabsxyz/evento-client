@@ -1,8 +1,8 @@
 'use client';
 
+import { ArrowLeft, ArrowRight } from '@/lib/icons';
 import { GhostPost } from '@/lib/types/ghost';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 

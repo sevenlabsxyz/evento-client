@@ -1,6 +1,6 @@
 'use client';
 
-import { Reply, X } from 'lucide-react';
+import { Reply, X } from '@/lib/icons';
 import type { MessageResponse } from 'stream-chat';
 
 interface ReplyPreviewProps {

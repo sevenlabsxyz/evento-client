@@ -1,7 +1,7 @@
 'use client';
 
+import { PlusIcon } from '@/lib/icons';
 import { EventWithUser } from '@/lib/types/api';
-import { PlusIcon } from 'lucide-react';
 import { EventCompactItem } from '../event-compact-item';
 import { Button } from '../ui/button';
 

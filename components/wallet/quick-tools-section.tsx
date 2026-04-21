@@ -1,5 +1,5 @@
+import { walletActionIcons } from '@/lib/icons/semantic';
 import { motion } from 'framer-motion';
-import { ArrowRightLeft, Bitcoin, ShoppingCart, Star } from 'lucide-react';
 
 type QuickTool = {
   id: 'converter' | 'buy-sell' | 'spend' | 'earn';
@@ -13,28 +13,28 @@ const quickTools: QuickTool[] = [
   {
     id: 'buy-sell',
     label: 'Buy / Sell',
-    icon: Bitcoin,
+    icon: walletActionIcons.buySell,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },
   {
     id: 'spend',
     label: 'Spend',
-    icon: ShoppingCart,
+    icon: walletActionIcons.spend,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },
   {
     id: 'earn',
     label: 'Earn',
-    icon: Star,
+    icon: walletActionIcons.earn,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },
   {
     id: 'converter',
     label: 'Converter',
-    icon: ArrowRightLeft,
+    icon: walletActionIcons.converter,
     iconBg: 'bg-gray-50',
     iconColor: 'text-gray-600',
   },

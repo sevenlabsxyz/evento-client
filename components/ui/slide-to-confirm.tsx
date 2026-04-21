@@ -1,7 +1,7 @@
 'use client';
 
+import { ChevronRight, Loader2 } from '@/lib/icons';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
-import { ChevronRight, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface SlideToConfirmProps {

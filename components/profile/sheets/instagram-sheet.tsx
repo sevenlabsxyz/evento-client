@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { ExternalLink, Instagram } from 'lucide-react';
+import { ExternalLink, Instagram } from '@/lib/icons';
 
 interface InstagramSheetProps {
   isOpen: boolean;

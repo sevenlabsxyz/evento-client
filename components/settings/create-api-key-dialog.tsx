@@ -14,9 +14,9 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useCreateApiKey } from '@/lib/hooks/use-api-keys';
+import { Check, Copy } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
-import { Check, Copy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface CreateApiKeyDialogProps {

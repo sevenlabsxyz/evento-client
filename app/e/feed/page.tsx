@@ -10,13 +10,6 @@ import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useEventsFeed } from '@/lib/hooks/use-events-feed';
 import { useUserSearch } from '@/lib/hooks/use-search';
-import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { useViewModeStore } from '@/lib/stores/view-mode-store';
-import { EventWithUser, UserDetails, UserSearchResult, VerificationStatus } from '@/lib/types/api';
-import { logger } from '@/lib/utils/logger';
-import { toast } from '@/lib/utils/toast';
-import debounce from 'lodash.debounce';
 import {
   ArrowDownAZ,
   Bookmark,
@@ -29,7 +22,14 @@ import {
   Search,
   Users,
   X,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { useRecentSearchesStore } from '@/lib/stores/recent-searches-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { useViewModeStore } from '@/lib/stores/view-mode-store';
+import { EventWithUser, UserDetails, UserSearchResult, VerificationStatus } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
+import { toast } from '@/lib/utils/toast';
+import debounce from 'lodash.debounce';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

@@ -10,6 +10,15 @@ import {
   useNotifyWalletInviteBatch,
 } from '@/lib/hooks/use-notify-wallet-invite-batch';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Loader2,
+  MessageSquareText,
+  TriangleAlert,
+  XCircle,
+} from '@/lib/icons';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import {
@@ -23,15 +32,6 @@ import {
   showWalletUnlockToast as showWalletUnlockToastPrompt,
 } from '@/lib/utils/wallet-unlock-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Info,
-  Loader2,
-  MessageSquareText,
-  TriangleAlert,
-  XCircle,
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 

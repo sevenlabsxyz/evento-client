@@ -4,14 +4,6 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
-import { breezSDK, type DepositInfo, type Fee } from '@/lib/services/breez-sdk';
-import {
-  BREEZ_ERROR_CONTEXT,
-  getBreezErrorMessage,
-  logBreezError,
-} from '@/lib/utils/breez-error-handler';
-import { toast } from '@/lib/utils/toast';
-import { VisuallyHidden } from '@silk-hq/components';
 import {
   ArrowRight,
   CheckCircle2,
@@ -20,7 +12,15 @@ import {
   Loader2,
   X,
   XCircle,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { breezSDK, type DepositInfo, type Fee } from '@/lib/services/breez-sdk';
+import {
+  BREEZ_ERROR_CONTEXT,
+  getBreezErrorMessage,
+  logBreezError,
+} from '@/lib/utils/breez-error-handler';
+import { toast } from '@/lib/utils/toast';
+import { VisuallyHidden } from '@silk-hq/components';
 import { useCallback, useEffect, useState } from 'react';
 import { SpeedUpSheet } from './sheets/speed-up-sheet';
 

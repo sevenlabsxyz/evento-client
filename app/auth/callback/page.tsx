@@ -2,12 +2,12 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
+import { CheckCircle, Loader2, XCircle } from '@/lib/icons';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { createClient } from '@/lib/supabase/client';
 import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '@/lib/utils/auth';
 import { logger } from '@/lib/utils/logger';
-import { CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 

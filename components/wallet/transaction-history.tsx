@@ -11,12 +11,12 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
+import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from '@/lib/icons';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface TransactionHistoryProps {

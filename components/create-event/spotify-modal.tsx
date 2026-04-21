@@ -1,6 +1,6 @@
 'use client';
 
-import { X } from 'lucide-react';
+import { X } from '@/lib/icons';
 import { useState } from 'react';
 
 interface SpotifyModalProps {

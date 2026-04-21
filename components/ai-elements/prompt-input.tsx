@@ -2,8 +2,8 @@
 
 'use client';
 
+import { CornerDownLeft } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { CornerDownLeft } from 'lucide-react';
 import * as React from 'react';
 
 export interface PromptInputMessage {
@@ -36,8 +36,7 @@ export const PromptInput = ({ className, onSubmit, children, ...props }: PromptI
   );
 };
 
-export interface PromptInputTextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export interface PromptInputTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 export const PromptInputTextarea = React.forwardRef<HTMLTextAreaElement, PromptInputTextareaProps>(
   ({ className, onKeyDown, ...props }, ref) => {

@@ -13,12 +13,6 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
 import { useRemoveGuest } from '@/lib/hooks/use-remove-guest';
 import { useWallet } from '@/lib/hooks/use-wallet';
-import { breezSDK } from '@/lib/services/breez-sdk';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
-import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
-import { toast } from '@/lib/utils/toast';
-import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import {
   CheckCircle,
   CircleHelp,
@@ -29,7 +23,13 @@ import {
   X,
   XCircle,
   Zap,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { breezSDK } from '@/lib/services/breez-sdk';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
+import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
+import { toast } from '@/lib/utils/toast';
+import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 

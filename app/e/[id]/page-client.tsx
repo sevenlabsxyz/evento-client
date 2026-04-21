@@ -28,6 +28,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { Bookmark, Image, Info, MessageSquare, Share } from '@/lib/icons';
 import { useTopBarStore } from '@/lib/stores/topbar-store';
 import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
@@ -35,7 +36,6 @@ import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
 

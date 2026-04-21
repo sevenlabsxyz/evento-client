@@ -5,10 +5,10 @@ import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { resetWalletInitialization, useWallet } from '@/lib/hooks/use-wallet';
+import { AlertCircle, AlertTriangle, KeyRound, Lock } from '@/lib/icons';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useWalletSeedStore } from '@/lib/stores/wallet-seed-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, AlertTriangle, KeyRound, Lock } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletUnlockProps {

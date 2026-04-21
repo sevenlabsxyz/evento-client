@@ -2,12 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import DetachedMenuSheet, { MenuOption } from '@/components/ui/detached-menu-sheet';
-import { EventWithUser } from '@/lib/types/api';
-import { cn } from '@/lib/utils';
-import { htmlToPlainText } from '@/lib/utils/content';
-import { formatEventDateFromParts, getRelativeTime } from '@/lib/utils/date';
-import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
-import { toast } from '@/lib/utils/toast';
 import {
   Bookmark,
   Calendar,
@@ -20,7 +14,13 @@ import {
   Send,
   Share,
   User,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { EventWithUser } from '@/lib/types/api';
+import { cn } from '@/lib/utils';
+import { htmlToPlainText } from '@/lib/utils/content';
+import { formatEventDateFromParts, getRelativeTime } from '@/lib/utils/date';
+import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
+import { toast } from '@/lib/utils/toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { UserAvatar } from './ui/user-avatar';

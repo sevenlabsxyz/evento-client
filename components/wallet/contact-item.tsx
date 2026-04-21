@@ -2,9 +2,9 @@
 
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
+import { ChevronRight, Pencil, Trash2 } from '@/lib/icons';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
-import { ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 
 interface ContactItemProps {

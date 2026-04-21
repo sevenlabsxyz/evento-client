@@ -4,22 +4,12 @@ import { LogoutConfirmationSheet } from '@/components/logout-confirmation-sheet'
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { navigationIcons } from '@/lib/icons/semantic';
 
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { LogOut, Plus } from '@/lib/icons';
 import { useSidebar } from '@/lib/stores/sidebar-store';
 import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
-import {
-  BookOpen,
-  Calendar1,
-  LogOut,
-  MessageCircle,
-  Plus,
-  Search,
-  Settings,
-  Star,
-  UserCircle,
-  Zap,
-} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
@@ -31,42 +21,42 @@ const menuSections = [
       {
         name: 'Events',
         path: '/',
-        icon: <Calendar1 className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.events className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Wallet',
         path: '/e/wallet',
-        icon: <Zap className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.wallet className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Lists',
         path: '/e/lists',
-        icon: <Star className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.lists className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Search',
         path: '/e/search',
-        icon: <Search className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.search className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Chat',
         path: '/e/messages',
-        icon: <MessageCircle className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.messages className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Profile',
         path: '/e/profile',
-        icon: <UserCircle className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.profile className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Settings',
         path: '/e/settings',
-        icon: <Settings className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.settings className='h-5 w-5' strokeWidth={2.5} />,
       },
       {
         name: 'Blog',
         path: '/e/blog',
-        icon: <BookOpen className='h-5 w-5' strokeWidth={2.5} />,
+        icon: <navigationIcons.blog className='h-5 w-5' strokeWidth={2.5} />,
       },
     ],
   },

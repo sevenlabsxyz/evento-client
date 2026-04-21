@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Eye, EyeOff, KeyRound, ShieldCheck, ShieldOff } from 'lucide-react';
+import { Eye, EyeOff, KeyRound, ShieldCheck, ShieldOff } from '@/lib/icons';
 import { useEffect, useState } from 'react';
 
 interface PasswordProtectionSheetProps {

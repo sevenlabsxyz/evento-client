@@ -6,11 +6,11 @@ import {
   GenerateDescriptionParams,
   useGenerateDescription,
 } from '@/lib/hooks/use-generate-description';
+import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import type { Editor } from '@tiptap/core';
 import DOMPurify from 'dompurify';
-import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { LoadingLogo } from '../ui/loading-logo';
 

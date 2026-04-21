@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { AlertTriangle, Info, Shield } from 'lucide-react';
+import { AlertTriangle, Info, Shield } from '@/lib/icons';
 
 interface BetaSheetProps {
   open: boolean;

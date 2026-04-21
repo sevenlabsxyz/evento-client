@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { designTokens } from '@/lib/design-tokens/colors';
-import { MessageCircle, UserMinus, UserPlus } from 'lucide-react';
+import { MessageCircle, UserMinus, UserPlus } from '@/lib/icons';
 import { useCallback } from 'react';
 
 interface ProfileActionsProps {

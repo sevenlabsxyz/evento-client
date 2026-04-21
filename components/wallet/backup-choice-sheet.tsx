@@ -8,8 +8,6 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Textarea } from '@/components/ui/textarea';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useWallet } from '@/lib/hooks/use-wallet';
-import { WalletStorageService } from '@/lib/services/wallet-storage';
-import { toast } from '@/lib/utils/toast';
 import {
   AlertCircle,
   ArrowRight,
@@ -22,7 +20,9 @@ import {
   Key,
   KeyRound,
   Shield,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { WalletStorageService } from '@/lib/services/wallet-storage';
+import { toast } from '@/lib/utils/toast';
 import { useState } from 'react';
 
 type Step = 'choice' | 'password' | 'backup' | 'seed-pin' | 'seed-view';

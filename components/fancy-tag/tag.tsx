@@ -1,7 +1,7 @@
 'use client';
 
+import { Check } from '@/lib/icons';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Check } from 'lucide-react';
 
 interface TagProps {
   text: string;

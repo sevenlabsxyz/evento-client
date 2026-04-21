@@ -14,6 +14,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
+import { Calendar, ChevronRight, Edit3, MapPin, Users } from '@/lib/icons';
 import { apiEventSchema } from '@/lib/schemas/event';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -23,7 +24,6 @@ import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-da
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, ChevronRight, Edit3, MapPin, Users } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

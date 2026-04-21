@@ -6,11 +6,11 @@ import { useCreatePledgeIntent, usePledgeStatus } from '@/lib/hooks/use-campaign
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
+import { CheckCircle2, Copy, Loader2, QrCode, RotateCcw, Wallet, Zap } from '@/lib/icons';
 import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { CheckCircle2, Copy, Loader2, QrCode, RotateCcw, Wallet, Zap } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];

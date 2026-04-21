@@ -1,17 +1,7 @@
 'use client';
 
-import { BitcoinEllipseHugeIcon } from '@/components/icons/bitcoin-ellipse-huge';
-import {
-  BookOpen,
-  Calendar1,
-  MessageCircle,
-  PanelRightClose,
-  PanelRightOpen,
-  Plus,
-  Search,
-  Shirt,
-  Star,
-} from 'lucide-react';
+import { BookOpen, PanelRightClose, PanelRightOpen, Plus, Shirt } from '@/lib/icons';
+import { navigationIcons } from '@/lib/icons/semantic';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -37,27 +27,27 @@ const navMain = [
   {
     title: 'Events',
     url: '/e/hub',
-    icon: Calendar1,
+    icon: navigationIcons.events,
   },
   {
     title: 'Wallet',
     url: '/e/wallet',
-    icon: BitcoinEllipseHugeIcon,
+    icon: navigationIcons.wallet,
   },
   {
     title: 'Search',
     url: '/e/search',
-    icon: Search,
+    icon: navigationIcons.search,
   },
   {
     title: 'Messages',
     url: '/e/messages',
-    icon: MessageCircle,
+    icon: navigationIcons.messages,
   },
   {
     title: 'Lists',
     url: '/e/lists',
-    icon: Star,
+    icon: navigationIcons.lists,
   },
 ];
 

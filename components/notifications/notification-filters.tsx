@@ -9,8 +9,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Filter } from '@/lib/icons';
 import { NotificationFilterParams } from '@/lib/types/notifications';
-import { Filter } from 'lucide-react';
 
 interface NotificationFiltersProps {
   currentFilters: NotificationFilterParams;

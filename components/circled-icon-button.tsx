@@ -1,8 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { LucideIcon } from 'lucide-react';
+import { AppIconComponent } from '@/lib/icons';
 
 interface CircledIconButtonProps {
-  icon: LucideIcon;
+  icon: AppIconComponent;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
   disabled?: boolean;

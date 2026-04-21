@@ -37,12 +37,6 @@ import {
   useUserProfile,
 } from '@/lib/hooks/use-user-profile';
 import { useUserPrompts } from '@/lib/hooks/use-user-prompts';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { UserBadge } from '@/lib/types/badges';
-import { cn } from '@/lib/utils';
-import { formatDateHeader } from '@/lib/utils/date';
-import { sortAndGroupProfileEvents } from '@/lib/utils/profile-events';
-import { motion } from 'framer-motion';
 import {
   ArrowUpRight,
   Award,
@@ -54,7 +48,13 @@ import {
   Search,
   Settings,
   User,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { UserBadge } from '@/lib/types/badges';
+import { cn } from '@/lib/utils';
+import { formatDateHeader } from '@/lib/utils/date';
+import { sortAndGroupProfileEvents } from '@/lib/utils/profile-events';
+import { motion } from 'framer-motion';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 

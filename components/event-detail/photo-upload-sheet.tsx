@@ -3,9 +3,9 @@
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useMultiFileUpload } from '@/lib/hooks/use-multi-file-upload';
+import { Camera, Trash2, X } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Camera, Trash2, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRef } from 'react';
 

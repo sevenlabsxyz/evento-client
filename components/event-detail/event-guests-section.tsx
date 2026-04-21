@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
-import { Share, UserPlus } from 'lucide-react';
+import { Share, UserPlus } from '@/lib/icons';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';

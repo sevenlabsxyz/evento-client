@@ -1,10 +1,10 @@
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
+import { Copy, X } from '@/lib/icons';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Copy, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 type BTCConverterSheetProps = {

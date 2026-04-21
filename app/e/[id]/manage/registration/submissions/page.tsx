@@ -8,11 +8,11 @@ import { useApproveRegistration } from '@/lib/hooks/use-approve-registration';
 import { useDenyRegistration } from '@/lib/hooks/use-deny-registration';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useRegistrationSubmissions } from '@/lib/hooks/use-registration-submissions';
+import { CheckCircle, ChevronRight, ClipboardList, Clock, XCircle } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationStatus, RegistrationSubmission } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { format } from 'date-fns';
-import { CheckCircle, ChevronRight, ClipboardList, Clock, XCircle } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

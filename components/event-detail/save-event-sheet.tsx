@@ -10,8 +10,8 @@ import { useEnsureDefaultList } from '@/lib/hooks/use-ensure-default-list';
 import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
+import { Check, Loader2, Plus } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { Check, Loader2, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface SaveEventSheetProps {

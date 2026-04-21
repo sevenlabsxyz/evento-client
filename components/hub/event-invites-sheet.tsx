@@ -7,9 +7,9 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
+import { AlertTriangle, Archive, Calendar, Check, Clock } from '@/lib/icons';
 import { EventInvite, HubSectionError } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { AlertTriangle, Archive, Calendar, Check, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 import { MasterInviteCard } from './master-invite-card';

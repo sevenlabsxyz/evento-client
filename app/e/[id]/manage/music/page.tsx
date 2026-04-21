@@ -5,11 +5,11 @@ import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useUpdateEvent } from '@/lib/hooks/use-update-event';
+import { Check, Trash2 } from '@/lib/icons';
 import type { UpdateEventData } from '@/lib/schemas/event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Check, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

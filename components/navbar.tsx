@@ -2,8 +2,8 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { navigationIcons } from '@/lib/icons/semantic';
 import { motion } from 'framer-motion';
-import { Calendar1, Plus, Search, User, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -18,15 +18,15 @@ export function Navbar({ activeTab, onTabChange }: NavbarProps) {
   const { user } = useUserProfile();
 
   const navItems = [
-    { id: 'hub', icon: Calendar1, path: '/e/hub' },
-    { id: 'wallet', icon: Zap, path: '/e/wallet' },
+    { id: 'hub', icon: navigationIcons.events, path: '/e/hub' },
+    { id: 'wallet', icon: navigationIcons.wallet, path: '/e/wallet' },
     // Hiding feed until improvements are made
     // { id: 'feed', icon: Calendar1, path: '/e/feed' },
-    { id: 'add', icon: Plus, path: '/e/create', isCenter: true },
-    { id: 'search', icon: Search, path: '/e/search' },
+    { id: 'add', icon: navigationIcons.create, path: '/e/create', isCenter: true },
+    { id: 'search', icon: navigationIcons.search, path: '/e/search' },
     // Temporarily hidden until notifications are fully working
     // { id: 'inbox', icon: Inbox, path: '/e/inbox' },
-    { id: 'profile', icon: User, path: '/e/profile' },
+    { id: 'profile', icon: navigationIcons.profile, path: '/e/profile' },
   ];
 
   const handleNavigation = (item: any) => {

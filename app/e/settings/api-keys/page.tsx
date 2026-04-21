@@ -15,10 +15,10 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useApiKeys, useApiKeysCount } from '@/lib/hooks/use-api-keys';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { AlertCircle, Key, Plus, ShieldAlert } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { ApiKey } from '@/lib/types/api-key.types';
 import { formatDistanceToNow } from 'date-fns';
-import { AlertCircle, Key, Plus, ShieldAlert } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

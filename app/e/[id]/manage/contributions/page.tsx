@@ -6,11 +6,11 @@ import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { Skeleton } from '@/components/ui/skeleton';
 import apiClient from '@/lib/api/client';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { Check, DollarSign } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { Check, DollarSign } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 

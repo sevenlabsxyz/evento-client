@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Menu } from '@/lib/icons';
 import { useSidebar } from '@/lib/stores/sidebar-store';
-import { Menu } from 'lucide-react';
 import type React from 'react';
 
 interface PageHeaderProps {

@@ -1,7 +1,7 @@
 'use client';
 
+import { ArrowLeft, Menu } from '@/lib/icons';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

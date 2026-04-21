@@ -1,7 +1,7 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
+import { Camera, Loader2, UploadCloud } from '@/lib/icons';
 import { motion } from 'framer-motion';
-import { Camera, Loader2, UploadCloud } from 'lucide-react';
 import { RefObject } from 'react';
 import { OnboardingHeader } from './onboarding-header';
 

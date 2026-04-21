@@ -9,6 +9,7 @@ import {
   useUpdateEventCampaign,
 } from '@/lib/hooks/use-event-campaign';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { Check, Info, MessageCircle, Zap } from '@/lib/icons';
 import { campaignFormSchema, type CampaignFormData } from '@/lib/schemas/campaign';
 import { useTopBarStore } from '@/lib/stores/topbar-store';
 import { useWalletStore } from '@/lib/stores/wallet-store';
@@ -16,7 +17,6 @@ import type { ApiError } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, Info, MessageCircle, Zap } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';

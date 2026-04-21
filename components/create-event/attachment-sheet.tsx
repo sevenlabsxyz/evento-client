@@ -3,7 +3,7 @@
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { Check } from 'lucide-react';
+import { Check } from '@/lib/icons';
 import { useState } from 'react';
 import SpotifySheet from './spotify-sheet';
 import WavlakeSheet from './wavlake-sheet';

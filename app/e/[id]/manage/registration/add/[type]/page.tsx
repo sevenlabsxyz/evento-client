@@ -2,8 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { useCreateRegistrationQuestion } from '@/lib/hooks/use-create-registration-question';
-import type { RegistrationQuestionType } from '@/lib/types/api';
-import { toast } from '@/lib/utils/toast';
 import {
   ArrowLeft,
   Building,
@@ -19,7 +17,9 @@ import {
   Twitter,
   Type,
   Youtube,
-} from 'lucide-react';
+} from '@/lib/icons';
+import type { RegistrationQuestionType } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

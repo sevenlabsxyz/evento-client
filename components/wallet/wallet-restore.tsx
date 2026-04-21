@@ -6,8 +6,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useWallet } from '@/lib/hooks/use-wallet';
+import { AlertCircle, CheckCircle2, Key, KeyRound, Loader2, RefreshCw } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, CheckCircle2, Key, KeyRound, Loader2, RefreshCw } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletRestoreProps {

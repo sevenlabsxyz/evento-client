@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
-import { ArrowUpDown, Loader2 } from 'lucide-react';
+import { ArrowUpDown, Loader2 } from '@/lib/icons';
 import { useEffect, useState } from 'react';
 
 interface AmountInputSheetProps {

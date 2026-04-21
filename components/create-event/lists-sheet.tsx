@@ -1,8 +1,8 @@
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { List } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import { VisuallyHidden } from '@silk-hq/components';
 import type { Editor } from '@tiptap/core';
-import { List } from 'lucide-react';
 
 interface ListsSheetProps {
   isOpen: boolean;

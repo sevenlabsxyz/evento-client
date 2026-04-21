@@ -1,5 +1,5 @@
+import { type AppIconComponent } from '@/lib/icons';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { type LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
 import { cn } from '@/lib/utils';
@@ -21,10 +21,9 @@ const statusBadgeVariants = cva(
 );
 
 interface StatusBadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof statusBadgeVariants> {
-  leftIcon?: LucideIcon;
-  rightIcon?: LucideIcon;
+  extends React.HTMLAttributes<HTMLSpanElement>, VariantProps<typeof statusBadgeVariants> {
+  leftIcon?: AppIconComponent;
+  rightIcon?: AppIconComponent;
   leftLabel: string;
   rightLabel?: string;
 }

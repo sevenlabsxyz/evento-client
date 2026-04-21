@@ -1,7 +1,7 @@
 'use client';
 
 import { transformEmailBlastForUI, useEmailBlasts } from '@/lib/hooks/use-email-blasts';
-import { AlertCircle, Loader2, Mail } from 'lucide-react';
+import { AlertCircle, Loader2, Mail } from '@/lib/icons';
 import { useState } from 'react';
 import EmailBlastCard from './email-blast-card';
 import EmailBlastDetailModal from './email-blast-detail-modal';

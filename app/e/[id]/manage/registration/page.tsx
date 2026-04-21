@@ -19,28 +19,6 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { useReorderRegistrationQuestions } from '@/lib/hooks/use-reorder-registration-questions';
 import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registration-question';
 import { useUpdateRegistrationSettings } from '@/lib/hooks/use-update-registration-settings';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import type { RegistrationQuestion, RegistrationQuestionType } from '@/lib/types/api';
-import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
-import { toast } from '@/lib/utils/toast';
-import {
-  closestCenter,
-  DndContext,
-  KeyboardSensor,
-  PointerSensor,
-  TouchSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  arrayMove,
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import {
   ArrowLeft,
   Building,
@@ -63,7 +41,29 @@ import {
   Twitter,
   Type,
   Youtube,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import type { RegistrationQuestion, RegistrationQuestionType } from '@/lib/types/api';
+import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
+import { toast } from '@/lib/utils/toast';
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

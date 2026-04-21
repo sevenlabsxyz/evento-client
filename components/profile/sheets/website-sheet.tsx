@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { ExternalLink, Globe } from 'lucide-react';
+import { ExternalLink, Globe } from '@/lib/icons';
 
 interface WebsiteSheetProps {
   isOpen: boolean;

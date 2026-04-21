@@ -20,10 +20,6 @@ import {
   useUpdatePrompt,
   useUserPrompts,
 } from '@/lib/hooks/use-user-prompts';
-import { useAuthStore } from '@/lib/stores/auth-store';
-import { Prompt, UserPrompt } from '@/lib/types/api';
-import { logger } from '@/lib/utils/logger';
-import { toast } from '@/lib/utils/toast';
 import {
   AlertTriangle,
   ArrowDown,
@@ -34,7 +30,11 @@ import {
   MessageSquare,
   Plus,
   Trash2,
-} from 'lucide-react';
+} from '@/lib/icons';
+import { useAuthStore } from '@/lib/stores/auth-store';
+import { Prompt, UserPrompt } from '@/lib/types/api';
+import { logger } from '@/lib/utils/logger';
+import { toast } from '@/lib/utils/toast';
 import { useEffect, useState } from 'react';
 
 interface PromptsSheetProps {

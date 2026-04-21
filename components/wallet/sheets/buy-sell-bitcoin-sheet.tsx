@@ -2,9 +2,9 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { GLOBAL_EXCHANGES, getExchangesForCountry, type Exchange } from '@/lib/constants/exchanges';
+import { ArrowUpRight, Loader2, MapPin, X } from '@/lib/icons';
 import { detectUserCountry } from '@/lib/utils/geo-detection';
 import { logger } from '@/lib/utils/logger';
-import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 

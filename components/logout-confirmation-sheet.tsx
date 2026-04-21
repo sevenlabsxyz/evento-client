@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { AlertTriangle, LogOut, Shield } from '@/lib/icons';
 import { hasWalletData } from '@/lib/utils/logout-cleanup';
-import { AlertTriangle, LogOut, Shield } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface LogoutConfirmationSheetProps {

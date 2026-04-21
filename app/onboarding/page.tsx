@@ -2,7 +2,7 @@
 
 import { UserOnboardingFlow } from '@/components/onboarding';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/icons';
 import { Suspense } from 'react';
 
 function OnboardingContent() {

@@ -17,7 +17,7 @@ import { init } from 'emoji-mart';
 import type { ChannelFilters, MessageResponse, Channel as StreamChannel } from 'stream-chat';
 import { Channel, Window } from 'stream-chat-react';
 
-import { ArrowLeft, Paperclip, Smile } from 'lucide-react';
+import { ArrowLeft, Paperclip, Smile } from '@/lib/icons';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 

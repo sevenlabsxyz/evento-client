@@ -1,6 +1,6 @@
 'use client';
 
-import { Search } from 'lucide-react';
+import { Search } from '@/lib/icons';
 import { useEffect, useMemo, useState } from 'react';
 
 interface TimezoneModalProps {

@@ -6,9 +6,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
+import { AlertTriangle, ShieldAlert } from '@/lib/icons';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { logger } from '@/lib/utils/logger';
-import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface BitrefillPaymentConfirmationSheetProps {

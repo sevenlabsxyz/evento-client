@@ -1,12 +1,12 @@
 'use client';
 
+import { Bold as BoldIcon, Italic as ItalicIcon, Link as LinkIcon, Type, X } from '@/lib/icons';
 import Bold from '@tiptap/extension-bold';
 import Heading from '@tiptap/extension-heading';
 import Italic from '@tiptap/extension-italic';
 import Link from '@tiptap/extension-link';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import { Bold as BoldIcon, Italic as ItalicIcon, Link as LinkIcon, Type, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface DescriptionModalProps {

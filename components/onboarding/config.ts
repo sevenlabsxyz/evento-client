@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { AppIconComponent } from '@/lib/icons';
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
 export interface OnboardingStep {
@@ -11,7 +11,7 @@ export interface OnboardingStep {
   };
   noCard?: boolean;
   actionLabel: string;
-  actionLabelIcon?: LucideIcon;
+  actionLabelIcon?: AppIconComponent;
   onAction?: (router: AppRouterInstance) => void;
 }
 

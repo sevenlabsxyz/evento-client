@@ -1,8 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Loader2 } from '@/lib/icons';
 import { cn } from '@/lib/utils';
-import { Loader2 } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const OTP_INPUT_IDS = ['first', 'second', 'third', 'fourth', 'fifth', 'sixth'] as const;

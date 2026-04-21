@@ -1,6 +1,6 @@
+import { ChevronDown, Link, Minus, Plus, Sparkles } from '@/lib/icons';
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
-import { ChevronDown, Link, Minus, Plus, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { AIDescriptionGeneratorSheet, EventData } from '../ai-description-generator-sheet';
 import { LinkEditSheet } from '../link-edit-sheet';

@@ -11,9 +11,9 @@ import { useListEvents } from '@/lib/hooks/use-list-events';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
 import { useUpdateList } from '@/lib/hooks/use-update-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
+import { Bookmark, Edit2, Loader2, Trash2 } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Edit2, Loader2, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

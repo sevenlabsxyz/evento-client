@@ -5,9 +5,9 @@ import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useRegistrationSubmissionDetail } from '@/lib/hooks/use-registration-submission-detail';
+import { Check, X } from '@/lib/icons';
 import type { RegistrationStatus } from '@/lib/types/api';
 import { format } from 'date-fns';
-import { Check, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface RegistrationDetailSheetProps {

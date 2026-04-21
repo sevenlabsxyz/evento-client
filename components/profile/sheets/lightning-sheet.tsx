@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { Copy, ExternalLink, Zap } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { Copy, ExternalLink, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 interface LightningSheetProps {

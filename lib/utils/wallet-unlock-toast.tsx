@@ -1,8 +1,8 @@
 'use client';
 
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
+import { Info } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { Info } from 'lucide-react';
 
 interface WalletUnlockRedirectOptions {
   rememberBatchZapReturnPath?: boolean;

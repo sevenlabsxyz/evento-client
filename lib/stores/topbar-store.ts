@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { AppIconComponent } from '@/lib/icons';
 import { create } from 'zustand';
 import { VerificationStatus } from '../types/api';
 
@@ -7,7 +7,7 @@ export type CenterMode = 'title' | 'empty' | 'logo' | 'chat-partner';
 
 export interface TopBarButton {
   id: string;
-  icon: LucideIcon;
+  icon: AppIconComponent;
   onClick: () => void;
   label?: string;
   disabled?: boolean;
@@ -16,7 +16,7 @@ export interface TopBarButton {
 export interface TopBarTextButton {
   id: string;
   label: string;
-  icon?: LucideIcon;
+  icon?: AppIconComponent;
   onClick: () => void;
   disabled?: boolean;
   variant?: 'default' | 'outline';

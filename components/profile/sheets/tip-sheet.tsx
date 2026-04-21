@@ -5,11 +5,11 @@ import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
+import { ArrowLeft, Copy, Loader2 } from '@/lib/icons';
 import { VerificationStatus } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Copy, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface TipSheetProps {

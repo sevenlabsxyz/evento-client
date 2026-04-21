@@ -10,9 +10,9 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useHubData } from '@/lib/hooks/use-hub-data';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
+import { AlertTriangle, MessageCircle } from '@/lib/icons';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
-import { AlertTriangle, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { CheckCircle2, Loader2, XCircle } from '@/lib/icons';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 
 interface BitrefillPaymentStatusSheetProps {
   open: boolean;

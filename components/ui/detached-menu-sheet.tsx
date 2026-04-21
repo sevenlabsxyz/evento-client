@@ -2,11 +2,11 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { LucideIcon } from 'lucide-react';
+import { AppIconComponent } from '@/lib/icons';
 
 export interface MenuOption {
   id: string;
-  icon: LucideIcon;
+  icon: AppIconComponent;
   label: string;
   onClick: () => void;
   variant?: 'default' | 'secondary' | 'destructive' | 'outline' | 'ghost' | 'link';

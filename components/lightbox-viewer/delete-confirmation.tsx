@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from '@/lib/icons';
 
 interface DeleteConfirmationProps {
   isOpen: boolean;

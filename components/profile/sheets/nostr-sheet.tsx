@@ -2,8 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { Copy, ExternalLink } from '@/lib/icons';
 import { toast } from '@/lib/utils/toast';
-import { Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 interface NostrSheetProps {

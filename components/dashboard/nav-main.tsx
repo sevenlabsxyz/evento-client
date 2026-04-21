@@ -1,6 +1,6 @@
 'use client';
 
-import { LucideIcon } from 'lucide-react';
+import { AppIconComponent } from '@/lib/icons';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -19,7 +19,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: LucideIcon;
+    icon?: AppIconComponent;
     external?: boolean;
   }[];
 }) {

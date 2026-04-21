@@ -14,7 +14,7 @@ import {
   Twitter,
   Type,
   Youtube,
-} from 'lucide-react';
+} from '@/lib/icons';
 import { useParams, useRouter } from 'next/navigation';
 
 type QuestionType =

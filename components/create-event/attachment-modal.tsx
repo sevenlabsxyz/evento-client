@@ -2,7 +2,7 @@
 
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
-import { Check, X } from 'lucide-react';
+import { Check, X } from '@/lib/icons';
 
 interface AttachmentModalProps {
   isOpen: boolean;
