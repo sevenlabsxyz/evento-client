@@ -80,10 +80,11 @@ export function useReplaceInterests() {
 
   return useMutation({
     mutationFn: async (interestIds: string[]) => {
+      const dedupedInterestIds = Array.from(new Set(interestIds));
       const response = await apiClient.put<ApiResponse<InterestWithParent[]>>(
         '/v1/user/interests',
         {
-          interest_ids: interestIds,
+          interest_ids: dedupedInterestIds,
         }
       );
       return response.data || [];
