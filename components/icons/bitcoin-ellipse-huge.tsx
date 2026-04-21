@@ -1,14 +1,14 @@
-import { BitcoinCpuIcon as HugeBitcoinCpuIcon } from '@hugeicons/core-free-icons';
+import { BitcoinEllipseIcon as HugeBitcoinEllipseIcon } from '@hugeicons/core-free-icons';
 import { HugeiconsIcon } from '@hugeicons/react';
 import type { LucideIcon } from 'lucide-react';
 import * as React from 'react';
 
-type BitcoinCpuHugeIconProps = React.SVGProps<SVGSVGElement> & {
+type BitcoinEllipseHugeIconProps = React.SVGProps<SVGSVGElement> & {
   size?: string | number;
   absoluteStrokeWidth?: boolean;
 };
 
-const BitcoinCpuHugeIconBase = React.forwardRef<SVGSVGElement, BitcoinCpuHugeIconProps>(
+const BitcoinEllipseHugeIconBase = React.forwardRef<SVGSVGElement, BitcoinEllipseHugeIconProps>(
   ({ size = 24, color, strokeWidth = 1.5, absoluteStrokeWidth, className, ...rest }, ref) => {
     const resolvedStrokeWidth =
       typeof strokeWidth === 'number'
@@ -20,7 +20,7 @@ const BitcoinCpuHugeIconBase = React.forwardRef<SVGSVGElement, BitcoinCpuHugeIco
     return (
       <HugeiconsIcon
         ref={ref}
-        icon={HugeBitcoinCpuIcon}
+        icon={HugeBitcoinEllipseIcon}
         size={size}
         color={typeof color === 'string' ? color : undefined}
         strokeWidth={resolvedStrokeWidth}
@@ -32,6 +32,6 @@ const BitcoinCpuHugeIconBase = React.forwardRef<SVGSVGElement, BitcoinCpuHugeIco
   }
 );
 
-BitcoinCpuHugeIconBase.displayName = 'BitcoinCpuHugeIcon';
+BitcoinEllipseHugeIconBase.displayName = 'BitcoinEllipseHugeIcon';
 
-export const BitcoinCpuHugeIcon = BitcoinCpuHugeIconBase as unknown as LucideIcon;
+export const BitcoinEllipseHugeIcon = BitcoinEllipseHugeIconBase as unknown as LucideIcon;
