@@ -1,3 +1,8 @@
+import { BitcoinEllipseIcon } from '@hugeicons/core-free-icons';
+import { HugeiconsIcon } from '@hugeicons/react';
+import type { LucideProps } from 'lucide-react';
+import { forwardRef } from 'react';
+
 export const BitcoinSVGIcon = ({
   className,
   fill = '#f7931a',
@@ -24,3 +29,21 @@ export const BitcoinSVGIcon = ({
     </svg>
   );
 };
+
+export const BitcoinNavIcon = forwardRef<SVGSVGElement, LucideProps>(
+  ({ size = 24, className, color = 'currentColor' }, ref) => {
+    return (
+      <HugeiconsIcon
+        ref={ref}
+        icon={BitcoinEllipseIcon}
+        size={size}
+        color={color}
+        strokeWidth={2}
+        absoluteStrokeWidth
+        className={className}
+      />
+    );
+  }
+);
+
+BitcoinNavIcon.displayName = 'BitcoinNavIcon';
