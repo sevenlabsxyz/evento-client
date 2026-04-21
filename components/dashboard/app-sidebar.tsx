@@ -129,7 +129,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton tooltip='Store' asChild>
               <a
-                href='https://theoriginalbhd.com/bitcoin'
+                href='https://theoriginal.com/bitcoin'
                 target='_blank'
                 rel='noreferrer'
                 onClick={() => setOpenMobile(false)}
