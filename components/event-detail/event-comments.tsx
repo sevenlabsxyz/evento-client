@@ -1,6 +1,7 @@
 'use client';
 
 import CommentItem from '@/components/event-detail/comment-item';
+import { Loader2, MessageCircle, SendHorizontal } from '@/components/icons/lucide';
 import {
   Empty,
   EmptyDescription,
@@ -16,7 +17,6 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, MessageCircle, SendHorizontal } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';

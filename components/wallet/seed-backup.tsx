@@ -1,9 +1,9 @@
 'use client';
 
+import { AlertCircle, Check, Copy, Eye, EyeOff } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Check, Copy, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 
 interface SeedBackupProps {

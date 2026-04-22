@@ -1,9 +1,9 @@
 'use client';
 
+import { ArrowLeft, X, Zap } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
-import { ArrowLeft, X, Zap } from 'lucide-react';
 import type { RecipientInfo } from '../zap-types';
 
 interface ZapConfirmStepProps {

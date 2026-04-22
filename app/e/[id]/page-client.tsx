@@ -15,6 +15,7 @@ import EventSubEvents from '@/components/event-detail/event-sub-events';
 import { WavlakeEmbed } from '@/components/event-detail/event-wavlake-embed';
 import SaveEventSheet from '@/components/event-detail/save-event-sheet';
 import SwipeableHeader from '@/components/event-detail/swipeable-header';
+import { Bookmark, Image, Info, MessageSquare, Share } from '@/components/icons/lucide';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -35,7 +36,6 @@ import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

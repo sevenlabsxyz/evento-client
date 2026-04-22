@@ -1,6 +1,17 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import {
+  Check,
+  ChevronRight,
+  ChevronsRight,
+  Contact as ContactIcon,
+  Gamepad2,
+  HelpCircle,
+  MoreHorizontal,
+  Plus,
+  Settings,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { AddContactSheet } from '@/components/wallet/add-contact-sheet';
@@ -50,17 +61,6 @@ import { toast } from '@/lib/utils/toast';
 import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
 import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
 import { motion } from 'framer-motion';
-import {
-  Check,
-  ChevronRight,
-  ChevronsRight,
-  Contact as ContactIcon,
-  Gamepad2,
-  HelpCircle,
-  MoreHorizontal,
-  Plus,
-  Settings,
-} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

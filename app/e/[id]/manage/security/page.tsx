@@ -2,6 +2,14 @@
 
 import EventVisibilitySheet from '@/components/create-event/event-visibility-sheet';
 import PasswordProtectionSheet from '@/components/create-event/password-protection-sheet';
+import {
+  ChevronRight,
+  EyeOff,
+  Globe,
+  Lock,
+  ShieldCheck,
+  ShieldOff,
+} from '@/components/icons/lucide';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { Switch } from '@/components/ui/switch';
@@ -14,7 +22,6 @@ import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, EyeOff, Globe, Lock, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

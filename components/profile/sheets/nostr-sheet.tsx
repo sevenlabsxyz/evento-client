@@ -1,9 +1,9 @@
 'use client';
 
+import { Copy, ExternalLink } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { toast } from '@/lib/utils/toast';
-import { Copy, ExternalLink } from 'lucide-react';
 import { useState } from 'react';
 
 interface NostrSheetProps {

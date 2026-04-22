@@ -1,10 +1,10 @@
 'use client';
 
+import { Calendar1, type LucideIcon, Plus, Search, Zap } from '@/components/icons/lucide';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { cn } from '@/lib/utils';
 import { AnimatePresence, motion, type Transition } from 'framer-motion';
-import { Calendar1, type LucideIcon, Plus, Search, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import * as React from 'react';

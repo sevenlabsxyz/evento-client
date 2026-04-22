@@ -1,5 +1,14 @@
 'use client';
 
+import {
+  AlertCircle,
+  ArrowLeft,
+  Loader2,
+  Scan,
+  UserPlus,
+  Users,
+  X,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
@@ -18,7 +27,6 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
 import { VisuallyHidden } from '@silk-hq/components';
-import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { AddContactSheet } from './add-contact-sheet';
 import { AmountInputSheet } from './amount-input-sheet';
@@ -182,7 +190,8 @@ export function SendLightningSheet({
           parsed = await breezSDK.parseInput(trimmedInvoice);
         } catch (breezError) {
           // Check if error is CORS/network related
-          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const errorMessage =
+            breezError instanceof Error ? breezError.message : String(breezError);
           const isCorsError =
             errorMessage.includes('CORS') ||
             errorMessage.includes('Access-Control-Allow-Origin') ||

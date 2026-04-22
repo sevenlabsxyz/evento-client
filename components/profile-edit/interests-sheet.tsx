@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { InterestsSelector } from '@/components/ui/interest-selector';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
@@ -12,7 +13,6 @@ import {
 import { Interest } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 
 interface InterestsSheetProps {

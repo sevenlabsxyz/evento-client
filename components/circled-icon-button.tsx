@@ -1,5 +1,5 @@
+import { LucideIcon } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
-import { LucideIcon } from 'lucide-react';
 
 interface CircledIconButtonProps {
   icon: LucideIcon;

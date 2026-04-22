@@ -1,6 +1,7 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { MessageCircle, Zap } from '@/components/icons/lucide';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
@@ -10,7 +11,6 @@ import { UserDetails } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { MessageCircle, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

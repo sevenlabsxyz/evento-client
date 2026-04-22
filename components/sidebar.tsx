@@ -5,9 +5,6 @@ import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAuth } from '@/lib/hooks/use-auth';
 
-import { useUserProfile } from '@/lib/hooks/use-user-profile';
-import { useSidebar } from '@/lib/stores/sidebar-store';
-import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import {
   BookOpen,
   Calendar1,
@@ -19,7 +16,10 @@ import {
   Star,
   UserCircle,
   Zap,
-} from 'lucide-react';
+} from '@/components/icons/lucide';
+import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { useSidebar } from '@/lib/stores/sidebar-store';
+import { Scroll, Sheet, VisuallyHidden } from '@silk-hq/components';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

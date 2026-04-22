@@ -1,5 +1,5 @@
+import { AlertTriangle } from '@/components/icons/lucide';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { AlertTriangle } from 'lucide-react';
 
 interface CapacityConfirmationSheetProps {
   isOpen: boolean;

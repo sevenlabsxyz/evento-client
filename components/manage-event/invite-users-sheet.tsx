@@ -1,10 +1,10 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { ArrowLeft } from '@/components/icons/lucide';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { InviteItem, UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import CsvImportSheet from './csv-import-sheet';
 import Step1SearchUsers from './invite-users-step1';

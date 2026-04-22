@@ -1,6 +1,7 @@
 'use client';
 
 import { BlogCard } from '@/components/blog/blog-card';
+import { Share } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGhostPosts } from '@/lib/hooks/use-ghost-posts';
@@ -8,7 +9,6 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Share } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useMemo } from 'react';
 import EnhancedBlogContent from './enhanced-blog-content';

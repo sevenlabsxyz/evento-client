@@ -1,8 +1,8 @@
 'use client';
 
+import { ExternalLink, Globe } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { ExternalLink, Globe } from 'lucide-react';
 
 interface WebsiteSheetProps {
   isOpen: boolean;

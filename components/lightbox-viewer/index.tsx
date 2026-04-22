@@ -42,7 +42,7 @@ import {
   MoreHorizontal,
   Trash2,
   XIcon,
-} from 'lucide-react';
+} from '@/components/icons/lucide';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSwipeable } from 'react-swipeable';
 import { DeleteConfirmation } from './delete-confirmation';

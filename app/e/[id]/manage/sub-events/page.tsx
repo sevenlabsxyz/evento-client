@@ -2,11 +2,11 @@
 
 import { EventCompactItem } from '@/components/event-compact-item';
 import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
+import { Plus, Trash2 } from '@/components/icons/lucide';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSubEvents } from '@/lib/hooks/use-sub-events';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
-import { Plus, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

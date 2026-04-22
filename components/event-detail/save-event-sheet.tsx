@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Loader2, Plus } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
@@ -11,7 +12,6 @@ import { useEventSavedStatus } from '@/lib/hooks/use-event-saved-status';
 import { useRemoveEventFromList } from '@/lib/hooks/use-remove-event-from-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { toast } from '@/lib/utils/toast';
-import { Check, Loader2, Plus } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface SaveEventSheetProps {

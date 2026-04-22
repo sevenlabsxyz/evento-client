@@ -1,5 +1,12 @@
 'use client';
 
+import {
+  BrainCircuit,
+  CheckCircle,
+  Loader2,
+  MessageCircle,
+  Sparkles,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import {
@@ -10,7 +17,6 @@ import { cn } from '@/lib/utils';
 import { logger } from '@/lib/utils/logger';
 import type { Editor } from '@tiptap/core';
 import DOMPurify from 'dompurify';
-import { BrainCircuit, CheckCircle, Loader2, MessageCircle, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import { LoadingLogo } from '../ui/loading-logo';
 

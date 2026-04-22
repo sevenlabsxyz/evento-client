@@ -1,9 +1,9 @@
 'use client';
 
+import { Check } from '@/components/icons/lucide';
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { Check } from 'lucide-react';
 import { useState } from 'react';
 import SpotifySheet from './spotify-sheet';
 import WavlakeSheet from './wavlake-sheet';

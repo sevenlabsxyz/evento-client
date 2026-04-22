@@ -1,7 +1,7 @@
 'use client';
 
+import { Check, Ticket, UserCheck } from '@/components/icons/lucide';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { Check, Ticket, UserCheck } from 'lucide-react';
 
 type EventType = 'rsvp' | 'registration' | 'ticketed';
 

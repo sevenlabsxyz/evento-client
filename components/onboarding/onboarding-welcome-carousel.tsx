@@ -1,10 +1,10 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { ArrowLeft, ArrowRight, Calendar, Sparkles, Zap } from '@/components/icons/lucide';
 import type { CarouselApi } from '@/components/ui/carousel';
 import { Carousel, CarouselContent, CarouselItem } from '@/components/ui/carousel';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Calendar, Sparkles, Zap } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface CarouselSlide {

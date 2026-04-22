@@ -1,5 +1,6 @@
 'use client';
 
+import { Bookmark, Edit2, Loader2, Trash2 } from '@/components/icons/lucide';
 import { MasterEventCard } from '@/components/master-event-card';
 import { Button } from '@/components/ui/button';
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
@@ -13,7 +14,6 @@ import { useUpdateList } from '@/lib/hooks/use-update-list';
 import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
-import { Bookmark, Edit2, Loader2, Trash2 } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

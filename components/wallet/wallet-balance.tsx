@@ -1,6 +1,15 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  ChevronRight,
+  HelpCircle,
+  Loader2,
+  Scan,
+  Zap,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { NumberTicker } from '@/components/ui/number-ticker';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,15 +20,6 @@ import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
 import { motion } from 'framer-motion';
-import {
-  ArrowDownLeft,
-  ArrowUpRight,
-  ChevronRight,
-  HelpCircle,
-  Loader2,
-  Scan,
-  Zap,
-} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { WalletEducationalSheet } from './wallet-educational-sheet';
 

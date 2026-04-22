@@ -1,7 +1,7 @@
 'use client';
 
+import { AlertTriangle } from '@/components/icons/lucide';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { AlertTriangle } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface DeleteConfirmationSheetProps {

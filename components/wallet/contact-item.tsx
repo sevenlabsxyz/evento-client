@@ -1,10 +1,10 @@
 'use client';
 
+import { ChevronRight, Pencil, Trash2 } from '@/components/icons/lucide';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
-import { ChevronRight, Pencil, Trash2 } from 'lucide-react';
 import { type KeyboardEvent, type ReactNode, useState } from 'react';
 
 interface ContactItemProps {

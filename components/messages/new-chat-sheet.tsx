@@ -1,5 +1,6 @@
 'use client';
 
+import { MessageCircle, Search } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebounce } from '@/lib/hooks/use-debounce';
@@ -9,7 +10,6 @@ import { UserDetails } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
-import { MessageCircle, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';

@@ -1,6 +1,15 @@
 'use client';
 
 import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  Check,
+  Clock,
+  Copy,
+  Info,
+  XCircle,
+} from '@/components/icons/lucide';
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -15,7 +24,6 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface TransactionDetailsSheetProps {

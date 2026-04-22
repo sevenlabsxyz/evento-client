@@ -1,5 +1,6 @@
 'use client';
 
+import { X, Zap as ZapIcon } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -7,7 +8,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAmountConverter, useZap } from '@/lib/hooks/use-wallet-payments';
 import { toast } from '@/lib/utils/toast';
-import { X, Zap as ZapIcon } from 'lucide-react';
 import { useState } from 'react';
 
 interface ZapModalProps {

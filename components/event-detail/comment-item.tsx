@@ -3,6 +3,7 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
 import { CommentReactionButton } from '@/components/comment-reaction-button';
 import DeleteConfirmationSheet from '@/components/event-detail/delete-confirmation-sheet';
+import { Heart, MoreHorizontal, Reply, SendHorizontal, Zap } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useAddComment } from '@/lib/hooks/use-add-comment';
@@ -14,7 +15,6 @@ import { UserDetails } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { format, formatDistance } from 'date-fns';
-import { Heart, MoreHorizontal, Reply, SendHorizontal, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';

@@ -1,6 +1,6 @@
+import { ChevronDown, List } from '@/components/icons/lucide';
 import { cn } from '@/lib/utils';
 import type { Editor } from '@tiptap/core';
-import { ChevronDown, List } from 'lucide-react';
 import { useState } from 'react';
 import { ShortcutKey } from '../shortcut-key';
 import { DropdownMenuItemClass, activeItemClass } from '../tiptap-utils';

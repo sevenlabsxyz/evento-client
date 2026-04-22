@@ -1,3 +1,4 @@
+import { AlertTriangle, Archive, Calendar, Check, Clock } from '@/components/icons/lucide';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import {
   Empty,
@@ -9,7 +10,6 @@ import {
 import { useEventInvites } from '@/lib/hooks/use-event-invites';
 import { EventInvite, HubSectionError } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { AlertTriangle, Archive, Calendar, Check, Clock } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { SheetWithDetentFull } from '../ui/sheet-with-detent-full';
 import { MasterInviteCard } from './master-invite-card';

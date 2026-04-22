@@ -1,10 +1,10 @@
 'use client';
 
+import { AtSignIcon, Download, EyeIcon, FileIcon, Upload } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { sampleEmails } from '@/lib/data/sample-emails';
 import { isValidEmail } from '@/lib/utils/email-validation';
-import { AtSignIcon, Download, EyeIcon, FileIcon, Upload } from 'lucide-react';
 import { useCallback, useState } from 'react';
 
 interface CsvImportSheetProps {

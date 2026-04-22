@@ -1,8 +1,8 @@
 'use client';
+import { Check, Loader2, MapPin, Plus, Search } from '@/components/icons/lucide';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { LocationData, useGooglePlaces } from '@/lib/hooks/use-google-places';
 import { debugLog } from '@/lib/utils/debug';
-import { Check, Loader2, MapPin, Plus, Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface LocationSheetProps {

@@ -1,9 +1,17 @@
 'use client';
 
+import {
+  Calendar,
+  Clock,
+  Loader,
+  MapPin,
+  MoreHorizontal,
+  Pin,
+  PinOff,
+} from '@/components/icons/lucide';
 import { EventWithUser } from '@/lib/types/api';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl } from '@/lib/utils/image';
-import { Calendar, Clock, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { UserAvatar } from './ui/user-avatar';

@@ -2,6 +2,14 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
+import {
+  AlertTriangle,
+  ArrowRight,
+  Calendar,
+  MapPinHouse,
+  Search,
+  UserRoundPen,
+} from '@/components/icons/lucide';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -10,14 +18,6 @@ import { EventFilterType, useUserEvents } from '@/lib/hooks/use-user-events';
 import { EventWithUser, HubSectionError } from '@/lib/types/api';
 import { UNDATED_DATE_KEY, formatDateHeader } from '@/lib/utils/date';
 import { getProfileEventDateKey } from '@/lib/utils/profile-events';
-import {
-  AlertTriangle,
-  ArrowRight,
-  Calendar,
-  MapPinHouse,
-  Search,
-  UserRoundPen,
-} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 

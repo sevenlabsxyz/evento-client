@@ -1,17 +1,17 @@
 'use client';
 
 import {
-  BookOpen,
-  Calendar1,
-  MessageCircle,
-  PanelRightClose,
-  PanelRightOpen,
-  Plus,
-  Search,
-  Shirt,
-  Star,
-  Zap,
-} from 'lucide-react';
+  AddToListIcon,
+  BitcoinEllipseIcon,
+  BookOpen01Icon,
+  Calendar03Icon,
+  Message01Icon,
+  PanelRightCloseIcon,
+  PanelRightOpenIcon,
+  PlusSignIcon,
+  Search01Icon,
+  Store04Icon,
+} from '@hugeicons/core-free-icons';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -19,6 +19,7 @@ import * as React from 'react';
 
 import { NavMain } from '@/components/dashboard/nav-main';
 import { NavUser } from '@/components/dashboard/nav-user';
+import { SidebarIcon } from '@/components/dashboard/sidebar-icon';
 import { Button } from '@/components/ui/button';
 import {
   Sidebar,
@@ -37,27 +38,27 @@ const navMain = [
   {
     title: 'Events',
     url: '/e/hub',
-    icon: Calendar1,
+    icon: Calendar03Icon,
   },
   {
     title: 'Wallet',
     url: '/e/wallet',
-    icon: Zap,
+    icon: BitcoinEllipseIcon,
   },
   {
     title: 'Search',
     url: '/e/search',
-    icon: Search,
+    icon: Search01Icon,
   },
   {
     title: 'Messages',
     url: '/e/messages',
-    icon: MessageCircle,
+    icon: Message01Icon,
   },
   {
     title: 'Lists',
     url: '/e/lists',
-    icon: Star,
+    icon: AddToListIcon,
   },
 ];
 
@@ -95,7 +96,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         {/* Expanded: full black Button — fades out as sidebar collapses */}
         <div className='mt-4 px-2 transition-opacity duration-200 group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:mt-0 group-data-[collapsible=icon]:h-0 group-data-[collapsible=icon]:overflow-hidden group-data-[collapsible=icon]:opacity-0'>
           <Button onClick={handleCreateEvent} className='w-full'>
-            <Plus className='h-4 w-4' />
+            <SidebarIcon icon={PlusSignIcon} size={16} />
             Create Event
           </Button>
         </div>
@@ -107,7 +108,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               onClick={handleCreateEvent}
               className='rounded-full bg-black text-white hover:bg-black/90 hover:text-white active:bg-black/80 group-data-[collapsible=icon]:!rounded-full'
             >
-              <Plus />
+              <SidebarIcon icon={PlusSignIcon} />
               <span>Create Event</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -119,22 +120,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Blog' asChild>
+            <SidebarMenuButton tooltip='Blog' size='xl' asChild>
               <Link href='/e/blog' onClick={() => setOpenMobile(false)}>
-                <BookOpen />
+                <SidebarIcon icon={BookOpen01Icon} />
                 <span>Blog</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton tooltip='Store' asChild>
+            <SidebarMenuButton tooltip='Store' size='xl' asChild>
               <a
-                href='https://theoriginal.com/bitcoin'
+                href='https://theoriginalbhd.com'
                 target='_blank'
                 rel='noreferrer'
                 onClick={() => setOpenMobile(false)}
               >
-                <Shirt />
+                <SidebarIcon icon={Store04Icon} />
                 <span>Store</span>
               </a>
             </SidebarMenuButton>
@@ -150,10 +151,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem> */}
           <SidebarMenuItem>
             <SidebarMenuButton
+              size='xl'
               tooltip={state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}
               onClick={toggleSidebar}
             >
-              {state === 'expanded' ? <PanelRightOpen /> : <PanelRightClose />}
+              <SidebarIcon icon={state === 'expanded' ? PanelRightOpenIcon : PanelRightCloseIcon} />
               <span>{state === 'expanded' ? 'Hide Sidebar' : 'Show Sidebar'}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>

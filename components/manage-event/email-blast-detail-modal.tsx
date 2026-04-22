@@ -1,10 +1,10 @@
 'use client';
 
+import { AlertCircle, CheckCircle, Users, XCircle } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { EmailBlast } from '@/lib/types/api';
 import DOMPurify from 'dompurify';
-import { AlertCircle, CheckCircle, Users, XCircle } from 'lucide-react';
 
 interface EmailBlastDetailModalProps {
   blast: EmailBlast;

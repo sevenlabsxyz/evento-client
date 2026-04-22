@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Copy, QrCode, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-payments';
 import { toast } from '@/lib/utils/toast';
-import { Check, Copy, QrCode, X } from 'lucide-react';
 import { useState } from 'react';
 
 interface ReceivePaymentProps {

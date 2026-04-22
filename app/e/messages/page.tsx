@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageSquare } from 'lucide-react';
+import { MessageSquare } from '@/components/icons/lucide';
 import { useState } from 'react';
 
 export default function MessagesPage() {

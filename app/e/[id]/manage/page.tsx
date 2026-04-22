@@ -1,13 +1,5 @@
 'use client';
 
-import CancelEventModal from '@/components/manage-event/cancel-event-modal';
-import { Button } from '@/components/ui/button';
-import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useEventDetails } from '@/lib/hooks/use-event-details';
-import { usePublishEvent } from '@/lib/hooks/use-publish-event';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
 import {
   ClipboardList,
   DollarSign,
@@ -21,7 +13,15 @@ import {
   Users,
   X,
   Zap,
-} from 'lucide-react';
+} from '@/components/icons/lucide';
+import CancelEventModal from '@/components/manage-event/cancel-event-modal';
+import { Button } from '@/components/ui/button';
+import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { usePublishEvent } from '@/lib/hooks/use-publish-event';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

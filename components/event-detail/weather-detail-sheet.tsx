@@ -1,9 +1,9 @@
 'use client';
 
+import { Droplets, MoreHorizontal, Sun, Thermometer, Wind } from '@/components/icons/lucide';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { WeatherData } from '@/lib/types/weather';
 import { logger } from '@/lib/utils/logger';
-import { Droplets, MoreHorizontal, Sun, Thermometer, Wind } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 // Temperature conversion helper functions

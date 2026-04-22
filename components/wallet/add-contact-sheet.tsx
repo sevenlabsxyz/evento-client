@@ -1,11 +1,11 @@
 'use client';
 
+import { Loader2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 

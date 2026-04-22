@@ -1,10 +1,10 @@
 'use client';
 
+import { AlertTriangle, Trash2, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { useCancelEvent } from '@/lib/hooks/use-cancel-event';
 import { toast } from '@/lib/utils/toast';
-import { AlertTriangle, Trash2, X } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

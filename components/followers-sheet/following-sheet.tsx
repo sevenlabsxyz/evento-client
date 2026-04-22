@@ -1,4 +1,5 @@
 'use client';
+import { ArrowRight, MessageCircle } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -6,7 +7,6 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserFollowing } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { VisuallyHidden } from '@silk-hq/components';
-import { ArrowRight, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';

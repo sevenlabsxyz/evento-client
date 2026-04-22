@@ -1,6 +1,7 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { AlertCircle, ChevronRight, EyeOff, Lock, Shield, Trash2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Switch } from '@/components/ui/switch';
@@ -11,7 +12,6 @@ import { WalletStorageService } from '@/lib/services/wallet-storage';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, ChevronRight, EyeOff, Lock, Shield, Trash2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

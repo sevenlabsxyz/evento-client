@@ -1,8 +1,8 @@
 'use client';
 
+import { Zap } from '@/components/icons/lucide';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useEventCampaignFeed } from '@/lib/hooks/use-campaign-feed';
-import { Zap } from 'lucide-react';
 
 interface CampaignContributorsProps {
   eventId: string;

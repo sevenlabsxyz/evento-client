@@ -1,11 +1,11 @@
 'use client';
 
+import { Check, Eye, MapPin, Users, X } from '@/components/icons/lucide';
 import { EventInvite } from '@/lib/types/api';
 import { cn } from '@/lib/utils';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
 import { VisuallyHidden } from '@silk-hq/components';
-import { Check, Eye, MapPin, Users, X } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';

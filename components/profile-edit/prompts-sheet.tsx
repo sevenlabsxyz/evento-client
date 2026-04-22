@@ -1,5 +1,16 @@
 'use client';
 
+import {
+  AlertTriangle,
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  EyeOff,
+  Loader2,
+  MessageSquare,
+  Plus,
+  Trash2,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
@@ -24,17 +35,6 @@ import { useAuthStore } from '@/lib/stores/auth-store';
 import { Prompt, UserPrompt } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import {
-  AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  Eye,
-  EyeOff,
-  Loader2,
-  MessageSquare,
-  Plus,
-  Trash2,
-} from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface PromptsSheetProps {

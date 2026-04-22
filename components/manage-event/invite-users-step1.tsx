@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronRight, MailIcon, Search, Share2, Upload, Users } from '@/components/icons/lucide';
 import { MIN_SEARCH_LENGTH } from '@/lib/constants/invite';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
@@ -7,7 +8,6 @@ import { InviteItem, UserDetails } from '@/lib/types/api';
 import { isValidEmail } from '@/lib/utils/email-validation';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
-import { ChevronRight, MailIcon, Search, Share2, Upload, Users } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { UserAvatar } from '../ui/user-avatar';

@@ -1,5 +1,6 @@
 'use client';
 
+import { Filter } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { NotificationFilterParams } from '@/lib/types/notifications';
-import { Filter } from 'lucide-react';
 
 interface NotificationFiltersProps {
   currentFilters: NotificationFilterParams;

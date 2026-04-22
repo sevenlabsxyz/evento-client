@@ -1,6 +1,7 @@
 'use client';
 
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { ArrowRight, Check, CircleHelp, Search, X, Zap } from '@/components/icons/lucide';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
@@ -13,7 +14,6 @@ import { breezSDK } from '@/lib/services/breez-sdk';
 import { EventRSVP, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
-import { ArrowRight, Check, CircleHelp, Search, X, Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import QuickProfileSheet from '../ui/quick-profile-sheet';

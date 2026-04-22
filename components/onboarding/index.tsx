@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowRight, Loader2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Env } from '@/lib/constants/env';
 import { useReplaceInterests } from '@/lib/hooks/use-user-interests';
@@ -10,7 +11,6 @@ import { sanitizeUploadFileName } from '@/lib/utils/file';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
-import { ArrowRight, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';

@@ -1,9 +1,9 @@
 'use client';
 
+import { Zap } from '@/components/icons/lucide';
 import { Progress } from '@/components/ui/progress';
 import { useProfileCampaign } from '@/lib/hooks/use-profile-campaign';
 import { cn } from '@/lib/utils';
-import { Zap } from 'lucide-react';
 import { useState } from 'react';
 import { ProfileCampaignPledgeSheet } from './campaign-pledge-sheet';
 

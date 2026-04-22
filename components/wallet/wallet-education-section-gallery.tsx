@@ -1,7 +1,7 @@
 'use client';
 
+import { ArrowLeft, ArrowRight } from '@/components/icons/lucide';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 

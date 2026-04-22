@@ -1,7 +1,7 @@
 'use client';
 
+import { AlertTriangle, Users } from '@/components/icons/lucide';
 import { CohostInvite, HubSectionError } from '@/lib/types/api';
-import { AlertTriangle, Users } from 'lucide-react';
 import { CohostInviteCard } from './cohost-invite-card';
 
 interface CohostInvitesSectionProps {

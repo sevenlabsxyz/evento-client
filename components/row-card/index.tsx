@@ -1,7 +1,7 @@
 'use client';
 
+import { ChevronRight } from '@/components/icons/lucide';
 import { Card } from '@/components/ui/card';
-import { ChevronRight } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 interface RowCardProps {

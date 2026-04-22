@@ -1,7 +1,7 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { ArrowUpRight, X } from '@/components/icons/lucide';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { EARN_PARTNERS, type EarnPartner } from '@/lib/constants/earn-partners';
-import { ArrowUpRight, X } from 'lucide-react';
 import Image from 'next/image';
 
 type EarnBitcoinSheetProps = {

@@ -1,6 +1,29 @@
 'use client';
 
 import DescriptionSheet from '@/components/create-event/description-sheet';
+import {
+  ArrowLeft,
+  Building,
+  CheckSquare,
+  ClipboardList,
+  FileText,
+  GripVertical,
+  Instagram,
+  Link,
+  Linkedin,
+  List,
+  Loader2,
+  MessageSquareText,
+  MoreHorizontal,
+  Phone,
+  Plus,
+  Settings,
+  Square,
+  Trash2,
+  Twitter,
+  Type,
+  Youtube,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -41,29 +64,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import {
-  ArrowLeft,
-  Building,
-  CheckSquare,
-  ClipboardList,
-  FileText,
-  GripVertical,
-  Instagram,
-  Link,
-  Linkedin,
-  List,
-  Loader2,
-  MessageSquareText,
-  MoreHorizontal,
-  Phone,
-  Plus,
-  Settings,
-  Square,
-  Trash2,
-  Twitter,
-  Type,
-  Youtube,
-} from 'lucide-react';
 import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

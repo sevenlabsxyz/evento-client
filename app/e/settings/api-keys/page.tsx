@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle, Key, Plus, ShieldAlert } from '@/components/icons/lucide';
 import { CreateApiKeyDialog } from '@/components/settings/create-api-key-dialog';
 import { RevokeApiKeyDialog } from '@/components/settings/revoke-api-key-dialog';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,6 @@ import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import type { ApiKey } from '@/lib/types/api-key.types';
 import { formatDistanceToNow } from 'date-fns';
-import { AlertCircle, Key, Plus, ShieldAlert } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

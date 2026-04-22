@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from '@/components/icons/lucide';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +9,6 @@ import { useVerifyEventPassword } from '@/lib/hooks/use-verify-event-password';
 import { PasswordProtectedEventResponse } from '@/lib/types/api';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Eye, EyeOff, KeyRound, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 

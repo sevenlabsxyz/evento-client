@@ -1,10 +1,10 @@
 'use client';
 
+import { Heart } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { useGalleryLikes } from '@/lib/hooks/use-photo-likes';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { Heart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface LikeButtonProps {

@@ -1,5 +1,6 @@
 'use client';
 
+import { Bookmark, ChevronRight, Loader2, Plus } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -18,7 +19,6 @@ import { useUserLists } from '@/lib/hooks/use-user-lists';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import { formatDistanceToNow } from 'date-fns';
-import { Bookmark, ChevronRight, Loader2, Plus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 

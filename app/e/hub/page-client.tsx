@@ -5,6 +5,7 @@ import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
 import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
+import { AlertTriangle, MessageCircle } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
@@ -12,7 +13,6 @@ import { useHubData } from '@/lib/hooks/use-hub-data';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
-import { AlertTriangle, MessageCircle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 

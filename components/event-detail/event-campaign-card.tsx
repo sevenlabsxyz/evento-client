@@ -1,9 +1,9 @@
 'use client';
 
+import { ChevronRight, Zap } from '@/components/icons/lucide';
 import { Progress } from '@/components/ui/progress';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
 import { cn } from '@/lib/utils';
-import { ChevronRight, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignDetailSheet } from './campaign-detail-sheet';
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { EventoIcon } from '@/components/icons/evento';
+import { AlertCircle, ArrowLeft, Loader2 } from '@/components/icons/lucide';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,7 +10,6 @@ import { useResendCode, useVerifyCode } from '@/lib/hooks/use-auth';
 import { verifyCodeSchema, type VerifyCodeFormData } from '@/lib/schemas/auth';
 import { toast } from '@/lib/utils/toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, ArrowLeft, Loader2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';

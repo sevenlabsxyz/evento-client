@@ -1,5 +1,6 @@
 'use client';
 
+import { UserPlus, Users } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -12,7 +13,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useContacts } from '@/lib/hooks/use-contacts';
 import type { Contact } from '@/lib/types/wallet';
-import { UserPlus, Users } from 'lucide-react';
 import { type ReactNode, useMemo } from 'react';
 import { ContactItem } from './contact-item';
 

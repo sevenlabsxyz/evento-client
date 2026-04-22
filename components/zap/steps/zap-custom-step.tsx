@@ -1,9 +1,9 @@
 'use client';
 
+import { ArrowLeft, ArrowUpDown, Loader2, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
-import { ArrowLeft, ArrowUpDown, Loader2, X } from 'lucide-react';
 
 interface ZapCustomStepProps {
   customAmount: string;

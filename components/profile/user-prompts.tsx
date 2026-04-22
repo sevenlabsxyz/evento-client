@@ -1,7 +1,7 @@
 'use client';
 
+import { EyeOff } from '@/components/icons/lucide';
 import { UserPrompt } from '@/lib/types/api';
-import { EyeOff } from 'lucide-react';
 
 interface UserPromptsProps {
   prompts: UserPrompt[];

@@ -1,8 +1,8 @@
 'use client';
 
+import { Loader2, MailIcon, Send, X } from '@/components/icons/lucide';
 import { useSendEventInvites } from '@/lib/hooks/use-event-invites';
 import { UserDetails } from '@/lib/types/api';
-import { Loader2, MailIcon, Send, X } from 'lucide-react';
 import { UserAvatar } from '../ui/user-avatar';
 
 interface Step2SendInvitesProps {

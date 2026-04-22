@@ -2,6 +2,7 @@
 
 import { EventoIcon } from '@/components/icons/evento';
 import Google from '@/components/icons/google';
+import { AlertCircle, Loader2, Mail } from '@/components/icons/lucide';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,7 +11,6 @@ import { useGoogleLogin, useLogin, useRedirectIfAuthenticated } from '@/lib/hook
 import { loginSchema, type LoginFormData } from '@/lib/schemas/auth';
 import { validateRedirectUrl } from '@/lib/utils/auth';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { AlertCircle, Loader2, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useState } from 'react';

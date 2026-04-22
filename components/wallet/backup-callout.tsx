@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight, Shield } from 'lucide-react';
+import { ChevronRight, Shield } from '@/components/icons/lucide';
 import { CircledIconButton } from '../circled-icon-button';
 
 interface BackupCalloutProps {

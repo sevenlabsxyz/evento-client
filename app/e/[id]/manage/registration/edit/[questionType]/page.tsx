@@ -1,10 +1,5 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
-import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registration-question';
-import type { RegistrationQuestionType } from '@/lib/types/api';
-import { toast } from '@/lib/utils/toast';
 import {
   ArrowLeft,
   Building,
@@ -20,7 +15,12 @@ import {
   Twitter,
   Type,
   Youtube,
-} from 'lucide-react';
+} from '@/components/icons/lucide';
+import { Button } from '@/components/ui/button';
+import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
+import { useUpdateRegistrationQuestion } from '@/lib/hooks/use-update-registration-question';
+import type { RegistrationQuestionType } from '@/lib/types/api';
+import { toast } from '@/lib/utils/toast';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

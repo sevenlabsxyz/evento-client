@@ -1,9 +1,9 @@
 'use client';
 
+import { Calendar1, Plus, Search, User, Zap } from '@/components/icons/lucide';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
 import { motion } from 'framer-motion';
-import { Calendar1, Plus, Search, User, Zap } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 

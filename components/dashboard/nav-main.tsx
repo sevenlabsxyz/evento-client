@@ -1,9 +1,9 @@
 'use client';
 
-import { LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
+import { SidebarIcon, type SidebarIconType } from '@/components/dashboard/sidebar-icon';
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -19,7 +19,7 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: LucideIcon;
+    icon?: SidebarIconType;
     external?: boolean;
   }[];
 }) {
@@ -39,7 +39,7 @@ export function NavMain({
 
             return (
               <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton tooltip={item.title} isActive={isActive} asChild>
+                <SidebarMenuButton tooltip={item.title} isActive={isActive} size='xl' asChild>
                   {item.external ? (
                     <a
                       href={item.url}
@@ -47,12 +47,12 @@ export function NavMain({
                       rel='noreferrer'
                       onClick={() => setOpenMobile(false)}
                     >
-                      {item.icon && <item.icon />}
+                      {item.icon && <SidebarIcon icon={item.icon} />}
                       <span>{item.title}</span>
                     </a>
                   ) : (
                     <Link href={item.url} onClick={() => setOpenMobile(false)}>
-                      {item.icon && <item.icon />}
+                      {item.icon && <SidebarIcon icon={item.icon} />}
                       <span>{item.title}</span>
                     </Link>
                   )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { Paperclip, X } from 'lucide-react';
+import { Paperclip, X } from '@/components/icons/lucide';
 
 interface AttachmentPreviewProps {
   attachments: File[];

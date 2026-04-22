@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle, ArrowRight, Scan, ShieldAlert, X, Zap } from '@/components/icons/lucide';
 import {
   Accordion,
   AccordionContent,
@@ -13,7 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { useAmountConverter, useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, ArrowRight, Scan, ShieldAlert, X, Zap } from 'lucide-react';
 import { useState } from 'react';
 
 interface SendPaymentProps {

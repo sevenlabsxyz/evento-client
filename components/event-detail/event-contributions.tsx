@@ -1,11 +1,11 @@
 'use client';
 
 import { CashAppSVGIcon } from '@/components/icons/cashapp';
+import { ChevronRight } from '@/components/icons/lucide';
 import { PayPalSVGIcon } from '@/components/icons/paypal';
 import { VenmoSVGIcon } from '@/components/icons/venmo';
 import { Event as ApiEvent } from '@/lib/types/api';
 import { getContributionMethods } from '@/lib/utils/event-transform';
-import { ChevronRight } from 'lucide-react';
 import { ReactNode, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';
 
