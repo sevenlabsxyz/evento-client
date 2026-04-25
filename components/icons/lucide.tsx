@@ -119,6 +119,7 @@ import {
   TextStrikethroughIcon,
   ThermometerIcon,
   Ticket01Icon,
+  TimeScheduleIcon,
   TurtleNeckIcon,
   TwitterIcon,
   Unlink01Icon,
@@ -188,7 +189,7 @@ const BookmarkBase = createIcon(Bookmark01Icon, 'Bookmark');
 const BrainCircuitBase = createIcon(BrainCogIcon, 'BrainCircuit');
 const BuildingBase = createIcon(Building01Icon, 'Building');
 const CalendarBase = createIcon(Calendar03Icon, 'Calendar');
-const CalendarClockBase = createIcon(Calendar03Icon, 'CalendarClock');
+const CalendarClockBase = createIcon(TimeScheduleIcon, 'CalendarClock');
 const CameraBase = createIcon(Camera01Icon, 'Camera');
 const CheckBase = createIcon(CheckmarkCircle02Icon, 'Check');
 const CheckCheckBase = createIcon(CheckmarkBadge02Icon, 'CheckCheck');
@@ -347,6 +348,7 @@ export const CheckCircle = CheckCircleBase;
 export const CheckCircle2 = CheckCircle2Base;
 export const CheckSquare = CheckSquareBase;
 export const ChevronDown = ChevronDownBase;
+export const ChevronLeft = ChevronLeftBase;
 export const ChevronLeftIcon = ChevronLeftBase;
 export const ChevronRight = ChevronRightBase;
 export const ChevronRightIcon = ChevronRightBase;
