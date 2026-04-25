@@ -1,8 +1,8 @@
 'use client';
 
+import { Smile } from '@/components/icons/lucide';
 import { EmojiPicker, EmojiPickerContent, EmojiPickerSearch } from '@/components/ui/emoji-picker';
 import { cn } from '@/lib/utils';
-import { Smile } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface EmojiSelectorProps {

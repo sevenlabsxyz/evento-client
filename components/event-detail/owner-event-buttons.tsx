@@ -1,8 +1,8 @@
 'use client';
 
+import { Copy, Link, Mail, MoreHorizontal, Settings, UserPlus } from '@/components/icons/lucide';
 import DetachedMenuSheet from '@/components/ui/detached-menu-sheet';
 import { toast } from '@/lib/utils/toast';
-import { Copy, Link, Mail, MoreHorizontal, Settings, UserPlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import InviteUsersSheet from '../manage-event/invite-users-sheet';

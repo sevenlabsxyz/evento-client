@@ -1,6 +1,7 @@
 'use client';
 
 import { BitcoinSVGIcon } from '@/components/icons/bitcoin';
+import { ArrowLeft, Copy, Loader2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -9,7 +10,6 @@ import { VerificationStatus } from '@/lib/types/api';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, Copy, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 
 interface TipSheetProps {

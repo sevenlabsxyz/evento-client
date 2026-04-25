@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertTriangle, ShieldAlert } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,7 +9,6 @@ import { useWallet } from '@/lib/hooks/use-wallet';
 import { useSendPayment } from '@/lib/hooks/use-wallet-payments';
 import { BTCPriceService } from '@/lib/services/btc-price';
 import { logger } from '@/lib/utils/logger';
-import { AlertTriangle, ShieldAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 
 interface BitrefillPaymentConfirmationSheetProps {

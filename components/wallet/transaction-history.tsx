@@ -1,5 +1,12 @@
 'use client';
 
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CheckCircle2,
+  Clock,
+  XCircle,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -16,7 +23,6 @@ import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
 import { Payment } from '@breeztech/breez-sdk-spark/web';
-import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface TransactionHistoryProps {

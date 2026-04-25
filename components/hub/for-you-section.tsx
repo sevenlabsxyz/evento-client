@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertTriangle, ArrowRight, Calendar, Compass, Users } from '@/components/icons/lucide';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
@@ -8,7 +9,6 @@ import { useFollowingEvents } from '@/lib/hooks/use-following-events';
 import { useForYouEvents } from '@/lib/hooks/use-for-you-events';
 import { EventWithUser, ForYouEvent, HubSectionError } from '@/lib/types/api';
 import { formatDateHeader } from '@/lib/utils/date';
-import { AlertTriangle, ArrowRight, Calendar, Compass, Users } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 

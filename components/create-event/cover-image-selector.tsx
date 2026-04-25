@@ -1,10 +1,10 @@
 'use client';
 
+import { Camera } from '@/components/icons/lucide';
 import ProgressiveImage from '@/components/ui/progressive-image';
 import { DEFAULT_EVENT_COVER_URL } from '@/lib/constants/event-cover';
 import { getCoverImageUrl500x500 } from '@/lib/utils/cover-images';
 import { isGif } from '@/lib/utils/image';
-import { Camera } from 'lucide-react';
 
 interface CoverImageSelectorProps {
   selectedImage?: string;

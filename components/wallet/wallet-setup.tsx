@@ -1,5 +1,6 @@
 'use client';
 
+import { AlertCircle, Key, Loader2, Wallet } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { NumericKeypad } from '@/components/wallet/numeric-keypad';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -7,7 +8,6 @@ import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useWallet } from '@/lib/hooks/use-wallet';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { AlertCircle, Key, Loader2, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 interface WalletSetupProps {

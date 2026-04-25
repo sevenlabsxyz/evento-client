@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowLeft, Check, Loader2 } from '@/components/icons/lucide';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useAuth, USER_QUERY_KEY } from '@/lib/hooks/use-auth';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
@@ -14,7 +15,6 @@ import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/type
 import { getContributionMethods } from '@/lib/utils/event-transform';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import ContributionPaymentSheet from './contribution-payment-sheet';

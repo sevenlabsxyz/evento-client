@@ -10,6 +10,7 @@ import LocationSheet from '@/components/create-event/location-sheet';
 import TimePickerSheet from '@/components/create-event/time-picker-sheet';
 import TimezoneSheet from '@/components/create-event/timezone-sheet';
 import { EmojiSelector } from '@/components/emoji-selector';
+import { Calendar, ChevronRight, Edit3, MapPin, Users } from '@/components/icons/lucide';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
@@ -23,7 +24,6 @@ import { formatDateForDisplay, formatTimeForDisplay } from '@/lib/utils/event-da
 import { getLocationDisplayName } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Calendar, ChevronRight, Edit3, MapPin, Users } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

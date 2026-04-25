@@ -1,7 +1,7 @@
 'use client';
 
+import { LucideIcon } from '@/components/icons/lucide';
 import { cn } from '@/lib/utils';
-import { LucideIcon } from 'lucide-react';
 
 interface CommentReactionButtonProps {
   icon: LucideIcon;

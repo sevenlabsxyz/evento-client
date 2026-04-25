@@ -1,5 +1,6 @@
 'use client';
 
+import { CheckCircle2, Copy, Loader2, RotateCcw, Zap } from '@/components/icons/lucide';
 import { EventoQRCode } from '@/components/ui/evento-qr-code';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { useCreatePledgeIntent, usePledgeStatus } from '@/lib/hooks/use-campaign-pledge';
@@ -8,7 +9,6 @@ import { queryKeys } from '@/lib/query-client';
 import { cn } from '@/lib/utils';
 import { toast } from '@/lib/utils/toast';
 import { useQueryClient } from '@tanstack/react-query';
-import { CheckCircle2, Copy, Loader2, RotateCcw, Zap } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];

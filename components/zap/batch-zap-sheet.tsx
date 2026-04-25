@@ -1,5 +1,14 @@
 'use client';
 
+import {
+  AlertTriangle,
+  CheckCircle2,
+  Info,
+  Loader2,
+  MessageSquareText,
+  TriangleAlert,
+  XCircle,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -23,15 +32,6 @@ import {
   showWalletUnlockToast as showWalletUnlockToastPrompt,
 } from '@/lib/utils/wallet-unlock-toast';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Info,
-  Loader2,
-  MessageSquareText,
-  TriangleAlert,
-  XCircle,
-} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 

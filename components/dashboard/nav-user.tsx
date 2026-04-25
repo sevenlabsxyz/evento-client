@@ -1,10 +1,18 @@
 'use client';
 
-import { BookOpen, Bot, Code2, LogOut, MoreVertical, Settings } from 'lucide-react';
+import {
+  BookOpen01Icon,
+  BotIcon,
+  CodeIcon,
+  Logout02Icon,
+  MoreVerticalIcon,
+  Settings02Icon,
+} from '@hugeicons/core-free-icons';
 
 import Link from 'next/link';
 import { useState } from 'react';
 
+import { SidebarIcon } from '@/components/dashboard/sidebar-icon';
 import { LogoutConfirmationSheet } from '@/components/logout-confirmation-sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -66,7 +74,7 @@ export function NavUser() {
                     {user?.username ? `@${user.username}` : 'Welcome to Evento'}
                   </span>
                 </div>
-                <MoreVertical className='ml-auto size-4' />
+                <SidebarIcon icon={MoreVerticalIcon} size={16} className='ml-auto' />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
@@ -97,7 +105,7 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href='/e/settings'>
-                    <Settings className='mr-2 h-4 w-4' />
+                    <SidebarIcon icon={Settings02Icon} size={16} className='mr-2' />
                     Settings
                   </Link>
                 </DropdownMenuItem>
@@ -106,13 +114,13 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href='https://docs.evento.so' target='_blank' rel='noopener noreferrer'>
-                    <Code2 className='mr-2 h-4 w-4' />
+                    <SidebarIcon icon={CodeIcon} size={16} className='mr-2' />
                     API & Docs
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link href='https://docs.evento.so' target='_blank' rel='noopener noreferrer'>
-                    <Bot className='mr-2 h-4 w-4' />
+                    <SidebarIcon icon={BotIcon} size={16} className='mr-2' />
                     AI Agents
                   </Link>
                 </DropdownMenuItem>
@@ -121,14 +129,14 @@ export function NavUser() {
               <DropdownMenuGroup>
                 <DropdownMenuItem asChild>
                   <Link href='/e/blog'>
-                    <BookOpen className='mr-2 h-4 w-4' />
+                    <SidebarIcon icon={BookOpen01Icon} size={16} className='mr-2' />
                     Blog
                   </Link>
                 </DropdownMenuItem>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={handleLogoutClick} className='text-destructive'>
-                <LogOut className='mr-2 h-4 w-4' />
+                <SidebarIcon icon={Logout02Icon} size={16} className='mr-2' />
                 Log out
               </DropdownMenuItem>
             </DropdownMenuContent>

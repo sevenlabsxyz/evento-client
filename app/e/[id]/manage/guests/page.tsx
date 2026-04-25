@@ -1,6 +1,17 @@
 'use client';
 
 import { exportGuestsCsvAction } from '@/app/actions/export-guests';
+import {
+  CheckCircle,
+  CircleHelp,
+  Loader2,
+  Search,
+  Share2,
+  Users,
+  X,
+  XCircle,
+  Zap,
+} from '@/components/icons/lucide';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
@@ -19,17 +30,6 @@ import { EventRSVP, RSVPStatus, UserDetails } from '@/lib/types/api';
 import { buildBatchZapRecipients } from '@/lib/utils/batch-zap';
 import { toast } from '@/lib/utils/toast';
 import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
-import {
-  CheckCircle,
-  CircleHelp,
-  Loader2,
-  Search,
-  Share2,
-  Users,
-  X,
-  XCircle,
-  Zap,
-} from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 

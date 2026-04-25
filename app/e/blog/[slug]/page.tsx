@@ -1,8 +1,8 @@
 import { BlogPostClient } from '@/components/blog/blog-post-client';
+import { AlertTriangle } from '@/components/icons/lucide';
 import { ghostService } from '@/lib/services/ghost';
 import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
-import { AlertTriangle } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 

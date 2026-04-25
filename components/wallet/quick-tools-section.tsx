@@ -1,5 +1,5 @@
+import { ArrowRightLeft, Bitcoin, ShoppingCart, Star } from '@/components/icons/lucide';
 import { motion } from 'framer-motion';
-import { ArrowRightLeft, Bitcoin, ShoppingCart, Star } from 'lucide-react';
 
 type QuickTool = {
   id: 'converter' | 'buy-sell' | 'spend' | 'earn';

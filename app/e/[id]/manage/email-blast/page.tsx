@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2, Mail, Plus } from '@/components/icons/lucide';
 import EmailBlastCancelConfirmation from '@/components/manage-event/email-blast-cancel-confirmation';
 import EmailBlastCard from '@/components/manage-event/email-blast-card';
 import EmailBlastDetailModal from '@/components/manage-event/email-blast-detail-modal';
@@ -13,7 +14,6 @@ import {
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EmailBlast } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, Mail, Plus } from 'lucide-react';
 import { useParams, usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

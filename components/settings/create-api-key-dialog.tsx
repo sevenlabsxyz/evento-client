@@ -2,6 +2,7 @@
 
 'use client';
 
+import { Check, Copy } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,7 +17,6 @@ import { Label } from '@/components/ui/label';
 import { useCreateApiKey } from '@/lib/hooks/use-api-keys';
 import { toast } from '@/lib/utils/toast';
 import { motion } from 'framer-motion';
-import { Check, Copy } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface CreateApiKeyDialogProps {

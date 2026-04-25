@@ -1,8 +1,8 @@
 'use client';
 
+import { Check, X } from '@/components/icons/lucide';
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
-import { Check, X } from 'lucide-react';
 
 interface AttachmentModalProps {
   isOpen: boolean;

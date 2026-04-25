@@ -1,6 +1,18 @@
 'use client';
 
 import { BadgesManagementSheet } from '@/components/badges/badges-management-sheet';
+import {
+  AtSign,
+  Award,
+  Camera,
+  ChevronRight,
+  Hash,
+  Heart,
+  Instagram,
+  MessageSquare,
+  Type,
+  User,
+} from '@/components/icons/lucide';
 import BiographySheet from '@/components/profile-edit/biography-sheet';
 import InterestsSheet from '@/components/profile-edit/interests-sheet';
 import NameSheet from '@/components/profile-edit/name-sheet';
@@ -15,18 +27,6 @@ import { useUserBadges } from '@/lib/hooks/use-badges';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useProfileFormStore } from '@/lib/stores/profile-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import {
-  AtSign,
-  Award,
-  Camera,
-  ChevronRight,
-  Hash,
-  Heart,
-  Instagram,
-  MessageSquare,
-  Type,
-  User,
-} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

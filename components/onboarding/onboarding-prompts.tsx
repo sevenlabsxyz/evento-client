@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowDown, ArrowLeft, ArrowUp, Plus, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
@@ -7,7 +8,6 @@ import { useAllPrompts, useUserPrompts } from '@/lib/hooks/use-user-prompts';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { Prompt } from '@/lib/types/api';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowDown, ArrowLeft, ArrowUp, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { OnboardingHeader } from './onboarding-header';
 

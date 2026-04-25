@@ -1,8 +1,8 @@
 'use client';
 
+import { ExternalLink, Instagram } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { ExternalLink, Instagram } from 'lucide-react';
 
 interface InstagramSheetProps {
   isOpen: boolean;

@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
@@ -15,7 +16,6 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { generateAvailableUsername } from '@/lib/utils/username';
 import { useQueryClient } from '@tanstack/react-query';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { RegistrationOtpInput } from './registration-otp-input';
 

@@ -2,6 +2,7 @@
 
 import { CircledIconButton } from '@/components/circled-icon-button';
 import EventRSVPSheet from '@/components/event-detail/event-rsvp-sheet';
+import { AlertTriangle, ArrowRight, Calendar } from '@/components/icons/lucide';
 import {
   Empty,
   EmptyDescription,
@@ -11,7 +12,6 @@ import {
 } from '@/components/ui/empty';
 import { EVENT_INVITES_CONFIG } from '@/lib/constants/event-invites';
 import { EventInvite, HubSectionError } from '@/lib/types/api';
-import { AlertTriangle, ArrowRight, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { EventInviteDetailSheet } from './event-invite-detail-sheet';
 import { EventInviteStoryThumbnail } from './event-invite-story-thumbnail';

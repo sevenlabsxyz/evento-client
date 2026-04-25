@@ -1,8 +1,8 @@
 'use client';
 
+import { Loader2 } from '@/components/icons/lucide';
 import { UserOnboardingFlow } from '@/components/onboarding';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
 
 function OnboardingContent() {

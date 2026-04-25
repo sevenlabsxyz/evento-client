@@ -1,5 +1,6 @@
 'use client';
 
+import { Camera, Share2 } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -12,7 +13,6 @@ import {
 import { EventDetail } from '@/lib/types/event';
 import { isGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
-import { Camera, Share2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 import PhotoUploadSheet from './photo-upload-sheet';

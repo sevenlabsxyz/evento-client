@@ -1,7 +1,7 @@
 'use client';
 
+import { Pin, PinOff } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
-import { Pin, PinOff } from 'lucide-react';
 import type { MessageResponse } from 'stream-chat';
 
 interface PinnedMessageBannerProps {

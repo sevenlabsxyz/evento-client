@@ -2,6 +2,19 @@
 
 import { EventCard } from '@/components/event-card';
 import { EventDateGroup } from '@/components/event-date-group';
+import {
+  ArrowDownAZ,
+  Bookmark,
+  Calendar,
+  Check,
+  Clock,
+  LayoutGrid,
+  LayoutList,
+  MapPin,
+  Search,
+  Users,
+  X,
+} from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { SheetWithDetent } from '@/components/ui/sheet-with-detent';
@@ -17,19 +30,6 @@ import { EventWithUser, UserDetails, UserSearchResult, VerificationStatus } from
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
-import {
-  ArrowDownAZ,
-  Bookmark,
-  Calendar,
-  Check,
-  Clock,
-  LayoutGrid,
-  LayoutList,
-  MapPin,
-  Search,
-  Users,
-  X,
-} from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 

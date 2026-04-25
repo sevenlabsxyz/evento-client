@@ -1,5 +1,6 @@
 'use client';
 
+import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from '@/components/icons/lucide';
 import ManageCohostsSheet from '@/components/manage-event/manage-cohosts-sheet';
 import {
   AlertDialog,
@@ -24,7 +25,6 @@ import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { CohostInvite, VerificationStatus } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
-import { Clock, Crown, Loader2, Plus, Trash2, UserPlus, X } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

@@ -1,11 +1,11 @@
 'use client';
 
+import { MessageSquarePlus, Plus } from '@/components/icons/lucide';
 import NewChatSheet from '@/components/messages/new-chat-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useStreamChatClient } from '@/lib/providers/stream-chat-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
-import { MessageSquarePlus, Plus } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import type { ChannelFilters, ChannelOptions, ChannelSort } from 'stream-chat';

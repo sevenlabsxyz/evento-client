@@ -8,6 +8,7 @@ import {
   PromptInputTools,
   type PromptInputMessage,
 } from '@/components/ai-elements/prompt-input';
+import { Search, Users } from '@/components/icons/lucide';
 import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
@@ -15,7 +16,6 @@ import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { UserDetails, UserSearchResult } from '@/lib/types/api';
-import { Search, Users } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

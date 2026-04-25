@@ -1,5 +1,6 @@
 'use client';
 
+import { Inbox } from '@/components/icons/lucide';
 import {
   Empty,
   EmptyContent,
@@ -10,7 +11,6 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { UINotification } from '@/lib/types/notifications';
-import { Inbox } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 import { NotificationItem } from './notification-item';

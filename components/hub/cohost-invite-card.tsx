@@ -1,11 +1,11 @@
 'use client';
 
+import { Check, Loader2, X } from '@/components/icons/lucide';
 import { useAcceptCohostInvite, useRejectCohostInvite } from '@/lib/hooks/use-cohost-invites';
 import { CohostInvite } from '@/lib/types/api';
 import { getEventCoverDisplayUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { formatDistanceToNow } from 'date-fns';
-import { Check, Loader2, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';

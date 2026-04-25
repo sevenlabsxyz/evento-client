@@ -1,5 +1,12 @@
 'use client';
 
+import {
+  CheckCircle,
+  ChevronRight,
+  ClipboardList,
+  Clock,
+  XCircle,
+} from '@/components/icons/lucide';
 import { RegistrationDetailSheet } from '@/components/manage-event/registration-detail-sheet';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -12,7 +19,6 @@ import { useTopBar } from '@/lib/stores/topbar-store';
 import type { RegistrationStatus, RegistrationSubmission } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { format } from 'date-fns';
-import { CheckCircle, ChevronRight, ClipboardList, Clock, XCircle } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

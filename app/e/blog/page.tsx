@@ -1,7 +1,7 @@
+import { AlertTriangle } from '@/components/icons/lucide';
 import { ghostService } from '@/lib/services/ghost';
 import { GhostPost } from '@/lib/types/ghost';
 import { logger } from '@/lib/utils/logger';
-import { AlertTriangle } from 'lucide-react';
 import { Suspense } from 'react';
 import PostPageClient from './page-client';
 

@@ -1,10 +1,10 @@
 'use client';
 
+import { Loader2, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { motion } from 'framer-motion';
-import { Loader2, X } from 'lucide-react';
 import type { LnurlPayRequestDetails, RecipientInfo } from '../zap-types';
 
 interface ZapAmountStepProps {

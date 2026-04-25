@@ -8,6 +8,18 @@ import { CircledIconButton } from '@/components/circled-icon-button';
 import EventSearchSheet from '@/components/event-search-sheet';
 import FollowersSheet from '@/components/followers-sheet/followers-sheet';
 import FollowingSheet from '@/components/followers-sheet/following-sheet';
+import {
+  ArrowUpRight,
+  Award,
+  BadgeCheck,
+  Calendar,
+  Edit3,
+  Loader2,
+  MessageCircle,
+  Search,
+  Settings,
+  User,
+} from '@/components/icons/lucide';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { MasterEventCard } from '@/components/master-event-card';
 import SocialLinks from '@/components/profile/social-links';
@@ -43,18 +55,6 @@ import { cn } from '@/lib/utils';
 import { formatDateHeader } from '@/lib/utils/date';
 import { sortAndGroupProfileEvents } from '@/lib/utils/profile-events';
 import { motion } from 'framer-motion';
-import {
-  ArrowUpRight,
-  Award,
-  BadgeCheck,
-  Calendar,
-  Edit3,
-  Loader2,
-  MessageCircle,
-  Search,
-  Settings,
-  User,
-} from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 

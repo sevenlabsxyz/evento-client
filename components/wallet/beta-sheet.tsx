@@ -1,8 +1,8 @@
 'use client';
 
+import { AlertTriangle, Info, Shield } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
-import { AlertTriangle, Info, Shield } from 'lucide-react';
 
 interface BetaSheetProps {
   open: boolean;

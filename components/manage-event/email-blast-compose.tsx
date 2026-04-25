@@ -1,6 +1,16 @@
 'use client';
 
 import {
+  ArrowRight,
+  CalendarClock,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Mail,
+  Send,
+  Users,
+} from '@/components/icons/lucide';
+import {
   isEmailBlastScheduledMutationRaceError,
   useCreateEmailBlastWithCallbacks,
   useUpdateEmailBlast,
@@ -21,16 +31,6 @@ import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
 import { EditorContent, useEditor } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
-import {
-  ArrowRight,
-  CalendarClock,
-  CheckCircle2,
-  Clock,
-  Loader2,
-  Mail,
-  Send,
-  Users,
-} from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import DatePickerSheet from '../create-event/date-picker-sheet';
 import TimePickerSheet from '../create-event/time-picker-sheet';

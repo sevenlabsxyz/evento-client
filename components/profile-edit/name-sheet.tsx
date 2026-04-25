@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2, User, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
@@ -7,7 +8,6 @@ import { useUpdateUserProfile } from '@/lib/hooks/use-user-profile';
 import { validateUpdateUserProfile } from '@/lib/schemas/user';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Loader2, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface NameSheetProps {

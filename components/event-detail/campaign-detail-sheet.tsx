@@ -1,12 +1,12 @@
 'use client';
 
+import { Info, Users, Zap } from '@/components/icons/lucide';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
 import { Progress } from '@/components/ui/progress';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { useEventCampaignFeed } from '@/lib/hooks/use-campaign-feed';
 import { useEventCampaign } from '@/lib/hooks/use-event-campaign';
-import { Info, Users, Zap } from 'lucide-react';
 import { useState } from 'react';
 import { CampaignPledgeSheet } from './campaign-pledge-sheet';
 

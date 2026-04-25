@@ -1,11 +1,11 @@
 'use client';
 
 import { BlogCard } from '@/components/blog/blog-card';
+import { ArrowRight } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Env } from '@/lib/constants/env';
 import { logger } from '@/lib/utils/logger';
-import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 

@@ -1,4 +1,4 @@
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons/lucide';
 import { create } from 'zustand';
 import { VerificationStatus } from '../types/api';
 

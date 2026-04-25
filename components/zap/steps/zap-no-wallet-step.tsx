@@ -1,7 +1,7 @@
 'use client';
 
+import { Check, Loader2, Zap } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
-import { Check, Loader2, Zap } from 'lucide-react';
 import type { RecipientInfo } from '../zap-types';
 
 interface ZapNoWalletStepProps {

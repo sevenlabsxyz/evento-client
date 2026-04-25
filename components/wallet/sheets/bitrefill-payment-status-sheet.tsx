@@ -1,9 +1,9 @@
 'use client';
 
+import { CheckCircle2, Loader2, XCircle } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { motion } from 'framer-motion';
-import { CheckCircle2, Loader2, XCircle } from 'lucide-react';
 
 interface BitrefillPaymentStatusSheetProps {
   open: boolean;

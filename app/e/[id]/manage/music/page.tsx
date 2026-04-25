@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Trash2 } from '@/components/icons/lucide';
 import { SpotifySVGImage } from '@/components/icons/spotify';
 import { WavlakeSVGImage } from '@/components/icons/wavlake';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -9,7 +10,6 @@ import type { UpdateEventData } from '@/lib/schemas/event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Check, Trash2 } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 

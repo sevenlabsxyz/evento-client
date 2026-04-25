@@ -1,10 +1,10 @@
 'use client';
 
+import { Eye, EyeOff, KeyRound, ShieldCheck, ShieldOff } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
-import { Eye, EyeOff, KeyRound, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface PasswordProtectionSheetProps {

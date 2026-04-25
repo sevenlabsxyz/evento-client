@@ -1,10 +1,10 @@
 import { CircledIconButton } from '@/components/circled-icon-button';
+import { ArrowUpRight, Loader2, MapPin, X } from '@/components/icons/lucide';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { WalletBalanceDisplay } from '@/components/wallet/wallet-balance-display';
 import { GLOBAL_EXCHANGES, getExchangesForCountry, type Exchange } from '@/lib/constants/exchanges';
 import { detectUserCountry } from '@/lib/utils/geo-detection';
 import { logger } from '@/lib/utils/logger';
-import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 

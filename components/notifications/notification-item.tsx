@@ -1,9 +1,9 @@
 'use client';
 
+import { CheckCheck, Clock, MessageCircle, Star, Trash2, User } from '@/components/icons/lucide';
 import { UINotification } from '@/lib/types/notifications';
 import { cn } from '@/lib/utils';
 import { formatDistance } from 'date-fns';
-import { CheckCheck, Clock, MessageCircle, Star, Trash2, User } from 'lucide-react';
 import { useState } from 'react';
 
 interface NotificationItemProps {

@@ -1,7 +1,7 @@
 'use client';
 
+import { ArrowRight } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
-import { ArrowRight } from 'lucide-react';
 import Image from 'next/image';
 
 interface WalletWelcomeProps {

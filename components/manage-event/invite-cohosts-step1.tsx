@@ -1,12 +1,12 @@
 'use client';
 
+import { ChevronRight, Clock, MailIcon, Search, Users, X } from '@/components/icons/lucide';
 import { MIN_SEARCH_LENGTH } from '@/lib/constants/invite';
 import { useCancelCohostInvite, useEventCohostInvites } from '@/lib/hooks/use-cohost-invites';
 import { useDebounce } from '@/lib/hooks/use-debounce';
 import { useUserSearch } from '@/lib/hooks/use-search';
 import { UserDetails } from '@/lib/types/api';
 import { isValidEmail } from '@/lib/utils/email-validation';
-import { ChevronRight, Clock, MailIcon, Search, Users, X } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { UserAvatar } from '../ui/user-avatar';

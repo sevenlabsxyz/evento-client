@@ -1,6 +1,6 @@
 'use client';
 
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon } from '@/components/icons/lucide';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';

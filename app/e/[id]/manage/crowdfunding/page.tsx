@@ -1,5 +1,6 @@
 'use client';
 
+import { Check, Info, MessageCircle, Zap } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -16,7 +17,6 @@ import type { ApiError } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { redirectToWalletUnlock, showWalletUnlockToast } from '@/lib/utils/wallet-unlock-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Check, Info, MessageCircle, Zap } from 'lucide-react';
 import { useParams, usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';

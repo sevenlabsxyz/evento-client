@@ -1,15 +1,5 @@
 'use client';
 
-import { APISheet } from '@/components/settings/api-sheet';
-import { ContactSheet } from '@/components/settings/contact-sheet';
-import { DeveloperModeDialog } from '@/components/settings/developer-mode-dialog';
-import { TelegramConnectSheet } from '@/components/settings/telegram-connect-sheet';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
-import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
-import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
-import { useTopBar } from '@/lib/stores/topbar-store';
-import { toast } from '@/lib/utils/toast';
 import {
   CheckCircle,
   ChevronRight,
@@ -23,7 +13,17 @@ import {
   Share,
   Shield,
   Terminal,
-} from 'lucide-react';
+} from '@/components/icons/lucide';
+import { APISheet } from '@/components/settings/api-sheet';
+import { ContactSheet } from '@/components/settings/contact-sheet';
+import { DeveloperModeDialog } from '@/components/settings/developer-mode-dialog';
+import { TelegramConnectSheet } from '@/components/settings/telegram-connect-sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
+import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
+import { useDeveloperSettingsStore } from '@/lib/stores/developer-settings-store';
+import { useTopBar } from '@/lib/stores/topbar-store';
+import { toast } from '@/lib/utils/toast';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 

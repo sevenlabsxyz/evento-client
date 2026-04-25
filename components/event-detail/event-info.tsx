@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from '@/components/icons/lucide';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { EventHost } from '@/lib/hooks/use-event-hosts';
 import { useEventRSVPs } from '@/lib/hooks/use-event-rsvps';
@@ -12,7 +13,6 @@ import { formatEventDateRangeFromParts } from '@/lib/utils/date';
 import { formatICSDate, formatICSDateFromParts } from '@/lib/utils/ics';
 import { formatEventLocationAddress, getEventLocationDisplayLines } from '@/lib/utils/location';
 import { toast } from '@/lib/utils/toast';
-import { ChevronRight, Clock, Globe, Lock, MapPin, Star, XCircle } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { DateTimeActionsSheet } from './date-time-actions-sheet';
 import RsvpSheet from './event-rsvp-sheet';

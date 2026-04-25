@@ -1,8 +1,8 @@
 'use client';
 
+import { ArrowLeft, Search } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
-import { ArrowLeft, Search } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

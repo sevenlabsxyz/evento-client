@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight } from '@/components/icons/lucide';
 import { useEffect, useState } from 'react';
 
 import { Card, CardContent } from '@/components/ui/card';

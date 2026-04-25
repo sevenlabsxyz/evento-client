@@ -1,8 +1,8 @@
 'use client';
 
+import { ExternalLink } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
-import { ExternalLink } from 'lucide-react';
 
 interface XSheetProps {
   isOpen: boolean;

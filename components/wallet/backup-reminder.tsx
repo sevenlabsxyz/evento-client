@@ -1,8 +1,8 @@
 'use client';
 
+import { AlertTriangle, X } from '@/components/icons/lucide';
 import { Button } from '@/components/ui/button';
 import { WalletStorageService } from '@/lib/services/wallet-storage';
-import { AlertTriangle, X } from 'lucide-react';
 
 interface BackupReminderProps {
   onBackup: () => void;

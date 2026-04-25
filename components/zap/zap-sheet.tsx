@@ -1,5 +1,6 @@
 'use client';
 
+import { Zap } from '@/components/icons/lucide';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { useSaveContactPrompt } from '@/components/wallet/save-contact-prompt';
 import { useNotifyWalletInvite } from '@/lib/hooks/use-notify-wallet-invite';
@@ -13,7 +14,6 @@ import {
 } from '@/lib/utils/wallet-unlock-toast';
 import { VisuallyHidden } from '@silk-hq/components';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { cloneElement, isValidElement, useEffect, useState } from 'react';
 import { ZapAmountStep } from './steps/zap-amount-step';

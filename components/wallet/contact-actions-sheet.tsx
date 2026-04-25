@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronRight, Loader2, Pencil, Trash2 } from '@/components/icons/lucide';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,7 +18,6 @@ import { useContacts } from '@/lib/hooks/use-contacts';
 import { useEventoCashProfile } from '@/lib/hooks/use-evento-cash-profile';
 import type { Contact } from '@/lib/types/wallet';
 import { cn } from '@/lib/utils';
-import { ChevronRight, Loader2, Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { Heart, MoreHorizontal, Trash2 } from '@/components/icons/lucide';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +12,6 @@ import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
 import { isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
-import { Heart, MoreHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { Loader2 } from '@/components/icons/lucide';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -10,7 +11,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { Loader2 } from 'lucide-react';
 
 interface DeleteConfirmationProps {
   isOpen: boolean;
