@@ -1,5 +1,6 @@
 'use client';
 
+import { RestoringSessionState } from '@/components/auth/restoring-session-state';
 import { CohostInvitesSection } from '@/components/hub/cohost-invites-section';
 import { EventInvitesSection } from '@/components/hub/event-invites-section';
 import { ForYouSection } from '@/components/hub/for-you-section';
@@ -7,9 +8,8 @@ import { HubBlogGallery } from '@/components/hub/hub-blog-gallery';
 import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useHubData } from '@/lib/hooks/use-hub-data';
-import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
+import { useRequireAuthForPage } from '@/lib/providers/auth-recovery-provider';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { GhostPost } from '@/lib/types/ghost';
 import { AlertTriangle, MessageCircle } from 'lucide-react';
@@ -48,9 +48,13 @@ interface HubPageClientProps {
 
 export default function HubPageClient({ posts }: HubPageClientProps) {
   const router = useRouter();
-  const { isLoading: isCheckingAuth } = useRequireAuth();
-  const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
-  const { data: hubData, isLoading: isHubLoading, error: hubError, refetch } = useHubData();
+  const pageAuth = useRequireAuthForPage({ redirectPath: '/e/hub', requireOnboarding: true });
+  const {
+    data: hubData,
+    isLoading: isHubLoading,
+    error: hubError,
+    refetch,
+  } = useHubData({ enabled: pageAuth.status === 'authenticated' });
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   useEffect(() => {
@@ -81,7 +85,41 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
     };
   }, [applyRouteConfig, setTopBarForRoute, clearRoute, router]);
 
-  if (isCheckingAuth || isCheckingOnboarding || isHubLoading) {
+  if (pageAuth.status === 'recovering') {
+    return <RestoringSessionState />;
+  }
+
+  if (pageAuth.status === 'checking' || pageAuth.status === 'redirecting') {
+    return <HubPageSkeleton />;
+  }
+
+  if (pageAuth.status === 'error') {
+    return (
+      <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
+        <div className='rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900'>
+          <div className='mb-2 flex items-center gap-2 text-base font-semibold'>
+            <AlertTriangle className='h-5 w-5' />
+            Couldn&apos;t restore your session
+          </div>
+          <p className='mb-4 text-sm text-amber-800'>
+            {pageAuth.error instanceof Error
+              ? pageAuth.error.message
+              : 'Something went wrong while checking your account session.'}
+          </p>
+          <Button
+            onClick={() => router.refresh()}
+            variant='outline'
+            className='rounded-full bg-white'
+          >
+            Try Again
+          </Button>
+        </div>
+        <HubBlogGallery posts={posts} />
+      </div>
+    );
+  }
+
+  if (isHubLoading) {
     return <HubPageSkeleton />;
   }
 
