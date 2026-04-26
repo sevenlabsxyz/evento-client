@@ -213,8 +213,8 @@ describe('formatEventDateRangeFromParts', () => {
 
 describe('formatDateHeader', () => {
   it('formats YYYY-MM-DD headers as local calendar dates without shifting a day', () => {
-    expect(formatDateHeader('2026-04-26')).toBe('Sunday, April 26');
-    expect(formatDateHeader('2026-04-27')).toBe('Monday, April 27');
+    expect(formatDateHeader('2026-04-28')).toBe('Tuesday, April 28');
+    expect(formatDateHeader('2026-04-29')).toBe('Wednesday, April 29');
   });
 
   it('returns a safe fallback when the date is missing or invalid', () => {
