@@ -212,9 +212,26 @@ describe('formatEventDateRangeFromParts', () => {
 });
 
 describe('formatDateHeader', () => {
+  beforeAll(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2026-04-25T12:00:00Z'));
+  });
+
+  afterAll(() => {
+    jest.useRealTimers();
+  });
+
   it('formats YYYY-MM-DD headers as local calendar dates without shifting a day', () => {
-    expect(formatDateHeader('2026-04-28')).toBe('Tuesday, April 28');
-    expect(formatDateHeader('2026-04-29')).toBe('Wednesday, April 29');
+    expect(formatDateHeader('2026-04-24')).toBe('Friday, April 24');
+    expect(formatDateHeader('2026-04-27')).toBe('Monday, April 27');
+  });
+
+  it('returns "Today" when the date matches the current day', () => {
+    expect(formatDateHeader('2026-04-25')).toBe('Today');
+  });
+
+  it('returns "Tomorrow" when the date matches the next day', () => {
+    expect(formatDateHeader('2026-04-26')).toBe('Tomorrow');
   });
 
   it('returns a safe fallback when the date is missing or invalid', () => {
