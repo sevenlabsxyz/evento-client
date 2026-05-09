@@ -214,7 +214,7 @@ describe('formatEventDateRangeFromParts', () => {
 describe('formatDateHeader', () => {
   beforeAll(() => {
     jest.useFakeTimers();
-    jest.setSystemTime(new Date('2026-04-25T12:00:00Z'));
+    jest.setSystemTime(new Date(2026, 3, 25, 12, 0, 0));
   });
 
   afterAll(() => {
