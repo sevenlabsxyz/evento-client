@@ -1,8 +1,10 @@
 import { resetWalletInitialization } from '@/lib/hooks/use-wallet';
+import { useAuthRecovery, useRequireAuthForPage } from '@/lib/providers/auth-recovery-provider';
+import { logger } from '@/lib/utils/logger';
 import { clearAllAppStorage } from '@/lib/utils/logout-cleanup';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
 import { authService, UnauthenticatedError } from '../services/auth';
 import { useAuthStore } from '../stores/auth-store';
 import { createClient } from '../supabase/client';
@@ -13,13 +15,27 @@ import { getOnboardingRedirectUrl, isUserOnboarded, validateRedirectUrl } from '
 // Key for user query
 export const USER_QUERY_KEY = ['auth', 'user'] as const;
 
+export interface UseAuthResult {
+  user: ReturnType<typeof useAuthStore.getState>['user'];
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  isRecovering?: boolean;
+  email: string | null;
+  checkAuth: (...args: any[]) => Promise<unknown>;
+  logout: (...args: any[]) => void;
+  isLoggingOut: boolean;
+}
+
 /**
  * Main auth hook that provides authentication state and actions
  */
-export function useAuth() {
+export function useAuth(): UseAuthResult {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { status: recoveryStatus, reconcileOptionalAuth } = useAuthRecovery();
   const { user, isAuthenticated, email, setUser, setEmail, clearAuth } = useAuthStore();
+  const attemptedOptionalRecoveryRef = useRef(false);
+  const hasPersistedAuth = isAuthenticated || !!user;
 
   // Query to check current auth status
   const {
@@ -29,7 +45,7 @@ export function useAuth() {
     refetch: checkAuth,
   } = useQuery({
     queryKey: USER_QUERY_KEY,
-    queryFn: () => authService.getCurrentUser({ requireSession: isAuthenticated || !!user }),
+    queryFn: () => authService.getCurrentUser({ requireSession: hasPersistedAuth }),
     retry: (failureCount, error) => {
       if (error instanceof UnauthenticatedError) {
         return false;
@@ -40,14 +56,22 @@ export function useAuth() {
     refetchOnWindowFocus: false,
   });
 
+  const hasUnauthorizedError = Boolean(
+    authError instanceof UnauthenticatedError ||
+    (authError &&
+      typeof authError === 'object' &&
+      'status' in authError &&
+      (authError as { status?: number }).status === 401)
+  );
+
   // Sync user data with store
   useEffect(() => {
     if (userData) {
+      attemptedOptionalRecoveryRef.current = false;
       setUser(userData);
-    } else if (authError) {
-      if (authError instanceof UnauthenticatedError) {
-        clearAuth();
-      }
+    } else if (authError && authError instanceof UnauthenticatedError) {
+      attemptedOptionalRecoveryRef.current = false;
+      clearAuth();
     }
     // Note: we intentionally do NOT clear auth when userData is null.
     // A null return during bootstrap (session exists but backend row
@@ -56,6 +80,36 @@ export function useAuth() {
     // next successful refetch. Confirmed logouts are handled by the
     // UnauthenticatedError / 401 path above.
   }, [userData, authError, setUser, clearAuth]);
+
+  useEffect(() => {
+    if (
+      !hasPersistedAuth ||
+      !authError ||
+      !hasUnauthorizedError ||
+      authError instanceof UnauthenticatedError ||
+      attemptedOptionalRecoveryRef.current
+    ) {
+      return;
+    }
+
+    attemptedOptionalRecoveryRef.current = true;
+
+    reconcileOptionalAuth({ reason: 'optional-auth-probe' })
+      .then((result) => {
+        if (result.status === 'authenticated') {
+          logger.info('Auth: optional auth probe recovered session', { userId: result.user.id });
+        } else {
+          logger.warn('Auth: optional auth probe downgraded to guest state', {
+            status: result.status,
+          });
+        }
+      })
+      .catch((error) => {
+        logger.warn('Auth: optional auth probe recovery failed', {
+          error: error instanceof Error ? error.message : String(error),
+        });
+      });
+  }, [authError, hasPersistedAuth, hasUnauthorizedError, reconcileOptionalAuth]);
 
   // Listen for auth state changes
   useEffect(() => {
@@ -99,10 +153,16 @@ export function useAuth() {
     },
   });
 
+  const effectiveUser = hasUnauthorizedError ? null : userData || user;
+  const effectiveIsAuthenticated = !hasUnauthorizedError && !!effectiveUser;
+  const isRecovering = recoveryStatus === 'recovering';
+  const showLoading = (!effectiveUser && isCheckingAuth) || isRecovering;
+
   return {
-    user,
-    isAuthenticated,
-    isLoading: isCheckingAuth,
+    user: effectiveUser,
+    isAuthenticated: effectiveIsAuthenticated,
+    isLoading: showLoading,
+    isRecovering,
     email,
     checkAuth,
     logout: logoutMutation.mutate,
@@ -234,18 +294,16 @@ export function useGoogleLogin() {
   };
 }
 
-export function useRequireAuth(redirectTo = '/auth/login') {
-  const { isAuthenticated, isLoading } = useAuth();
-  const router = useRouter();
-  const pathname = usePathname();
+export function useRequireAuth(_redirectTo = '/auth/login') {
+  const pageAuth = useRequireAuthForPage();
 
-  useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push(`${redirectTo}?redirect=${encodeURIComponent(pathname)}`);
-    }
-  }, [isAuthenticated, isLoading, router, redirectTo, pathname]);
-
-  return { isAuthenticated, isLoading };
+  return {
+    isAuthenticated: pageAuth.status === 'authenticated',
+    isLoading:
+      pageAuth.status === 'checking' ||
+      pageAuth.status === 'recovering' ||
+      pageAuth.status === 'redirecting',
+  };
 }
 
 /**

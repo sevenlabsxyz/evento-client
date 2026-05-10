@@ -179,7 +179,13 @@ export function useSearchUsers() {
 
  * Hook to check if the current user follows another user
  */
-export function useFollowStatus(userId: string) {
+interface FollowStatusOptions {
+  enabled?: boolean;
+}
+
+export function useFollowStatus(userId: string, options?: FollowStatusOptions) {
+  const enabled = options?.enabled ?? true;
+
   return useQuery({
     queryKey: ['user', 'follow', 'status', userId],
     queryFn: async () => {
@@ -190,7 +196,7 @@ export function useFollowStatus(userId: string) {
       );
       return response.data || { isFollowing: false };
     },
-    enabled: !!userId,
+    enabled: enabled && !!userId,
     staleTime: 60 * 1000, // 1 minute - shorter time because follow status might change frequently
   });
 }

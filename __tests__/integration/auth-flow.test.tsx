@@ -1,5 +1,6 @@
 import { useAuth, useLogin, useVerifyCode } from '@/lib/hooks/use-auth';
 import { useUserProfile } from '@/lib/hooks/use-user-profile';
+import { AuthRecoveryProvider } from '@/lib/providers/auth-recovery-provider';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { act, renderHook } from '@testing-library/react';
 
@@ -129,7 +130,9 @@ describe('Authentication Integration Flow', () => {
 
   const createWrapper = (client: QueryClient) => {
     return ({ children }: { children: React.ReactNode }) => (
-      <QueryClientProvider client={client}>{children}</QueryClientProvider>
+      <QueryClientProvider client={client}>
+        <AuthRecoveryProvider>{children}</AuthRecoveryProvider>
+      </QueryClientProvider>
     );
   };
 

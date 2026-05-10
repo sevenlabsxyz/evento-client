@@ -5,6 +5,7 @@ import QuickProfileSheet from '@/components/ui/quick-profile-sheet';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useEnsureAuthenticatedAction } from '@/lib/providers/auth-recovery-provider';
 import { streamChatService } from '@/lib/services/stream-chat';
 import { UserDetails } from '@/lib/types/api';
 import { EventDetail } from '@/lib/types/event';
@@ -21,6 +22,7 @@ interface EventHostProps {
 export default function EventHost({ event }: EventHostProps) {
   const router = useRouter();
   const { user: loggedInUser } = useAuth();
+  const ensureAuthenticatedAction = useEnsureAuthenticatedAction();
   const [selectedHost, setSelectedHost] = useState<UserDetails | null>(null);
 
   if (!event.hosts || event.hosts.length === 0) {
@@ -28,6 +30,15 @@ export default function EventHost({ event }: EventHostProps) {
   }
 
   const handleContactHost = async (hostId: string) => {
+    if (!loggedInUser) {
+      const recovered = await ensureAuthenticatedAction({
+        reason: `action:message-host:${hostId}`,
+      });
+      if (!recovered) {
+        return;
+      }
+    }
+
     try {
       const res = await streamChatService.createDirectMessageChannel(hostId);
       if (res?.channel?.id) {
@@ -36,6 +47,12 @@ export default function EventHost({ event }: EventHostProps) {
         toast.error('Unable to start chat');
       }
     } catch (err: any) {
+      const status = err && typeof err === 'object' && 'status' in err ? err.status : undefined;
+      if (status === 401) {
+        await ensureAuthenticatedAction({ reason: `action:message-host:${hostId}` });
+        return;
+      }
+
       toast.error(err?.message || 'Failed to start chat');
       logger.error('createDirectMessageChannel error', {
         error: err instanceof Error ? err.message : String(err),

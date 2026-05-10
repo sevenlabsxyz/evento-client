@@ -383,6 +383,15 @@ describe('User Profile Hooks', () => {
       expect(result.current.isLoading).toBe(false);
       expect(mockApiClientTyped.get).not.toHaveBeenCalled();
     });
+
+    it('can be explicitly disabled for public guest surfaces', () => {
+      const { result } = renderHook(() => useFollowStatus('user123', { enabled: false }), {
+        wrapper: ({ children }) => createTestWrapper(queryClient)({ children }),
+      });
+
+      expect(result.current.isLoading).toBe(false);
+      expect(mockApiClientTyped.get).not.toHaveBeenCalled();
+    });
   });
 
   describe('useFollowAction', () => {

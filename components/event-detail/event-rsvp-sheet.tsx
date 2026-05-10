@@ -8,6 +8,7 @@ import { useRegistrationSettings } from '@/lib/hooks/use-registration-settings';
 import { RSVPError, useUpsertRSVP } from '@/lib/hooks/use-upsert-rsvp';
 import { USER_PROFILE_QUERY_KEY } from '@/lib/hooks/use-user-profile';
 import { useUserRSVP } from '@/lib/hooks/use-user-rsvp';
+import { useAuthRecovery } from '@/lib/providers/auth-recovery-provider';
 import { queryKeys } from '@/lib/query-client';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import type { Event as ApiEvent, RSVPStatus, UserRegistration } from '@/lib/types/api';
@@ -35,6 +36,7 @@ interface RsvpSheetProps {
 export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpSheetProps) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const { clearAuth } = useAuthStore();
+  const { ensureRequiredAuth } = useAuthRecovery();
   const queryClient = useQueryClient();
   const router = useRouter();
   const pathname = usePathname();
@@ -103,6 +105,20 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
       onClose();
     },
     [clearAuth, eventId, onClose, pathname, queryClient, router]
+  );
+
+  const ensureAuthenticatedForAction = useCallback(
+    async (status: RSVPStatus, message?: string) => {
+      const result = await ensureRequiredAuth({ reason: `action:rsvp:${eventId}` });
+
+      if (result.status === 'authenticated') {
+        return true;
+      }
+
+      redirectToLogin(status, message);
+      return false;
+    },
+    [ensureRequiredAuth, eventId, redirectToLogin]
   );
 
   // Determine what to show when sheet opens
@@ -211,8 +227,10 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
 
     // Auth check for non-registration flows (maybe/no buttons, or already registered)
     if (!isAuthenticated) {
-      redirectToLogin(status);
-      return;
+      const recovered = await ensureAuthenticatedForAction(status, 'Please sign in to RSVP.');
+      if (!recovered) {
+        return;
+      }
     }
 
     // Check if user's registration is pending/denied
@@ -252,7 +270,12 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
           return;
         }
         if (error instanceof RSVPError && error.status === 401) {
-          redirectToLogin(status, 'Please sign in to RSVP.');
+          const recovered = await ensureAuthenticatedForAction(status, 'Please sign in to RSVP.');
+          if (!recovered) {
+            return;
+          }
+          setRsvpPhase('idle');
+          setSelectedStatus(null);
           return;
         }
         const message =

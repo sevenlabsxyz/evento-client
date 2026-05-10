@@ -28,13 +28,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { UserAvatar } from '@/components/ui/user-avatar';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { DEFAULT_AVATAR_IMAGE } from '@/lib/constants/avatar';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { usePublicUserBadges } from '@/lib/hooks/use-badges';
 import { usePinnedEvent, useUpdatePinnedEvent } from '@/lib/hooks/use-pinned-event';
+import { useProtectedFollowAction } from '@/lib/hooks/use-protected-follow-action';
 import { usePublicUserEvents } from '@/lib/hooks/use-public-user-events';
 import { type EventTimeframe } from '@/lib/hooks/use-user-events';
 import { useOtherUserInterests } from '@/lib/hooks/use-user-interests';
 import {
-  useFollowAction,
   useFollowStatus,
   useUserByUsername,
   useUserEventCount,
@@ -42,7 +43,6 @@ import {
   useUserFollowingCount,
 } from '@/lib/hooks/use-user-profile';
 import { useOtherUserPrompts } from '@/lib/hooks/use-user-prompts';
-import { useAuth } from '@/lib/stores/auth-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { EventWithUser } from '@/lib/types/api';
 import { UserBadge } from '@/lib/types/badges';
@@ -77,7 +77,7 @@ interface UserProfilePageClientProps {
 }
 
 export default function UserProfilePageClient({ username }: UserProfilePageClientProps) {
-  // Fetch auth state but don’t enforce login – allows public profile view
+  // Fetch auth state but don’t enforce login – allows public profile view while still reconciling stale sessions
   const { user, isLoading: isCheckingAuth } = useAuth();
   const router = useRouter();
   const { setTopBar } = useTopBar();
@@ -103,12 +103,15 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   } = useUserByUsername(username);
 
   // Get follow status for this user
-  const { data: followStatus, isLoading: isFollowStatusLoading } = useFollowStatus(
-    userData?.id || ''
-  );
+  const { data: followStatus, isLoading: isFollowStatusLoading } = useFollowStatus(userData?.id || '', {
+    enabled: !!user?.id,
+  });
 
-  // Consolidated follow/unfollow mutation
-  const followActionMutation = useFollowAction();
+  const { handleFollowToggle, isPending: isFollowActionPending } = useProtectedFollowAction({
+    userId: userData?.id || '',
+    userName: userData?.name,
+    isFollowing: !!followStatus?.isFollowing,
+  });
 
   const { data: eventCount = 0 } = useUserEventCount(userData?.id || '');
   const { data: followersCount = 0 } = useUserFollowersCount(userData?.id || '');
@@ -164,31 +167,6 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
   const profileZapAddress = userData
     ? userData.ln_address || `${userData.username}@evento.cash`
     : null;
-
-  const handleFollowToggle = () => {
-    if (!userData?.id) {
-      toast.error('Unable to identify user');
-      return;
-    }
-
-    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
-
-    followActionMutation.mutate(
-      { userId: userData.id, action },
-      {
-        onSuccess: () => {
-          if (action === 'follow') {
-            toast.success(`You followed ${userData.name || 'this user'}!`);
-          } else {
-            toast.success(`You unfollowed ${userData.name || 'this user'}`);
-          }
-        },
-        onError: () => {
-          toast.error(`Failed to ${action}. Please try again.`);
-        },
-      }
-    );
-  };
 
   const shareName = userProfile?.name || 'User';
   const topBarTitle = userProfile ? `${userProfile.name} (${userProfile.username})` : '';
@@ -700,7 +678,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                 <div className='flex w-full flex-row gap-4'>
                   <Button
                     onClick={handleFollowToggle}
-                    disabled={isFollowStatusLoading || followActionMutation.isPending}
+                    disabled={isCheckingAuth || isFollowStatusLoading || isFollowActionPending}
                     className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base ${
                       followStatus?.isFollowing
                         ? 'bg-gray-50 text-gray-900 hover:bg-gray-200'
@@ -710,12 +688,12 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     {followStatus?.isFollowing ? (
                       <>
                         <UserMinus className='mr-2 h-4 w-4' />
-                        {followActionMutation.isPending ? 'Unfollowing...' : 'Following'}
+                        {isFollowActionPending ? 'Unfollowing...' : 'Following'}
                       </>
                     ) : (
                       <>
                         <UserPlus className='mr-2 h-4 w-4' />
-                        {followActionMutation.isPending ? 'Following...' : 'Follow'}
+                        {isFollowActionPending ? 'Following...' : 'Follow'}
                       </>
                     )}
                   </Button>

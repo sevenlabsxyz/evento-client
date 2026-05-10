@@ -10,8 +10,8 @@ import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
 import { ZapSheet } from '@/components/zap/zap-sheet';
 import { validateUsername } from '@/lib/design-tokens/colors';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useProtectedFollowAction } from '@/lib/hooks/use-protected-follow-action';
 import { useQuickProfileData } from '@/lib/hooks/use-quick-profile-data';
-import { useFollowAction } from '@/lib/hooks/use-user-profile';
 import { UserDetails } from '@/lib/types/api';
 import { toast } from '@/lib/utils/toast';
 import { VisuallyHidden } from '@silk-hq/components';
@@ -33,27 +33,11 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
   // Use optimized hook for all profile data
   const { followStatus, eventCount, followersCount, followingCount, isLoading } =
     useQuickProfileData(user.id);
-  const followActionMutation = useFollowAction();
-
-  const handleFollowToggle = useCallback(() => {
-    const action = followStatus?.isFollowing ? 'unfollow' : 'follow';
-
-    followActionMutation.mutate(
-      { userId: user.id, action },
-      {
-        onSuccess: () => {
-          if (action === 'follow') {
-            toast.success(`You followed ${user.name || 'this user'}!`);
-          } else {
-            toast.success(`You unfollowed ${user.name || 'this user'}`);
-          }
-        },
-        onError: () => {
-          toast.error(`Failed to ${action}. Please try again.`);
-        },
-      }
-    );
-  }, [followStatus?.isFollowing, followActionMutation, user.id, user.name]);
+  const { handleFollowToggle, isPending: isFollowActionPending } = useProtectedFollowAction({
+    userId: user.id,
+    userName: user.name,
+    isFollowing: !!followStatus?.isFollowing,
+  });
 
   const handleMessage = useCallback(() => {
     toast.success('Message feature coming soon!');
@@ -127,7 +111,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                             <ProfileActions
                               isFollowing={followStatus?.isFollowing || false}
                               isLoading={isLoading}
-                              isPending={followActionMutation.isPending}
+                              isPending={isFollowActionPending}
                               onFollowToggle={handleFollowToggle}
                               onMessage={handleMessage}
                             />

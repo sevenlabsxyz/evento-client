@@ -1,5 +1,6 @@
 'use client';
 
+import { useAuth } from '@/lib/hooks/use-auth';
 import {
   useFollowStatus,
   useUserEventCount,
@@ -25,7 +26,8 @@ interface QuickProfileData {
  * Uses React Query's parallel queries for better performance
  */
 export function useQuickProfileData(userId: string): QuickProfileData {
-  const followStatusQuery = useFollowStatus(userId);
+  const { user } = useAuth();
+  const followStatusQuery = useFollowStatus(userId, { enabled: !!user?.id });
   const eventCountQuery = useUserEventCount(userId);
   const followersCountQuery = useUserFollowersCount(userId);
   const followingCountQuery = useUserFollowingCount(userId);
