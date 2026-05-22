@@ -9,27 +9,27 @@ import {
 describe('event social metadata helpers', () => {
   const env = process.env as Record<string, string | undefined>;
   const originalNodeEnv = process.env.NODE_ENV;
-  const originalVercelUrl = process.env.VERCEL_URL;
-  const originalVercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const originalAppUrl = process.env.APP_URL;
+  const originalNextPublicAppUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   beforeEach(() => {
     env.NODE_ENV = 'production';
-    delete process.env.VERCEL_URL;
-    delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    delete process.env.APP_URL;
+    delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
   afterAll(() => {
     env.NODE_ENV = originalNodeEnv;
-    if (originalVercelUrl === undefined) {
-      delete process.env.VERCEL_URL;
+    if (originalAppUrl === undefined) {
+      delete process.env.APP_URL;
     } else {
-      process.env.VERCEL_URL = originalVercelUrl;
+      process.env.APP_URL = originalAppUrl;
     }
 
-    if (originalVercelProductionUrl === undefined) {
-      delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    if (originalNextPublicAppUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_APP_URL;
     } else {
-      process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercelProductionUrl;
+      process.env.NEXT_PUBLIC_APP_URL = originalNextPublicAppUrl;
     }
   });
 
