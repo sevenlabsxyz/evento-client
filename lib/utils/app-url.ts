@@ -8,21 +8,15 @@ function normalizeAppUrl(value: string) {
   return withProtocol.replace(/\/+$/, '');
 }
 
-export function getAppUrl() {
+export function getAppUrl(): string {
   if (process.env.NODE_ENV === 'development') {
     return LOCAL_APP_URL;
   }
 
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return normalizeAppUrl(process.env.NEXT_PUBLIC_APP_URL);
-  }
+  const configuredAppUrl = process.env.NEXT_PUBLIC_APP_URL ?? process.env.APP_URL;
 
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    return normalizeAppUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL);
-  }
-
-  if (process.env.VERCEL_URL) {
-    return normalizeAppUrl(process.env.VERCEL_URL);
+  if (configuredAppUrl) {
+    return normalizeAppUrl(configuredAppUrl);
   }
 
   return DEFAULT_APP_URL;
