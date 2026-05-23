@@ -9,27 +9,27 @@ import {
 describe('event social metadata helpers', () => {
   const env = process.env as Record<string, string | undefined>;
   const originalNodeEnv = process.env.NODE_ENV;
-  const originalVercelUrl = process.env.VERCEL_URL;
-  const originalVercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const originalAppUrl = process.env.APP_URL;
+  const originalNextPublicAppUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   beforeEach(() => {
     env.NODE_ENV = 'production';
-    delete process.env.VERCEL_URL;
-    delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    delete process.env.APP_URL;
+    delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
   afterAll(() => {
     env.NODE_ENV = originalNodeEnv;
-    if (originalVercelUrl === undefined) {
-      delete process.env.VERCEL_URL;
+    if (originalAppUrl === undefined) {
+      delete process.env.APP_URL;
     } else {
-      process.env.VERCEL_URL = originalVercelUrl;
+      process.env.APP_URL = originalAppUrl;
     }
 
-    if (originalVercelProductionUrl === undefined) {
-      delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    if (originalNextPublicAppUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_APP_URL;
     } else {
-      process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercelProductionUrl;
+      process.env.NEXT_PUBLIC_APP_URL = originalNextPublicAppUrl;
     }
   });
 
@@ -64,6 +64,14 @@ describe('event social metadata helpers', () => {
         cover: '/eventos/uploaded-covers/cov_123.png',
       })
     ).toMatch(/^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=1774269296000-/);
+  });
+
+  it('normalizes app URL env vars for social image urls', () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'app.evento.so/';
+
+    expect(buildEventSocialImageUrl('evt_123')).toMatch(
+      /^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=/
+    );
   });
 
   it('still versions the image url when updated_at is missing', () => {
