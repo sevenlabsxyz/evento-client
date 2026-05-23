@@ -66,6 +66,14 @@ describe('event social metadata helpers', () => {
     ).toMatch(/^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=1774269296000-/);
   });
 
+  it('normalizes app URL env vars for social image urls', () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'app.evento.so/';
+
+    expect(buildEventSocialImageUrl('evt_123')).toMatch(
+      /^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=/
+    );
+  });
+
   it('still versions the image url when updated_at is missing', () => {
     const before = buildEventSocialImageUrl('evt_123', {
       title: 'Bitcoin Pizza Day',
