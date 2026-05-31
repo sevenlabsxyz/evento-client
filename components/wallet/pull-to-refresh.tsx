@@ -51,6 +51,9 @@ export function PullToRefresh({ onRefresh, children, className }: PullToRefreshP
         const dampened = Math.min(diff * 0.5, 100);
         setPullDistance(dampened);
         setIsPulling(true);
+      } else {
+        setPullDistance(0);
+        setIsPulling(false);
       }
     };
 
