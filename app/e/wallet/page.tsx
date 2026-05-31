@@ -28,6 +28,7 @@ import { WalletBalance } from '@/components/wallet/wallet-balance';
 import { WalletEasterEggConfetti } from '@/components/wallet/wallet-easter-egg-confetti';
 import { WalletEducationList } from '@/components/wallet/wallet-education-list';
 import { WalletEducationalSheet } from '@/components/wallet/wallet-educational-sheet';
+import { PullToRefresh } from '@/components/wallet/pull-to-refresh';
 import { WalletLoadingScreen } from '@/components/wallet/wallet-loading-screen';
 import { WalletRestore } from '@/components/wallet/wallet-restore';
 import { WalletSetup } from '@/components/wallet/wallet-setup';
@@ -61,6 +62,7 @@ import {
   Plus,
   Settings,
 } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -110,6 +112,7 @@ export default function WalletPage() {
   const { walletState, isLoading: isWalletLoading, markAsBackedUp, refreshBalance } = useWallet();
   const { payments, isLoading: isLoadingPayments, fetchPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
+  const isMobile = useIsMobile();
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -618,6 +621,17 @@ export default function WalletPage() {
     }
   };
 
+  const handleRefresh = useCallback(async () => {
+    if (!walletState.isConnected) return;
+    try {
+      await Promise.all([refreshBalance(), fetchPayments()]);
+    } catch (error) {
+      logger.error('Pull-to-refresh failed', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }, [walletState.isConnected, refreshBalance, fetchPayments]);
+
   useEffect(() => {
     if (!devLnurlWithdrawConfig) {
       return;
@@ -702,34 +716,35 @@ export default function WalletPage() {
 
   // Main Wallet Screen
   return (
-    <div className='min-h-screen bg-white'>
+    <div className={isMobile ? 'h-full bg-white' : 'min-h-screen bg-white'}>
       <WalletEasterEggConfetti celebrationKey={walletEasterEggCelebrationKey} />
-      <div className='mx-auto bg-white md:max-w-md'>
-        <div className='px-4 pt-4'>
-          <div>
-            <div className='space-y-4'>
-              {/* Wallet Balance Card */}
-              {walletState.isInitialized && user?.username && (
-                <WalletBalance
-                  onSend={() => openDrawer('send')}
-                  onReceive={() => openDrawer('receive')}
-                  onScan={() => openDrawer('scan')}
+      <PullToRefresh onRefresh={handleRefresh} className={isMobile ? 'h-full' : ''}>
+        <div className='mx-auto bg-white md:max-w-md'>
+          <div className='px-4 pt-4'>
+            <div>
+              <div className='space-y-4'>
+                {/* Wallet Balance Card */}
+                {walletState.isInitialized && user?.username && (
+                  <WalletBalance
+                    onSend={() => openDrawer('send')}
+                    onReceive={() => openDrawer('receive')}
+                    onScan={() => openDrawer('scan')}
+                  />
+                )}
+  
+                {/* Backup Callout - subtle reminder below action buttons */}
+                {showBackupReminder && (
+                  <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
+                )}
+  
+                {/* Quick Tools Section */}
+                <QuickToolsSection
+                  onToolClick={(toolId) => {
+                    openDrawer(toolId);
+                  }}
                 />
-              )}
-
-              {/* Backup Callout - subtle reminder below action buttons */}
-              {showBackupReminder && (
-                <BackupCallout onBackup={() => setShowBackupChoiceSheet(true)} />
-              )}
-
-              {/* Quick Tools Section */}
-              <QuickToolsSection
-                onToolClick={(toolId) => {
-                  openDrawer(toolId);
-                }}
-              />
+              </div>
             </div>
-          </div>
 
           <div className='pb-28'>
             <div className='space-y-6'>
@@ -819,8 +834,9 @@ export default function WalletPage() {
               <WalletEducationList />
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      </PullToRefresh>
 
       {/* Sheets */}
       <ReceiveLightningSheet
