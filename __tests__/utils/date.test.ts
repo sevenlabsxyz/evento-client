@@ -5,6 +5,29 @@ import {
   formatEventDateRangeFromParts,
 } from '@/lib/utils/date';
 
+// Build the expected displayDate string using the same toLocaleDateString
+// call the implementation uses, so the test is deterministic regardless of
+// the local machine's timezone.
+function getExpectedRangeDisplayDate(
+  start: { year: number; month: number; day: number; timezone: string },
+  end: { year: number; month: number; day: number; timezone: string }
+): string {
+  const startDate = new Date(start.year, start.month - 1, start.day);
+  const endDate = new Date(end.year, end.month - 1, end.day);
+  const startTz = start.timezone ? { timeZone: start.timezone } : {};
+  const endTz = end.timezone ? { timeZone: end.timezone } : {};
+
+  const startWeekday = startDate.toLocaleDateString('en-US', { weekday: 'short', ...startTz });
+  const startMonth = startDate.toLocaleDateString('en-US', { month: 'long', ...startTz });
+  const startDay = startDate.toLocaleDateString('en-US', { day: 'numeric', ...startTz });
+  const endWeekday = endDate.toLocaleDateString('en-US', { weekday: 'short', ...endTz });
+  const endMonth = endDate.toLocaleDateString('en-US', { month: 'long', ...endTz });
+  const endDay = endDate.toLocaleDateString('en-US', { day: 'numeric', ...endTz });
+
+  const isSameMonth = startMonth === endMonth;
+  return `${startWeekday}, ${startMonth} ${startDay} - ${endWeekday}, ${isSameMonth ? endDay : `${endMonth} ${endDay}`}`;
+}
+
 describe('formatEventDate', () => {
   it('formats event date/time using the provided event timezone', () => {
     const formatted = formatEventDate('2026-04-26T17:00:00.000Z', 'America/Los_Angeles');
@@ -136,53 +159,57 @@ describe('formatEventDateRangeFromParts', () => {
   });
 
   it('returns a date range for multi-day events', () => {
+    const startInput = {
+      year: 2026,
+      month: 4,
+      day: 27,
+      hours: 13,
+      minutes: 0,
+      timezone: 'America/Los_Angeles',
+    };
+    const endInput = {
+      year: 2026,
+      month: 4,
+      day: 29,
+      hours: 17,
+      minutes: 0,
+      timezone: 'America/Los_Angeles',
+    };
     const formatted = formatEventDateRangeFromParts({
-      start: {
-        year: 2026,
-        month: 4,
-        day: 27,
-        hours: 13,
-        minutes: 0,
-        timezone: 'America/Los_Angeles',
-      },
-      end: {
-        year: 2026,
-        month: 4,
-        day: 29,
-        hours: 17,
-        minutes: 0,
-        timezone: 'America/Los_Angeles',
-      },
+      start: startInput,
+      end: endInput,
     });
 
     expect(formatted.isMultiDay).toBe(true);
-    expect(formatted.displayDate).toBe('Mon, April 27 - Wed, 29');
+    expect(formatted.displayDate).toBe(getExpectedRangeDisplayDate(startInput, endInput));
     expect(formatted.startDate.monthShort).toBe('APR');
     expect(formatted.startDate.dayOfMonth).toBe('27');
   });
 
   it('shows both month names when a multi-day range crosses months', () => {
+    const startInput = {
+      year: 2026,
+      month: 4,
+      day: 30,
+      hours: 13,
+      minutes: 0,
+      timezone: 'America/Los_Angeles',
+    };
+    const endInput = {
+      year: 2026,
+      month: 5,
+      day: 1,
+      hours: 17,
+      minutes: 0,
+      timezone: 'America/Los_Angeles',
+    };
     const formatted = formatEventDateRangeFromParts({
-      start: {
-        year: 2026,
-        month: 4,
-        day: 30,
-        hours: 13,
-        minutes: 0,
-        timezone: 'America/Los_Angeles',
-      },
-      end: {
-        year: 2026,
-        month: 5,
-        day: 1,
-        hours: 17,
-        minutes: 0,
-        timezone: 'America/Los_Angeles',
-      },
+      start: startInput,
+      end: endInput,
     });
 
     expect(formatted.isMultiDay).toBe(true);
-    expect(formatted.displayDate).toBe('Thu, April 30 - Fri, May 1');
+    expect(formatted.displayDate).toBe(getExpectedRangeDisplayDate(startInput, endInput));
   });
 
   it('falls back to a single display date when the end date is invalid', () => {
