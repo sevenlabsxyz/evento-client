@@ -249,8 +249,12 @@ export function formatEventDateRange(startIso: string, endIso: string, timezone?
 
 function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateRangeParts | null {
   if (isValidDateParts(input.year, input.month, input.day)) {
+    // Use UTC noon to avoid timezone-induced day shifts when the runner's
+    // local timezone differs from the event timezone.
     return getEventDateRangeParts(
-      new Date(input.year as number, (input.month as number) - 1, input.day as number),
+      new Date(
+        Date.UTC(input.year as number, (input.month as number) - 1, input.day as number, 12, 0, 0)
+      ),
       input.timezone
     );
   }
