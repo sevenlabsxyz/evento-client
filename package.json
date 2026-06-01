@@ -166,24 +166,5 @@
     "*.{ts,tsx}": [
       "jest --bail --findRelatedTests --passWithNoTests"
     ]
-  },
-  "pnpm": {
-    "overrides": {
-      "flatted": "^3.4.2",
-      "jws": "^3.2.3",
-      "linkifyjs": "^4.3.2",
-      "lodash": "^4.18.1",
-      "glob@>=10 <10.5.0": "10.5.0",
-      "minimatch": "^9.0.7",
-      "picomatch": "^4.0.4",
-      "js-yaml": "^4.1.1",
-      "mdast-util-to-hast": "^13.2.1",
-      "markdown-it": "^14.1.1",
-      "ajv": "^6.14.0",
-      "test-exclude": "^7.0.0",
-      "brace-expansion": "^2.1.0",
-      "yaml": "^1.10.3",
-      "postcss": "^8.5.10"
-    }
   }
 }
