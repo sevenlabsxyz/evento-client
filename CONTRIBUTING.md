@@ -72,14 +72,14 @@ Unsure where to begin? You can start by looking through `good-first-issue` and `
 
 We actively welcome your pull requests! Here's how to contribute:
 
-1. Fork the repo and create your branch from `dev`
+1. Fork the repo and create your branch from `main`
 2. If you've added code that should be tested, add tests
 3. If you've changed APIs, update the documentation
 4. Ensure the test suite passes
 5. Make sure your code lints
 6. Issue that pull request!
 
-**Important:** All contributions should be based on the `dev` branch, not `main`. The `main` branch is reserved for stable releases.
+**Important:** All contributions should be based on the `main` branch.
 
 ## Development Setup
 
@@ -98,10 +98,10 @@ We actively welcome your pull requests! Here's how to contribute:
     cd evento-client
     ```
 
-2. **Switch to the dev branch**
+2. **Switch to the main branch**
 
     ```bash
-    git checkout dev
+    git checkout main
     ```
 
 3. **Install dependencies**
