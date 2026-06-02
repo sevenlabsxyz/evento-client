@@ -249,9 +249,11 @@ export function formatEventDateRange(startIso: string, endIso: string, timezone?
 
 function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateRangeParts | null {
   if (isValidDateParts(input.year, input.month, input.day)) {
+    // Date parts are already in the event's local timezone; don't apply
+    // timezone conversion, matching the behavior of formatEventDateFromParts.
     return getEventDateRangeParts(
       new Date(input.year as number, (input.month as number) - 1, input.day as number),
-      input.timezone
+      undefined
     );
   }
 
