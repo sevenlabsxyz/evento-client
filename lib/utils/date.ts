@@ -250,8 +250,7 @@ export function formatEventDateRange(startIso: string, endIso: string, timezone?
 function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateRangeParts | null {
   if (isValidDateParts(input.year, input.month, input.day)) {
     return getEventDateRangeParts(
-      new Date(input.year as number, (input.month as number) - 1, input.day as number),
-      input.timezone
+      new Date(input.year as number, (input.month as number) - 1, input.day as number)
     );
   }
 
