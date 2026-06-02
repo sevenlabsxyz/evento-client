@@ -251,7 +251,7 @@ function getEventDateRangePartsFromInput(input: EventDatePartsInput): EventDateR
   if (isValidDateParts(input.year, input.month, input.day)) {
     return getEventDateRangeParts(
       new Date(input.year as number, (input.month as number) - 1, input.day as number),
-      input.timezone
+      undefined
     );
   }
 
