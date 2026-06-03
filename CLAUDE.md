@@ -4,8 +4,6 @@ This document provides comprehensive context for AI agents working on the Evento
 
 ---
 
-a
-
 ## Tech Stack
 
 | Technology          | Version | Purpose                                |
