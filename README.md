@@ -93,11 +93,11 @@ pnpm start
 
 ### Development Workflow
 
-1. **Ensure you're on the dev branch**
+1. **Ensure you're on the main branch**
 
     ```bash
-    git checkout dev
-    git pull origin dev
+    git checkout main
+    git pull origin main
     ```
 
 2. **Create a new branch** for your feature/fix
@@ -121,7 +121,7 @@ pnpm start
     git commit -m "feat: add new feature"
     ```
 
-6. **Push and create a Pull Request** to the `dev` branch
+6. **Push and create a Pull Request** to the `main` branch
 
 ## API Integration
 
@@ -134,13 +134,13 @@ We love contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md
 ### Quick Contribution Guide
 
 1. Fork the repository
-2. Clone and switch to dev branch (`git clone <repo> && cd evento-client && git checkout dev`)
+2. Clone and switch to main branch (`git clone <repo> && cd evento-client && git checkout main`)
 3. Create your feature branch (`git checkout -b feature/AmazingFeature`)
 4. Commit your changes (`git commit -m 'feat: add some AmazingFeature'`)
 5. Push to the branch (`git push origin feature/AmazingFeature`)
-6. Open a Pull Request to the `dev` branch
+6. Open a Pull Request to the `main` branch
 
-**Note:** All PRs should target the `dev` branch, not `main`.
+**Note:** All PRs should target the `main` branch.
 
 ## Community
 
