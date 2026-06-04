@@ -59,7 +59,7 @@ This README is kept intentionally high-level and focused on local development ba
 
 4. **Open your browser**
 
-    Navigate to [http://localhost:3000](http://localhost:3000)
+    Navigate to [http://localhost:3003](http://localhost:3003)
 
 ## Development
 
