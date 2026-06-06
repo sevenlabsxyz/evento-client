@@ -380,7 +380,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
         </div>
 
         {isOwnerOrCohost ? (
-          <OwnerEventButtons eventId={event.id} />
+          <OwnerEventButtons eventId={event.id} eventTitle={event.title} />
         ) : (
           <>
             <div className='grid grid-cols-1 gap-2'>
