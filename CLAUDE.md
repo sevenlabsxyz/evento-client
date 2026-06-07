@@ -10,7 +10,7 @@ a
 
 | Technology          | Version | Purpose                                |
 | ------------------- | ------- | -------------------------------------- |
-| **Next.js**         | 14.2.16 | React framework (App Router)           |
+| **Next.js**         | 14.2.35 | React framework (App Router)           |
 | **React**           | 18.x    | UI library                             |
 | **TypeScript**      | 5.x     | Type safety                            |
 | **TanStack Query**  | 5.83.0  | Server state management                |
@@ -19,7 +19,7 @@ a
 | **shadcn/ui**       | -       | UI component system (Radix + Tailwind) |
 | **React Hook Form** | 7.60.0  | Form handling                          |
 | **Zod**             | 4.0.5   | Schema validation                      |
-| **Axios**           | 1.10.0  | HTTP client                            |
+| **Axios**           | 1.16.0  | HTTP client                            |
 | **Breez SDK Spark** | 0.11.0  | Bitcoin Lightning wallet               |
 
 ---
@@ -830,4 +830,4 @@ pnpm build
 
 ---
 
-_Last updated: January 2025_
+_Last updated: June 2026_
