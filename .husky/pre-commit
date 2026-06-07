@@ -1,3 +1,1 @@
-# Run the full test suite, then format and test only staged files.
-# pnpm lint && pnpm test && pnpm exec lint-staged // TODO: Re-enable linting when lint errors are fixed
-pnpm test && pnpm exec lint-staged
+pnpm lint && pnpm test && pnpm exec lint-staged
