@@ -381,9 +381,6 @@ importers:
       axios-mock-adapter:
         specifier: ^2.1.0
         version: 2.1.0(axios@1.16.0)
-      babel-jest:
-        specifier: 29.7.0
-        version: 29.7.0(@babel/core@7.28.4)
       dotenv:
         specifier: ^17.3.1
         version: 17.3.1
