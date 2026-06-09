@@ -16,6 +16,7 @@
     "test:e2e:cleanup": "playwright test -c playwright.config.ts --project=smoke --grep @cleanup",
     "test:watch": "jest --config=jest.config.ts --watch",
     "test:ci": "jest --config=jest.config.ts --ci --coverage",
+    "test:coverage": "jest --config=jest.config.ts --coverage --passWithNoTests",
     "tsc": "tsc --noEmit",
     "prepare": "husky"
   },
