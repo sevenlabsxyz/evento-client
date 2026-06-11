@@ -35,40 +35,6 @@ jest.mock('@/lib/services/breez-sdk', () => ({
   },
 }));
 
-// Mock contacts store - define mock inside the callback
-jest.mock('@/lib/stores/contacts-store', () => {
-  const mockState: {
-    contacts: any[];
-    isLoading: boolean;
-    error: string | null;
-    searchQuery: string;
-  } = {
-    contacts: [],
-    isLoading: false,
-    error: null,
-    searchQuery: '',
-  };
-
-  return {
-    useContactsStore: jest.fn(() => ({
-      ...mockState,
-      setContacts: jest.fn((contacts: any[]) => {
-        mockState.contacts = contacts;
-      }),
-      setLoading: jest.fn((loading: boolean) => {
-        mockState.isLoading = loading;
-      }),
-      setError: jest.fn((error: string | null) => {
-        mockState.error = error;
-      }),
-      setSearchQuery: jest.fn(),
-      addContact: jest.fn(),
-      updateContact: jest.fn(),
-      removeContact: jest.fn(),
-    })),
-  };
-});
-
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { getBreezErrorMessage, logBreezError } from '@/lib/utils/breez-error-handler';
 import { toast } from 'sonner';
