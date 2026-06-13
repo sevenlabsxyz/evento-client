@@ -200,9 +200,6 @@ importers:
       '@tryghost/content-api':
         specifier: ^1.11.28
         version: 1.11.28
-      '@types/google.maps':
-        specifier: ^3.58.1
-        version: 3.58.1
       '@vercel/analytics':
         specifier: ^1.5.0
         version: 1.5.0(next@14.2.35(@babel/core@7.28.4)(@playwright/test@1.58.2)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)
@@ -360,6 +357,9 @@ importers:
       '@types/dompurify':
         specifier: ^3.2.0
         version: 3.2.0
+      '@types/google.maps':
+        specifier: ^3.58.1
+        version: 3.58.1
       '@types/jest':
         specifier: ^29.5.12
         version: 29.5.12
