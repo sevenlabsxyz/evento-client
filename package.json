@@ -131,8 +131,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@testing-library/jest-dom": "^6.8.0",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@types/bip39": "^3.0.4",
-    "@types/dompurify": "^3.2.0",
+
     "@types/google.maps": "^3.58.1",
     "@types/jest": "^29.5.12",
     "@types/lodash.debounce": "^4.0.9",
