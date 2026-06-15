@@ -125,7 +125,9 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
     const currentIds = Array.from(
       new Set(selectedSlugs.map((slug) => slugToIdMap[slug]).filter(Boolean))
     ).sort();
-    const originalIds = Array.from(new Set((userInterests?.map((i) => i.id) || []).filter(Boolean))).sort();
+    const originalIds = Array.from(
+      new Set((userInterests?.map((i) => i.id) || []).filter(Boolean))
+    ).sort();
     return JSON.stringify(currentIds) !== JSON.stringify(originalIds);
   }, [selectedSlugs, slugToIdMap, userInterests]);
 

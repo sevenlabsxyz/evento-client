@@ -49,10 +49,15 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   // Set up event listener to detect when active invoice is paid
   useEffect(() => {
     // Set up listener if we have an active invoice OR if we're showing lightning address (no amount)
-    const shouldListen = activeInvoice || (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
+    const shouldListen =
+      activeInvoice ||
+      (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
     if (!shouldListen) return;
 
-    logger.info('Setting up payment listener for invoice', { activeInvoice, hasLightningAddress: !!address?.lightningAddress });
+    logger.info('Setting up payment listener for invoice', {
+      activeInvoice,
+      hasLightningAddress: !!address?.lightningAddress,
+    });
 
     const handlePaymentEvent = (event: SdkEvent) => {
       if (event.type === 'paymentSucceeded') {

@@ -182,7 +182,8 @@ export function SendLightningSheet({
           parsed = await breezSDK.parseInput(trimmedInvoice);
         } catch (breezError) {
           // Check if error is CORS/network related
-          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const errorMessage =
+            breezError instanceof Error ? breezError.message : String(breezError);
           const isCorsError =
             errorMessage.includes('CORS') ||
             errorMessage.includes('Access-Control-Allow-Origin') ||

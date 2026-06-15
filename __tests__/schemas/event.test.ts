@@ -427,7 +427,6 @@ describe('Event Schemas', () => {
       }
     });
 
-
     it('accepts settings field for capacity management', () => {
       const dataWithSettings = {
         ...validUpdateData,

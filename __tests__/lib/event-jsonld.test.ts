@@ -65,7 +65,9 @@ describe('buildEventJsonLd', () => {
     });
 
     expect(result.image).toEqual([
-      expect.stringMatching(/^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=1774269296000-/),
+      expect.stringMatching(
+        /^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=1774269296000-/
+      ),
     ]);
   });
 
