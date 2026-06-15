@@ -21,6 +21,10 @@ export function getAppUrl() {
     return normalizeAppUrl(process.env.VERCEL_URL);
   }
 
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return normalizeAppUrl(process.env.NEXT_PUBLIC_APP_URL);
+  }
+
   return DEFAULT_APP_URL;
 }
 
