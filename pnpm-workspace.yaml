@@ -11,7 +11,7 @@ overrides:
   picomatch: ^4.0.4
   js-yaml: ^4.1.1
   mdast-util-to-hast: ^13.2.1
-  markdown-it: ^14.1.1
+  markdown-it: ^14.1.2
   ajv: ^6.14.0
   test-exclude: ^7.0.0
   brace-expansion: ^2.1.0
