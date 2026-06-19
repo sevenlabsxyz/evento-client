@@ -71,8 +71,6 @@
     "@tiptap/extension-image": "^3.0.3",
     "@tiptap/extension-italic": "^3.0.1",
     "@tiptap/extension-link": "^3.0.1",
-    "@tiptap/extension-list": "^3.0.3",
-    "@tiptap/extension-list-item": "^3.0.7",
     "@tiptap/extension-placeholder": "^3.0.3",
     "@tiptap/pm": "^3.0.1",
     "@tiptap/react": "^3.0.1",
