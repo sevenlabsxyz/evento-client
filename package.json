@@ -28,7 +28,6 @@
     "@emoji-mart/react": "^1.1.1",
     "@giphy/js-fetch-api": "^5.7.0",
     "@giphy/js-types": "^5.1.0",
-    "@giphy/react-components": "^10.1.0",
     "@hookform/resolvers": "^5.1.1",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.14",
