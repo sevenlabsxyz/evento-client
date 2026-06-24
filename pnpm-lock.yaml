@@ -197,9 +197,6 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.0.1
         version: 3.0.7
-      '@tryghost/content-api':
-        specifier: ^1.11.28
-        version: 1.11.28
       '@types/google.maps':
         specifier: ^3.58.1
         version: 3.58.1
@@ -2117,9 +2114,6 @@ packages:
         optional: true
       svelte:
         optional: true
-
-  '@tryghost/content-api@1.11.28':
-    resolution: {integrity: sha512-OKOnwpLOZEBi24Sbe5zPznNRWX9bmC9lbEfuhbB/2tnxAUAYxZvr9zLenJr7Wzz1CWZW93pqAdTo51m2lIIx3Q==}
 
   '@tsconfig/node10@1.0.11':
     resolution: {integrity: sha512-DcRjDCujK/kCk/cUe8Xz8ZSpm8mS3mNNpta+jGCA6USEDfktlNvm1+IuZ9eTcDbNk41BHwpHHeW+N1lKCz4zOw==}
@@ -8294,12 +8288,6 @@ snapshots:
       prettier: 3.8.1
     transitivePeerDependencies:
       - supports-color
-
-  '@tryghost/content-api@1.11.28':
-    dependencies:
-      axios: 1.16.0
-    transitivePeerDependencies:
-      - debug
 
   '@tsconfig/node10@1.0.11': {}
 
