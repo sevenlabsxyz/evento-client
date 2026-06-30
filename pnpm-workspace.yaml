@@ -1,6 +1,9 @@
 packages:
   - .
 
+allowBuilds:
+  supabase: false
+
 overrides:
   flatted: ^3.4.2
   jws: ^3.2.3
