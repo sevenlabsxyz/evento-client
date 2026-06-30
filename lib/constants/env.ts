@@ -36,6 +36,9 @@ export const Env = {
   // Breez SDK
   NEXT_PUBLIC_BREEZ_API_KEY: process.env.NEXT_PUBLIC_BREEZ_API_KEY || '',
 
+  // Telegram
+  NEXT_PUBLIC_TELEGRAM_BOT_USERNAME: process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? '',
+
   // Error Alerting
   NEXT_PUBLIC_ERROR_ALERTS_ENABLED: process.env.NEXT_PUBLIC_ERROR_ALERTS_ENABLED === 'true',
 } as const;
