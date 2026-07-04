@@ -14,6 +14,9 @@ coverage
 # VS Code settings
 .vscode
 
+# GitHub Actions (auto-generated/bundled files)
+.github/actions
+
 # Misc
 public/**/*.ico
 public/**/*.png

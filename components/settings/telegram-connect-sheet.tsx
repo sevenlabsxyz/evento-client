@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { SheetWithDetentFull } from '@/components/ui/sheet-with-detent-full';
+import { Env } from '@/lib/constants/env';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { toast } from '@/lib/utils/toast';
 import { CheckCircle, Loader2, Send, Unlink } from 'lucide-react';
@@ -21,7 +22,7 @@ declare global {
 }
 
 const EVENTO_API_BASE = 'https://evento.so';
-const BOT_USERNAME = process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ?? '';
+const BOT_USERNAME = Env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME;
 
 export function TelegramConnectSheet({
   open,

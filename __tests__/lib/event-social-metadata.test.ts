@@ -11,11 +11,13 @@ describe('event social metadata helpers', () => {
   const originalNodeEnv = process.env.NODE_ENV;
   const originalVercelUrl = process.env.VERCEL_URL;
   const originalVercelProductionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const originalNextPublicAppUrl = process.env.NEXT_PUBLIC_APP_URL;
 
   beforeEach(() => {
     env.NODE_ENV = 'production';
     delete process.env.VERCEL_URL;
     delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
+    delete process.env.NEXT_PUBLIC_APP_URL;
   });
 
   afterAll(() => {
@@ -30,6 +32,12 @@ describe('event social metadata helpers', () => {
       delete process.env.VERCEL_PROJECT_PRODUCTION_URL;
     } else {
       process.env.VERCEL_PROJECT_PRODUCTION_URL = originalVercelProductionUrl;
+    }
+
+    if (originalNextPublicAppUrl === undefined) {
+      delete process.env.NEXT_PUBLIC_APP_URL;
+    } else {
+      process.env.NEXT_PUBLIC_APP_URL = originalNextPublicAppUrl;
     }
   });
 
@@ -64,6 +72,20 @@ describe('event social metadata helpers', () => {
         cover: '/eventos/uploaded-covers/cov_123.png',
       })
     ).toMatch(/^https:\/\/app\.evento\.so\/e\/evt_123\/social-image\?v=1774269296000-/);
+  });
+
+  it('prefers NEXT_PUBLIC_APP_URL over Vercel deployment URLs', () => {
+    process.env.NEXT_PUBLIC_APP_URL = 'https://events.example.com/';
+    process.env.VERCEL_PROJECT_PRODUCTION_URL = 'evento-client-production.vercel.app';
+    process.env.VERCEL_URL = 'evento-client-preview.vercel.app';
+
+    expect(
+      buildEventSocialImageUrl('evt_123', {
+        updatedAt: '2026-03-23T12:34:56.000Z',
+        title: 'Bitcoin Pizza Day',
+        cover: '/eventos/uploaded-covers/cov_123.png',
+      })
+    ).toMatch(/^https:\/\/events\.example\.com\/e\/evt_123\/social-image\?v=1774269296000-/);
   });
 
   it('still versions the image url when updated_at is missing', () => {
