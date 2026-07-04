@@ -23,6 +23,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { SubmitButton } from '@/components/ui/submit-button';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
 import { useCreateEventWithCallbacks } from '@/lib/hooks/use-create-event';
+import { useEventDetails } from '@/lib/hooks/use-event-details';
+import { queryKeys } from '@/lib/query-client';
 import { useEventFormStore } from '@/lib/stores/event-form-store';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { getContentPreview, isContentEmpty } from '@/lib/utils/content';
@@ -31,8 +33,19 @@ import { getLocationDisplayName } from '@/lib/utils/location';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { SheetStack } from '@silk-hq/components';
-import { Calendar, ChevronRight, Edit3, Globe, Lock, MapPin, Music, Users } from 'lucide-react';
-import { usePathname } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  Calendar,
+  ChevronRight,
+  Edit3,
+  Globe,
+  Layers,
+  Lock,
+  MapPin,
+  Music,
+  Users,
+} from 'lucide-react';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 interface CreatedEventModalData {
@@ -50,6 +63,11 @@ export default function CreatePage() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
+  const queryClient = useQueryClient();
+
+  // When set, the new event is created as a sub-event of this parent
+  const parentEventId = useSearchParams().get('parent_event_id') ?? undefined;
+  const { data: parentEvent } = useEventDetails(parentEventId ?? '');
 
   // Set TopBar content
   useEffect(() => {
@@ -57,7 +75,7 @@ export default function CreatePage() {
 
     setTopBarForRoute(pathname, {
       leftMode: 'back',
-      title: 'Create Event',
+      title: parentEventId ? 'Create Sub Event' : 'Create Event',
       hideMobileBreadcrumb: true,
       subtitle: undefined,
       showAvatar: true,
@@ -69,7 +87,7 @@ export default function CreatePage() {
     return () => {
       clearRoute(pathname);
     };
-  }, [pathname, applyRouteConfig, setTopBarForRoute, clearRoute]);
+  }, [pathname, parentEventId, applyRouteConfig, setTopBarForRoute, clearRoute]);
 
   const createEventMutation = useCreateEventWithCallbacks();
 
@@ -216,8 +234,15 @@ export default function CreatePage() {
 
     try {
       const formData = getFormData();
-      const { status: _status, ...createPayload } = formData;
+      const { status: _status, ...basePayload } = formData;
+      const createPayload = parentEventId
+        ? { ...basePayload, parent_event_id: parentEventId }
+        : basePayload;
       const result = await createEventMutation.mutateAsync(createPayload);
+
+      if (parentEventId) {
+        queryClient.invalidateQueries({ queryKey: queryKeys.eventSubEvents(parentEventId) });
+      }
 
       const createdType = result.type ?? formData.type;
       const createdStatus = result.status ?? (createdType === 'rsvp' ? 'published' : 'draft');
@@ -381,6 +406,25 @@ export default function CreatePage() {
   return (
     <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
       {/* Header */}
+
+      {/* Sub Event Banner */}
+      {parentEventId && (
+        <div className='mx-4 mt-2 flex items-center gap-3 rounded-2xl border border-teal-200 bg-teal-50 p-3'>
+          <div className='flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-teal-100'>
+            <Layers className='h-4 w-4 text-teal-600' />
+          </div>
+          <p className='text-sm text-teal-900'>
+            This event will be created as a sub event
+            {parentEvent?.title ? (
+              <>
+                {' '}
+                of <span className='font-semibold'>{parentEvent.title}</span>
+              </>
+            ) : null}
+            .
+          </p>
+        </div>
+      )}
 
       {/* Cover Image Selector */}
       <div className='mb-2 mt-2 px-4'>

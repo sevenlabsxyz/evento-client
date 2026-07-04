@@ -210,6 +210,9 @@ export interface Event {
   source_platform?: string | null;
   has_campaign?: boolean;
 
+  // Sub-events: set when this event is a sub-event of another event
+  parent_event_id?: string | null;
+
   created_at: string;
   updated_at: string;
 

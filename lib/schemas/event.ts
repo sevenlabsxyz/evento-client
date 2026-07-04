@@ -97,6 +97,9 @@ export const eventFormSchema = z.object({
   // Password protection
   password_protected: z.boolean().optional(),
   password: z.string().optional(),
+
+  // Sub-events: creates the event as a sub-event of the given parent
+  parent_event_id: z.string().optional(),
 });
 
 export type EventFormData = z.infer<typeof eventFormSchema>;
@@ -159,6 +162,9 @@ export const updateEventSchema = z.object({
 
   password_protected: z.boolean().optional(),
   password: z.string().optional(),
+
+  // Sub-events: set to link to a parent event, null to unlink
+  parent_event_id: z.string().nullable().optional(),
 });
 
 export type UpdateEventData = z.infer<typeof updateEventSchema>;
@@ -240,6 +246,7 @@ export const apiEventSchema = z.object({
   has_campaign: z.boolean().optional(),
   max_capacity: z.number().nullable().optional(),
   show_capacity_count: z.boolean().optional(),
+  parent_event_id: z.string().nullable().optional(),
 
   // Password protection
   password_protected: z.boolean().optional(),
