@@ -9,7 +9,7 @@ import { useAmountConverter, useReceivePayment } from '@/lib/hooks/use-wallet-pa
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/web';
+import type { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/ssr';
 import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';

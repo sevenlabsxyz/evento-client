@@ -10,7 +10,7 @@ import {
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
 import { toast } from '@/lib/utils/toast';
-import {
+import type {
   BreezSdk,
   CheckLightningAddressRequest,
   ClaimDepositRequest,
@@ -42,7 +42,7 @@ import {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
-} from '@breeztech/breez-sdk-spark/web';
+} from '@breeztech/breez-sdk-spark/ssr';
 
 type LightningAddressChangedEvent = {
   type: 'lightningAddressChanged';
@@ -152,7 +152,7 @@ export class BreezSDKService {
         if (DEBUG_BREEZ) {
           console.debug('Loading Breez SDK module...');
         }
-        sdkModule = await import('@breeztech/breez-sdk-spark/web');
+        sdkModule = await import('@breeztech/breez-sdk-spark/ssr');
 
         // Initialize WASM if there's a default export (initialization function)
         if (sdkModule.default && typeof sdkModule.default === 'function') {
@@ -193,7 +193,6 @@ export class BreezSDKService {
       config.apiKey = apiKey;
       // Configure LNURL domain for Lightning addresses
       config.lnurlDomain = 'evento.cash';
-      config.supportLnurlVerify = true;
       // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
       // Auto-claims if fee is ≤ 10 sat/vbyte (~2,000 sats for a typical 200 vbyte swap tx)
       // This covers most normal fee environments; only extreme spikes require manual claiming
@@ -502,7 +501,7 @@ export class BreezSDKService {
 
     try {
       const request: PrepareSendPaymentRequest = {
-        paymentRequest,
+        paymentRequest: { type: 'input', input: paymentRequest },
         amount: amountSats ? BigInt(amountSats) : undefined,
       };
 
@@ -529,7 +528,7 @@ export class BreezSDKService {
     try {
       if (DEBUG_BREEZ) console.debug('⚡ [BREEZ:PREPARE_SEND_ALL] Preparing send-all payment...');
       const request: PrepareSendPaymentRequest = {
-        paymentRequest,
+        paymentRequest: { type: 'input', input: paymentRequest },
         amount: BigInt(amountSats),
         feePolicy: 'feesIncluded',
       };
@@ -1074,4 +1073,4 @@ export class BreezSDKService {
 export const breezSDK = BreezSDKService.getInstance();
 
 // Re-export types for use in components
-export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark/web';
+export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark/ssr';

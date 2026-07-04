@@ -30,6 +30,13 @@ export function ZapCustomStep({
   onBack,
   onClose,
 }: ZapCustomStepProps) {
+  const amountSats = Number(customAmount);
+  const hasValidSatsAmount =
+    customAmount !== '' &&
+    Number.isFinite(amountSats) &&
+    Number.isInteger(amountSats) &&
+    amountSats > 0;
+
   return (
     <div className='flex flex-col'>
       {/* Header */}
@@ -80,13 +87,13 @@ export function ZapCustomStep({
             value={inputMode === 'usd' ? customAmountUSD : customAmount}
             onNumberClick={onNumberClick}
             onDelete={onDelete}
-            showDecimal={true}
+            showDecimal={inputMode === 'usd'}
           />
 
           {/* Confirm Button */}
           <Button
             onClick={onConfirm}
-            disabled={!customAmount || Number(customAmount) <= 0 || isPreparing}
+            disabled={!hasValidSatsAmount || isPreparing}
             className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
           >
             {isPreparing ? (

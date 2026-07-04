@@ -1,5 +1,5 @@
 import { WalletState } from '@/lib/types/wallet';
-import { LightningAddressInfo } from '@breeztech/breez-sdk-spark/web';
+import type { LightningAddressInfo } from '@breeztech/breez-sdk-spark/ssr';
 import { create } from 'zustand';
 
 export const INITIAL_WALLET_STATE: WalletState = {

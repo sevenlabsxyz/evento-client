@@ -1,4 +1,4 @@
-import { Payment } from '@breeztech/breez-sdk-spark/web';
+import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 
 export interface WalletPaymentDisplayData {
   primaryText: string;

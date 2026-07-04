@@ -32,9 +32,13 @@ export function AmountInputSheet({
   const [isSendAll, setIsSendAll] = useState(false);
   const { satsToUSD, usdToSats } = useAmountConverter();
 
+  const satsAmount = Number(amount);
+  const hasValidSatsAmount =
+    amount !== '' && Number.isFinite(satsAmount) && Number.isInteger(satsAmount) && satsAmount > 0;
+
   // Constraint validation logic
   const isWithinConstraints = () => {
-    const satsAmount = Number(amount);
+    if (amount && !hasValidSatsAmount) return false;
     if (minAmount != null && satsAmount < minAmount) return false;
     if (maxAmount != null && satsAmount > maxAmount) return false;
     return true;
@@ -42,7 +46,9 @@ export function AmountInputSheet({
 
   // Get validation message
   const getValidationMessage = () => {
-    const satsAmount = Number(amount);
+    if (amount && Number.isFinite(satsAmount) && satsAmount > 0 && !Number.isInteger(satsAmount)) {
+      return 'Enter a whole number of sats';
+    }
     if (minAmount != null && satsAmount < minAmount && satsAmount > 0) {
       return `Minimum: ${minAmount.toLocaleString()} sats`;
     }
@@ -80,6 +86,8 @@ export function AmountInputSheet({
 
   const handleNumberClick = async (num: string) => {
     setIsSendAll(false);
+    if (inputMode === 'sats' && num === '.') return;
+
     const currentValue = inputMode === 'usd' ? amountUSD : amount;
     const newValue = currentValue + num;
 
@@ -143,7 +151,7 @@ export function AmountInputSheet({
   };
 
   const handleConfirm = () => {
-    if (amount && Number(amount) > 0) {
+    if (hasValidSatsAmount) {
       onConfirm(Number(amount), isSendAll);
       // Don't close the sheet here - parent will close it after async operations complete
     }
@@ -209,7 +217,7 @@ export function AmountInputSheet({
             onNumberClick={handleNumberClick}
             onDelete={handleDelete}
             enableKeyboard={open}
-            showDecimal={true}
+            showDecimal={inputMode === 'usd'}
           />
 
           {/* Validation Message */}
@@ -219,7 +227,7 @@ export function AmountInputSheet({
           {/* Next Button */}
           <Button
             onClick={handleConfirm}
-            disabled={!amount || Number(amount) <= 0 || isLoading || !isWithinConstraints()}
+            disabled={!hasValidSatsAmount || isLoading || !isWithinConstraints()}
             className='h-12 w-full rounded-full bg-gray-50 font-medium text-gray-900 hover:bg-gray-100'
             variant='outline'
           >

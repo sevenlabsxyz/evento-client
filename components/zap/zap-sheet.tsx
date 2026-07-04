@@ -26,6 +26,9 @@ import type { LnurlPayRequestDetails, RecipientInfo, Step, ZapSheetProps } from 
 
 const DEFAULT_QUICK_AMOUNTS = [21, 100, 500, 1000, 5000];
 
+const isPositiveIntegerSats = (amount: number) =>
+  Number.isFinite(amount) && Number.isInteger(amount) && amount > 0;
+
 export function ZapSheet({
   recipientLightningAddress,
   recipientName,
@@ -148,6 +151,8 @@ export function ZapSheet({
   };
 
   const handleNumberClick = async (num: string) => {
+    if (inputMode === 'sats' && num === '.') return;
+
     const currentValue = inputMode === 'usd' ? customAmountUSD : customAmount;
     const newValue = currentValue + num;
 
@@ -194,9 +199,9 @@ export function ZapSheet({
   };
 
   const handleCustomAmountConfirm = async () => {
-    if (!customAmount || Number(customAmount) <= 0) return;
-
     const amountSats = Number(customAmount);
+    if (!isPositiveIntegerSats(amountSats)) return;
+
     setSelectedAmount(amountSats);
     setIsPreparing(true);
 
@@ -222,7 +227,7 @@ export function ZapSheet({
       // Prepare the LNURL payment
       const response = await breezSDK.prepareLnurlPay({
         payRequest: currentPayRequest,
-        amountSats,
+        amount: BigInt(amountSats),
         comment: comment || undefined,
       });
 
@@ -251,7 +256,7 @@ export function ZapSheet({
   };
 
   const handleProceedToConfirm = async () => {
-    if (!selectedAmount) return;
+    if (!selectedAmount || !isPositiveIntegerSats(selectedAmount)) return;
 
     setIsPreparing(true);
 
@@ -277,7 +282,7 @@ export function ZapSheet({
       // Prepare the LNURL payment
       const response = await breezSDK.prepareLnurlPay({
         payRequest: currentPayRequest,
-        amountSats: selectedAmount,
+        amount: BigInt(selectedAmount),
         comment: comment || undefined,
       });
 

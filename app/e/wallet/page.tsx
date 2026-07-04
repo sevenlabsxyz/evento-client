@@ -48,7 +48,7 @@ import { migrateRecentAddressesToContacts } from '@/lib/utils/contacts-migration
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { matchWalletEasterEgg } from '@/lib/utils/wallet-easter-eggs';
-import { InputType, Payment } from '@breeztech/breez-sdk-spark/web';
+import type { InputType, Payment } from '@breeztech/breez-sdk-spark/ssr';
 import { motion } from 'framer-motion';
 import {
   Check,

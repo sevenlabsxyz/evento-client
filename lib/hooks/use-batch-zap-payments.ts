@@ -91,7 +91,7 @@ export function useBatchZapPayments() {
 
           const prepareResponse = await breezSDK.prepareLnurlPay({
             payRequest,
-            amountSats: distribution.perRecipientAmountSats,
+            amount: BigInt(distribution.perRecipientAmountSats),
             comment: comment || undefined,
           });
 
