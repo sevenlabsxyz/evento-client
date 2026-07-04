@@ -13,16 +13,16 @@ export function getAppUrl() {
     return LOCAL_APP_URL;
   }
 
+  if (process.env.NEXT_PUBLIC_APP_URL) {
+    return normalizeAppUrl(process.env.NEXT_PUBLIC_APP_URL);
+  }
+
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return normalizeAppUrl(process.env.VERCEL_PROJECT_PRODUCTION_URL);
   }
 
   if (process.env.VERCEL_URL) {
     return normalizeAppUrl(process.env.VERCEL_URL);
-  }
-
-  if (process.env.NEXT_PUBLIC_APP_URL) {
-    return normalizeAppUrl(process.env.NEXT_PUBLIC_APP_URL);
   }
 
   return DEFAULT_APP_URL;
