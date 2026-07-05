@@ -107,6 +107,9 @@ export const queryKeys = {
   listEvents: (listId: string) => [...queryKeys.lists, listId, 'events'] as const,
   eventSavedStatus: (eventId: string) => [...queryKeys.events, eventId, 'saved'] as const,
 
+  // Sub-events
+  eventSubEvents: (eventId: string) => [...queryKeys.events, eventId, 'sub-events'] as const,
+
   // Event hosts
   eventHosts: (eventId: string) => [...queryKeys.events, eventId, 'hosts'] as const,
   eventCohosts: (eventId: string) => [...queryKeys.events, eventId, 'cohosts'] as const,

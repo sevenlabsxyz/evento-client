@@ -2,29 +2,43 @@
 
 import { EventWithUser } from '@/lib/types/api';
 import { PlusIcon } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { EventCompactItem } from '../event-compact-item';
 import { Button } from '../ui/button';
 
 interface EventSubEventsProps {
+  eventId: string;
+  isHost?: boolean;
   subEvents: EventWithUser[];
   subEventsLoading: boolean;
   subEventsError: Error | null;
 }
 
 export default function EventSubEvents({
+  eventId,
+  isHost = false,
   subEvents,
   subEventsLoading,
   subEventsError,
 }: EventSubEventsProps) {
+  const router = useRouter();
+
   if (subEventsError) return null;
 
   return (
     <div className='space-y-4 border-t border-gray-100 pt-6'>
       <div className='mb-4 flex items-center justify-between gap-2'>
         <h3 className='text-lg font-semibold text-gray-900'>Sub Events</h3>
-        <Button variant='secondary' size='icon'>
-          <PlusIcon className='h-4 w-4' />
-        </Button>
+        {isHost && (
+          <Button
+            variant='secondary'
+            size='icon'
+            aria-label='Manage sub events'
+            onClick={() => router.push(`/e/${eventId}/manage/sub-events`)}
+          >
+            <PlusIcon className='h-4 w-4' />
+          </Button>
+        )}
       </div>
       <div className='space-y-4'>
         {subEventsLoading ? (

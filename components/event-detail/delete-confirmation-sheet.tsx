@@ -10,6 +10,11 @@ interface DeleteConfirmationSheetProps {
   onConfirm: () => void;
   itemType?: string;
   isLoading?: boolean;
+  // Copy overrides for non-delete actions (e.g. removing a link instead of deleting)
+  title?: string;
+  description?: string;
+  confirmLabel?: string;
+  loadingLabel?: string;
 }
 
 export default function DeleteConfirmationSheet({
@@ -18,6 +23,10 @@ export default function DeleteConfirmationSheet({
   onConfirm,
   itemType = 'comment',
   isLoading = false,
+  title,
+  description,
+  confirmLabel,
+  loadingLabel,
 }: DeleteConfirmationSheetProps) {
   const handleConfirm = () => {
     onConfirm();
@@ -43,13 +52,14 @@ export default function DeleteConfirmationSheet({
                 <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
                   <AlertTriangle className='h-5 w-5 text-red-500' />
                 </div>
-                <h2 className='text-xl font-semibold'>Delete {itemType}</h2>
+                <h2 className='text-xl font-semibold'>{title ?? `Delete ${itemType}`}</h2>
               </div>
 
               {/* Body */}
               <div className='mb-8 text-gray-600'>
                 <p>
-                  Are you sure you want to delete this {itemType}? This action cannot be undone.
+                  {description ??
+                    `Are you sure you want to delete this ${itemType}? This action cannot be undone.`}
                 </p>
               </div>
 
@@ -64,7 +74,9 @@ export default function DeleteConfirmationSheet({
                   className='w-full'
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Deleting...' : `Delete ${itemType}`}
+                  {isLoading
+                    ? (loadingLabel ?? 'Deleting...')
+                    : (confirmLabel ?? `Delete ${itemType}`)}
                 </Button>
               </div>
             </div>

@@ -519,8 +519,10 @@ export default function EventDetailPageClient() {
       {!(visibilitySettings?.hide_description_for_unapproved && !isApprovedAttendee) && (
         <EventDescription event={event} />
       )}
-      {(subEventsLoading || subEvents.length > 0 || subEventsError) && (
+      {(subEventsLoading || subEvents.length > 0 || subEventsError || isOwnerOrCohost) && (
         <EventSubEvents
+          eventId={eventId}
+          isHost={isOwnerOrCohost}
           subEvents={subEvents}
           subEventsLoading={subEventsLoading}
           subEventsError={subEventsError}

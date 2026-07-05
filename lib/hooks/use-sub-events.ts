@@ -1,19 +1,29 @@
 import { apiClient } from '@/lib/api/client';
+import { queryKeys } from '@/lib/query-client';
 import { EventWithUser } from '@/lib/types/api';
 import { transformApiEventResponse } from '@/lib/utils/api-transform';
 import { debugError } from '@/lib/utils/debug';
 import { useQuery } from '@tanstack/react-query';
 
-export function useSubEvents(eventId?: string) {
+interface UseSubEventsOptions {
+  /** Include draft sub-events — only honored by the API for hosts of the parent event */
+  includeDrafts?: boolean;
+}
+
+export function useSubEvents(eventId?: string, options: UseSubEventsOptions = {}) {
+  const { includeDrafts = false } = options;
+
   return useQuery<EventWithUser[]>({
-    queryKey: ['event', 'sub-events', eventId],
+    queryKey: [...queryKeys.eventSubEvents(eventId ?? ''), { includeDrafts }],
     queryFn: async (): Promise<EventWithUser[]> => {
       try {
         if (!eventId) {
           return [];
         }
 
-        const response = await apiClient.get<EventWithUser[]>(`/v1/events/${eventId}/sub-events`);
+        const response = await apiClient.get<EventWithUser[]>(
+          `/v1/events/${eventId}/sub-events${includeDrafts ? '?include_drafts=true' : ''}`
+        );
 
         // The API client interceptor returns response.data directly
         const responseData = response;
