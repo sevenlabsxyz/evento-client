@@ -13,6 +13,7 @@ import { getEventCoverDisplayUrl } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import debounce from 'lodash.debounce';
 import { Link2, Search } from 'lucide-react';
+import Image from 'next/image';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 interface LinkSubEventSheetProps {
@@ -47,9 +48,12 @@ function LinkableEventRow({
   return (
     <div className='flex items-center gap-3 rounded-xl border border-gray-100 p-2'>
       <div className='h-12 w-12 shrink-0 overflow-hidden rounded-lg'>
-        <img
+        <Image
           src={getEventCoverDisplayUrl(event.cover, 'feed')}
           alt={event.title}
+          width={48}
+          height={48}
+          sizes='48px'
           className='h-full w-full object-cover'
         />
       </div>
@@ -138,6 +142,24 @@ export default function LinkSubEventSheet({
       );
   }, [activeQuery.data, parentEventId, linkedEventIds]);
 
+  const renderLoadMoreButton = (className?: string) => {
+    if (!activeQuery.hasNextPage) return null;
+
+    return (
+      <div className={cn('flex justify-center', className)}>
+        <Button
+          variant='outline'
+          size='sm'
+          className='w-full max-w-[200px]'
+          onClick={() => activeQuery.fetchNextPage()}
+          disabled={activeQuery.isFetchingNextPage}
+        >
+          {activeQuery.isFetchingNextPage ? 'Loading...' : 'Load more'}
+        </Button>
+      </div>
+    );
+  };
+
   const handleLink = async (event: EventWithUser) => {
     setLinkingEventId(event.id);
     try {
@@ -222,13 +244,18 @@ export default function LinkSubEventSheet({
       ) : events.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-12'>
           <div className='text-center text-base text-gray-600'>
-            {searchText.trim()
-              ? `No events found matching "${searchText}"`
-              : 'No events available to link'}
+            {activeQuery.hasNextPage
+              ? 'No linkable events loaded yet'
+              : searchText.trim()
+                ? `No events found matching "${searchText}"`
+                : 'No events available to link'}
           </div>
           <p className='mt-2 text-center text-sm text-gray-500'>
-            Only your own events without a parent event can be linked.
+            {activeQuery.hasNextPage
+              ? 'Load more to keep checking your remaining events.'
+              : 'Only your own events without a parent event can be linked.'}
           </p>
+          {renderLoadMoreButton('mt-4')}
         </div>
       ) : (
         <div className='flex flex-col gap-2'>
@@ -241,19 +268,7 @@ export default function LinkSubEventSheet({
             />
           ))}
 
-          {activeQuery.hasNextPage && (
-            <div className='flex justify-center pt-4'>
-              <Button
-                variant='outline'
-                size='sm'
-                className='w-full max-w-[200px]'
-                onClick={() => activeQuery.fetchNextPage()}
-                disabled={activeQuery.isFetchingNextPage}
-              >
-                {activeQuery.isFetchingNextPage ? 'Loading...' : 'Load more'}
-              </Button>
-            </div>
-          )}
+          {renderLoadMoreButton('pt-4')}
         </div>
       )}
     </MasterScrollableSheet>

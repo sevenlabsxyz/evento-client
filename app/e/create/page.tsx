@@ -46,7 +46,7 @@ import {
   Users,
 } from 'lucide-react';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 interface CreatedEventModalData {
   id: string;
@@ -59,7 +59,39 @@ interface CreatedEventModalData {
   ctaLabel: string;
 }
 
+function CreatePageFallback() {
+  return (
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
+      <div className='flex-1 overflow-y-auto pb-24'>
+        <div className='mb-2 mt-2 px-4'>
+          <Skeleton className='h-40 w-full rounded-2xl' />
+        </div>
+        <div className='space-y-4 bg-gray-50 px-4 pt-4'>
+          <Skeleton className='h-24 w-full rounded-2xl' />
+          <Skeleton className='h-28 w-full rounded-2xl' />
+          <Skeleton className='h-20 w-full rounded-2xl' />
+          <Skeleton className='h-20 w-full rounded-2xl' />
+          <Skeleton className='h-20 w-full rounded-2xl' />
+        </div>
+      </div>
+      <div className='sticky bottom-0 z-50 border-t border-gray-200 bg-white p-4 md:bottom-2 md:rounded-b-xl'>
+        <div className='mx-auto max-w-full md:max-w-md'>
+          <Skeleton className='h-10 w-full rounded-xl' />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CreatePage() {
+  return (
+    <Suspense fallback={<CreatePageFallback />}>
+      <CreatePageContent />
+    </Suspense>
+  );
+}
+
+function CreatePageContent() {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
   const pathname = usePathname();
