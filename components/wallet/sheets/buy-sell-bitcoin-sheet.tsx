@@ -37,6 +37,7 @@ export function BuySellBitcoinSheet({
   const [isConvertingAmount, setIsConvertingAmount] = useState(false);
   const [isStartingCashApp, setIsStartingCashApp] = useState(false);
   const [hasOpenedCashApp, setHasOpenedCashApp] = useState(false);
+  const [cashAppUrl, setCashAppUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const detectCountry = async () => {
@@ -119,11 +120,14 @@ export function BuySellBitcoinSheet({
     try {
       setIsStartingCashApp(true);
       const response = await breezSDK.buyBitcoinWithCashApp(amountSats);
+      setCashAppUrl(response.url);
       setHasOpenedCashApp(true);
 
-      const popup = window.open(response.url, '_blank', 'noopener,noreferrer');
-      if (!popup) {
-        window.location.assign(response.url);
+      const popup = window.open(response.url, '_blank');
+      if (popup) {
+        popup.opener = null;
+      } else {
+        toast.info('Cash App is ready. Tap Open Cash App to continue.');
       }
 
       await onFundingStarted?.();
@@ -262,6 +266,21 @@ export function BuySellBitcoinSheet({
                                 You can leave this screen. Evento will update your balance when the
                                 Bitcoin lands.
                               </p>
+                              {cashAppUrl && (
+                                <Button
+                                  type='button'
+                                  variant='outline'
+                                  className='mt-3 h-10 rounded-full border-green-200 bg-white'
+                                  onClick={() => {
+                                    const popup = window.open(cashAppUrl, '_blank');
+                                    if (popup) {
+                                      popup.opener = null;
+                                    }
+                                  }}
+                                >
+                                  Open Cash App
+                                </Button>
+                              )}
                             </div>
                           </div>
                         )}
