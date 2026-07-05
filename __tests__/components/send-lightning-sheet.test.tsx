@@ -143,7 +143,11 @@ describe('SendLightningSheet', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Next' }));
 
     expect(await screen.findByText('Stablecoin sends are not ready')).toBeInTheDocument();
-    expect(screen.getByText(/cross-chain stablecoin address/i)).toBeInTheDocument();
+    expect(screen.getByText(/recognized this as a cross-chain address/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/address is valid but Evento cannot send to it yet/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/token contract address/i)).toBeInTheDocument();
     expect(screen.getByText('0x1111111111111111111111111111111111111111')).toBeInTheDocument();
 
     await waitFor(() => {

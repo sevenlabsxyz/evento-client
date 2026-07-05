@@ -1053,8 +1053,8 @@ export function SendLightningSheet({
                 <div>
                   <h3 className='font-semibold text-amber-950'>Stablecoin sends are not ready</h3>
                   <p className='mt-1 text-sm text-amber-900'>
-                    Evento recognized this as a cross-chain stablecoin address, but sending USDT or
-                    USDC from the wallet is not available yet.
+                    Evento recognized this as a cross-chain address, but sending USDT or USDC from
+                    the wallet is not available yet.
                   </p>
                 </div>
               </div>
@@ -1078,8 +1078,14 @@ export function SendLightningSheet({
             </div>
 
             <p className='text-sm text-gray-600'>
-              We need route selection, quote expiry, fee display, and slippage confirmation before
-              this can be sent safely.
+              If this is the recipient&apos;s wallet address, the address is valid but Evento cannot
+              send to it yet. We still need route selection, quote expiry, fee display, and slippage
+              confirmation before this can be sent safely.
+            </p>
+
+            <p className='rounded-2xl bg-gray-50 p-4 text-sm text-gray-600'>
+              If you pasted a token contract address like the USDT or USDC contract, use the
+              recipient&apos;s wallet address instead.
             </p>
 
             <div className='space-y-3'>
