@@ -16,7 +16,7 @@ import {
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/web';
+import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/ssr';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -182,7 +182,8 @@ export function SendLightningSheet({
           parsed = await breezSDK.parseInput(trimmedInvoice);
         } catch (breezError) {
           // Check if error is CORS/network related
-          const errorMessage = breezError instanceof Error ? breezError.message : String(breezError);
+          const errorMessage =
+            breezError instanceof Error ? breezError.message : String(breezError);
           const isCorsError =
             errorMessage.includes('CORS') ||
             errorMessage.includes('Access-Control-Allow-Origin') ||
@@ -461,7 +462,7 @@ export function SendLightningSheet({
 
         const prepareResponse = await breezSDK.prepareLnurlPay({
           payRequest,
-          amountSats,
+          amount: BigInt(amountSats),
           comment: comment || undefined,
         });
 

@@ -10,7 +10,7 @@ import {
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
-import { Payment, PrepareSendPaymentResponse } from '@breeztech/breez-sdk-spark/web';
+import type { Payment, PrepareSendPaymentResponse } from '@breeztech/breez-sdk-spark/ssr';
 import { useCallback, useEffect, useState } from 'react';
 import { useWallet } from './use-wallet';
 

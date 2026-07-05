@@ -1,7 +1,7 @@
 'use client';
 
 import { MasterScrollableSheet } from '@/components/ui/master-scrollable-sheet';
-import { Payment } from '@breeztech/breez-sdk-spark/web';
+import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 import { TransactionDetailsSheet } from './transaction-details-sheet';
 import { TransactionHistory } from './transaction-history';
 
