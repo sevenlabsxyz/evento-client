@@ -10,7 +10,7 @@ import { BTCPriceService } from '@/lib/services/btc-price';
 import { detectUserCountry } from '@/lib/utils/geo-detection';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import { ArrowUpRight, CheckCircle2, Loader2, MapPin, X } from 'lucide-react';
+import { ArrowUpRight, Loader2, MapPin, X } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
@@ -36,7 +36,6 @@ export function BuySellBitcoinSheet({
   const [amountSats, setAmountSats] = useState<number | null>(null);
   const [isConvertingAmount, setIsConvertingAmount] = useState(false);
   const [isStartingCashApp, setIsStartingCashApp] = useState(false);
-  const [hasOpenedCashApp, setHasOpenedCashApp] = useState(false);
   const [cashAppUrl, setCashAppUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -106,7 +105,25 @@ export function BuySellBitcoinSheet({
     };
   }, [amountUsd, cashAppEnabled, open]);
 
+  const handleAmountUsdChange = (value: string) => {
+    setAmountUsd(value);
+    setCashAppUrl(null);
+  };
+
+  const openCashAppUrl = (url: string) => {
+    const popup = window.open(url, '_blank');
+    if (popup) {
+      popup.opener = null;
+    }
+    return popup;
+  };
+
   const handleStartCashAppBuy = async () => {
+    if (cashAppUrl) {
+      openCashAppUrl(cashAppUrl);
+      return;
+    }
+
     if (!amountSats || amountSats <= 0) {
       toast.error('Enter an amount to buy');
       return;
@@ -117,21 +134,27 @@ export function BuySellBitcoinSheet({
       return;
     }
 
+    let popup: Window | null = null;
+
     try {
       setIsStartingCashApp(true);
-      const response = await breezSDK.buyBitcoinWithCashApp(amountSats);
-      setCashAppUrl(response.url);
-      setHasOpenedCashApp(true);
-
-      const popup = window.open(response.url, '_blank');
+      popup = window.open('', '_blank');
       if (popup) {
         popup.opener = null;
+      }
+
+      const response = await breezSDK.buyBitcoinWithCashApp(amountSats);
+      setCashAppUrl(response.url);
+
+      if (popup) {
+        popup.location.href = response.url;
       } else {
-        toast.info('Cash App is ready. Tap Open Cash App to continue.');
+        toast.info('Cash App is ready. Tap Continue to Cash App again to open it.');
       }
 
       await onFundingStarted?.();
     } catch (error) {
+      popup?.close();
       toast.error(error instanceof Error ? error.message : 'Failed to start Cash App purchase');
     } finally {
       setIsStartingCashApp(false);
@@ -219,7 +242,7 @@ export function BuySellBitcoinSheet({
                                 type='button'
                                 variant={amountUsd === String(preset) ? 'default' : 'outline'}
                                 className='h-11 rounded-full'
-                                onClick={() => setAmountUsd(String(preset))}
+                                onClick={() => handleAmountUsdChange(String(preset))}
                               >
                                 ${preset}
                               </Button>
@@ -234,7 +257,7 @@ export function BuySellBitcoinSheet({
                               min='1'
                               type='number'
                               value={amountUsd}
-                              onChange={(event) => setAmountUsd(event.target.value)}
+                              onChange={(event) => handleAmountUsdChange(event.target.value)}
                               className='h-12 rounded-full pl-8 text-base'
                             />
                           </div>
@@ -252,44 +275,12 @@ export function BuySellBitcoinSheet({
                           </p>
                         </div>
 
-                        <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900'>
-                          Cash App or your browser will open to complete the purchase. Bitcoin
-                          arrives after the network confirms it, and your balance updates when the
-                          deposit is claimed.
-                        </div>
-
-                        {hasOpenedCashApp && (
-                          <div className='flex items-start gap-3 rounded-2xl border border-green-200 bg-green-50 p-4'>
-                            <CheckCircle2 className='mt-0.5 h-5 w-5 flex-shrink-0 text-green-600' />
-                            <div>
-                              <h3 className='font-semibold text-green-900'>Waiting for deposit</h3>
-                              <p className='text-sm text-green-800'>
-                                You can leave this screen. Evento will update your balance when the
-                                Bitcoin lands.
-                              </p>
-                              {cashAppUrl && (
-                                <Button
-                                  type='button'
-                                  variant='outline'
-                                  className='mt-3 h-10 rounded-full border-green-200 bg-white'
-                                  onClick={() => {
-                                    const popup = window.open(cashAppUrl, '_blank');
-                                    if (popup) {
-                                      popup.opener = null;
-                                    }
-                                  }}
-                                >
-                                  Open Cash App
-                                </Button>
-                              )}
-                            </div>
-                          </div>
-                        )}
-
                         <Button
                           type='button'
                           className='h-12 w-full rounded-full font-semibold'
-                          disabled={!amountSats || isConvertingAmount || isStartingCashApp}
+                          disabled={
+                            (!cashAppUrl && !amountSats) || isConvertingAmount || isStartingCashApp
+                          }
                           onClick={handleStartCashAppBuy}
                         >
                           {isStartingCashApp ? (
