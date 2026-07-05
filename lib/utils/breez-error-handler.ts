@@ -55,6 +55,7 @@ export const BREEZ_ERROR_CONTEXT = {
   DELETING_LIGHTNING_ADDRESS: 'deleting Lightning address',
 
   // Deposit Operations
+  BUYING_BITCOIN: 'buying Bitcoin',
   LISTING_UNCLAIMED_DEPOSITS: 'listing unclaimed deposits',
   CLAIMING_DEPOSIT: 'claiming deposit',
   REFUNDING_DEPOSIT: 'refunding deposit',

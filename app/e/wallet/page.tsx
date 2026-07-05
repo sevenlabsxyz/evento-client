@@ -36,6 +36,7 @@ import { WalletWelcome } from '@/components/wallet/wallet-welcome';
 import { Env } from '@/lib/constants/env';
 import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { useAuth, useRequireAuth } from '@/lib/hooks/use-auth';
+import { useFundingRegion } from '@/lib/hooks/use-funding-region';
 import { useLightningAddress } from '@/lib/hooks/use-lightning-address';
 import { useScreenWakeLock } from '@/lib/hooks/use-screen-wake-lock';
 import { useWallet } from '@/lib/hooks/use-wallet';
@@ -110,6 +111,7 @@ export default function WalletPage() {
   const { walletState, isLoading: isWalletLoading, markAsBackedUp, refreshBalance } = useWallet();
   const { payments, isLoading: isLoadingPayments, fetchPayments } = usePaymentHistory();
   const { address, checkAvailability, registerAddress } = useLightningAddress();
+  const { isCashAppEligible } = useFundingRegion();
 
   const [step, setStep] = useState<WalletStep>('welcome');
   const [mnemonic, setMnemonic] = useState<string | null>(null);
@@ -724,6 +726,7 @@ export default function WalletPage() {
 
               {/* Quick Tools Section */}
               <QuickToolsSection
+                buySellLabel={isCashAppEligible ? 'Buy Bitcoin' : 'Buy / Sell'}
                 onToolClick={(toolId) => {
                   openDrawer(toolId);
                 }}
@@ -886,6 +889,10 @@ export default function WalletPage() {
       <BuySellBitcoinSheet
         open={openDrawers.includes('buy-sell')}
         onOpenChange={(open) => !open && closeDrawer('buy-sell')}
+        cashAppEnabled={isCashAppEligible}
+        onFundingStarted={async () => {
+          await Promise.all([refreshBalance(), fetchPayments()]);
+        }}
       />
       <SpendBitcoinSheet
         open={openDrawers.includes('spend')}

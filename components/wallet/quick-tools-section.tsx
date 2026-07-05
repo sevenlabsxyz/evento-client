@@ -42,14 +42,20 @@ const quickTools: QuickTool[] = [
 
 type QuickToolsSectionProps = {
   onToolClick: (toolId: QuickTool['id']) => void;
+  buySellLabel?: string;
 };
 
-export function QuickToolsSection({ onToolClick }: QuickToolsSectionProps) {
+export function QuickToolsSection({
+  onToolClick,
+  buySellLabel = 'Buy / Sell',
+}: QuickToolsSectionProps) {
   return (
     <div className='space-y-3 pb-4 pt-2'>
       <div className='grid grid-cols-4 gap-1'>
         {quickTools.map((tool) => {
           const Icon = tool.icon;
+          const label = tool.id === 'buy-sell' ? buySellLabel : tool.label;
+
           return (
             <div
               key={tool.id}
@@ -63,7 +69,7 @@ export function QuickToolsSection({ onToolClick }: QuickToolsSectionProps) {
               >
                 <Icon className={`h-6 w-6 ${tool.iconColor}`} />
               </motion.div>
-              <span className='text-sm font-semibold text-gray-500'>{tool.label}</span>
+              <span className='text-center text-sm font-semibold text-gray-500'>{label}</span>
             </div>
           );
         })}
