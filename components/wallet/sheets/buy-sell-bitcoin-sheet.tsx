@@ -253,8 +253,9 @@ export function BuySellBitcoinSheet({
                         </div>
 
                         <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900'>
-                          Cash App will open to complete the purchase. Bitcoin arrives after the
-                          network confirms it, and your balance updates when the deposit is claimed.
+                          Cash App or your browser will open to complete the purchase. Bitcoin
+                          arrives after the network confirms it, and your balance updates when the
+                          deposit is claimed.
                         </div>
 
                         {hasOpenedCashApp && (
@@ -294,12 +295,12 @@ export function BuySellBitcoinSheet({
                           {isStartingCashApp ? (
                             <>
                               <Loader2 className='h-5 w-5 animate-spin' />
-                              Opening Cash App
+                              Continuing to Cash App
                             </>
                           ) : (
                             <>
                               <CashAppSVGIcon className='h-5 w-5' />
-                              Continue with Cash App
+                              Continue to Cash App
                             </>
                           )}
                         </Button>
