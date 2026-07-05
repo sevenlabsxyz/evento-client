@@ -14,7 +14,7 @@ import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
-import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
+import type { Payment } from '@breeztech/breez-sdk-spark';
 import { ArrowDownLeft, ArrowUpRight, Check, Clock, Copy, Info, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 

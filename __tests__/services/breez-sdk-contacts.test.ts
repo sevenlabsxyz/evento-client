@@ -15,7 +15,7 @@ const mockSdk = {
   removeEventListener: jest.fn(),
 };
 
-jest.mock('@breeztech/breez-sdk-spark/ssr', () => ({
+jest.mock('@breeztech/breez-sdk-spark', () => ({
   BreezSdk: jest.fn(),
   Config: {},
   Network: 'mainnet',

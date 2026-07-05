@@ -1,5 +1,5 @@
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
-import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
+import type { Payment } from '@breeztech/breez-sdk-spark';
 
 function createLightningPayment(
   overrides: Partial<Payment['details']> = {},

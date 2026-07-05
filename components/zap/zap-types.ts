@@ -1,6 +1,6 @@
 export type Step = 'amount' | 'custom' | 'confirm' | 'sending' | 'success' | 'no-wallet';
 
-import type { LnurlPayRequestDetails as BreezLnurlPayRequestDetails } from '@breeztech/breez-sdk-spark/ssr';
+import type { LnurlPayRequestDetails as BreezLnurlPayRequestDetails } from '@breeztech/breez-sdk-spark';
 
 export interface ZapSheetProps {
   recipientLightningAddress: string;

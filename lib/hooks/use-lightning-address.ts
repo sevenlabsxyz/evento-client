@@ -8,7 +8,7 @@ import {
   logBreezError,
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
-import type { LightningAddressInfo } from '@breeztech/breez-sdk-spark/ssr';
+import type { LightningAddressInfo } from '@breeztech/breez-sdk-spark';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { apiClient } from '../api/client';

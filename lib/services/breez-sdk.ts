@@ -43,7 +43,7 @@ import type {
   Seed,
   SendPaymentRequest,
   SendPaymentResponse,
-} from '@breeztech/breez-sdk-spark/ssr';
+} from '@breeztech/breez-sdk-spark';
 
 type LightningAddressChangedEvent = {
   type: 'lightningAddressChanged';
@@ -153,7 +153,7 @@ export class BreezSDKService {
         if (DEBUG_BREEZ) {
           console.debug('Loading Breez SDK module...');
         }
-        sdkModule = await import('@breeztech/breez-sdk-spark/ssr');
+        sdkModule = await import('@breeztech/breez-sdk-spark');
 
         // Initialize WASM if there's a default export (initialization function)
         if (sdkModule.default && typeof sdkModule.default === 'function') {
@@ -1093,4 +1093,4 @@ export class BreezSDKService {
 export const breezSDK = BreezSDKService.getInstance();
 
 // Re-export types for use in components
-export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark/ssr';
+export type { DepositInfo, Fee, FeePolicy } from '@breeztech/breez-sdk-spark';
