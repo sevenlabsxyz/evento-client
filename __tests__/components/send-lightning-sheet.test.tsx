@@ -142,6 +142,9 @@ const getCrossChainRoutesMock = breezSDK.getCrossChainRoutes as jest.MockedFunct
 const prepareCrossChainPaymentMock = breezSDK.prepareCrossChainPayment as jest.MockedFunction<
   typeof breezSDK.prepareCrossChainPayment
 >;
+const prepareLnurlPayMock = breezSDK.prepareLnurlPay as jest.MockedFunction<
+  typeof breezSDK.prepareLnurlPay
+>;
 const sendPaymentWithOptionsMock = breezSDK.sendPaymentWithOptions as jest.MockedFunction<
   typeof breezSDK.sendPaymentWithOptions
 >;
@@ -230,5 +233,66 @@ describe('SendLightningSheet', () => {
         prepareResponse,
       });
     });
+  });
+
+  it('resets cross-chain mode when entering a Lightning address after a stablecoin address', async () => {
+    const baseRoute = {
+      provider: 'orchestra',
+      chain: 'Base',
+      chainId: '8453',
+      asset: 'USDC',
+      decimals: 6,
+      exactOutEligible: false,
+      supportedSources: [],
+    } as any;
+    const polygonRoute = {
+      ...baseRoute,
+      chain: 'Polygon',
+      chainId: '137',
+    };
+    const payRequest = {
+      commentAllowed: 0,
+      minSendable: BigInt(1000),
+      maxSendable: BigInt(100_000_000),
+    };
+
+    parseInputMock
+      .mockResolvedValueOnce({
+        type: 'crossChainAddress',
+        address: '0x1111111111111111111111111111111111111111',
+        addressFamily: 'evm',
+        chainId: 8453,
+      } as any)
+      .mockResolvedValueOnce({
+        type: 'lightningAddress',
+        payRequest,
+      } as any);
+    getCrossChainRoutesMock.mockResolvedValue([baseRoute, polygonRoute]);
+    prepareLnurlPayMock.mockResolvedValue({ feeSats: 1 } as any);
+
+    render(<SendLightningSheet open={true} onOpenChange={jest.fn()} />);
+
+    fireEvent.change(screen.getByLabelText('Payment destination'), {
+      target: { value: '0x1111111111111111111111111111111111111111' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+    expect(await screen.findByText('Choose a stablecoin route')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Enter Different Address' }));
+
+    fireEvent.change(screen.getByLabelText('Payment destination'), {
+      target: { value: 'alice@example.com' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Confirm Amount' }));
+
+    await waitFor(() => {
+      expect(prepareLnurlPayMock).toHaveBeenCalledWith({
+        payRequest,
+        amount: BigInt(25_000),
+        comment: undefined,
+      });
+    });
+    expect(prepareCrossChainPaymentMock).not.toHaveBeenCalled();
   });
 });

@@ -176,22 +176,35 @@ export function SendLightningSheet({
     return cleaned;
   };
 
+  const resetDestinationState = () => {
+    setIsLightningInvoice(false);
+    setHasFixedAmount(false);
+    setInvoiceAmount(null);
+    setInvoiceDescription('');
+    setAmount('');
+    setAmountUSD('');
+    setComment('');
+    setParsedInput(null);
+    setLnurlPrepareResponse(null);
+    setCommentAllowed(0);
+    setMinSendable(1);
+    setMaxSendable(1000000000);
+    setPaymentType('lightning');
+    setBitcoinPrepareResponse(null);
+    setCrossChainRoutes([]);
+    setSelectedCrossChainRoute(null);
+    setCrossChainPrepareResponse(null);
+    setIsLoadingCrossChainRoutes(false);
+    setSendAll(false);
+  };
+
   const handleInvoiceChange = (value: string) => {
     const cleanedValue = stripUriPrefixes(value);
+    const hasChanged = cleanedValue !== invoice;
     setInvoice(cleanedValue);
 
-    // Reset state when input changes
-    if (!cleanedValue) {
-      setIsLightningInvoice(false);
-      setHasFixedAmount(false);
-      setInvoiceAmount(null);
-      setInvoiceDescription('');
-      setAmount('');
-      setAmountUSD('');
-      setParsedInput(null);
-      setCrossChainRoutes([]);
-      setSelectedCrossChainRoute(null);
-      setCrossChainPrepareResponse(null);
+    if (hasChanged) {
+      resetDestinationState();
     }
   };
 
@@ -312,6 +325,10 @@ export function SendLightningSheet({
       setParsedInput(parsed);
 
       if (parsed.type === 'bolt11Invoice') {
+        setPaymentType('lightning');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(true);
 
         // Try to get amount and description from invoice
@@ -340,6 +357,10 @@ export function SendLightningSheet({
           setInvoiceDescription(prepareResponse.paymentMethod.invoiceDetails.description || '');
         }
       } else if (parsed.type === 'lightningAddress') {
+        setPaymentType('lightning');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(false);
 
         // Extract LNURL constraints from Lightning address
@@ -353,6 +374,10 @@ export function SendLightningSheet({
         // Lightning address - need amount
         setStep('amount');
       } else if (parsed.type === 'lnurlPay') {
+        setPaymentType('lightning');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(false);
 
         // Extract LNURL constraints
@@ -365,6 +390,9 @@ export function SendLightningSheet({
       } else if (parsed.type === 'bitcoinAddress') {
         // Bitcoin on-chain address
         setPaymentType('bitcoin');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(false);
         setHasFixedAmount(false);
 
@@ -388,6 +416,11 @@ export function SendLightningSheet({
         );
 
         if (lightningMethod) {
+          setPaymentType('lightning');
+          setCrossChainRoutes([]);
+          setSelectedCrossChainRoute(null);
+          setCrossChainPrepareResponse(null);
+
           // Handle Lightning payment method from BIP21
           if (lightningMethod.type === 'bolt11Invoice') {
             setIsLightningInvoice(true);
@@ -448,6 +481,9 @@ export function SendLightningSheet({
 
           if (bitcoinMethod) {
             setPaymentType('bitcoin');
+            setCrossChainRoutes([]);
+            setSelectedCrossChainRoute(null);
+            setCrossChainPrepareResponse(null);
             setIsLightningInvoice(false);
             setHasFixedAmount(false);
             setStep('amount');
