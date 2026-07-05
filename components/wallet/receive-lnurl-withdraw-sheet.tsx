@@ -7,7 +7,7 @@ import { useAmountConverter } from '@/lib/hooks/use-wallet-payments';
 import { breezSDK } from '@/lib/services/breez-sdk';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import type { InputType } from '@breeztech/breez-sdk-spark';
+import type { InputType } from '@breeztech/breez-sdk-spark/ssr';
 import { motion } from 'framer-motion';
 import { CheckCircle2, Loader2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';

@@ -4,7 +4,7 @@ import {
   matchWalletEasterEgg,
   WalletEasterEggRule,
 } from '@/lib/utils/wallet-easter-eggs';
-import type { Payment } from '@breeztech/breez-sdk-spark';
+import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 
 function createLightningPayment(
   overrides: Partial<Payment['details']> = {},

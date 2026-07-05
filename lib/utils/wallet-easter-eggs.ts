@@ -1,4 +1,4 @@
-import type { Payment } from '@breeztech/breez-sdk-spark';
+import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 
 export interface WalletEasterEggRule {
   id: string;

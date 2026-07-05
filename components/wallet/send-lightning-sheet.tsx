@@ -16,7 +16,7 @@ import {
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark';
+import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/ssr';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';

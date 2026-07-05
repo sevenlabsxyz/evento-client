@@ -15,7 +15,7 @@ import { BTCPriceService } from '@/lib/services/btc-price';
 import { useWalletPreferences } from '@/lib/stores/wallet-preferences-store';
 import { logger } from '@/lib/utils/logger';
 import { getWalletPaymentDisplayData } from '@/lib/utils/wallet-payment-display';
-import type { Payment } from '@breeztech/breez-sdk-spark';
+import type { Payment } from '@breeztech/breez-sdk-spark/ssr';
 import { ArrowDownLeft, ArrowUpRight, CheckCircle2, Clock, XCircle } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
