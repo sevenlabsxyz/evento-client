@@ -8,7 +8,6 @@ import { ImageResponse } from 'next/og';
 export const EVENT_SOCIAL_IMAGE_HEADERS = {
   'Cache-Control': 'public, no-store, max-age=0, must-revalidate',
   'CDN-Cache-Control': 'public, no-store, max-age=0, must-revalidate',
-  'Vercel-CDN-Cache-Control': 'public, no-store, max-age=0, must-revalidate',
 };
 
 export const eventSocialImageSize = {

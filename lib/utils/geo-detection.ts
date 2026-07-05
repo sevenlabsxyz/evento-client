@@ -2,29 +2,10 @@ import { logger } from '@/lib/utils/logger';
 
 /**
  * Detect user's country code using various methods
- * Priority: Vercel headers > Browser locale > Default
+ * Priority: Browser locale > Default
  */
 
 export type CountryCode = string; // ISO 3166-1 alpha-2 code (e.g., 'US', 'GB', 'BR')
-
-/**
- * Get country from Vercel geo headers
- * This should be called from an API route to access headers
- */
-export async function getCountryFromVercel(): Promise<CountryCode | null> {
-  try {
-    const response = await fetch('/api/geo');
-    if (response.ok) {
-      const data = await response.json();
-      return data.country || null;
-    }
-  } catch (error) {
-    logger.error('Failed to fetch country from Vercel', {
-      error: error instanceof Error ? error.message : String(error),
-    });
-  }
-  return null;
-}
 
 /**
  * Get country from browser locale
@@ -72,13 +53,6 @@ export function getCountryFromBrowser(): CountryCode | null {
  * Detect user's country with fallback chain
  */
 export async function detectUserCountry(): Promise<CountryCode> {
-  // Try Vercel geo headers first
-  const vercelCountry = await getCountryFromVercel();
-  if (vercelCountry) {
-    return vercelCountry;
-  }
-
-  // Fallback to browser detection
   const browserCountry = getCountryFromBrowser();
   if (browserCountry) {
     return browserCountry;
