@@ -1,5 +1,6 @@
 import { ReceiveLightningSheet } from '@/components/wallet/receive-invoice-sheet';
 import { breezSDK } from '@/lib/services/breez-sdk';
+import { toast } from '@/lib/utils/toast';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
@@ -84,6 +85,7 @@ jest.mock('@/lib/utils/toast', () => ({
 const receivePaymentMock = breezSDK.receivePayment as jest.MockedFunction<
   typeof breezSDK.receivePayment
 >;
+const toastErrorMock = toast.error as jest.MockedFunction<typeof toast.error>;
 
 describe('ReceiveLightningSheet', () => {
   beforeEach(() => {
@@ -115,5 +117,24 @@ describe('ReceiveLightningSheet', () => {
       paymentMethod: { type: 'bitcoinAddress', newAddress: true },
     });
     expect(await screen.findByTestId('qr-code')).toHaveTextContent('bitcoin:bc1qsecond');
+  });
+
+  it('does not retry Bitcoin address generation indefinitely after a failure', async () => {
+    receivePaymentMock.mockReset();
+    receivePaymentMock.mockRejectedValue(new Error('Network unavailable'));
+
+    render(<ReceiveLightningSheet open={true} onOpenChange={jest.fn()} />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Onchain' }));
+
+    await waitFor(() => {
+      expect(toastErrorMock).toHaveBeenCalledWith('Network unavailable');
+    });
+
+    expect(await screen.findByRole('button', { name: 'Try Again' })).toBeInTheDocument();
+
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
+    expect(receivePaymentMock).toHaveBeenCalledTimes(1);
   });
 });

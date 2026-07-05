@@ -27,6 +27,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   const [invoiceAmountUSD, setInvoiceAmountUSD] = useState<number | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingBitcoin, setIsGeneratingBitcoin] = useState(false);
+  const [bitcoinAddressError, setBitcoinAddressError] = useState<string | null>(null);
   const [amountSheetOpen, setAmountSheetOpen] = useState(false);
   const [activeInvoice, setActiveInvoice] = useState<string | null>(null); // Track active bolt11 invoice
   const [showSuccess, setShowSuccess] = useState(false);
@@ -107,7 +108,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   }, [activeInvoice, open, activeTab, invoiceAmount, address?.lightningAddress, satsToUSD]);
 
   const generateBitcoinAddress = useCallback(async () => {
-    if (bitcoinAddress || isGeneratingBitcoin) return; // Don't generate if already exists or loading
+    if (bitcoinAddress || bitcoinAddressError || isGeneratingBitcoin) return;
 
     setIsGeneratingBitcoin(true);
     const requestId = bitcoinAddressRequestId.current + 1;
@@ -127,18 +128,21 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
       logger.error('Failed to generate Bitcoin address', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error(error.message || 'Failed to generate Bitcoin address');
+      const errorMessage = error.message || 'Failed to generate Bitcoin address';
+      setBitcoinAddressError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       if (bitcoinAddressRequestId.current === requestId) {
         setIsGeneratingBitcoin(false);
       }
     }
-  }, [bitcoinAddress, isGeneratingBitcoin]);
+  }, [bitcoinAddress, bitcoinAddressError, isGeneratingBitcoin]);
 
   useEffect(() => {
     if (!open) {
       bitcoinAddressRequestId.current += 1;
       setBitcoinAddress('');
+      setBitcoinAddressError(null);
       setIsGeneratingBitcoin(false);
       return;
     }
@@ -488,6 +492,23 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         </Button>
                       </div>
                     </>
+                  ) : bitcoinAddressError ? (
+                    <div className='flex flex-col items-center justify-center py-12 text-center'>
+                      <p className='text-sm font-medium text-gray-900'>
+                        Failed to generate Bitcoin address
+                      </p>
+                      <p className='mt-1 max-w-xs text-sm text-gray-500'>{bitcoinAddressError}</p>
+                      <Button
+                        onClick={() => {
+                          setBitcoinAddressError(null);
+                          setBitcoinAddress('');
+                        }}
+                        variant='outline'
+                        className='mt-4 h-12 rounded-full bg-gray-50 px-6'
+                      >
+                        Try Again
+                      </Button>
+                    </div>
                   ) : null}
                 </>
               )}
