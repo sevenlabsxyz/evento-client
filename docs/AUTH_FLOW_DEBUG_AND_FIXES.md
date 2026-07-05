@@ -801,21 +801,21 @@ export const useAuthContext = () => useContext(AuthContext);
 **Update app/providers.tsx:**
 
 ```typescript
-// app/providers.tsx
+// app/e/layout.tsx
 'use client';
 
-import { Sidebar } from '@/components/sidebar';
+import { AppSidebar } from '@/components/dashboard/app-sidebar';
 import { queryClient } from '@/lib/query-client';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { AuthProvider } from '@/lib/providers/auth-provider';
 
-export function Providers({ children }: { children: React.ReactNode }) {
+export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <AppSidebar />
         {children}
-        <Sidebar />
       </AuthProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>

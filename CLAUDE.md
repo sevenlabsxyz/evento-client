@@ -670,22 +670,6 @@ describe('useAuth', () => {
 });
 ```
 
-### MSW for API Mocking
-
-```typescript
-// __tests__/setup/msw/handlers.ts
-import { http, HttpResponse } from 'msw';
-
-export const handlers = [
-    http.get('/api/v1/user', () => {
-        return HttpResponse.json({
-            success: true,
-            data: { id: 'usr_123', username: 'testuser' },
-        });
-    }),
-];
-```
-
 ### Running Tests
 
 ```bash
