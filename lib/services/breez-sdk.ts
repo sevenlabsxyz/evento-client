@@ -12,6 +12,7 @@ import {
 import { toast } from '@/lib/utils/toast';
 import type {
   BreezSdk,
+  BuyBitcoinResponse,
   CheckLightningAddressRequest,
   ClaimDepositRequest,
   Config,
@@ -847,6 +848,25 @@ export class BreezSDKService {
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.REFUNDING_DEPOSIT);
       const userMessage = getBreezErrorMessage(error, 'refund deposit');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Start a Cash App Bitcoin purchase flow for this wallet.
+   */
+  async buyBitcoinWithCashApp(amountSats: number): Promise<BuyBitcoinResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const response = await this.sdk.buyBitcoin({
+        type: 'cashApp',
+        amountSats,
+      });
+      return response;
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.BUYING_BITCOIN);
+      const userMessage = getBreezErrorMessage(error, 'start Cash App purchase');
       throw new Error(userMessage);
     }
   }

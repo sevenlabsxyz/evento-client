@@ -5,14 +5,17 @@ import { NextRequest, NextResponse } from 'next/server';
  * Vercel automatically adds geo headers in production
  */
 export async function GET(request: NextRequest) {
-  // Get country from Vercel geo headers
-  // https://vercel.com/docs/edge-network/headers#x-vercel-ip-country
-  const country = request.headers.get('x-vercel-ip-country') || null;
+  // Prefer deployment/provider geo headers when available.
+  const country =
+    request.headers.get('x-vercel-ip-country') ||
+    request.headers.get('cf-ipcountry') ||
+    request.headers.get('x-country-code') ||
+    null;
   const city = request.headers.get('x-vercel-ip-city') || null;
   const region = request.headers.get('x-vercel-ip-country-region') || null;
 
   return NextResponse.json({
-    country,
+    country: country?.toUpperCase() ?? null,
     city,
     region,
   });
