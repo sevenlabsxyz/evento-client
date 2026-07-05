@@ -44,9 +44,9 @@ export function SendLightningSheet({
   const [amountUSD, setAmountUSD] = useState('');
   const [comment, setComment] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
-  const [step, setStep] = useState<'input' | 'amount' | 'comment' | 'bitcoin-fee' | 'confirm'>(
-    'input'
-  );
+  const [step, setStep] = useState<
+    'input' | 'amount' | 'comment' | 'bitcoin-fee' | 'confirm' | 'cross-chain-unavailable'
+  >('input');
   const [hasFixedAmount, setHasFixedAmount] = useState(false);
   const [isLightningInvoice, setIsLightningInvoice] = useState(false);
   const [invoiceAmount, setInvoiceAmount] = useState<number | null>(null);
@@ -278,6 +278,11 @@ export function SendLightningSheet({
 
         // Bitcoin addresses always need amount input
         setStep('amount');
+      } else if (parsed.type === 'crossChainAddress') {
+        setIsLightningInvoice(false);
+        setHasFixedAmount(false);
+        setPaymentType('lightning');
+        setStep('cross-chain-unavailable');
       } else if (parsed.type === 'bip21') {
         // BIP21 unified payment URI (bitcoin:address?lightning=invoice)
         const bip21 = parsed as any;
@@ -1012,6 +1017,92 @@ export function SendLightningSheet({
     </div>
   );
 
+  const crossChainUnavailableContent = (() => {
+    const crossChainInput = parsedInput?.type === 'crossChainAddress' ? (parsedInput as any) : null;
+    const addressFamily = crossChainInput?.addressFamily
+      ? String(crossChainInput.addressFamily).toUpperCase()
+      : 'Stablecoin';
+    const chainLabel = crossChainInput?.chainId ? `Chain ${crossChainInput.chainId}` : null;
+
+    return (
+      <div className='flex h-full flex-col'>
+        <div className='flex items-center justify-between p-4 pt-0'>
+          <button
+            onClick={() => setStep('input')}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <ArrowLeft className='h-5 w-5' />
+          </button>
+          <h2 className='text-xl font-semibold'>Stablecoin Transfer</h2>
+          <button
+            onClick={() => {
+              resetForm();
+              onOpenChange(false);
+            }}
+            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+          >
+            <X className='h-5 w-5' />
+          </button>
+        </div>
+
+        <div className='flex-1 overflow-y-auto p-6'>
+          <div className='mx-auto max-w-md space-y-6'>
+            <div className='rounded-2xl border border-amber-200 bg-amber-50 p-5'>
+              <div className='mb-3 flex items-start gap-3'>
+                <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700' />
+                <div>
+                  <h3 className='font-semibold text-amber-950'>Stablecoin sends are not ready</h3>
+                  <p className='mt-1 text-sm text-amber-900'>
+                    Evento recognized this as a cross-chain stablecoin address, but sending USDT or
+                    USDC from the wallet is not available yet.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+              <p className='mb-1 text-xs text-muted-foreground'>Detected address</p>
+              <p className='break-all font-mono text-sm font-medium'>
+                {crossChainInput?.address || invoice}
+              </p>
+              <div className='mt-3 flex flex-wrap gap-2'>
+                <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700'>
+                  {addressFamily}
+                </span>
+                {chainLabel && (
+                  <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700'>
+                    {chainLabel}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <p className='text-sm text-gray-600'>
+              We need route selection, quote expiry, fee display, and slippage confirmation before
+              this can be sent safely.
+            </p>
+
+            <div className='space-y-3'>
+              <Button onClick={() => setStep('input')} className='h-12 w-full rounded-full'>
+                Enter Different Address
+              </Button>
+              <Button
+                onClick={() => {
+                  resetForm();
+                  onOpenChange(false);
+                }}
+                variant='outline'
+                className='h-12 w-full rounded-full bg-gray-50'
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  })();
+
   return (
     <>
       <SheetWithDetentFull.Root
@@ -1044,6 +1135,7 @@ export function SendLightningSheet({
               {step === 'bitcoin-fee' && bitcoinFeeContent}
               {step === 'comment' && commentContent}
               {step === 'confirm' && confirmationContent}
+              {step === 'cross-chain-unavailable' && crossChainUnavailableContent}
             </SheetWithDetentFull.Content>
           </SheetWithDetentFull.View>
         </SheetWithDetentFull.Portal>
