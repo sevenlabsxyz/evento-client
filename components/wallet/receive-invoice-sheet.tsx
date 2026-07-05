@@ -11,7 +11,7 @@ import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import type { Payment, SdkEvent } from '@breeztech/breez-sdk-spark/ssr';
 import { Bitcoin, CheckCircle2, Copy, Loader2, Zap } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { AmountInputSheet } from './amount-input-sheet';
 
 interface ReceiveLightningSheetProps {
@@ -27,9 +27,11 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   const [invoiceAmountUSD, setInvoiceAmountUSD] = useState<number | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingBitcoin, setIsGeneratingBitcoin] = useState(false);
+  const [bitcoinAddressError, setBitcoinAddressError] = useState<string | null>(null);
   const [amountSheetOpen, setAmountSheetOpen] = useState(false);
   const [activeInvoice, setActiveInvoice] = useState<string | null>(null); // Track active bolt11 invoice
   const [showSuccess, setShowSuccess] = useState(false);
+  const bitcoinAddressRequestId = useRef(0);
 
   const { createInvoice } = useReceivePayment();
   const { address, isLoading: isAddressLoading } = useLightningAddress();
@@ -49,10 +51,15 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
   // Set up event listener to detect when active invoice is paid
   useEffect(() => {
     // Set up listener if we have an active invoice OR if we're showing lightning address (no amount)
-    const shouldListen = activeInvoice || (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
+    const shouldListen =
+      activeInvoice ||
+      (open && activeTab === 'lightning' && !invoiceAmount && address?.lightningAddress);
     if (!shouldListen) return;
 
-    logger.info('Setting up payment listener for invoice', { activeInvoice, hasLightningAddress: !!address?.lightningAddress });
+    logger.info('Setting up payment listener for invoice', {
+      activeInvoice,
+      hasLightningAddress: !!address?.lightningAddress,
+    });
 
     const handlePaymentEvent = (event: SdkEvent) => {
       if (event.type === 'paymentSucceeded') {
@@ -100,32 +107,55 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
     };
   }, [activeInvoice, open, activeTab, invoiceAmount, address?.lightningAddress, satsToUSD]);
 
-  const generateBitcoinAddress = async () => {
-    if (bitcoinAddress || isGeneratingBitcoin) return; // Don't generate if already exists or loading
+  const generateBitcoinAddress = useCallback(async () => {
+    if (bitcoinAddress || bitcoinAddressError || isGeneratingBitcoin) return;
 
     setIsGeneratingBitcoin(true);
+    const requestId = bitcoinAddressRequestId.current + 1;
+    bitcoinAddressRequestId.current = requestId;
+
     try {
-      // Use the SDK's receivePayment method with bitcoinAddress payment method
+      // Request a fresh deposit address for each receive session to avoid address reuse.
       const receiveResponse = await breezSDK.receivePayment({
-        paymentMethod: { type: 'bitcoinAddress' },
+        paymentMethod: { type: 'bitcoinAddress', newAddress: true },
       });
-      setBitcoinAddress(receiveResponse.paymentRequest);
+      if (bitcoinAddressRequestId.current === requestId) {
+        setBitcoinAddress(receiveResponse.paymentRequest);
+      }
     } catch (error: any) {
+      if (bitcoinAddressRequestId.current !== requestId) return;
+
       logger.error('Failed to generate Bitcoin address', {
         error: error instanceof Error ? error.message : String(error),
       });
-      toast.error(error.message || 'Failed to generate Bitcoin address');
+      const errorMessage = error.message || 'Failed to generate Bitcoin address';
+      setBitcoinAddressError(errorMessage);
+      toast.error(errorMessage);
     } finally {
-      setIsGeneratingBitcoin(false);
+      if (bitcoinAddressRequestId.current === requestId) {
+        setIsGeneratingBitcoin(false);
+      }
     }
-  };
+  }, [bitcoinAddress, bitcoinAddressError, isGeneratingBitcoin]);
+
+  useEffect(() => {
+    if (!open) {
+      bitcoinAddressRequestId.current += 1;
+      setBitcoinAddress('');
+      setBitcoinAddressError(null);
+      setIsGeneratingBitcoin(false);
+      return;
+    }
+
+    if (activeTab === 'bitcoin') {
+      void generateBitcoinAddress();
+    }
+  }, [open, activeTab, generateBitcoinAddress]);
 
   const handleTabChange = (tab: 'lightning' | 'bitcoin') => {
     setActiveTab(tab);
 
-    if (tab === 'bitcoin') {
-      generateBitcoinAddress();
-    } else if (tab === 'lightning' && address?.lightningAddress && !invoiceAmount) {
+    if (tab === 'lightning' && address?.lightningAddress && !invoiceAmount) {
       generateLightningAddressQR(address.lightningAddress);
     }
   };
@@ -462,6 +492,23 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         </Button>
                       </div>
                     </>
+                  ) : bitcoinAddressError ? (
+                    <div className='flex flex-col items-center justify-center py-12 text-center'>
+                      <p className='text-sm font-medium text-gray-900'>
+                        Failed to generate Bitcoin address
+                      </p>
+                      <p className='mt-1 max-w-xs text-sm text-gray-500'>{bitcoinAddressError}</p>
+                      <Button
+                        onClick={() => {
+                          setBitcoinAddressError(null);
+                          setBitcoinAddress('');
+                        }}
+                        variant='outline'
+                        className='mt-4 h-12 rounded-full bg-gray-50 px-6'
+                      >
+                        Try Again
+                      </Button>
+                    </div>
                   ) : null}
                 </>
               )}
