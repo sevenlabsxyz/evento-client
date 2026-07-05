@@ -134,27 +134,12 @@ export function BuySellBitcoinSheet({
       return;
     }
 
-    let popup: Window | null = null;
-
     try {
       setIsStartingCashApp(true);
-      popup = window.open('', '_blank');
-      if (popup) {
-        popup.opener = null;
-      }
-
       const response = await breezSDK.buyBitcoinWithCashApp(amountSats);
       setCashAppUrl(response.url);
-
-      if (popup) {
-        popup.location.href = response.url;
-      } else {
-        toast.info('Cash App is ready. Tap Continue to Cash App again to open it.');
-      }
-
       await onFundingStarted?.();
     } catch (error) {
-      popup?.close();
       toast.error(error instanceof Error ? error.message : 'Failed to start Cash App purchase');
     } finally {
       setIsStartingCashApp(false);
@@ -286,7 +271,12 @@ export function BuySellBitcoinSheet({
                           {isStartingCashApp ? (
                             <>
                               <Loader2 className='h-5 w-5 animate-spin' />
-                              Continuing to Cash App
+                              Preparing Cash App
+                            </>
+                          ) : cashAppUrl ? (
+                            <>
+                              <CashAppSVGIcon className='h-5 w-5' />
+                              Open Cash App
                             </>
                           ) : (
                             <>
