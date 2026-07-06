@@ -2,6 +2,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { getAppUrl } from '@/lib/utils/app-url';
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import type React from 'react';
 import './globals.css';
 import { Providers } from './providers';
@@ -72,6 +73,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel='apple-touch-icon' sizes='120x120' href='/assets/pwa/icon@256px.png' />
       </head>
       <body className={inter.className}>
+        <Script
+          src='https://analytics.seven.sx/script.js'
+          data-website-id='b0fc246c-0945-4a4f-b6e2-3b77992a9da7'
+          strategy='afterInteractive'
+        />
         <Providers>
           {children}
           <Toaster />
