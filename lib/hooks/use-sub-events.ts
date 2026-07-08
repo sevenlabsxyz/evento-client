@@ -1,6 +1,6 @@
 import { apiClient } from '@/lib/api/client';
 import { queryKeys } from '@/lib/query-client';
-import { EventWithUser } from '@/lib/types/api';
+import { ApiResponse, EventWithUser } from '@/lib/types/api';
 import { transformApiEventResponse } from '@/lib/utils/api-transform';
 import { debugError } from '@/lib/utils/debug';
 import { useQuery } from '@tanstack/react-query';
@@ -21,12 +21,12 @@ export function useSubEvents(eventId?: string, options: UseSubEventsOptions = {}
           return [];
         }
 
-        const response = await apiClient.get<EventWithUser[]>(
+        const response = await apiClient.get<ApiResponse<EventWithUser[]>>(
           `/v1/events/${eventId}/sub-events${includeDrafts ? '?include_drafts=true' : ''}`
         );
 
-        // The API client interceptor returns response.data directly
-        const responseData = response;
+        // The API client interceptor returns the backend envelope directly
+        const responseData = response?.data;
 
         // Check if it's the expected array format
         if (!responseData || !Array.isArray(responseData)) {

@@ -136,16 +136,20 @@ beforeEach(() => {
       }
 
       if (url.includes('/v1/events/sub-events')) {
-        return Promise.resolve([
-          {
-            id: 'subevent1',
-            title: 'Sub Event 1',
-            description: 'Sub Event Description',
-            user_details: { username: 'user1', name: 'User 1' },
-            computed_start_date: new Date().toISOString(),
-            timezone: 'UTC',
-          },
-        ]);
+        return Promise.resolve({
+          success: true,
+          message: 'ok',
+          data: [
+            {
+              id: 'subevent1',
+              title: 'Sub Event 1',
+              description: 'Sub Event Description',
+              user_details: { username: 'user1', name: 'User 1' },
+              computed_start_date: new Date().toISOString(),
+              timezone: 'UTC',
+            },
+          ],
+        });
       }
 
       // Event invites
