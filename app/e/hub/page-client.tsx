@@ -8,6 +8,7 @@ import { MyEventsSection } from '@/components/hub/my-events-section';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useRequireAuth } from '@/lib/hooks/use-auth';
+import { useMyCohostInvites } from '@/lib/hooks/use-cohost-invites';
 import { useHubData } from '@/lib/hooks/use-hub-data';
 import { useRequireOnboarding } from '@/lib/hooks/use-require-onboarding';
 import { useTopBar } from '@/lib/stores/topbar-store';
@@ -51,6 +52,11 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
   const { isLoading: isCheckingAuth } = useRequireAuth();
   const { isLoading: isCheckingOnboarding } = useRequireOnboarding();
   const { data: hubData, isLoading: isHubLoading, error: hubError, refetch } = useHubData();
+  const canFetchCohostInvites = !isCheckingAuth && !isCheckingOnboarding;
+  const { data: directPendingCohostInvites = [] } = useMyCohostInvites(
+    'pending',
+    canFetchCohostInvites
+  );
   const { applyRouteConfig, setTopBarForRoute, clearRoute } = useTopBar();
 
   useEffect(() => {
@@ -108,13 +114,23 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
   }
 
   const { viewer, sections } = hubData;
+  const hubPendingCohostInvites = sections.pending_cohost_invites.items;
+  const cohostInvites = hubPendingCohostInvites.length
+    ? hubPendingCohostInvites
+    : directPendingCohostInvites;
+  const cohostInvitesTotalCount = hubPendingCohostInvites.length
+    ? sections.pending_cohost_invites.total_count
+    : directPendingCohostInvites.length;
+  const cohostInvitesError = cohostInvites.length
+    ? undefined
+    : sections.pending_cohost_invites.error;
 
   return (
     <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
       <CohostInvitesSection
-        invites={sections.pending_cohost_invites.items}
-        totalCount={sections.pending_cohost_invites.total_count}
-        error={sections.pending_cohost_invites.error}
+        invites={cohostInvites}
+        totalCount={cohostInvitesTotalCount}
+        error={cohostInvitesError}
       />
       <div className='flex flex-col gap-6 md:flex-row md:gap-12'>
         <div className='md:w-1/2'>

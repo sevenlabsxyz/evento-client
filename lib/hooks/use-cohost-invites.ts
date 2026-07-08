@@ -74,6 +74,8 @@ export function useSendCohostInvites(eventId: string) {
         count ? `Sent ${count} cohost invite${count === 1 ? '' : 's'}` : 'Invites sent'
       );
       queryClient.invalidateQueries({ queryKey: queryKeys.eventCohostInvites(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cohostInvites });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to send cohost invites');
@@ -170,6 +172,8 @@ export function useCancelCohostInvite(eventId: string) {
     onSuccess: () => {
       toast.success('Invite cancelled');
       queryClient.invalidateQueries({ queryKey: queryKeys.eventCohostInvites(eventId) });
+      queryClient.invalidateQueries({ queryKey: queryKeys.cohostInvites });
+      queryClient.invalidateQueries({ queryKey: queryKeys.hub });
     },
     onError: (err: any) => {
       toast.error(err?.response?.data?.message || 'Failed to cancel invite');

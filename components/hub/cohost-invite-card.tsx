@@ -29,8 +29,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
       ? event.cover
       : getEventCoverDisplayUrl(event?.cover, 'thumbnail');
   const eventId = event?.id || invite.event_id;
-
-  if (!event) return null;
+  const eventTitle = event?.title || 'Event details unavailable';
 
   return (
     <div className='rounded-2xl border border-gray-200 bg-white p-4'>
@@ -55,16 +54,16 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
         <span className='flex-shrink-0 text-xs text-gray-400'>{timeAgo}</span>
       </div>
 
-      <Link href={`/e/${event.id}`} className='block'>
+      <Link href={`/e/${eventId}`} className='block'>
         <div className='flex gap-3'>
           {coverImage && (
             <div className='relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg'>
-              <Image src={coverImage} alt={event.title} fill className='object-cover' />
+              <Image src={coverImage} alt={eventTitle} fill className='object-cover' />
             </div>
           )}
           <div className='min-w-0 flex-1'>
-            <h3 className='truncate font-semibold text-gray-900'>{event.title}</h3>
-            {event.location && <p className='truncate text-sm text-gray-500'>{event.location}</p>}
+            <h3 className='truncate font-semibold text-gray-900'>{eventTitle}</h3>
+            {event?.location && <p className='truncate text-sm text-gray-500'>{event.location}</p>}
           </div>
         </div>
       </Link>
@@ -78,6 +77,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
       {invite.status === 'pending' && (
         <div className='mt-4 flex gap-2'>
           <button
+            type='button'
             onClick={() =>
               acceptMutation.mutate(invite.id, {
                 onSuccess: () => {
@@ -97,6 +97,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
             Accept
           </button>
           <button
+            type='button'
             onClick={() => rejectMutation.mutate(invite.id)}
             disabled={isPending}
             className='flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
