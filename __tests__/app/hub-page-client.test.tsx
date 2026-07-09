@@ -115,6 +115,6 @@ describe('HubPageClient', () => {
     expect(screen.getByText('Fallback Cohost Event')).toBeInTheDocument();
 
     const section = screen.getByText('Cohost Invitations').closest('div')!;
-    expect(within(section).getByText('1')).toBeInTheDocument();
+    expect(within(section).queryByText('1')).not.toBeInTheDocument();
   });
 });

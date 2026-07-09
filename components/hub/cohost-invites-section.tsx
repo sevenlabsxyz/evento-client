@@ -1,20 +1,15 @@
 'use client';
 
 import { CohostInvite, HubSectionError } from '@/lib/types/api';
-import { AlertTriangle, Users } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 import { CohostInviteCard } from './cohost-invite-card';
 
 interface CohostInvitesSectionProps {
   invites?: CohostInvite[];
-  totalCount?: number | null;
   error?: HubSectionError;
 }
 
-export function CohostInvitesSection({
-  invites = [],
-  totalCount,
-  error,
-}: CohostInvitesSectionProps) {
+export function CohostInvitesSection({ invites = [], error }: CohostInvitesSectionProps) {
   if (error) {
     return (
       <div className='mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900'>
@@ -33,16 +28,14 @@ export function CohostInvitesSection({
 
   return (
     <div className='mb-6'>
-      <div className='mb-3 flex items-center gap-2'>
-        <Users className='h-5 w-5 text-red-600' />
-        <h2 className='text-lg font-semibold'>Cohost Invitations</h2>
-        <span className='rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-600'>
-          {totalCount ?? invites.length}
-        </span>
+      <div className='flex items-center justify-between'>
+        <h2 className='text-xl font-semibold'>Cohost Invitations</h2>
       </div>
-      <div className='space-y-3'>
+      <div className='mt-3 flex snap-x snap-mandatory gap-3 overflow-x-auto pb-1'>
         {invites.map((invite) => (
-          <CohostInviteCard key={invite.id} invite={invite} />
+          <div key={invite.id} className='w-[85vw] max-w-[400px] flex-none snap-start sm:w-[400px]'>
+            <CohostInviteCard invite={invite} />
+          </div>
         ))}
       </div>
     </div>

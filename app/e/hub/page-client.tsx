@@ -118,20 +118,13 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
   const cohostInvites = hubPendingCohostInvites.length
     ? hubPendingCohostInvites
     : directPendingCohostInvites;
-  const cohostInvitesTotalCount = hubPendingCohostInvites.length
-    ? sections.pending_cohost_invites.total_count
-    : directPendingCohostInvites.length;
   const cohostInvitesError = cohostInvites.length
     ? undefined
     : sections.pending_cohost_invites.error;
 
   return (
     <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
-      <CohostInvitesSection
-        invites={cohostInvites}
-        totalCount={cohostInvitesTotalCount}
-        error={cohostInvitesError}
-      />
+      <CohostInvitesSection invites={cohostInvites} error={cohostInvitesError} />
       <div className='flex flex-col gap-6 md:flex-row md:gap-12'>
         <div className='md:w-1/2'>
           <MyEventsSection
