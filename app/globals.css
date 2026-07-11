@@ -1,8 +1,9 @@
 @import '@silk-hq/components/unlayered-styles';
+@import './typeset.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import './typeset.css';
 
 body {
   font-family: Arial, Helvetica, sans-serif;
