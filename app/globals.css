@@ -1,4 +1,6 @@
 @import '@silk-hq/components/unlayered-styles';
+@import './typeset.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
