@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Env } from '@/lib/constants/env';
+import { useAuth } from '@/lib/hooks/use-auth';
 import { useReplaceInterests } from '@/lib/hooks/use-user-interests';
 import { useUpdateUserProfile, useUserProfile } from '@/lib/hooks/use-user-profile';
 import { useAnswerPrompt } from '@/lib/hooks/use-user-prompts';
@@ -10,7 +11,7 @@ import { sanitizeUploadFileName } from '@/lib/utils/file';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { AnimatePresence } from 'framer-motion';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, LogOut } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -37,6 +38,7 @@ export const UserOnboardingFlow = ({
 }: UserOnboardingFlowProps) => {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { logout, isLoggingOut } = useAuth();
   const { user } = useUserProfile();
   const updateUserProfile = useUpdateUserProfile();
 
@@ -154,6 +156,10 @@ export const UserOnboardingFlow = ({
   };
 
   const isUpdating = updating || updateUserProfile.isPending;
+
+  const handleExit = () => {
+    logout();
+  };
 
   // Simplified button state logic
   const isSaveButtonDisabled = (() => {
@@ -307,19 +313,34 @@ export const UserOnboardingFlow = ({
 
       {/* Footer with buttons */}
       <div className='flex-shrink-0 border-t border-gray-100 bg-white px-4 pb-6 pt-4 md:border-t-0 md:px-0'>
-        <div className='flex items-center gap-3'>
+        <div className='flex flex-col-reverse gap-2 sm:flex-row sm:items-center sm:gap-3'>
+          <Button
+            type='button'
+            variant='ghost'
+            className='h-12 w-full flex-shrink-0 text-gray-500 hover:bg-gray-100 hover:text-gray-900 sm:mr-auto sm:w-auto'
+            disabled={isUpdating || isLoggingOut}
+            onClick={handleExit}
+          >
+            {isLoggingOut ? (
+              <Loader2 className='h-4 w-4 animate-spin' />
+            ) : (
+              <LogOut className='h-4 w-4' />
+            )}
+            Exit setup
+          </Button>
           {step > 1 && (
             <Button
               variant='outline'
               className='h-12 flex-shrink-0 px-6'
+              disabled={isUpdating || isLoggingOut}
               onClick={() => setStep(step - 1)}
             >
               Back
             </Button>
           )}
           <Button
-            disabled={isSaveButtonDisabled || isUpdating}
-            className='h-12 flex-grow bg-red-600 hover:bg-red-700'
+            disabled={isSaveButtonDisabled || isUpdating || isLoggingOut}
+            className='h-12 w-full flex-grow bg-red-600 hover:bg-red-700 sm:w-auto'
             onClick={() => updateUserFn({ name, username, image: uploadedImg })}
           >
             {updating ? (
