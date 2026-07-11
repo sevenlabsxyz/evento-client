@@ -4,8 +4,9 @@
  *
  * Adapted for Evento's Tailwind CSS v3 pipeline by removing the top-level
  * @layer components wrappers from the canonical stylesheet. The stylesheet is
- * imported after @tailwind base/components/utilities from app/globals.css;
- * keeping nested @layer blocks inside an imported file causes Tailwind v3's
+ * imported before the Tailwind directives in app/globals.css so the
+ * unlayered typeset rules win predictably over Tailwind's layered defaults.
+ * Keeping nested @layer blocks inside an imported file causes Tailwind v3's
  * PostCSS pass to error because the imported file does not contain its own
  * @tailwind components directive.
  */
