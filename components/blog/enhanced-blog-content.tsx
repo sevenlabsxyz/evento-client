@@ -1,6 +1,6 @@
 'use client';
 
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { ImageSizes, isGif } from '@/lib/utils/image';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -174,7 +174,13 @@ export default function EnhancedBlogContent({ html, className }: EnhancedBlogCon
         onOpenChange={(open) => !open && setSelectedImage(null)}
       >
         {selectedImage && (
-          <DialogContent className='max-h-[96vh] max-w-[min(96vw,1400px)] border-none bg-transparent p-0 shadow-none'>
+          <DialogContent
+            aria-describedby={undefined}
+            className='max-h-[96vh] max-w-[min(96vw,1400px)] border-none bg-transparent p-0 shadow-none'
+          >
+            <DialogTitle className='sr-only'>
+              {selectedImage.alt ? `Image preview: ${selectedImage.alt}` : 'Image preview'}
+            </DialogTitle>
             <div className='flex items-center justify-center bg-black/40 p-2 rounded-[2rem]'>
               <Image
                 src={selectedImage.src}
