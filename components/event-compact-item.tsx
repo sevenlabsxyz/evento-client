@@ -3,13 +3,23 @@
 import { EventWithUser } from '@/lib/types/api';
 import { formatEventDateFromParts } from '@/lib/utils/date';
 import { getEventCoverDisplayUrl } from '@/lib/utils/image';
-import { Calendar, Clock, Loader, MapPin, MoreHorizontal, Pin, PinOff } from 'lucide-react';
+import {
+  Calendar,
+  ChevronRight,
+  Clock,
+  Loader,
+  MapPin,
+  MoreHorizontal,
+  Pin,
+  PinOff,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { UserAvatar } from './ui/user-avatar';
 
 interface EventCompactItemProps {
   event: EventWithUser;
+  variant?: 'default' | 'sub-event';
   onBookmark?: (eventId: string) => void;
   isBookmarked?: boolean;
   isPinning?: boolean;
@@ -21,6 +31,7 @@ interface EventCompactItemProps {
 
 export function EventCompactItem({
   event,
+  variant = 'default',
   onBookmark,
   isBookmarked = false,
   isPinning = false,
@@ -46,7 +57,7 @@ export function EventCompactItem({
 
   return (
     <div
-      className='flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50'
+      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50'
       onClick={handleEventClick}
     >
       {/* Event thumbnail */}
@@ -61,7 +72,15 @@ export function EventCompactItem({
       {/* Event details */}
       <div className='min-w-0 flex-1'>
         <div className='flex items-center justify-between'>
-          <h4 className='line-clamp-1 font-medium text-gray-900'>{event.title}</h4>
+          <h4
+            className={
+              variant === 'sub-event'
+                ? 'line-clamp-2 min-w-0 flex-1 font-medium leading-snug text-gray-900'
+                : 'line-clamp-1 font-medium text-gray-900'
+            }
+          >
+            {event.title}
+          </h4>
           <div className='flex items-center'>
             {canPin && (
               <Button
@@ -135,17 +154,24 @@ export function EventCompactItem({
         </div>
       </div>
 
-      <Button
-        variant='ghost'
-        size='icon'
-        className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
-        onClick={(e) => {
-          e.stopPropagation();
-          onMenuClick?.(event.id);
-        }}
-      >
-        <MoreHorizontal className='h-4 w-4' />
-      </Button>
+      {variant === 'sub-event' ? (
+        <ChevronRight
+          aria-hidden='true'
+          className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600'
+        />
+      ) : (
+        <Button
+          variant='ghost'
+          size='icon'
+          className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
+          onClick={(e) => {
+            e.stopPropagation();
+            onMenuClick?.(event.id);
+          }}
+        >
+          <MoreHorizontal className='h-4 w-4' />
+        </Button>
+      )}
     </div>
   );
 }

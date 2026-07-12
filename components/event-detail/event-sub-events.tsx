@@ -59,7 +59,7 @@ export default function EventSubEvents({
         ) : subEvents.length > 0 ? (
           <div className='space-y-3'>
             {subEvents.map((subEvent) => (
-              <EventCompactItem key={subEvent.id} event={subEvent} />
+              <EventCompactItem key={subEvent.id} event={subEvent} variant='sub-event' />
             ))}
           </div>
         ) : (
