@@ -14,6 +14,7 @@ import {
   PinOff,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import type { KeyboardEvent } from 'react';
 import { Button } from './ui/button';
 import { UserAvatar } from './ui/user-avatar';
 
@@ -55,10 +56,21 @@ export function EventCompactItem({
     router.push(`/e/${event.id}`);
   };
 
+  const handleEventKeyDown = (keyboardEvent: KeyboardEvent<HTMLDivElement>) => {
+    if (variant === 'sub-event' && (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ')) {
+      keyboardEvent.preventDefault();
+      handleEventClick();
+    }
+  };
+
   return (
     <div
-      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50'
+      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+      role={variant === 'sub-event' ? 'link' : undefined}
+      tabIndex={variant === 'sub-event' ? 0 : undefined}
+      aria-label={variant === 'sub-event' ? `View ${event.title}` : undefined}
       onClick={handleEventClick}
+      onKeyDown={handleEventKeyDown}
     >
       {/* Event thumbnail */}
       <div className='h-14 w-14 overflow-hidden rounded-md'>
@@ -124,34 +136,38 @@ export function EventCompactItem({
             <Clock className='mr-1 h-3 w-3' />
             <span className='line-clamp-1'>{timeWithTz?.split(' ')[0] || '--:--'}</span>
           </div>
-          <div className='flex items-center'>
-            <MapPin className='mr-1 h-3 w-3' />
-            <span className='line-clamp-1'>{event.location}</span>
-          </div>
+          {variant !== 'sub-event' && (
+            <div className='flex items-center'>
+              <MapPin className='mr-1 h-3 w-3' />
+              <span className='line-clamp-1'>{event.location}</span>
+            </div>
+          )}
         </div>
 
         {/* User details */}
-        <div className='mt-1 flex items-center gap-1'>
-          <UserAvatar
-            user={{
-              name: event.user_details.name || undefined,
-              username: event.user_details.username || undefined,
-              image: event.user_details.image || undefined,
-              verification_status: event.user_details.verification_status || null,
-            }}
-            size='xs'
-          />
-          {/* <img
-            src={
-              event.user_details.image
-                ? getOptimizedAvatarUrl(event.user_details.image)
-                : '/assets/img/evento-sublogo.svg'
-            }
-            alt={event.user_details.name || event.user_details.username}
-            className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
-          /> */}
-          <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
-        </div>
+        {variant !== 'sub-event' && (
+          <div className='mt-1 flex items-center gap-1'>
+            <UserAvatar
+              user={{
+                name: event.user_details.name || undefined,
+                username: event.user_details.username || undefined,
+                image: event.user_details.image || undefined,
+                verification_status: event.user_details.verification_status || null,
+              }}
+              size='xs'
+            />
+            {/* <img
+              src={
+                event.user_details.image
+                  ? getOptimizedAvatarUrl(event.user_details.image)
+                  : '/assets/img/evento-sublogo.svg'
+              }
+              alt={event.user_details.name || event.user_details.username}
+              className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
+            /> */}
+            <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
+          </div>
+        )}
       </div>
 
       {variant === 'sub-event' ? (

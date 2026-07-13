@@ -523,6 +523,7 @@ export default function EventDetailPageClient() {
         <EventSubEvents
           eventId={eventId}
           isHost={isOwnerOrCohost}
+          parentTimezone={eventData?.timezone || event.timezone || 'UTC'}
           subEvents={subEvents}
           subEventsLoading={subEventsLoading}
           subEventsError={subEventsError}
@@ -570,8 +571,8 @@ export default function EventDetailPageClient() {
       {/* Main content */}
       <div className='mx-auto max-w-full bg-white md:pt-4 lg:max-w-4xl'>
         <div className='pt-4 md:pt-0 lg:flex lg:gap-8'>
-          {/* Left Column - Image & Quick Actions (sticky on desktop) */}
-          <div className='lg:sticky lg:top-0 lg:w-1/2 lg:self-start'>
+          {/* Left Column - Image & Quick Actions */}
+          <div className='lg:w-1/2 lg:self-start'>
             <SwipeableHeader
               event={event}
               onImageClick={(index) => {
