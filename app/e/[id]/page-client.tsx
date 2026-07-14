@@ -19,6 +19,7 @@ import { LightboxViewer } from '@/components/lightbox-viewer';
 import { AnimatedTabs } from '@/components/ui/animated-tabs';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventHosts } from '@/lib/hooks/use-event-hosts';
@@ -33,6 +34,7 @@ import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
@@ -50,7 +52,7 @@ export default function EventDetailPageClient() {
   const setTopBarForRoute = useTopBarStore((s) => s.setTopBarForRoute);
   const applyRouteConfig = useTopBarStore((s) => s.applyRouteConfig);
   const clearRoute = useTopBarStore((s) => s.clearRoute);
-  const [lightboxImages, setLightboxImages] = useState<string[]>([]);
+  const [lightboxSource, setLightboxSource] = useState<'cover' | 'gallery'>('cover');
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [showSaveSheet, setShowSaveSheet] = useState(false);
   const searchParams = useSearchParams();
@@ -254,6 +256,7 @@ export default function EventDetailPageClient() {
   const { data: eventData, isLoading: eventLoading, error: eventError } = useEventDetails(eventId);
   const { data: hostsData = [], isLoading: hostsLoading } = useEventHosts(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
+  const { mutateAsync: deleteGalleryItem } = useDeleteGalleryItem();
   const {
     data: subEvents = [],
     isLoading: subEventsLoading,
@@ -281,6 +284,36 @@ export default function EventDetailPageClient() {
     if (eventData?.creator_user_id === user.id) return true;
     return hostsData.some((host) => host.user_details?.id === user.id);
   }, [eventData?.creator_user_id, hostsData, user?.id]);
+
+  const galleryLightboxImages = useMemo(
+    () =>
+      galleryData.map((item) => ({
+        id: item.id,
+        image: getOptimizedImageUrl(item.url, 1200, 90),
+        user_details: item.user_details,
+        created_at: item.created_at,
+      })),
+    [galleryData]
+  );
+  const selectedGalleryItem =
+    lightboxSource !== 'gallery' || selectedImageIndex === null
+      ? null
+      : galleryData[selectedImageIndex] || null;
+  const canDeleteSelectedGalleryItem = Boolean(
+    selectedGalleryItem && (isOwnerOrCohost || selectedGalleryItem.user_details?.id === user?.id)
+  );
+
+  const handleDeleteGalleryItem = useCallback(
+    async (photoId: string) => {
+      try {
+        await deleteGalleryItem({ galleryItemId: photoId, eventId });
+        return { success: true };
+      } catch {
+        return { success: false };
+      }
+    },
+    [deleteGalleryItem, eventId]
+  );
 
   const { data: registrationSettings } = useRegistrationSettings(eventId);
   const { data: myRegistration } = useMyRegistration(eventId);
@@ -547,7 +580,7 @@ export default function EventDetailPageClient() {
   const renderCommentsTab = () => (
     <div className='border-t border-gray-100 py-6'>
       <h2 className='mb-4 text-lg font-semibold text-gray-900'>Comments</h2>
-      <EventComments eventId={event.id} />
+      <EventComments eventId={event.id} isEventHost={isOwnerOrCohost} />
     </div>
   );
 
@@ -557,8 +590,11 @@ export default function EventDetailPageClient() {
         <h2 className='mb-4 text-lg font-semibold text-gray-900'>Gallery</h2>
         <EventGallery
           event={event}
+          galleryItems={galleryData}
+          currentUserId={user?.id || ''}
+          isEventHost={isOwnerOrCohost}
           onImageClick={(index) => {
-            setLightboxImages(event.galleryImages || []);
+            setLightboxSource('gallery');
             setSelectedImageIndex(index);
           }}
         />
@@ -576,7 +612,7 @@ export default function EventDetailPageClient() {
             <SwipeableHeader
               event={event}
               onImageClick={(index) => {
-                setLightboxImages(event.coverImages);
+                setLightboxSource('cover');
                 setSelectedImageIndex(index);
               }}
             />
@@ -646,14 +682,12 @@ export default function EventDetailPageClient() {
 
       {/* Image Lightbox */}
       <LightboxViewer
-        images={lightboxImages}
+        images={lightboxSource === 'gallery' ? galleryLightboxImages : event.coverImages}
         selectedImage={selectedImageIndex}
         onClose={() => setSelectedImageIndex(null)}
         onImageChange={setSelectedImageIndex}
-        showDropdownMenu={false}
-        handleDelete={async (photoId: string) => {
-          return { success: false };
-        }}
+        showDropdownMenu={canDeleteSelectedGalleryItem}
+        handleDelete={handleDeleteGalleryItem}
         userId={user?.id || ''}
         eventId={event.id}
       />
