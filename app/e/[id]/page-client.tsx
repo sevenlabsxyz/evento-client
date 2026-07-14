@@ -34,6 +34,7 @@ import { PasswordProtectedEventResponse, RSVPStatus } from '@/lib/types/api';
 import { getInitialAppPath, hasAppNavigated, setInitialAppPath } from '@/lib/utils/app-session';
 import { hasEventAccess } from '@/lib/utils/event-access';
 import { transformApiEventToDisplay } from '@/lib/utils/event-transform';
+import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
 import { Bookmark, Image, Info, MessageSquare, Share } from 'lucide-react';
@@ -288,7 +289,7 @@ export default function EventDetailPageClient() {
     () =>
       galleryData.map((item) => ({
         id: item.id,
-        image: item.url,
+        image: getOptimizedImageUrl(item.url, 1200, 90),
         user_details: item.user_details,
         created_at: item.created_at,
       })),

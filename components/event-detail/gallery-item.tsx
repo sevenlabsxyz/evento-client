@@ -9,7 +9,7 @@ import {
 import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
-import { isGif } from '@/lib/utils/image';
+import { getOptimizedImageUrl, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { Heart, MoreHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
@@ -39,6 +39,7 @@ export default function GalleryItem({
     isLoading: likesLoading,
   } = useGalleryItemLikes(item.id, eventId);
   const deleteGalleryItem = useDeleteGalleryItem();
+  const displayUrl = getOptimizedImageUrl(item.url);
 
   const isOwner = item.user_details?.id === currentUserId;
   const canDelete = isOwner || isEventHost;
@@ -66,17 +67,32 @@ export default function GalleryItem({
     toggleLike();
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget || !onImageClick) return;
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onImageClick();
+    }
+  };
+
   return (
     <div
-      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md'
+      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2'
       onClick={onImageClick}
+      onKeyDown={handleKeyDown}
       onMouseEnter={() => setShowControls(true)}
       onMouseLeave={() => setShowControls(false)}
+      role={onImageClick ? 'button' : undefined}
+      tabIndex={onImageClick ? 0 : undefined}
+      aria-label={
+        onImageClick ? `Open gallery image by ${item.user_details?.username || 'user'}` : undefined
+      }
     >
       {/* Image */}
       {isGif(item.url) ? (
         <img
-          src={item.url}
+          src={displayUrl}
           alt={`Gallery image by ${item.user_details?.username || 'user'}`}
           className={`h-full w-full object-cover transition-opacity ${
             isLoaded ? 'opacity-100' : 'opacity-0'
@@ -85,7 +101,7 @@ export default function GalleryItem({
         />
       ) : (
         <Image
-          src={item.url}
+          src={displayUrl}
           alt={`Gallery image by ${item.user_details?.username || 'user'}`}
           fill
           sizes='(max-width: 768px) 33vw, 20vw'

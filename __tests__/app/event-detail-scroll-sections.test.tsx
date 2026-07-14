@@ -219,12 +219,16 @@ jest.mock('@/components/lightbox-viewer', () => ({
     showDropdownMenu,
     handleDelete,
   }: {
-    images: Array<{ id: string }>;
+    images: Array<{ id: string; image: string }>;
     selectedImage: number | null;
     showDropdownMenu: boolean;
     handleDelete: (photoId: string) => Promise<{ success: boolean }>;
   }) => (
-    <div data-testid='event-gallery-lightbox' data-show-delete={String(showDropdownMenu)}>
+    <div
+      data-testid='event-gallery-lightbox'
+      data-show-delete={String(showDropdownMenu)}
+      data-selected-image-url={selectedImage === null ? 'none' : images[selectedImage].image}
+    >
       {selectedImage !== null && (
         <button type='button' onClick={() => void handleDelete(images[selectedImage].id)}>
           Delete event gallery photo
@@ -300,7 +304,7 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     mockGalleryData = [
       {
         id: 'photo-1',
-        url: 'https://example.com/photo.jpg',
+        url: '/eventos/gallery/photo.jpg',
         created_at: '2026-07-14T12:00:00.000Z',
         user_details: { id: 'uploader-1' },
         events: { id: 'event-123', title: 'Test Event' },
@@ -322,6 +326,10 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     expect(screen.getByTestId('event-gallery-lightbox')).toHaveAttribute(
       'data-show-delete',
       'true'
+    );
+    expect(screen.getByTestId('event-gallery-lightbox')).toHaveAttribute(
+      'data-selected-image-url',
+      'https://api.evento.so/storage/v1/object/public/cdn/eventos/gallery/photo.jpg?width=1200&quality=90'
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete event gallery photo' }));

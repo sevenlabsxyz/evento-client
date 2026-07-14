@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import GalleryItem from '@/components/event-detail/gallery-item';
 
 const mockDelete = jest.fn();
+const mockToggleLike = jest.fn();
 
 jest.mock('next/image', () => ({
   __esModule: true,
@@ -31,7 +32,7 @@ jest.mock('@/lib/hooks/use-gallery-item-likes', () => ({
   useGalleryItemLikes: () => ({
     likes: 0,
     hasLiked: false,
-    toggleLike: jest.fn(),
+    toggleLike: mockToggleLike,
     isLoading: false,
   }),
 }));
@@ -88,5 +89,59 @@ describe('GalleryItem permissions', () => {
 
     expect(screen.queryByRole('button', { name: 'Photo actions' })).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Delete Photo' })).not.toBeInTheDocument();
+  });
+
+  it('normalizes relative gallery image paths before rendering', () => {
+    render(
+      <GalleryItem
+        item={{ ...item, url: '/eventos/gallery/photo.jpg' } as any}
+        currentUserId='viewer-1'
+        eventId='event-1'
+      />
+    );
+
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      'https://api.evento.so/storage/v1/object/public/cdn/eventos/gallery/photo.jpg?width=500&quality=80'
+    );
+  });
+
+  it.each([
+    ['Enter', 'Enter'],
+    ['Space', ' '],
+  ])('opens the image with the %s key', (_label, key) => {
+    const onImageClick = jest.fn();
+    render(
+      <GalleryItem
+        item={item as any}
+        currentUserId='viewer-1'
+        eventId='event-1'
+        onImageClick={onImageClick}
+      />
+    );
+
+    const imageTile = screen.getByRole('img').closest('[role="button"]');
+    expect(imageTile).not.toBeNull();
+    fireEvent.keyDown(imageTile!, { key });
+
+    expect(onImageClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps nested like and menu controls from activating the image tile', () => {
+    const onImageClick = jest.fn();
+    render(
+      <GalleryItem
+        item={item as any}
+        currentUserId='uploader-1'
+        eventId='event-1'
+        onImageClick={onImageClick}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: '0' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Photo actions' }));
+
+    expect(mockToggleLike).toHaveBeenCalledTimes(1);
+    expect(onImageClick).not.toHaveBeenCalled();
   });
 });

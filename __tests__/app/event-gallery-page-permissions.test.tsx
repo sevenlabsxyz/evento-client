@@ -6,12 +6,14 @@ const mockBack = jest.fn();
 const mockDeleteGalleryItem = jest.fn();
 let mockUser: { id: string } | null = { id: 'viewer-1' };
 let mockHostsData: Array<{ user_details: { id: string } }> = [];
+let mockEventData: { id: string; title: string; creator_user_id: string } | null;
+let mockGalleryData: typeof galleryFixture;
 
-const mockGalleryData = [
+const galleryFixture = [
   {
     id: 'photo-1',
     created_at: '2026-07-14T12:00:00.000Z',
-    url: 'https://example.com/photo.jpg',
+    url: '/eventos/gallery/photo.jpg',
     user_details: {
       id: 'uploader-1',
       username: 'uploader',
@@ -35,11 +37,7 @@ jest.mock('@/lib/hooks/use-auth', () => ({
 
 jest.mock('@/lib/hooks/use-event-details', () => ({
   useEventDetails: () => ({
-    data: {
-      id: 'event-1',
-      title: 'Event',
-      creator_user_id: 'creator-1',
-    },
+    data: mockEventData,
     isLoading: false,
   }),
 }));
@@ -85,7 +83,7 @@ jest.mock('@/components/lightbox-viewer', () => ({
     showDropdownMenu,
     handleDelete,
   }: {
-    images: Array<{ id: string }>;
+    images: Array<{ id: string; image: string }>;
     selectedImage: number | null;
     showDropdownMenu: boolean;
     handleDelete: (photoId: string) => Promise<{ success: boolean }>;
@@ -94,6 +92,7 @@ jest.mock('@/components/lightbox-viewer', () => ({
       data-testid='gallery-lightbox'
       data-show-delete={String(showDropdownMenu)}
       data-selected-image={selectedImage === null ? 'none' : String(selectedImage)}
+      data-selected-image-url={selectedImage === null ? 'none' : images[selectedImage].image}
     >
       {selectedImage !== null && (
         <button type='button' onClick={() => void handleDelete(images[selectedImage].id)}>
@@ -101,6 +100,13 @@ jest.mock('@/components/lightbox-viewer', () => ({
         </button>
       )}
     </div>
+  ),
+}));
+
+jest.mock('@/components/event-detail/photo-upload-sheet', () => ({
+  __esModule: true,
+  default: ({ isOpen, eventId }: { isOpen: boolean; eventId: string }) => (
+    <div data-testid='photo-upload-sheet' data-open={String(isOpen)} data-event-id={eventId} />
   ),
 }));
 
@@ -117,6 +123,8 @@ describe('GalleryPage host moderation', () => {
     jest.clearAllMocks();
     mockUser = { id: 'viewer-1' };
     mockHostsData = [];
+    mockEventData = { id: 'event-1', title: 'Event', creator_user_id: 'creator-1' };
+    mockGalleryData = galleryFixture;
     mockDeleteGalleryItem.mockResolvedValue({ galleryItemId: 'photo-1', eventId: 'event-1' });
   });
 
@@ -134,6 +142,10 @@ describe('GalleryPage host moderation', () => {
 
     fireEvent.click(screen.getByTestId('gallery-item-photo-1'));
     expect(screen.getByTestId('gallery-lightbox')).toHaveAttribute('data-show-delete', 'true');
+    expect(screen.getByTestId('gallery-lightbox')).toHaveAttribute(
+      'data-selected-image-url',
+      'https://api.evento.so/storage/v1/object/public/cdn/eventos/gallery/photo.jpg?width=1200&quality=90'
+    );
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete selected photo' }));
     await waitFor(() => {
@@ -164,5 +176,26 @@ describe('GalleryPage host moderation', () => {
 
     expect(screen.queryByTitle('Add Photos')).not.toBeInTheDocument();
     expect(screen.getByTestId('gallery-lightbox')).toHaveAttribute('data-show-delete', 'false');
+  });
+
+  it('renders the empty gallery state for a valid event', () => {
+    mockGalleryData = [];
+
+    render(<GalleryPage />);
+
+    expect(screen.getByRole('heading', { name: 'No Photos Yet' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Event Not Found' })).not.toBeInTheDocument();
+  });
+
+  it('opens the existing upload sheet when a host clicks Add Photos', () => {
+    mockUser = { id: 'host-1' };
+    mockHostsData = [{ user_details: { id: 'host-1' } }];
+
+    render(<GalleryPage />);
+
+    expect(screen.getByTestId('photo-upload-sheet')).toHaveAttribute('data-open', 'false');
+    fireEvent.click(screen.getByTitle('Add Photos'));
+    expect(screen.getByTestId('photo-upload-sheet')).toHaveAttribute('data-open', 'true');
+    expect(screen.getByTestId('photo-upload-sheet')).toHaveAttribute('data-event-id', 'event-1');
   });
 });

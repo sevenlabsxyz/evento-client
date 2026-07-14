@@ -1,6 +1,7 @@
 'use client';
 
 import GalleryItem from '@/components/event-detail/gallery-item';
+import PhotoUploadSheet from '@/components/event-detail/photo-upload-sheet';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
@@ -8,6 +9,7 @@ import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventHosts } from '@/lib/hooks/use-event-hosts';
+import { getOptimizedImageUrl } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -18,6 +20,7 @@ export default function GalleryPage() {
   const params = useParams();
   const router = useRouter();
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
+  const [uploadSheetOpen, setUploadSheetOpen] = useState(false);
   const eventId = params.id as string;
   const { data: eventData, isLoading: eventLoading } = useEventDetails(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
@@ -34,7 +37,7 @@ export default function GalleryPage() {
     () =>
       galleryData.map((item) => ({
         id: item.id,
-        image: item.url,
+        image: getOptimizedImageUrl(item.url, 1200, 90),
         user_details: item.user_details,
         created_at: item.created_at,
       })),
@@ -81,7 +84,7 @@ export default function GalleryPage() {
     );
   }
 
-  if (!eventData || galleryData.length === 0) {
+  if (!eventData) {
     return (
       <div className='flex min-h-screen items-center justify-center bg-gray-50'>
         <div className='text-center'>
@@ -129,21 +132,7 @@ export default function GalleryPage() {
   };
 
   const handleAddPhoto = () => {
-    // TODO: Implement photo upload functionality
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
-    input.onchange = (e) => {
-      const files = (e.target as HTMLInputElement).files;
-      if (files) {
-        logger.debug('Selected files', {
-          files: Array.from(files).map((f) => f.name),
-        });
-        // TODO: Handle file upload
-      }
-    };
-    input.click();
+    setUploadSheetOpen(true);
   };
 
   return (
@@ -230,6 +219,12 @@ export default function GalleryPage() {
         showDropdownMenu={canDeleteSelectedGalleryItem}
         handleDelete={handleDeleteGalleryItem}
         userId={user?.id || ''}
+        eventId={eventId}
+      />
+
+      <PhotoUploadSheet
+        isOpen={uploadSheetOpen}
+        onClose={() => setUploadSheetOpen(false)}
         eventId={eventId}
       />
     </div>
