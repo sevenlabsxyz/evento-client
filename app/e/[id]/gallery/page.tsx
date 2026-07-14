@@ -1,15 +1,17 @@
 'use client';
 
+import GalleryItem from '@/components/event-detail/gallery-item';
 import { LightboxViewer } from '@/components/lightbox-viewer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuth } from '@/lib/hooks/use-auth';
+import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
-import { getOptimizedImageUrl } from '@/lib/utils/image';
+import { useEventHosts } from '@/lib/hooks/use-event-hosts';
 import { logger } from '@/lib/utils/logger';
 import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export default function GalleryPage() {
   const { user } = useAuth();
@@ -19,6 +21,42 @@ export default function GalleryPage() {
   const eventId = params.id as string;
   const { data: eventData, isLoading: eventLoading } = useEventDetails(eventId);
   const { data: galleryData = [], isLoading: galleryLoading } = useEventGallery(eventId);
+  const { data: hostsData = [] } = useEventHosts(eventId);
+  const { mutateAsync: deleteGalleryItem } = useDeleteGalleryItem();
+
+  const isEventHost = useMemo(() => {
+    if (!user?.id) return false;
+    if (eventData?.creator_user_id === user.id) return true;
+    return hostsData.some((host) => host.user_details?.id === user.id);
+  }, [eventData?.creator_user_id, hostsData, user?.id]);
+
+  const lightboxImages = useMemo(
+    () =>
+      galleryData.map((item) => ({
+        id: item.id,
+        image: item.url,
+        user_details: item.user_details,
+        created_at: item.created_at,
+      })),
+    [galleryData]
+  );
+  const selectedGalleryItem =
+    selectedImageIndex === null ? null : galleryData[selectedImageIndex] || null;
+  const canDeleteSelectedGalleryItem = Boolean(
+    selectedGalleryItem && (isEventHost || selectedGalleryItem.user_details?.id === user?.id)
+  );
+
+  const handleDeleteGalleryItem = useCallback(
+    async (photoId: string) => {
+      try {
+        await deleteGalleryItem({ galleryItemId: photoId, eventId });
+        return { success: true };
+      } catch {
+        return { success: false };
+      }
+    },
+    [deleteGalleryItem, eventId]
+  );
 
   if (eventLoading || galleryLoading) {
     return (
@@ -66,8 +104,6 @@ export default function GalleryPage() {
   const handleImageClick = (index: number) => {
     setSelectedImageIndex(index);
   };
-
-  const isOwner = eventData?.user_details?.id === user?.id;
 
   const handleShareGallery = async () => {
     const galleryUrl = `${window.location.origin}/e/event/${eventId}/gallery`;
@@ -133,7 +169,7 @@ export default function GalleryPage() {
           >
             <Share className='h-5 w-5 text-gray-600' />
           </button>
-          {isOwner && (
+          {isEventHost && (
             <button
               onClick={handleAddPhoto}
               className='rounded-full p-2 hover:bg-gray-100'
@@ -150,17 +186,14 @@ export default function GalleryPage() {
         {galleryImages.length > 0 ? (
           <div className='grid grid-cols-2 gap-2 sm:grid-cols-3'>
             {galleryImages.map((image, index) => (
-              <button
-                key={index}
-                onClick={() => handleImageClick(index)}
-                className='aspect-square overflow-hidden rounded-lg bg-gray-200 transition-opacity hover:opacity-90'
-              >
-                <img
-                  src={getOptimizedImageUrl(image.url)}
-                  alt={`Gallery image ${index + 1}`}
-                  className='h-full w-full object-cover'
-                />
-              </button>
+              <GalleryItem
+                key={image.id}
+                item={image}
+                currentUserId={user?.id || ''}
+                eventId={eventId}
+                isEventHost={isEventHost}
+                onImageClick={() => handleImageClick(index)}
+              />
             ))}
           </div>
         ) : (
@@ -190,28 +223,12 @@ export default function GalleryPage() {
 
       {/* Image Lightbox */}
       <LightboxViewer
-        images={galleryImages.map((image) => ({
-          id: image.id,
-          image: image.url,
-          user_details: image.user_details,
-          created_at: image.created_at,
-        }))}
+        images={lightboxImages}
         selectedImage={selectedImageIndex}
         onClose={() => setSelectedImageIndex(null)}
         onImageChange={(index: number) => setSelectedImageIndex(index)}
-        handleDelete={async (photoId: string) => {
-          try {
-            // TODO: Implement actual delete functionality
-            logger.info('Deleting photo', { photoId });
-            // For now, just return success - this will be implemented later
-            return { success: true };
-          } catch (error) {
-            logger.error('Error deleting photo', {
-              error: error instanceof Error ? error.message : String(error),
-            });
-            return { success: false };
-          }
-        }}
+        showDropdownMenu={canDeleteSelectedGalleryItem}
+        handleDelete={handleDeleteGalleryItem}
         userId={user?.id || ''}
         eventId={eventId}
       />

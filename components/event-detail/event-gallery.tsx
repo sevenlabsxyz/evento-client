@@ -9,69 +9,29 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from '@/components/ui/empty';
+import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { EventDetail } from '@/lib/types/event';
-import { isGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { Camera, Share2 } from 'lucide-react';
-import Image from 'next/image';
 import { useState } from 'react';
+import GalleryItem from './gallery-item';
 import PhotoUploadSheet from './photo-upload-sheet';
 
 interface EventGalleryProps {
   event: EventDetail;
+  galleryItems: GalleryItemType[];
   currentUserId?: string;
+  isEventHost?: boolean;
   onImageClick?: (index: number) => void;
 }
 
-interface GalleryImageProps {
-  src: string;
-  index: number;
-  onImageClick?: (index: number) => void;
-}
-
-function GalleryImage({ src, index, onImageClick }: GalleryImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
-  const handleImageClick = () => {
-    if (onImageClick) {
-      onImageClick(index);
-    }
-  };
-
-  return (
-    <div
-      onClick={handleImageClick}
-      className='relative aspect-square cursor-pointer overflow-hidden rounded-md'
-    >
-      {isGif(src) ? (
-        <img
-          src={src}
-          alt={`Gallery image ${index + 1}`}
-          className={`h-full w-full object-cover transition-opacity ${
-            isLoaded ? 'opacity-100' : 'opacity-0'
-          }`}
-          onLoad={() => setIsLoaded(true)}
-        />
-      ) : (
-        <Image
-          src={src}
-          alt={`Gallery image ${index + 1}`}
-          fill
-          sizes='(max-width: 768px) 33vw, 20vw'
-          className={`object-cover transition-opacity ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setIsLoaded(true)}
-        />
-      )}
-      {!isLoaded && (
-        <div className='absolute inset-0 flex items-center justify-center bg-gray-100'>
-          <div className='h-8 w-8 animate-spin rounded-full border-t-2 border-solid border-red-500'></div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default function EventGallery({ event, onImageClick }: EventGalleryProps) {
-  const galleryImages = event.galleryImages || [];
+export default function EventGallery({
+  event,
+  galleryItems,
+  currentUserId = '',
+  isEventHost = false,
+  onImageClick,
+}: EventGalleryProps) {
   const [uploadSheetOpen, setUploadSheetOpen] = useState(false);
 
   const handleAddPhoto = () => {
@@ -102,7 +62,7 @@ export default function EventGallery({ event, onImageClick }: EventGalleryProps)
   return (
     <div className='py-6'>
       {/* Action Buttons */}
-      {galleryImages.length > 0 && (
+      {galleryItems.length > 0 && (
         <div className='mb-6 flex items-center justify-between gap-3'>
           <Button
             onClick={handleAddPhoto}
@@ -125,10 +85,17 @@ export default function EventGallery({ event, onImageClick }: EventGalleryProps)
       )}
 
       {/* Gallery Grid */}
-      {galleryImages.length > 0 ? (
+      {galleryItems.length > 0 ? (
         <div className='grid grid-cols-3 gap-1 md:gap-2'>
-          {galleryImages.map((image, index) => (
-            <GalleryImage key={index} src={image} index={index} onImageClick={onImageClick} />
+          {galleryItems.map((item, index) => (
+            <GalleryItem
+              key={item.id}
+              item={item}
+              currentUserId={currentUserId}
+              eventId={event.id}
+              isEventHost={isEventHost}
+              onImageClick={() => onImageClick?.(index)}
+            />
           ))}
         </div>
       ) : (

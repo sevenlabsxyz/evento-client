@@ -8,6 +8,9 @@ const mockBack = jest.fn();
 const mockSetTopBarForRoute = jest.fn();
 const mockApplyRouteConfig = jest.fn();
 const mockClearRoute = jest.fn();
+const mockDeleteGalleryItem = jest.fn();
+let mockGalleryData: any[] = [];
+let mockHostsData: any[] = [];
 
 const detailsScrollIntoView = jest.fn();
 const commentsScrollIntoView = jest.fn();
@@ -43,11 +46,15 @@ jest.mock('@/lib/hooks/use-event-details', () => ({
 }));
 
 jest.mock('@/lib/hooks/use-event-gallery', () => ({
-  useEventGallery: () => ({ data: [], isLoading: false }),
+  useEventGallery: () => ({ data: mockGalleryData, isLoading: false }),
 }));
 
 jest.mock('@/lib/hooks/use-event-hosts', () => ({
-  useEventHosts: () => ({ data: [], isLoading: false }),
+  useEventHosts: () => ({ data: mockHostsData, isLoading: false }),
+}));
+
+jest.mock('@/lib/hooks/use-delete-gallery-item', () => ({
+  useDeleteGalleryItem: () => ({ mutateAsync: mockDeleteGalleryItem }),
 }));
 
 jest.mock('@/lib/hooks/use-event-weather', () => ({
@@ -167,12 +174,33 @@ jest.mock('@/components/event-detail/event-wavlake-embed', () => ({
 
 jest.mock('@/components/event-detail/event-comments', () => ({
   __esModule: true,
-  default: () => <div data-testid='comments-section-content'>Comments Section</div>,
+  default: ({ isEventHost }: { isEventHost: boolean }) => (
+    <div data-testid='comments-section-content' data-is-event-host={String(isEventHost)}>
+      Comments Section
+    </div>
+  ),
 }));
 
 jest.mock('@/components/event-detail/event-gallery', () => ({
   __esModule: true,
-  default: () => <div data-testid='gallery-section-content'>Gallery Section</div>,
+  default: ({
+    galleryItems,
+    isEventHost,
+    onImageClick,
+  }: {
+    galleryItems: Array<{ id: string }>;
+    isEventHost: boolean;
+    onImageClick: (index: number) => void;
+  }) => (
+    <div data-testid='gallery-section-content' data-is-event-host={String(isEventHost)}>
+      Gallery Section
+      {galleryItems.length > 0 && (
+        <button type='button' onClick={() => onImageClick(0)}>
+          Open gallery photo
+        </button>
+      )}
+    </div>
+  ),
 }));
 
 jest.mock('@/components/event-detail/event-password-gate', () => ({
@@ -185,7 +213,25 @@ jest.mock('@/components/event-detail/save-event-sheet', () => ({
 }));
 
 jest.mock('@/components/lightbox-viewer', () => ({
-  LightboxViewer: () => null,
+  LightboxViewer: ({
+    images,
+    selectedImage,
+    showDropdownMenu,
+    handleDelete,
+  }: {
+    images: Array<{ id: string }>;
+    selectedImage: number | null;
+    showDropdownMenu: boolean;
+    handleDelete: (photoId: string) => Promise<{ success: boolean }>;
+  }) => (
+    <div data-testid='event-gallery-lightbox' data-show-delete={String(showDropdownMenu)}>
+      {selectedImage !== null && (
+        <button type='button' onClick={() => void handleDelete(images[selectedImage].id)}>
+          Delete event gallery photo
+        </button>
+      )}
+    </div>
+  ),
 }));
 
 jest.mock('@/components/ui/animated-tabs', () => ({
@@ -223,6 +269,12 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     commentsScrollIntoView.mockClear();
     galleryScrollIntoView.mockClear();
     mockSearchParams.delete('tab');
+    mockGalleryData = [];
+    mockHostsData = [];
+    mockDeleteGalleryItem.mockResolvedValue({
+      galleryItemId: 'photo-1',
+      eventId: 'event-123',
+    });
   });
 
   afterEach(() => {
@@ -241,6 +293,42 @@ describe('EventDetailPageClient section scrolling tabs', () => {
     expect(screen.getByTestId('gallery-section-content')).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Comments' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Gallery' })).toBeInTheDocument();
+  });
+
+  it('passes cohost moderation through the main comment, gallery grid, and lightbox paths', () => {
+    mockHostsData = [{ user_details: { id: 'user-1' } }];
+    mockGalleryData = [
+      {
+        id: 'photo-1',
+        url: 'https://example.com/photo.jpg',
+        created_at: '2026-07-14T12:00:00.000Z',
+        user_details: { id: 'uploader-1' },
+        events: { id: 'event-123', title: 'Test Event' },
+      },
+    ];
+
+    render(<EventDetailPageClient />);
+
+    expect(screen.getByTestId('comments-section-content')).toHaveAttribute(
+      'data-is-event-host',
+      'true'
+    );
+    expect(screen.getByTestId('gallery-section-content')).toHaveAttribute(
+      'data-is-event-host',
+      'true'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Open gallery photo' }));
+    expect(screen.getByTestId('event-gallery-lightbox')).toHaveAttribute(
+      'data-show-delete',
+      'true'
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete event gallery photo' }));
+    expect(mockDeleteGalleryItem).toHaveBeenCalledWith({
+      galleryItemId: 'photo-1',
+      eventId: 'event-123',
+    });
   });
 
   it('preserves a deep-linked non-default tab on first render', async () => {

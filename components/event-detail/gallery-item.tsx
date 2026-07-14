@@ -20,6 +20,7 @@ interface GalleryItemProps {
   currentUserId: string;
   onImageClick?: () => void;
   eventId: string;
+  isEventHost?: boolean;
 }
 
 export default function GalleryItem({
@@ -27,6 +28,7 @@ export default function GalleryItem({
   currentUserId,
   onImageClick,
   eventId,
+  isEventHost = false,
 }: GalleryItemProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [showControls, setShowControls] = useState(false);
@@ -39,6 +41,7 @@ export default function GalleryItem({
   const deleteGalleryItem = useDeleteGalleryItem();
 
   const isOwner = item.user_details?.id === currentUserId;
+  const canDelete = isOwner || isEventHost;
 
   const handleDelete = () => {
     if (
@@ -118,8 +121,8 @@ export default function GalleryItem({
           <span className='text-xs'>{likes}</span>
         </button>
 
-        {/* Menu for owner */}
-        {isOwner && (
+        {/* Menu for uploader or event host */}
+        {canDelete && (
           <div
             className={`absolute right-2 top-2 transition-opacity ${
               showControls ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
@@ -127,7 +130,12 @@ export default function GalleryItem({
           >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className='rounded-full bg-black bg-opacity-50 p-1.5 text-white'>
+                <button
+                  type='button'
+                  aria-label='Photo actions'
+                  className='rounded-full bg-black bg-opacity-50 p-1.5 text-white'
+                  onClick={(event) => event.stopPropagation()}
+                >
                   <MoreHorizontal className='h-4 w-4' />
                 </button>
               </DropdownMenuTrigger>
