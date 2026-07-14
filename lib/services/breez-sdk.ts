@@ -17,6 +17,9 @@ import type {
   ClaimDepositRequest,
   Config,
   ConnectRequest,
+  CrossChainAddressDetails,
+  CrossChainRouteFilter,
+  CrossChainRoutePair,
   DepositInfo,
   EventListener,
   Fee,
@@ -194,6 +197,9 @@ export class BreezSDKService {
       config.apiKey = apiKey;
       // Configure LNURL domain for Lightning addresses
       config.lnurlDomain = 'evento.cash';
+      // Cross-chain sends require explicit opt-in plus background tasks so delivery status can reconcile.
+      config.backgroundTasksEnabled = true;
+      config.crossChainConfig = {};
       // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
       // Auto-claims if fee is ≤ 10 sat/vbyte (~2,000 sats for a typical 200 vbyte swap tx)
       // This covers most normal fee environments; only extreme spikes require manual claiming
@@ -545,6 +551,56 @@ export class BreezSDKService {
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_SEND_PAYMENT);
       const userMessage = getBreezErrorMessage(error, 'prepare send-all payment');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Fetch available cross-chain routes for a parsed stablecoin destination.
+   */
+  async getCrossChainRoutes(
+    addressDetails: CrossChainAddressDetails
+  ): Promise<CrossChainRoutePair[]> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const filter: CrossChainRouteFilter = {
+        type: 'send',
+        addressDetails,
+      };
+
+      return await this.sdk.getCrossChainRoutes(filter);
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.GETTING_CROSS_CHAIN_ROUTES);
+      const userMessage = getBreezErrorMessage(error, 'get stablecoin routes');
+      throw new Error(userMessage);
+    }
+  }
+
+  /**
+   * Prepare a cross-chain stablecoin payment and quote fees/recipient output.
+   */
+  async prepareCrossChainPayment(
+    address: string,
+    route: CrossChainRoutePair,
+    amountSats: number
+  ): Promise<PrepareSendPaymentResponse> {
+    if (!this.sdk) throw new Error('SDK not connected');
+
+    try {
+      const request: PrepareSendPaymentRequest = {
+        paymentRequest: {
+          type: 'crossChain',
+          address,
+          route,
+        },
+        amount: BigInt(amountSats),
+      };
+
+      return await this.sdk.prepareSendPayment(request);
+    } catch (error) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_CROSS_CHAIN_PAYMENT);
+      const userMessage = getBreezErrorMessage(error, 'prepare stablecoin payment');
       throw new Error(userMessage);
     }
   }

@@ -16,7 +16,13 @@ import {
 } from '@/lib/utils/breez-error-handler';
 import { logger } from '@/lib/utils/logger';
 import { toast } from '@/lib/utils/toast';
-import type { InputType, PrepareLnurlPayResponse } from '@breeztech/breez-sdk-spark/ssr';
+import type {
+  CrossChainAddressDetails,
+  CrossChainRoutePair,
+  InputType,
+  PrepareLnurlPayResponse,
+  PrepareSendPaymentResponse,
+} from '@breeztech/breez-sdk-spark/ssr';
 import { VisuallyHidden } from '@silk-hq/components';
 import { AlertCircle, ArrowLeft, Loader2, Scan, UserPlus, Users, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
@@ -33,6 +39,43 @@ interface SendLightningSheetProps {
   scannedData?: string;
 }
 
+const formatTokenAmount = (amount: string | undefined, decimals: number): string => {
+  if (!amount) return '0';
+
+  try {
+    const value = BigInt(amount);
+    let divisor = BigInt(1);
+    for (let index = 0; index < decimals; index += 1) {
+      divisor *= BigInt(10);
+    }
+    const whole = value / divisor;
+    const fraction = value % divisor;
+
+    if (fraction === BigInt(0) || decimals === 0) {
+      return whole.toLocaleString();
+    }
+
+    const fractionText = fraction.toString().padStart(decimals, '0').replace(/0+$/, '');
+    return `${whole.toLocaleString()}.${fractionText}`;
+  } catch {
+    return amount;
+  }
+};
+
+const getCrossChainRouteLabel = (route: CrossChainRoutePair) => `${route.asset} on ${route.chain}`;
+
+const formatQuoteExpiry = (expiresAt: string | undefined): string => {
+  if (!expiresAt) return 'Unknown';
+
+  const expiryDate = new Date(expiresAt);
+  if (Number.isNaN(expiryDate.getTime())) return 'Unknown';
+
+  return expiryDate.toLocaleTimeString([], {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+};
+
 export function SendLightningSheet({
   open,
   onOpenChange,
@@ -45,7 +88,7 @@ export function SendLightningSheet({
   const [comment, setComment] = useState('');
   const [inputMode, setInputMode] = useState<'sats' | 'usd'>('usd');
   const [step, setStep] = useState<
-    'input' | 'amount' | 'comment' | 'bitcoin-fee' | 'confirm' | 'cross-chain-unavailable'
+    'input' | 'amount' | 'comment' | 'bitcoin-fee' | 'confirm' | 'cross-chain-routes'
   >('input');
   const [hasFixedAmount, setHasFixedAmount] = useState(false);
   const [isLightningInvoice, setIsLightningInvoice] = useState(false);
@@ -65,9 +108,17 @@ export function SendLightningSheet({
   const [maxSendable, setMaxSendable] = useState<number>(1000000000);
 
   // Bitcoin on-chain payment state
-  const [paymentType, setPaymentType] = useState<'lightning' | 'bitcoin'>('lightning');
+  const [paymentType, setPaymentType] = useState<'lightning' | 'bitcoin' | 'cross-chain'>(
+    'lightning'
+  );
   const [bitcoinFeeSpeed, setBitcoinFeeSpeed] = useState<'fast' | 'medium' | 'slow'>('medium');
   const [bitcoinPrepareResponse, setBitcoinPrepareResponse] = useState<any>(null);
+  const [crossChainRoutes, setCrossChainRoutes] = useState<CrossChainRoutePair[]>([]);
+  const [selectedCrossChainRoute, setSelectedCrossChainRoute] =
+    useState<CrossChainRoutePair | null>(null);
+  const [crossChainPrepareResponse, setCrossChainPrepareResponse] =
+    useState<PrepareSendPaymentResponse | null>(null);
+  const [isLoadingCrossChainRoutes, setIsLoadingCrossChainRoutes] = useState(false);
   const [sendAll, setSendAll] = useState(false);
   const [showContactsSheet, setShowContactsSheet] = useState(false);
   const [showAddContactSheet, setShowAddContactSheet] = useState(false);
@@ -101,6 +152,10 @@ export function SendLightningSheet({
     setPaymentType('lightning');
     setBitcoinFeeSpeed('medium');
     setBitcoinPrepareResponse(null);
+    setCrossChainRoutes([]);
+    setSelectedCrossChainRoute(null);
+    setCrossChainPrepareResponse(null);
+    setIsLoadingCrossChainRoutes(false);
     setSendAll(false);
   };
 
@@ -121,19 +176,35 @@ export function SendLightningSheet({
     return cleaned;
   };
 
+  const resetDestinationState = () => {
+    setIsLightningInvoice(false);
+    setHasFixedAmount(false);
+    setInvoiceAmount(null);
+    setInvoiceDescription('');
+    setAmount('');
+    setAmountUSD('');
+    setComment('');
+    setParsedInput(null);
+    setLnurlPrepareResponse(null);
+    setCommentAllowed(0);
+    setMinSendable(1);
+    setMaxSendable(1000000000);
+    setPaymentType('lightning');
+    setBitcoinPrepareResponse(null);
+    setCrossChainRoutes([]);
+    setSelectedCrossChainRoute(null);
+    setCrossChainPrepareResponse(null);
+    setIsLoadingCrossChainRoutes(false);
+    setSendAll(false);
+  };
+
   const handleInvoiceChange = (value: string) => {
     const cleanedValue = stripUriPrefixes(value);
+    const hasChanged = cleanedValue !== invoice;
     setInvoice(cleanedValue);
 
-    // Reset state when input changes
-    if (!cleanedValue) {
-      setIsLightningInvoice(false);
-      setHasFixedAmount(false);
-      setInvoiceAmount(null);
-      setInvoiceDescription('');
-      setAmount('');
-      setAmountUSD('');
-      setParsedInput(null);
+    if (hasChanged) {
+      resetDestinationState();
     }
   };
 
@@ -159,6 +230,40 @@ export function SendLightningSheet({
 
   const toggleInputMode = () => {
     setInputMode(inputMode === 'sats' ? 'usd' : 'sats');
+  };
+
+  const handleLoadCrossChainRoutes = async (addressDetails: CrossChainAddressDetails) => {
+    setPaymentType('cross-chain');
+    setIsLightningInvoice(false);
+    setHasFixedAmount(false);
+    setCrossChainPrepareResponse(null);
+    setSelectedCrossChainRoute(null);
+    setIsLoadingCrossChainRoutes(true);
+
+    try {
+      const routes = await breezSDK.getCrossChainRoutes(addressDetails);
+      setCrossChainRoutes(routes);
+
+      if (routes.length === 0) {
+        toast.error('No stablecoin route is available for this address yet');
+        setStep('cross-chain-routes');
+        return;
+      }
+
+      if (routes.length === 1) {
+        setSelectedCrossChainRoute(routes[0]);
+        setStep('amount');
+        return;
+      }
+
+      setStep('cross-chain-routes');
+    } catch (error: any) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.GETTING_CROSS_CHAIN_ROUTES);
+      const userMessage = getBreezErrorMessage(error, 'get stablecoin routes');
+      toast.error(userMessage);
+    } finally {
+      setIsLoadingCrossChainRoutes(false);
+    }
   };
 
   const handleContinue = async () => {
@@ -220,6 +325,10 @@ export function SendLightningSheet({
       setParsedInput(parsed);
 
       if (parsed.type === 'bolt11Invoice') {
+        setPaymentType('lightning');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(true);
 
         // Try to get amount and description from invoice
@@ -248,6 +357,10 @@ export function SendLightningSheet({
           setInvoiceDescription(prepareResponse.paymentMethod.invoiceDetails.description || '');
         }
       } else if (parsed.type === 'lightningAddress') {
+        setPaymentType('lightning');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(false);
 
         // Extract LNURL constraints from Lightning address
@@ -261,6 +374,10 @@ export function SendLightningSheet({
         // Lightning address - need amount
         setStep('amount');
       } else if (parsed.type === 'lnurlPay') {
+        setPaymentType('lightning');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(false);
 
         // Extract LNURL constraints
@@ -273,16 +390,16 @@ export function SendLightningSheet({
       } else if (parsed.type === 'bitcoinAddress') {
         // Bitcoin on-chain address
         setPaymentType('bitcoin');
+        setCrossChainRoutes([]);
+        setSelectedCrossChainRoute(null);
+        setCrossChainPrepareResponse(null);
         setIsLightningInvoice(false);
         setHasFixedAmount(false);
 
         // Bitcoin addresses always need amount input
         setStep('amount');
       } else if (parsed.type === 'crossChainAddress') {
-        setIsLightningInvoice(false);
-        setHasFixedAmount(false);
-        setPaymentType('lightning');
-        setStep('cross-chain-unavailable');
+        await handleLoadCrossChainRoutes(parsed as CrossChainAddressDetails);
       } else if (parsed.type === 'bip21') {
         // BIP21 unified payment URI (bitcoin:address?lightning=invoice)
         const bip21 = parsed as any;
@@ -299,6 +416,11 @@ export function SendLightningSheet({
         );
 
         if (lightningMethod) {
+          setPaymentType('lightning');
+          setCrossChainRoutes([]);
+          setSelectedCrossChainRoute(null);
+          setCrossChainPrepareResponse(null);
+
           // Handle Lightning payment method from BIP21
           if (lightningMethod.type === 'bolt11Invoice') {
             setIsLightningInvoice(true);
@@ -359,6 +481,9 @@ export function SendLightningSheet({
 
           if (bitcoinMethod) {
             setPaymentType('bitcoin');
+            setCrossChainRoutes([]);
+            setSelectedCrossChainRoute(null);
+            setCrossChainPrepareResponse(null);
             setIsLightningInvoice(false);
             setHasFixedAmount(false);
             setStep('amount');
@@ -415,6 +540,19 @@ export function SendLightningSheet({
         // Step change is handled inside handlePrepareBitcoinPayment
       } catch (error) {
         // Error already handled in handlePrepareBitcoinPayment
+      } finally {
+        setIsPreparingPayment(false);
+      }
+      return;
+    }
+
+    if (paymentType === 'cross-chain') {
+      setIsPreparingPayment(true);
+      try {
+        await handlePrepareCrossChainPayment(amountSats);
+        setStep('confirm');
+      } catch (error) {
+        // Error already handled in handlePrepareCrossChainPayment
       } finally {
         setIsPreparingPayment(false);
       }
@@ -513,6 +651,29 @@ export function SendLightningSheet({
     }
   };
 
+  const handlePrepareCrossChainPayment = async (amountSats: number) => {
+    if (!selectedCrossChainRoute || parsedInput?.type !== 'crossChainAddress') {
+      toast.error('Please choose a stablecoin route first');
+      throw new Error('Cross-chain route not selected');
+    }
+
+    try {
+      const addressDetails = parsedInput as CrossChainAddressDetails;
+      const prepareResponse = await breezSDK.prepareCrossChainPayment(
+        addressDetails.address,
+        selectedCrossChainRoute,
+        amountSats
+      );
+
+      setCrossChainPrepareResponse(prepareResponse);
+    } catch (error: any) {
+      logBreezError(error, BREEZ_ERROR_CONTEXT.PREPARING_CROSS_CHAIN_PAYMENT);
+      const userMessage = getBreezErrorMessage(error, 'prepare stablecoin payment');
+      toast.error(userMessage);
+      throw error;
+    }
+  };
+
   const handleSend = async () => {
     // Prevent re-entry if already sending
     if (isSending) {
@@ -533,6 +694,14 @@ export function SendLightningSheet({
             type: 'bitcoinAddress',
             confirmationSpeed: bitcoinFeeSpeed,
           },
+        });
+      } else if (paymentType === 'cross-chain') {
+        if (!crossChainPrepareResponse) {
+          throw new Error('Stablecoin payment not prepared');
+        }
+
+        await breezSDK.sendPaymentWithOptions({
+          prepareResponse: crossChainPrepareResponse,
         });
       } else if (parsedInput?.type === 'lightningAddress' || parsedInput?.type === 'lnurlPay') {
         // Send LNURL payment
@@ -570,6 +739,11 @@ export function SendLightningSheet({
       toast.info('QR scanner not available');
     }
   };
+
+  const crossChainPaymentMethod =
+    crossChainPrepareResponse?.paymentMethod?.type === 'crossChainAddress'
+      ? crossChainPrepareResponse.paymentMethod
+      : null;
 
   // Confirmation step content
   const confirmationContent = (
@@ -624,6 +798,23 @@ export function SendLightningSheet({
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <p className='mb-1 text-xs text-muted-foreground'>Sending to</p>
                 <p className='text-sm font-medium'>{invoice}</p>
+              </div>
+            )}
+
+            {paymentType === 'cross-chain' && crossChainPaymentMethod && (
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                <p className='mb-1 text-xs text-muted-foreground'>Sending stablecoin to</p>
+                <p className='break-all font-mono text-sm font-medium'>
+                  {crossChainPaymentMethod.recipientAddress}
+                </p>
+                <div className='mt-3 flex flex-wrap gap-2'>
+                  <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700'>
+                    {getCrossChainRouteLabel(crossChainPaymentMethod.route)}
+                  </span>
+                  <span className='rounded-full bg-white px-3 py-1 text-xs font-medium text-gray-700'>
+                    {crossChainPaymentMethod.route.provider}
+                  </span>
+                </div>
               </div>
             )}
 
@@ -686,8 +877,58 @@ export function SendLightningSheet({
                 </div>
               )}
 
+            {paymentType === 'cross-chain' && crossChainPaymentMethod && (
+              <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                <div className='space-y-2'>
+                  <div className='flex justify-between gap-4'>
+                    <span className='text-sm text-muted-foreground'>Recipient receives</span>
+                    <span className='text-right text-sm font-medium'>
+                      {formatTokenAmount(
+                        crossChainPaymentMethod.estimatedOut,
+                        crossChainPaymentMethod.route.decimals
+                      )}{' '}
+                      {crossChainPaymentMethod.route.asset}
+                    </span>
+                  </div>
+                  <div className='flex justify-between gap-4'>
+                    <span className='text-sm text-muted-foreground'>Stablecoin fee</span>
+                    <span className='text-right text-sm font-medium'>
+                      {formatTokenAmount(
+                        crossChainPaymentMethod.feeAmount,
+                        crossChainPaymentMethod.route.decimals
+                      )}{' '}
+                      {crossChainPaymentMethod.route.asset}
+                    </span>
+                  </div>
+                  <div className='flex justify-between gap-4'>
+                    <span className='text-sm text-muted-foreground'>Service fee</span>
+                    <span className='text-right text-sm font-medium'>
+                      {formatTokenAmount(
+                        crossChainPaymentMethod.serviceFeeAmount,
+                        crossChainPaymentMethod.route.decimals
+                      )}{' '}
+                      {crossChainPaymentMethod.serviceFeeAsset ||
+                        crossChainPaymentMethod.route.asset}
+                    </span>
+                  </div>
+                  <div className='flex justify-between gap-4'>
+                    <span className='text-sm text-muted-foreground'>Network fee</span>
+                    <span className='text-right text-sm font-medium'>
+                      {crossChainPaymentMethod.sourceTransferFeeSats.toLocaleString()} sats
+                    </span>
+                  </div>
+                  <div className='flex justify-between gap-4 border-t border-gray-300 pt-2'>
+                    <span className='text-sm font-semibold'>Quote expires</span>
+                    <span className='text-right text-sm font-semibold'>
+                      {formatQuoteExpiry(crossChainPaymentMethod.expiresAt)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Show fees for BOLT11 or LNURL */}
-            {(feeEstimate || lnurlPrepareResponse) && paymentType !== 'bitcoin' && (
+            {(feeEstimate || lnurlPrepareResponse) && paymentType === 'lightning' && (
               <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
                 <div className='flex justify-between'>
                   <span className='text-sm text-muted-foreground'>Network Fee</span>
@@ -1017,7 +1258,7 @@ export function SendLightningSheet({
     </div>
   );
 
-  const crossChainUnavailableContent = (() => {
+  const crossChainRoutesContent = (() => {
     const crossChainInput = parsedInput?.type === 'crossChainAddress' ? (parsedInput as any) : null;
     const addressFamily = crossChainInput?.addressFamily
       ? String(crossChainInput.addressFamily).toUpperCase()
@@ -1051,10 +1292,15 @@ export function SendLightningSheet({
               <div className='mb-3 flex items-start gap-3'>
                 <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700' />
                 <div>
-                  <h3 className='font-semibold text-amber-950'>Stablecoin sends are not ready</h3>
+                  <h3 className='font-semibold text-amber-950'>
+                    {crossChainRoutes.length > 0
+                      ? 'Choose a stablecoin route'
+                      : 'No stablecoin route available'}
+                  </h3>
                   <p className='mt-1 text-sm text-amber-900'>
-                    Evento recognized this as a cross-chain stablecoin address, but sending USDT or
-                    USDC from the wallet is not available yet.
+                    {crossChainRoutes.length > 0
+                      ? 'Evento found multiple ways to send to this address. Pick the asset and chain before entering an amount.'
+                      : 'Evento recognized this address, but Breez did not return a supported USDT or USDC route for it yet.'}
                   </p>
                 </div>
               </div>
@@ -1077,10 +1323,55 @@ export function SendLightningSheet({
               </div>
             </div>
 
-            <p className='text-sm text-gray-600'>
-              We need route selection, quote expiry, fee display, and slippage confirmation before
-              this can be sent safely.
-            </p>
+            {isLoadingCrossChainRoutes && (
+              <div className='flex items-center justify-center rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+                <span className='text-sm font-medium'>Finding stablecoin routes...</span>
+              </div>
+            )}
+
+            {crossChainRoutes.length > 0 && (
+              <div className='space-y-3'>
+                {crossChainRoutes.map((route) => {
+                  const routeKey = [
+                    route.provider,
+                    route.chain,
+                    route.chainId,
+                    route.asset,
+                    route.contractAddress,
+                  ]
+                    .filter(Boolean)
+                    .join(':');
+
+                  return (
+                    <button
+                      key={routeKey}
+                      type='button'
+                      onClick={() => {
+                        setSelectedCrossChainRoute(route);
+                        setStep('amount');
+                      }}
+                      className='w-full rounded-lg border border-gray-200 bg-white p-4 text-left transition-colors hover:border-gray-900'
+                    >
+                      <div className='flex items-start justify-between gap-3'>
+                        <div>
+                          <p className='font-semibold text-gray-950'>
+                            {getCrossChainRouteLabel(route)}
+                          </p>
+                          <p className='mt-1 text-xs text-muted-foreground'>
+                            Provider: {route.provider}
+                            {route.chainId ? ` · Chain ${route.chainId}` : ''}
+                          </p>
+                        </div>
+                        <span className='rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700'>
+                          {route.decimals} decimals
+                        </span>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             <div className='space-y-3'>
               <Button onClick={() => setStep('input')} className='h-12 w-full rounded-full'>
@@ -1135,7 +1426,7 @@ export function SendLightningSheet({
               {step === 'bitcoin-fee' && bitcoinFeeContent}
               {step === 'comment' && commentContent}
               {step === 'confirm' && confirmationContent}
-              {step === 'cross-chain-unavailable' && crossChainUnavailableContent}
+              {step === 'cross-chain-routes' && crossChainRoutesContent}
             </SheetWithDetentFull.Content>
           </SheetWithDetentFull.View>
         </SheetWithDetentFull.Portal>

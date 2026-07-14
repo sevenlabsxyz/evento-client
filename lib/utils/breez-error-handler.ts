@@ -34,6 +34,8 @@ export const BREEZ_ERROR_CONTEXT = {
   WAITING_FOR_PAYMENT: 'waiting for payment',
   PARSING_INPUT: 'parsing input',
   PARSING_PAYMENT_INPUT: 'parsing payment input',
+  GETTING_CROSS_CHAIN_ROUTES: 'getting stablecoin routes',
+  PREPARING_CROSS_CHAIN_PAYMENT: 'preparing stablecoin payment',
 
   // LNURL Operations
   PREPARING_LNURL_PAYMENT: 'preparing LNURL payment',
