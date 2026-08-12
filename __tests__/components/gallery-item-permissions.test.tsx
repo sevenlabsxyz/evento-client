@@ -106,6 +106,21 @@ describe('GalleryItem permissions', () => {
     );
   });
 
+  it('serves a stored GIF tile from the CDN without stripping animation', () => {
+    render(
+      <GalleryItem
+        item={{ ...item, url: '/eventos/gallery/anim.gif' } as any}
+        currentUserId='viewer-1'
+        eventId='event-1'
+      />
+    );
+
+    expect(screen.getByRole('img')).toHaveAttribute(
+      'src',
+      'https://api.evento.so/storage/v1/object/public/cdn/eventos/gallery/anim.gif'
+    );
+  });
+
   it.each([
     ['Enter', 'Enter'],
     ['Space', ' '],

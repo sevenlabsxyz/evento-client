@@ -9,7 +9,7 @@ import {
 import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { GalleryItem as GalleryItemType } from '@/lib/hooks/use-event-gallery';
 import { useGalleryItemLikes } from '@/lib/hooks/use-gallery-item-likes';
-import { getOptimizedImageUrl, isGif } from '@/lib/utils/image';
+import { getOptimizedImageUrlPreservingGif, isGif } from '@/lib/utils/image';
 import { toast } from '@/lib/utils/toast';
 import { Heart, MoreHorizontal, Trash2 } from 'lucide-react';
 import Image from 'next/image';
@@ -39,7 +39,7 @@ export default function GalleryItem({
     isLoading: likesLoading,
   } = useGalleryItemLikes(item.id, eventId);
   const deleteGalleryItem = useDeleteGalleryItem();
-  const displayUrl = getOptimizedImageUrl(item.url);
+  const displayUrl = getOptimizedImageUrlPreservingGif(item.url);
 
   const isOwner = item.user_details?.id === currentUserId;
   const canDelete = isOwner || isEventHost;

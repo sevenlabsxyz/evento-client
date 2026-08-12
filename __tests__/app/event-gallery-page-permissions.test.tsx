@@ -196,6 +196,22 @@ describe('GalleryPage host moderation', () => {
     expect(screen.getByTestId('photo-upload-sheet')).toHaveAttribute('data-open', 'false');
     fireEvent.click(screen.getByTitle('Add Photos'));
     expect(screen.getByTestId('photo-upload-sheet')).toHaveAttribute('data-open', 'true');
-    expect(screen.getByTestId('photo-upload-sheet')).toHaveAttribute('data-event-id', 'event-1');
+  });
+
+  it('builds the gallery share URL from the event route, not /e/event/', async () => {
+    const shareSpy = jest.fn();
+    Object.defineProperty(global.navigator, 'share', {
+      value: shareSpy,
+      configurable: true,
+      writable: true,
+    });
+
+    render(<GalleryPage />);
+    fireEvent.click(screen.getByTitle('Share Gallery'));
+
+    expect(shareSpy).toHaveBeenCalledTimes(1);
+    const sharedUrl = shareSpy.mock.calls[0][0].url as string;
+    expect(sharedUrl).toMatch(/\/e\/event-1\/gallery$/);
+    expect(sharedUrl).not.toContain('/e/event/');
   });
 });

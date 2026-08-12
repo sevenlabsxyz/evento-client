@@ -9,7 +9,7 @@ import { useDeleteGalleryItem } from '@/lib/hooks/use-delete-gallery-item';
 import { useEventDetails } from '@/lib/hooks/use-event-details';
 import { useEventGallery } from '@/lib/hooks/use-event-gallery';
 import { useEventHosts } from '@/lib/hooks/use-event-hosts';
-import { getOptimizedImageUrl } from '@/lib/utils/image';
+import { getOptimizedImageUrlPreservingGif } from '@/lib/utils/image';
 import { logger } from '@/lib/utils/logger';
 import { ArrowLeft, Plus, Share } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
@@ -37,7 +37,7 @@ export default function GalleryPage() {
     () =>
       galleryData.map((item) => ({
         id: item.id,
-        image: getOptimizedImageUrl(item.url, 1200, 90),
+        image: getOptimizedImageUrlPreservingGif(item.url, 1200, 90),
         user_details: item.user_details,
         created_at: item.created_at,
       })),
@@ -109,7 +109,7 @@ export default function GalleryPage() {
   };
 
   const handleShareGallery = async () => {
-    const galleryUrl = `${window.location.origin}/e/event/${eventId}/gallery`;
+    const galleryUrl = `${window.location.origin}/e/${eventId}/gallery`;
 
     if (navigator.share) {
       try {

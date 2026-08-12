@@ -42,6 +42,36 @@ export function isGif(url: string): boolean {
 }
 
 /**
+ * Get an optimized image URL that preserves GIF animation.
+ *
+ * Supabase image transformations can flatten animated GIFs to a single frame,
+ * so stored GIFs are served from the CDN origin without transformation params.
+ * Non-GIFs delegate to `getOptimizedImageUrl` for the requested size/quality.
+ *
+ * @param url - Image URL (relative path or full URL)
+ * @param size - Image width in pixels (default: 500)
+ * @param quality - Image quality 1-100 (default: 80)
+ * @returns Optimized image URL, or raw CDN URL for stored GIFs
+ */
+export function getOptimizedImageUrlPreservingGif(
+  url: string,
+  size: number = 500,
+  quality: number = 80
+): string {
+  if (isGif(url)) {
+    // External GIFs (e.g. media.giphy.com) are already absolute HTTPS and
+    // would be returned as-is by getOptimizedImageUrl. Stored GIFs need the
+    // CDN origin without transformation params to keep animating.
+    if (url.includes('https://')) {
+      return url;
+    }
+    const cleanPath = url.startsWith('/') ? url.slice(1) : url;
+    return `https://api.evento.so/storage/v1/object/public/cdn/${cleanPath}`;
+  }
+  return getOptimizedImageUrl(url, size, quality);
+}
+
+/**
  * Preset image sizes for different use cases
  */
 export const ImageSizes = {
