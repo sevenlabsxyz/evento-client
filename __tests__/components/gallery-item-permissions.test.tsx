@@ -138,7 +138,7 @@ describe('GalleryItem permissions', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: '0' }));
+    fireEvent.click(screen.getByRole('button', { name: /like photo/i }));
     fireEvent.click(screen.getByRole('button', { name: 'Photo actions' }));
 
     expect(mockToggleLike).toHaveBeenCalledTimes(1);

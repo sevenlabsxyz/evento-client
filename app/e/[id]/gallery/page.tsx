@@ -140,7 +140,12 @@ export default function GalleryPage() {
       {/* Header */}
       <div className='sticky top-0 z-40 flex items-center justify-between border-b border-gray-100 bg-white p-4'>
         <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
+          <button
+            type='button'
+            onClick={() => router.back()}
+            aria-label='Go back'
+            className='rounded-full p-2 hover:bg-gray-100'
+          >
             <ArrowLeft className='h-5 w-5' />
           </button>
           <div>
@@ -152,7 +157,9 @@ export default function GalleryPage() {
         {/* Action Buttons */}
         <div className='flex items-center gap-2'>
           <button
+            type='button'
             onClick={handleShareGallery}
+            aria-label='Share gallery'
             className='rounded-full p-2 hover:bg-gray-100'
             title='Share Gallery'
           >
@@ -160,7 +167,9 @@ export default function GalleryPage() {
           </button>
           {isEventHost && (
             <button
+              type='button'
               onClick={handleAddPhoto}
+              aria-label='Add photos'
               className='rounded-full p-2 hover:bg-gray-100'
               title='Add Photos'
             >

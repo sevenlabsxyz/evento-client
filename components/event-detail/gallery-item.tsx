@@ -125,8 +125,10 @@ export default function GalleryItem({
       >
         {/* Like button */}
         <button
+          type='button'
           onClick={handleLikeToggle}
           disabled={likesLoading}
+          aria-label={`${hasLiked ? 'Unlike' : 'Like'} photo`}
           className={`absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-black bg-opacity-50 px-2.5 py-1.5 text-white transition-all ${
             showControls || hasLiked ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
           }`}
