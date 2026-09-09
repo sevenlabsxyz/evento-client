@@ -23,9 +23,10 @@ import QuickProfileSheet from '../ui/quick-profile-sheet';
 
 interface EventCommentsProps {
   eventId: string;
+  isEventHost?: boolean;
 }
 
-export default function EventComments({ eventId }: EventCommentsProps) {
+export default function EventComments({ eventId, isEventHost = false }: EventCommentsProps) {
   const { user } = useAuth();
   const router = useRouter();
   const { data: comments = [], isLoading, error } = useEventComments(eventId);
@@ -154,6 +155,7 @@ export default function EventComments({ eventId }: EventCommentsProps) {
                 comment={comment}
                 currentUser={user}
                 eventId={eventId}
+                isEventHost={isEventHost}
                 activeReplyId={activeReplyId}
                 setActiveReplyId={setActiveReplyId}
               />

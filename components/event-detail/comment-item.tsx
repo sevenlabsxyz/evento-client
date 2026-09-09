@@ -26,6 +26,7 @@ interface CommentItemProps {
   comment: EventComment;
   currentUser: UserDetails | null;
   eventId: string;
+  isEventHost?: boolean;
   isReply?: boolean;
   activeReplyId: string | null;
   setActiveReplyId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -35,6 +36,7 @@ export default function CommentItem({
   comment,
   currentUser,
   eventId,
+  isEventHost = false,
   isReply = false,
   activeReplyId,
   setActiveReplyId,
@@ -69,6 +71,8 @@ export default function CommentItem({
   const timeAgo = formatDistance(createdDate, new Date(), { addSuffix: true });
   const formattedDate = format(createdDate, "MMM d, yyyy 'at' h:mm a");
   const isAuthor = currentUser ? comment.user_id === currentUser.id : false;
+  const canEdit = isAuthor;
+  const canDelete = isAuthor || isEventHost;
 
   // Auto-grow textarea as content grows
   useEffect(() => {
@@ -195,7 +199,7 @@ export default function CommentItem({
                 </span>
               </div>
 
-              {isAuthor && (
+              {canDelete && (
                 <CircledIconButton
                   icon={MoreHorizontal}
                   onClick={() => setShowActionsSheet(true)}
@@ -331,6 +335,7 @@ export default function CommentItem({
                     comment={reply}
                     currentUser={currentUser}
                     eventId={eventId}
+                    isEventHost={isEventHost}
                     isReply={true}
                     activeReplyId={activeReplyId}
                     setActiveReplyId={setActiveReplyId}
@@ -357,6 +362,8 @@ export default function CommentItem({
         onClose={() => setShowActionsSheet(false)}
         onEdit={() => setIsEditing(true)}
         onDelete={handleDelete}
+        canEdit={canEdit}
+        canDelete={canDelete}
       />
 
       {selectedUser && (

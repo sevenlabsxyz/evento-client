@@ -8,6 +8,8 @@ interface CommentActionsSheetProps {
   onClose: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  canEdit: boolean;
+  canDelete: boolean;
 }
 
 export function CommentActionsSheet({
@@ -15,9 +17,13 @@ export function CommentActionsSheet({
   onClose,
   onEdit,
   onDelete,
+  canEdit,
+  canDelete,
 }: CommentActionsSheetProps) {
-  const options: MenuOption[] = [
-    {
+  const options: MenuOption[] = [];
+
+  if (canEdit) {
+    options.push({
       id: 'edit',
       icon: Pencil,
       label: 'Edit',
@@ -26,8 +32,11 @@ export function CommentActionsSheet({
         onClose();
       },
       variant: 'secondary',
-    },
-    {
+    });
+  }
+
+  if (canDelete) {
+    options.push({
       id: 'delete',
       icon: Trash2,
       label: 'Delete',
@@ -36,8 +45,8 @@ export function CommentActionsSheet({
         onClose();
       },
       variant: 'destructive',
-    },
-  ];
+    });
+  }
 
   return <DetachedMenuSheet isOpen={isOpen} onClose={onClose} options={options} />;
 }
