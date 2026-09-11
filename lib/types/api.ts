@@ -485,12 +485,14 @@ export type CohostInviteTarget = { userId: string } | { email: string };
 
 // Email Blast creation form
 export interface CreateEmailBlastForm {
+  subject: string;
   message: string;
   recipientFilter: EmailBlastRecipientFilter;
   scheduledFor?: string | null;
 }
 
 export interface UpdateEmailBlastForm {
+  subject?: string;
   message?: string;
   recipientFilter?: EmailBlastRecipientFilter;
   scheduledFor?: string;
