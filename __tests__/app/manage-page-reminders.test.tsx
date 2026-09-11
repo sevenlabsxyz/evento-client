@@ -37,6 +37,11 @@ jest.mock('@/lib/stores/topbar-store', () => ({
   }),
 }));
 
+jest.mock('@/components/manage-event/cancel-event-modal', () => ({
+  __esModule: true,
+  default: () => null,
+}));
+
 const mockUseEventDetails = useEventDetails as jest.MockedFunction<typeof useEventDetails>;
 
 describe('ManageEventPage reminders row', () => {
