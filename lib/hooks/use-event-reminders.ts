@@ -11,15 +11,13 @@ import {
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export const FOURTH_REMINDER_ERROR = 'You can select up to 3 reminders';
-export const INVALID_REMINDER_OFFSET_ERROR = 'Only 1h, 2h, 3h, 8h, 1d, and 3d reminders are allowed';
+export const INVALID_REMINDER_OFFSET_ERROR =
+  'Only 1h, 2h, 3h, 8h, 1d, and 3d reminders are allowed';
 
 const EMPTY_REMINDERS: EventReminders = { offsets: [] };
 
 export function isEventReminderOffset(value: unknown): value is EventReminderOffset {
-  return (
-    typeof value === 'string' &&
-    (EVENT_REMINDER_OFFSETS as readonly string[]).includes(value)
-  );
+  return typeof value === 'string' && (EVENT_REMINDER_OFFSETS as readonly string[]).includes(value);
 }
 
 export function sanitizeReminderOffsets(offsets: unknown): EventReminderOffset[] {
