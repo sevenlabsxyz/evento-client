@@ -175,13 +175,15 @@ export function transformEmailBlastForUI(blast: EmailBlast): EmailBlast & {
   failed: number;
   pending: number;
 } {
-  // Extract subject from message (first line or first 50 chars)
+  // Prefer the subject the API persisted; fall back to first message line.
   const subject =
+    blast.subject?.trim() ||
     blast.message
       .replace(/<[^>]*>/g, '') // Remove HTML tags
       .split('\n')[0] // Get first line
       .slice(0, 50) // Limit to 50 chars
-      .trim() || 'No subject';
+      .trim() ||
+    'No subject';
 
   // Map recipient filter to display text
   const recipientMap = {
