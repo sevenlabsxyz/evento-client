@@ -555,6 +555,28 @@ export type VerificationStatus = 'verified' | 'pending' | null;
 export type RestrictedEventField = 'location' | 'description' | 'guest_list';
 export type EmailBlastRecipientFilter = 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited';
 
+// Host-configurable RSVP-yes guest reminder offsets (relative to event start)
+export const EVENT_REMINDER_OFFSETS = ['1h', '2h', '3h', '8h', '1d', '3d'] as const;
+export type EventReminderOffset = (typeof EVENT_REMINDER_OFFSETS)[number];
+export const MAX_EVENT_REMINDERS = 3;
+
+export const EVENT_REMINDER_OFFSET_LABELS: Record<EventReminderOffset, string> = {
+  '1h': '1 hour before',
+  '2h': '2 hours before',
+  '3h': '3 hours before',
+  '8h': '8 hours before',
+  '1d': '1 day before',
+  '3d': '3 days before',
+};
+
+export interface EventReminders {
+  offsets: EventReminderOffset[];
+}
+
+export interface UpdateEventRemindersBody {
+  offsets: EventReminderOffset[];
+}
+
 // Password-protected event response (minimal data when locked)
 export interface PasswordProtectedEventResponse {
   id: string;
