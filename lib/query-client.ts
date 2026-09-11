@@ -139,6 +139,7 @@ export const queryKeys = {
   eventEmailBlasts: (eventId: string) => [...queryKeys.emailBlasts, eventId] as const,
   emailBlast: (eventId: string, blastId: string) =>
     [...queryKeys.emailBlasts, eventId, blastId] as const,
+  eventReminders: (eventId: string) => [...queryKeys.events, eventId, 'reminders'] as const,
 
   // Blog (Ghost CMS)
   blog: ['blog'] as const,

@@ -9,6 +9,7 @@ import { usePublishEvent } from '@/lib/hooks/use-publish-event';
 import { useTopBar } from '@/lib/stores/topbar-store';
 import { toast } from '@/lib/utils/toast';
 import {
+  Bell,
   ClipboardList,
   DollarSign,
   FileText,
@@ -140,6 +141,15 @@ export default function ManageEventPage() {
       iconBg: 'bg-red-100',
       iconColor: 'text-red-600',
       route: `/e/${eventId}/manage/email-blast`,
+    },
+    {
+      id: 'reminders',
+      title: 'Reminders',
+      description: 'Automatic emails to guests who RSVP Yes',
+      icon: <Bell className='h-6 w-6' />,
+      iconBg: 'bg-amber-100',
+      iconColor: 'text-amber-600',
+      route: `/e/${eventId}/manage/reminders`,
     },
     {
       id: 'sub-events',
