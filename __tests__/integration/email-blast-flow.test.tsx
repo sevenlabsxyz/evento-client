@@ -92,6 +92,7 @@ describe('Email Blast Integration Flow', () => {
 
   it('should create email blast successfully', async () => {
     const mockEmailBlastData = {
+      subject: 'Reminder',
       message: "<p>Don't forget to arrive on time!</p>",
       recipientFilter: 'all' as const,
       scheduledFor: null,
@@ -118,6 +119,7 @@ describe('Email Blast Integration Flow', () => {
     apiClient.post.mockRejectedValueOnce(new Error('Failed to create email blast'));
 
     const mockEmailBlastData = {
+      subject: 'Test subject',
       message: '<p>Test message</p>',
       recipientFilter: 'all' as const,
       scheduledFor: null,
@@ -158,6 +160,7 @@ describe('Email Blast Integration Flow', () => {
 
     for (const filter of recipientFilters) {
       const mockEmailBlastData = {
+        subject: `Subject for ${filter}`,
         message: `<p>Message for ${filter} recipients</p>`,
         recipientFilter: filter as 'all' | 'rsvp-yes' | 'rsvp-no' | 'rsvp-maybe' | 'invited',
         scheduledFor: null,
@@ -183,6 +186,7 @@ describe('Email Blast Integration Flow', () => {
   it('should handle scheduled email blasts', async () => {
     const scheduledDate = new Date('2025-01-02T10:00:00Z');
     const mockEmailBlastData = {
+      subject: 'Scheduled reminder',
       message: '<p>Scheduled reminder</p>',
       recipientFilter: 'all' as const,
       scheduledFor: scheduledDate.toISOString(),

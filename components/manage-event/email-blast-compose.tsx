@@ -335,6 +335,7 @@ export default function EmailBlastCompose({
 
       if (isEditMode) {
         const updateEmailBlastData: UpdateEmailBlastForm = {
+          subject: subject.trim(),
           message,
           recipientFilter: recipients,
           ...(scheduledFor ? { scheduledFor } : {}),
@@ -344,6 +345,7 @@ export default function EmailBlastCompose({
         toast.success('Email blast updated successfully!');
       } else {
         const emailBlastData: CreateEmailBlastForm = {
+          subject: subject.trim(),
           message,
           recipientFilter: recipients,
           ...(scheduledFor && { scheduledFor }),

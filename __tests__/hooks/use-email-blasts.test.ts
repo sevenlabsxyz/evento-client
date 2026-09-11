@@ -230,6 +230,7 @@ describe('useCreateEmailBlast', () => {
   const createMockCreateForm = (
     overrides: Partial<CreateEmailBlastForm> = {}
   ): CreateEmailBlastForm => ({
+    subject: 'Test email blast subject',
     message: 'Test email blast message',
     recipientFilter: 'all',
     scheduledFor: null,
@@ -272,6 +273,12 @@ describe('useCreateEmailBlast', () => {
       });
 
       expect(mockApiClient.post).toHaveBeenCalledWith('/v1/events/event123/email-blasts', mockForm);
+      expect(mockForm).toEqual(
+        expect.objectContaining({
+          subject: 'Test email blast subject',
+          message: 'Test email blast message',
+        })
+      );
       expect(mutationResult).toEqual(mockBlast);
     });
 
@@ -510,6 +517,7 @@ describe('useCreateEmailBlastWithCallbacks', () => {
   const createMockCreateForm = (
     overrides: Partial<CreateEmailBlastForm> = {}
   ): CreateEmailBlastForm => ({
+    subject: 'Test email blast subject',
     message: 'Test email blast message',
     recipientFilter: 'all',
     scheduledFor: null,
@@ -694,6 +702,18 @@ describe('transformEmailBlastForUI', () => {
   });
 
   describe('subject extraction', () => {
+    it('prefers the subject returned by the API', () => {
+      const blast = createMockEmailBlast({
+        subject: 'Host typed subject',
+        message:
+          '<!--evento-blast-subject:Host%20typed%20subject--><p><strong>Host typed subject</strong></p><p>Body</p>',
+      });
+
+      const result = transformEmailBlastForUI(blast);
+
+      expect(result.subject).toBe('Host typed subject');
+    });
+
     it('extracts subject from first line of message', () => {
       const blast = createMockEmailBlast({
         message: 'This is the subject\nThis is the body content',
