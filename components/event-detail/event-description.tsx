@@ -1,7 +1,7 @@
 'use client';
 
 import { EventDetail } from '@/lib/types/event';
-import DOMPurify from 'dompurify';
+import { sanitizeRichText } from '@/lib/utils/sanitize';
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '../ui/button';
 
@@ -12,7 +12,15 @@ interface EventDescriptionProps {
 export default function EventDescription({ event }: EventDescriptionProps) {
   const [expanded, setExpanded] = useState(false);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  // Sanitized after mount: DOMPurify can't run during SSR (no window), so raw
+  // HTML must never reach dangerouslySetInnerHTML on the server. Empty until
+  // the effect below replaces it with the sanitized value.
+  const [cleanHtml, setCleanHtml] = useState('');
   const contentRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    setCleanHtml(sanitizeRichText(event?.description ?? ''));
+  }, [event?.description]);
 
   useEffect(() => {
     const el = contentRef.current;
@@ -23,7 +31,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
       setIsOverflowing(el.scrollHeight > el.clientHeight + 4); // small tolerance
     };
 
-    // Run after mount and on resize
+    // Run after mount and on resize (also re-runs when sanitized content lands)
     checkOverflow();
     const ro = new ResizeObserver(checkOverflow);
     ro.observe(el);
@@ -32,7 +40,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
       ro.disconnect();
       window.removeEventListener('resize', checkOverflow);
     };
-  }, [event?.description]);
+  }, [cleanHtml]);
 
   if (!event.description || event.description === '<p></p>') return null;
 
@@ -50,7 +58,7 @@ export default function EventDescription({ event }: EventDescriptionProps) {
               (expanded ? '' : ' max-h-56')
             }
             style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}
-            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(event.description) }}
+            dangerouslySetInnerHTML={{ __html: cleanHtml }}
           />
 
           {/* Fade-out gradient when collapsed and overflowing */}

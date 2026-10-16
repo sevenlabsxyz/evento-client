@@ -56,6 +56,7 @@ import {
   sortProfileEventsByStartDate,
 } from '@/lib/utils/profile-events';
 import { toast } from '@/lib/utils/toast';
+import { safeExternalUrl } from '@/lib/utils/url';
 import { motion } from 'framer-motion';
 import {
   ArrowLeft,
@@ -831,7 +832,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
             <Button
               onClick={() => {
                 setShowWebsiteModal(false);
-                window.open(userData?.bio_link || '#', '_blank', 'noopener,noreferrer');
+                window.open(safeExternalUrl(userData?.bio_link), '_blank', 'noopener,noreferrer');
               }}
               className='w-full bg-red-500 text-white hover:bg-red-600'
             >

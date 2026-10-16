@@ -155,6 +155,26 @@ async function initializeWalletState({
   }
 }
 
+/**
+ * Best-effort upgrade of a legacy v1 encrypted seed (200k PBKDF2
+ * iterations) to the current v2 envelope (1M iterations) after a successful
+ * unlock. Runs only once the correct password is already verified, keeps the
+ * same password, and never blocks or fails the unlock itself (AuditWallet
+ * F1).
+ */
+async function reencryptSeedAfterUnlock(encryptedSeed: string, password: string): Promise<void> {
+  if (!WalletStorageService.needsReencrypt(encryptedSeed)) {
+    return;
+  }
+
+  try {
+    const upgraded = await WalletStorageService.reencryptWithSamePin(encryptedSeed, password);
+    WalletStorageService.saveEncryptedSeed(upgraded);
+  } catch (err) {
+    logBreezError(err, 'upgrading encrypted seed to v2');
+  }
+}
+
 export function useWallet() {
   const { walletState, isLoading, error, setWalletState, setLoading, setError } = useWalletStore();
 
@@ -320,6 +340,12 @@ export function useWallet() {
 
         // Persist to localStorage
         WalletStorageService.saveWalletState(newState);
+
+        // Transparently upgrade a legacy v1 encrypted seed (200k PBKDF2
+        // iterations) to the current v2 envelope now that the correct
+        // password is verified. The wallet is already restored, so failure
+        // here never blocks the restore.
+        await reencryptSeedAfterUnlock(encryptedSeed, password);
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.RESTORING_WALLET);
         const userMessage = getBreezErrorMessage(err, 'restore wallet');
@@ -422,6 +448,12 @@ export function useWallet() {
         };
 
         setWalletState(newState);
+
+        // Transparently upgrade a legacy v1 encrypted seed (200k PBKDF2
+        // iterations) to the current v2 envelope. The correct password is
+        // verified at this point, and the seed is already saved back in
+        // memory + connected, so failure here never blocks the unlock.
+        await reencryptSeedAfterUnlock(encryptedSeed, password);
       } catch (err: any) {
         logBreezError(err, BREEZ_ERROR_CONTEXT.UNLOCKING_WALLET);
         const userMessage = getBreezErrorMessage(err, 'unlock wallet');
@@ -440,15 +472,18 @@ export function useWallet() {
   const lockWallet = useCallback(async (): Promise<void> => {
     try {
       await breezSDK.disconnect();
-      clearSeed(); // Clear in-memory seed
+    } catch (err: unknown) {
+      logBreezError(err, BREEZ_ERROR_CONTEXT.LOCKING_WALLET);
+      const userMessage = getBreezErrorMessage(err, 'lock wallet');
+      setError(userMessage);
+    } finally {
+      // Always drop the in-memory seed, even if disconnect failed,
+      // so the secret never outlives the lock attempt
+      clearSeed();
       setWalletState((prev) => ({
         ...prev,
         isConnected: false,
       }));
-    } catch (err: any) {
-      logBreezError(err, BREEZ_ERROR_CONTEXT.LOCKING_WALLET);
-      const userMessage = getBreezErrorMessage(err, 'lock wallet');
-      setError(userMessage);
     }
   }, [clearSeed]);
 

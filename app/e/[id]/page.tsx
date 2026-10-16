@@ -43,6 +43,9 @@ type EventSeoData = Pick<
   | 'computed_end_date'
 >;
 
+// Metadata fetch runs with the service-role key (bypasses RLS), so it must be
+// filtered to public, non-draft events only. Non-public events fall back to
+// generic noindex metadata — the authenticated client page still renders them.
 const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | null> => {
   const supabase = getEventMetadataClient();
 
@@ -81,7 +84,9 @@ const fetchEventSeoData = cache(async (eventId: string): Promise<EventSeoData | 
       `
     )
     .eq('id', eventId)
-    .single<EventSeoData>();
+    .eq('visibility', 'public')
+    .in('status', ['published', 'cancelled'])
+    .maybeSingle<EventSeoData>();
 
   if (error) {
     throw error;
@@ -102,7 +107,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
     const event = await fetchEventSeoData(eventId);
 
     if (!event) {
-      logger.info('No event found for ID', { eventId });
+      // Non-public, draft, or nonexistent event: generic noindex metadata only.
+      logger.info('No public event found for ID', { eventId });
       return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
@@ -160,6 +166,8 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
   }
 }
 
+// Generic, leak-free metadata used for private/draft/nonexistent events.
+// `index: false` keeps non-public event pages out of search indexes.
 function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallbackImage?: string) {
   const openGraphImages = fallbackImage
     ? [
@@ -180,6 +188,11 @@ function getDefaultMetadata(previousImages: any[], canonicalPath = '/', fallback
     openGraph: {
       url: canonicalPath,
       images: openGraphImages,
+    },
+    robots: {
+      index: false,
+      follow: true,
+      nocache: true,
     },
     twitter: fallbackImage ? { card: 'summary_large_image', images: [fallbackImage] } : undefined,
   };

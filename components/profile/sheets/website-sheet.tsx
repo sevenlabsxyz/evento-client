@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { DetachedSheet } from '@/components/ui/detached-sheet';
+import { safeExternalUrl } from '@/lib/utils/url';
 import { ExternalLink, Globe } from 'lucide-react';
 
 interface WebsiteSheetProps {
@@ -13,7 +14,7 @@ interface WebsiteSheetProps {
 export default function WebsiteSheet({ isOpen, onClose, url }: WebsiteSheetProps) {
   const handleOpenWebsite = () => {
     const fullUrl = url.startsWith('http') ? url : `https://${url}`;
-    window.open(fullUrl, '_blank', 'noopener,noreferrer');
+    window.open(safeExternalUrl(fullUrl), '_blank', 'noopener,noreferrer');
     onClose();
   };
 

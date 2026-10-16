@@ -356,18 +356,70 @@ export function shouldRetryBreezError(error: any): boolean {
   return handleBreezError(error).shouldRetry;
 }
 
+// Money-path redaction patterns: bolt11 invoices and BIP39-looking
+// mnemonic sequences (12+ space-separated lowercase words) must never
+// reach the console or error reporters in the clear.
+const BOLT11_PATTERN = /lnbc[A-Za-z0-9]+/g;
+const MNEMONIC_PATTERN = /\b(?:[a-z]{3,12} ){11,}[a-z]{3,12}\b/g;
+
+/**
+ * Recursively redact a logged value: replace bolt11 invoice strings and
+ * mnemonic-looking word sequences in every string it contains.
+ */
+export function redactMoneyStrings(value: unknown, seen: Set<unknown> = new Set()): unknown {
+  if (typeof value === 'string') {
+    return value
+      .replace(BOLT11_PATTERN, 'lnbc[redacted]')
+      .replace(MNEMONIC_PATTERN, '[mnemonic redacted]');
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => redactMoneyStrings(item, seen));
+  }
+
+  if (value !== null && typeof value === 'object') {
+    if (seen.has(value)) {
+      return '[circular]';
+    }
+    seen.add(value);
+
+    const redacted: Record<string, unknown> = {};
+    for (const [key, item] of Object.entries(value)) {
+      redacted[key] = redactMoneyStrings(item, seen);
+    }
+    return redacted;
+  }
+
+  return value;
+}
+
 /**
  * Log Breez SDK error with context (for debugging)
- * This preserves the original error for developers while showing friendly messages to users
+ * Logs only sanitized info; raw errors can embed invoices or seed words.
  */
-export function logBreezError(error: any, context?: string): void {
+export function logBreezError(error: unknown, context?: string): void {
   const errorInfo = handleBreezError(error, context);
 
-  logger.error(`[Breez SDK Error]${context ? ` (${context})` : ''}`, {
+  // Deliberately drops originalError and the full error object from the log:
+  // raw SDK errors/payloads can embed invoices (lnbc…) or seed words.
+  // Log only code/category/userMessage, with money strings redacted.
+  const loggedInfo: Record<string, unknown> = {
     userMessage: errorInfo.userMessage,
-    originalError: errorInfo.originalError,
     category: errorInfo.category,
     shouldRetry: errorInfo.shouldRetry,
-    fullError: error,
-  });
+  };
+
+  if (
+    error !== null &&
+    typeof error === 'object' &&
+    'code' in error &&
+    typeof error.code === 'string'
+  ) {
+    loggedInfo.code = error.code;
+  }
+
+  logger.error(
+    `[Breez SDK Error]${context ? ` (${context})` : ''}`,
+    redactMoneyStrings(loggedInfo)
+  );
 }

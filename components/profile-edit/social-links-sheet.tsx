@@ -51,9 +51,12 @@ export default function SocialLinksSheet({
 
   const validateWebsite = (url: string) => {
     if (!url) return true;
+    // Only http(s) URLs are allowed; explicit other schemes (javascript:, data:, ftp:, mailto:, ...) are rejected
+    const scheme = /^([a-z][a-z0-9+.-]*)(?::\/\/|:[^0-9])/i.exec(url);
+    if (scheme && !['http', 'https'].includes(scheme[1].toLowerCase())) return false;
     try {
-      new URL(url.startsWith('http') ? url : `https://${url}`);
-      return true;
+      const parsed = new URL(url.startsWith('http') ? url : `https://${url}`);
+      return parsed.protocol === 'http:' || parsed.protocol === 'https:';
     } catch {
       return false;
     }

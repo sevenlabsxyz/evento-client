@@ -49,15 +49,13 @@ export async function POST(request: NextRequest) {
     try {
       callbackUrl = new URL(callback);
       const hostname = callbackUrl.hostname.toLowerCase();
-      if (!ALLOWED_DOMAINS.some(domain => hostname === domain)) {
-        logger.warn('LNURL withdraw callback domain not in allowlist', { hostname, allowed: ALLOWED_DOMAINS });
+      if (!ALLOWED_DOMAINS.some((domain) => hostname === domain)) {
+        logger.warn('LNURL withdraw callback domain not in allowlist', {
+          hostname,
+          allowed: ALLOWED_DOMAINS,
+        });
         return NextResponse.json({ error: 'Callback domain not allowed' }, { status: 400 });
       }
-    } catch {
-      return NextResponse.json({ error: 'Invalid callback URL' }, { status: 400 });
-    }
-    try {
-      callbackUrl = new URL(callback);
     } catch {
       return NextResponse.json({ error: 'Invalid callback URL' }, { status: 400 });
     }
@@ -68,7 +66,11 @@ export async function POST(request: NextRequest) {
     callbackUrl.searchParams.set('pr', invoice);
 
     logger.info('Executing LNURL withdraw', {
-      callback: callbackUrl.toString().replace(/k1=[^&]+/, 'k1=***'), // Mask k1 for security
+      // Mask k1 (secret nonce) and pr (bolt11 invoice) for security
+      callback: callbackUrl
+        .toString()
+        .replace(/k1=[^&]+/, 'k1=***')
+        .replace(/pr=[^&]+/, 'pr=***'),
       amount,
     });
 

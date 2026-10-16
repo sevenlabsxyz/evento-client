@@ -3,11 +3,48 @@ import { BackupOptions, WalletState } from '@/lib/types/wallet';
 import { logger } from '@/lib/utils/logger';
 import * as bip39 from 'bip39';
 
+/**
+ * PBKDF2-SHA256 iterations used by the legacy (v1) envelope. Old blobs (no
+ * `v2|` prefix) are still decrypted with these so existing wallets and
+ * backups keep working; a v1 blob is only ever re-encrypted (as v2) after a
+ * successful unlock.
+ */
+const LEGACY_PBKDF2_ITERATIONS = 200000;
+
+/**
+ * Upper bound for the iterations field of a parsed v2 envelope. The field is
+ * untrusted input (e.g. a pasted "backup" in the restore flow), so a tampered
+ * huge value must be rejected instead of freezing the tab in PBKDF2.
+ */
+const MAX_ENVELOPE_ITERATIONS = 10_000_000;
+
+/**
+ * PBKDF2-SHA256 iterations used for all new (v2) encryptions. Short PINs at
+ * 200k iterations were cheap to brute-force offline from an exfiltrated
+ * encrypted-seed backup; 1M iterations restores a comfortable margin
+ * (AuditWallet F1).
+ */
+const PBKDF2_ITERATIONS = 1000000;
+
+/** Version prefix of the current envelope: `v2|<iterations>|<base64 payload>`. */
+const ENVELOPE_V2_PREFIX = 'v2';
+
+interface ParsedEnvelope {
+  version: 1 | 2;
+  iterations: number;
+  /** base64(salt(16) + iv(12) + AES-GCM ciphertext incl. 16-byte tag) */
+  payload: string;
+}
+
 export class WalletStorageService {
   /**
    * Derive encryption key from password using PBKDF2
    */
-  private static async deriveKey(password: string, salt: Uint8Array): Promise<CryptoKey> {
+  private static async deriveKey(
+    password: string,
+    salt: Uint8Array,
+    iterations: number
+  ): Promise<CryptoKey> {
     const baseKey = await crypto.subtle.importKey(
       'raw',
       new TextEncoder().encode(password),
@@ -18,8 +55,8 @@ export class WalletStorageService {
     return await crypto.subtle.deriveKey(
       {
         name: 'PBKDF2',
-        salt: Buffer.from(salt),
-        iterations: 200000,
+        salt,
+        iterations,
         hash: 'SHA-256',
       },
       baseKey,
@@ -30,13 +67,39 @@ export class WalletStorageService {
   }
 
   /**
-   * Encrypt seed phrase with password (returns base64 string)
+   * Parse an encrypted seed into its versioned envelope.
+   *
+   * - v2 (current): `v2|<iterations>|<base64(salt+iv+ct+tag)>`
+   * - v1 (legacy):  bare `base64(salt+iv+ct+tag)` encrypted with 200000
+   *   PBKDF2 iterations. Never written anymore, but still decrypted so all
+   *   existing wallets and backups keep working.
+   */
+  private static parseEnvelope(encryptedSeed: string): ParsedEnvelope {
+    const trimmed = encryptedSeed.trim();
+
+    if (trimmed.startsWith(`${ENVELOPE_V2_PREFIX}|`)) {
+      const match = /^v2\|(\d+)\|(.+)$/.exec(trimmed);
+      if (!match) {
+        throw new Error('Corrupted v2 encrypted seed');
+      }
+      const iterations = Number.parseInt(match[1], 10);
+      if (iterations <= 0 || iterations > MAX_ENVELOPE_ITERATIONS) {
+        throw new Error('Corrupted v2 encrypted seed');
+      }
+      return { version: 2, iterations, payload: match[2] };
+    }
+
+    return { version: 1, iterations: LEGACY_PBKDF2_ITERATIONS, payload: trimmed };
+  }
+
+  /**
+   * Encrypt seed phrase with password (returns versioned v2 envelope string)
    */
   static async encryptSeed(mnemonic: string, password: string): Promise<string> {
     try {
       const salt = crypto.getRandomValues(new Uint8Array(16));
       const iv = crypto.getRandomValues(new Uint8Array(12));
-      const key = await this.deriveKey(password, salt);
+      const key = await this.deriveKey(password, salt, PBKDF2_ITERATIONS);
 
       const ciphertext = await crypto.subtle.encrypt(
         { name: 'AES-GCM', iv },
@@ -50,8 +113,10 @@ export class WalletStorageService {
       combined.set(iv, salt.length);
       combined.set(new Uint8Array(ciphertext), salt.length + iv.length);
 
-      // Return as base64 string (looks harmless)
-      return btoa(String.fromCharCode(...combined));
+      const base64 = btoa(String.fromCharCode(...combined));
+
+      // Return as versioned envelope (looks harmless)
+      return `${ENVELOPE_V2_PREFIX}|${PBKDF2_ITERATIONS}|${base64}`;
     } catch (error) {
       logger.error('Failed to encrypt seed', {
         error: error instanceof Error ? error.message : String(error),
@@ -61,19 +126,22 @@ export class WalletStorageService {
   }
 
   /**
-   * Decrypt seed phrase with password (supports base64 format)
+   * Decrypt seed phrase with password (supports v2 and legacy v1 formats)
    */
   static async decryptSeed(encryptedSeed: string, password: string): Promise<string> {
     try {
-      // Decode base64 string
-      const combined = Uint8Array.from(atob(encryptedSeed), (c) => c.charCodeAt(0));
+      // Parse versioned envelope (v2) or fall back to legacy v1 base64
+      const envelope = this.parseEnvelope(encryptedSeed);
+
+      // Decode base64 payload
+      const combined = Uint8Array.from(atob(envelope.payload), (c) => c.charCodeAt(0));
 
       // Extract salt (16 bytes), iv (12 bytes), and ciphertext
       const salt = combined.slice(0, 16);
       const iv = combined.slice(16, 28);
       const data = combined.slice(28);
 
-      const key = await this.deriveKey(password, salt);
+      const key = await this.deriveKey(password, salt, envelope.iterations);
 
       // Decrypt
       const decryptedData = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
@@ -85,6 +153,29 @@ export class WalletStorageService {
       });
       throw new Error('Invalid password or corrupted backup');
     }
+  }
+
+  /**
+   * Whether an encrypted seed still uses the legacy v1 format (200k PBKDF2
+   * iterations) and should be re-encrypted as v2. Always false for malformed
+   * values; decryption surfaces the actual error.
+   */
+  static needsReencrypt(encryptedSeed: string): boolean {
+    try {
+      return this.parseEnvelope(encryptedSeed).version === 1;
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Re-encrypt an encrypted seed with the same password, upgrading it to the
+   * current v2 envelope (1M PBKDF2 iterations). Throws if the password is
+   * wrong; the original value is only replaced by the caller on success.
+   */
+  static async reencryptWithSamePin(encryptedSeed: string, password: string): Promise<string> {
+    const mnemonic = await this.decryptSeed(encryptedSeed, password);
+    return this.encryptSeed(mnemonic, password);
   }
 
   /**

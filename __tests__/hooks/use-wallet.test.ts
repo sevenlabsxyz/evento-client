@@ -24,6 +24,8 @@ jest.mock('@/lib/services/wallet-storage', () => ({
     encryptSeed: jest.fn(),
     decryptSeed: jest.fn(),
     saveEncryptedSeed: jest.fn(),
+    needsReencrypt: jest.fn(),
+    reencryptWithSamePin: jest.fn(),
   },
 }));
 

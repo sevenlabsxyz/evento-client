@@ -15,6 +15,7 @@ import type {
   BuyBitcoinResponse,
   CheckLightningAddressRequest,
   ClaimDepositRequest,
+  ClaimDepositResponse,
   Config,
   ConnectRequest,
   DepositInfo,
@@ -56,18 +57,32 @@ export type BreezEvent = SdkEvent | LightningAddressChangedEvent;
 const DEBUG_BREEZ = false;
 
 let sdkInstance: BreezSdk | null = null;
-let isInitializing = false;
-let initializationError: Error | null = null;
 let sdkModule: any = null;
 let currentWalletFingerprint: string | null = null;
+// In-flight connect attempt, keyed by the wallet fingerprint it is connecting
+let connectPromise: Promise<BreezSdk> | null = null;
+let connectPromiseFingerprint: string | null = null;
 
 /**
  * Create a wallet fingerprint from mnemonic for logging/debugging
- * Returns first 3 words to identify wallet without exposing full seed
+ * Non-reversible identifier: first 8 hex chars of the mnemonic's SHA-256,
+ * so no seed words are ever exposed in logs or error reports
  */
-function getWalletFingerprint(mnemonic: string): string {
-  const words = mnemonic.trim().split(/\s+/);
-  return words.slice(0, 3).join(' ');
+async function getWalletFingerprint(mnemonic: string): Promise<string> {
+  const data = new TextEncoder().encode(mnemonic);
+
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const digest = await crypto.subtle.digest('SHA-256', data);
+    const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0'));
+    return hash.join('').slice(0, 8);
+  }
+
+  // FNV-1a fallback for environments without WebCrypto (still a hash, no seed words)
+  let fnv = 0x811c9dc5;
+  for (const byte of data) {
+    fnv = Math.imul(fnv ^ byte, 0x01000193) >>> 0;
+  }
+  return fnv.toString(16).padStart(8, '0');
 }
 
 export class BreezSDKService {
@@ -90,7 +105,7 @@ export class BreezSDKService {
    * Initialize and connect to the Breez SDK
    */
   async connect(mnemonic: string, apiKey: string, network: Network = 'mainnet'): Promise<BreezSdk> {
-    const newFingerprint = getWalletFingerprint(mnemonic);
+    const newFingerprint = await getWalletFingerprint(mnemonic);
 
     if (DEBUG_BREEZ) {
       console.debug('🔑 [BREEZ:CONNECT] Attempting to connect wallet');
@@ -130,115 +145,141 @@ export class BreezSDKService {
             );
           }
         }
+      }
+    }
 
-        // Continue to create new SDK instance for the new wallet
+    // A connect for the same wallet is already in flight: share its result
+    // so concurrent callers for the same mnemonic get the same instance.
+    if (connectPromise && connectPromiseFingerprint === newFingerprint) {
+      return connectPromise;
+    }
+
+    // A connect for a DIFFERENT wallet is in flight: wait for it to settle,
+    // then disconnect that wallet before connecting fresh, so a concurrent
+    // connect() can never be handed the first wallet's instance.
+    if (connectPromise) {
+      try {
+        await connectPromise;
+      } catch (error) {
+        // Previous wallet's connect failed; safe to proceed with a fresh one
+        if (DEBUG_BREEZ) {
+          console.warn('⚠️ [BREEZ:CONNECT] In-flight connect for another wallet failed', error);
+        }
+      }
+
+      try {
+        await this.disconnect();
+      } catch (error) {
+        if (DEBUG_BREEZ) {
+          console.warn('⚠️ [BREEZ:CONNECT] Failed to disconnect prior wallet, continuing', error);
+        }
+      }
+    }
+
+    const doConnect = async (): Promise<BreezSdk> => {
+      try {
+        // Dynamically import the SDK module
+        if (!sdkModule) {
+          if (DEBUG_BREEZ) {
+            console.debug('Loading Breez SDK module...');
+          }
+          sdkModule = await import('@breeztech/breez-sdk-spark/ssr');
+
+          // Initialize WASM if there's a default export (initialization function)
+          if (sdkModule.default && typeof sdkModule.default === 'function') {
+            if (DEBUG_BREEZ) {
+              console.debug('Initializing Breez SDK WASM...');
+            }
+            await sdkModule.default();
+          }
+        }
+
+        // Check if API key is provided
+        if (!apiKey) {
+          throw new Error(
+            'Breez API key is required. Please set NEXT_PUBLIC_BREEZ_API_KEY in your environment variables.'
+          );
+        }
+
+        // Construct the seed
+        const seed: Seed = {
+          type: 'mnemonic',
+          mnemonic,
+          passphrase: undefined,
+        };
+
+        // Create the config
+        let config: Config;
+        try {
+          config = sdkModule.defaultConfig(network);
+        } catch (err) {
+          console.error('Failed to get default config', {
+            error: err instanceof Error ? err.message : String(err),
+          });
+          throw new Error(
+            'Failed to initialize Breez SDK. The WASM module may not be loaded properly.'
+          );
+        }
+
+        config.apiKey = apiKey;
+        // Configure LNURL domain for Lightning addresses
+        config.lnurlDomain = 'evento.cash';
+        // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
+        // Auto-claims if fee is ≤ 10 sat/vbyte (~2,000 sats for a typical 200 vbyte swap tx)
+        // This covers most normal fee environments; only extreme spikes require manual claiming
+        config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 10 } as MaxFee;
+
+        // Storage directory - using browser's IndexedDB
+        const storageDir = './.breez-data';
+
+        // Connect to SDK
+        const connectRequest: ConnectRequest = {
+          config,
+          seed,
+          storageDir,
+        };
+
+        this.sdk = await sdkModule.connect(connectRequest);
+        sdkInstance = this.sdk;
         currentWalletFingerprint = newFingerprint;
-      }
-    }
 
-    if (isInitializing) {
-      // Wait for initialization to complete
-      while (isInitializing) {
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        // Set up event listener
+        await this.setupEventListener();
+
+        if (DEBUG_BREEZ) {
+          console.debug('✅ [BREEZ:CONNECT] Breez SDK connected successfully');
+          console.debug('✅ [BREEZ:CONNECT] Wallet fingerprint', {
+            fingerprint: currentWalletFingerprint,
+          });
+        }
+        return this.sdk!;
+      } catch (error: unknown) {
+        logBreezError(error, BREEZ_ERROR_CONTEXT.CONNECTING);
+
+        // Provide helpful error message
+        if (error instanceof Error && error.message?.includes('defaultConfig')) {
+          throw new Error(
+            'Breez SDK initialization failed. Please refresh the page and try again. If the issue persists, check that the Breez SDK package is properly installed.'
+          );
+        }
+
+        const userMessage = getBreezErrorMessage(error, 'connect to wallet');
+        throw new Error(userMessage);
       }
-      if (sdkInstance) return sdkInstance;
-    }
+    };
+
+    const attempt = doConnect();
+    connectPromise = attempt;
+    connectPromiseFingerprint = newFingerprint;
 
     try {
-      isInitializing = true;
-      initializationError = null;
-
-      // Dynamically import the SDK module
-      if (!sdkModule) {
-        if (DEBUG_BREEZ) {
-          console.debug('Loading Breez SDK module...');
-        }
-        sdkModule = await import('@breeztech/breez-sdk-spark/ssr');
-
-        // Initialize WASM if there's a default export (initialization function)
-        if (sdkModule.default && typeof sdkModule.default === 'function') {
-          if (DEBUG_BREEZ) {
-            console.debug('Initializing Breez SDK WASM...');
-          }
-          await sdkModule.default();
-        }
-      }
-
-      // Check if API key is provided
-      if (!apiKey) {
-        throw new Error(
-          'Breez API key is required. Please set NEXT_PUBLIC_BREEZ_API_KEY in your environment variables.'
-        );
-      }
-
-      // Construct the seed
-      const seed: Seed = {
-        type: 'mnemonic',
-        mnemonic,
-        passphrase: undefined,
-      };
-
-      // Create the config
-      let config: Config;
-      try {
-        config = sdkModule.defaultConfig(network);
-      } catch (err) {
-        console.error('Failed to get default config', {
-          error: err instanceof Error ? err.message : String(err),
-        });
-        throw new Error(
-          'Failed to initialize Breez SDK. The WASM module may not be loaded properly.'
-        );
-      }
-
-      config.apiKey = apiKey;
-      // Configure LNURL domain for Lightning addresses
-      config.lnurlDomain = 'evento.cash';
-      // Enable auto-claiming of on-chain deposits (Bitcoin → Lightning conversion)
-      // Auto-claims if fee is ≤ 10 sat/vbyte (~2,000 sats for a typical 200 vbyte swap tx)
-      // This covers most normal fee environments; only extreme spikes require manual claiming
-      config.maxDepositClaimFee = { type: 'rate', satPerVbyte: 10 } as MaxFee;
-
-      // Storage directory - using browser's IndexedDB
-      const storageDir = './.breez-data';
-
-      // Connect to SDK
-      const connectRequest: ConnectRequest = {
-        config,
-        seed,
-        storageDir,
-      };
-
-      this.sdk = await sdkModule.connect(connectRequest);
-      sdkInstance = this.sdk;
-      currentWalletFingerprint = newFingerprint;
-
-      // Set up event listener
-      await this.setupEventListener();
-
-      if (DEBUG_BREEZ) {
-        console.debug('✅ [BREEZ:CONNECT] Breez SDK connected successfully');
-        console.debug('✅ [BREEZ:CONNECT] Wallet fingerprint', {
-          fingerprint: currentWalletFingerprint,
-        });
-      }
-      return this.sdk!;
-    } catch (error: any) {
-      logBreezError(error, BREEZ_ERROR_CONTEXT.CONNECTING);
-      initializationError = error;
-      isInitializing = false;
-
-      // Provide helpful error message
-      if (error.message?.includes('defaultConfig')) {
-        throw new Error(
-          'Breez SDK initialization failed. Please refresh the page and try again. If the issue persists, check that the Breez SDK package is properly installed.'
-        );
-      }
-
-      const userMessage = getBreezErrorMessage(error, 'connect to wallet');
-      throw new Error(userMessage);
+      return await attempt;
     } finally {
-      isInitializing = false;
+      // Only clear if a newer attempt hasn't replaced ours
+      if (connectPromise === attempt) {
+        connectPromise = null;
+        connectPromiseFingerprint = null;
+      }
     }
   }
 
@@ -262,19 +303,22 @@ export class BreezSDKService {
         }
 
         await this.sdk.disconnect();
-        this.sdk = null;
-        sdkInstance = null;
-        currentWalletFingerprint = null;
-        this.eventCallbacks.clear();
 
         if (DEBUG_BREEZ) {
           console.debug('✅ [BREEZ:DISCONNECT] Breez SDK disconnected successfully');
-          console.debug('✅ [BREEZ:DISCONNECT] Wallet fingerprint cleared');
+          console.debug('🔌 [BREEZ:DISCONNECT] Wallet fingerprint cleared');
         }
       } catch (error) {
         logBreezError(error, BREEZ_ERROR_CONTEXT.DISCONNECTING);
         const userMessage = getBreezErrorMessage(error, 'disconnect wallet');
         throw new Error(userMessage);
+      } finally {
+        // Always drop the instance/fingerprint/callbacks, even if the underlying
+        // disconnect failed, so no stale usable instance is left behind
+        this.sdk = null;
+        sdkInstance = null;
+        currentWalletFingerprint = null;
+        this.eventCallbacks.clear();
       }
     }
   }
@@ -802,16 +846,17 @@ export class BreezSDKService {
    * Manually claim an on-chain deposit (convert to Lightning)
    * Used when auto-claiming fails due to high fees
    */
-  async claimDeposit(txid: string, vout: number, maxFee: Fee): Promise<void> {
+  async claimDeposit(txid: string, vout: number, maxFee: Fee): Promise<ClaimDepositResponse> {
     if (!this.sdk) throw new Error('SDK not connected');
 
     try {
       if (DEBUG_BREEZ)
         console.debug(`💰 [BREEZ:CLAIM_DEPOSIT] Claiming deposit ${txid}:${vout}`, { maxFee });
       const request: ClaimDepositRequest = { txid, vout, maxFee };
-      await this.sdk.claimDeposit(request);
+      const response = await this.sdk.claimDeposit(request);
       if (DEBUG_BREEZ)
         console.debug(`✅ [BREEZ:CLAIM_DEPOSIT] Successfully claimed deposit ${txid}:${vout}`);
+      return response;
     } catch (error) {
       logBreezError(error, BREEZ_ERROR_CONTEXT.CLAIMING_DEPOSIT);
       const userMessage = getBreezErrorMessage(error, 'claim deposit');

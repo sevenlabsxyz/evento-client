@@ -41,7 +41,23 @@ export async function GET(request: NextRequest) {
   if (upstreamResponse.status >= 300 && upstreamResponse.status < 400) {
     const location = upstreamResponse.headers.get('location');
     if (location) {
-      return NextResponse.redirect(new URL(location, apiOrigin), 302);
+      // Only honor same-origin redirects; a malicious upstream could otherwise
+      // bounce the user to an attacker-controlled absolute URL.
+      let redirectUrl: URL;
+      try {
+        redirectUrl = new URL(location, apiOrigin);
+      } catch {
+        return NextResponse.json({ error: 'Invalid upstream redirect' }, { status: 502 });
+      }
+
+      if (redirectUrl.origin !== apiOrigin) {
+        return NextResponse.json(
+          { error: 'Upstream redirect to disallowed origin' },
+          { status: 502 }
+        );
+      }
+
+      return NextResponse.redirect(redirectUrl, 302);
     }
   }
 

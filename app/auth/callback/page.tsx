@@ -1,7 +1,6 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { STORAGE_KEYS } from '@/lib/constants/storage-keys';
 import { authService } from '@/lib/services/auth';
 import { useAuthStore } from '@/lib/stores/auth-store';
 import { createClient } from '@/lib/supabase/client';
@@ -46,10 +45,6 @@ function AuthCallbackContent() {
 
         const supabase = createClient();
         const code = callbackUrl.searchParams.get('code');
-        const searchAccessToken = callbackUrl.searchParams.get('access_token');
-        const searchRefreshToken = callbackUrl.searchParams.get('refresh_token');
-        const hashAccessToken = hashParams.get('access_token');
-        const hashRefreshToken = hashParams.get('refresh_token');
 
         if (code) {
           const {
@@ -76,23 +71,6 @@ function AuthCallbackContent() {
                   error: exchangeError.message,
                 }
               );
-            }
-          }
-        } else {
-          const accessToken = searchAccessToken || hashAccessToken;
-          const refreshToken = searchRefreshToken || hashRefreshToken;
-
-          if (accessToken && refreshToken) {
-            localStorage.setItem(STORAGE_KEYS.SUPABASE_ACCESS_TOKEN, accessToken);
-            localStorage.setItem(STORAGE_KEYS.SUPABASE_REFRESH_TOKEN, refreshToken);
-
-            const { error: setSessionError } = await supabase.auth.setSession({
-              access_token: accessToken,
-              refresh_token: refreshToken,
-            });
-
-            if (setSessionError) {
-              throw new Error(setSessionError.message);
             }
           }
         }

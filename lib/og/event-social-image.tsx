@@ -341,17 +341,27 @@ export async function renderEventSocialImage(eventId: string) {
       return renderFallbackEventImage('Evento Event');
     }
 
+    // This fetch runs with the service-role key (bypasses RLS); only public,
+    // non-draft events may have their title/cover rendered into the OG image.
     const { data: event, error } = await supabase
       .from('events')
       .select('cover, title')
       .eq('id', eventId)
-      .single();
+      .eq('visibility', 'public')
+      .in('status', ['published', 'cancelled'])
+      .maybeSingle();
 
-    if (error || !event) {
+    if (error) {
       logger.error('Error fetching event for OG image', {
         eventId,
         error: error?.message,
       });
+      return renderFallbackEventImage('Evento Event');
+    }
+
+    if (!event) {
+      // Non-public, draft, or nonexistent event: generic fallback image only.
+      logger.info('No public event found for OG image', { eventId });
       return renderFallbackEventImage('Evento Event');
     }
 

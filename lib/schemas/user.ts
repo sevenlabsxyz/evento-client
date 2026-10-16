@@ -17,7 +17,11 @@ export const updateUserProfileSchema = z.object({
 
   bio: z.string().max(280, 'Bio must be less than 280 characters').optional(),
 
-  bio_link: z.string().url('Please enter a valid URL').optional().or(z.literal('')),
+  bio_link: z
+    .string()
+    .regex(/^https?:\/\/.+/, 'Please enter a valid http(s) URL')
+    .optional()
+    .or(z.literal('')),
 
   x_handle: z.string().max(50, 'X handle must be less than 50 characters').optional(),
 

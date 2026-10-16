@@ -123,8 +123,8 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
 
   // Move to confirm PIN step
   const handleCreatePinNext = (pinToConfirm = pin) => {
-    if (pinToConfirm.length < 4) {
-      toast.error('PIN must be at least 4 digits');
+    if (pinToConfirm.length < 6) {
+      toast.error('PIN must be at least 6 digits');
       return;
     }
     setStep('confirm-pin');
@@ -352,7 +352,9 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             <Key className='h-8 w-8 text-black' />
           </div>
           <h2 className='text-2xl font-bold'>Create a PIN</h2>
-          <p className='mt-2 text-sm text-muted-foreground'>Create a PIN to protect your wallet</p>
+          <p className='mt-2 text-sm text-muted-foreground'>
+            Create a 6-digit PIN to protect your wallet
+          </p>
         </div>
 
         <div className='space-y-4'>
@@ -380,7 +382,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             onClick={() => handleCreatePinNext()}
             className='mt-6 w-full rounded-full'
             size='lg'
-            disabled={pin.length < 4}
+            disabled={pin.length < 6}
           >
             Next
           </Button>
@@ -439,7 +441,7 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
             onClick={() => handleConfirmPin()}
             className='mt-6 w-full rounded-full'
             size='lg'
-            disabled={confirmPin.length < 4 || isRestoring}
+            disabled={confirmPin.length < 6 || isRestoring}
           >
             {isRestoring ? (
               <>
