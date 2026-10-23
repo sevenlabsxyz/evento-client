@@ -12,27 +12,27 @@ interface RegistrationStatusProps {
 export function RegistrationStatus({ registration, onShowRsvp }: RegistrationStatusProps) {
   const statusConfig = {
     pending: {
-      icon: <Clock className='h-6 w-6 text-yellow-500' />,
+      icon: <Clock className='h-6 w-6 text-yellow-500 dark:text-yellow-400' />,
       title: 'Registration Pending',
       description: "You're on the list! We're waiting for the host to approve your registration.",
-      bgColor: 'bg-yellow-50',
-      borderColor: 'border-yellow-200',
+      bgColor: 'bg-yellow-50 dark:bg-yellow-950/40',
+      borderColor: 'border-yellow-200 dark:border-yellow-900',
     },
     approved: {
-      icon: <CheckCircle className='h-6 w-6 text-green-500' />,
+      icon: <CheckCircle className='h-6 w-6 text-green-500 dark:text-green-400' />,
       title: "You're Registered!",
       description: 'Your registration has been approved.',
-      bgColor: 'bg-green-50',
-      borderColor: 'border-green-200',
+      bgColor: 'bg-green-50 dark:bg-green-950/40',
+      borderColor: 'border-green-200 dark:border-green-900',
     },
     denied: {
-      icon: <XCircle className='h-6 w-6 text-red-500' />,
+      icon: <XCircle className='h-6 w-6 text-red-500 dark:text-red-400' />,
       title: 'Registration Not Approved',
       description: registration.denial_reason
         ? `Reason: ${registration.denial_reason}`
         : 'Unfortunately, your registration was not approved.',
-      bgColor: 'bg-red-50',
-      borderColor: 'border-red-200',
+      bgColor: 'bg-red-50 dark:bg-red-950/40',
+      borderColor: 'border-red-200 dark:border-red-900',
     },
   };
 
@@ -44,12 +44,16 @@ export function RegistrationStatus({ registration, onShowRsvp }: RegistrationSta
       <div className='flex items-start gap-4'>
         <div className='flex-shrink-0'>{config.icon}</div>
         <div className='flex-1'>
-          <h3 className='text-lg font-semibold text-gray-900'>{config.title}</h3>
-          <p className='mt-1 text-sm text-gray-600'>{config.description}</p>
-          <p className='mt-2 text-xs text-gray-500'>Registered {submittedAt}</p>
+          <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            {config.title}
+          </h3>
+          <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>{config.description}</p>
+          <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
+            Registered {submittedAt}
+          </p>
 
           {registration.approval_status === 'approved' && registration.reviewed_at && (
-            <p className='mt-1 text-xs text-gray-500'>
+            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
               Approved{' '}
               {formatDistanceToNow(new Date(registration.reviewed_at), { addSuffix: true })}
             </p>
@@ -65,7 +69,7 @@ export function RegistrationStatus({ registration, onShowRsvp }: RegistrationSta
           )}
 
           {registration.approval_status === 'denied' && (
-            <p className='mt-4 text-xs text-gray-500'>
+            <p className='mt-4 text-xs text-gray-500 dark:text-neutral-400'>
               If you believe this was a mistake, please contact the event host.
             </p>
           )}

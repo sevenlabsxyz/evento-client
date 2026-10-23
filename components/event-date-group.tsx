@@ -24,11 +24,11 @@ export function EventDateGroup({
     <div className='mb-5'>
       {/* Date header */}
       <div className='mb-2 px-2'>
-        <h2 className='font-medium text-gray-900'>{formattedDate}</h2>
+        <h2 className='font-medium text-gray-900 dark:text-neutral-100'>{formattedDate}</h2>
       </div>
 
       {/* Events list for this date */}
-      <div className='rounded-lg bg-white p-1 shadow-sm'>
+      <div className='rounded-lg bg-white p-1 shadow-sm dark:bg-neutral-900'>
         {events.map((event) => (
           <EventCompactItem
             key={event.id}

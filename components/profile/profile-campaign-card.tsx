@@ -52,14 +52,16 @@ export default function ProfileCampaignCard({
     <>
       <div data-testid='profile-campaign-card' className={cn('', className)}>
         <div className='mb-3 flex items-center gap-2'>
-          <Zap className='h-4 w-4 text-amber-500' />
-          <span className='text-lg font-semibold text-gray-900'>
+          <Zap className='h-4 w-4 text-amber-500 dark:text-amber-400' />
+          <span className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
             {campaign.title || 'Crowdfunding'}
           </span>
           <span
             className={cn(
               'ml-auto rounded-full px-2 py-0.5 text-xs font-medium',
-              isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'
+              isActive
+                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400'
+                : 'bg-gray-100 text-gray-500 dark:bg-neutral-800 dark:text-neutral-400'
             )}
           >
             {isActive ? 'Active' : 'Paused'}
@@ -67,19 +69,21 @@ export default function ProfileCampaignCard({
         </div>
 
         {campaign.description && (
-          <p className='mb-3 text-sm leading-relaxed text-gray-600'>{campaign.description}</p>
+          <p className='mb-3 text-sm leading-relaxed text-gray-600 dark:text-neutral-400'>
+            {campaign.description}
+          </p>
         )}
 
         {/* Raised / Goal stats */}
         <div className='mb-2 flex items-baseline gap-1'>
-          <span className='text-2xl font-bold tabular-nums text-gray-900'>
+          <span className='text-2xl font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
             {formatSats(campaign.raised_sats)}
           </span>
-          <span className='text-sm text-gray-500'>sats raised</span>
+          <span className='text-sm text-gray-500 dark:text-neutral-400'>sats raised</span>
           {hasGoal && (
             <>
-              <span className='text-sm text-gray-400'>of</span>
-              <span className='text-sm font-medium text-gray-700'>
+              <span className='text-sm text-gray-400 dark:text-neutral-500'>of</span>
+              <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                 {formatSats(campaign.goal_sats!)} goal
               </span>
             </>
@@ -91,19 +95,19 @@ export default function ProfileCampaignCard({
           <div className='mb-3'>
             <Progress
               value={Math.min(progressPercent, 100)}
-              className='h-2 bg-gray-100 [&>div]:bg-amber-500'
+              className='h-2 bg-gray-100 dark:bg-neutral-800 [&>div]:bg-amber-500'
             />
           </div>
         )}
 
         {/* Pledge count */}
-        <p className='mb-4 text-sm text-gray-500'>
+        <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
           {campaign.pledge_count} {campaign.pledge_count === 1 ? 'contribution' : 'contributions'}
         </p>
 
         {/* CTA */}
         {isPaused ? (
-          <div className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-400'>
+          <div className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-200 px-4 py-3 text-sm font-semibold text-gray-400 dark:bg-neutral-700 dark:text-neutral-500'>
             <Zap className='h-4 w-4' />
             Campaign paused
           </div>

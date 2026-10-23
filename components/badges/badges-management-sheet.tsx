@@ -161,7 +161,7 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
       headerLeft={
         <div>
           <h2 className='text-xl font-semibold'>Manage Badges</h2>
-          <p className='text-sm text-gray-500'>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
             {displayCount} of {MAX_DISPLAY_SLOTS} slots used
           </p>
         </div>
@@ -189,15 +189,21 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
         </div>
       ) : !userBadges || userBadges.length === 0 ? (
         <div className='flex flex-col items-center justify-center py-12'>
-          <p className='text-gray-500'>You haven&apos;t earned any badges yet.</p>
-          <p className='text-sm text-gray-400'>Keep using Evento to earn badges!</p>
+          <p className='text-gray-500 dark:text-neutral-400'>
+            You haven&apos;t earned any badges yet.
+          </p>
+          <p className='text-sm text-gray-400 dark:text-neutral-500'>
+            Keep using Evento to earn badges!
+          </p>
         </div>
       ) : (
         <>
           {/* Display Slots Section */}
           <div className='mb-8'>
-            <h3 className='mb-3 text-sm font-semibold text-gray-700'>Display on Profile</h3>
-            <p className='mb-4 text-xs text-gray-500'>
+            <h3 className='mb-3 text-sm font-semibold text-gray-700 dark:text-neutral-300'>
+              Display on Profile
+            </h3>
+            <p className='mb-4 text-xs text-gray-500 dark:text-neutral-400'>
               Tap a slot to remove a badge. Badges appear on your profile in this order.
             </p>
             <div className='flex gap-3'>
@@ -210,8 +216,8 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
                     className={cn(
                       'relative flex h-16 w-16 items-center justify-center rounded-full border-2 border-dashed transition-colors',
                       badge
-                        ? 'border-amber-400 bg-amber-50'
-                        : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+                        ? 'border-amber-400 bg-amber-50 dark:bg-amber-950/40'
+                        : 'border-gray-300 bg-gray-50 hover:border-gray-400 dark:border-neutral-700 dark:bg-neutral-950 dark:hover:border-neutral-600'
                     )}
                   >
                     {badge ? (
@@ -222,7 +228,9 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
                         </div>
                       </>
                     ) : (
-                      <span className='text-lg font-medium text-gray-400'>{index + 1}</span>
+                      <span className='text-lg font-medium text-gray-400 dark:text-neutral-500'>
+                        {index + 1}
+                      </span>
                     )}
                   </button>
                 );
@@ -233,8 +241,10 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
           {/* Available Badges Section */}
           {availableBadges.length > 0 && (
             <div className='mb-8'>
-              <h3 className='mb-3 text-sm font-semibold text-gray-700'>Available Badges</h3>
-              <p className='mb-4 text-xs text-gray-500'>
+              <h3 className='mb-3 text-sm font-semibold text-gray-700 dark:text-neutral-300'>
+                Available Badges
+              </h3>
+              <p className='mb-4 text-xs text-gray-500 dark:text-neutral-400'>
                 Tap a badge to add it to your profile display.
               </p>
               <div className='flex flex-wrap gap-4'>

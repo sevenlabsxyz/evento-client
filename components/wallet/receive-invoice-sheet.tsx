@@ -251,25 +251,27 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
           {showSuccess ? (
             <div className='flex flex-col items-center justify-center space-y-6 py-12'>
               {/* Success Icon */}
-              <div className='rounded-full bg-green-100 p-6'>
-                <CheckCircle2 className='h-16 w-16 text-green-600' />
+              <div className='rounded-full bg-green-100 p-6 dark:bg-green-950/60'>
+                <CheckCircle2 className='h-16 w-16 text-green-600 dark:text-green-400' />
               </div>
 
               {/* Success Message */}
               <div className='text-center'>
-                <h3 className='mb-2 text-2xl font-bold text-gray-900'>Payment Received!</h3>
-                <p className='text-gray-600'>
+                <h3 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                  Payment Received!
+                </h3>
+                <p className='text-gray-600 dark:text-neutral-400'>
                   You successfully received {invoiceAmount?.toLocaleString() || 0} sats
                 </p>
               </div>
 
               {/* Amount Display */}
               {invoiceAmountUSD !== null && (
-                <div className='rounded-xl bg-gray-50 px-6 py-4'>
-                  <p className='text-center text-3xl font-bold text-gray-900'>
+                <div className='rounded-xl bg-gray-50 px-6 py-4 dark:bg-neutral-950'>
+                  <p className='text-center text-3xl font-bold text-gray-900 dark:text-neutral-100'>
                     ${invoiceAmountUSD.toFixed(2)}
                   </p>
-                  <p className='text-center text-sm text-gray-600'>
+                  <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
                     {invoiceAmount?.toLocaleString()} sats
                   </p>
                 </div>
@@ -298,17 +300,19 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                   {/* Registering State - Show when address is not yet available */}
                   {!address?.lightningAddress && !invoiceAmount && (
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
-                      <Loader2 className='mb-4 h-8 w-8 animate-spin text-gray-400' />
-                      <p className='text-sm font-medium text-gray-600'>
+                      <Loader2 className='mb-4 h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
+                      <p className='text-sm font-medium text-gray-600 dark:text-neutral-400'>
                         Registering your Lightning address...
                       </p>
-                      <p className='mt-1 text-xs text-gray-400'>This may take a few moments</p>
+                      <p className='mt-1 text-xs text-gray-400 dark:text-neutral-500'>
+                        This may take a few moments
+                      </p>
                     </div>
                   )}
 
                   {/* Show Lightning Address or Invoice based on state */}
                   {(address?.lightningAddress || activeInvoice) && (
-                    <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                    <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                       <div className='flex items-start justify-between gap-2'>
                         <div className='flex min-w-0 flex-1 flex-col'>
                           <p className='mb-1 text-sm text-muted-foreground'>
@@ -356,7 +360,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         {/* Loading Overlay */}
                         {isGenerating && (
                           <div className='absolute inset-0 flex items-center justify-center rounded-3xl bg-white/80 backdrop-blur-sm'>
-                            <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary' />
+                            <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary dark:border-neutral-700' />
                           </div>
                         )}
                       </div>
@@ -364,7 +368,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                       {/* Amount Display - Only show when invoice has an amount */}
                       {invoiceAmount && invoiceAmountUSD !== null && (
                         <div className='text-center'>
-                          <p className='text-lg font-semibold text-gray-900'>
+                          <p className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
                             ${invoiceAmountUSD.toFixed(2)} · {invoiceAmount.toLocaleString()} sats
                           </p>
                         </div>
@@ -390,14 +394,14 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         }
                       }}
                       variant='outline'
-                      className='h-12 w-full rounded-full bg-gray-50'
+                      className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                     >
                       {invoiceAmount ? 'Receive Any Amount' : 'Add Amount'}
                     </Button>
                     <Button
                       onClick={handleShare}
                       variant='outline'
-                      className='h-12 w-full rounded-full bg-gray-50'
+                      className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                     >
                       Share
                     </Button>
@@ -411,13 +415,15 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                   {/* Bitcoin Address QR Code */}
                   {isGeneratingBitcoin ? (
                     <div className='flex flex-col items-center justify-center py-12'>
-                      <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary' />
-                      <p className='mt-4 text-sm text-gray-600'>Generating Bitcoin address...</p>
+                      <div className='h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-primary dark:border-neutral-700' />
+                      <p className='mt-4 text-sm text-gray-600 dark:text-neutral-400'>
+                        Generating Bitcoin address...
+                      </p>
                     </div>
                   ) : bitcoinAddress ? (
                     <>
                       {/* Bitcoin Address Display */}
-                      <div className='rounded-lg border border-gray-200 bg-gray-50 p-4'>
+                      <div className='rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                         <p className='mb-1 text-sm text-muted-foreground'>Bitcoin Address</p>
                         <div className='flex items-start gap-2'>
                           <p className='flex-1 break-all font-mono text-base leading-relaxed'>
@@ -486,7 +492,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                             }
                           }}
                           variant='outline'
-                          className='h-12 w-full rounded-full bg-gray-50'
+                          className='h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                         >
                           Share
                         </Button>
@@ -494,17 +500,19 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                     </>
                   ) : bitcoinAddressError ? (
                     <div className='flex flex-col items-center justify-center py-12 text-center'>
-                      <p className='text-sm font-medium text-gray-900'>
+                      <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
                         Failed to generate Bitcoin address
                       </p>
-                      <p className='mt-1 max-w-xs text-sm text-gray-500'>{bitcoinAddressError}</p>
+                      <p className='mt-1 max-w-xs text-sm text-gray-500 dark:text-neutral-400'>
+                        {bitcoinAddressError}
+                      </p>
                       <Button
                         onClick={() => {
                           setBitcoinAddressError(null);
                           setBitcoinAddress('');
                         }}
                         variant='outline'
-                        className='mt-4 h-12 rounded-full bg-gray-50 px-6'
+                        className='mt-4 h-12 rounded-full bg-gray-50 px-6 dark:bg-neutral-950'
                       >
                         Try Again
                       </Button>

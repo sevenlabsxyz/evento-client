@@ -348,7 +348,7 @@ export const LightboxViewer = React.memo(
             <div className='absolute right-4 top-4 z-10 flex space-x-2'>
               <button
                 onClick={downloadImage}
-                className='mr-2 text-white hover:text-gray-300'
+                className='mr-2 text-white hover:text-gray-300 dark:hover:text-neutral-600'
                 aria-label='Download image'
               >
                 {isDownloading ? (
@@ -359,7 +359,7 @@ export const LightboxViewer = React.memo(
               </button>
               <button
                 onClick={onClose}
-                className='text-white hover:text-gray-300'
+                className='text-white hover:text-gray-300 dark:hover:text-neutral-600'
                 aria-label='Close fullscreen view'
               >
                 <XIcon className='h-6 w-6' />
@@ -381,7 +381,7 @@ export const LightboxViewer = React.memo(
                         setImageError(false);
                         setImageLoading(true);
                       }}
-                      className='mt-2 rounded bg-white bg-opacity-20 px-4 py-2 text-sm hover:bg-opacity-30'
+                      className='mt-2 rounded bg-white bg-opacity-20 px-4 py-2 text-sm hover:bg-opacity-30 dark:bg-neutral-900'
                     >
                       Retry
                     </button>
@@ -405,14 +405,14 @@ export const LightboxViewer = React.memo(
             )}
             <button
               onClick={goToPrevious}
-              className='absolute left-4 z-10 text-white hover:text-gray-300'
+              className='absolute left-4 z-10 text-white hover:text-gray-300 dark:hover:text-neutral-600'
               aria-label='Previous image'
             >
               <ChevronLeftIcon className='h-10 w-10' />
             </button>
             <button
               onClick={goToNext}
-              className='absolute right-4 z-10 text-white hover:text-gray-300'
+              className='absolute right-4 z-10 text-white hover:text-gray-300 dark:hover:text-neutral-600'
               aria-label='Next image'
             >
               <ChevronRightIcon className='h-10 w-10' />
@@ -422,7 +422,7 @@ export const LightboxViewer = React.memo(
             selectedImage !== null &&
             isGalleryImageObject(images[selectedImage]) && (
               <div
-                className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4'
+                className='flex items-center justify-between border-t border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'
                 style={{ height: '15dvh' }}
               >
                 <div
@@ -441,7 +441,7 @@ export const LightboxViewer = React.memo(
                     </Avatar>
                     <div>
                       <div className='flex flex-row items-center'>
-                        <p className='cursor-pointer text-sm font-semibold leading-none text-gray-500'>
+                        <p className='cursor-pointer text-sm font-semibold leading-none text-gray-500 dark:text-neutral-400'>
                           @{images[selectedImage].user_details?.username}
                         </p>
                         {images[selectedImage].user_details?.verification_status === 'verified' && (
@@ -449,12 +449,12 @@ export const LightboxViewer = React.memo(
                         )}
                       </div>
                       {!images[selectedImage].user_details?.name ? null : (
-                        <p className='cursor-pointer text-sm text-gray-400'>
+                        <p className='cursor-pointer text-sm text-gray-400 dark:text-neutral-500'>
                           {images[selectedImage].user_details?.name}
                         </p>
                       )}
                       {images[selectedImage].created_at && (
-                        <p className='cursor-pointer pt-2 text-[10px] text-gray-400'>
+                        <p className='cursor-pointer pt-2 text-[10px] text-gray-400 dark:text-neutral-500'>
                           posted on{' '}
                           {new Date(images[selectedImage].created_at).toLocaleDateString()}
                         </p>

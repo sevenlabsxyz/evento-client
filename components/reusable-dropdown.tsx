@@ -44,7 +44,7 @@ export function ReusableDropdown({
 
       {isOpen && (
         <div
-          className={`absolute top-full mt-2 ${width} z-50 rounded-2xl border border-gray-200 bg-white py-2 shadow-xl ${
+          className={`absolute top-full mt-2 ${width} z-50 rounded-2xl border border-gray-200 bg-white py-2 shadow-xl dark:border-neutral-800 dark:bg-neutral-900 ${
             align === 'right' ? 'right-0' : 'left-0'
           }`}
         >
@@ -55,15 +55,19 @@ export function ReusableDropdown({
                 item.action();
                 setIsOpen(false);
               }}
-              className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 ${
-                item.destructive ? 'text-red-500' : 'text-gray-900'
+              className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-neutral-950 ${
+                item.destructive
+                  ? 'text-red-500 dark:text-red-400'
+                  : 'text-gray-900 dark:text-neutral-100'
               }`}
             >
               <span className='font-medium'>{item.label}</span>
               {item.icon && (
                 <div
                   className={`flex h-6 w-6 items-center justify-center ${
-                    item.destructive ? 'text-red-500' : 'text-gray-600'
+                    item.destructive
+                      ? 'text-red-500 dark:text-red-400'
+                      : 'text-gray-600 dark:text-neutral-400'
                   }`}
                 >
                   {item.icon}

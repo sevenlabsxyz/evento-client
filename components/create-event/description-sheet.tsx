@@ -83,7 +83,7 @@ export default function DescriptionSheet({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-red-600 underline',
+          class: 'text-red-600 dark:text-red-400 underline',
         },
       }).extend({
         inclusive: false,

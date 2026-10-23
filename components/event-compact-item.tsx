@@ -65,7 +65,7 @@ export function EventCompactItem({
 
   return (
     <div
-      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:hover:bg-neutral-950'
       role={variant === 'sub-event' ? 'link' : undefined}
       tabIndex={variant === 'sub-event' ? 0 : undefined}
       aria-label={variant === 'sub-event' ? `View ${event.title}` : undefined}
@@ -87,8 +87,8 @@ export function EventCompactItem({
           <h4
             className={
               variant === 'sub-event'
-                ? 'line-clamp-2 min-w-0 flex-1 font-medium leading-snug text-gray-900'
-                : 'line-clamp-1 font-medium text-gray-900'
+                ? 'line-clamp-2 min-w-0 flex-1 font-medium leading-snug text-gray-900 dark:text-neutral-100'
+                : 'line-clamp-1 font-medium text-gray-900 dark:text-neutral-100'
             }
           >
             {event.title}
@@ -98,16 +98,16 @@ export function EventCompactItem({
               <Button
                 variant='ghost'
                 size='icon'
-                className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
+                className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500 dark:text-neutral-500 dark:hover:text-neutral-400'
                 onClick={(e) => {
                   e.stopPropagation();
                   onPin?.(event.id, isPinned);
                 }}
               >
                 {isPinning ? (
-                  <Loader className='h-4 w-4 animate-spin text-gray-900' />
+                  <Loader className='h-4 w-4 animate-spin text-gray-900 dark:text-neutral-100' />
                 ) : isPinned ? (
-                  <PinOff className='h-4 w-4 text-gray-900' />
+                  <PinOff className='h-4 w-4 text-gray-900 dark:text-neutral-100' />
                 ) : (
                   <Pin className='h-4 w-4' />
                 )}
@@ -116,18 +116,18 @@ export function EventCompactItem({
             {/* <Button
               variant='ghost'
               size='icon'
-              className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
+              className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 dark:text-neutral-500 hover:text-gray-500 dark:hover:text-neutral-400'
               onClick={(e) => {
                 e.stopPropagation();
                 onBookmark?.(event.id);
               }}
             >
-              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-red-600' : ''}`} />
+              <Bookmark className={`h-4 w-4 ${isBookmarked ? 'fill-current text-red-600 dark:text-red-400' : ''}`} />
             </Button> */}
           </div>
         </div>
 
-        <div className='mt-1 flex items-center text-xs text-gray-500'>
+        <div className='mt-1 flex items-center text-xs text-gray-500 dark:text-neutral-400'>
           <div className='mr-2 flex w-fit items-center'>
             <Calendar className='mr-1 h-3 w-3' />
             <span className='w-max'>{date}</span>
@@ -163,9 +163,11 @@ export function EventCompactItem({
                   : '/assets/img/evento-sublogo.svg'
               }
               alt={event.user_details.name || event.user_details.username}
-              className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 object-cover'
+              className='mr-1.5 h-4 w-4 rounded-full border border-gray-200 dark:border-neutral-800 object-cover'
             /> */}
-            <span className='text-xs text-gray-500'>@{event.user_details.username}</span>
+            <span className='text-xs text-gray-500 dark:text-neutral-400'>
+              @{event.user_details.username}
+            </span>
           </div>
         )}
       </div>
@@ -173,13 +175,13 @@ export function EventCompactItem({
       {variant === 'sub-event' ? (
         <ChevronRight
           aria-hidden='true'
-          className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600'
+          className='h-5 w-5 shrink-0 text-gray-400 transition-colors group-hover:text-gray-600 dark:text-neutral-500 dark:group-hover:text-neutral-400'
         />
       ) : (
         <Button
           variant='ghost'
           size='icon'
-          className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500'
+          className='h-7 w-7 rounded-full bg-transparent p-0 text-gray-400 hover:text-gray-500 dark:text-neutral-500 dark:hover:text-neutral-400'
           onClick={(e) => {
             e.stopPropagation();
             onMenuClick?.(event.id);

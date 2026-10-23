@@ -217,19 +217,19 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
             <SheetWithDetentFull.Content className='flex h-full flex-col'>
               {/* Handle */}
               <div className='mb-1 mt-2 flex items-center'>
-                <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>
 
               {/* Header with Balance */}
-              <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3'>
+              <div className='flex items-center justify-between border-b border-gray-200 bg-white px-4 py-3 dark:border-neutral-800 dark:bg-neutral-900'>
                 <h2 className='text-xl font-semibold'>Spend Bitcoin</h2>
                 <div className='flex items-center gap-3'>
                   <WalletBalanceDisplay />
                   <button
                     onClick={() => onOpenChange(false)}
-                    className='rounded-full p-1 hover:bg-gray-100'
+                    className='rounded-full p-1 hover:bg-gray-100 dark:hover:bg-neutral-800'
                   >
-                    <X className='h-5 w-5 text-gray-500' />
+                    <X className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
                   </button>
                 </div>
               </div>
@@ -237,8 +237,8 @@ export function SpendBitcoinSheet({ open, onOpenChange }: SpendBitcoinSheetProps
               {/* Bitrefill Iframe */}
               <div className='relative min-h-0 flex-1'>
                 {!iframeLoaded && (
-                  <div className='absolute inset-0 flex items-center justify-center bg-white'>
-                    <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+                  <div className='absolute inset-0 flex items-center justify-center bg-white dark:bg-neutral-900'>
+                    <Loader2 className='h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
                   </div>
                 )}
                 <iframe

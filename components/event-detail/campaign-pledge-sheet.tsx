@@ -134,7 +134,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
   const renderAmountStep = () => (
     <div className='px-4 pb-6'>
-      <p className='mb-6 text-sm text-gray-600'>
+      <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
         {campaign?.title ? `Contribute to "${campaign.title}"` : 'Choose an amount to contribute'}
       </p>
 
@@ -147,14 +147,14 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
             className={cn(
               'flex flex-col items-center justify-center rounded-2xl border-2 px-3 py-4 transition-all',
               selectedAmount === amount
-                ? 'border-amber-500 bg-amber-50'
-                : 'border-gray-200 bg-white hover:border-gray-300'
+                ? 'border-amber-500 bg-amber-50 dark:bg-amber-950/40'
+                : 'border-gray-200 bg-white hover:border-gray-300 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700'
             )}
           >
-            <span className='text-lg font-bold tabular-nums text-gray-900'>
+            <span className='text-lg font-bold tabular-nums text-gray-900 dark:text-neutral-100'>
               {formatSats(amount)}
             </span>
-            <span className='text-xs text-gray-500'>sats</span>
+            <span className='text-xs text-gray-500 dark:text-neutral-400'>sats</span>
           </button>
         ))}
       </div>
@@ -167,7 +167,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
           'flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-semibold transition-colors',
           selectedAmount
             ? 'bg-gray-900 text-white hover:bg-gray-800 active:bg-gray-700'
-            : 'cursor-not-allowed bg-gray-200 text-gray-400'
+            : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-neutral-700 dark:text-neutral-500'
         )}
       >
         {createPledge.isPending ? (
@@ -197,7 +197,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
   const renderInvoiceOptionsView = () => (
     <div className='flex flex-col gap-3 px-4 pb-6'>
-      <p className='mb-2 text-center text-sm text-gray-600'>
+      <p className='mb-2 text-center text-sm text-gray-600 dark:text-neutral-400'>
         Pay <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
       </p>
 
@@ -208,22 +208,22 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         className={cn(
           'flex w-full items-center gap-4 rounded-2xl border-2 px-4 py-4 text-left transition-all',
           walletState.isConnected
-            ? 'border-amber-400 bg-amber-50 hover:bg-amber-100 active:bg-amber-200'
-            : 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50'
+            ? 'border-amber-400 bg-amber-50 hover:bg-amber-100 active:bg-amber-200 dark:bg-amber-950/40 dark:hover:bg-amber-950/60 dark:active:bg-amber-900/60'
+            : 'cursor-not-allowed border-gray-200 bg-gray-50 opacity-50 dark:border-neutral-800 dark:bg-neutral-950'
         )}
       >
-        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100'>
+        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/60'>
           {isWalletPaying ? (
-            <Loader2 className='h-5 w-5 animate-spin text-amber-600' />
+            <Loader2 className='h-5 w-5 animate-spin text-amber-600 dark:text-amber-400' />
           ) : (
-            <Wallet className='h-5 w-5 text-amber-600' />
+            <Wallet className='h-5 w-5 text-amber-600 dark:text-amber-400' />
           )}
         </div>
         <div>
-          <p className='text-sm font-semibold text-gray-900'>
+          <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
             {isWalletPaying ? 'Paying…' : 'Pay with Evento wallet'}
           </p>
-          <p className='text-xs text-gray-500'>
+          <p className='text-xs text-gray-500 dark:text-neutral-400'>
             {walletState.isConnected ? 'Instant payment from your balance' : 'Wallet not connected'}
           </p>
         </div>
@@ -232,19 +232,21 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       {/* View QR code */}
       <button
         onClick={() => setInvoiceView('qr')}
-        className='flex w-full items-center gap-4 rounded-2xl border-2 border-gray-200 bg-white px-4 py-4 text-left transition-all hover:border-gray-300 hover:bg-gray-50'
+        className='flex w-full items-center gap-4 rounded-2xl border-2 border-gray-200 bg-white px-4 py-4 text-left transition-all hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 dark:hover:bg-neutral-950'
       >
-        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100'>
-          <QrCode className='h-5 w-5 text-gray-600' />
+        <div className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+          <QrCode className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
         </div>
         <div>
-          <p className='text-sm font-semibold text-gray-900'>View QR code</p>
-          <p className='text-xs text-gray-500'>Scan or copy for any Lightning wallet</p>
+          <p className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>View QR code</p>
+          <p className='text-xs text-gray-500 dark:text-neutral-400'>
+            Scan or copy for any Lightning wallet
+          </p>
         </div>
       </button>
 
       {/* Waiting indicator */}
-      <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400'>
+      <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400 dark:text-neutral-500'>
         <Loader2 className='h-4 w-4 animate-spin' />
         Waiting for payment…
       </div>
@@ -255,11 +257,11 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
     <div className='flex flex-col items-center px-4 pb-6'>
       <button
         onClick={() => setInvoiceView('options')}
-        className='mb-4 flex items-center gap-1 self-start text-sm text-gray-500 hover:text-gray-700'
+        className='mb-4 flex items-center gap-1 self-start text-sm text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
       >
         ← Back
       </button>
-      <p className='mb-4 text-center text-sm text-gray-600'>
+      <p className='mb-4 text-center text-sm text-gray-600 dark:text-neutral-400'>
         Scan or copy the invoice to pay{' '}
         <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span>
       </p>
@@ -272,11 +274,11 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       {/* Copy button */}
       <button
         onClick={handleCopyInvoice}
-        className='mb-4 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100'
+        className='mb-4 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
       >
         {copied ? (
           <>
-            <CheckCircle2 className='h-4 w-4 text-emerald-500' />
+            <CheckCircle2 className='h-4 w-4 text-emerald-500 dark:text-emerald-400' />
             Copied!
           </>
         ) : (
@@ -288,7 +290,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       </button>
 
       {/* Waiting indicator */}
-      <div className='flex items-center gap-2 text-sm text-gray-500'>
+      <div className='flex items-center gap-2 text-sm text-gray-500 dark:text-neutral-400'>
         <Loader2 className='h-4 w-4 animate-spin' />
         Waiting for payment…
       </div>
@@ -300,11 +302,11 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
   const renderSettledStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
-      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100'>
-        <CheckCircle2 className='h-8 w-8 text-emerald-600' />
+      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-950/60'>
+        <CheckCircle2 className='h-8 w-8 text-emerald-600 dark:text-emerald-400' />
       </div>
-      <h3 className='mb-1 text-xl font-bold text-gray-900'>Thank you!</h3>
-      <p className='text-center text-sm text-gray-600'>
+      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>Thank you!</h3>
+      <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
         Your contribution of{' '}
         <span className='font-semibold'>{formatSats(selectedAmount ?? 0)} sats</span> has been
         received.
@@ -314,11 +316,13 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
   const renderExpiredStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
-      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-        <RotateCcw className='h-8 w-8 text-red-500' />
+      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
+        <RotateCcw className='h-8 w-8 text-red-500 dark:text-red-400' />
       </div>
-      <h3 className='mb-1 text-xl font-bold text-gray-900'>Invoice expired</h3>
-      <p className='mb-6 text-center text-sm text-gray-600'>
+      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>
+        Invoice expired
+      </h3>
+      <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
         The payment window has closed. You can try again with a new invoice.
       </p>
       <button
@@ -333,11 +337,11 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
 
   const renderFailedStep = () => (
     <div className='flex flex-col items-center px-4 pb-6'>
-      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-        <RotateCcw className='h-8 w-8 text-red-500' />
+      <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
+        <RotateCcw className='h-8 w-8 text-red-500 dark:text-red-400' />
       </div>
-      <h3 className='mb-1 text-xl font-bold text-gray-900'>Payment failed</h3>
-      <p className='mb-6 text-center text-sm text-gray-600'>
+      <h3 className='mb-1 text-xl font-bold text-gray-900 dark:text-neutral-100'>Payment failed</h3>
+      <p className='mb-6 text-center text-sm text-gray-600 dark:text-neutral-400'>
         We could not confirm this payment. You can try again with a new invoice.
       </p>
       <button

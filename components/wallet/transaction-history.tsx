@@ -75,15 +75,15 @@ export function TransactionHistory({
     if (isPending) {
       if (isIncoming) {
         return (
-          <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100'>
-            <ArrowDownLeft className='h-5 w-5 text-orange-600' />
+          <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100 dark:bg-orange-950/60'>
+            <ArrowDownLeft className='h-5 w-5 text-orange-600 dark:text-orange-400' />
           </div>
         );
       }
 
       return (
-        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100'>
-          <ArrowUpRight className='h-5 w-5 text-orange-600' />
+        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100 dark:bg-orange-950/60'>
+          <ArrowUpRight className='h-5 w-5 text-orange-600 dark:text-orange-400' />
         </div>
       );
     }
@@ -91,15 +91,15 @@ export function TransactionHistory({
     // Normal color scheme for completed/failed transactions
     if (isIncoming) {
       return (
-        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100'>
-          <ArrowDownLeft className='h-5 w-5 text-green-600' />
+        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100 dark:bg-green-950/60'>
+          <ArrowDownLeft className='h-5 w-5 text-green-600 dark:text-green-400' />
         </div>
       );
     }
 
     return (
-      <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-blue-100'>
-        <ArrowUpRight className='h-5 w-5 text-blue-600' />
+      <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-blue-100 dark:bg-blue-950/60'>
+        <ArrowUpRight className='h-5 w-5 text-blue-600 dark:text-blue-400' />
       </div>
     );
   };
@@ -108,11 +108,11 @@ export function TransactionHistory({
     switch (status) {
       case 'complete':
       case 'succeeded':
-        return <CheckCircle2 className='h-4 w-4 text-green-600' />;
+        return <CheckCircle2 className='h-4 w-4 text-green-600 dark:text-green-400' />;
       case 'pending':
-        return <Clock className='h-4 w-4 text-yellow-600' />;
+        return <Clock className='h-4 w-4 text-yellow-600 dark:text-yellow-400' />;
       case 'failed':
-        return <XCircle className='h-4 w-4 text-red-600' />;
+        return <XCircle className='h-4 w-4 text-red-600 dark:text-red-400' />;
       default:
         return null;
     }
@@ -193,7 +193,7 @@ export function TransactionHistory({
           <button
             key={payment.id}
             onClick={() => onTransactionClick?.(payment)}
-            className='w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50'
+            className='w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-950'
           >
             <div className='flex min-w-0 items-start gap-3'>
               {getPaymentIcon(payment)}
@@ -206,8 +206,10 @@ export function TransactionHistory({
                     </div>
 
                     <div className='min-w-0 flex-1 overflow-hidden'>
-                      <p className='truncate font-medium text-gray-900'>{primaryText}</p>
-                      <p className='truncate text-xs font-normal text-gray-600'>
+                      <p className='truncate font-medium text-gray-900 dark:text-neutral-100'>
+                        {primaryText}
+                      </p>
+                      <p className='truncate text-xs font-normal text-gray-600 dark:text-neutral-400'>
                         {detailParts.join(' • ')}
                       </p>
                     </div>
@@ -215,18 +217,24 @@ export function TransactionHistory({
 
                   <div className='flex max-w-[110px] flex-shrink-0 flex-col items-end text-right'>
                     {balanceHidden ? (
-                      <p className='truncate font-semibold text-gray-900'>••••••</p>
+                      <p className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
+                        ••••••
+                      </p>
                     ) : (
                       <>
                         <p
                           className={`truncate font-semibold ${
-                            isIncoming ? 'text-green-600' : 'text-gray-900'
+                            isIncoming
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-gray-900 dark:text-neutral-100'
                           }`}
                         >
                           {isIncoming ? '+' : '-'}
                           {amountSats.toLocaleString()} sats
                         </p>
-                        <p className='truncate text-sm text-gray-500'>${usdAmount.toFixed(2)}</p>
+                        <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                          ${usdAmount.toFixed(2)}
+                        </p>
                       </>
                     )}
                   </div>
@@ -242,7 +250,7 @@ export function TransactionHistory({
           <Button
             onClick={onViewAll}
             variant='outline'
-            className='font-lg h-12 w-full rounded-full bg-gray-50'
+            className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
           >
             View All Transactions
           </Button>

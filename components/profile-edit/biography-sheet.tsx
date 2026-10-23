@@ -82,13 +82,16 @@ export default function BiographySheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Biography</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <X className='h-5 w-5' />
                 </button>
               </div>
@@ -109,12 +112,12 @@ export default function BiographySheet({
                   />
 
                   {/* Character count */}
-                  <p className='mb-4 text-right text-sm text-gray-500'>
+                  <p className='mb-4 text-right text-sm text-gray-500 dark:text-neutral-400'>
                     {bio.length}/{maxLength}
                   </p>
 
                   {/* Info text */}
-                  <p className='mb-6 text-sm text-gray-500'>
+                  <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
                     Write a short bio to help others get to know you. Share your interests, what
                     brings you to events, or anything else you&apos;d like people to know.
                   </p>

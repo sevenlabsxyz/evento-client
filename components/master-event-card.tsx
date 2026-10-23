@@ -82,7 +82,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
         }
       }}
       className={cn(
-        'flex w-full items-start gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100',
+        'flex w-full items-start gap-4 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800',
         className
       )}
     >
@@ -90,11 +90,13 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
       <div className='flex min-w-0 flex-1 flex-col gap-1'>
         {/* Time Row */}
         <div className='flex items-center gap-1 text-sm'>
-          <span className='font-medium text-red-500'>{eventTimeWithTz}</span>
+          <span className='font-medium text-red-500 dark:text-red-400'>{eventTimeWithTz}</span>
         </div>
 
         {/* Title */}
-        <h3 className='py-1 text-lg font-bold leading-tight text-gray-900'>{event.title}</h3>
+        <h3 className='py-1 text-lg font-bold leading-tight text-gray-900 dark:text-neutral-100'>
+          {event.title}
+        </h3>
 
         {/* Host */}
         <div className='flex items-center gap-2'>
@@ -107,7 +109,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
             }}
             size='xs'
           />
-          <span className='text-sm text-gray-600'>
+          <span className='text-sm text-gray-600 dark:text-neutral-400'>
             by{' '}
             <span className='font-semibold'>
               @{event.user_details.name || event.user_details.username}
@@ -117,7 +119,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
 
         {/* Location */}
         {event.location && (
-          <div className='flex items-center gap-1 py-1 text-sm text-gray-600'>
+          <div className='flex items-center gap-1 py-1 text-sm text-gray-600 dark:text-neutral-400'>
             <MapPin className='mx-0.5 h-4 w-4 shrink-0' />
             <span className='truncate'>{event.location}</span>
           </div>
@@ -127,12 +129,12 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
         {(showCapacity || showPrice) && (
           <div className='mt-1 flex items-center gap-2'>
             {showCapacity && (
-              <span className='rounded-full border border-amber-500 px-2.5 py-0.5 text-xs font-semibold text-amber-600'>
+              <span className='rounded-full border border-amber-500 px-2.5 py-0.5 text-xs font-semibold text-amber-600 dark:text-amber-400'>
                 Capacity {event.max_capacity}
               </span>
             )}
             {showPrice && priceDisplay && (
-              <span className='rounded-full border border-green-500 px-2.5 py-0.5 text-xs font-semibold text-green-600'>
+              <span className='rounded-full border border-green-500 px-2.5 py-0.5 text-xs font-semibold text-green-600 dark:text-green-400'>
                 {priceDisplay}
               </span>
             )}
@@ -151,7 +153,7 @@ export function MasterEventCard({ event, className, onClick, onLongPress }: Mast
           alt={event.title}
           width={96}
           height={96}
-          className='h-24 w-24 rounded-3xl border border-gray-200 object-cover'
+          className='h-24 w-24 rounded-3xl border border-gray-200 object-cover dark:border-neutral-800'
         />
       </div>
     </button>

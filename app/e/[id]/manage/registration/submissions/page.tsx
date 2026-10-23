@@ -105,9 +105,9 @@ export default function RegistrationSubmissionsPage() {
 
   const getStatusBadge = (status: RegistrationStatus) => {
     const styles: Record<RegistrationStatus, string> = {
-      pending: 'bg-yellow-100 text-yellow-800',
-      approved: 'bg-green-100 text-green-800',
-      denied: 'bg-red-100 text-red-800',
+      pending: 'bg-yellow-100 dark:bg-yellow-950/60 text-yellow-800 dark:text-yellow-400',
+      approved: 'bg-green-100 dark:bg-green-950/60 text-green-800 dark:text-green-400',
+      denied: 'bg-red-100 dark:bg-red-950/60 text-red-800 dark:text-red-400',
     };
 
     const labels: Record<RegistrationStatus, string> = {
@@ -125,8 +125,8 @@ export default function RegistrationSubmissionsPage() {
 
   if (isLoadingInitialPage) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='border-b border-gray-100 px-4 py-4'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
+        <div className='border-b border-gray-100 px-4 py-4 dark:border-neutral-800'>
           <div className='flex space-x-1'>
             {Array.from({ length: 3 }).map((_, i) => (
               <Skeleton key={i} className='h-10 w-20 rounded-lg' />
@@ -137,7 +137,10 @@ export default function RegistrationSubmissionsPage() {
         <div className='flex-1 space-y-3 overflow-y-auto p-4'>
           <div className='space-y-3'>
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+              <div
+                key={i}
+                className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'
+              >
                 <Skeleton className='h-12 w-12 rounded-full' />
                 <div className='flex-1 space-y-2'>
                   <Skeleton className='h-4 w-32' />
@@ -149,8 +152,8 @@ export default function RegistrationSubmissionsPage() {
           </div>
         </div>
 
-        <div className='border-t border-gray-100 bg-gray-50 p-4'>
-          <div className='flex items-center justify-between text-sm text-gray-600'>
+        <div className='border-t border-gray-100 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+          <div className='flex items-center justify-between text-sm text-gray-600 dark:text-neutral-400'>
             <Skeleton className='h-4 w-16' />
             <Skeleton className='h-4 w-24' />
           </div>
@@ -161,10 +164,12 @@ export default function RegistrationSubmissionsPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to manage doesn&apos;t exist.
           </p>
           <button
@@ -179,9 +184,9 @@ export default function RegistrationSubmissionsPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Tabs */}
-      <div className='border-b border-gray-100 px-4 py-4'>
+      <div className='border-b border-gray-100 px-4 py-4 dark:border-neutral-800'>
         <AnimatedTabs
           tabs={tabs.map((tab) => ({
             title: tab.count > 0 ? `${tab.label} (${tab.count})` : tab.label,
@@ -197,7 +202,10 @@ export default function RegistrationSubmissionsPage() {
         {isLoadingSubmissions ? (
           <div className='space-y-3'>
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+              <div
+                key={i}
+                className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'
+              >
                 <Skeleton className='h-12 w-12 rounded-full' />
                 <div className='flex-1 space-y-2'>
                   <Skeleton className='h-4 w-32' />
@@ -220,11 +228,13 @@ export default function RegistrationSubmissionsPage() {
           </div>
         ) : (
           <div className='py-16 text-center'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-              <ClipboardList className='h-8 w-8 text-gray-400' />
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+              <ClipboardList className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
             </div>
-            <h3 className='mb-2 text-lg font-medium text-gray-900'>No Submissions</h3>
-            <p className='text-sm text-gray-500'>
+            <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+              No Submissions
+            </h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
               {activeTab === 'pending' && 'No pending registrations to review.'}
               {activeTab === 'approved' && 'No approved registrations.'}
               {activeTab === 'denied' && 'No denied registrations.'}
@@ -246,14 +256,14 @@ export default function RegistrationSubmissionsPage() {
       />
 
       {/* Summary Footer */}
-      <div className='shrink-0 border-t border-gray-100 bg-gray-50 p-4'>
+      <div className='shrink-0 border-t border-gray-100 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
         {isLoadingSubmissions ? (
           <div className='flex items-center justify-between'>
             <Skeleton className='h-4 w-16' />
             <Skeleton className='h-4 w-24' />
           </div>
         ) : (
-          <div className='flex items-center justify-between text-sm text-gray-600'>
+          <div className='flex items-center justify-between text-sm text-gray-600 dark:text-neutral-400'>
             <span>Total: {totalCount}</span>
             <span>
               Showing {activeTab}: {filteredRegistrations.length}
@@ -275,7 +285,7 @@ function RegistrationCard({ registration, onClick, getStatusBadge }: Registratio
   return (
     <button
       onClick={onClick}
-      className='w-full rounded-2xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100'
+      className='w-full rounded-2xl bg-gray-50 p-4 text-left transition-colors hover:bg-gray-100 dark:bg-neutral-950 dark:hover:bg-neutral-800'
     >
       <div className='flex items-start gap-4'>
         <UserAvatar
@@ -291,21 +301,21 @@ function RegistrationCard({ registration, onClick, getStatusBadge }: Registratio
         <div className='min-w-0 flex-1'>
           <div className='flex items-start justify-between gap-2'>
             <div className='min-w-0 flex-1'>
-              <h3 className='truncate font-semibold text-gray-900'>
+              <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
                 {registration.user_details?.name || registration.name}
               </h3>
               {registration.user_details?.username && (
-                <p className='truncate text-sm text-gray-500'>
+                <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
                   @{registration.user_details.username}
                 </p>
               )}
             </div>
             <div className='flex flex-shrink-0 items-center gap-2'>
               {getStatusBadge(registration.approval_status)}
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </div>
           </div>
-          <p className='mt-1 text-xs text-gray-400'>
+          <p className='mt-1 text-xs text-gray-400 dark:text-neutral-500'>
             Submitted {format(new Date(registration.created_at), 'MMM d, yyyy')}
           </p>
         </div>

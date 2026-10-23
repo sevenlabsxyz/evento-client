@@ -52,11 +52,11 @@ export function ZapNoWalletStep({
 
   return (
     <div className='flex flex-col items-center justify-center p-12 text-center'>
-      <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-        <Zap className='h-8 w-8 text-gray-400' />
+      <div className='mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+        <Zap className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
       </div>
-      <h3 className='mb-2 text-xl font-semibold text-gray-900'>{heading}</h3>
-      <p className='mb-8 text-gray-600'>
+      <h3 className='mb-2 text-xl font-semibold text-gray-900 dark:text-neutral-100'>{heading}</h3>
+      <p className='mb-8 text-gray-600 dark:text-neutral-400'>
         This user hasn&apos;t set up their Evento Wallet yet. Let them know so they can start
         receiving Lightning payments!
       </p>
@@ -73,7 +73,7 @@ export function ZapNoWalletStep({
         <Button
           variant='ghost'
           onClick={onClose}
-          className='h-12 w-full rounded-full font-semibold text-gray-600 hover:text-gray-900'
+          className='h-12 w-full rounded-full font-semibold text-gray-600 hover:text-gray-900 dark:text-neutral-400 dark:hover:text-neutral-100'
         >
           Close
         </Button>

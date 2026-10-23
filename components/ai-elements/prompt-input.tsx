@@ -29,15 +29,14 @@ export const PromptInput = ({ className, onSubmit, children, ...props }: PromptI
       }}
       {...props}
     >
-      <div className='flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all focus-within:border-gray-300 focus-within:shadow-md'>
+      <div className='flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all focus-within:border-gray-300 focus-within:shadow-md dark:border-neutral-800 dark:bg-neutral-900 dark:focus-within:border-neutral-700'>
         {children}
       </div>
     </form>
   );
 };
 
-export interface PromptInputTextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
+export interface PromptInputTextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {}
 
 export const PromptInputTextarea = React.forwardRef<HTMLTextAreaElement, PromptInputTextareaProps>(
   ({ className, onKeyDown, ...props }, ref) => {
@@ -58,7 +57,7 @@ export const PromptInputTextarea = React.forwardRef<HTMLTextAreaElement, PromptI
         ref={ref}
         name='message'
         className={cn(
-          'flex w-full resize-none bg-transparent px-4 py-3 text-base outline-none placeholder:text-gray-400',
+          'flex w-full resize-none bg-transparent px-4 py-3 text-base outline-none placeholder:text-gray-400 dark:placeholder:text-neutral-500',
           'max-h-[200px] min-h-[48px]',
           className
         )}
@@ -75,7 +74,7 @@ export interface PromptInputFooterProps extends React.HTMLAttributes<HTMLDivElem
 export const PromptInputFooter = ({ className, ...props }: PromptInputFooterProps) => (
   <div
     className={cn(
-      'flex items-center justify-between gap-2 border-t border-gray-100 px-3 py-2',
+      'flex items-center justify-between gap-2 border-t border-gray-100 px-3 py-2 dark:border-neutral-800',
       className
     )}
     {...props}

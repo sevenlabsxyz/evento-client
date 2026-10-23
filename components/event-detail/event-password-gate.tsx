@@ -59,8 +59,8 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
   const primaryHost = event.hosts?.[0];
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center bg-white p-4'>
-      <Card className='w-full max-w-sm rounded-3xl bg-gray-50'>
+    <div className='flex min-h-screen flex-col items-center justify-center bg-white p-4 dark:bg-neutral-900'>
+      <Card className='w-full max-w-sm rounded-3xl bg-gray-50 dark:bg-neutral-950'>
         <CardHeader className='space-y-4'>
           {/* Event cover image */}
           {coverImageUrl && (
@@ -86,7 +86,7 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
         <CardContent className='space-y-4'>
           {/* Error Alert */}
           {error && (
-            <Alert variant='destructive' className='bg-red-50 leading-none'>
+            <Alert variant='destructive' className='bg-red-50 leading-none dark:bg-red-950/40'>
               <AlertCircle className='h-4 w-4' />
               <AlertDescription className='-mb-1 mt-0.5'>{error}</AlertDescription>
             </Alert>
@@ -99,19 +99,19 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
                 Event Password
               </label>
               <div className='relative'>
-                <KeyRound className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+                <KeyRound className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
                 <Input
                   id='password'
                   type={showPassword ? 'text' : 'password'}
                   placeholder='Enter password'
-                  className='bg-white pl-10 pr-10'
+                  className='bg-white pl-10 pr-10 dark:bg-neutral-900'
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={verifyPassword.isPending}
                 />
                 <button
                   type='button'
-                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                  className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-400'
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? <EyeOff className='h-4 w-4' /> : <Eye className='h-4 w-4' />}

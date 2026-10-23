@@ -112,10 +112,10 @@ export default function EditProfilePage() {
 
   if (isLoading || isCheckingAuth || updateProfileMutation.isPending || !user) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='flex-1 space-y-4 overflow-y-auto p-4'>
           {/* Profile Info Group: Profile Picture, Username, Name, Bio */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             {/* Profile Picture */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
@@ -158,7 +158,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Social Links Group: Social Links + Nostr */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             {/* Social Links */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
@@ -181,7 +181,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Personality Group: Interests, Prompts, Badges */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             {/* Interests */}
             <div className='flex w-full items-center gap-4'>
               <Skeleton className='h-12 w-12 rounded-xl' />
@@ -219,26 +219,28 @@ export default function EditProfilePage() {
 
   return (
     <>
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         {/* Content */}
         <div className='flex-1 space-y-4 overflow-y-auto p-4'>
           {/* Profile Info Group: Profile Picture, Username, Name, Bio */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             {/* Profile Picture */}
             <button
               onClick={() => setShowProfileImageSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100'>
-                <Camera className='h-6 w-6 text-gray-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-neutral-800'>
+                <Camera className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Profile Picture</h3>
-                <p className='text-sm text-gray-500'>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  Profile Picture
+                </h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   {image ? 'Tap to change photo' : 'Add a profile photo'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Username */}
@@ -246,14 +248,16 @@ export default function EditProfilePage() {
               onClick={() => setShowUsernameSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
-                <AtSign className='h-6 w-6 text-blue-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950/60'>
+                <AtSign className='h-6 w-6 text-blue-600 dark:text-blue-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Username</h3>
-                <p className='text-sm text-gray-500'>{username || 'Choose a username'}</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Username</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {username || 'Choose a username'}
+                </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Name */}
@@ -261,14 +265,16 @@ export default function EditProfilePage() {
               onClick={() => setShowNameSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100'>
-                <User className='h-6 w-6 text-blue-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100 dark:bg-blue-950/60'>
+                <User className='h-6 w-6 text-blue-600 dark:text-blue-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Name</h3>
-                <p className='text-sm text-gray-500'>{name || 'Add your name'}</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Name</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {name || 'Add your name'}
+                </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Biography */}
@@ -276,40 +282,40 @@ export default function EditProfilePage() {
               onClick={() => setShowBiographySheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-green-100'>
-                <Type className='h-6 w-6 text-green-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-green-100 dark:bg-green-950/60'>
+                <Type className='h-6 w-6 text-green-600 dark:text-green-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Biography</h3>
-                <p className='text-sm text-gray-500'>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Biography</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   {bio
                     ? bio.replace(/<[^>]*>/g, '').substring(0, 40) + '...'
                     : 'Tell us about yourself'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
           </div>
 
           {/* Social Links Group: Social Links + Nostr */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             {/* Social Links */}
             <button
               onClick={() => setShowSocialLinksSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100'>
-                <Instagram className='h-6 w-6 text-purple-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-950/60'>
+                <Instagram className='h-6 w-6 text-purple-600 dark:text-purple-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Social Links</h3>
-                <p className='text-sm text-gray-500'>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Social Links</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   {[instagram_handle && 'Instagram', x_handle && 'X', bio_link && 'Website']
                     .filter(Boolean)
                     .join(', ') || 'Add your social profiles'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Nostr */}
@@ -317,32 +323,34 @@ export default function EditProfilePage() {
               onClick={() => setShowNostrSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100'>
-                <Hash className='h-6 w-6 text-pink-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-pink-100 dark:bg-pink-950/60'>
+                <Hash className='h-6 w-6 text-pink-600 dark:text-pink-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Nostr</h3>
-                <p className='text-sm text-gray-500'>{nip05 || 'Add Nostr identifier'}</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Nostr</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                  {nip05 || 'Add Nostr identifier'}
+                </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
           </div>
 
           {/* Personality Group: Interests, Prompts, Badges */}
-          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='space-y-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             {/* Interests */}
             <button
               onClick={() => setShowInterestsSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100'>
-                <Heart className='h-6 w-6 text-teal-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-teal-100 dark:bg-teal-950/60'>
+                <Heart className='h-6 w-6 text-teal-600 dark:text-teal-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Interests</h3>
-                <p className='text-sm text-gray-500'>Share what you love</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Interests</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>Share what you love</p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Prompts */}
@@ -350,14 +358,16 @@ export default function EditProfilePage() {
               onClick={() => setShowPromptsSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100'>
-                <MessageSquare className='h-6 w-6 text-indigo-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/60'>
+                <MessageSquare className='h-6 w-6 text-indigo-600 dark:text-indigo-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Prompts</h3>
-                <p className='text-sm text-gray-500'>Showcase your personality</p>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Prompts</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                  Showcase your personality
+                </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
 
             {/* Badges */}
@@ -365,18 +375,18 @@ export default function EditProfilePage() {
               onClick={() => setShowBadgesSheet(true)}
               className='flex w-full items-center gap-4 text-left'
             >
-              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100'>
-                <Award className='h-6 w-6 text-amber-600' />
+              <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60'>
+                <Award className='h-6 w-6 text-amber-600 dark:text-amber-400' />
               </div>
               <div className='flex-1'>
-                <h3 className='font-semibold text-gray-900'>Badges</h3>
-                <p className='text-sm text-gray-500'>
+                <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>Badges</h3>
+                <p className='text-sm text-gray-500 dark:text-neutral-400'>
                   {displayedBadgesCount > 0
                     ? `${displayedBadgesCount} badge${displayedBadgesCount !== 1 ? 's' : ''} on display`
                     : 'Showcase your achievements'}
                 </p>
               </div>
-              <ChevronRight className='h-5 w-5 text-gray-400' />
+              <ChevronRight className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
             </button>
           </div>
         </div>

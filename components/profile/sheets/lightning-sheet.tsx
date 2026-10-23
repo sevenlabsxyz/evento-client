@@ -52,23 +52,27 @@ export default function LightningSheet({ isOpen, onClose, address }: LightningSh
 
               {/* Lightning Info */}
               <div className='mb-6 flex items-center gap-3'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100'>
-                  <Zap className='h-6 w-6 text-yellow-600' />
+                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-950/60'>
+                  <Zap className='h-6 w-6 text-yellow-600 dark:text-yellow-400' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-gray-900'>{address}</h3>
-                  <p className='text-sm text-gray-500'>Bitcoin Lightning Address</p>
+                  <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>{address}</h3>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                    Bitcoin Lightning Address
+                  </p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
-                <p className='mb-4 text-gray-600'>
+                <p className='mb-4 text-gray-600 dark:text-neutral-400'>
                   This is a Bitcoin Lightning Network address. You can use it to send instant,
                   low-fee Bitcoin payments globally.
                 </p>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='break-all font-mono text-sm text-gray-700'>{address}</p>
+                <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                  <p className='break-all font-mono text-sm text-gray-700 dark:text-neutral-300'>
+                    {address}
+                  </p>
                 </div>
               </div>
 

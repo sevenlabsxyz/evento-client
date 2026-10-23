@@ -67,7 +67,7 @@ export default function EventGallery({
           <Button
             onClick={handleAddPhoto}
             variant='outline'
-            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black'
+            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950 dark:hover:text-white'
           >
             <Camera className='h-4 w-4' />
             Add Photos
@@ -76,7 +76,7 @@ export default function EventGallery({
           <Button
             onClick={handleShareAlbum}
             variant='outline'
-            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black'
+            className='flex-1 gap-2 rounded-full border-gray-200 bg-white py-5 text-gray-700 hover:bg-gray-50 hover:text-black dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950 dark:hover:text-white'
           >
             <Share2 className='h-4 w-4' />
             Share Album

@@ -13,10 +13,10 @@ export const MiniListItem = ({ icon, text, onClick, className = '' }: MiniListIt
   return (
     <button
       onClick={onClick}
-      className={`flex w-full items-center px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 ${className}`}
+      className={`flex w-full items-center px-4 py-3 text-left text-sm transition-colors hover:bg-gray-50 dark:hover:bg-neutral-950 ${className}`}
     >
       {icon && <span className='flex-shrink-0'>{icon}</span>}
-      <span className='text-gray-900'>{text}</span>
+      <span className='text-gray-900 dark:text-neutral-100'>{text}</span>
     </button>
   );
 };

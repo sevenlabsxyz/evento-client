@@ -36,7 +36,7 @@ export default function CapacityConfirmationSheet({
               {/* Header */}
               <div className='mb-6'>
                 <div className='mb-6 flex items-center justify-between'>
-                  <button onClick={onClose} className='font-medium text-red-500'>
+                  <button onClick={onClose} className='font-medium text-red-500 dark:text-red-400'>
                     Cancel
                   </button>
                   <h2 className='text-lg font-semibold'>Turn Off Capacity?</h2>
@@ -52,20 +52,20 @@ export default function CapacityConfirmationSheet({
               {/* Content */}
               <div className='space-y-4 text-center'>
                 <div className='mb-4 flex justify-center'>
-                  <AlertTriangle className='h-12 w-12 text-amber-500' />
+                  <AlertTriangle className='h-12 w-12 text-amber-500 dark:text-amber-400' />
                 </div>
 
                 <div className='space-y-3 text-left'>
-                  <p className='text-sm leading-relaxed text-gray-700'>
+                  <p className='text-sm leading-relaxed text-gray-700 dark:text-neutral-300'>
                     Are you sure you want to turn off capacity limits for this event?
                     {currentCapacity && (
-                      <span className='font-semibold text-gray-900'>
+                      <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {' '}
                         Your current capacity is set to {currentCapacity} attendees.
                       </span>
                     )}
                   </p>
-                  <p className='text-sm leading-relaxed text-gray-500'>
+                  <p className='text-sm leading-relaxed text-gray-500 dark:text-neutral-400'>
                     This action will remove all capacity restrictions. You can always set a new
                     capacity later.
                   </p>

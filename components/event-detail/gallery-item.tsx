@@ -112,7 +112,7 @@ export default function GalleryItem({
 
       {/* Loading state */}
       {!isLoaded && (
-        <div className='absolute inset-0 flex items-center justify-center bg-gray-100'>
+        <div className='absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-neutral-800'>
           <div className='h-8 w-8 animate-spin rounded-full border-t-2 border-solid border-red-500'></div>
         </div>
       )}
@@ -134,7 +134,7 @@ export default function GalleryItem({
           }`}
         >
           <Heart
-            className={`h-3.5 w-3.5 ${hasLiked ? 'fill-red-500 text-red-500' : 'text-white'}`}
+            className={`h-3.5 w-3.5 ${hasLiked ? 'fill-red-500 text-red-500 dark:text-red-400' : 'text-white'}`}
           />
           <span className='text-xs'>{likes}</span>
         </button>
@@ -163,7 +163,7 @@ export default function GalleryItem({
                     e.stopPropagation();
                     handleDelete();
                   }}
-                  className='cursor-pointer text-red-600 focus:text-red-700'
+                  className='cursor-pointer text-red-600 focus:text-red-700 dark:text-red-400 dark:focus:text-red-400'
                 >
                   <Trash2 className='mr-2 h-4 w-4' />
                   Delete Photo

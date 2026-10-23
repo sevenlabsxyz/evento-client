@@ -49,14 +49,14 @@ export default function DeleteConfirmationSheet({
 
               {/* Header */}
               <div className='mb-6 flex items-center gap-3'>
-                <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50'>
-                  <AlertTriangle className='h-5 w-5 text-red-500' />
+                <div className='flex h-10 w-10 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
+                  <AlertTriangle className='h-5 w-5 text-red-500 dark:text-red-400' />
                 </div>
                 <h2 className='text-xl font-semibold'>{title ?? `Delete ${itemType}`}</h2>
               </div>
 
               {/* Body */}
-              <div className='mb-8 text-gray-600'>
+              <div className='mb-8 text-gray-600 dark:text-neutral-400'>
                 <p>
                   {description ??
                     `Are you sure you want to delete this ${itemType}? This action cannot be undone.`}

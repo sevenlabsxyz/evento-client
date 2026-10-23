@@ -27,7 +27,7 @@ export const BlogCard = ({ date, slug, image, title, description, className }: B
     <Link
       href={`/e/blog/${slug}`}
       className={cn(
-        'group flex h-full w-full cursor-pointer flex-col overflow-hidden border bg-white shadow-sm transition-all duration-300 ease-in-out rounded-[2rem] hover:-translate-y-0.5 hover:shadow-lg',
+        'group flex h-full w-full cursor-pointer flex-col overflow-hidden border bg-white shadow-sm transition-all duration-300 ease-in-out rounded-[2rem] hover:-translate-y-0.5 hover:shadow-lg dark:bg-neutral-900',
         className
       )}
     >
@@ -55,16 +55,18 @@ export const BlogCard = ({ date, slug, image, title, description, className }: B
       <div className='p-6'>
         <div className='mb-3 flex items-center justify-between gap-4'>
           {/*{category && category.length > 0 && (
-            <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium uppercase tracking-wider text-red-600">
+            <span className="rounded-full bg-red-50 dark:bg-red-950/40 px-3 py-1 text-xs font-medium uppercase tracking-wider text-red-600 dark:text-red-400">
               {category[0].name}
             </span>
           )}*/}
-          <time className='text-sm text-gray-500'>{formattedDate}</time>
+          <time className='text-sm text-gray-500 dark:text-neutral-400'>{formattedDate}</time>
         </div>
-        <h2 className='m-0 mb-2 line-clamp-3 text-xl font-bold leading-7 text-gray-900 transition-colors duration-200 ease-in-out group-hover:text-red-600'>
+        <h2 className='m-0 mb-2 line-clamp-3 text-xl font-bold leading-7 text-gray-900 transition-colors duration-200 ease-in-out group-hover:text-red-600 dark:text-neutral-100 dark:group-hover:text-red-400'>
           {title}
         </h2>
-        <p className='m-0 line-clamp-3 text-sm leading-6 text-gray-600'>{description}</p>
+        <p className='m-0 line-clamp-3 text-sm leading-6 text-gray-600 dark:text-neutral-400'>
+          {description}
+        </p>
       </div>
     </Link>
   );

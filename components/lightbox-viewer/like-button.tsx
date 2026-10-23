@@ -45,7 +45,12 @@ export const LikeButton = ({ itemId, className, userId, eventId }: LikeButtonPro
           transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
           <Heart
-            className={cn('h-4 w-4', has_liked ? 'fill-current text-red-500' : 'text-gray-500')}
+            className={cn(
+              'h-4 w-4',
+              has_liked
+                ? 'fill-current text-red-500 dark:text-red-400'
+                : 'text-gray-500 dark:text-neutral-400'
+            )}
           />
         </motion.div>
       </Button>

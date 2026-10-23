@@ -102,13 +102,13 @@ export default function LocationSheet({
   // Search input as secondary header
   const searchHeader = (
     <div className='relative px-4 pb-4'>
-      <Search className='absolute left-7 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400' />
+      <Search className='absolute left-7 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
       <input
         type='text'
         placeholder='Search for a place or address'
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className='h-11 w-full rounded-xl bg-gray-100 pl-11 pr-4 text-base outline-none placeholder:text-gray-400'
+        className='h-11 w-full rounded-xl bg-gray-100 pl-11 pr-4 text-base outline-none placeholder:text-gray-400 dark:bg-neutral-800 dark:placeholder:text-neutral-500'
         autoFocus
       />
     </div>
@@ -126,16 +126,18 @@ export default function LocationSheet({
         {selectedLocation && (
           <button
             onClick={() => handleLocationSelect(selectedLocation)}
-            className='flex w-full min-w-0 items-center gap-3 overflow-hidden border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
+            className='flex w-full min-w-0 items-center gap-3 overflow-hidden border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:hover:bg-neutral-950'
           >
-            <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-              <Check className='h-5 w-5 text-red-600' />
+            <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
+              <Check className='h-5 w-5 text-red-600 dark:text-red-400' />
             </div>
             <div className='min-w-0 flex-1 overflow-hidden'>
-              <div className='truncate font-medium text-gray-900'>
+              <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
                 {selectedLocation.formatted || selectedLocation.name || selectedLocation.city}
               </div>
-              <div className='truncate text-sm text-gray-500'>Selected address</div>
+              <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                Selected address
+              </div>
             </div>
           </button>
         )}
@@ -144,20 +146,20 @@ export default function LocationSheet({
           <button
             onClick={handleCurrentLocation}
             disabled={isGettingCurrentLocation}
-            className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
+            className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-800 dark:hover:bg-neutral-950'
           >
-            <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100'>
+            <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60'>
               {isGettingCurrentLocation ? (
-                <Loader2 className='h-5 w-5 animate-spin text-blue-600' />
+                <Loader2 className='h-5 w-5 animate-spin text-blue-600 dark:text-blue-400' />
               ) : (
-                <MapPin className='h-5 w-5 text-blue-600' />
+                <MapPin className='h-5 w-5 text-blue-600 dark:text-blue-400' />
               )}
             </div>
             <div className='min-w-0 flex-1'>
-              <div className='truncate font-medium text-gray-900'>
+              <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
                 {isGettingCurrentLocation ? 'Getting location...' : 'Use current location'}
               </div>
-              <div className='truncate text-sm text-gray-500'>
+              <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
                 {error || "We'll use your current GPS location"}
               </div>
             </div>
@@ -167,8 +169,8 @@ export default function LocationSheet({
         {/* Loading State */}
         {(isLoading || isSelectingPlace) && (
           <div className='flex items-center justify-center gap-2 py-4'>
-            <Loader2 className='h-5 w-5 animate-spin text-gray-400' />
-            <span className='text-sm text-gray-500'>
+            <Loader2 className='h-5 w-5 animate-spin text-gray-400 dark:text-neutral-500' />
+            <span className='text-sm text-gray-500 dark:text-neutral-400'>
               {isSelectingPlace ? 'Loading place details...' : 'Searching...'}
             </span>
           </div>
@@ -183,14 +185,18 @@ export default function LocationSheet({
                 key={prediction.placeId}
                 onClick={() => handlePlaceSelect(prediction.placeId)}
                 disabled={isSelectingPlace}
-                className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60'
+                className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60 dark:border-neutral-800 dark:hover:bg-neutral-950'
               >
-                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100'>
-                  <MapPin className='h-5 w-5 text-gray-500' />
+                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                  <MapPin className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
                 </div>
                 <div className='min-w-0 flex-1'>
-                  <div className='truncate font-medium text-gray-900'>{prediction.mainText}</div>
-                  <div className='truncate text-sm text-gray-500'>{prediction.secondaryText}</div>
+                  <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
+                    {prediction.mainText}
+                  </div>
+                  <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                    {prediction.secondaryText}
+                  </div>
                 </div>
               </button>
             ))}
@@ -199,16 +205,18 @@ export default function LocationSheet({
             {searchQuery.trim() && (
               <button
                 onClick={handleCustomLocation}
-                className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50'
+                className='flex w-full items-center gap-3 border-b border-gray-100 px-4 py-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:hover:bg-neutral-950'
               >
-                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100'>
-                  <Plus className='h-5 w-5 text-red-500' />
+                <div className='flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
+                  <Plus className='h-5 w-5 text-red-500 dark:text-red-400' />
                 </div>
                 <div className='min-w-0 flex-1'>
-                  <div className='truncate font-medium text-gray-900'>
+                  <div className='truncate font-medium text-gray-900 dark:text-neutral-100'>
                     Add &quot;{searchQuery}&quot;
                   </div>
-                  <div className='truncate text-sm text-gray-500'>Use as custom location</div>
+                  <div className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                    Use as custom location
+                  </div>
                 </div>
               </button>
             )}
@@ -216,7 +224,7 @@ export default function LocationSheet({
         ) : !searchQuery && isScriptLoaded ? (
           /* Empty state - prompt to search */
           <div className='px-4 py-6 text-center'>
-            <p className='text-sm text-gray-500'>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
               Type to search for places or add a custom location
             </p>
           </div>

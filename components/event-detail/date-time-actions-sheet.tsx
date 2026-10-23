@@ -31,7 +31,9 @@ export function DateTimeActionsSheet({
   return (
     <MasterScrollableSheet title='Date & Time' open={open} onOpenChange={onOpenChange}>
       <div className='px-4 pb-6'>
-        <p className='mb-5 whitespace-pre-line text-sm text-gray-600'>{dateTimeText}</p>
+        <p className='mb-5 whitespace-pre-line text-sm text-gray-600 dark:text-neutral-400'>
+          {dateTimeText}
+        </p>
 
         <div className='space-y-3'>
           <Button
@@ -55,7 +57,7 @@ export function DateTimeActionsSheet({
           <Button
             type='button'
             variant='outline'
-            className='mt-2 h-14 w-full text-base font-medium text-gray-600'
+            className='mt-2 h-14 w-full text-base font-medium text-gray-600 dark:text-neutral-400'
             onClick={() => onOpenChange(false)}
           >
             Cancel

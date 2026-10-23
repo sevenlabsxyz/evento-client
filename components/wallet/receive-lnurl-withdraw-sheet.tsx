@@ -304,12 +304,12 @@ export function ReceiveLnurlWithdrawSheet({
             <div className='flex flex-col items-center justify-center space-y-6 py-10 text-center'>
               {/* Success Icon with Spring Animation */}
               <motion.div
-                className='rounded-full bg-green-100 p-6'
+                className='rounded-full bg-green-100 p-6 dark:bg-green-950/60'
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
               >
-                <CheckCircle2 className='h-16 w-16 text-green-600' />
+                <CheckCircle2 className='h-16 w-16 text-green-600 dark:text-green-400' />
               </motion.div>
 
               {/* Title with Fade-in Slide-up */}
@@ -319,7 +319,9 @@ export function ReceiveLnurlWithdrawSheet({
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
               >
-                <h3 className='text-2xl font-bold text-gray-900'>Bitcoin received</h3>
+                <h3 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                  Bitcoin received
+                </h3>
                 <p className='text-sm text-muted-foreground'>
                   Your sats arrived in your Evento wallet.
                 </p>
@@ -328,15 +330,15 @@ export function ReceiveLnurlWithdrawSheet({
               {/* Amount Card with Fade-in Slide-up */}
               {amountUSD !== null && (
                 <motion.div
-                  className='rounded-xl bg-gray-50 px-6 py-4'
+                  className='rounded-xl bg-gray-50 px-6 py-4 dark:bg-neutral-950'
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
                 >
-                  <p className='text-center text-3xl font-bold text-gray-900'>
+                  <p className='text-center text-3xl font-bold text-gray-900 dark:text-neutral-100'>
                     ${amountUSD.toFixed(2)}
                   </p>
-                  <p className='text-center text-sm text-gray-600'>
+                  <p className='text-center text-sm text-gray-600 dark:text-neutral-400'>
                     {amountSats?.toLocaleString()} sats
                   </p>
                 </motion.div>
@@ -345,11 +347,11 @@ export function ReceiveLnurlWithdrawSheet({
           ) : (
             <>
               <div className='space-y-3'>
-                <div className='rounded-2xl bg-white p-4'>
+                <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
                   <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                     Description
                   </p>
-                  <p className='text-sm font-medium text-gray-900'>
+                  <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
                     {withdrawRequest?.defaultDescription || 'Receive funds'}
                   </p>
                 </div>
@@ -357,29 +359,29 @@ export function ReceiveLnurlWithdrawSheet({
                 {constraints && (
                   <>
                     {constraints.isFixedAmount ? (
-                      <div className='rounded-2xl bg-white p-4'>
+                      <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
                         <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                           Amount
                         </p>
-                        <p className='text-2xl font-semibold text-gray-900'>
+                        <p className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
                           {constraints.minSats.toLocaleString()} sats
                         </p>
                       </div>
                     ) : (
                       <div className='grid grid-cols-2 gap-3'>
-                        <div className='rounded-2xl bg-white p-4'>
+                        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                             Minimum
                           </p>
-                          <p className='text-lg font-semibold text-gray-900'>
+                          <p className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
                             {constraints.minSats.toLocaleString()} sats
                           </p>
                         </div>
-                        <div className='rounded-2xl bg-white p-4'>
+                        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                             Maximum
                           </p>
-                          <p className='text-lg font-semibold text-gray-900'>
+                          <p className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
                             {constraints.maxSats.toLocaleString()} sats
                           </p>
                         </div>
@@ -392,8 +394,8 @@ export function ReceiveLnurlWithdrawSheet({
               {step === 'confirm' && amountSats && (
                 <div className='space-y-4'>
                   {/* Amount Card */}
-                  <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center'>
-                    <p className='text-3xl font-bold text-gray-900'>
+                  <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-neutral-800 dark:bg-neutral-900'>
+                    <p className='text-3xl font-bold text-gray-900 dark:text-neutral-100'>
                       {amountSats.toLocaleString()} sats
                     </p>
                     {amountUSD !== null && (
@@ -403,7 +405,7 @@ export function ReceiveLnurlWithdrawSheet({
 
                   {/* Description */}
                   {withdrawRequest?.defaultDescription && (
-                    <p className='text-center text-sm text-gray-700'>
+                    <p className='text-center text-sm text-gray-700 dark:text-neutral-300'>
                       {withdrawRequest.defaultDescription}
                     </p>
                   )}

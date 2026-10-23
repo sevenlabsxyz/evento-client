@@ -35,7 +35,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
 
   return (
     <>
-      <div className='flex w-full flex-wrap justify-center gap-2 rounded-3xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200'>
+      <div className='flex w-full flex-wrap justify-center gap-2 rounded-3xl border border-gray-200 bg-gray-50 p-2.5 transition-all duration-200 dark:border-neutral-800 dark:bg-neutral-950'>
         {showQRCode && username && (
           <Button
             size='icon'
@@ -43,7 +43,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             onClick={() => setActiveSheet('qr')}
             className='h-12 w-12 rounded-full'
           >
-            <QrCode className='h-6 w-6 text-gray-600' />
+            <QrCode className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
           </Button>
         )}
 
@@ -54,7 +54,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             onClick={() => setActiveSheet('website')}
             className='h-12 w-12 rounded-full'
           >
-            <Globe className='h-6 w-6 text-gray-600' />
+            <Globe className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
           </Button>
         )}
 
@@ -65,7 +65,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             onClick={() => setActiveSheet('instagram')}
             className='h-12 w-12 rounded-full'
           >
-            <Instagram className='h-6 w-6 text-pink-500' />
+            <Instagram className='h-6 w-6 text-pink-500 dark:text-pink-400' />
           </Button>
         )}
 

@@ -155,12 +155,12 @@ export default function ContributionsManagementPage() {
   // Conditional returns MUST come after all hooks
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='space-y-6 p-4'>
           <Skeleton className='h-4 w-3/4' />
 
           {/* Contribution Settings Skeleton */}
-          <div className='rounded-2xl bg-gray-50 p-6'>
+          <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
             <div className='mb-4 flex items-center gap-3'>
               <Skeleton className='h-12 w-12 rounded-xl' />
               <div className='space-y-2'>
@@ -182,7 +182,7 @@ export default function ContributionsManagementPage() {
           </div>
 
           {/* Information Section Skeleton */}
-          <div className='rounded-2xl bg-blue-50 p-4'>
+          <div className='rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40'>
             <Skeleton className='mb-2 h-5 w-32' />
             <Skeleton className='h-4 w-full' />
             <Skeleton className='mt-1 h-4 w-3/4' />
@@ -194,10 +194,12 @@ export default function ContributionsManagementPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to manage doesn&apos;t exist.
           </p>
           <button
@@ -265,7 +267,7 @@ export default function ContributionsManagementPage() {
       key: 'cashApp' as const,
       name: 'Cash App',
       icon: <CashAppSVGIcon className='h-6 w-6' />,
-      iconBg: 'bg-green-100',
+      iconBg: 'bg-green-100 dark:bg-green-950/60',
       iconColor: '',
       placeholder: '$username',
       hint: 'Enter as $username',
@@ -274,7 +276,7 @@ export default function ContributionsManagementPage() {
       key: 'venmo' as const,
       name: 'Venmo',
       icon: <VenmoSVGIcon className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: '',
       placeholder: '@username',
       hint: 'Enter as @username',
@@ -283,7 +285,7 @@ export default function ContributionsManagementPage() {
       key: 'paypal' as const,
       name: 'PayPal',
       icon: <PayPalSVGIcon className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
       iconColor: '',
       placeholder: 'username or email',
       hint: 'Username or email address',
@@ -295,29 +297,33 @@ export default function ContributionsManagementPage() {
   );
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* TopBar handles header */}
       {/* Content */}
       <div className='space-y-6 p-4'>
-        <div className='text-sm text-gray-500'>
+        <div className='text-sm text-gray-500 dark:text-neutral-400'>
           Set up payment methods and suggested contribution amounts for your event.
         </div>
 
         {/* Suggested Amount Section */}
-        <div className='rounded-2xl bg-gray-50 p-6'>
+        <div className='rounded-2xl bg-gray-50 p-6 dark:bg-neutral-950'>
           <div className='mb-4 flex items-center gap-3'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-green-100'>
-              <DollarSign className='h-5 w-5 text-green-600' />
+            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 dark:bg-green-950/60'>
+              <DollarSign className='h-5 w-5 text-green-600 dark:text-green-400' />
             </div>
             <div>
-              <h3 className='font-semibold text-gray-900'>Suggested Amount</h3>
-              <p className='text-sm text-gray-600'>Guests can choose their own amount</p>
+              <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                Suggested Amount
+              </h3>
+              <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                Guests can choose their own amount
+              </p>
             </div>
           </div>
 
           <div className='space-y-4'>
             <div className='flex items-center gap-3'>
-              <div className='rounded-lg bg-gray-100 px-3 py-2 font-medium text-gray-700'>
+              <div className='rounded-lg bg-gray-100 px-3 py-2 font-medium text-gray-700 dark:bg-neutral-800 dark:text-neutral-300'>
                 $ USD
               </div>
               <input
@@ -327,10 +333,10 @@ export default function ContributionsManagementPage() {
                 placeholder='0.00'
                 min='0'
                 step='0.01'
-                className='w-24 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500'
+                className='w-24 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700'
               />
             </div>
-            <p className='text-xs text-gray-500'>
+            <p className='text-xs text-gray-500 dark:text-neutral-400'>
               This is a suggested amount. Guests can contribute any amount they choose.
             </p>
           </div>
@@ -338,12 +344,17 @@ export default function ContributionsManagementPage() {
 
         {/* Payment Methods Section */}
         <div className='space-y-4'>
-          <h3 className='text-lg font-semibold text-gray-900'>Payment Methods</h3>
+          <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Payment Methods
+          </h3>
 
           {paymentMethods.map((method) => {
             const paymentData = contributions.paymentMethods[method.key];
             return (
-              <div key={method.key} className='rounded-2xl border border-gray-200 bg-white p-4'>
+              <div
+                key={method.key}
+                className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'
+              >
                 <div className='mb-3 flex items-center gap-3'>
                   <div
                     className={`h-10 w-10 ${method.iconBg} flex items-center justify-center rounded-xl`}
@@ -351,17 +362,19 @@ export default function ContributionsManagementPage() {
                     {method.icon}
                   </div>
                   <div className='flex-1'>
-                    <h4 className='font-medium text-gray-900'>{method.name}</h4>
-                    <p className='text-xs text-gray-500'>{method.hint}</p>
+                    <h4 className='font-medium text-gray-900 dark:text-neutral-100'>
+                      {method.name}
+                    </h4>
+                    <p className='text-xs text-gray-500 dark:text-neutral-400'>{method.hint}</p>
                   </div>
                   <button
                     onClick={() => handlePaymentMethodToggle(method.key)}
                     className={`h-6 w-10 rounded-full transition-colors ${
-                      paymentData?.enabled ? 'bg-green-500' : 'bg-gray-300'
+                      paymentData?.enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-neutral-600'
                     }`}
                   >
                     <div
-                      className={`h-4 w-4 rounded-full bg-white transition-transform ${
+                      className={`h-4 w-4 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
                         paymentData?.enabled ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
@@ -374,7 +387,7 @@ export default function ContributionsManagementPage() {
                     value={paymentData.value}
                     onChange={(e) => handlePaymentMethodValue(method.key, e.target.value)}
                     placeholder={method.placeholder}
-                    className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500'
+                    className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700'
                   />
                 )}
               </div>
@@ -383,9 +396,11 @@ export default function ContributionsManagementPage() {
         </div>
 
         {/* Information Section */}
-        <div className='rounded-2xl bg-blue-50 p-4'>
-          <h4 className='mb-2 font-medium text-blue-900'>How Contributions Work</h4>
-          <p className='text-sm text-blue-700'>
+        <div className='rounded-2xl bg-blue-50 p-4 dark:bg-blue-950/40'>
+          <h4 className='mb-2 font-medium text-blue-900 dark:text-blue-400'>
+            How Contributions Work
+          </h4>
+          <p className='text-sm text-blue-700 dark:text-blue-400'>
             Payment methods you enable will appear as buttons on your event page. When guests tap
             them, the respective app will open on their phone to complete the contribution.
           </p>

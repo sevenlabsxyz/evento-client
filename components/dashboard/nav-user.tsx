@@ -56,7 +56,7 @@ export function NavUser() {
               >
                 <Avatar className='h-8 w-8 rounded-full'>
                   <AvatarImage src={user?.image} alt={user?.name || 'User'} />
-                  <AvatarFallback className='rounded-full bg-gray-100'>
+                  <AvatarFallback className='rounded-full bg-gray-100 dark:bg-neutral-800'>
                     {user?.name?.charAt(0)?.toUpperCase() || 'E'}
                   </AvatarFallback>
                 </Avatar>
@@ -80,7 +80,7 @@ export function NavUser() {
                   <Link href='/e/profile' className='flex items-center gap-2 px-1 py-1.5'>
                     <Avatar className='h-8 w-8 rounded-full'>
                       <AvatarImage src={user?.image} alt={user?.name || 'User'} />
-                      <AvatarFallback className='rounded-full bg-gray-100'>
+                      <AvatarFallback className='rounded-full bg-gray-100 dark:bg-neutral-800'>
                         {user?.name?.charAt(0)?.toUpperCase() || 'E'}
                       </AvatarFallback>
                     </Avatar>

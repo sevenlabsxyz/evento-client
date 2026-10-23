@@ -15,7 +15,7 @@ const EmojiPicker = React.forwardRef<HTMLDivElement, EmojiPickerProps>(
     <EmojiPickerPrimitive.Root
       ref={ref}
       className={cn(
-        'isolate flex h-[368px] w-fit flex-col rounded-lg border border-gray-200 bg-white dark:bg-neutral-900',
+        'isolate flex h-[368px] w-fit flex-col rounded-lg border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900',
         className
       )}
       onEmojiSelect={onEmojiSelect}
@@ -93,7 +93,7 @@ const EmojiPickerFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-between border-t border-gray-200 px-3 py-2 dark:border-neutral-700',
+        'flex items-center justify-between border-t border-gray-200 px-3 py-2 dark:border-neutral-700 dark:border-neutral-800',
         className
       )}
       {...props}

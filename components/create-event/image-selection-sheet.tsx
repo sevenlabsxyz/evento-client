@@ -47,14 +47,16 @@ export default function ImageSelectionSheet({
   // Custom header with title and subtitle
   const headerContent = (
     <div className='flex flex-col'>
-      <h2 className='text-xl font-semibold text-gray-900'>Add Cover Image</h2>
-      <p className='text-sm text-gray-500'>Choose from our curated collection</p>
+      <h2 className='text-xl font-semibold text-gray-900 dark:text-neutral-100'>Add Cover Image</h2>
+      <p className='text-sm text-gray-500 dark:text-neutral-400'>
+        Choose from our curated collection
+      </p>
     </div>
   );
 
   // Tab navigation component
   const tabNavigation = (
-    <div className='border-b border-gray-200 px-4 pb-3'>
+    <div className='border-b border-gray-200 px-4 pb-3 dark:border-neutral-800'>
       <div className='grid grid-cols-6 gap-2'>
         {coverImageCategories.map((category) => {
           const IconComponent = category.icon;
@@ -64,7 +66,9 @@ export default function ImageSelectionSheet({
               key={category.id}
               onClick={() => setActiveTab(category.id)}
               className={`relative flex flex-col items-center gap-2 px-1 py-2 transition-colors ${
-                isActive ? 'text-gray-900' : 'text-gray-400'
+                isActive
+                  ? 'text-gray-900 dark:text-neutral-100'
+                  : 'text-gray-400 dark:text-neutral-500'
               }`}
             >
               <IconComponent className='h-6 w-6' />

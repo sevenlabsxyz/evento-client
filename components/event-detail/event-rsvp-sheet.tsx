@@ -302,8 +302,8 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
         label: currentStatus === 'no' ? 'Not going' : 'No',
         classes:
           currentStatus === 'no'
-            ? 'bg-gray-400 text-white hover:bg-gray-400'
-            : 'bg-gray-200 text-gray-800 hover:bg-gray-300',
+            ? 'bg-gray-400 dark:bg-neutral-500 text-white hover:bg-gray-400 dark:hover:bg-neutral-500'
+            : 'bg-gray-200 dark:bg-neutral-700 text-gray-800 dark:text-neutral-200 hover:bg-gray-300 dark:hover:bg-neutral-600',
       },
     ],
     [currentStatus]
@@ -348,7 +348,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             {registrationRequired &&
               hasExistingRegistration &&
               existingRegistration?.approval_status === 'approved' && (
-                <div className='mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700'>
+                <div className='mb-4 rounded-lg bg-green-50 p-3 text-sm text-green-700 dark:bg-green-950/40 dark:text-green-400'>
                   Your registration has been approved. Update your attendance below.
                 </div>
               )}
@@ -379,11 +379,13 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             </button>
 
             {!authResolved && !needsRegistration && (
-              <p className='mt-4 text-center text-sm text-gray-500'>Checking session...</p>
+              <p className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
+                Checking session...
+              </p>
             )}
 
             {registrationRequired && !hasExistingRegistration && (
-              <p className='mt-4 text-center text-sm text-gray-500'>
+              <p className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
                 This event requires registration. Clicking &quot;Yes&quot; will open the
                 registration form.
               </p>
@@ -393,7 +395,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               maxCapacity !== null &&
               spotsRemaining !== null &&
               (!isEventFull || isYesRsvp) && (
-                <p className='text-center text-sm text-gray-500'>
+                <p className='text-center text-sm text-gray-500 dark:text-neutral-400'>
                   {isEventFull && isYesRsvp
                     ? 'No more spots left'
                     : `${spotsRemaining} ${spotsRemaining === 1 ? 'spot' : 'spots'} left`}
@@ -409,18 +411,22 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
               rsvpPhase === 'loading' ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
-            <p className='mt-3 text-sm font-medium text-gray-500'>Updating RSVP...</p>
+            <Loader2 className='h-8 w-8 animate-spin text-gray-500 dark:text-neutral-400' />
+            <p className='mt-3 text-sm font-medium text-gray-500 dark:text-neutral-400'>
+              Updating RSVP...
+            </p>
           </div>
         )}
 
         {/* Success state - fades in after loading */}
         {rsvpPhase === 'success' && (
           <div className='duration-400 absolute inset-0 flex flex-col items-center justify-center animate-in fade-in'>
-            <div className='flex h-14 w-14 items-center justify-center rounded-full bg-green-100'>
-              <Check className='h-7 w-7 text-green-600' strokeWidth={3} />
+            <div className='flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-950/60'>
+              <Check className='h-7 w-7 text-green-600 dark:text-green-400' strokeWidth={3} />
             </div>
-            <p className='mt-3 text-sm font-medium text-gray-700'>{rsvpStatusLabel}</p>
+            <p className='mt-3 text-sm font-medium text-gray-700 dark:text-neutral-300'>
+              {rsvpStatusLabel}
+            </p>
           </div>
         )}
       </div>
@@ -431,7 +437,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
     if (isLoading && currentView !== 'registration-form') {
       return (
         <div className='flex items-center justify-center py-12'>
-          <Loader2 className='h-8 w-8 animate-spin text-gray-400' />
+          <Loader2 className='h-8 w-8 animate-spin text-gray-400 dark:text-neutral-500' />
         </div>
       );
     }
@@ -477,7 +483,7 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
             <button
               type='button'
               onClick={onClose}
-              className='mt-4 w-full rounded-xl bg-gray-200 px-4 py-3 text-center font-medium text-gray-800 hover:bg-gray-300'
+              className='mt-4 w-full rounded-xl bg-gray-200 px-4 py-3 text-center font-medium text-gray-800 hover:bg-gray-300 dark:bg-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-600'
             >
               Close
             </button>
@@ -510,18 +516,20 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
                 type='button'
                 onClick={handleRegistrationHeaderBack}
                 disabled={isRegistrationStepBusy}
-                className='flex-shrink-0 rounded-full p-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50'
+                className='flex-shrink-0 rounded-full p-2 hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-neutral-800'
               >
                 <ArrowLeft className='h-5 w-5' />
               </button>
               <div className='min-w-0'>
-                <h2 className='truncate text-lg font-semibold text-gray-900'>
+                <h2 className='truncate text-lg font-semibold text-gray-900 dark:text-neutral-100'>
                   {registrationStep === 'otp' ? 'Verify your email' : 'Register for Event'}
                 </h2>
                 {registrationStep === 'otp' && (
-                  <p className='truncate text-sm text-gray-500'>
+                  <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
                     Code sent to{' '}
-                    <span className='font-medium text-gray-700'>{registrationEmail}</span>
+                    <span className='font-medium text-gray-700 dark:text-neutral-300'>
+                      {registrationEmail}
+                    </span>
                   </p>
                 )}
               </div>

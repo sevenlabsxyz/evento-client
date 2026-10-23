@@ -121,11 +121,11 @@ export default function EventRemindersPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-md'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
         <div className='space-y-4 p-4'>
           <Skeleton className='h-20 w-full rounded-2xl' />
           {Array.from({ length: 6 }).map((_, index) => (
-            <div key={index} className='rounded-2xl bg-gray-50 p-4'>
+            <div key={index} className='rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
               <div className='flex items-center justify-between'>
                 <Skeleton className='h-4 w-36' />
                 <Skeleton className='h-6 w-11 rounded-full' />
@@ -143,10 +143,12 @@ export default function EventRemindersPage() {
 
   if (error) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Reminders unavailable</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Reminders unavailable
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             We couldn&apos;t load reminder settings for this event.
           </p>
           <button
@@ -164,11 +166,13 @@ export default function EventRemindersPage() {
     return (
       <div
         data-testid='reminders-unavailable'
-        className='flex min-h-screen items-center justify-center bg-gray-50'
+        className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'
       >
         <div className='max-w-sm text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Reminders coming soon</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Reminders coming soon
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             Guest reminders aren&apos;t available for this event yet. Please check back later.
           </p>
           <button
@@ -183,22 +187,24 @@ export default function EventRemindersPage() {
   }
 
   return (
-    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
-      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4'>
-        <div className='rounded-2xl bg-white p-4'>
+    <div className='relative mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
+      <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
+        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
           <div className='mb-3 flex items-start gap-3'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100'>
-              <Bell className='h-5 w-5 text-amber-600' />
+            <div className='flex h-10 w-10 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60'>
+              <Bell className='h-5 w-5 text-amber-600 dark:text-amber-400' />
             </div>
             <div>
-              <h2 className='text-base font-semibold text-gray-900'>Guest reminders</h2>
-              <p className='mt-1 text-sm text-gray-500'>
+              <h2 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                Guest reminders
+              </h2>
+              <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                 Automatically email guests who RSVP&apos;d Yes before the event starts. Choose up to{' '}
                 {MAX_EVENT_REMINDERS} times. Times are relative to the event start.
               </p>
             </div>
           </div>
-          <p className='text-xs text-gray-400'>
+          <p className='text-xs text-gray-400 dark:text-neutral-500'>
             {selectedOffsets.length} of {MAX_EVENT_REMINDERS} reminders selected
           </p>
         </div>
@@ -206,24 +212,28 @@ export default function EventRemindersPage() {
         {selectedOffsets.length === 0 ? (
           <div
             data-testid='reminders-empty-state'
-            className='rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center'
+            className='rounded-2xl border border-dashed border-gray-200 bg-white px-4 py-8 text-center dark:border-neutral-800 dark:bg-neutral-900'
           >
-            <p className='text-sm font-medium text-gray-900'>No reminders scheduled</p>
-            <p className='mt-1 text-sm text-gray-500'>
+            <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+              No reminders scheduled
+            </p>
+            <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
               Guests who RSVP Yes will not receive automatic reminder emails until you turn one on.
             </p>
           </div>
         ) : null}
 
-        <div className='overflow-hidden rounded-2xl bg-white'>
+        <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
           {EVENT_REMINDER_OFFSETS.map((offset, index) => {
             const checked = selectedOffsets.includes(offset);
 
             return (
               <div key={offset}>
-                {index > 0 ? <div className='mx-4 border-t border-gray-100' /> : null}
+                {index > 0 ? (
+                  <div className='mx-4 border-t border-gray-100 dark:border-neutral-800' />
+                ) : null}
                 <div className='flex items-center justify-between p-4'>
-                  <span className='text-sm font-medium text-gray-900'>
+                  <span className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
                     {EVENT_REMINDER_OFFSET_LABELS[offset]}
                   </span>
                   <Switch
@@ -237,10 +247,10 @@ export default function EventRemindersPage() {
           })}
         </div>
 
-        <p className='px-1 text-xs text-gray-400'>{FOURTH_REMINDER_ERROR}.</p>
+        <p className='px-1 text-xs text-gray-400 dark:text-neutral-500'>{FOURTH_REMINDER_ERROR}.</p>
       </div>
 
-      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
+      <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>
         <div className='mx-auto max-w-full'>
           <SubmitButton
             onClick={handleSave}

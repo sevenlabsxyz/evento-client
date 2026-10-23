@@ -49,7 +49,12 @@ export function BadgeItem({
         className
       )}
     >
-      <div className={cn('relative overflow-hidden rounded-full bg-gray-100', styles.container)}>
+      <div
+        className={cn(
+          'relative overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800',
+          styles.container
+        )}
+      >
         {badge.image_url ? (
           <Image
             src={badge.image_url}
@@ -66,7 +71,9 @@ export function BadgeItem({
       </div>
       {showDescription && (
         <div className='max-w-[80px]'>
-          <p className='truncate text-xs font-medium text-gray-900'>{badge.name}</p>
+          <p className='truncate text-xs font-medium text-gray-900 dark:text-neutral-100'>
+            {badge.name}
+          </p>
         </div>
       )}
     </button>

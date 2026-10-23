@@ -44,7 +44,9 @@ export default function DetachedMenuSheet({
               {/* Title */}
               {title && (
                 <div className='mb-6 text-center'>
-                  <h2 className='text-lg font-semibold text-gray-900'>{title}</h2>
+                  <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+                    {title}
+                  </h2>
                 </div>
               )}
 
@@ -58,7 +60,7 @@ export default function DetachedMenuSheet({
                       onClick={option.onClick}
                       variant={option.variant || 'secondary'}
                       disabled={option.disabled}
-                      className='flex w-full items-center gap-4 rounded-full border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50'
+                      className='flex w-full items-center gap-4 rounded-full border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:hover:bg-neutral-950'
                     >
                       <IconComponent className='h-5 w-5' />
                       <span className='font-medium'>{option.label}</span>

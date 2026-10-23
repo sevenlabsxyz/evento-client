@@ -149,46 +149,46 @@ export function MyEventsSection({
               {Array.from({ length: 6 }, (_, idx) => `ske-${idx}`).map((skeletonKey) => (
                 <div
                   key={skeletonKey}
-                  className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4'
+                  className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4 dark:bg-neutral-950'
                 >
                   {/* Left content skeleton */}
                   <div className='flex min-w-0 flex-1 flex-col gap-2'>
-                    <div className='h-4 w-32 rounded bg-gray-200' />
-                    <div className='h-5 w-3/4 rounded bg-gray-200' />
+                    <div className='h-4 w-32 rounded bg-gray-200 dark:bg-neutral-700' />
+                    <div className='h-5 w-3/4 rounded bg-gray-200 dark:bg-neutral-700' />
                     <div className='flex items-center gap-2'>
-                      <div className='h-5 w-5 rounded-full bg-gray-200' />
-                      <div className='h-3 w-24 rounded bg-gray-200' />
+                      <div className='h-5 w-5 rounded-full bg-gray-200 dark:bg-neutral-700' />
+                      <div className='h-3 w-24 rounded bg-gray-200 dark:bg-neutral-700' />
                     </div>
                     <div className='flex items-center gap-1'>
-                      <div className='h-3.5 w-3.5 rounded bg-gray-200' />
-                      <div className='h-3 w-32 rounded bg-gray-200' />
+                      <div className='h-3.5 w-3.5 rounded bg-gray-200 dark:bg-neutral-700' />
+                      <div className='h-3 w-32 rounded bg-gray-200 dark:bg-neutral-700' />
                     </div>
                   </div>
                   {/* Right image skeleton */}
-                  <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200' />
+                  <div className='h-24 w-24 shrink-0 rounded-xl bg-gray-200 dark:bg-neutral-700' />
                 </div>
               ))}
             </div>
           ) : hasError ? (
-            <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900'>
+            <div className='rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
               <div className='mb-2 flex items-center gap-2 text-sm font-semibold'>
                 <AlertTriangle className='h-4 w-4' />
                 Could not load upcoming events
               </div>
-              <p className='text-sm text-amber-800'>{upcomingError?.message}</p>
+              <p className='text-sm text-amber-800 dark:text-amber-400'>{upcomingError?.message}</p>
             </div>
           ) : events.length === 0 ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
-              <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-                <Calendar className='h-8 w-8 text-gray-400' />
+              <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
+                <Calendar className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
-              <h3 className='mb-2 text-base font-semibold text-gray-900'>
+              <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
                 {activeTab === 'upcoming' && 'No upcoming events'}
                 {activeTab === 'hosting' && "No events you're hosting"}
                 {activeTab === 'drafts' && 'No draft events'}
                 {activeTab === 'past' && 'No past events'}
               </h3>
-              <p className='mb-4 text-sm text-gray-500'>
+              <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
                 {activeTab === 'upcoming' && 'Create your first event or RSVP to others'}
                 {activeTab === 'hosting' && 'Create an event to get started'}
                 {activeTab === 'drafts' && 'Your draft events will appear here'}
@@ -201,7 +201,7 @@ export function MyEventsSection({
               <div className='flex flex-col gap-4'>
                 {groupedEvents.map((group) => (
                   <div key={group.date} className='space-y-2'>
-                    <h3 className='text-sm font-medium text-gray-500'>
+                    <h3 className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
                       {formatDateHeader(group.date)}
                     </h3>
                     <div className='flex flex-col gap-2'>
@@ -215,7 +215,7 @@ export function MyEventsSection({
               <Button
                 onClick={handleViewAll}
                 variant='ghost'
-                className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100'
+                className='mt-3 w-full border border-gray-200 bg-gray-50 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
               >
                 View All Events
                 {activeTab === 'upcoming' && (upcomingHasMore || upcomingTotalCount)

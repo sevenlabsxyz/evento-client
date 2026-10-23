@@ -32,7 +32,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
   const eventTitle = event?.title || 'Event details unavailable';
 
   return (
-    <div className='rounded-2xl border border-gray-200 bg-white p-4'>
+    <div className='rounded-2xl border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
       <div className='mb-3 flex items-center gap-2'>
         {inviter && (
           <UserAvatar
@@ -46,12 +46,14 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
           />
         )}
         <div className='min-w-0 flex-1'>
-          <span className='text-sm text-gray-600'>
-            <strong className='text-gray-900'>{inviter?.name || `@${inviter?.username}`}</strong>
+          <span className='text-sm text-gray-600 dark:text-neutral-400'>
+            <strong className='text-gray-900 dark:text-neutral-100'>
+              {inviter?.name || `@${inviter?.username}`}
+            </strong>
             {' invited you to cohost'}
           </span>
         </div>
-        <span className='flex-shrink-0 text-xs text-gray-400'>{timeAgo}</span>
+        <span className='flex-shrink-0 text-xs text-gray-400 dark:text-neutral-500'>{timeAgo}</span>
       </div>
 
       <Link href={`/e/${eventId}`} className='block'>
@@ -62,15 +64,23 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
             </div>
           )}
           <div className='min-w-0 flex-1'>
-            <h3 className='truncate font-semibold text-gray-900'>{eventTitle}</h3>
-            {event?.location && <p className='truncate text-sm text-gray-500'>{event.location}</p>}
+            <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
+              {eventTitle}
+            </h3>
+            {event?.location && (
+              <p className='truncate text-sm text-gray-500 dark:text-neutral-400'>
+                {event.location}
+              </p>
+            )}
           </div>
         </div>
       </Link>
 
       {invite.message && (
-        <div className='mt-3 rounded-xl bg-gray-50 p-3'>
-          <p className='text-sm italic text-gray-700'>&quot;{invite.message}&quot;</p>
+        <div className='mt-3 rounded-xl bg-gray-50 p-3 dark:bg-neutral-950'>
+          <p className='text-sm italic text-gray-700 dark:text-neutral-300'>
+            &quot;{invite.message}&quot;
+          </p>
         </div>
       )}
 
@@ -100,7 +110,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
             type='button'
             onClick={() => rejectMutation.mutate(invite.id)}
             disabled={isPending}
-            className='flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50'
+            className='flex flex-1 items-center justify-center gap-2 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
           >
             {rejectMutation.isPending ? (
               <Loader2 className='h-4 w-4 animate-spin' />
@@ -113,14 +123,14 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
       )}
 
       {invite.status === 'accepted' && (
-        <div className='mt-4 flex items-center justify-center gap-2 rounded-xl bg-green-50 py-2.5 text-sm font-medium text-green-700'>
+        <div className='mt-4 flex items-center justify-center gap-2 rounded-xl bg-green-50 py-2.5 text-sm font-medium text-green-700 dark:bg-green-950/40 dark:text-green-400'>
           <Check className='h-4 w-4' />
           Accepted
         </div>
       )}
 
       {invite.status === 'rejected' && (
-        <div className='mt-4 flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-500'>
+        <div className='mt-4 flex items-center justify-center gap-2 rounded-xl bg-gray-100 py-2.5 text-sm font-medium text-gray-500 dark:bg-neutral-800 dark:text-neutral-400'>
           <X className='h-4 w-4' />
           Declined
         </div>

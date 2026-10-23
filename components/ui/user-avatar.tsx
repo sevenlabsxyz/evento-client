@@ -100,7 +100,7 @@ export function UserAvatar({
       className={cn(
         !height && !width ? sizeConfig.avatar : '',
         sizeConfig.border,
-        'border-gray-200 bg-white'
+        'border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
       )}
       style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
     >
@@ -113,7 +113,7 @@ export function UserAvatar({
           }
         }}
       />
-      <AvatarFallback className={cn('bg-white', sizeConfig.textSize)}>
+      <AvatarFallback className={cn('bg-white dark:bg-neutral-900', sizeConfig.textSize)}>
         <img
           src={DEFAULT_AVATAR_IMAGE}
           alt='Default profile'
@@ -140,7 +140,7 @@ export function UserAvatar({
             aria-label='Verification badge'
             onClick={handleVerificationClick}
             className={cn(
-              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
+              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-800',
               sizeConfig.badge,
               sizeConfig.badgePosition,
               'transition-transform hover:scale-105'
@@ -152,7 +152,7 @@ export function UserAvatar({
           <span
             aria-hidden='true'
             className={cn(
-              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600',
+              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-800',
               sizeConfig.badge,
               sizeConfig.badgePosition
             )}

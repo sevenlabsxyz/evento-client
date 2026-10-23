@@ -149,7 +149,7 @@ export function BuySellBitcoinSheet({
   const ExchangeCard = ({ exchange }: { exchange: Exchange }) => {
     return (
       <div
-        className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 hover:bg-gray-100'
+        className='flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-gray-50 p-4 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
         onClick={() => window.open(exchange.link, '_blank')}
       >
         {/* Left: Logo + Content */}
@@ -158,14 +158,14 @@ export function BuySellBitcoinSheet({
             <Image src={exchange.logo} alt={exchange.name} fill className='object-cover' />
           </div>
           <div>
-            <h3 className='font-semibold text-gray-900'>{exchange.name}</h3>
-            <p className='text-sm text-gray-600'>{exchange.description}</p>
+            <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>{exchange.name}</h3>
+            <p className='text-sm text-gray-600 dark:text-neutral-400'>{exchange.description}</p>
           </div>
         </div>
 
         {/* Right: Button */}
         <CircledIconButton
-          className='flex-shrink-0 bg-white'
+          className='flex-shrink-0 bg-white dark:bg-neutral-900'
           icon={ArrowUpRight}
           onClick={() => window.open(exchange.link, '_blank')}
         />
@@ -184,34 +184,36 @@ export function BuySellBitcoinSheet({
                 <SheetWithDetentFull.ScrollContent>
                   {/* Handle */}
                   <div className='my-4 flex items-center'>
-                    <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+                    <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
                   </div>
 
                   {/* Header */}
-                  <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0'>
+                  <div className='flex items-center justify-between border-gray-200 bg-white px-4 py-3 pt-0 dark:border-neutral-800 dark:bg-neutral-900'>
                     <h2 className='text-xl font-semibold'>
                       {cashAppEnabled ? 'Buy Bitcoin' : 'Buy/Sell Bitcoin'}
                     </h2>
                     <div className='flex items-center gap-3'>
                       <WalletBalanceDisplay />
                       <button onClick={() => onOpenChange(false)}>
-                        <X className='h-5 w-5 text-gray-500' />
+                        <X className='h-5 w-5 text-gray-500 dark:text-neutral-400' />
                       </button>
                     </div>
                   </div>
 
                   {/* Content */}
-                  <div className='bg-white px-4 py-6'>
+                  <div className='bg-white px-4 py-6 dark:bg-neutral-900'>
                     {cashAppEnabled ? (
                       <div className='space-y-6'>
-                        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+                        <div className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
                           <div className='flex items-center gap-3'>
                             <div className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-2xl'>
                               <CashAppSVGIcon className='h-12 w-12' />
                             </div>
                             <div>
-                              <h3 className='font-semibold text-gray-900'>Cash App</h3>
-                              <p className='text-sm text-gray-600'>
+                              <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                                Cash App
+                              </h3>
+                              <p className='text-sm text-gray-600 dark:text-neutral-400'>
                                 Buy Bitcoin in Cash App and send it to your Evento wallet.
                               </p>
                             </div>
@@ -219,7 +221,9 @@ export function BuySellBitcoinSheet({
                         </div>
 
                         <div className='space-y-3'>
-                          <h3 className='font-semibold text-gray-900'>Amount</h3>
+                          <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                            Amount
+                          </h3>
                           <div className='grid grid-cols-4 gap-2'>
                             {CASH_APP_USD_PRESETS.map((preset) => (
                               <Button
@@ -234,7 +238,7 @@ export function BuySellBitcoinSheet({
                             ))}
                           </div>
                           <div className='relative'>
-                            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-500'>
+                            <span className='absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 dark:text-neutral-400'>
                               $
                             </span>
                             <Input
@@ -246,7 +250,7 @@ export function BuySellBitcoinSheet({
                               className='h-12 rounded-full pl-8 text-base'
                             />
                           </div>
-                          <p className='text-sm text-gray-600'>
+                          <p className='text-sm text-gray-600 dark:text-neutral-400'>
                             {isConvertingAmount ? (
                               <span className='inline-flex items-center gap-2'>
                                 <Loader2 className='h-4 w-4 animate-spin' />
@@ -291,19 +295,21 @@ export function BuySellBitcoinSheet({
                         {/* Regional Exchanges */}
                         <div className='space-y-3'>
                           <div className='flex items-center gap-2'>
-                            <MapPin className='h-4 w-4 text-gray-500' />
-                            <h3 className='font-semibold text-gray-900'>
+                            <MapPin className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
+                            <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
                               Available in Your Region
                             </h3>
                             {!isDetecting && (
-                              <span className='text-sm text-gray-500'>({countryCode})</span>
+                              <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                                ({countryCode})
+                              </span>
                             )}
                           </div>
 
                           {isDetecting ? (
                             <div className='flex items-center justify-center py-8'>
-                              <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
-                              <span className='ml-2 text-sm text-gray-500'>
+                              <Loader2 className='h-6 w-6 animate-spin text-gray-400 dark:text-neutral-500' />
+                              <span className='ml-2 text-sm text-gray-500 dark:text-neutral-400'>
                                 Detecting your location...
                               </span>
                             </div>
@@ -314,7 +320,7 @@ export function BuySellBitcoinSheet({
                               ))}
                             </div>
                           ) : (
-                            <p className='py-4 text-sm text-gray-500'>
+                            <p className='py-4 text-sm text-gray-500 dark:text-neutral-400'>
                               No regional exchanges available for your location.
                             </p>
                           )}
@@ -322,7 +328,9 @@ export function BuySellBitcoinSheet({
 
                         {/* Global Exchanges */}
                         <div className='space-y-3'>
-                          <h3 className='font-semibold text-gray-900'>Global</h3>
+                          <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                            Global
+                          </h3>
                           <div className='space-y-3'>
                             {GLOBAL_EXCHANGES.map((exchange) => (
                               <ExchangeCard key={exchange.id} exchange={exchange} />

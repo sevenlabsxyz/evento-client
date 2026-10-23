@@ -48,7 +48,7 @@ export default function SectionOne({ editor, onOpenSheet }: SectionOneProps) {
       {showDropdown && (
         <>
           <div className='fixed inset-0 z-40' onClick={() => setShowDropdown(false)} />
-          <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg'>
+          <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg dark:bg-neutral-900'>
             <button
               onClick={setParagraph}
               className={cn(DropdownMenuItemClass, {

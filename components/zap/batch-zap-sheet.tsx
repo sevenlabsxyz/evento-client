@@ -42,7 +42,7 @@ interface BatchZapSheetProps {
 }
 
 const SUMMARY_ROW_CLASS =
-  'flex items-center justify-between gap-4 rounded-2xl bg-gray-50 px-4 py-3';
+  'flex items-center justify-between gap-4 rounded-2xl bg-gray-50 dark:bg-neutral-950 px-4 py-3';
 
 type BatchZapStep = 'setup' | 'comment' | 'review';
 
@@ -302,23 +302,23 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
             <div
               className={`rounded-3xl p-5 ${
                 failedResults.length === 0 && skippedResults.length === 0
-                  ? 'border border-green-200 bg-green-50'
-                  : 'border border-amber-200 bg-amber-50'
+                  ? 'border border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-950/40'
+                  : 'border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40'
               }`}
             >
               <div className='flex items-start gap-3'>
                 {failedResults.length === 0 && skippedResults.length === 0 ? (
-                  <CheckCircle2 className='mt-0.5 h-5 w-5 flex-shrink-0 text-green-600' />
+                  <CheckCircle2 className='mt-0.5 h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400' />
                 ) : (
-                  <TriangleAlert className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600' />
+                  <TriangleAlert className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 dark:text-amber-400' />
                 )}
                 <div>
-                  <p className='font-semibold text-gray-900'>
+                  <p className='font-semibold text-gray-900 dark:text-neutral-100'>
                     {failedResults.length === 0 && skippedResults.length === 0
                       ? 'All payments were sent'
                       : 'Batch finished with some issues'}
                   </p>
-                  <p className='mt-1 text-sm text-gray-700'>
+                  <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
                     {sentResults.length} payment{sentResults.length === 1 ? '' : 's'} sent for{' '}
                     {totalSentSats.toLocaleString()} sats.
                   </p>
@@ -330,33 +330,37 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
               <div
                 className={`rounded-3xl p-5 ${
                   walletNotifyError
-                    ? 'border border-red-200 bg-red-50'
-                    : 'border border-blue-200 bg-blue-50'
+                    ? 'border border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-950/40'
+                    : 'border border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950/40'
                 }`}
               >
                 <div className='flex items-start gap-3'>
                   {walletNotifyError ? (
-                    <XCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600' />
+                    <XCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
                   ) : (
-                    <Info className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600' />
+                    <Info className='mt-0.5 h-5 w-5 flex-shrink-0 text-blue-600 dark:text-blue-400' />
                   )}
                   <div>
-                    <p className='font-semibold text-gray-900'>Wallet reminder emails</p>
+                    <p className='font-semibold text-gray-900 dark:text-neutral-100'>
+                      Wallet reminder emails
+                    </p>
                     {walletNotifyError ? (
-                      <p className='mt-1 text-sm text-red-700'>{walletNotifyError}</p>
+                      <p className='mt-1 text-sm text-red-700 dark:text-red-400'>
+                        {walletNotifyError}
+                      </p>
                     ) : walletNotifySummary ? (
-                      <p className='mt-1 text-sm text-gray-700'>
+                      <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
                         {walletNotifySummary.sentCount} guest
                         {walletNotifySummary.sentCount === 1 ? '' : 's'} emailed,{' '}
                         {walletNotifySummary.alreadyNotifiedCount} already notified,{' '}
                         {walletNotifySummary.errorCount} could not be notified.
                       </p>
                     ) : noWalletRecipientUsernames.length === 0 ? (
-                      <p className='mt-1 text-sm text-gray-700'>
+                      <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
                         We could not identify any usernames for the guests without wallets.
                       </p>
                     ) : (
-                      <p className='mt-1 text-sm text-gray-700'>
+                      <p className='mt-1 text-sm text-gray-700 dark:text-neutral-300'>
                         Wallet reminder email results are not available yet.
                       </p>
                     )}
@@ -366,33 +370,45 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
             )}
 
             <div className='grid gap-3 sm:grid-cols-3'>
-              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
-                <div className='text-2xl font-semibold text-gray-900'>{sentResults.length}</div>
-                <div className='text-sm text-gray-500'>Sent</div>
+              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center dark:bg-neutral-950'>
+                <div className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
+                  {sentResults.length}
+                </div>
+                <div className='text-sm text-gray-500 dark:text-neutral-400'>Sent</div>
               </div>
-              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
-                <div className='text-2xl font-semibold text-gray-900'>{failedResults.length}</div>
-                <div className='text-sm text-gray-500'>Failed</div>
+              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center dark:bg-neutral-950'>
+                <div className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
+                  {failedResults.length}
+                </div>
+                <div className='text-sm text-gray-500 dark:text-neutral-400'>Failed</div>
               </div>
-              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center'>
-                <div className='text-2xl font-semibold text-gray-900'>{skippedResults.length}</div>
-                <div className='text-sm text-gray-500'>Skipped</div>
+              <div className='rounded-2xl bg-gray-50 px-4 py-4 text-center dark:bg-neutral-950'>
+                <div className='text-2xl font-semibold text-gray-900 dark:text-neutral-100'>
+                  {skippedResults.length}
+                </div>
+                <div className='text-sm text-gray-500 dark:text-neutral-400'>Skipped</div>
               </div>
             </div>
 
             {(failedResults.length > 0 || skippedResults.length > 0) && (
               <div className='space-y-3'>
-                <h3 className='text-base font-semibold text-gray-900'>Needs attention</h3>
+                <h3 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                  Needs attention
+                </h3>
                 {failedResults.map((result) => (
                   <div
                     key={`failed-${result.recipient.userId}`}
-                    className='rounded-2xl border border-red-100 bg-red-50 px-4 py-3'
+                    className='rounded-2xl border border-red-100 bg-red-50 px-4 py-3 dark:border-red-900 dark:bg-red-950/40'
                   >
                     <div className='flex items-start gap-3'>
-                      <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500' />
+                      <XCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-500 dark:text-red-400' />
                       <div>
-                        <p className='font-medium text-gray-900'>{result.recipient.name}</p>
-                        <p className='text-sm text-red-700'>{result.error || 'Payment failed'}</p>
+                        <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                          {result.recipient.name}
+                        </p>
+                        <p className='text-sm text-red-700 dark:text-red-400'>
+                          {result.error || 'Payment failed'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -400,13 +416,17 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 {skippedResults.map((result) => (
                   <div
                     key={`skipped-${result.recipient.userId}`}
-                    className='rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3'
+                    className='rounded-2xl border border-gray-200 bg-gray-50 px-4 py-3 dark:border-neutral-800 dark:bg-neutral-950'
                   >
                     <div className='flex items-start gap-3'>
-                      <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500' />
+                      <Info className='mt-0.5 h-4 w-4 flex-shrink-0 text-gray-500 dark:text-neutral-400' />
                       <div>
-                        <p className='font-medium text-gray-900'>{result.recipient.name}</p>
-                        <p className='text-sm text-gray-600'>{result.error || 'Payment skipped'}</p>
+                        <p className='font-medium text-gray-900 dark:text-neutral-100'>
+                          {result.recipient.name}
+                        </p>
+                        <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                          {result.error || 'Payment skipped'}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -425,20 +445,24 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 transition={{ duration: 0.18, ease: 'easeOut' }}
                 className='space-y-6'
               >
-                <div className='rounded-3xl border border-gray-200 bg-white p-5'>
+                <div className='rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900'>
                   <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <p className='text-base font-semibold text-gray-900'>Amount</p>
-                      <p className='text-sm text-gray-500'>Choose how to calculate the batch.</p>
+                      <p className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                        Amount
+                      </p>
+                      <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                        Choose how to calculate the batch.
+                      </p>
                     </div>
                     <div className='text-right'>
-                      <div className='text-sm font-semibold text-gray-900'>
+                      <div className='text-sm font-semibold text-gray-900 dark:text-neutral-100'>
                         {walletState.balance.toLocaleString()} sats
                       </div>
                       {isBalanceUSDLoading ? (
                         <Skeleton className='ml-auto mt-1 h-3 w-16' />
                       ) : (
-                        <div className='text-xs text-gray-500'>
+                        <div className='text-xs text-gray-500 dark:text-neutral-400'>
                           ${availableBalanceUSD.toFixed(2)} available
                         </div>
                       )}
@@ -451,8 +475,8 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                       onClick={() => setAmountMode('per-person')}
                       className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
                         amountMode === 'per-person'
-                          ? 'border-red-200 bg-red-50 text-red-900'
-                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                          ? 'border-red-200 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'
+                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
                       }`}
                     >
                       <p className='font-medium'>Per person</p>
@@ -463,8 +487,8 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                       onClick={() => setAmountMode('total-split')}
                       className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
                         amountMode === 'total-split'
-                          ? 'border-red-200 bg-red-50 text-red-900'
-                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                          ? 'border-red-200 bg-red-50 text-red-900 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'
+                          : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
                       }`}
                     >
                       <p className='font-medium'>Total split</p>
@@ -477,7 +501,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                   <div className='mt-4'>
                     <label
                       htmlFor='batch-zap-amount'
-                      className='mb-2 block text-sm font-medium text-gray-700'
+                      className='mb-2 block text-sm font-medium text-gray-700 dark:text-neutral-300'
                     >
                       Amount in sats
                     </label>
@@ -488,18 +512,20 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                       placeholder='Enter sats'
                       value={amountInput}
                       onChange={(event) => setAmountInput(event.target.value.replace(/[^\d]/g, ''))}
-                      className='h-14 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:border-red-200'
+                      className='h-14 w-full rounded-2xl border border-gray-200 bg-gray-50 px-4 text-lg font-semibold text-gray-900 outline-none placeholder:text-gray-400 focus:border-red-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-900'
                     />
-                    <p className='mt-2 text-xs text-gray-500'>
+                    <p className='mt-2 text-xs text-gray-500 dark:text-neutral-400'>
                       Minimum 5 sats per guest. Total-split keeps any remainder in your wallet.
                     </p>
                   </div>
                 </div>
 
-                <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+                <p className='px-1 text-xs leading-5 text-gray-500 dark:text-neutral-400'>
+                  {recipientContextLine}
+                </p>
 
                 {!validation.valid && amountInput && (
-                  <div className='rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800'>
+                  <div className='rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
                     {validation.error}
                   </div>
                 )}
@@ -513,14 +539,16 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 transition={{ duration: 0.18, ease: 'easeOut' }}
                 className='space-y-6'
               >
-                <div className='rounded-3xl border border-gray-200 bg-white p-5'>
+                <div className='rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900'>
                   <div className='flex items-start gap-3'>
-                    <div className='rounded-2xl bg-red-50 p-3 text-red-500'>
+                    <div className='rounded-2xl bg-red-50 p-3 text-red-500 dark:bg-red-950/40 dark:text-red-400'>
                       <MessageSquareText className='h-5 w-5' />
                     </div>
                     <div>
-                      <p className='text-base font-semibold text-gray-900'>Shared comment</p>
-                      <p className='mt-1 text-sm text-gray-500'>
+                      <p className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                        Shared comment
+                      </p>
+                      <p className='mt-1 text-sm text-gray-500 dark:text-neutral-400'>
                         This optional note will be attached to every payment in the batch.
                       </p>
                     </div>
@@ -530,7 +558,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                     <div className='space-y-2'>
                       <label
                         htmlFor='batch-zap-comment'
-                        className='block text-sm font-medium text-gray-700'
+                        className='block text-sm font-medium text-gray-700 dark:text-neutral-300'
                       >
                         Add a message (optional)
                       </label>
@@ -540,9 +568,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                         onChange={(event) => setComment(event.target.value)}
                         placeholder='Say something nice...'
                         rows={4}
-                        className='w-full resize-none rounded-3xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-red-200'
+                        className='w-full resize-none rounded-3xl border border-gray-200 bg-gray-50 p-4 text-sm text-gray-900 outline-none transition-colors placeholder:text-gray-400 focus:border-red-200 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-900'
                       />
-                      <p className='text-xs text-gray-500'>
+                      <p className='text-xs text-gray-500 dark:text-neutral-400'>
                         This message is sent when possible. If a recipient wallet rejects comments,
                         that payment may fail.
                       </p>
@@ -550,7 +578,9 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                   </div>
                 </div>
 
-                <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+                <p className='px-1 text-xs leading-5 text-gray-500 dark:text-neutral-400'>
+                  {recipientContextLine}
+                </p>
               </motion.div>
             ) : (
               <motion.div
@@ -562,30 +592,40 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                 className='space-y-6'
               >
                 {validation.distribution && (
-                  <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5'>
-                    <h3 className='text-base font-semibold text-gray-900'>Send summary</h3>
+                  <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900'>
+                    <h3 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                      Send summary
+                    </h3>
                     <div className={SUMMARY_ROW_CLASS}>
-                      <span className='text-sm text-gray-500'>Recipients</span>
-                      <span className='font-semibold text-gray-900'>
+                      <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                        Recipients
+                      </span>
+                      <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {validation.distribution.recipientCount}
                       </span>
                     </div>
                     <div className={SUMMARY_ROW_CLASS}>
-                      <span className='text-sm text-gray-500'>Per recipient</span>
-                      <span className='font-semibold text-gray-900'>
+                      <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                        Per recipient
+                      </span>
+                      <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {validation.distribution.perRecipientAmountSats.toLocaleString()} sats
                       </span>
                     </div>
                     <div className={SUMMARY_ROW_CLASS}>
-                      <span className='text-sm text-gray-500'>Total to send</span>
-                      <span className='font-semibold text-gray-900'>
+                      <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                        Total to send
+                      </span>
+                      <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {validation.distribution.totalAmountSats.toLocaleString()} sats
                       </span>
                     </div>
                     {validation.distribution.leftoverSats > 0 && (
                       <div className={SUMMARY_ROW_CLASS}>
-                        <span className='text-sm text-gray-500'>Remainder kept in wallet</span>
-                        <span className='font-semibold text-gray-900'>
+                        <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                          Remainder kept in wallet
+                        </span>
+                        <span className='font-semibold text-gray-900 dark:text-neutral-100'>
                           {validation.distribution.leftoverSats.toLocaleString()} sats
                         </span>
                       </div>
@@ -593,20 +633,24 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
                   </div>
                 )}
 
-                <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5'>
-                  <h3 className='text-base font-semibold text-gray-900'>Shared comment</h3>
+                <div className='space-y-3 rounded-3xl border border-gray-200 bg-white p-5 dark:border-neutral-800 dark:bg-neutral-900'>
+                  <h3 className='text-base font-semibold text-gray-900 dark:text-neutral-100'>
+                    Shared comment
+                  </h3>
                   {comment.trim() ? (
-                    <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-700'>
+                    <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-700 dark:bg-neutral-950 dark:text-neutral-300'>
                       {comment.trim()}
                     </div>
                   ) : (
-                    <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-500'>
+                    <div className='rounded-2xl bg-gray-50 px-4 py-3 text-sm text-gray-500 dark:bg-neutral-950 dark:text-neutral-400'>
                       No shared comment will be included.
                     </div>
                   )}
                 </div>
 
-                <p className='px-1 text-xs leading-5 text-gray-500'>{recipientContextLine}</p>
+                <p className='px-1 text-xs leading-5 text-gray-500 dark:text-neutral-400'>
+                  {recipientContextLine}
+                </p>
               </motion.div>
             )}
           </AnimatePresence>

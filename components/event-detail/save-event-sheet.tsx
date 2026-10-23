@@ -111,7 +111,9 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
       onOpenChange={(open) => !open && onClose()}
       headerSecondary={
         <div className='px-4 pb-3'>
-          <p className='text-sm text-gray-500'>Choose lists to save this event to</p>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+            Choose lists to save this event to
+          </p>
         </div>
       }
       contentClassName='p-4'
@@ -124,11 +126,15 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
         </div>
       ) : lists.length === 0 && !showCreateForm ? (
         <div className='flex flex-col items-center justify-center py-12 text-center'>
-          <div className='mb-4 rounded-2xl bg-gray-100 p-4'>
-            <Plus className='h-8 w-8 text-gray-400' />
+          <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
+            <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
           </div>
-          <h3 className='mb-1 text-base font-semibold text-gray-900'>No lists yet</h3>
-          <p className='mb-4 text-sm text-gray-500'>Create your first list to save events</p>
+          <h3 className='mb-1 text-base font-semibold text-gray-900 dark:text-neutral-100'>
+            No lists yet
+          </h3>
+          <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>
+            Create your first list to save events
+          </p>
           <Button onClick={() => setShowCreateForm(true)} variant='default'>
             <Plus className='mr-2 h-4 w-4' />
             Create List
@@ -143,8 +149,10 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
               Create New List
             </Button>
           ) : (
-            <div className='rounded-lg border border-gray-200 p-4'>
-              <h3 className='mb-3 font-medium text-gray-900'>Create New List</h3>
+            <div className='rounded-lg border border-gray-200 p-4 dark:border-neutral-800'>
+              <h3 className='mb-3 font-medium text-gray-900 dark:text-neutral-100'>
+                Create New List
+              </h3>
               <Input
                 type='text'
                 value={newListName}
@@ -159,7 +167,9 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                   }
                 }}
               />
-              <p className='mb-3 text-right text-xs text-gray-500'>{newListName.length}/50</p>
+              <p className='mb-3 text-right text-xs text-gray-500 dark:text-neutral-400'>
+                {newListName.length}/50
+              </p>
               <div className='flex gap-2'>
                 <Button
                   onClick={handleCreateList}
@@ -200,12 +210,14 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                   key={list.id}
                   onClick={() => handleToggleList(list.id, checked)}
                   disabled={isProcessing}
-                  className='flex w-full items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50 disabled:opacity-50'
+                  className='flex w-full items-center justify-between rounded-lg border border-gray-200 p-4 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-800 dark:hover:bg-neutral-950'
                 >
                   <div className='flex items-center gap-3'>
                     <div
                       className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
-                        checked ? 'border-red-500 bg-red-500' : 'border-gray-300 bg-white'
+                        checked
+                          ? 'border-red-500 bg-red-500'
+                          : 'border-gray-300 bg-white dark:border-neutral-700 dark:bg-neutral-900'
                       }`}
                     >
                       {isProcessing ? (
@@ -215,11 +227,15 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                       ) : null}
                     </div>
                     <div className='text-left'>
-                      <p className='font-medium text-gray-900'>{list.name}</p>
-                      {list.is_default && <span className='text-xs text-gray-500'>Default</span>}
+                      <p className='font-medium text-gray-900 dark:text-neutral-100'>{list.name}</p>
+                      {list.is_default && (
+                        <span className='text-xs text-gray-500 dark:text-neutral-400'>Default</span>
+                      )}
                     </div>
                   </div>
-                  <span className='text-sm text-gray-500'>{list.event_count} events</span>
+                  <span className='text-sm text-gray-500 dark:text-neutral-400'>
+                    {list.event_count} events
+                  </span>
                 </button>
               );
             })}

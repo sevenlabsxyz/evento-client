@@ -45,7 +45,7 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
   // Display-only mode: gray styling, no checkmark, no interaction
   if (displayOnly) {
     return (
-      <span className='inline-flex items-center whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-inset ring-gray-200'>
+      <span className='inline-flex items-center whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-sm font-medium text-gray-700 ring-1 ring-inset ring-gray-200 dark:bg-neutral-900 dark:text-neutral-300 dark:ring-neutral-800'>
         {text}
       </span>
     );
@@ -72,7 +72,7 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
         mass: 0.5,
         backgroundColor: { duration: 0.1 },
       }}
-      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)]' : 'text-gray-600 ring-[rgba(0,0,0,0.06)]'} `}
+      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)] dark:text-red-400' : 'text-gray-600 ring-[rgba(0,0,0,0.06)] dark:text-neutral-400'} `}
     >
       <motion.div
         className='relative flex items-center'
@@ -118,7 +118,9 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
 export function TagSection({ title, items, selectedItems, onToggleItem }: TagSectionProps) {
   return (
     <div className='mb-6'>
-      <h2 className='mb-3 text-left text-lg font-semibold text-gray-900'>{title}</h2>
+      <h2 className='mb-3 text-left text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+        {title}
+      </h2>
       <motion.div
         className='flex flex-wrap gap-2 overflow-visible'
         layout
@@ -152,7 +154,7 @@ export function InterestsSelector({
   onChange,
   mainTitle = 'Select your interests.',
   hideTitle = false,
-  className = 'bg-white',
+  className = 'bg-white dark:bg-neutral-900',
   contentClassName = 'mx-auto max-w-[570px]',
 }: InterestsSelectorProps) {
   const [selectedItems, setSelectedItems] = useState<string[]>(
@@ -177,7 +179,7 @@ export function InterestsSelector({
   return (
     <div className={className}>
       {!hideTitle && (
-        <h1 className='mb-6 text-left text-2xl font-bold text-gray-900 md:text-center'>
+        <h1 className='mb-6 text-left text-2xl font-bold text-gray-900 dark:text-neutral-100 md:text-center'>
           {mainTitle}
         </h1>
       )}

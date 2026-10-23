@@ -192,7 +192,7 @@ export default function EmailBlastCompose({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-red-600 underline',
+          class: 'text-red-600 dark:text-red-400 underline',
         },
       }),
       Placeholder.configure({
@@ -490,11 +490,11 @@ export default function EmailBlastCompose({
               </label>
 
               {editor && (
-                <div className='flex items-center gap-2 rounded-t-lg border border-gray-200 bg-gray-50 p-2'>
+                <div className='flex items-center gap-2 rounded-t-lg border border-gray-200 bg-gray-50 p-2 dark:border-neutral-800 dark:bg-neutral-950'>
                   <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
-                    className={`rounded p-2 transition-colors hover:bg-gray-200 ${
-                      editor.isActive('bold') ? 'bg-gray-200' : ''
+                    className={`rounded p-2 transition-colors hover:bg-gray-200 dark:hover:bg-neutral-700 ${
+                      editor.isActive('bold') ? 'bg-gray-200 dark:bg-neutral-700' : ''
                     }`}
                     type='button'
                   >
@@ -502,14 +502,14 @@ export default function EmailBlastCompose({
                   </button>
                   <button
                     onClick={() => editor.chain().focus().toggleItalic().run()}
-                    className={`rounded p-2 transition-colors hover:bg-gray-200 ${
-                      editor.isActive('italic') ? 'bg-gray-200' : ''
+                    className={`rounded p-2 transition-colors hover:bg-gray-200 dark:hover:bg-neutral-700 ${
+                      editor.isActive('italic') ? 'bg-gray-200 dark:bg-neutral-700' : ''
                     }`}
                     type='button'
                   >
                     <em>I</em>
                   </button>
-                  <div className='mx-1 h-6 w-px bg-gray-300' />
+                  <div className='mx-1 h-6 w-px bg-gray-300 dark:bg-neutral-600' />
                   <button
                     onClick={() => {
                       const url = window.prompt('Enter URL:');
@@ -517,8 +517,8 @@ export default function EmailBlastCompose({
                         editor.chain().focus().setLink({ href: url }).run();
                       }
                     }}
-                    className={`rounded p-2 transition-colors hover:bg-gray-200 ${
-                      editor.isActive('link') ? 'bg-gray-200' : ''
+                    className={`rounded p-2 transition-colors hover:bg-gray-200 dark:hover:bg-neutral-700 ${
+                      editor.isActive('link') ? 'bg-gray-200 dark:bg-neutral-700' : ''
                     }`}
                     type='button'
                   >
@@ -539,7 +539,7 @@ export default function EmailBlastCompose({
             <div className='EmailBlastCompose-field'>
               <label className='EmailBlastCompose-label'>Delivery</label>
               {isEditMode ? (
-                <div className='rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700'>
+                <div className='rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'>
                   Scheduled blasts can only be rescheduled to another future time.
                 </div>
               ) : (
@@ -553,24 +553,28 @@ export default function EmailBlastCompose({
                     }}
                     className={`rounded-lg border px-4 py-3 text-left transition-colors ${
                       !scheduled
-                        ? 'border-red-500 bg-red-50 text-red-700'
-                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                        ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
                     }`}
                   >
                     <div className='font-medium'>Now</div>
-                    <div className='text-xs text-gray-500'>Send as soon as possible</div>
+                    <div className='text-xs text-gray-500 dark:text-neutral-400'>
+                      Send as soon as possible
+                    </div>
                   </button>
                   <button
                     type='button'
                     onClick={() => setScheduled(true)}
                     className={`rounded-lg border px-4 py-3 text-left transition-colors ${
                       scheduled
-                        ? 'border-red-500 bg-red-50 text-red-700'
-                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+                        ? 'border-red-500 bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400'
+                        : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
                     }`}
                   >
                     <div className='font-medium'>Scheduled for later</div>
-                    <div className='text-xs text-gray-500'>Pick date and time</div>
+                    <div className='text-xs text-gray-500 dark:text-neutral-400'>
+                      Pick date and time
+                    </div>
                   </button>
                 </div>
               )}
@@ -590,7 +594,7 @@ export default function EmailBlastCompose({
                       className='EmailBlastCompose-input flex w-full items-center justify-between text-left'
                     >
                       {scheduledDate ? formattedDate : 'Select date'}
-                      <CalendarClock className='h-4 w-4 text-gray-400' />
+                      <CalendarClock className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                     </button>
                   </div>
                   <div>
@@ -608,7 +612,7 @@ export default function EmailBlastCompose({
                             .minute.toString()
                             .padStart(2, '0')} ${getTimeComponents().period}`
                         : 'Select time'}
-                      <Clock className='h-4 w-4 text-gray-400' />
+                      <Clock className='h-4 w-4 text-gray-400 dark:text-neutral-500' />
                     </button>
                   </div>
                 </div>
@@ -619,26 +623,30 @@ export default function EmailBlastCompose({
 
         {step === 'preview' && (
           <div key='preview' className='EmailBlastCompose-step'>
-            <div className='rounded-lg border border-blue-200 bg-blue-50 p-4'>
-              <div className='space-y-1 text-sm text-blue-800'>
+            <div className='rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-900 dark:bg-blue-950/40'>
+              <div className='space-y-1 text-sm text-blue-800 dark:text-blue-400'>
                 <p>
                   <strong>Recipients:</strong> {selectedOption?.label} ({selectedOption?.count}{' '}
                   recipients)
                 </p>
-                <p className='pt-1 text-blue-700'>
+                <p className='pt-1 text-blue-700 dark:text-blue-400'>
                   <strong>Delivery:</strong> {scheduleSummary}
                 </p>
               </div>
             </div>
 
-            <div className='rounded-xl border border-gray-200 bg-white p-4 shadow-sm'>
-              <div className='mb-3 flex items-center justify-between text-xs text-gray-500'>
+            <div className='rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'>
+              <div className='mb-3 flex items-center justify-between text-xs text-gray-500 dark:text-neutral-400'>
                 <span>Inbox Preview</span>
-                <CheckCircle2 className='h-4 w-4 text-green-600' />
+                <CheckCircle2 className='h-4 w-4 text-green-600 dark:text-green-400' />
               </div>
-              <div className='mb-2 text-sm font-semibold text-gray-900'>From: Evento Host</div>
-              <div className='mb-1 text-sm text-gray-900'>Subject: {subject || 'No subject'}</div>
-              <div className='text-sm text-gray-600'>
+              <div className='mb-2 text-sm font-semibold text-gray-900 dark:text-neutral-100'>
+                From: Evento Host
+              </div>
+              <div className='mb-1 text-sm text-gray-900 dark:text-neutral-100'>
+                Subject: {subject || 'No subject'}
+              </div>
+              <div className='text-sm text-gray-600 dark:text-neutral-400'>
                 {plainTextMessage || 'No message content yet'}
               </div>
             </div>
@@ -674,7 +682,7 @@ export default function EmailBlastCompose({
             variant='outline'
             onClick={handleSecondaryAction}
             type='button'
-            className='h-14 w-full rounded-full border-gray-300 text-base font-semibold'
+            className='h-14 w-full rounded-full border-gray-300 text-base font-semibold dark:border-neutral-700'
           >
             {secondaryActionLabel}
           </Button>

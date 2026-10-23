@@ -41,18 +41,20 @@ export default function InstagramSheet({ isOpen, onClose, handle }: InstagramShe
                   <Instagram className='h-6 w-6 text-white' />
                 </div>
                 <div>
-                  <h3 className='font-semibold text-gray-900'>@{handle}</h3>
-                  <p className='text-sm text-gray-500'>Instagram profile</p>
+                  <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>@{handle}</h3>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>Instagram profile</p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
-                <p className='mb-4 text-gray-600'>
+                <p className='mb-4 text-gray-600 dark:text-neutral-400'>
                   You&apos;re about to visit this Instagram profile. This will open in a new tab.
                 </p>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='text-sm text-gray-700'>instagram.com/{handle}</p>
+                <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                  <p className='text-sm text-gray-700 dark:text-neutral-300'>
+                    instagram.com/{handle}
+                  </p>
                 </div>
               </div>
 

@@ -704,9 +704,9 @@ export default function WalletPage() {
 
   // Main Wallet Screen
   return (
-    <div className='min-h-screen bg-white'>
+    <div className='min-h-screen bg-white dark:bg-neutral-900'>
       <WalletEasterEggConfetti celebrationKey={walletEasterEggCelebrationKey} />
-      <div className='mx-auto bg-white md:max-w-md'>
+      <div className='mx-auto bg-white dark:bg-neutral-900 md:max-w-md'>
         <div className='px-4 pt-4'>
           <div>
             <div className='space-y-4'>
@@ -770,7 +770,7 @@ export default function WalletPage() {
                 <Button
                   onClick={() => setShowContactsSheet(true)}
                   variant='outline'
-                  className='font-lg h-12 w-full rounded-full bg-gray-50'
+                  className='font-lg h-12 w-full rounded-full bg-gray-50 dark:bg-neutral-950'
                 >
                   View All Contacts
                 </Button>
@@ -778,16 +778,16 @@ export default function WalletPage() {
 
               {/* Incoming Onchain Bitcoin Alert */}
               {unclaimedDepositsCount > 0 && (
-                <div className='rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4'>
+                <div className='rounded-2xl border border-amber-200 bg-amber-50 px-6 py-4 dark:border-amber-900 dark:bg-amber-950/40'>
                   {/* Header Row */}
                   <div className='mb-1 flex items-center justify-between gap-3'>
                     <div className='flex flex-row items-center gap-1'>
-                      <ChevronsRight className='h-7 w-7 text-amber-600' />
+                      <ChevronsRight className='h-7 w-7 text-amber-600 dark:text-amber-400' />
                       <div className='text-lg font-semibold'>Money Incoming</div>
                     </div>
                     <motion.button
                       onClick={() => setShowOnchainEducationalSheet(true)}
-                      className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white transition-colors'
+                      className='flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-amber-200 bg-white transition-colors dark:border-amber-900 dark:bg-neutral-900'
                       whileTap={{ scale: 0.95 }}
                       transition={{
                         type: 'spring',
@@ -795,7 +795,7 @@ export default function WalletPage() {
                         damping: 17,
                       }}
                     >
-                      <HelpCircle className='h-5 w-5 text-gray-600' />
+                      <HelpCircle className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
                     </motion.button>
                   </div>
 
@@ -811,7 +811,7 @@ export default function WalletPage() {
                     onClick={() => setShowIncomingFundsModal(true)}
                     variant='outline'
                     size='lg'
-                    className='h-12 w-full rounded-full border-amber-200 bg-white hover:bg-amber-100'
+                    className='h-12 w-full rounded-full border-amber-200 bg-white hover:bg-amber-100 dark:border-amber-900 dark:bg-neutral-900 dark:hover:bg-amber-950/60'
                   >
                     Speed It Up!
                   </Button>
@@ -973,7 +973,7 @@ export default function WalletPage() {
                     event.stopPropagation();
                     setActionMenuContact(contact);
                   }}
-                  className='bg-white'
+                  className='bg-white dark:bg-neutral-900'
                 />
                 <CircledIconButton
                   icon={ChevronRight}
@@ -981,7 +981,7 @@ export default function WalletPage() {
                     event.stopPropagation();
                     handleContactSelect(contact);
                   }}
-                  className='bg-white'
+                  className='bg-white dark:bg-neutral-900'
                 />
               </>
             )}

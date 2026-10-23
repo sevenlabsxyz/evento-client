@@ -67,7 +67,7 @@ export default function ProgressiveImage({
     return (
       <div
         className={cn(
-          'flex items-center justify-center bg-gray-200 text-sm text-gray-400',
+          'flex items-center justify-center bg-gray-200 text-sm text-gray-400 dark:bg-neutral-700 dark:text-neutral-500',
           fill ? 'absolute inset-0' : '',
           className
         )}
@@ -108,7 +108,7 @@ export default function ProgressiveImage({
           )}
           style={!fill ? { width, height } : undefined}
         >
-          <div className='animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent' />
+          <div className='animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-neutral-900/20' />
         </div>
       )}
     </div>

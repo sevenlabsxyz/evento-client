@@ -79,7 +79,7 @@ export function MasterScrollableSheet({
           >
             {/* Handle */}
             <div className='my-4 flex items-center'>
-              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
+              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
             </div>
 
             {/* Accessibility title */}
@@ -117,7 +117,7 @@ export function MasterScrollableSheet({
 
             {/* Optional Footer - sticky at bottom, outside scroll area */}
             {footer && (
-              <div className='flex-shrink-0 border-t border-gray-200 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))]'>
+              <div className='flex-shrink-0 border-t border-gray-200 px-4 py-4 pb-[calc(1rem+env(safe-area-inset-bottom))] dark:border-neutral-800'>
                 {footer}
               </div>
             )}

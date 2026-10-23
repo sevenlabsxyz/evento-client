@@ -77,18 +77,20 @@ export default function PasswordProtectionSheet({
               {/* Header */}
               <div className='mb-6'>
                 <h2 className='text-center text-xl font-semibold'>Password Protection</h2>
-                <p className='mt-2 text-center text-sm text-gray-500'>
+                <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
                   Require a password to view event details
                 </p>
               </div>
 
               {/* Toggle Section */}
-              <div className='mb-6 rounded-xl border-2 border-gray-200 bg-white p-4'>
+              <div className='mb-6 rounded-xl border-2 border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
                 <div className='flex items-center justify-between'>
                   <div className='flex items-center gap-3'>
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        enabled ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600'
+                        enabled
+                          ? 'bg-red-500 text-white'
+                          : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
                       {enabled ? (
@@ -98,10 +100,10 @@ export default function PasswordProtectionSheet({
                       )}
                     </div>
                     <div>
-                      <h3 className='font-semibold text-gray-900'>
+                      <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
                         {enabled ? 'Protected' : 'Not Protected'}
                       </h3>
-                      <p className='text-sm text-gray-500'>
+                      <p className='text-sm text-gray-500 dark:text-neutral-400'>
                         {enabled ? 'Password required to view' : 'Anyone with link can view'}
                       </p>
                     </div>
@@ -118,12 +120,12 @@ export default function PasswordProtectionSheet({
                       Event Password
                     </label>
                     <div className='relative'>
-                      <KeyRound className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+                      <KeyRound className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
                       <Input
                         id='event-password'
                         type={showPassword ? 'text' : 'password'}
                         placeholder='Enter password'
-                        className='bg-gray-50 pl-10 pr-10'
+                        className='bg-gray-50 pl-10 pr-10 dark:bg-neutral-950'
                         value={password}
                         onChange={(e) => {
                           setPassword(e.target.value);
@@ -132,7 +134,7 @@ export default function PasswordProtectionSheet({
                       />
                       <button
                         type='button'
-                        className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600'
+                        className='absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:text-neutral-500 dark:hover:text-neutral-400'
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -142,11 +144,11 @@ export default function PasswordProtectionSheet({
                         )}
                       </button>
                     </div>
-                    {error && <p className='text-sm text-red-500'>{error}</p>}
+                    {error && <p className='text-sm text-red-500 dark:text-red-400'>{error}</p>}
                   </div>
 
-                  <div className='rounded-lg bg-gray-50 p-3'>
-                    <p className='text-xs text-gray-500'>
+                  <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                    <p className='text-xs text-gray-500 dark:text-neutral-400'>
                       <strong>Note:</strong> Hosts, co-hosts, and guests who have already
                       RSVP&apos;d &quot;Yes&quot; will automatically bypass the password.
                     </p>

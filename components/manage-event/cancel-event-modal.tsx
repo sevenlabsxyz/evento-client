@@ -64,31 +64,36 @@ export default function CancelEventModal({
 
               {/* Header with close button */}
               <div className='mb-4 flex items-center justify-between'>
-                <h2 className='text-2xl font-bold text-gray-900'>Cancel Event</h2>
-                <button onClick={onClose} className='rounded-full p-2 hover:bg-gray-100'>
-                  <X className='h-5 w-5 text-gray-600' />
+                <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                  Cancel Event
+                </h2>
+                <button
+                  onClick={onClose}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
+                  <X className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
                 </button>
               </div>
 
               {/* Warning Icon */}
               <div className='mb-6 flex justify-center'>
-                <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-                  <AlertTriangle className='h-8 w-8 text-red-600' />
+                <div className='flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
+                  <AlertTriangle className='h-8 w-8 text-red-600 dark:text-red-400' />
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6 space-y-4 text-center'>
-                <p className='text-gray-600'>
+                <p className='text-gray-600 dark:text-neutral-400'>
                   You are about to cancel <strong>{eventTitle || 'this event'}</strong>.
                 </p>
 
                 {/* Warning Text */}
-                <div className='rounded-xl bg-red-50 p-4 text-left'>
-                  <p className='mb-2 font-medium text-red-600'>
+                <div className='rounded-xl bg-red-50 p-4 text-left dark:bg-red-950/40'>
+                  <p className='mb-2 font-medium text-red-600 dark:text-red-400'>
                     Warning: This action is permanent and cannot be undone.
                   </p>
-                  <ul className='list-disc space-y-1 pl-5 text-sm text-gray-700'>
+                  <ul className='list-disc space-y-1 pl-5 text-sm text-gray-700 dark:text-neutral-300'>
                     <li>All event data will be permanently deleted</li>
                     <li>All RSVPs, comments, and photos will be removed</li>
                     <li>Links to this event will no longer work</li>
@@ -98,22 +103,24 @@ export default function CancelEventModal({
               </div>
 
               {/* Email Notification Toggle */}
-              <div className='mb-6 rounded-2xl bg-gray-50 p-4'>
+              <div className='mb-6 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
                 <div className='flex items-center justify-between'>
                   <div className='flex-1'>
-                    <h3 className='mb-1 font-medium text-gray-900'>Notify attendees via email</h3>
-                    <p className='text-sm text-gray-500'>
+                    <h3 className='mb-1 font-medium text-gray-900 dark:text-neutral-100'>
+                      Notify attendees via email
+                    </h3>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       Send cancellation notification to all registered guests
                     </p>
                   </div>
                   <button
                     onClick={() => setSendEmail(!sendEmail)}
                     className={`ml-4 h-6 w-12 rounded-full transition-colors ${
-                      sendEmail ? 'bg-red-500' : 'bg-gray-300'
+                      sendEmail ? 'bg-red-500' : 'bg-gray-300 dark:bg-neutral-600'
                     }`}
                   >
                     <div
-                      className={`h-5 w-5 rounded-full bg-white transition-transform ${
+                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
                         sendEmail ? 'translate-x-6' : 'translate-x-0.5'
                       }`}
                     />
@@ -125,7 +132,7 @@ export default function CancelEventModal({
               <Button
                 onClick={handleConfirm}
                 disabled={cancelEventMutation.isPending}
-                className='mt-4 w-full bg-red-500 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300'
+                className='mt-4 w-full bg-red-500 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-neutral-600'
                 size='lg'
               >
                 {cancelEventMutation.isPending ? (

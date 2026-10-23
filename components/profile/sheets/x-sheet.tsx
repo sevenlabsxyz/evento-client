@@ -43,18 +43,18 @@ export default function XSheet({ isOpen, onClose, handle }: XSheetProps) {
                   </svg>
                 </div>
                 <div>
-                  <h3 className='font-semibold text-gray-900'>@{handle}</h3>
-                  <p className='text-sm text-gray-500'>X (Twitter) profile</p>
+                  <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>@{handle}</h3>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>X (Twitter) profile</p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
-                <p className='mb-4 text-gray-600'>
+                <p className='mb-4 text-gray-600 dark:text-neutral-400'>
                   You&apos;re about to visit this X (Twitter) profile. This will open in a new tab.
                 </p>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='text-sm text-gray-700'>x.com/{handle}</p>
+                <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                  <p className='text-sm text-gray-700 dark:text-neutral-300'>x.com/{handle}</p>
                 </div>
               </div>
 

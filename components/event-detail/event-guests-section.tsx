@@ -53,7 +53,7 @@ export default function EventGuestsSection({
   // Loading state: show lightweight skeleton row
   if (isLoading) {
     return (
-      <div className='border-t border-gray-100 py-6'>
+      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
         <div className='mb-3 flex items-start justify-between'>
           <div>
             <Skeleton className='h-5 w-28' />
@@ -77,11 +77,13 @@ export default function EventGuestsSection({
   // Error state: show retry affordance
   if (error) {
     return (
-      <div className='border-t border-gray-100 py-6'>
+      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
         <div className='mb-3 flex items-start justify-between'>
           <div>
-            <h3 className='text-lg font-semibold text-gray-900'>Guest List</h3>
-            <p className='text-sm text-red-500'>Failed to load guests.</p>
+            <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+              Guest List
+            </h3>
+            <p className='text-sm text-red-500 dark:text-red-400'>Failed to load guests.</p>
           </div>
           <Button variant='outline' size='sm' onClick={() => refetch()}>
             Retry
@@ -112,16 +114,18 @@ export default function EventGuestsSection({
 
   return (
     <>
-      <div className='border-t border-gray-100 py-6'>
+      <div className='border-t border-gray-100 py-6 dark:border-neutral-800'>
         <div className='mb-3 flex items-start justify-between'>
           <div>
-            <h3 className='text-lg font-semibold text-gray-900'>Guest List</h3>
-            <p className='text-sm text-gray-500'>{goingCount} going</p>
+            <h3 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+              Guest List
+            </h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>{goingCount} going</p>
           </div>
           {isHostOrCoHost ? (
             <button
               onClick={handlePrimaryClick}
-              className='inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium hover:bg-gray-100'
+              className='inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-800'
             >
               <UserPlus className='h-4 w-4' /> Invite
             </button>
@@ -157,7 +161,7 @@ export default function EventGuestsSection({
           ))}
           {remaining > 0 && (
             <button
-              className='relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-600'
+              className='relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-600 dark:bg-neutral-700 dark:text-neutral-400'
               style={{ marginLeft: -8 }}
               onClick={() => setSheetOpen(true)}
               aria-label='Open full guest list'

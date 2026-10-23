@@ -52,7 +52,9 @@ export default function StatsPage() {
           />
         </svg>
         <div className='absolute inset-0 flex items-center justify-center'>
-          <span className='text-2xl font-bold text-indigo-600'>{percentage}%</span>
+          <span className='text-2xl font-bold text-indigo-600 dark:text-indigo-400'>
+            {percentage}%
+          </span>
         </div>
       </div>
     );
@@ -60,7 +62,7 @@ export default function StatsPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
         </div>
@@ -69,7 +71,7 @@ export default function StatsPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-gray-100 md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-gray-100 dark:bg-neutral-800 md:max-w-sm'>
       {/* Header */}
       <div className='relative bg-gray-900 pb-8 pt-12'>
         <Button
@@ -84,7 +86,7 @@ export default function StatsPage() {
         {/* Empty State Message */}
         <div className='mt-8 px-6 text-center text-white'>
           <h1 className='mb-4 text-2xl font-bold'>No events recorded in your stats</h1>
-          <p className='mb-12 text-gray-300'>
+          <p className='mb-12 text-gray-300 dark:text-neutral-600'>
             We will calculate it as soon as your next event is completed
           </p>
 
@@ -92,27 +94,27 @@ export default function StatsPage() {
           <div className='mb-8 grid grid-cols-3 gap-8'>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.events}</div>
-              <div className='text-gray-300'>Events</div>
+              <div className='text-gray-300 dark:text-neutral-600'>Events</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.countries}</div>
-              <div className='text-gray-300'>Countries</div>
+              <div className='text-gray-300 dark:text-neutral-600'>Countries</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.cities}</div>
-              <div className='text-gray-300'>Cities</div>
+              <div className='text-gray-300 dark:text-neutral-600'>Cities</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.categories}</div>
-              <div className='text-gray-300'>Categories</div>
+              <div className='text-gray-300 dark:text-neutral-600'>Categories</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.mutuals}</div>
-              <div className='text-gray-300'>Mutuals</div>
+              <div className='text-gray-300 dark:text-neutral-600'>Mutuals</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>0</div>
-              <div className='text-gray-300'>Connections</div>
+              <div className='text-gray-300 dark:text-neutral-600'>Connections</div>
             </div>
           </div>
         </div>
@@ -121,22 +123,26 @@ export default function StatsPage() {
       {/* Content Cards */}
       <div className='-mt-4 space-y-4 px-4 pb-6'>
         {/* Total Card */}
-        <div className='rounded-2xl bg-white p-6'>
+        <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-2xl font-bold'>Total</h2>
             <Button variant='ghost' size='icon' className='h-8 w-8'>
-              <Share className='h-5 w-5 text-gray-600' />
+              <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </Button>
           </div>
 
           <div className='mb-8 flex items-end gap-8'>
             <div className='text-center'>
-              <div className='mb-2 text-6xl font-bold text-indigo-600'>{stats.events}</div>
-              <div className='font-medium text-indigo-600'>Events</div>
+              <div className='mb-2 text-6xl font-bold text-indigo-600 dark:text-indigo-400'>
+                {stats.events}
+              </div>
+              <div className='font-medium text-indigo-600 dark:text-indigo-400'>Events</div>
             </div>
             <div className='text-center'>
-              <div className='mb-2 text-6xl font-bold text-gray-400'>{stats.mutuals}</div>
-              <div className='font-medium text-gray-400'>Mutuals Met</div>
+              <div className='mb-2 text-6xl font-bold text-gray-400 dark:text-neutral-500'>
+                {stats.mutuals}
+              </div>
+              <div className='font-medium text-gray-400 dark:text-neutral-500'>Mutuals Met</div>
             </div>
           </div>
 
@@ -158,23 +164,27 @@ export default function StatsPage() {
         </div>
 
         {/* Countries Card */}
-        <div className='rounded-2xl bg-white p-6'>
+        <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-2xl font-bold'>Countries</h2>
             <Button variant='ghost' size='icon' className='h-8 w-8'>
-              <Share className='h-5 w-5 text-gray-600' />
+              <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </Button>
           </div>
 
           <div className='mb-6 flex items-center justify-between'>
             <div className='flex items-end gap-4'>
               <div className='text-center'>
-                <div className='mb-2 text-5xl font-bold text-red-500'>{stats.countries}</div>
-                <div className='font-medium text-red-500'>Visited</div>
+                <div className='mb-2 text-5xl font-bold text-red-500 dark:text-red-400'>
+                  {stats.countries}
+                </div>
+                <div className='font-medium text-red-500 dark:text-red-400'>Visited</div>
               </div>
               <div className='text-center'>
-                <div className='mb-2 text-5xl font-bold text-gray-400'>249</div>
-                <div className='font-medium text-gray-400'>World total</div>
+                <div className='mb-2 text-5xl font-bold text-gray-400 dark:text-neutral-500'>
+                  249
+                </div>
+                <div className='font-medium text-gray-400 dark:text-neutral-500'>World total</div>
               </div>
             </div>
             <div className='text-center'>
@@ -186,38 +196,46 @@ export default function StatsPage() {
           </div>
 
           <div className='mb-6'>
-            <h3 className='mb-4 font-medium text-gray-500'>Most visited</h3>
+            <h3 className='mb-4 font-medium text-gray-500 dark:text-neutral-400'>Most visited</h3>
             {/* Empty state for most visited countries */}
           </div>
 
-          <Button variant='ghost' className='w-full font-semibold text-red-500'>
+          <Button variant='ghost' className='w-full font-semibold text-red-500 dark:text-red-400'>
             Show Visited Countries
           </Button>
         </div>
 
         {/* Event Categories Card */}
-        <div className='rounded-2xl bg-white p-6'>
+        <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <div className='mb-6 flex items-center justify-between'>
             <h2 className='text-2xl font-bold'>Event Categories</h2>
             <Button variant='ghost' size='icon' className='h-8 w-8'>
-              <Share className='h-5 w-5 text-gray-600' />
+              <Share className='h-5 w-5 text-gray-600 dark:text-neutral-400' />
             </Button>
           </div>
 
           <div className='grid grid-cols-2 gap-6'>
             <div className='text-center'>
-              <div className='mb-2 text-4xl font-bold text-blue-600'>{stats.categories}</div>
-              <div className='font-medium text-blue-600'>Categories</div>
+              <div className='mb-2 text-4xl font-bold text-blue-600 dark:text-blue-400'>
+                {stats.categories}
+              </div>
+              <div className='font-medium text-blue-600 dark:text-blue-400'>Categories</div>
             </div>
             <div className='text-center'>
-              <div className='mb-2 text-4xl font-bold text-green-600'>{stats.mutuals}</div>
-              <div className='font-medium text-green-600'>Mutuals</div>
+              <div className='mb-2 text-4xl font-bold text-green-600 dark:text-green-400'>
+                {stats.mutuals}
+              </div>
+              <div className='font-medium text-green-600 dark:text-green-400'>Mutuals</div>
             </div>
           </div>
 
           <div className='mt-6'>
-            <h3 className='mb-4 font-medium text-gray-500'>Popular categories</h3>
-            <div className='text-center text-sm text-gray-400'>No event categories yet</div>
+            <h3 className='mb-4 font-medium text-gray-500 dark:text-neutral-400'>
+              Popular categories
+            </h3>
+            <div className='text-center text-sm text-gray-400 dark:text-neutral-500'>
+              No event categories yet
+            </div>
           </div>
         </div>
       </div>

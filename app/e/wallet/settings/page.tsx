@@ -77,49 +77,51 @@ export default function WalletSettingsPage() {
           <button
             type='button'
             onClick={handleLockWallet}
-            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
+            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-950'
           >
-            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100'>
-              <Lock className='h-5 w-5 text-blue-600' />
+            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60'>
+              <Lock className='h-5 w-5 text-blue-600 dark:text-blue-400' />
             </div>
             <div className='flex-1'>
               <div className='font-medium'>Lock Wallet</div>
               <div className='text-sm text-muted-foreground'>Require password to access</div>
             </div>
-            <CircledIconButton icon={ChevronRight} className='bg-white' />
+            <CircledIconButton icon={ChevronRight} className='bg-white dark:bg-neutral-900' />
           </button>
 
           {/* Backup Status */}
           <button
             type='button'
             onClick={() => setShowBackupChoiceSheet(true)}
-            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50'
+            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-950'
           >
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                walletState.hasBackup ? 'bg-green-100' : 'bg-amber-100'
+                walletState.hasBackup
+                  ? 'bg-green-100 dark:bg-green-950/60'
+                  : 'bg-amber-100 dark:bg-amber-950/60'
               }`}
             >
               <Shield
-                className={`h-5 w-5 ${walletState.hasBackup ? 'text-green-600' : 'text-amber-600'}`}
+                className={`h-5 w-5 ${walletState.hasBackup ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'}`}
               />
             </div>
             <div className='flex-1'>
               <div className='font-medium'>Backup Status</div>
               <div className='text-sm text-muted-foreground'>
                 {walletState.hasBackup ? (
-                  <span className='text-green-600'>Backed up</span>
+                  <span className='text-green-600 dark:text-green-400'>Backed up</span>
                 ) : (
-                  <span className='text-amber-600'>Not backed up</span>
+                  <span className='text-amber-600 dark:text-amber-400'>Not backed up</span>
                 )}
               </div>
             </div>
-            <CircledIconButton icon={ChevronRight} className='bg-white' />
+            <CircledIconButton icon={ChevronRight} className='bg-white dark:bg-neutral-900' />
           </button>
 
-          <div className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4'>
-            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200'>
-              <EyeOff className='h-5 w-5 text-gray-700' />
+          <div className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+            <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-700'>
+              <EyeOff className='h-5 w-5 text-gray-700 dark:text-neutral-300' />
             </div>
             <div className='flex-1'>
               <div className='font-medium'>Hide balance and values</div>
@@ -134,12 +136,12 @@ export default function WalletSettingsPage() {
 
       {/* Danger Zone */}
       <div className='space-y-4'>
-        <h2 className='text-lg font-semibold text-red-600'>Danger Zone</h2>
+        <h2 className='text-lg font-semibold text-red-600 dark:text-red-400'>Danger Zone</h2>
 
-        <div className='rounded-3xl border border-red-200 bg-red-50 p-4'>
+        <div className='rounded-3xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
           <div className='mb-4 flex items-start gap-3'>
-            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
-            <div className='text-sm text-red-900'>
+            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
+            <div className='text-sm text-red-900 dark:text-red-400'>
               <p className='font-medium'>Delete Wallet</p>
               <p className='mt-1'>
                 This will permanently delete your wallet from this device. Make sure you have backed
@@ -174,9 +176,9 @@ export default function WalletSettingsPage() {
         onOpenChange={setShowDeleteSheet}
       >
         <div className='space-y-6 px-4 pb-8'>
-          <div className='flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4'>
-            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600' />
-            <div className='text-sm text-red-900'>
+          <div className='flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 dark:border-red-900 dark:bg-red-950/40'>
+            <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
+            <div className='text-sm text-red-900 dark:text-red-400'>
               <p className='font-medium'>This action cannot be undone</p>
               <p className='mt-1'>
                 Your wallet will be permanently deleted from this device. Make sure you have backed

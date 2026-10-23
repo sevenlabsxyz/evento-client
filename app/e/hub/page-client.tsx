@@ -18,21 +18,21 @@ import { useEffect } from 'react';
 
 function HubPageSkeleton() {
   return (
-    <div className='flex min-h-screen w-full flex-col bg-white'>
-      <div className='h-full w-full bg-white px-4 pb-36 pt-4 md:px-8 md:pb-24'>
+    <div className='flex min-h-screen w-full flex-col bg-white dark:bg-neutral-900'>
+      <div className='h-full w-full bg-white px-4 pb-36 pt-4 dark:bg-neutral-900 md:px-8 md:pb-24'>
         <div className='mb-4'>
           <Skeleton className='h-5 w-48' />
         </div>
         <div className='flex flex-col gap-4'>
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
             <Skeleton className='mb-3 h-5 w-28' />
             <Skeleton className='h-16 w-full rounded-lg' />
           </div>
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
             <Skeleton className='mb-3 h-5 w-36' />
             <Skeleton className='h-16 w-full rounded-lg' />
           </div>
-          <div className='rounded-2xl bg-white p-4'>
+          <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
             <Skeleton className='mb-3 h-5 w-24' />
             <Skeleton className='h-24 w-full rounded-lg' />
           </div>
@@ -84,18 +84,22 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
 
   if (!hubData) {
     return (
-      <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
-        <div className='rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900'>
+      <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 dark:bg-neutral-900 md:px-8 md:pb-32'>
+        <div className='rounded-3xl border border-amber-200 bg-amber-50 p-5 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
           <div className='mb-2 flex items-center gap-2 text-base font-semibold'>
             <AlertTriangle className='h-5 w-5' />
             Couldn&apos;t load your hub
           </div>
-          <p className='mb-4 text-sm text-amber-800'>
+          <p className='mb-4 text-sm text-amber-800 dark:text-amber-400'>
             {hubError instanceof Error
               ? hubError.message
               : 'Something went wrong while loading your hub data.'}
           </p>
-          <Button onClick={() => refetch()} variant='outline' className='rounded-full bg-white'>
+          <Button
+            onClick={() => refetch()}
+            variant='outline'
+            className='rounded-full bg-white dark:bg-neutral-900'
+          >
             Try Again
           </Button>
         </div>
@@ -114,7 +118,7 @@ export default function HubPageClient({ posts }: HubPageClientProps) {
     : sections.pending_cohost_invites.error;
 
   return (
-    <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 md:px-8 md:pb-32'>
+    <div className='flex h-full w-full flex-col gap-6 bg-white px-4 pb-44 pt-4 dark:bg-neutral-900 md:px-8 md:pb-32'>
       <CohostInvitesSection invites={cohostInvites} error={cohostInvitesError} />
       <div className='flex flex-col gap-6 md:flex-row md:gap-12'>
         <div className='md:w-1/2'>

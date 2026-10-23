@@ -15,8 +15,10 @@ export function ProfileInfo({ user }: ProfileInfoProps) {
     <>
       {/* User Info - Centered */}
       <div className='mb-3 text-center'>
-        <h2 className='text-2xl font-bold text-gray-900'>{user.name || 'Unknown User'}</h2>
-        <p className='text-gray-600'>@{user.username}</p>
+        <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+          {user.name || 'Unknown User'}
+        </h2>
+        <p className='text-gray-600 dark:text-neutral-400'>@{user.username}</p>
       </div>
 
       {/* Social Links */}
@@ -35,9 +37,9 @@ export function ProfileInfo({ user }: ProfileInfoProps) {
 
       {/* Bio */}
       {sanitizedBio ? (
-        <div className='mb-3 rounded-xl bg-gray-50 p-4'>
-          <h4 className='mb-2 text-sm font-semibold text-gray-900'>Bio</h4>
-          <p className='text-sm text-gray-700'>{sanitizedBio}</p>
+        <div className='mb-3 rounded-xl bg-gray-50 p-4 dark:bg-neutral-950'>
+          <h4 className='mb-2 text-sm font-semibold text-gray-900 dark:text-neutral-100'>Bio</h4>
+          <p className='text-sm text-gray-700 dark:text-neutral-300'>{sanitizedBio}</p>
         </div>
       ) : null}
     </>

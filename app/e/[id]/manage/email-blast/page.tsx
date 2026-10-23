@@ -116,25 +116,25 @@ export default function EmailBlastPage() {
   };
 
   return (
-    <div className='mx-auto mt-2 min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto mt-2 min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Content */}
       <div className='p-4'>
         {/* Email Blast History */}
         <div className='space-y-3'>
           {isLoading ? (
             <div className='py-12 text-center'>
-              <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500' />
-              <p className='text-gray-600'>Loading email blasts...</p>
+              <Loader2 className='mx-auto mb-4 h-8 w-8 animate-spin text-red-500 dark:text-red-400' />
+              <p className='text-gray-600 dark:text-neutral-400'>Loading email blasts...</p>
             </div>
           ) : error ? (
             <div className='py-12 text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60'>
                 <Mail className='h-8 w-8 text-red-400' />
               </div>
-              <h3 className='mb-2 text-lg font-medium text-gray-900'>
+              <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
                 Failed to load email blasts
               </h3>
-              <p className='mb-6 text-gray-500'>
+              <p className='mb-6 text-gray-500 dark:text-neutral-400'>
                 There was an error loading your email blasts. Please try again.
               </p>
               <button
@@ -146,11 +146,13 @@ export default function EmailBlastPage() {
             </div>
           ) : transformedBlasts.length === 0 ? (
             <div className='py-12 text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Mail className='h-8 w-8 text-gray-400' />
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                <Mail className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
-              <h3 className='mb-2 text-lg font-medium text-gray-900'>No email blasts yet</h3>
-              <p className='mb-6 text-gray-500'>
+              <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+                No email blasts yet
+              </h3>
+              <p className='mb-6 text-gray-500 dark:text-neutral-400'>
                 Send your first email blast to keep your guests informed
               </p>
               <button

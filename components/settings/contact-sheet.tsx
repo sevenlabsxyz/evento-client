@@ -90,13 +90,17 @@ export function ContactSheet({
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr]'>
-            <div className='border-b border-gray-100 p-4'>
+            <div className='border-b border-gray-100 p-4 dark:border-neutral-800'>
               <div className='mb-4 flex justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div>
-                <h2 className='mb-2 text-2xl font-bold text-gray-900'>Contact Us</h2>
-                <p className='text-gray-600'>Send us a message and we&apos;ll get back to you</p>
+                <h2 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                  Contact Us
+                </h2>
+                <p className='text-gray-600 dark:text-neutral-400'>
+                  Send us a message and we&apos;ll get back to you
+                </p>
               </div>
             </div>
 
@@ -105,48 +109,52 @@ export function ContactSheet({
                 <SheetWithDetentFull.ScrollContent className='p-4'>
                   <form onSubmit={handleSubmit} className='space-y-6'>
                     {/* Title Field */}
-                    <div className='space-y-2 rounded-2xl bg-white p-4'>
-                      <label className='text-sm font-medium text-gray-700'>Subject *</label>
+                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                      <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                        Subject *
+                      </label>
                       <input
                         type='text'
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         placeholder="What's this about?"
-                        className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
+                        className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100'
                         required
                       />
                     </div>
 
                     {/* Message Field */}
-                    <div className='space-y-2 rounded-2xl bg-white p-4'>
-                      <label className='text-sm font-medium text-gray-700'>Message *</label>
+                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                      <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+                        Message *
+                      </label>
                       <textarea
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder='Tell us more about your issue or question...'
                         rows={6}
-                        className='w-full resize-none border-none bg-transparent text-gray-900 outline-none'
+                        className='w-full resize-none border-none bg-transparent text-gray-900 outline-none dark:text-neutral-100'
                         required
                       />
                     </div>
 
                     {/* File Upload */}
-                    <div className='space-y-2 rounded-2xl bg-white p-4'>
-                      <label className='text-sm font-medium text-gray-700'>
+                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                      <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                         Attachment (optional)
                       </label>
 
                       {attachedFile ? (
-                        <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3'>
+                        <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-800 dark:bg-neutral-950'>
                           <div className='flex items-center gap-3'>
-                            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
-                              <Upload className='h-4 w-4 text-red-600' />
+                            <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-950/60'>
+                              <Upload className='h-4 w-4 text-red-600 dark:text-red-400' />
                             </div>
                             <div>
-                              <p className='text-sm font-medium text-gray-900'>
+                              <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
                                 {attachedFile.name}
                               </p>
-                              <p className='text-xs text-gray-500'>
+                              <p className='text-xs text-gray-500 dark:text-neutral-400'>
                                 {(attachedFile.size / 1024).toFixed(1)} KB
                               </p>
                             </div>
@@ -169,13 +177,13 @@ export function ContactSheet({
                             accept='image/*,.pdf,.doc,.docx,.txt'
                             className='absolute inset-0 h-full w-full cursor-pointer opacity-0'
                           />
-                          <div className='flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-red-500'>
+                          <div className='flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-red-500 dark:border-neutral-700'>
                             <div className='text-center'>
-                              <Upload className='mx-auto mb-2 h-8 w-8 text-gray-400' />
-                              <p className='text-sm text-gray-600'>
+                              <Upload className='mx-auto mb-2 h-8 w-8 text-gray-400 dark:text-neutral-500' />
+                              <p className='text-sm text-gray-600 dark:text-neutral-400'>
                                 Click to upload a file or screenshot
                               </p>
-                              <p className='mt-1 text-xs text-gray-500'>
+                              <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
                                 PNG, JPG, PDF, DOC up to 10MB
                               </p>
                             </div>

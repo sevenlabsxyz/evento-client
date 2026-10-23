@@ -115,13 +115,16 @@ export default function UsernameSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Username</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <X className='h-5 w-5' />
                 </button>
               </div>
@@ -134,7 +137,7 @@ export default function UsernameSheet({
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <AtSign className='h-5 w-5 text-gray-400' />
+                      <AtSign className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
                     </div>
                     <Input
                       type='text'
@@ -147,35 +150,39 @@ export default function UsernameSheet({
                     {/* Status icon */}
                     {checkUsernameMutation.isPending && (
                       <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                        <div className='h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600' />
+                        <div className='h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-neutral-700' />
                       </div>
                     )}
                     {!checkUsernameMutation.isPending &&
                       isAvailable === true &&
                       username !== currentUsername && (
                         <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                          <CheckCircle className='h-5 w-5 text-green-500' />
+                          <CheckCircle className='h-5 w-5 text-green-500 dark:text-green-400' />
                         </div>
                       )}
                     {!checkUsernameMutation.isPending && isAvailable === false && (
                       <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                        <XCircle className='h-5 w-5 text-red-500' />
+                        <XCircle className='h-5 w-5 text-red-500 dark:text-red-400' />
                       </div>
                     )}
                   </div>
 
                   {/* Success message */}
                   {isAvailable && username !== currentUsername && (
-                    <p className='mb-4 text-sm text-green-500'>Username is available!</p>
+                    <p className='mb-4 text-sm text-green-500 dark:text-green-400'>
+                      Username is available!
+                    </p>
                   )}
 
                   {/* Error message */}
                   {!isAvailable && username !== currentUsername && (
-                    <p className='mb-4 text-sm text-red-500'>Username is not available.</p>
+                    <p className='mb-4 text-sm text-red-500 dark:text-red-400'>
+                      Username is not available.
+                    </p>
                   )}
 
                   {/* Info text */}
-                  <p className='mb-6 text-sm text-gray-500'>
+                  <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
                     Your username is unique and helps others find you on Evento. It can only contain
                     letters, numbers, and underscores.
                   </p>

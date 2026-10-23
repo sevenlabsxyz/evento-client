@@ -68,8 +68,8 @@ export default function ApiKeysPage() {
 
   if (isCheckingAuth || isLoadingKeys) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
-        <div className='flex-1 overflow-y-auto bg-white px-4 pt-4'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
+        <div className='flex-1 overflow-y-auto bg-white px-4 pt-4 dark:bg-neutral-900'>
           {/* Header Skeleton */}
           <div className='mb-6'>
             <Skeleton className='mb-2 h-6 w-48' />
@@ -79,7 +79,10 @@ export default function ApiKeysPage() {
           {/* Cards Skeleton */}
           <div className='space-y-4'>
             {[1, 2].map((i) => (
-              <div key={i} className='rounded-2xl border border-gray-200 bg-gray-50 p-4'>
+              <div
+                key={i}
+                className='rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'
+              >
                 <div className='mb-3 flex items-start justify-between'>
                   <Skeleton className='h-5 w-40' />
                   <Skeleton className='h-5 w-16' />
@@ -97,14 +100,14 @@ export default function ApiKeysPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-md'>
-      <div className='flex-1 overflow-y-auto bg-white px-4 pb-24 pt-4'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-md'>
+      <div className='flex-1 overflow-y-auto bg-white px-4 pb-24 pt-4 dark:bg-neutral-900'>
         {/* Header */}
         <div className='mb-6'>
           <div className='mb-2 flex items-start justify-between'>
             <div>
-              <h1 className='text-2xl font-bold text-gray-900'>API Keys</h1>
-              <p className='mt-1 text-sm text-gray-600'>
+              <h1 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>API Keys</h1>
+              <p className='mt-1 text-sm text-gray-600 dark:text-neutral-400'>
                 Manage your API keys for Evento integrations
               </p>
             </div>
@@ -112,16 +115,19 @@ export default function ApiKeysPage() {
 
           {/* Key count indicator */}
           <div className='mt-4 flex items-stretch gap-2'>
-            <div className='flex flex-1 items-center rounded-lg bg-gray-100 px-3'>
-              <p className='text-xs text-gray-600'>
-                Active Keys: <span className='font-semibold text-gray-900'>{activeCount}</span> /{' '}
-                {maxKeys}
+            <div className='flex flex-1 items-center rounded-lg bg-gray-100 px-3 dark:bg-neutral-800'>
+              <p className='text-xs text-gray-600 dark:text-neutral-400'>
+                Active Keys:{' '}
+                <span className='font-semibold text-gray-900 dark:text-neutral-100'>
+                  {activeCount}
+                </span>{' '}
+                / {maxKeys}
               </p>
             </div>
             <Button
               onClick={() => setCreateDialogOpen(true)}
               disabled={!canCreateMore}
-              className='rounded-xl bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500'
+              className='rounded-xl bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400'
             >
               <Plus className='mr-1 h-4 w-4' />
               Create Key
@@ -129,9 +135,9 @@ export default function ApiKeysPage() {
           </div>
 
           {!canCreateMore && (
-            <div className='mt-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3'>
-              <AlertCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-600' />
-              <p className='text-sm text-red-800'>
+            <div className='mt-3 flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-900 dark:bg-red-950/40'>
+              <AlertCircle className='mt-0.5 h-4 w-4 flex-shrink-0 text-red-600 dark:text-red-400' />
+              <p className='text-sm text-red-800 dark:text-red-400'>
                 You&apos;ve reached the maximum of {maxKeys} API keys. Revoke an existing key to
                 create a new one.
               </p>
@@ -166,39 +172,43 @@ export default function ApiKeysPage() {
             {apiKeys.map((key) => (
               <div
                 key={key.id}
-                className='rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-shadow hover:shadow-md'
+                className='rounded-2xl border border-gray-200 bg-gray-50 p-4 transition-shadow hover:shadow-md dark:border-neutral-800 dark:bg-neutral-950'
               >
                 <div className='mb-3 flex items-start justify-between'>
                   <div className='flex items-center gap-2'>
-                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100'>
+                    <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-950/60'>
                       {key.status === 'active' ? (
-                        <Key className='h-4 w-4 text-red-600' />
+                        <Key className='h-4 w-4 text-red-600 dark:text-red-400' />
                       ) : (
-                        <ShieldAlert className='h-4 w-4 text-gray-600' />
+                        <ShieldAlert className='h-4 w-4 text-gray-600 dark:text-neutral-400' />
                       )}
                     </div>
-                    <h3 className='font-semibold text-gray-900'>{key.name}</h3>
+                    <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                      {key.name}
+                    </h3>
                   </div>
                   <Badge
                     variant={key.status === 'active' ? 'default' : 'secondary'}
                     className={
                       key.status === 'active'
-                        ? 'bg-green-100 text-green-800 hover:bg-green-100'
-                        : 'bg-gray-200 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-950/60 dark:text-green-400 dark:hover:bg-green-950/60'
+                        : 'bg-gray-200 text-gray-700 hover:bg-gray-200 dark:bg-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-700'
                     }
                   >
                     {key.status === 'active' ? 'Active' : 'Revoked'}
                   </Badge>
                 </div>
 
-                <div className='mb-3 space-y-1 text-sm text-gray-600'>
+                <div className='mb-3 space-y-1 text-sm text-gray-600 dark:text-neutral-400'>
                   <div className='flex items-center justify-between'>
                     <span>Created:</span>
-                    <span className='font-medium text-gray-900'>{formatDate(key.created_at)}</span>
+                    <span className='font-medium text-gray-900 dark:text-neutral-100'>
+                      {formatDate(key.created_at)}
+                    </span>
                   </div>
                   <div className='flex items-center justify-between'>
                     <span>Last used:</span>
-                    <span className='font-medium text-gray-900'>
+                    <span className='font-medium text-gray-900 dark:text-neutral-100'>
                       {formatDate(key.last_used_at)}
                     </span>
                   </div>
@@ -209,7 +219,7 @@ export default function ApiKeysPage() {
                     variant='outline'
                     size='sm'
                     onClick={() => handleRevoke(key)}
-                    className='w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700'
+                    className='w-full border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40 dark:hover:text-red-400'
                   >
                     Revoke Key
                   </Button>

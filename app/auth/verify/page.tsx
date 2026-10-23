@@ -1,6 +1,7 @@
 'use client';
 
 import { EventoIcon } from '@/components/icons/evento';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,7 +97,10 @@ function VerifyContent() {
   }
 
   return (
-    <div className='flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-gray-50 p-4'>
+    <div className='flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-gray-50 p-4 dark:bg-neutral-950'>
+      <div className='fixed right-4 top-4 z-50'>
+        <ThemeToggle />
+      </div>
       <div className='mx-auto -mt-12 mb-2 flex w-full max-w-sm opacity-50 hover:opacity-100'>
         <Button
           variant='link'
@@ -116,7 +120,7 @@ function VerifyContent() {
           <CardTitle className='text-center text-xl font-bold'>Check your email</CardTitle>
           <CardDescription className='space-y-2 text-center'>
             <p>We&apos;ve sent a 6-digit verification code to</p>
-            <p className='flex items-center justify-center gap-2 font-medium text-gray-900'>
+            <p className='flex items-center justify-center gap-2 font-medium text-gray-900 dark:text-neutral-100'>
               {email}
             </p>
           </CardDescription>
@@ -156,36 +160,38 @@ function VerifyContent() {
                   <InputOTPGroup>
                     <InputOTPSlot
                       index={0}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={1}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={2}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
                     />
                   </InputOTPGroup>
                   <InputOTPGroup>
                     <InputOTPSlot
                       index={3}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={4}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={5}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
                     />
                   </InputOTPGroup>
                 </InputOTP>
               </div>
               <input type='hidden' {...register('code')} />
               {errors.code && (
-                <p className='text-center text-sm text-red-500'>{errors.code.message}</p>
+                <p className='text-center text-sm text-red-500 dark:text-red-400'>
+                  {errors.code.message}
+                </p>
               )}
             </div>
 
@@ -207,14 +213,14 @@ function VerifyContent() {
         </CardContent>
       </Card>
       <div className='my-4 space-y-2 text-center'>
-        <p className='text-sm text-gray-600'>
+        <p className='text-sm text-gray-600 dark:text-neutral-400'>
           Didn&apos;t receive the code?{' '}
           {resendTimer > 0 ? (
-            <span className='text-gray-500'>Resend in {resendTimer}s</span>
+            <span className='text-gray-500 dark:text-neutral-400'>Resend in {resendTimer}s</span>
           ) : (
             <button
               onClick={handleResend}
-              className='font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50'
+              className='font-medium text-red-600 hover:underline disabled:cursor-not-allowed disabled:opacity-50 dark:text-red-400'
               disabled={isLoading || isResending}
             >
               {isResending ? 'Sending...' : 'Resend code'}

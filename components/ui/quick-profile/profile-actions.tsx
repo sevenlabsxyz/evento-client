@@ -27,9 +27,9 @@ export function ProfileActions({
       <Button
         onClick={handleFollowClick}
         disabled={isLoading || isPending}
-        className={`h-12 flex-1 rounded-full border border-gray-200 ${
+        className={`h-12 flex-1 rounded-full border border-gray-200 dark:border-neutral-800 ${
           isFollowing
-            ? 'bg-gray-50 text-gray-900 hover:bg-gray-100'
+            ? 'bg-gray-50 text-gray-900 hover:bg-gray-100 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800'
             : `${designTokens.colors.gradients.primaryButton} text-white`
         }`}
       >

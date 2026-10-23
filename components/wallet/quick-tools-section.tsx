@@ -14,29 +14,29 @@ const quickTools: QuickTool[] = [
     id: 'buy-sell',
     label: 'Buy / Sell',
     icon: Bitcoin,
-    iconBg: 'bg-gray-50',
-    iconColor: 'text-gray-600',
+    iconBg: 'bg-gray-50 dark:bg-neutral-950',
+    iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     id: 'spend',
     label: 'Spend',
     icon: ShoppingCart,
-    iconBg: 'bg-gray-50',
-    iconColor: 'text-gray-600',
+    iconBg: 'bg-gray-50 dark:bg-neutral-950',
+    iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     id: 'earn',
     label: 'Earn',
     icon: Star,
-    iconBg: 'bg-gray-50',
-    iconColor: 'text-gray-600',
+    iconBg: 'bg-gray-50 dark:bg-neutral-950',
+    iconColor: 'text-gray-600 dark:text-neutral-400',
   },
   {
     id: 'converter',
     label: 'Converter',
     icon: ArrowRightLeft,
-    iconBg: 'bg-gray-50',
-    iconColor: 'text-gray-600',
+    iconBg: 'bg-gray-50 dark:bg-neutral-950',
+    iconColor: 'text-gray-600 dark:text-neutral-400',
   },
 ];
 
@@ -63,13 +63,15 @@ export function QuickToolsSection({
               className='font-lg flex flex-col items-center justify-center'
             >
               <motion.div
-                className={`flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 shadow-sm hover:bg-gray-100 ${tool.iconBg} mb-2`}
+                className={`flex h-14 w-14 items-center justify-center rounded-full border border-gray-200 shadow-sm hover:bg-gray-100 dark:border-neutral-800 dark:hover:bg-neutral-800 ${tool.iconBg} mb-2`}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
                 <Icon className={`h-6 w-6 ${tool.iconColor}`} />
               </motion.div>
-              <span className='text-center text-sm font-semibold text-gray-500'>{label}</span>
+              <span className='text-center text-sm font-semibold text-gray-500 dark:text-neutral-400'>
+                {label}
+              </span>
             </div>
           );
         })}

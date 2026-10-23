@@ -158,13 +158,16 @@ export default function SocialLinksSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Social Links</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <XIcon className='h-5 w-5' />
                 </button>
               </div>
@@ -181,7 +184,7 @@ export default function SocialLinksSheet({
                       Instagram
                     </Label>
                     <div className='relative'>
-                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
+                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-500'>
                         @
                       </span>
                       <Input
@@ -197,7 +200,9 @@ export default function SocialLinksSheet({
                       />
                     </div>
                     {errors.instagram && (
-                      <p className='mt-1 text-sm text-red-500'>{errors.instagram}</p>
+                      <p className='mt-1 text-sm text-red-500 dark:text-red-400'>
+                        {errors.instagram}
+                      </p>
                     )}
                   </div>
 
@@ -210,7 +215,7 @@ export default function SocialLinksSheet({
                       X (formerly Twitter)
                     </Label>
                     <div className='relative'>
-                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400'>
+                      <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-neutral-500'>
                         @
                       </span>
                       <Input
@@ -225,7 +230,9 @@ export default function SocialLinksSheet({
                         className='pl-8'
                       />
                     </div>
-                    {errors.x && <p className='mt-1 text-sm text-red-500'>{errors.x}</p>}
+                    {errors.x && (
+                      <p className='mt-1 text-sm text-red-500 dark:text-red-400'>{errors.x}</p>
+                    )}
                   </div>
 
                   {/* Website */}
@@ -245,12 +252,14 @@ export default function SocialLinksSheet({
                       placeholder='yourwebsite.com'
                     />
                     {errors.website && (
-                      <p className='mt-1 text-sm text-red-500'>{errors.website}</p>
+                      <p className='mt-1 text-sm text-red-500 dark:text-red-400'>
+                        {errors.website}
+                      </p>
                     )}
                   </div>
 
                   {/* Info text */}
-                  <p className='text-sm text-gray-500'>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
                     Add your social media profiles to help others connect with you outside of
                     Evento. Add your social media profiles to help others connect with you outside
                     of Evento.

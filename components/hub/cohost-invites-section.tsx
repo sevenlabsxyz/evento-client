@@ -12,12 +12,12 @@ interface CohostInvitesSectionProps {
 export function CohostInvitesSection({ invites = [], error }: CohostInvitesSectionProps) {
   if (error) {
     return (
-      <div className='mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900'>
+      <div className='mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-amber-900 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
         <div className='mb-2 flex items-center gap-2 text-sm font-semibold'>
           <AlertTriangle className='h-4 w-4' />
           Cohost invitations are temporarily unavailable
         </div>
-        <p className='text-sm text-amber-800'>{error.message}</p>
+        <p className='text-sm text-amber-800 dark:text-amber-400'>{error.message}</p>
       </div>
     );
   }

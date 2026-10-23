@@ -41,7 +41,10 @@ export function ZapCustomStep({
     <div className='flex flex-col'>
       {/* Header */}
       <div className='flex items-center justify-between p-4 pt-0'>
-        <button onClick={onBack} className='rounded-full p-2 transition-colors hover:bg-gray-100'>
+        <button
+          onClick={onBack}
+          className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
+        >
           <ArrowLeft className='h-5 w-5' />
         </button>
         <h2 className='text-xl font-semibold'>Custom Amount</h2>
@@ -49,7 +52,7 @@ export function ZapCustomStep({
           <WalletBalanceDisplay />
           <button
             onClick={onClose}
-            className='rounded-full p-2 transition-colors hover:bg-gray-100'
+            className='rounded-full p-2 transition-colors hover:bg-gray-100 dark:hover:bg-neutral-800'
           >
             <X className='h-5 w-5' />
           </button>
@@ -60,16 +63,16 @@ export function ZapCustomStep({
       <div className='p-6'>
         <div className='mx-auto max-w-md space-y-6'>
           {/* Amount Display */}
-          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center'>
-            <div className='text-4xl font-bold text-gray-900'>
+          <div className='rounded-xl border border-gray-200 bg-gray-50 p-8 text-center dark:border-neutral-800 dark:bg-neutral-950'>
+            <div className='text-4xl font-bold text-gray-900 dark:text-neutral-100'>
               {inputMode === 'usd' ? `$${customAmountUSD || '0'}` : `${customAmount || '0'}`}
             </div>
-            <div className='mt-1 text-lg font-medium text-gray-600'>
+            <div className='mt-1 text-lg font-medium text-gray-600 dark:text-neutral-400'>
               {inputMode === 'usd' ? 'USD' : 'sats'}
             </div>
             <button
               onClick={onToggleMode}
-              className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100'
+              className='mx-auto mt-3 flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-800'
             >
               <ArrowUpDown className='h-4 w-4' />
               <span>

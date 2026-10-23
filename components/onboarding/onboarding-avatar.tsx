@@ -55,7 +55,7 @@ export const OnboardingAvatar = ({
               <UploadCloud className='h-10 w-10 text-white opacity-0 transition-opacity md:group-hover:opacity-100' />
             </div>
           )}
-          <Avatar className='h-40 w-40 border-4 border-gray-100 shadow-lg md:h-48 md:w-48'>
+          <Avatar className='h-40 w-40 border-4 border-gray-100 shadow-lg dark:border-neutral-800 md:h-48 md:w-48'>
             <AvatarImage src={uploadedImg.trim() || DEFAULT_AVATAR_IMAGE} />
             <AvatarFallback className='text-xs'>Loading...</AvatarFallback>
           </Avatar>
@@ -65,7 +65,9 @@ export const OnboardingAvatar = ({
             </div>
           )}
         </button>
-        <p className='mt-4 text-center text-sm text-gray-500'>Tap to upload</p>
+        <p className='mt-4 text-center text-sm text-gray-500 dark:text-neutral-400'>
+          Tap to upload
+        </p>
       </div>
     </motion.div>
   );

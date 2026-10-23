@@ -160,12 +160,12 @@ export default function DatePickerSheet({
               {/* Header */}
               <div className='mb-4'>
                 <div className='mb-4 flex items-center justify-between'>
-                  <button onClick={onClose} className='font-medium text-red-500'>
+                  <button onClick={onClose} className='font-medium text-red-500 dark:text-red-400'>
                     Cancel
                   </button>
                   <div className='text-center'>
                     <h2 className='text-lg font-semibold'>{title}</h2>
-                    <p className='text-sm text-gray-500'>
+                    <p className='text-sm text-gray-500 dark:text-neutral-400'>
                       {currentDate.toLocaleDateString('en-US', {
                         weekday: 'short',
                         month: 'short',
@@ -185,7 +185,7 @@ export default function DatePickerSheet({
                 <div className='mb-4 flex items-center justify-between'>
                   <button
                     onClick={() => navigateMonth('prev')}
-                    className='rounded-lg p-2 hover:bg-gray-100'
+                    className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
                   >
                     ←
                   </button>
@@ -194,7 +194,7 @@ export default function DatePickerSheet({
                   </h3>
                   <button
                     onClick={() => navigateMonth('next')}
-                    className='rounded-lg p-2 hover:bg-gray-100'
+                    className='rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
                   >
                     →
                   </button>
@@ -203,7 +203,10 @@ export default function DatePickerSheet({
                 {/* Days of Week Header */}
                 <div className='mb-2 grid grid-cols-7 gap-1'>
                   {daysOfWeek.map((day) => (
-                    <div key={day} className='py-2 text-center text-xs font-medium text-gray-500'>
+                    <div
+                      key={day}
+                      className='py-2 text-center text-xs font-medium text-gray-500 dark:text-neutral-400'
+                    >
                       {day}
                     </div>
                   ))}
@@ -224,8 +227,8 @@ export default function DatePickerSheet({
                           : isReferenceDate(day)
                             ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500 ring-offset-2'
                             : isToday(day)
-                              ? 'border border-gray-200 bg-gray-100 text-black'
-                              : 'hover:bg-gray-100'
+                              ? 'border border-gray-200 bg-gray-100 text-black dark:border-neutral-800 dark:bg-neutral-800 dark:text-white'
+                              : 'hover:bg-gray-100 dark:hover:bg-neutral-800'
                       } `}
                     >
                       {day}

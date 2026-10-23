@@ -133,7 +133,7 @@ export default function SavedListDetailPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='flex flex-1 items-center justify-center pb-20'>
           <div className='h-8 w-8 animate-spin rounded-full border-b-2 border-red-500'></div>
         </div>
@@ -143,10 +143,12 @@ export default function SavedListDetailPage() {
 
   if (!currentList && !eventsLoading) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col items-center justify-center bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='text-center'>
           <h2 className='mb-2 text-xl font-bold'>List not found</h2>
-          <p className='mb-4 text-gray-600'>This list may have been deleted</p>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
+            This list may have been deleted
+          </p>
           <Button
             onClick={() => router.push('/e/lists')}
             className='bg-red-500 text-white hover:bg-red-600'
@@ -159,9 +161,9 @@ export default function SavedListDetailPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Content */}
-      <div className='flex-1 overflow-y-auto bg-white pb-20'>
+      <div className='flex-1 overflow-y-auto bg-white pb-20 dark:bg-neutral-900'>
         {eventsLoading ? (
           <div className='space-y-4 px-4 py-4'>
             {[1, 2, 3].map((i) => (
@@ -181,11 +183,13 @@ export default function SavedListDetailPage() {
         ) : (
           <div className='flex flex-1 items-center justify-center px-4 py-12'>
             <div className='text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Bookmark className='h-8 w-8 text-gray-400' />
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                <Bookmark className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
-              <h3 className='mb-2 text-lg font-semibold text-gray-900'>No events in this list</h3>
-              <p className='text-sm text-gray-500'>
+              <h3 className='mb-2 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+                No events in this list
+              </h3>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
                 Use the &quot;Save Event&quot; feature in any event to add it to this list.
               </p>
             </div>
@@ -227,7 +231,7 @@ export default function SavedListDetailPage() {
       {/* Rename Modal */}
       {showRenameModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Rename List</h3>
             <Input
               type='text'
@@ -239,7 +243,9 @@ export default function SavedListDetailPage() {
               maxLength={50}
               onKeyDown={(e) => e.key === 'Enter' && handleRenameList()}
             />
-            <p className='mb-4 text-right text-xs text-gray-500'>{newListName.length}/50</p>
+            <p className='mb-4 text-right text-xs text-gray-500 dark:text-neutral-400'>
+              {newListName.length}/50
+            </p>
             <div className='flex gap-3'>
               <Button
                 variant='outline'
@@ -274,9 +280,9 @@ export default function SavedListDetailPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-2 text-xl font-bold'>Delete List?</h3>
-            <p className='mb-6 text-sm text-gray-600'>
+            <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
               This will remove all events from &quot;{currentList?.name}&quot;. This action cannot
               be undone.
             </p>
@@ -311,9 +317,9 @@ export default function SavedListDetailPage() {
       {/* Remove Event Confirmation Modal */}
       {showRemoveConfirmModal && eventToRemove && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 md:max-w-sm'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-2 text-xl font-bold'>Remove Event?</h3>
-            <p className='mb-6 text-sm text-gray-600'>
+            <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
               This will remove the event from &quot;{currentList?.name}&quot;. You can always add it
               back later.
             </p>

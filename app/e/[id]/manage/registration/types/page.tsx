@@ -49,50 +49,50 @@ export default function ChooseQuestionTypePage() {
       key: 'text',
       label: 'Text',
       icon: <Type className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
     },
     {
       key: 'long_text',
       label: 'Long Text',
       icon: <FileText className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
     },
     {
       key: 'single_select',
       label: 'Single Select',
       icon: <List className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       key: 'multi_select',
       label: 'Multi Select',
       icon: <CheckSquare className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
     },
     {
       key: 'url',
       label: 'URL',
       icon: <Link className='h-6 w-6' />,
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-600',
+      iconBg: 'bg-purple-100 dark:bg-purple-950/60',
+      iconColor: 'text-purple-600 dark:text-purple-400',
     },
     {
       key: 'phone',
       label: 'Phone Number',
       icon: <Phone className='h-6 w-6' />,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-600',
+      iconBg: 'bg-green-100 dark:bg-green-950/60',
+      iconColor: 'text-green-600 dark:text-green-400',
     },
     {
       key: 'checkbox',
       label: 'Checkbox',
       icon: <Square className='h-6 w-6' />,
-      iconBg: 'bg-yellow-100',
-      iconColor: 'text-yellow-600',
+      iconBg: 'bg-yellow-100 dark:bg-yellow-950/60',
+      iconColor: 'text-yellow-600 dark:text-yellow-400',
     },
   ];
 
@@ -101,29 +101,29 @@ export default function ChooseQuestionTypePage() {
       key: 'instagram',
       label: 'Instagram',
       icon: <Instagram className='h-6 w-6' />,
-      iconBg: 'bg-pink-100',
-      iconColor: 'text-pink-600',
+      iconBg: 'bg-pink-100 dark:bg-pink-950/60',
+      iconColor: 'text-pink-600 dark:text-pink-400',
     },
     {
       key: 'twitter',
       label: 'X (Twitter)',
       icon: <Twitter className='h-6 w-6' />,
-      iconBg: 'bg-gray-100',
-      iconColor: 'text-gray-600',
+      iconBg: 'bg-gray-100 dark:bg-neutral-800',
+      iconColor: 'text-gray-600 dark:text-neutral-400',
     },
     {
       key: 'youtube',
       label: 'YouTube',
       icon: <Youtube className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
     },
     {
       key: 'linkedin',
       label: 'LinkedIn',
       icon: <Linkedin className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
     },
   ];
 
@@ -132,8 +132,8 @@ export default function ChooseQuestionTypePage() {
       key: 'company',
       label: 'Company',
       icon: <Building className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
     },
   ];
 
@@ -143,13 +143,13 @@ export default function ChooseQuestionTypePage() {
 
   const renderQuestionSection = (title: string, questions: QuestionTypeOption[]) => (
     <div className='mb-6'>
-      <h3 className='mb-3 px-4 text-sm font-medium text-gray-500'>{title}</h3>
+      <h3 className='mb-3 px-4 text-sm font-medium text-gray-500 dark:text-neutral-400'>{title}</h3>
       <div className='space-y-1'>
         {questions.map((question) => (
           <button
             key={question.key}
             onClick={() => handleQuestionTypeSelect(question.key)}
-            className='flex w-full items-center gap-4 p-4 transition-colors hover:bg-gray-50'
+            className='flex w-full items-center gap-4 p-4 transition-colors hover:bg-gray-50 dark:hover:bg-neutral-950'
           >
             <div
               className={`h-12 w-12 ${question.iconBg} flex items-center justify-center rounded-xl`}
@@ -157,9 +157,9 @@ export default function ChooseQuestionTypePage() {
               <div className={question.iconColor}>{question.icon}</div>
             </div>
             <div className='flex-1 text-left'>
-              <h4 className='font-medium text-gray-900'>{question.label}</h4>
+              <h4 className='font-medium text-gray-900 dark:text-neutral-100'>{question.label}</h4>
             </div>
-            <div className='text-gray-400'>
+            <div className='text-gray-400 dark:text-neutral-500'>
               <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path
                   strokeLinecap='round'
@@ -176,10 +176,13 @@ export default function ChooseQuestionTypePage() {
   );
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Header */}
-      <div className='flex items-center gap-4 border-b border-gray-100 p-4'>
-        <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
+      <div className='flex items-center gap-4 border-b border-gray-100 p-4 dark:border-neutral-800'>
+        <button
+          onClick={() => router.back()}
+          className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+        >
           <ArrowLeft className='h-5 w-5' />
         </button>
         <h1 className='text-xl font-semibold'>Choose Question Type</h1>
@@ -192,7 +195,7 @@ export default function ChooseQuestionTypePage() {
 
         {/* Social Profile Note */}
         <div className='mb-6 px-4'>
-          <p className='text-sm text-gray-500'>
+          <p className='text-sm text-gray-500 dark:text-neutral-400'>
             We will retrieve the information automatically if the guest has set it on their Luma
             profile.
           </p>

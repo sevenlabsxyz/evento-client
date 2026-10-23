@@ -212,15 +212,15 @@ export default function ProfilePage() {
         {/* Filter Controls */}
         <div className='flex justify-center'>
           {/* Timeframe Toggle */}
-          <div className='flex items-center rounded-full bg-gray-50 p-1'>
+          <div className='flex items-center rounded-full bg-gray-50 p-1 dark:bg-neutral-950'>
             <button
               type='button'
               onClick={() => setTimeframe('future')}
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'future'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
               Upcoming
@@ -231,8 +231,8 @@ export default function ProfilePage() {
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'past'
-                  ? 'bg-white text-black shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
               Past
@@ -254,15 +254,15 @@ export default function ProfilePage() {
             </div>
           ) : groupedProfileEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
-              <div className='rounded-full bg-gray-100 p-3'>
-                <MessageCircle className='h-6 w-6 text-gray-400' />
+              <div className='rounded-full bg-gray-100 p-3 dark:bg-neutral-800'>
+                <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-500' />
               </div>
-              <p className='text-sm text-gray-500'>No events found</p>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>No events found</p>
             </div>
           ) : (
             groupedProfileEvents.map((group) => (
               <div key={group.date} className='space-y-3'>
-                <h3 className='text-sm font-medium text-gray-500'>
+                <h3 className='text-sm font-medium text-gray-500 dark:text-neutral-400'>
                   {formatDateHeader(group.date)}
                 </h3>
                 <div className='space-y-3'>
@@ -364,7 +364,7 @@ export default function ProfilePage() {
           </Button>
         )}
         {sortedBadges.length ? (
-          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4'>
+          <div className='rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
             <div className='grid grid-cols-3 gap-4 sm:grid-cols-4'>
               {sortedBadges.map((userBadge) => (
                 <BadgeItem
@@ -396,8 +396,8 @@ export default function ProfilePage() {
   // Show loading state while fetching user data
   if (isCheckingAuth || isUserLoading || !user) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
-        <div className='flex-1 overflow-y-auto bg-gray-50 p-6'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
+        <div className='flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-neutral-950'>
           <Skeleton variant='profile' />
         </div>
       </div>
@@ -405,8 +405,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='min-h-screen bg-white'>
-      <div className='mx-auto max-w-full bg-white md:max-w-md'>
+    <div className='min-h-screen bg-white dark:bg-neutral-900'>
+      <div className='mx-auto max-w-full bg-white dark:bg-neutral-900 md:max-w-md'>
         <div>
           {/* Profile Info */}
           <div>
@@ -426,19 +426,23 @@ export default function ProfilePage() {
             </div>
 
             {/* Profile Section */}
-            <div className='mb-4 bg-white px-4 pb-0 pt-20'>
+            <div className='mb-4 bg-white px-4 pb-0 pt-20 dark:bg-neutral-900'>
               {/* User Info - Centered */}
               <div className='mb-6 text-center'>
-                <h2 className='text-2xl font-bold text-gray-900'>{userData.name}</h2>
-                <p className='text-gray-600'>{userData.username}</p>
+                <h2 className='text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+                  {userData.name}
+                </h2>
+                <p className='text-gray-600 dark:text-neutral-400'>{userData.username}</p>
               </div>
 
               {/* Stats - Centered */}
               <div className='mb-4 flex justify-center'>
                 <div className='grid grid-cols-3 gap-8'>
                   <div className='text-center'>
-                    <div className='text-xl font-bold text-gray-900'>{userStats.events}</div>
-                    <div className='text-sm text-gray-500'>Events</div>
+                    <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                      {userStats.events}
+                    </div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Events</div>
                   </div>
                   <motion.button
                     className='text-center'
@@ -446,8 +450,10 @@ export default function ProfilePage() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{userStats.following}</div>
-                    <div className='text-sm text-gray-500'>Following</div>
+                    <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                      {userStats.following}
+                    </div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Following</div>
                   </motion.button>
                   <motion.button
                     className='text-center'
@@ -455,8 +461,10 @@ export default function ProfilePage() {
                     whileTap={{ scale: 0.95 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 17 }}
                   >
-                    <div className='text-xl font-bold text-gray-900'>{userStats.followers}</div>
-                    <div className='text-sm text-gray-500'>Followers</div>
+                    <div className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                      {userStats.followers}
+                    </div>
+                    <div className='text-sm text-gray-500 dark:text-neutral-400'>Followers</div>
                   </motion.button>
                 </div>
               </div>
@@ -477,7 +485,7 @@ export default function ProfilePage() {
           {/* Tabs */}
           <div className='px-4 pb-32'>
             {/* Tabbed Section */}
-            <div className='mb-4 w-full bg-white'>
+            <div className='mb-4 w-full bg-white dark:bg-neutral-900'>
               {/* Tab Headers */}
               <AnimatedTabs
                 expanded
@@ -515,12 +523,14 @@ export default function ProfilePage() {
       {/* Verification Modal */}
       {showVerificationModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center md:max-w-sm'>
-            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center dark:bg-neutral-900 md:max-w-sm'>
+            <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
               <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
-            <h3 className='mb-4 text-xl font-bold text-gray-900'>You are verified</h3>
-            <p className='mb-6 text-gray-600'>
+            <h3 className='mb-4 text-xl font-bold text-gray-900 dark:text-neutral-100'>
+              You are verified
+            </h3>
+            <p className='mb-6 text-gray-600 dark:text-neutral-400'>
               Congratulations! Your account is verified. You have premium member status with
               enhanced credibility and access to exclusive features on our platform.
             </p>

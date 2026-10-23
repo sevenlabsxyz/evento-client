@@ -91,7 +91,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               placeholder='Contact name'
               disabled={isAddingContact}
               autoComplete='name'
-              className='h-12 rounded-full bg-gray-50'
+              className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
             {errors.name && <p className='text-sm text-destructive'>{errors.name.message}</p>}
           </div>
@@ -108,7 +108,7 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               placeholder='user@domain.com'
               disabled={isAddingContact}
               autoComplete='email'
-              className='h-12 rounded-full bg-gray-50'
+              className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
             {errors.lightningAddress && (
               <p className='text-sm text-destructive'>{errors.lightningAddress.message}</p>

@@ -52,25 +52,31 @@ export default function NostrSheet({ isOpen, onClose, nip05 }: NostrSheetProps) 
 
               {/* Nostr Info */}
               <div className='mb-6 flex items-center gap-3'>
-                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-purple-100'>
+                <div className='flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-950/60'>
                   <div className='flex h-6 w-6 items-center justify-center rounded-full bg-purple-600'>
                     <span className='text-xs font-bold text-white'>N</span>
                   </div>
                 </div>
                 <div>
-                  <h3 className='font-semibold text-gray-900'>Nostr Protocol</h3>
-                  <p className='text-sm text-gray-500'>Decentralized social network</p>
+                  <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                    Nostr Protocol
+                  </h3>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                    Decentralized social network
+                  </p>
                 </div>
               </div>
 
               {/* Description */}
               <div className='mb-6'>
-                <p className='mb-4 text-gray-600'>
+                <p className='mb-4 text-gray-600 dark:text-neutral-400'>
                   This is a Nostr identifier (NIP-05). Nostr is a decentralized protocol for social
                   networking.
                 </p>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='break-all font-mono text-sm text-gray-700'>{nip05}</p>
+                <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                  <p className='break-all font-mono text-sm text-gray-700 dark:text-neutral-300'>
+                    {nip05}
+                  </p>
                 </div>
               </div>
 

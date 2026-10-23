@@ -76,17 +76,17 @@ export default function ContactPage() {
 
   if (isCheckingAuth) {
     return (
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         {/* Contact Page Loading Skeleton */}
-        <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6'>
+        <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6 dark:bg-neutral-950'>
           {/* Title Field Skeleton */}
-          <div className='space-y-2 rounded-2xl bg-white p-4'>
+          <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
             <Skeleton className='h-4 w-24' />
             <Skeleton className='h-7 w-3/4' />
           </div>
 
           {/* Message Field Skeleton */}
-          <div className='space-y-2 rounded-2xl bg-white p-4'>
+          <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
             <Skeleton className='h-4 w-24' />
             <div className='space-y-2'>
               <Skeleton className='h-4 w-full' />
@@ -106,58 +106,62 @@ export default function ContactPage() {
   }
 
   return (
-    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+    <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Header */}
-      <div className='border-b border-gray-200'></div>
+      <div className='border-b border-gray-200 dark:border-neutral-800'></div>
 
       {/* Form */}
       <form
         onSubmit={handleSubmit}
-        className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6'
+        className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 py-6 dark:bg-neutral-950'
       >
         {/* Title Field */}
-        <div className='space-y-2 rounded-2xl bg-white p-4'>
-          <label className='text-sm font-medium text-gray-700'>Subject *</label>
+        <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+          <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+            Subject *
+          </label>
           <input
             type='text'
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             placeholder="What's this about?"
-            className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none'
+            className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100'
             required
           />
         </div>
 
         {/* Message Field */}
-        <div className='space-y-2 rounded-2xl bg-white p-4'>
-          <label className='text-sm font-medium text-gray-700'>Message *</label>
+        <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+          <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+            Message *
+          </label>
           <textarea
             value={formData.message}
             onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             placeholder='Tell us more about your issue or question...'
             rows={6}
-            className='w-full resize-none border-none bg-transparent text-gray-900 outline-none'
+            className='w-full resize-none border-none bg-transparent text-gray-900 outline-none dark:text-neutral-100'
             required
           />
         </div>
 
         {/* File Upload */}
-        {/* <div className="space-y-2 rounded-2xl bg-white p-4">
-          <label className="text-sm font-medium text-gray-700">
+        {/* <div className="space-y-2 rounded-2xl bg-white dark:bg-neutral-900 p-4">
+          <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">
             Attachment (optional)
           </label>
 
           {attachedFile ? (
-            <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3">
+            <div className="flex items-center justify-between rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950 p-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100">
-                  <Upload className="h-4 w-4 text-red-600" />
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-950/60">
+                  <Upload className="h-4 w-4 text-red-600 dark:text-red-400" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">
+                  <p className="text-sm font-medium text-gray-900 dark:text-neutral-100">
                     {attachedFile.name}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-neutral-400">
                     {(attachedFile.size / 1024).toFixed(1)} KB
                   </p>
                 </div>
@@ -180,13 +184,13 @@ export default function ContactPage() {
                 accept="image/*,.pdf,.doc,.docx,.txt"
                 className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
               />
-              <div className="flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-6 transition-colors hover:border-red-500">
+              <div className="flex items-center justify-center rounded-xl border-2 border-dashed border-gray-300 dark:border-neutral-700 p-6 transition-colors hover:border-red-500">
                 <div className="text-center">
-                  <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400" />
-                  <p className="text-sm text-gray-600">
+                  <Upload className="mx-auto mb-2 h-8 w-8 text-gray-400 dark:text-neutral-500" />
+                  <p className="text-sm text-gray-600 dark:text-neutral-400">
                     Click to upload a file or screenshot
                   </p>
-                  <p className="mt-1 text-xs text-gray-500">
+                  <p className="mt-1 text-xs text-gray-500 dark:text-neutral-400">
                     PNG, JPG, PDF, DOC up to 10MB
                   </p>
                 </div>

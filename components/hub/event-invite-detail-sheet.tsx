@@ -69,7 +69,7 @@ export function EventInviteDetailSheet({
                 <DetachedSheet.Title>Event Invite</DetachedSheet.Title>
               </VisuallyHidden.Root>
 
-              <div className='overflow-hidden rounded-2xl bg-white shadow-sm'>
+              <div className='overflow-hidden rounded-2xl bg-white shadow-sm dark:bg-neutral-900'>
                 {/* Event Image */}
                 {event.coverImages.length > 0 && (
                   <div className='relative mx-auto flex h-56 w-56'>
@@ -83,7 +83,7 @@ export function EventInviteDetailSheet({
                 )}
 
                 <div className='p-6'>
-                  <div className='mb-4 flex items-center gap-3 rounded-xl border bg-gray-100 p-4'>
+                  <div className='mb-4 flex items-center gap-3 rounded-xl border bg-gray-100 p-4 dark:bg-neutral-800'>
                     <UserAvatar
                       user={{
                         name: event.hosts[0].name,
@@ -94,26 +94,32 @@ export function EventInviteDetailSheet({
                       size='sm'
                     />
                     <div className='min-w-0 flex-1'>
-                      <p className='text-sm font-medium text-gray-900'>{event.hosts[0].name}</p>
-                      <p className='text-xs text-gray-500'>
+                      <p className='text-sm font-medium text-gray-900 dark:text-neutral-100'>
+                        {event.hosts[0].name}
+                      </p>
+                      <p className='text-xs text-gray-500 dark:text-neutral-400'>
                         invited you to an event on {eventDate} at {eventTime}
                       </p>
                     </div>
                   </div>
 
                   <div className='mb-4'>
-                    <h3 className='mb-2 text-xl font-semibold text-gray-900'>{event.title}</h3>
+                    <h3 className='mb-2 text-xl font-semibold text-gray-900 dark:text-neutral-100'>
+                      {event.title}
+                    </h3>
                     <div
                       className={cn(
-                        'mb-2 flex items-center text-sm text-gray-500',
-                        invite.events.location ? '' : 'text-gray-400'
+                        'mb-2 flex items-center text-sm text-gray-500 dark:text-neutral-400',
+                        invite.events.location ? '' : 'text-gray-400 dark:text-neutral-500'
                       )}
                     >
                       <MapPin className='mr-1 h-4 w-4' />
                       <span>{invite.events.location || 'TBD'}</span>
                     </div>
                     {invite.message && (
-                      <p className='text-sm text-gray-600'>&quot;{invite.message}&quot;</p>
+                      <p className='text-sm text-gray-600 dark:text-neutral-400'>
+                        &quot;{invite.message}&quot;
+                      </p>
                     )}
                   </div>
 
@@ -147,9 +153,12 @@ export function EventInviteDetailSheet({
                       <span
                         className={cn(
                           'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium',
-                          invite.response === 'going' && 'bg-green-100 text-green-800',
-                          invite.response === 'maybe' && 'bg-yellow-100 text-yellow-800',
-                          invite.response === 'not_going' && 'bg-red-100 text-red-800'
+                          invite.response === 'going' &&
+                            'bg-green-100 text-green-800 dark:bg-green-950/60 dark:text-green-400',
+                          invite.response === 'maybe' &&
+                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-950/60 dark:text-yellow-400',
+                          invite.response === 'not_going' &&
+                            'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-400'
                         )}
                       >
                         {invite.response === 'going' && <Check className='mr-1 h-3 w-3' />}

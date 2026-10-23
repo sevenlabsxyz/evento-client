@@ -94,9 +94,11 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
               id='name'
               placeholder='Contact name'
               disabled={isLoading}
-              className='h-12 rounded-full bg-gray-50'
+              className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
-            {errors.name && <p className='text-sm text-red-500'>{errors.name.message}</p>}
+            {errors.name && (
+              <p className='text-sm text-red-500 dark:text-red-400'>{errors.name.message}</p>
+            )}
           </div>
 
           <div className='space-y-2'>
@@ -110,10 +112,12 @@ export function EditContactSheet({ contact, open, onOpenChange }: EditContactShe
               placeholder='user@domain.com'
               disabled={isLoading}
               autoComplete='email'
-              className='h-12 rounded-full bg-gray-50'
+              className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
             {errors.lightningAddress && (
-              <p className='text-sm text-red-500'>{errors.lightningAddress.message}</p>
+              <p className='text-sm text-red-500 dark:text-red-400'>
+                {errors.lightningAddress.message}
+              </p>
             )}
             <p className='text-xs text-muted-foreground'>
               Enter a Lightning address in user@domain format

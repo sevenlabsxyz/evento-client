@@ -100,11 +100,11 @@ function ScrollWheel<T extends number | string>({
   return (
     <div className='relative h-44 overflow-hidden'>
       {/* Gradient overlays */}
-      <div className='pointer-events-none absolute left-0 right-0 top-0 z-10 h-11 bg-gradient-to-b from-white to-transparent' />
-      <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-11 bg-gradient-to-t from-white to-transparent' />
+      <div className='pointer-events-none absolute left-0 right-0 top-0 z-10 h-11 bg-gradient-to-b from-white to-transparent dark:from-neutral-900' />
+      <div className='pointer-events-none absolute bottom-0 left-0 right-0 z-10 h-11 bg-gradient-to-t from-white to-transparent dark:from-neutral-900' />
 
       {/* Selection indicator */}
-      <div className='pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-11 -translate-y-1/2 border-y border-gray-200/80' />
+      <div className='pointer-events-none absolute left-0 right-0 top-1/2 z-10 h-11 -translate-y-1/2 border-y border-gray-200/80 dark:border-neutral-800/80' />
 
       <div
         ref={wheelRef}
@@ -130,8 +130,8 @@ function ScrollWheel<T extends number | string>({
             }}
             className={`flex h-11 w-full items-center justify-center rounded-lg text-lg font-medium transition-colors ${
               selectedValue === value
-                ? 'border border-gray-200 bg-gray-100 text-gray-900'
-                : 'text-gray-400 hover:text-gray-500'
+                ? 'border border-gray-200 bg-gray-100 text-gray-900 dark:border-neutral-800 dark:bg-neutral-800 dark:text-neutral-100'
+                : 'text-gray-400 hover:text-gray-500 dark:text-neutral-500 dark:hover:text-neutral-400'
             }`}
             style={{
               scrollSnapAlign: 'center',
@@ -216,12 +216,16 @@ export default function TimePickerSheet({
               {/* Header */}
               <div className='mb-6'>
                 <div className='flex items-center justify-between'>
-                  <button type='button' onClick={onClose} className='font-medium text-red-500'>
+                  <button
+                    type='button'
+                    onClick={onClose}
+                    className='font-medium text-red-500 dark:text-red-400'
+                  >
                     Cancel
                   </button>
                   <div className='text-center'>
                     <h2 className='text-lg font-semibold'>{title}</h2>
-                    <p className='whitespace-pre-line text-sm text-gray-500'>
+                    <p className='whitespace-pre-line text-sm text-gray-500 dark:text-neutral-400'>
                       {`${hour.toString().padStart(2, '0')}:${minute
                         .toString()
                         .padStart(2, '0')} ${period}`}
@@ -267,8 +271,8 @@ export default function TimePickerSheet({
                       onClick={() => setPeriod('AM')}
                       className={`h-10 w-16 rounded-lg border text-lg font-medium transition-colors ${
                         period === 'AM'
-                          ? 'border-gray-300 bg-gray-100 text-gray-900'
-                          : 'border-gray-200 bg-transparent text-gray-400'
+                          ? 'border-gray-300 bg-gray-100 text-gray-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100'
+                          : 'border-gray-200 bg-transparent text-gray-400 dark:border-neutral-800 dark:text-neutral-500'
                       } `}
                     >
                       AM
@@ -278,8 +282,8 @@ export default function TimePickerSheet({
                       onClick={() => setPeriod('PM')}
                       className={`h-10 w-16 rounded-lg border text-lg font-medium transition-colors ${
                         period === 'PM'
-                          ? 'border-gray-300 bg-gray-100 text-gray-900'
-                          : 'border-gray-200 bg-transparent text-gray-400'
+                          ? 'border-gray-300 bg-gray-100 text-gray-900 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100'
+                          : 'border-gray-200 bg-transparent text-gray-400 dark:border-neutral-800 dark:text-neutral-500'
                       } `}
                     >
                       PM
@@ -293,18 +297,18 @@ export default function TimePickerSheet({
                 <button
                   type='button'
                   onClick={() => setShowTimezoneSheet(true)}
-                  className='w-full rounded-xl bg-red-100 p-3 font-medium text-red-600'
+                  className='w-full rounded-xl bg-red-100 p-3 font-medium text-red-600 dark:bg-red-950/60 dark:text-red-400'
                 >
                   Timezone: {formatSelectedTimezone(timezone)}
                 </button>
               </div>
 
               {/* Clear Button */}
-              <div className='border-t border-gray-100 pt-4'>
+              <div className='border-t border-gray-100 pt-4 dark:border-neutral-800'>
                 <button
                   type='button'
                   onClick={handleClear}
-                  className='w-full py-3 font-medium text-red-500'
+                  className='w-full py-3 font-medium text-red-500 dark:text-red-400'
                 >
                   Clear Time
                 </button>

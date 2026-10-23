@@ -2,6 +2,7 @@
 
 import { EventoIcon } from '@/components/icons/evento';
 import Google from '@/components/icons/google';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,7 +52,10 @@ function LoginContent() {
   }
 
   return (
-    <div className='flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-gray-50 p-4'>
+    <div className='flex min-h-[100dvh] flex-col items-center justify-center overflow-y-auto bg-gray-50 p-4 dark:bg-neutral-950'>
+      <div className='fixed right-4 top-4 z-50'>
+        <ThemeToggle />
+      </div>
       <Card className='w-full max-w-sm rounded-3xl'>
         <CardHeader className='space-y-1'>
           <div className='mx-auto flex w-full items-center justify-center'>
@@ -76,17 +80,19 @@ function LoginContent() {
                 Email
               </label>
               <div className='relative'>
-                <Mail className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
+                <Mail className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
                 <Input
                   {...register('email')}
                   id='email'
                   type='email'
                   placeholder='you@example.com'
-                  className='bg-gray-50 pl-10'
+                  className='bg-gray-50 pl-10 dark:bg-neutral-950'
                   disabled={isLoading || isGoogleLoading}
                 />
               </div>
-              {errors.email && <p className='text-sm text-red-500'>{errors.email.message}</p>}
+              {errors.email && (
+                <p className='text-sm text-red-500 dark:text-red-400'>{errors.email.message}</p>
+              )}
             </div>
 
             <Button
@@ -110,13 +116,13 @@ function LoginContent() {
               <span className='w-full border-t' />
             </div>
             <div className='relative flex justify-center text-xs uppercase'>
-              <span className='bg-white px-2 text-muted-foreground'>or</span>
+              <span className='bg-white px-2 text-muted-foreground dark:bg-neutral-900'>or</span>
             </div>
           </div>
 
           <Button
             variant='secondary'
-            className='w-full border border-gray-200 py-6 text-base'
+            className='w-full border border-gray-200 py-6 text-base dark:border-neutral-800'
             onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
           >
@@ -142,11 +148,11 @@ function LoginContent() {
       <div className='mx-auto my-4 w-full max-w-xs text-center text-xs tracking-wide text-muted-foreground opacity-75'>
         <p>
           By continuing to use this app, you agree to Evento&apos;s{' '}
-          <Link href='/terms' className='underline hover:text-red-600'>
+          <Link href='/terms' className='underline hover:text-red-600 dark:hover:text-red-400'>
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href='/privacy' className='underline hover:text-red-600'>
+          <Link href='/privacy' className='underline hover:text-red-600 dark:hover:text-red-400'>
             Privacy Policy
           </Link>
           .

@@ -64,7 +64,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* Manage Button */}
       <button
         onClick={handleManage}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
       >
         <Settings className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Manage</span>
@@ -73,7 +73,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* Blasts Button */}
       <button
         onClick={handleEmailBlasts}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
       >
         <Mail className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>Blasts</span>
@@ -82,7 +82,7 @@ export default function OwnerEventButtons({ eventId }: OwnerEventButtonsProps) {
       {/* More Button */}
       <button
         onClick={() => setMoreOptionsOpen(true)}
-        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100'
+        className='flex h-16 flex-col items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-gray-700 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
       >
         <MoreHorizontal className='mb-1 h-5 w-5' />
         <span className='text-xs font-medium'>More</span>

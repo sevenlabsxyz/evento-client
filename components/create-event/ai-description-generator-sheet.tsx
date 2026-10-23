@@ -149,21 +149,23 @@ export function AIDescriptionGeneratorSheet({
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content className='relative'>
             {/* Fixed Header */}
-            <div className='border-b border-gray-200'>
+            <div className='border-b border-gray-200 dark:border-neutral-800'>
               <div className='mb-4 flex justify-center'>
-                <SheetWithDetentFull.Handle className='h-1 w-12 rounded-full bg-gray-300' />
+                <SheetWithDetentFull.Handle className='h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
               </div>
               <div className='flex items-center justify-between px-4 pb-4'>
                 <button
                   onClick={onClose}
-                  className='font-medium text-red-600 transition-colors hover:text-red-700'
+                  className='font-medium text-red-600 transition-colors hover:text-red-700 dark:text-red-400 dark:hover:text-red-400'
                 >
                   Cancel
                 </button>
-                <h1 className='text-lg font-semibold text-gray-900'>AI Description</h1>
+                <h1 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+                  AI Description
+                </h1>
                 <button
                   onClick={onClose}
-                  className='text-gray-500 opacity-0 transition-colors hover:text-gray-700'
+                  className='text-gray-500 opacity-0 transition-colors hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                 >
                   Cancel
                 </button>
@@ -171,16 +173,16 @@ export function AIDescriptionGeneratorSheet({
 
               {/* Title Warning */}
               {!hasTitleField && (
-                <div className='flex items-center gap-1 bg-amber-50 px-4 py-2 text-sm text-amber-600'>
+                <div className='flex items-center gap-1 bg-amber-50 px-4 py-2 text-sm text-amber-600 dark:bg-amber-950/40 dark:text-amber-400'>
                   <p>Please add an event title before generating a description</p>
                 </div>
               )}
 
               {/* Toolbar */}
-              <div className='bg-gray-50 px-4 py-2'>
+              <div className='bg-gray-50 px-4 py-2 dark:bg-neutral-950'>
                 <div className='mx-auto flex max-w-md items-center justify-center gap-2'>
                   <div className='flex items-center gap-1'>
-                    <Sparkles className='h-4 w-4 text-red-600' />
+                    <Sparkles className='h-4 w-4 text-red-600 dark:text-red-400' />
                     <span className='text-sm font-medium'>AI-powered description generator</span>
                   </div>
                 </div>
@@ -189,9 +191,9 @@ export function AIDescriptionGeneratorSheet({
 
             {/* Loading overlay */}
             {generateDescriptionMutation.isPending && (
-              <div className='absolute inset-0 z-10 flex flex-col items-center justify-center bg-white bg-opacity-90 p-4 text-center'>
-                <LoadingLogo size='lg' className='mb-4 text-red-600' />
-                <p className='text-sm text-gray-600'>
+              <div className='absolute inset-0 z-10 flex flex-col items-center justify-center bg-white bg-opacity-90 p-4 text-center dark:bg-neutral-900'>
+                <LoadingLogo size='lg' className='mb-4 text-red-600 dark:text-red-400' />
+                <p className='text-sm text-gray-600 dark:text-neutral-400'>
                   Creating the perfect description for your event...
                 </p>
               </div>
@@ -207,15 +209,15 @@ export function AIDescriptionGeneratorSheet({
                         {/* Custom Prompt */}
                         <div className='mb-6'>
                           <h2 className='mb-2 text-base font-medium'>Custom Prompt (Optional)</h2>
-                          <p className='mb-2 text-sm text-gray-500'>
+                          <p className='mb-2 text-sm text-gray-500 dark:text-neutral-400'>
                             Add specific details you&apos;d like to include in your description
                           </p>
                           <textarea
                             className={cn(
                               'w-full resize-none rounded-md border p-3 transition-colors',
                               !hasTitleField
-                                ? 'border-gray-200 bg-gray-50 text-gray-400'
-                                : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50'
+                                ? 'border-gray-200 bg-gray-50 text-gray-400 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-500'
+                                : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50 dark:border-neutral-800 dark:focus:ring-red-900'
                             )}
                             placeholder='e.g. Include information about food, dress code, or parking...'
                             rows={3}
@@ -235,14 +237,14 @@ export function AIDescriptionGeneratorSheet({
                                 className={cn(
                                   'flex flex-col items-center justify-center rounded-md border px-2 py-3 transition-all',
                                   selectedLength === option.value
-                                    ? 'border-red-600 bg-red-50 text-red-600'
-                                    : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-red-600 bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
+                                    : 'border-gray-200 hover:border-gray-300 dark:border-neutral-800 dark:hover:border-neutral-700'
                                 )}
                                 onClick={() => setSelectedLength(option.value)}
                                 disabled={generateDescriptionMutation.isPending || !hasTitleField}
                               >
                                 <span className='font-medium'>{option.label}</span>
-                                <span className='mt-1 text-xs text-gray-500'>
+                                <span className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
                                   {option.description}
                                 </span>
                               </button>
@@ -260,15 +262,15 @@ export function AIDescriptionGeneratorSheet({
                                 className={cn(
                                   'flex flex-col items-center justify-center rounded-md border px-2 py-3 transition-all',
                                   selectedTone === option.value
-                                    ? 'border-red-600 bg-red-50 text-red-600'
-                                    : 'border-gray-200 hover:border-gray-300'
+                                    ? 'border-red-600 bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
+                                    : 'border-gray-200 hover:border-gray-300 dark:border-neutral-800 dark:hover:border-neutral-700'
                                 )}
                                 onClick={() => setSelectedTone(option.value)}
                                 disabled={generateDescriptionMutation.isPending || !hasTitleField}
                               >
                                 <div className='mb-1'>{option.icon}</div>
                                 <span className='font-medium'>{option.label}</span>
-                                <span className='mt-1 text-xs text-gray-500'>
+                                <span className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
                                   {option.description}
                                 </span>
                               </button>
@@ -302,7 +304,7 @@ export function AIDescriptionGeneratorSheet({
                           </Button>
 
                           {!hasTitleField && (
-                            <p className='mt-2 text-center text-sm text-gray-500'>
+                            <p className='mt-2 text-center text-sm text-gray-500 dark:text-neutral-400'>
                               Add an event title to enable description generation
                             </p>
                           )}
@@ -310,7 +312,7 @@ export function AIDescriptionGeneratorSheet({
 
                         {/* Error Message */}
                         {error && (
-                          <div className='mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700'>
+                          <div className='mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-400'>
                             {error}
                           </div>
                         )}
@@ -319,11 +321,11 @@ export function AIDescriptionGeneratorSheet({
                       <>
                         {/* Generated Content Display */}
                         <div className='mb-5'>
-                          <div className='mb-3 flex items-center gap-2 text-green-600'>
+                          <div className='mb-3 flex items-center gap-2 text-green-600 dark:text-green-400'>
                             <CheckCircle className='h-5 w-5' />
                             <span className='text-base font-medium'>Description Generated!</span>
                           </div>
-                          <div className='prose prose-sm max-w-none rounded-md border border-gray-200 bg-white p-4'>
+                          <div className='prose prose-sm max-w-none rounded-md border border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900'>
                             <div
                               dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(generatedContent || ''),
@@ -340,7 +342,7 @@ export function AIDescriptionGeneratorSheet({
                               setGeneratedContent(null);
                               setError(null);
                             }}
-                            className='flex-1 border-gray-200 text-gray-700 hover:bg-gray-50'
+                            className='flex-1 border-gray-200 text-gray-700 hover:bg-gray-50 dark:border-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-950'
                           >
                             Edit Options
                           </Button>

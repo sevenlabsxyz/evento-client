@@ -54,8 +54,8 @@ export default function AddQuestionPage() {
       description: 'Collect a short, single-line answer',
       defaultQuestion: '',
       icon: <Type className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
     },
     long_text: {
       type: 'long_text',
@@ -63,8 +63,8 @@ export default function AddQuestionPage() {
       description: 'Collect a longer, multi-line answer',
       defaultQuestion: '',
       icon: <FileText className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
     },
     single_select: {
       type: 'single_select',
@@ -72,8 +72,8 @@ export default function AddQuestionPage() {
       description: 'Let guests choose one option from a list',
       defaultQuestion: '',
       icon: <List className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       hasOptions: true,
     },
     multi_select: {
@@ -82,8 +82,8 @@ export default function AddQuestionPage() {
       description: 'Let guests choose multiple options from a list',
       defaultQuestion: '',
       icon: <CheckSquare className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       hasOptions: true,
     },
     url: {
@@ -92,8 +92,8 @@ export default function AddQuestionPage() {
       description: 'Collect a website or link',
       defaultQuestion: '',
       icon: <Link className='h-6 w-6' />,
-      iconBg: 'bg-purple-100',
-      iconColor: 'text-purple-600',
+      iconBg: 'bg-purple-100 dark:bg-purple-950/60',
+      iconColor: 'text-purple-600 dark:text-purple-400',
     },
     phone: {
       type: 'phone',
@@ -101,8 +101,8 @@ export default function AddQuestionPage() {
       description: 'Collect a phone number',
       defaultQuestion: 'What is your phone number?',
       icon: <Phone className='h-6 w-6' />,
-      iconBg: 'bg-green-100',
-      iconColor: 'text-green-600',
+      iconBg: 'bg-green-100 dark:bg-green-950/60',
+      iconColor: 'text-green-600 dark:text-green-400',
     },
     checkbox: {
       type: 'checkbox',
@@ -110,8 +110,8 @@ export default function AddQuestionPage() {
       description: 'Get a yes/no or agree/disagree response',
       defaultQuestion: '',
       icon: <Square className='h-6 w-6' />,
-      iconBg: 'bg-yellow-100',
-      iconColor: 'text-yellow-600',
+      iconBg: 'bg-yellow-100 dark:bg-yellow-950/60',
+      iconColor: 'text-yellow-600 dark:text-yellow-400',
     },
     instagram: {
       type: 'instagram',
@@ -119,8 +119,8 @@ export default function AddQuestionPage() {
       description: "Get the guest's Instagram username",
       defaultQuestion: 'What is your Instagram profile?',
       icon: <Instagram className='h-6 w-6' />,
-      iconBg: 'bg-pink-100',
-      iconColor: 'text-pink-600',
+      iconBg: 'bg-pink-100 dark:bg-pink-950/60',
+      iconColor: 'text-pink-600 dark:text-pink-400',
     },
     twitter: {
       type: 'twitter',
@@ -128,8 +128,8 @@ export default function AddQuestionPage() {
       description: "Get the guest's X (Twitter) handle",
       defaultQuestion: 'What is your X (Twitter) handle?',
       icon: <Twitter className='h-6 w-6' />,
-      iconBg: 'bg-gray-100',
-      iconColor: 'text-gray-600',
+      iconBg: 'bg-gray-100 dark:bg-neutral-800',
+      iconColor: 'text-gray-600 dark:text-neutral-400',
     },
     youtube: {
       type: 'youtube',
@@ -137,8 +137,8 @@ export default function AddQuestionPage() {
       description: "Get the guest's YouTube channel",
       defaultQuestion: 'What is your YouTube channel?',
       icon: <Youtube className='h-6 w-6' />,
-      iconBg: 'bg-red-100',
-      iconColor: 'text-red-600',
+      iconBg: 'bg-red-100 dark:bg-red-950/60',
+      iconColor: 'text-red-600 dark:text-red-400',
     },
     linkedin: {
       type: 'linkedin',
@@ -146,8 +146,8 @@ export default function AddQuestionPage() {
       description: "Get the guest's LinkedIn profile",
       defaultQuestion: 'What is your LinkedIn profile?',
       icon: <Linkedin className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
     },
     company: {
       type: 'company',
@@ -155,8 +155,8 @@ export default function AddQuestionPage() {
       description: 'Get the company the guest works for',
       defaultQuestion: 'What company do you work for?',
       icon: <Building className='h-6 w-6' />,
-      iconBg: 'bg-blue-100',
-      iconColor: 'text-blue-600',
+      iconBg: 'bg-blue-100 dark:bg-blue-950/60',
+      iconColor: 'text-blue-600 dark:text-blue-400',
       autoNote: "We'll automatically pull this information if they've entered it on Evento before.",
     },
   };
@@ -206,10 +206,12 @@ export default function AddQuestionPage() {
 
   if (!config) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Invalid Question Type</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Invalid Question Type
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The question type you&apos;re trying to add doesn&apos;t exist.
           </p>
           <button
@@ -224,11 +226,14 @@ export default function AddQuestionPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
       {/* Header */}
-      <div className='flex items-center justify-between border-b border-gray-100 p-4'>
+      <div className='flex items-center justify-between border-b border-gray-100 p-4 dark:border-neutral-800'>
         <div className='flex items-center gap-4'>
-          <button onClick={() => router.back()} className='rounded-full p-2 hover:bg-gray-100'>
+          <button
+            onClick={() => router.back()}
+            className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+          >
             <ArrowLeft className='h-5 w-5' />
           </button>
           <h1 className='text-xl font-semibold'>Add Question</h1>
@@ -238,7 +243,7 @@ export default function AddQuestionPage() {
           className={`rounded-full px-6 py-2 font-medium transition-all ${
             isFormValid && !createQuestion.isPending
               ? 'bg-black text-white hover:bg-gray-800'
-              : 'cursor-not-allowed bg-gray-300 text-gray-500'
+              : 'cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-neutral-600 dark:text-neutral-400'
           }`}
           disabled={!isFormValid || createQuestion.isPending}
         >
@@ -261,34 +266,40 @@ export default function AddQuestionPage() {
             <div className={config.iconColor}>{config.icon}</div>
           </div>
           <div>
-            <h2 className='text-lg font-semibold text-gray-900'>{config.label}</h2>
-            <p className='text-sm text-gray-500'>{config.description}</p>
+            <h2 className='text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+              {config.label}
+            </h2>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>{config.description}</p>
           </div>
         </div>
 
         {/* Question Label Input */}
         <div className='space-y-2'>
-          <label className='block text-sm font-medium text-gray-700'>Question Label</label>
+          <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
+            Question Label
+          </label>
           <input
             type='text'
             value={questionLabel}
             onChange={(e) => setQuestionLabel(e.target.value)}
             placeholder='Enter your question'
-            className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500'
+            className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
           />
         </div>
 
         {/* Auto Note for social profiles and company */}
         {config.autoNote && (
-          <div className='rounded-xl bg-blue-50 p-4'>
-            <p className='text-sm text-blue-700'>{config.autoNote}</p>
+          <div className='rounded-xl bg-blue-50 p-4 dark:bg-blue-950/40'>
+            <p className='text-sm text-blue-700 dark:text-blue-400'>{config.autoNote}</p>
           </div>
         )}
 
         {/* Options for select types */}
         {config.hasOptions && (
           <div className='space-y-3'>
-            <label className='block text-sm font-medium text-gray-700'>Options</label>
+            <label className='block text-sm font-medium text-gray-700 dark:text-neutral-300'>
+              Options
+            </label>
             {options.map((option, index) => (
               <div key={index} className='flex gap-2'>
                 <input
@@ -296,12 +307,12 @@ export default function AddQuestionPage() {
                   value={option}
                   onChange={(e) => handleOptionChange(index, e.target.value)}
                   placeholder={`Option ${index + 1}`}
-                  className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500'
+                  className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
                 />
                 {options.length > 1 && (
                   <button
                     onClick={() => handleRemoveOption(index)}
-                    className='rounded-lg px-3 py-2 text-red-600 hover:bg-red-50'
+                    className='rounded-lg px-3 py-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40'
                   >
                     Remove
                   </button>
@@ -310,7 +321,7 @@ export default function AddQuestionPage() {
             ))}
             <button
               onClick={handleAddOption}
-              className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600'
+              className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-400'
             >
               + Add Option
             </button>
@@ -318,19 +329,21 @@ export default function AddQuestionPage() {
         )}
 
         {/* Required Toggle */}
-        <div className='flex items-center justify-between rounded-xl bg-gray-50 p-4'>
+        <div className='flex items-center justify-between rounded-xl bg-gray-50 p-4 dark:bg-neutral-950'>
           <div>
-            <h3 className='font-medium text-gray-900'>Required</h3>
-            <p className='text-sm text-gray-500'>Guests must answer this question to register</p>
+            <h3 className='font-medium text-gray-900 dark:text-neutral-100'>Required</h3>
+            <p className='text-sm text-gray-500 dark:text-neutral-400'>
+              Guests must answer this question to register
+            </p>
           </div>
           <button
             onClick={() => setIsRequired(!isRequired)}
             className={`h-6 w-12 rounded-full transition-colors ${
-              isRequired ? 'bg-red-500' : 'bg-gray-300'
+              isRequired ? 'bg-red-500' : 'bg-gray-300 dark:bg-neutral-600'
             }`}
           >
             <div
-              className={`h-5 w-5 rounded-full bg-white transition-transform ${
+              className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
                 isRequired ? 'translate-x-6' : 'translate-x-0.5'
               }`}
             />

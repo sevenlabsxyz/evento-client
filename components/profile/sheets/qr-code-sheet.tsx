@@ -90,12 +90,14 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
               </div>
 
               <h2 className='mb-2 text-center text-lg font-semibold'>Profile QR Code</h2>
-              <p className='mb-6 text-center text-sm text-gray-500'>@{username}</p>
+              <p className='mb-6 text-center text-sm text-gray-500 dark:text-neutral-400'>
+                @{username}
+              </p>
 
               <div className='mb-6 flex justify-center'>
                 <div
                   ref={qrCodeRef}
-                  className='rounded-2xl border border-gray-100 bg-white p-4 shadow-sm'
+                  className='rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'
                 >
                   <QRCodeSVG
                     value={profileUrl}
@@ -116,8 +118,10 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
               </div>
 
               <div className='mb-6'>
-                <div className='rounded-lg bg-gray-50 p-3'>
-                  <p className='text-center text-sm text-gray-700'>evento.so/{username}</p>
+                <div className='rounded-lg bg-gray-50 p-3 dark:bg-neutral-950'>
+                  <p className='text-center text-sm text-gray-700 dark:text-neutral-300'>
+                    evento.so/{username}
+                  </p>
                 </div>
               </div>
 

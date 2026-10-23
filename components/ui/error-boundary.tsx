@@ -59,8 +59,10 @@ export class ErrorBoundary extends Component<Props, State> {
 
       return (
         <div className='flex flex-col items-center justify-center p-6 text-center'>
-          <div className='mb-2 text-lg font-semibold text-gray-900'>Something went wrong</div>
-          <div className='mb-4 text-sm text-gray-600'>
+          <div className='mb-2 text-lg font-semibold text-gray-900 dark:text-neutral-100'>
+            Something went wrong
+          </div>
+          <div className='mb-4 text-sm text-gray-600 dark:text-neutral-400'>
             We&apos;re sorry, but there was an error loading this content.
           </div>
           <button

@@ -12,9 +12,10 @@ export const getOutput = (editor: Editor, format: 'html' | 'json' | 'text') => {
   }
 };
 
-export const activeItemClass = 'bg-red-50 text-red-600';
+export const activeItemClass = 'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400';
 
-export const DropdownMenuItemClass = 'w-full text-left px-3 py-2 hover:bg-gray-50';
+export const DropdownMenuItemClass =
+  'w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-950';
 
 export interface LinkProps {
   url: string;

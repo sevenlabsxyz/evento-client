@@ -102,40 +102,40 @@ export default function AttachmentSheet({
                 {options.map((option) => {
                   const getButtonStyles = () => {
                     if (option.disabled) {
-                      return 'w-full p-4 bg-gray-200 rounded-2xl flex items-center gap-4 text-left cursor-not-allowed opacity-50';
+                      return 'w-full p-4 bg-gray-200 dark:bg-neutral-700 rounded-2xl flex items-center gap-4 text-left cursor-not-allowed opacity-50';
                     }
                     if (option.filled) {
-                      return 'w-full p-4 bg-green-50 border border-green-200 hover:bg-green-100 rounded-2xl flex items-center gap-4 text-left transition-colors';
+                      return 'w-full p-4 bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-900 hover:bg-green-100 dark:hover:bg-green-950/60 rounded-2xl flex items-center gap-4 text-left transition-colors';
                     }
-                    return 'w-full p-4 bg-gray-50 hover:bg-gray-100 rounded-2xl flex items-center gap-4 text-left transition-colors';
+                    return 'w-full p-4 bg-gray-50 dark:bg-neutral-950 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-2xl flex items-center gap-4 text-left transition-colors';
                   };
 
                   const getIconStyles = () => {
                     if (option.disabled) {
-                      return 'w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center text-gray-500';
+                      return 'w-12 h-12 bg-gray-300 dark:bg-neutral-600 rounded-full flex items-center justify-center text-gray-500 dark:text-neutral-400';
                     }
                     if (option.filled) {
-                      return 'w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-700';
+                      return 'w-12 h-12 bg-green-100 dark:bg-green-950/60 rounded-full flex items-center justify-center text-green-700 dark:text-green-400';
                     }
-                    return 'w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-600';
+                    return 'w-12 h-12 bg-white dark:bg-neutral-900 rounded-full flex items-center justify-center text-gray-600 dark:text-neutral-400';
                   };
 
                   const getTextStyles = () => {
                     if (option.disabled) {
                       return {
-                        label: 'font-medium text-gray-500',
-                        description: 'text-sm text-gray-400',
+                        label: 'font-medium text-gray-500 dark:text-neutral-400',
+                        description: 'text-sm text-gray-400 dark:text-neutral-500',
                       };
                     }
                     if (option.filled) {
                       return {
-                        label: 'font-medium text-green-900',
-                        description: 'text-sm text-green-700',
+                        label: 'font-medium text-green-900 dark:text-green-400',
+                        description: 'text-sm text-green-700 dark:text-green-400',
                       };
                     }
                     return {
-                      label: 'font-medium text-gray-900',
-                      description: 'text-sm text-gray-500',
+                      label: 'font-medium text-gray-900 dark:text-neutral-100',
+                      description: 'text-sm text-gray-500 dark:text-neutral-400',
                     };
                   };
 

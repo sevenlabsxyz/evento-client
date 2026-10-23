@@ -139,7 +139,7 @@ export function TelegramConnectSheet({
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content className='grid grid-rows-[min-content_1fr]'>
-            <div className='border-b border-gray-100 p-4'>
+            <div className='border-b border-gray-100 p-4 dark:border-neutral-800'>
               <div className='mb-4 flex justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
@@ -148,8 +148,10 @@ export function TelegramConnectSheet({
                   <Send className='h-5 w-5 text-white' />
                 </div>
                 <div>
-                  <h2 className='text-xl font-bold text-gray-900'>Telegram</h2>
-                  <p className='text-sm text-gray-500'>
+                  <h2 className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
+                    Telegram
+                  </h2>
+                  <p className='text-sm text-gray-500 dark:text-neutral-400'>
                     {isConnected
                       ? 'Your Telegram account is connected'
                       : 'Connect your Telegram account'}
@@ -163,16 +165,16 @@ export function TelegramConnectSheet({
                 <SheetWithDetentFull.ScrollContent className='p-6'>
                   {isConnected ? (
                     <div className='space-y-6'>
-                      <div className='flex items-center gap-3 rounded-2xl bg-green-50 p-4'>
-                        <CheckCircle className='h-5 w-5 flex-shrink-0 text-green-600' />
-                        <p className='text-sm text-green-800'>
+                      <div className='flex items-center gap-3 rounded-2xl bg-green-50 p-4 dark:bg-green-950/40'>
+                        <CheckCircle className='h-5 w-5 flex-shrink-0 text-green-600 dark:text-green-400' />
+                        <p className='text-sm text-green-800 dark:text-green-400'>
                           Telegram is connected. You can log in with Telegram and receive
                           notifications there.
                         </p>
                       </div>
                       <Button
                         variant='secondary'
-                        className='w-full rounded-xl border border-red-200 py-4 text-red-600 hover:bg-red-50'
+                        className='w-full rounded-xl border border-red-200 py-4 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/40'
                         onClick={handleDisconnect}
                         disabled={isDisconnecting}
                       >
@@ -191,13 +193,13 @@ export function TelegramConnectSheet({
                     </div>
                   ) : (
                     <div className='space-y-6'>
-                      <p className='text-sm text-gray-600'>
+                      <p className='text-sm text-gray-600 dark:text-neutral-400'>
                         Connect Telegram to log in with your Telegram account and receive event
                         notifications via Telegram.
                       </p>
                       <div className='flex min-h-[56px] items-center justify-center'>
                         {!widgetLoaded && (
-                          <Loader2 className='h-6 w-6 animate-spin text-gray-400' />
+                          <Loader2 className='h-6 w-6 animate-spin text-gray-400 dark:text-neutral-500' />
                         )}
                         <div
                           ref={widgetContainerRef}
@@ -205,7 +207,7 @@ export function TelegramConnectSheet({
                         />
                       </div>
                       {!BOT_USERNAME && (
-                        <p className='text-center text-xs text-red-500'>
+                        <p className='text-center text-xs text-red-500 dark:text-red-400'>
                           NEXT_PUBLIC_TELEGRAM_BOT_USERNAME is not configured.
                         </p>
                       )}

@@ -111,9 +111,9 @@ export default function HostsManagementPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='space-y-4 p-4'>
-          <div className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+          <div className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'>
             <Skeleton className='h-12 w-12 rounded-full' />
             <div className='flex-1 space-y-2'>
               <Skeleton className='h-5 w-24' />
@@ -127,10 +127,12 @@ export default function HostsManagementPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to manage doesn&apos;t exist.
           </p>
           <button
@@ -148,7 +150,7 @@ export default function HostsManagementPage() {
 
   return (
     <>
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='space-y-4 p-4'>
           {/* Invite Cohost Button */}
           <div className='flex justify-center'>
@@ -174,7 +176,9 @@ export default function HostsManagementPage() {
                   <div
                     key={host.id}
                     className={`flex items-center gap-4 rounded-2xl p-4 ${
-                      isCreator ? 'border border-amber-200 bg-amber-50' : 'bg-gray-50'
+                      isCreator
+                        ? 'border border-amber-200 bg-amber-50 dark:border-amber-900 dark:bg-amber-950/40'
+                        : 'bg-gray-50 dark:bg-neutral-950'
                     }`}
                   >
                     <UserAvatar
@@ -195,17 +199,19 @@ export default function HostsManagementPage() {
                       ) : (
                         <>
                           <div className='flex items-center gap-2'>
-                            <h3 className='truncate font-semibold text-gray-900'>
+                            <h3 className='truncate font-semibold text-gray-900 dark:text-neutral-100'>
                               {hostDisplayName}
                             </h3>
                             {isCreator && (
-                              <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
+                              <span className='flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
                                 <Crown className='h-3 w-3' />
                                 Creator
                               </span>
                             )}
                           </div>
-                          <p className='text-sm text-gray-500'>{hostHandle}</p>
+                          <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                            {hostHandle}
+                          </p>
                         </>
                       )}
                     </div>
@@ -213,7 +219,7 @@ export default function HostsManagementPage() {
                       <button
                         onClick={() => handleRemoveHost(host.id)}
                         disabled={removingHostId === host.id}
-                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50'
+                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-red-400'
                         aria-label={`Remove ${host.name || host.username}`}
                       >
                         <Trash2 className='h-4 w-4' />
@@ -228,11 +234,13 @@ export default function HostsManagementPage() {
             </div>
           ) : (
             <div className='py-12 text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Plus className='h-8 w-8 text-gray-400' />
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
-              <h3 className='mb-2 text-lg font-medium text-gray-900'>No Hosts</h3>
-              <p className='mb-6 text-sm text-gray-500'>
+              <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+                No Hosts
+              </h3>
+              <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
                 Add cohosts to help you manage this event
               </p>
               <button
@@ -246,40 +254,42 @@ export default function HostsManagementPage() {
 
           {pendingInvites.length > 0 && (
             <div className='mt-6'>
-              <h3 className='mb-3 text-sm font-medium text-gray-500'>Pending Invites</h3>
+              <h3 className='mb-3 text-sm font-medium text-gray-500 dark:text-neutral-400'>
+                Pending Invites
+              </h3>
               <div className='space-y-2'>
                 {pendingInvites.map((invite) => {
                   const isCancelling = cancellingInviteId === invite.id;
                   return (
                     <div
                       key={invite.id}
-                      className={`flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 transition-opacity ${
+                      className={`flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3 transition-opacity dark:border-amber-900 dark:bg-amber-950/40 ${
                         isCancelling ? 'opacity-50' : ''
                       }`}
                     >
-                      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100'>
+                      <div className='flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-950/60'>
                         {isCancelling ? (
-                          <Loader2 className='h-4 w-4 animate-spin text-amber-600' />
+                          <Loader2 className='h-4 w-4 animate-spin text-amber-600 dark:text-amber-400' />
                         ) : (
-                          <Clock className='h-4 w-4 text-amber-600' />
+                          <Clock className='h-4 w-4 text-amber-600 dark:text-amber-400' />
                         )}
                       </div>
                       <div className='min-w-0 flex-1'>
-                        <p className='truncate text-sm font-medium text-gray-900'>
+                        <p className='truncate text-sm font-medium text-gray-900 dark:text-neutral-100'>
                           {invite.invitee?.username
                             ? `@${invite.invitee.username}`
                             : invite.invitee_email}
                         </p>
-                        <p className='text-xs text-gray-500'>
+                        <p className='text-xs text-gray-500 dark:text-neutral-400'>
                           {isCancelling ? 'Cancelling...' : 'Pending cohost invite'}
                         </p>
                       </div>
                       <button
                         onClick={() => handleCancelInvite(invite)}
                         disabled={isCancelling || cancelInviteMutation.isPending}
-                        className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50'
+                        className='flex h-8 w-8 items-center justify-center rounded-full hover:bg-amber-200 disabled:cursor-not-allowed disabled:opacity-50 dark:hover:bg-amber-900/60'
                       >
-                        <X className='h-4 w-4 text-gray-500' />
+                        <X className='h-4 w-4 text-gray-500 dark:text-neutral-400' />
                       </button>
                     </div>
                   );
@@ -302,7 +312,7 @@ export default function HostsManagementPage() {
             <AlertDialogTitle>Cancel Invite?</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to cancel the cohost invitation to{' '}
-              <span className='font-medium text-gray-900'>
+              <span className='font-medium text-gray-900 dark:text-neutral-100'>
                 {inviteToCancel?.invitee?.username
                   ? `@${inviteToCancel.invitee.username}`
                   : inviteToCancel?.invitee_email}

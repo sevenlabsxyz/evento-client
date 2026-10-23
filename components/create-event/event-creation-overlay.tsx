@@ -67,7 +67,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
           <div className='flex w-64 max-w-full flex-col items-center justify-center space-y-6 px-4'>
             {/* Animated Logo */}
             <motion.div
-              className='rounded-full border border-gray-200 bg-gray-50 p-6 shadow-lg'
+              className='rounded-full border border-gray-200 bg-gray-50 p-6 shadow-lg dark:border-neutral-800 dark:bg-neutral-950'
               animate={{
                 rotate: 360,
               }}
@@ -96,7 +96,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.3 }}
-                  className='absolute inset-0 text-center text-lg font-medium text-gray-900'
+                  className='absolute inset-0 text-center text-lg font-medium text-gray-900 dark:text-neutral-100'
                 >
                   {LOADING_MESSAGES[currentMessageIndex]}
                 </motion.p>

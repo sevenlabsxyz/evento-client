@@ -64,6 +64,7 @@ body {
 
 @layer base {
   :root {
+    color-scheme: light;
     --background: 0 0% 100%;
     --foreground: 0 0% 3.9%;
     --card: 0 0% 100%;
@@ -99,11 +100,12 @@ body {
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
   .dark {
+    color-scheme: dark;
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 0 0% 9%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 0 0% 9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
@@ -144,8 +146,33 @@ body {
 }
 
 .prose hr {
-  @apply border-gray-100;
+  @apply border-gray-100 dark:border-neutral-800;
   @apply my-6;
+}
+
+/* Typography plugin: readable defaults in dark mode */
+.dark .prose {
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-lead: hsl(var(--muted-foreground));
+  --tw-prose-links: hsl(var(--foreground));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-counters: hsl(var(--muted-foreground));
+  --tw-prose-bullets: hsl(var(--muted-foreground));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-quote-borders: hsl(var(--border));
+  --tw-prose-captions: hsl(var(--muted-foreground));
+  --tw-prose-code: hsl(var(--foreground));
+  --tw-prose-pre-code: hsl(var(--foreground));
+  --tw-prose-pre-bg: hsl(var(--muted));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border));
+}
+
+.dark ::selection {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
 }
 
 /* Toast styling */
@@ -185,6 +212,35 @@ body {
 [data-sonner-toast][data-styled='true'] [data-description] {
   @apply text-gray-700 !important;
   @apply text-base !important;
+}
+
+/* Rich toasts keep readable contrast on dark surfaces */
+.dark [data-rich-colors='true'][data-sonner-toast][data-type='success'] {
+  @apply bg-green-950/60 !important;
+  @apply border-green-800 !important;
+}
+
+.dark [data-rich-colors='true'][data-sonner-toast][data-type='error'] {
+  @apply bg-red-950/60 !important;
+  @apply border-red-800 !important;
+}
+
+.dark [data-rich-colors='true'][data-sonner-toast][data-type='info'] {
+  @apply bg-blue-950/60 !important;
+  @apply border-blue-800 !important;
+}
+
+.dark [data-rich-colors='true'][data-sonner-toast][data-type='warning'] {
+  @apply bg-orange-950/60 !important;
+  @apply border-orange-800 !important;
+}
+
+.dark [data-sonner-toast][data-styled='true'] [data-title] {
+  @apply text-gray-100 !important;
+}
+
+.dark [data-sonner-toast][data-styled='true'] [data-description] {
+  @apply text-gray-300 !important;
 }
 
 [data-sonner-toast][data-styled='true'] [data-icon] {

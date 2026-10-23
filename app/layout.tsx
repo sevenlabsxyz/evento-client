@@ -50,7 +50,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: '#ffffff',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
+  ],
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -60,7 +63,7 @@ export const viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en'>
+    <html lang='en' suppressHydrationWarning>
       <head>
         <meta name='mobile-web-app-capable' content='yes' />
         <meta name='apple-mobile-web-app-capable' content='yes' />

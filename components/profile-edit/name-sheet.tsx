@@ -86,13 +86,16 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
           <SheetWithDetentFull.Backdrop />
           <SheetWithDetentFull.Content>
             {/* Header */}
-            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4'>
+            <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
                 <SheetWithDetentFull.Handle />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Name</h2>
-                <button onClick={handleCancel} className='rounded-full p-2 hover:bg-gray-100'>
+                <button
+                  onClick={handleCancel}
+                  className='rounded-full p-2 hover:bg-gray-100 dark:hover:bg-neutral-800'
+                >
                   <X className='h-5 w-5' />
                 </button>
               </div>
@@ -105,7 +108,7 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                   {/* Input with icon */}
                   <div className='relative mb-4'>
                     <div className='absolute left-3 top-1/2 -translate-y-1/2'>
-                      <User className='h-5 w-5 text-gray-400' />
+                      <User className='h-5 w-5 text-gray-400 dark:text-neutral-500' />
                     </div>
                     <Input
                       type='text'
@@ -121,10 +124,12 @@ export default function NameSheet({ isOpen, onClose, onSave, currentName = '' }:
                   </div>
 
                   {/* Character count */}
-                  <p className='mb-4 text-right text-sm text-gray-500'>{name.length}/50</p>
+                  <p className='mb-4 text-right text-sm text-gray-500 dark:text-neutral-400'>
+                    {name.length}/50
+                  </p>
 
                   {/* Info text */}
-                  <p className='mb-6 text-sm text-gray-500'>
+                  <p className='mb-6 text-sm text-gray-500 dark:text-neutral-400'>
                     Your display name is how you appear to others on Evento. Use your real name or a
                     nickname.
                   </p>

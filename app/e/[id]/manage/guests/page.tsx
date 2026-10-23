@@ -136,7 +136,7 @@ export default function GuestListPage() {
 
   if (isLoading) {
     return (
-      <div className='mx-auto min-h-screen max-w-full bg-white md:max-w-sm'>
+      <div className='mx-auto min-h-screen max-w-full bg-white dark:bg-neutral-900 md:max-w-sm'>
         <div className='space-y-4 p-4'>
           {/* Search bar skeleton */}
           <Skeleton className='h-12 w-full rounded-xl' />
@@ -151,7 +151,10 @@ export default function GuestListPage() {
           {/* Guest list skeleton */}
           <div className='space-y-3'>
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'>
+              <div
+                key={i}
+                className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'
+              >
                 <Skeleton className='h-12 w-12 rounded-full' />
                 <div className='flex-1 space-y-2'>
                   <Skeleton className='h-4 w-32' />
@@ -167,10 +170,12 @@ export default function GuestListPage() {
 
   if (error || !existingEvent) {
     return (
-      <div className='flex min-h-screen items-center justify-center bg-gray-50'>
+      <div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-neutral-950'>
         <div className='text-center'>
-          <h1 className='mb-2 text-2xl font-bold text-gray-900'>Event Not Found</h1>
-          <p className='mb-4 text-gray-600'>
+          <h1 className='mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100'>
+            Event Not Found
+          </h1>
+          <p className='mb-4 text-gray-600 dark:text-neutral-400'>
             The event you&apos;re trying to manage doesn&apos;t exist.
           </p>
           <button
@@ -254,24 +259,24 @@ export default function GuestListPage() {
 
   return (
     <>
-      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white md:max-w-sm'>
+      <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
         {/* Search Bar */}
         <div className='p-4 pb-0'>
           <div className='flex items-center gap-2'>
             <div className='relative flex-1'>
-              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400' />
+              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-neutral-500' />
               <input
                 type='text'
                 placeholder='Search event guests...'
                 value={searchQuery}
                 onChange={handleSearchChange}
-                className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none'
+                className='w-full rounded-xl border-none bg-gray-100 py-3 pl-10 pr-4 text-gray-900 placeholder-gray-500 outline-none dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder-neutral-400'
               />
             </div>
             <Button
               variant='outline'
               size='sm'
-              className='h-12 rounded-full border-gray-200 bg-gray-50 px-4'
+              className='h-12 rounded-full border-gray-200 bg-gray-50 px-4 dark:border-neutral-800 dark:bg-neutral-950'
               disabled={batchRecipientSummary.eligibleRecipients.length === 0}
               onClick={handleOpenBatchZap}
             >
@@ -308,7 +313,7 @@ export default function GuestListPage() {
 
         {activeTab === 'yes' && (
           <div className='px-4'>
-            <div className='rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700'>
+            <div className='rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:border-amber-900 dark:bg-amber-950/40 dark:text-amber-400'>
               Creator and co-hosts cannot be removed from this list. Remove co-host access in Hosts
               to remove them from the guest list.
             </div>
@@ -325,7 +330,7 @@ export default function GuestListPage() {
                 return (
                   <div
                     key={guest.id}
-                    className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4'
+                    className='flex items-center gap-4 rounded-2xl bg-gray-50 p-4 dark:bg-neutral-950'
                   >
                     <UserAvatar
                       user={{
@@ -339,14 +344,18 @@ export default function GuestListPage() {
                       width={48}
                     />
                     <div className='flex-1'>
-                      <h3 className='font-semibold text-gray-900'>{guest.user_details?.name}</h3>
-                      <p className='text-sm text-gray-500'>{guest.user_details?.username}</p>
+                      <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
+                        {guest.user_details?.name}
+                      </h3>
+                      <p className='text-sm text-gray-500 dark:text-neutral-400'>
+                        {guest.user_details?.username}
+                      </p>
                     </div>
                     {activeTab === 'yes' && !guestRole && (
                       <button
                         onClick={() => handleOpenRemoveSheet(guest)}
                         disabled={removingUserId === guest.user_id}
-                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50'
+                        className='flex h-8 w-8 items-center justify-center rounded-full text-gray-400 hover:bg-gray-200 hover:text-red-500 disabled:opacity-50 dark:text-neutral-500 dark:hover:bg-neutral-700 dark:hover:text-red-400'
                         aria-label={`Remove ${guest.user_details?.name || guest.user_details?.username || 'guest'}`}
                       >
                         {removingUserId === guest.user_id ? (
@@ -358,10 +367,12 @@ export default function GuestListPage() {
                     )}
                     {activeTab === 'yes' && guestRole && (
                       <div className='flex flex-col items-end gap-1'>
-                        <span className='rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700'>
+                        <span className='rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700 dark:bg-amber-950/60 dark:text-amber-400'>
                           {guestRole === 'creator' ? 'Creator' : 'Co-host'}
                         </span>
-                        <span className='text-[11px] text-gray-500'>Manage in Hosts</span>
+                        <span className='text-[11px] text-gray-500 dark:text-neutral-400'>
+                          Manage in Hosts
+                        </span>
                       </div>
                     )}
                   </div>
@@ -370,11 +381,13 @@ export default function GuestListPage() {
             </div>
           ) : (
             <div className='py-16 text-center'>
-              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100'>
-                <Users className='h-8 w-8 text-gray-400' />
+              <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
+                <Users className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
               </div>
-              <h3 className='mb-2 text-lg font-medium text-gray-900'>No Guests</h3>
-              <p className='text-sm text-gray-500'>
+              <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
+                No Guests
+              </h3>
+              <p className='text-sm text-gray-500 dark:text-neutral-400'>
                 {activeTab === 'yes' && "No guests have confirmed they're going yet."}
                 {activeTab === 'no' && 'No guests have declined yet.'}
                 {activeTab === 'maybe' && 'No guests have responded with maybe yet.'}
@@ -384,8 +397,8 @@ export default function GuestListPage() {
         </div>
 
         {/* Summary Footer */}
-        <div className='mt-auto border-t border-gray-100 bg-gray-50 p-4'>
-          <div className='flex items-center justify-between text-sm text-gray-600'>
+        <div className='mt-auto border-t border-gray-100 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+          <div className='flex items-center justify-between text-sm text-gray-600 dark:text-neutral-400'>
             <span>Total Guests: {guests.length}</span>
             <span>
               {activeTab.charAt(0).toUpperCase() + activeTab.slice(1).replace('-', ' ')}:{' '}
@@ -416,10 +429,12 @@ export default function GuestListPage() {
                   <DetachedSheet.Handle />
                 </div>
 
-                <h2 className='mb-2 text-xl font-semibold text-gray-900'>Remove guest?</h2>
-                <p className='mb-6 text-sm text-gray-600'>
+                <h2 className='mb-2 text-xl font-semibold text-gray-900 dark:text-neutral-100'>
+                  Remove guest?
+                </h2>
+                <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
                   Remove{' '}
-                  <span className='font-medium text-gray-900'>
+                  <span className='font-medium text-gray-900 dark:text-neutral-100'>
                     {guestToRemove?.user_details?.name ||
                       guestToRemove?.user_details?.username ||
                       'this user'}
@@ -431,7 +446,7 @@ export default function GuestListPage() {
                   <button
                     onClick={handleCloseRemoveSheet}
                     disabled={removeGuest.isPending}
-                    className='w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50'
+                    className='w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300 dark:hover:bg-neutral-950'
                   >
                     Cancel
                   </button>

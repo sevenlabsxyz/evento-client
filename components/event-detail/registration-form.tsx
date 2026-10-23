@@ -336,7 +336,7 @@ export function RegistrationForm({
                 <label
                   key={option}
                   htmlFor={optionId}
-                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50'
+                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-neutral-950'
                 >
                   <RadioGroupItem id={optionId} value={option} />
                   <span className='text-sm'>{option}</span>
@@ -356,7 +356,7 @@ export function RegistrationForm({
                 <label
                   key={option}
                   htmlFor={optionId}
-                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50'
+                  className='flex cursor-pointer items-center gap-3 rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-neutral-950'
                 >
                   <Checkbox
                     id={optionId}
@@ -382,7 +382,9 @@ export function RegistrationForm({
               checked={value === 'true'}
               onCheckedChange={(checked) => updateAnswer(question.id, checked ? 'true' : '')}
             />
-            <span className='text-sm text-gray-600'>{question.placeholder || 'I agree'}</span>
+            <span className='text-sm text-gray-600 dark:text-neutral-400'>
+              {question.placeholder || 'I agree'}
+            </span>
           </label>
         );
 
@@ -405,7 +407,7 @@ export function RegistrationForm({
         return (
           <div className='flex items-center'>
             {prefixes[question.type] && (
-              <span className='rounded-l-md border border-r-0 bg-gray-100 px-3 py-2 text-gray-500'>
+              <span className='rounded-l-md border border-r-0 bg-gray-100 px-3 py-2 text-gray-500 dark:bg-neutral-800 dark:text-neutral-400'>
                 {prefixes[question.type]}
               </span>
             )}
@@ -445,9 +447,11 @@ export function RegistrationForm({
   if (isCompletingRegistration) {
     return (
       <div className='flex min-h-[280px] flex-col items-center justify-center gap-3 py-8 text-center'>
-        <Loader2 className='h-8 w-8 animate-spin text-gray-500' />
-        <p className='text-sm font-medium text-gray-700'>Completing your registration...</p>
-        <p className='text-xs text-gray-500'>
+        <Loader2 className='h-8 w-8 animate-spin text-gray-500 dark:text-neutral-400' />
+        <p className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
+          Completing your registration...
+        </p>
+        <p className='text-xs text-gray-500 dark:text-neutral-400'>
           Please wait while we finalize your account and RSVP.
         </p>
       </div>
@@ -474,7 +478,7 @@ export function RegistrationForm({
         {/* Name field */}
         <div>
           <label htmlFor='registration-name' className='mb-2 block text-sm font-medium'>
-            Name <span className='text-red-500'>*</span>
+            Name <span className='text-red-500 dark:text-red-400'>*</span>
           </label>
           <Input
             id='registration-name'
@@ -492,13 +496,15 @@ export function RegistrationForm({
             placeholder='Your full name'
             className={errors.name ? 'border-red-500' : ''}
           />
-          {errors.name && <p className='mt-1 text-sm text-red-500'>{errors.name}</p>}
+          {errors.name && (
+            <p className='mt-1 text-sm text-red-500 dark:text-red-400'>{errors.name}</p>
+          )}
         </div>
 
         {/* Email field */}
         <div>
           <label htmlFor='registration-email' className='mb-2 block text-sm font-medium'>
-            Email <span className='text-red-500'>*</span>
+            Email <span className='text-red-500 dark:text-red-400'>*</span>
           </label>
           <Input
             id='registration-email'
@@ -518,10 +524,16 @@ export function RegistrationForm({
             className={errors.email ? 'border-red-500' : ''}
             disabled={!!user?.email}
           />
-          {errors.email && <p className='mt-1 text-sm text-red-500'>{errors.email}</p>}
-          {user?.email && <p className='mt-1 text-xs text-gray-500'>Using your account email</p>}
+          {errors.email && (
+            <p className='mt-1 text-sm text-red-500 dark:text-red-400'>{errors.email}</p>
+          )}
+          {user?.email && (
+            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
+              Using your account email
+            </p>
+          )}
           {!isAuthenticated && (
-            <p className='mt-1 text-xs text-gray-500'>
+            <p className='mt-1 text-xs text-gray-500 dark:text-neutral-400'>
               We&apos;ll send a verification code to this email
             </p>
           )}
@@ -532,11 +544,11 @@ export function RegistrationForm({
           <div key={question.id}>
             <p className='mb-2 block text-sm font-medium'>
               {question.label}
-              {question.is_required && <span className='text-red-500'> *</span>}
+              {question.is_required && <span className='text-red-500 dark:text-red-400'> *</span>}
             </p>
             {renderQuestionField(question)}
             {errors[question.id] && (
-              <p className='mt-1 text-sm text-red-500'>{errors[question.id]}</p>
+              <p className='mt-1 text-sm text-red-500 dark:text-red-400'>{errors[question.id]}</p>
             )}
           </div>
         ))}
