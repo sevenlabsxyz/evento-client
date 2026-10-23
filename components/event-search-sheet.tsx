@@ -32,6 +32,8 @@ interface EventSearchSheetProps {
   pinnedEventId?: string;
   isOwnProfile?: boolean;
   initialFilter?: EventFilterType | 'drafts';
+  initialTimeframe?: EventTimeframe;
+  initialSortBy?: EventSortBy;
 }
 
 type EventSearchFilter = EventFilterType | 'drafts';
@@ -44,12 +46,14 @@ export default function EventSearchSheet({
   pinnedEventId,
   isOwnProfile = false,
   initialFilter,
+  initialTimeframe,
+  initialSortBy,
 }: EventSearchSheetProps) {
   const [searchText, setSearchText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState<EventSearchFilter>(initialFilter ?? 'upcoming');
-  const [timeframe, setTimeframe] = useState<EventTimeframe>('future');
-  const [sortBy, setSortBy] = useState<EventSortBy>('date-desc');
+  const [timeframe, setTimeframe] = useState<EventTimeframe>(initialTimeframe ?? 'future');
+  const [sortBy, setSortBy] = useState<EventSortBy>(initialSortBy ?? 'date-desc');
   const searchInputRef = useRef<HTMLInputElement>(null);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
@@ -81,12 +85,18 @@ export default function EventSearchSheet({
     }
   }, [isOpen]);
 
-  // Sync filter from parent when opening or when prop changes
+  // Sync filter/timeframe/sort from parent when opening or when props change
   useEffect(() => {
     if (isOpen && initialFilter) {
       setFilter(initialFilter);
     }
-  }, [isOpen, initialFilter]);
+    if (isOpen && initialTimeframe) {
+      setTimeframe(initialTimeframe);
+    }
+    if (isOpen && initialSortBy) {
+      setSortBy(initialSortBy);
+    }
+  }, [isOpen, initialFilter, initialTimeframe, initialSortBy]);
 
   // Fetch events for own profile (with server-side filtering)
   const ownProfileQuery = useUserEvents({
