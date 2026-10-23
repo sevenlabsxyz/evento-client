@@ -111,7 +111,6 @@ export async function generateMetadata({ params }: Props, parent: ResolvingMetad
 
     if (!event) {
       // Non-public, draft, or nonexistent event: generic noindex metadata only.
-      logger.info('No public event found for ID', { eventId });
       return getDefaultMetadata(previousImages, eventUrl, fallbackOgImage);
     }
 
