@@ -14,6 +14,7 @@ import {
   AlertTriangle,
   ArrowRight,
   Calendar,
+  History,
   MapPinHouse,
   Search,
   UserRoundPen,
@@ -21,7 +22,7 @@ import {
 import { useEffect, useState } from 'react';
 import { MasterEventCard } from '../master-event-card';
 
-type MyEventsTab = EventFilterType | 'drafts';
+type MyEventsTab = EventFilterType | 'drafts' | 'past';
 
 interface MyEventsSectionProps {
   username?: string;
@@ -56,6 +57,14 @@ export function MyEventsSection({
     enabled: loadedTabs.includes('drafts'),
   });
 
+  const pastQuery = useUserEvents({
+    filter: 'upcoming',
+    timeframe: 'past',
+    sortBy: 'date-desc',
+    limit: 6,
+    enabled: loadedTabs.includes('past'),
+  });
+
   // Track when tabs are opened for lazy loading
   useEffect(() => {
     if (activeTab !== 'upcoming' && !loadedTabs.includes(activeTab)) {
@@ -69,6 +78,8 @@ export function MyEventsSection({
         return hostingQuery;
       case 'drafts':
         return draftsQuery;
+      case 'past':
+        return pastQuery;
       default:
         return null;
     }
@@ -97,6 +108,12 @@ export function MyEventsSection({
     []
   );
 
+  // Past events are fetched newest-first; display them oldest-first so the
+  // date groups read chronologically top-to-bottom, same as upcoming events.
+  if (activeTab === 'past') {
+    groupedEvents.reverse();
+  }
+
   const handleViewAll = () => {
     setIsSheetOpen(true);
   };
@@ -117,8 +134,9 @@ export function MyEventsSection({
               { title: 'Upcoming', icon: Calendar, onClick: () => setActiveTab('upcoming') },
               { title: 'Hosting', icon: MapPinHouse, onClick: () => setActiveTab('hosting') },
               { title: 'Drafts', icon: UserRoundPen, onClick: () => setActiveTab('drafts') },
+              { title: 'Past', icon: History, onClick: () => setActiveTab('past') },
             ]}
-            selected={['upcoming', 'hosting', 'drafts'].indexOf(activeTab)}
+            selected={['upcoming', 'hosting', 'drafts', 'past'].indexOf(activeTab)}
           />
           <CircledIconButton icon={Search} onClick={handleViewAll} />
         </div>
@@ -168,11 +186,13 @@ export function MyEventsSection({
                 {activeTab === 'upcoming' && 'No upcoming events'}
                 {activeTab === 'hosting' && "No events you're hosting"}
                 {activeTab === 'drafts' && 'No draft events'}
+                {activeTab === 'past' && 'No past events'}
               </h3>
               <p className='mb-4 text-sm text-gray-500'>
                 {activeTab === 'upcoming' && 'Create your first event or RSVP to others'}
                 {activeTab === 'hosting' && 'Create an event to get started'}
                 {activeTab === 'drafts' && 'Your draft events will appear here'}
+                {activeTab === 'past' && 'Events you hosted or attended will appear here'}
               </p>
             </div>
           ) : (
@@ -210,7 +230,9 @@ export function MyEventsSection({
             onClose={() => setIsSheetOpen(false)}
             username={username}
             isOwnProfile
-            initialFilter={activeTab === 'drafts' ? 'hosting' : activeTab}
+            initialFilter={activeTab === 'drafts' || activeTab === 'past' ? 'upcoming' : activeTab}
+            initialTimeframe={activeTab === 'past' ? 'past' : undefined}
+            initialSortBy={activeTab === 'past' ? 'date-desc' : undefined}
           />
         </div>
       </div>

@@ -89,6 +89,7 @@ describe('MyEventsSection', () => {
       },
     });
     mockUseUserEvents.mockReturnValue(createInfiniteResult([]));
+    jest.spyOn(Date, 'now').mockReturnValue(new Date('2026-10-22T12:00:00Z').getTime());
     mockUseMyDraftEvents.mockImplementation(({ enabled }: { enabled?: boolean }) =>
       enabled
         ? createInfiniteResult([
@@ -116,6 +117,7 @@ describe('MyEventsSection', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
@@ -130,4 +132,58 @@ describe('MyEventsSection', () => {
 
     expect(screen.getByText('Draft without date')).toBeInTheDocument();
   });
+});
+
+it('requests past events when the Past tab is selected', async () => {
+  render(<MyEventsSection />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Past' }));
+
+  await waitFor(() => {
+    expect(mockUseUserEvents).toHaveBeenCalledWith(
+      expect.objectContaining({
+        filter: 'upcoming',
+        timeframe: 'past',
+        sortBy: 'date-desc',
+        enabled: true,
+      })
+    );
+  });
+});
+
+it('shows the empty state for the Past tab when there are no past events', async () => {
+  render(<MyEventsSection />);
+
+  fireEvent.click(screen.getByRole('button', { name: 'Past' }));
+
+  await waitFor(() => {
+    expect(screen.getByText('No past events')).toBeInTheDocument();
+  });
+  expect(screen.getByText('Events you hosted or attended will appear here')).toBeInTheDocument();
+});
+
+it('groups past events oldest-to-newest under date headers', async () => {
+  mockUseUserEvents.mockImplementation((params: { timeframe?: string }) =>
+    params?.timeframe === 'past'
+      ? createInfiniteResult([
+          { id: 'newer', title: 'Newer Pinned Hike', computed_start_date: '2026-10-05T10:00:00Z' },
+          {
+            id: 'older',
+            title: 'Older Rooftop Dinner',
+            computed_start_date: '2026-09-01T10:00:00Z',
+          },
+        ])
+      : createInfiniteResult([])
+  );
+
+  render(<MyEventsSection />);
+  fireEvent.click(screen.getByRole('button', { name: 'Past' }));
+
+  await waitFor(() => {
+    expect(screen.getByText('Older Rooftop Dinner')).toBeInTheDocument();
+  });
+
+  const older = screen.getByText('Older Rooftop Dinner');
+  const newer = screen.getByText('Newer Pinned Hike');
+  expect(older.compareDocumentPosition(newer) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
