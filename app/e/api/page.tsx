@@ -40,7 +40,7 @@ export default function EventoAPIPage() {
         <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
           <Button
             onClick={handleGetAccess}
-            className='w-full rounded-xl bg-red-500 py-4 text-lg font-semibold text-white hover:bg-red-600'
+            className='w-full rounded-xl bg-red-500 py-4 text-lg font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Get API Access
           </Button>
@@ -62,23 +62,23 @@ export default function EventoAPIPage() {
             <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>What you can do:</h3>
             <ul className='space-y-2 text-gray-700 dark:text-neutral-300'>
               <li className='flex items-start gap-2'>
-                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                 <span>Access event data and details</span>
               </li>
               <li className='flex items-start gap-2'>
-                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                 <span>Create custom event displays</span>
               </li>
               <li className='flex items-start gap-2'>
-                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                 <span>Integrate with your existing systems</span>
               </li>
               <li className='flex items-start gap-2'>
-                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                 <span>Build custom notification systems</span>
               </li>
               <li className='flex items-start gap-2'>
-                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                 <span>Sync events across platforms</span>
               </li>
             </ul>

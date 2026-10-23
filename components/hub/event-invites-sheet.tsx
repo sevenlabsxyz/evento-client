@@ -77,7 +77,7 @@ export function EventInvitesSheet({
           <SheetWithDetentFull.Content className='flex flex-col bg-white dark:bg-neutral-900'>
             <div className='px-4 pt-2'>
               <div className='mb-4 flex justify-center'>
-                <SheetWithDetentFull.Handle />
+                <SheetWithDetentFull.Handle className='dark:bg-neutral-700' />
               </div>
 
               <VisuallyHidden.Root asChild>

@@ -34,7 +34,7 @@ const EmojiPickerSearch = React.forwardRef<
   <EmojiPickerPrimitive.Search
     ref={ref}
     className={cn(
-      'z-10 mx-2 mt-2 appearance-none rounded-md border-none bg-neutral-100 px-2.5 py-2 text-sm outline-none focus:ring-0 dark:bg-neutral-800',
+      'z-10 mx-2 mt-2 appearance-none rounded-md border-none bg-neutral-100 px-2.5 py-2 text-sm outline-none focus:ring-0 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500',
       className
     )}
     placeholder='Search emojis...'
@@ -93,7 +93,7 @@ const EmojiPickerFooter = React.forwardRef<HTMLDivElement, React.HTMLAttributes<
     <div
       ref={ref}
       className={cn(
-        'flex items-center justify-between border-t border-gray-200 px-3 py-2 dark:border-neutral-700 dark:border-neutral-800',
+        'flex items-center justify-between border-t border-gray-200 px-3 py-2 dark:border-neutral-800',
         className
       )}
       {...props}

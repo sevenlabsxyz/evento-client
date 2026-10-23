@@ -109,7 +109,7 @@ export function ContactSheet({
                 <SheetWithDetentFull.ScrollContent className='p-4'>
                   <form onSubmit={handleSubmit} className='space-y-6'>
                     {/* Title Field */}
-                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                       <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                         Subject *
                       </label>
@@ -118,13 +118,13 @@ export function ContactSheet({
                         value={formData.title}
                         onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         placeholder="What's this about?"
-                        className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100'
+                        className='w-full border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         required
                       />
                     </div>
 
                     {/* Message Field */}
-                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                       <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                         Message *
                       </label>
@@ -133,19 +133,19 @@ export function ContactSheet({
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         placeholder='Tell us more about your issue or question...'
                         rows={6}
-                        className='w-full resize-none border-none bg-transparent text-gray-900 outline-none dark:text-neutral-100'
+                        className='w-full resize-none border-none bg-transparent text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         required
                       />
                     </div>
 
                     {/* File Upload */}
-                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                    <div className='space-y-2 rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                       <label className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                         Attachment (optional)
                       </label>
 
                       {attachedFile ? (
-                        <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-800 dark:bg-neutral-950'>
+                        <div className='flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-neutral-700 dark:bg-neutral-900'>
                           <div className='flex items-center gap-3'>
                             <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-950/60'>
                               <Upload className='h-4 w-4 text-red-600 dark:text-red-400' />
@@ -197,7 +197,7 @@ export function ContactSheet({
                       <Button
                         type='submit'
                         disabled={isLoading}
-                        className='w-full rounded-xl bg-red-500 py-3 font-medium text-white hover:bg-red-600 disabled:opacity-50'
+                        className='w-full rounded-xl bg-red-500 py-3 font-medium text-white hover:bg-red-600 disabled:opacity-50 dark:bg-red-600 dark:hover:bg-red-700'
                       >
                         {isLoading ? (
                           <div className='flex items-center gap-2'>

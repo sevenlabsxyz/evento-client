@@ -127,9 +127,11 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
       {[0, 1, 2, 3, 4, 5].map((index) => (
         <div
           key={index}
-          className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
+          className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'
         >
-          {currentPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+          {currentPin.length > index && (
+            <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+          )}
         </div>
       ))}
     </div>
@@ -237,8 +239,8 @@ export function WalletSetup({ onComplete, onCancel }: WalletSetupProps) {
     return (
       <div className='space-y-6'>
         <div className='text-center'>
-          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:bg-neutral-950'>
-            <Key className='h-8 w-8 text-black dark:text-white' />
+          <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'>
+            <Key className='h-8 w-8 text-black dark:text-neutral-100' />
           </div>
           <h2 className='text-2xl font-bold'>Confirm Your PIN</h2>
           <p className='mt-2 text-sm text-muted-foreground'>Enter your PIN again to confirm</p>

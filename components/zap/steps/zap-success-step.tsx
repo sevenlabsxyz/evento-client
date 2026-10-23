@@ -48,7 +48,7 @@ export function ZapSuccessStep({ selectedAmount, recipientName, onClose }: ZapSu
         >
           <Button
             onClick={onClose}
-            className='h-12 w-full rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800'
+            className='h-12 w-full rounded-full bg-gray-900 font-semibold text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
             Done
           </Button>

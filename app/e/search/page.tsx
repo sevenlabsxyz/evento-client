@@ -115,7 +115,10 @@ export default function SearchPage() {
           </div>
 
           <div className='w-full max-w-md'>
-            <PromptInput onSubmit={handlePromptSubmit} className='shadow-xl shadow-gray-200/50'>
+            <PromptInput
+              onSubmit={handlePromptSubmit}
+              className='shadow-xl shadow-gray-200/50 dark:shadow-black/40'
+            >
               <PromptInputTextarea
                 placeholder='Search for users...'
                 className='min-h-[56px] text-base'
@@ -125,7 +128,7 @@ export default function SearchPage() {
               />
               <PromptInputFooter>
                 <PromptInputTools>
-                  <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-500'>
+                  <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-400'>
                     <Search className='h-3.5 w-3.5' />
                     <span>Search as you type</span>
                   </div>
@@ -155,7 +158,7 @@ export default function SearchPage() {
                 />
                 <PromptInputFooter>
                   <PromptInputTools>
-                    <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-500'>
+                    <div className='flex items-center gap-2 text-xs text-gray-400 dark:text-neutral-400'>
                       <Users className='h-3.5 w-3.5' />
                       <span>
                         {isPending

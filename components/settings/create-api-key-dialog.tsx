@@ -105,6 +105,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     maxLength={50}
                     disabled={createApiKey.isPending}
                     autoFocus
+                    className='dark:focus-visible:ring-offset-neutral-900'
                   />
                   <p className='text-xs text-gray-500 dark:text-neutral-400'>
                     Maximum 50 characters
@@ -124,7 +125,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                 <Button
                   type='submit'
                   disabled={!name.trim() || createApiKey.isPending}
-                  className='bg-red-500 hover:bg-red-600'
+                  className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   {createApiKey.isPending ? 'Creating...' : 'Create Key'}
                 </Button>
@@ -151,7 +152,7 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
                     id='api-key'
                     value={generatedKey}
                     readOnly
-                    className='h-10 pr-12 font-mono text-sm'
+                    className='h-10 pr-12 font-mono text-sm dark:focus-visible:ring-offset-neutral-900'
                   />
                   <MotionButton
                     type='button'
@@ -179,7 +180,10 @@ export function CreateApiKeyDialog({ open, onOpenChange }: CreateApiKeyDialogPro
             </div>
 
             <DialogFooter>
-              <Button onClick={handleClose} className='bg-red-500 hover:bg-red-600'>
+              <Button
+                onClick={handleClose}
+                className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+              >
                 I&apos;ve Saved My Key
               </Button>
             </DialogFooter>

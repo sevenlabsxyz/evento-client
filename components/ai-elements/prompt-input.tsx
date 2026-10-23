@@ -93,7 +93,7 @@ export const PromptInputSubmit = ({ className, children, ...props }: PromptInput
   <button
     type='submit'
     className={cn(
-      'inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-white transition-colors hover:bg-gray-800',
+      'inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gray-900 text-white transition-colors hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200',
       className
     )}
     {...props}

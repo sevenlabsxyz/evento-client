@@ -153,7 +153,7 @@ export default function EventRemindersPage() {
           </p>
           <button
             onClick={() => router.push(`/e/${eventId}/manage`)}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -177,7 +177,7 @@ export default function EventRemindersPage() {
           </p>
           <button
             onClick={() => router.push(`/e/${eventId}/manage`)}
-            className='rounded-lg bg-gray-900 px-4 py-2 text-white hover:bg-gray-800'
+            className='rounded-lg bg-gray-900 px-4 py-2 text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           >
             Go Back
           </button>
@@ -204,7 +204,7 @@ export default function EventRemindersPage() {
               </p>
             </div>
           </div>
-          <p className='text-xs text-gray-400 dark:text-neutral-500'>
+          <p className='text-xs text-gray-400 dark:text-neutral-400'>
             {selectedOffsets.length} of {MAX_EVENT_REMINDERS} reminders selected
           </p>
         </div>
@@ -247,7 +247,7 @@ export default function EventRemindersPage() {
           })}
         </div>
 
-        <p className='px-1 text-xs text-gray-400 dark:text-neutral-500'>{FOURTH_REMINDER_ERROR}.</p>
+        <p className='px-1 text-xs text-gray-400 dark:text-neutral-400'>{FOURTH_REMINDER_ERROR}.</p>
       </div>
 
       <div className='fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-900 md:left-1/2 md:w-full md:max-w-md md:-translate-x-1/2 md:rounded-t-2xl md:border md:shadow-sm'>

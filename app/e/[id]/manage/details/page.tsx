@@ -219,7 +219,7 @@ export default function EditEventDetailsPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -350,7 +350,7 @@ export default function EditEventDetailsPage() {
               </label>
               <div className='flex items-center justify-between'>
                 <span
-                  className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-500'}`}
+                  className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-400'}`}
                 >
                   {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
@@ -375,7 +375,7 @@ export default function EditEventDetailsPage() {
               </label>
               <div className='flex items-center justify-between'>
                 <span
-                  className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-500' : 'text-gray-900 dark:text-neutral-100'}`}
+                  className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
                 >
                   {isContentEmpty(description)
                     ? 'Add description about this event...'
@@ -400,7 +400,7 @@ export default function EditEventDetailsPage() {
                       {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
                     </label>
                     {hasCapacity && capacity && (
-                      <span className='text-xs text-gray-400 dark:text-neutral-500'>
+                      <span className='text-xs text-gray-400 dark:text-neutral-400'>
                         Maximum attendees: {capacity}
                       </span>
                     )}
@@ -418,7 +418,7 @@ export default function EditEventDetailsPage() {
                     }`}
                   >
                     <div
-                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
+                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
                         hasCapacity ? 'translate-x-6' : 'translate-x-0.5'
                       }`}
                     ></div>
@@ -444,7 +444,7 @@ export default function EditEventDetailsPage() {
                   }`}
                 >
                   <div
-                    className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
+                    className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
                       showCapacityCount ? 'translate-x-6' : 'translate-x-0.5'
                     }`}
                   ></div>

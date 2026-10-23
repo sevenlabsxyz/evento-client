@@ -108,7 +108,7 @@ export default function LocationSheet({
         placeholder='Search for a place or address'
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className='h-11 w-full rounded-xl bg-gray-100 pl-11 pr-4 text-base outline-none placeholder:text-gray-400 dark:bg-neutral-800 dark:placeholder:text-neutral-500'
+        className='h-11 w-full rounded-xl bg-gray-100 pl-11 pr-4 text-base outline-none placeholder:text-gray-400 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-400'
         autoFocus
       />
     </div>

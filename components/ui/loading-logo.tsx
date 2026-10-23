@@ -12,7 +12,13 @@ export const LoadingLogo = ({ size = 'md', className }: LoadingLogoProps) => {
 
   return (
     <div className={cn('flex animate-spin items-center justify-center', className)}>
-      <Image src='/assets/img/evento-sublogo.svg' alt='Evento Logo' width={width} height={height} />
+      <Image
+        src='/assets/img/evento-sublogo.svg'
+        alt='Evento Logo'
+        width={width}
+        height={height}
+        className='dark:invert'
+      />
     </div>
   );
 };

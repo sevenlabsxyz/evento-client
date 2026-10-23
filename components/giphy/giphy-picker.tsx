@@ -95,7 +95,7 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
           placeholder='Search GIFs...'
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className='w-full bg-gray-100 pl-10 dark:bg-neutral-800'
+          className='w-full bg-gray-100 pl-10 dark:bg-neutral-800 dark:focus-visible:ring-offset-neutral-900'
         />
       </div>
 
@@ -113,7 +113,9 @@ export default function GiphyPicker({ onGifSelect }: GiphyPickerProps) {
             <div
               key={gif.id}
               className={`aspect-square cursor-pointer overflow-hidden rounded-lg transition-all duration-200 ${
-                selectedGif?.id === gif.id ? 'ring-2 ring-primary ring-offset-2' : ''
+                selectedGif?.id === gif.id
+                  ? 'ring-2 ring-primary ring-offset-2 dark:ring-offset-neutral-900'
+                  : ''
               }`}
               onClick={() => handleGifClick(gif)}
             >

@@ -139,7 +139,7 @@ export default function EmailBlastPage() {
               </p>
               <button
                 onClick={() => window.location.reload()}
-                className='rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600'
+                className='rounded-lg bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Retry
               </button>
@@ -157,7 +157,7 @@ export default function EmailBlastPage() {
               </p>
               <button
                 onClick={handleCreateBlast}
-                className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600'
+                className='flex h-12 w-full items-center justify-center gap-2 rounded-full bg-red-500 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 <Plus className='h-5 w-5' />
                 Create Email Blast

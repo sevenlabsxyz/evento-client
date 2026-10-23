@@ -130,7 +130,7 @@ export function MasterInviteCard({ invite, onRSVP, className }: MasterInviteCard
         <div className='flex flex-col gap-2'>
           <Button
             onClick={onRSVP}
-            className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+            className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             <Users className='mr-1.5 h-4 w-4' />
             RSVP

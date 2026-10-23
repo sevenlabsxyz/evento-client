@@ -74,15 +74,19 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
       {showDropdown && (
         <>
           <div className='fixed inset-0 z-40' onClick={() => setShowDropdown(false)} />
-          <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg dark:bg-neutral-900'>
+          <div className='absolute left-0 top-full z-50 mt-1 w-64 rounded-md border bg-white shadow-lg dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:shadow-black/40'>
             <button
               onClick={toggleStrike}
               disabled={
                 !editor.can().chain().focus().toggleStrike().run() || editor.isActive('codeBlock')
               }
-              className={cn(DropdownMenuItemClass, {
-                [activeItemClass]: editor.isActive('strike'),
-              })}
+              className={cn(
+                DropdownMenuItemClass,
+                'dark:disabled:text-neutral-500 dark:disabled:hover:bg-transparent',
+                {
+                  [activeItemClass]: editor.isActive('strike'),
+                }
+              )}
               aria-label='Strikethrough'
             >
               <span className='grow'>Strikethrough</span>
@@ -93,9 +97,13 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
               disabled={
                 !editor.can().chain().focus().toggleCode().run() || editor.isActive('codeBlock')
               }
-              className={cn(DropdownMenuItemClass, {
-                [activeItemClass]: editor.isActive('code'),
-              })}
+              className={cn(
+                DropdownMenuItemClass,
+                'dark:disabled:text-neutral-500 dark:disabled:hover:bg-transparent',
+                {
+                  [activeItemClass]: editor.isActive('code'),
+                }
+              )}
               aria-label='Code'
             >
               <span className='grow'>Code</span>
@@ -106,7 +114,10 @@ export default function SectionTwo({ editor, onOpenSheet }: SectionTwoProps) {
               disabled={
                 !editor.can().chain().focus().unsetAllMarks().run() || editor.isActive('codeBlock')
               }
-              className={cn(DropdownMenuItemClass)}
+              className={cn(
+                DropdownMenuItemClass,
+                'dark:disabled:text-neutral-500 dark:disabled:hover:bg-transparent'
+              )}
               aria-label='Clear formatting'
             >
               <span className='grow'>Clear formatting</span>

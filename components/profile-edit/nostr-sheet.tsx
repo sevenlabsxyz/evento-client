@@ -162,7 +162,7 @@ export default function NostrSheet({
                     <Button
                       onClick={handleSave}
                       disabled={!hasChanges || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isSaving ? (
                         <>

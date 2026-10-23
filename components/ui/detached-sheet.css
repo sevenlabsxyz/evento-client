@@ -48,3 +48,16 @@
   /* INTERACTIVITY */
   cursor: pointer;
 }
+
+/* Dark theme: neutral-900 card surface, hairline edge, deeper lift shadow */
+.dark .DetachedSheet-innerContent {
+  background-color: rgb(23 23 23);
+  box-shadow:
+    0 0 0 1px rgb(38 38 38 / 0.9),
+    0 10px 15px -3px rgb(0 0 0 / 0.5),
+    0 4px 6px -4px rgb(0 0 0 / 0.45);
+}
+
+.dark .DetachedSheet-handle {
+  background-color: rgb(64 64 64);
+}

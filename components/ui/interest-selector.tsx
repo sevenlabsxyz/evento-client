@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 // ============================================================================
@@ -42,6 +43,16 @@ interface TagProps {
 // ============================================================================
 
 export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProps) {
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
+
+  const selectedBg = isDark ? 'rgba(127, 29, 29, 0.45)' : '#fef2f2';
+  const selectedHoverBg = isDark ? 'rgba(127, 29, 29, 0.65)' : '#fef2f2';
+  const selectedTapBg = isDark ? 'rgba(127, 29, 29, 0.8)' : '#fee2e2';
+  const idleBg = isDark ? 'rgba(38, 38, 38, 0.8)' : 'rgba(229, 231, 235, 0.5)';
+  const idleHoverBg = isDark ? 'rgba(64, 64, 64, 0.85)' : 'rgba(229, 231, 235, 0.8)';
+  const idleTapBg = isDark ? 'rgba(82, 82, 82, 0.9)' : 'rgba(229, 231, 235, 0.9)';
+
   // Display-only mode: gray styling, no checkmark, no interaction
   if (displayOnly) {
     return (
@@ -57,13 +68,13 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
       layout
       initial={false}
       animate={{
-        backgroundColor: isSelected ? '#fef2f2' : 'rgba(229, 231, 235, 0.5)',
+        backgroundColor: isSelected ? selectedBg : idleBg,
       }}
       whileHover={{
-        backgroundColor: isSelected ? '#fef2f2' : 'rgba(229, 231, 235, 0.8)',
+        backgroundColor: isSelected ? selectedHoverBg : idleHoverBg,
       }}
       whileTap={{
-        backgroundColor: isSelected ? '#fee2e2' : 'rgba(229, 231, 235, 0.9)',
+        backgroundColor: isSelected ? selectedTapBg : idleTapBg,
       }}
       transition={{
         type: 'spring',
@@ -72,7 +83,7 @@ export function Tag({ text, isSelected, onToggle, displayOnly = false }: TagProp
         mass: 0.5,
         backgroundColor: { duration: 0.1 },
       }}
-      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)] dark:text-red-400' : 'text-gray-600 ring-[rgba(0,0,0,0.06)] dark:text-neutral-400'} `}
+      className={`inline-flex items-center overflow-hidden whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium ring-1 ring-inset ${isSelected ? 'text-red-600 ring-[rgba(0,0,0,0.12)] dark:text-red-400 dark:ring-red-900/60' : 'text-gray-600 ring-[rgba(0,0,0,0.06)] dark:text-neutral-400 dark:ring-neutral-700'} `}
     >
       <motion.div
         className='relative flex items-center'

@@ -94,7 +94,7 @@ export function WalletEducationList() {
         {posts.map((post) => (
           <Card
             key={post.id}
-            className='cursor-pointer rounded-2xl bg-gray-50 transition-colors hover:bg-gray-100 dark:bg-neutral-950 dark:hover:bg-neutral-800'
+            className='cursor-pointer rounded-2xl bg-gray-50 transition-colors hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
             onClick={() => {
               setSelectedArticle(post);
               setIsSheetOpen(true);

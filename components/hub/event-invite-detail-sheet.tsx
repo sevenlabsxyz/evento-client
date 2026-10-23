@@ -58,11 +58,11 @@ export function EventInviteDetailSheet({
       <DetachedSheet.Portal>
         <DetachedSheet.View>
           <DetachedSheet.Backdrop />
-          <DetachedSheet.Content>
+          <DetachedSheet.Content className='dark:[&_.DetachedSheet-innerContent]:bg-neutral-900'>
             <div className='p-6 pb-8'>
               {/* Handle */}
               <div className='mb-4 flex justify-center'>
-                <DetachedSheet.Handle />
+                <DetachedSheet.Handle className='dark:bg-neutral-700' />
               </div>
 
               <VisuallyHidden.Root asChild>
@@ -77,13 +77,13 @@ export function EventInviteDetailSheet({
                       src={event.coverImages[0]}
                       alt={event.title}
                       fill
-                      className='rounded-2xl border object-cover'
+                      className='rounded-2xl border object-cover dark:border-neutral-700'
                     />
                   </div>
                 )}
 
                 <div className='p-6'>
-                  <div className='mb-4 flex items-center gap-3 rounded-xl border bg-gray-100 p-4 dark:bg-neutral-800'>
+                  <div className='mb-4 flex items-center gap-3 rounded-xl border bg-gray-100 p-4 dark:border-neutral-700 dark:bg-neutral-800'>
                     <UserAvatar
                       user={{
                         name: event.hosts[0].name,
@@ -110,7 +110,7 @@ export function EventInviteDetailSheet({
                     <div
                       className={cn(
                         'mb-2 flex items-center text-sm text-gray-500 dark:text-neutral-400',
-                        invite.events.location ? '' : 'text-gray-400 dark:text-neutral-500'
+                        invite.events.location ? '' : 'text-gray-400 dark:text-neutral-400'
                       )}
                     >
                       <MapPin className='mr-1 h-4 w-4' />
@@ -131,7 +131,7 @@ export function EventInviteDetailSheet({
                           onRSVP?.();
                           onClose();
                         }}
-                        className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                        className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                       >
                         <Users className='mr-2 h-4 w-4' />
                         RSVP

@@ -139,7 +139,7 @@ export default function ProfileImageSheet({
                         <Image
                           src='/assets/img/evento-sublogo.svg'
                           alt='Evento'
-                          className='h-full w-full p-1'
+                          className='h-full w-full p-1 dark:invert'
                           fill
                         />
                       </AvatarFallback>
@@ -148,7 +148,7 @@ export default function ProfileImageSheet({
                     {/* Camera Icon Overlay */}
                     <button
                       onClick={triggerFileInput}
-                      className='absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-neutral-900'
+                      className='absolute bottom-0 right-0 rounded-full bg-white p-3 shadow-md transition-shadow hover:shadow-lg dark:bg-neutral-800 dark:ring-1 dark:ring-neutral-700'
                     >
                       <Camera className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
                     </button>
@@ -173,7 +173,7 @@ export default function ProfileImageSheet({
                   <div className='flex flex-col gap-3'>
                     <Button
                       onClick={handleSave}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                       disabled={!selectedFile || isUploading || updateProfileMutation.isPending}
                     >
                       {isUploading

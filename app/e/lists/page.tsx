@@ -131,7 +131,10 @@ export default function SavedListsPage() {
               <EmptyDescription>Create your first list to start saving events.</EmptyDescription>
             </EmptyHeader>
             <EmptyContent>
-              <Button onClick={openCreateModal} className='bg-red-500 text-white hover:bg-red-600'>
+              <Button
+                onClick={openCreateModal}
+                className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
+              >
                 Create List
               </Button>
             </EmptyContent>
@@ -170,7 +173,7 @@ export default function SavedListsPage() {
 
       {/* Create List Modal */}
       {showCreateModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Create New List</h3>
             <Input
@@ -200,7 +203,7 @@ export default function SavedListsPage() {
               </Button>
               <Button
                 onClick={handleCreateList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 disabled={!newListName.trim() || createListMutation.isPending}
               >
                 {createListMutation.isPending ? (

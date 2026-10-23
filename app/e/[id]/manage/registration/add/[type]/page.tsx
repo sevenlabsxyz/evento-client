@@ -216,7 +216,7 @@ export default function AddQuestionPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -242,7 +242,7 @@ export default function AddQuestionPage() {
           onClick={handleSave}
           className={`rounded-full px-6 py-2 font-medium transition-all ${
             isFormValid && !createQuestion.isPending
-              ? 'bg-black text-white hover:bg-gray-800'
+              ? 'bg-black text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
               : 'cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-neutral-600 dark:text-neutral-400'
           }`}
           disabled={!isFormValid || createQuestion.isPending}
@@ -283,7 +283,7 @@ export default function AddQuestionPage() {
             value={questionLabel}
             onChange={(e) => setQuestionLabel(e.target.value)}
             placeholder='Enter your question'
-            className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
+            className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
           />
         </div>
 
@@ -307,7 +307,7 @@ export default function AddQuestionPage() {
                   value={option}
                   onChange={(e) => handleOptionChange(index, e.target.value)}
                   placeholder={`Option ${index + 1}`}
-                  className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
+                  className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
                 />
                 {options.length > 1 && (
                   <button
@@ -321,7 +321,7 @@ export default function AddQuestionPage() {
             ))}
             <button
               onClick={handleAddOption}
-              className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-400'
+              className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-300'
             >
               + Add Option
             </button>
@@ -339,7 +339,7 @@ export default function AddQuestionPage() {
           <button
             onClick={() => setIsRequired(!isRequired)}
             className={`h-6 w-12 rounded-full transition-colors ${
-              isRequired ? 'bg-red-500' : 'bg-gray-300 dark:bg-neutral-600'
+              isRequired ? 'bg-red-500 dark:bg-red-600' : 'bg-gray-300 dark:bg-neutral-600'
             }`}
           >
             <div

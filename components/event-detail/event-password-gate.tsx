@@ -59,8 +59,8 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
   const primaryHost = event.hosts?.[0];
 
   return (
-    <div className='flex min-h-screen flex-col items-center justify-center bg-white p-4 dark:bg-neutral-900'>
-      <Card className='w-full max-w-sm rounded-3xl bg-gray-50 dark:bg-neutral-950'>
+    <div className='flex min-h-screen flex-col items-center justify-center bg-white p-4 dark:bg-neutral-950'>
+      <Card className='w-full max-w-sm rounded-3xl bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'>
         <CardHeader className='space-y-4'>
           {/* Event cover image */}
           {coverImageUrl && (
@@ -86,9 +86,14 @@ export function EventPasswordGate({ event, onAccessGranted }: EventPasswordGateP
         <CardContent className='space-y-4'>
           {/* Error Alert */}
           {error && (
-            <Alert variant='destructive' className='bg-red-50 leading-none dark:bg-red-950/40'>
+            <Alert
+              variant='destructive'
+              className='bg-red-50 leading-none dark:bg-red-950/40 dark:text-red-400 dark:[&>svg]:text-red-400'
+            >
               <AlertCircle className='h-4 w-4' />
-              <AlertDescription className='-mb-1 mt-0.5'>{error}</AlertDescription>
+              <AlertDescription className='-mb-1 mt-0.5 dark:text-red-400'>
+                {error}
+              </AlertDescription>
             </Alert>
           )}
 

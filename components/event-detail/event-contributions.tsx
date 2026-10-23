@@ -74,7 +74,7 @@ export default function EventContributions({ eventData, eventId }: EventContribu
                 return (
                   <div
                     key={method.type}
-                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white ${config.bgColor}`}
+                    className={`flex h-8 w-8 items-center justify-center rounded-full border-2 border-white dark:border-neutral-950 ${config.bgColor}`}
                   >
                     {config.icon}
                   </div>

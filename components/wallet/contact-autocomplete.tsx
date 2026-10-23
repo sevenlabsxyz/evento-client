@@ -52,7 +52,7 @@ function ContactAutocompleteItem({
     <CommandItem
       value={`${contact.name} ${contact.paymentIdentifier}`}
       onSelect={onSelect}
-      className='flex items-center gap-3 px-3 py-2'
+      className='flex items-center gap-3 px-3 py-2 dark:data-[selected=true]:bg-neutral-800'
     >
       <UserAvatar
         user={{
@@ -179,7 +179,7 @@ export function ContactAutocomplete({
       </PopoverTrigger>
       {shouldShowDropdown && (
         <PopoverContent
-          className='z-50 w-[var(--radix-popover-trigger-width)] rounded-lg border bg-popover p-0 shadow-lg'
+          className='z-50 w-[var(--radix-popover-trigger-width)] rounded-lg border bg-popover p-0 shadow-lg dark:border-neutral-700'
           align='start'
           sideOffset={4}
           onOpenAutoFocus={(e) => e.preventDefault()}

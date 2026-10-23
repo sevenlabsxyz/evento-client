@@ -62,7 +62,7 @@ export function BetaSheet({ open, onOpenChange }: BetaSheetProps) {
 
                     {/* Information Cards */}
                     <div className='space-y-4'>
-                      <div className='rounded-xl bg-white p-4 shadow-sm dark:bg-neutral-900'>
+                      <div className='rounded-xl bg-white p-4 shadow-sm dark:border dark:border-neutral-800 dark:bg-neutral-800/60 dark:shadow-none'>
                         <div className='mb-3 flex items-center gap-2'>
                           <Info className='h-5 w-5 text-blue-600 dark:text-blue-400' />
                           <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
@@ -76,7 +76,7 @@ export function BetaSheet({ open, onOpenChange }: BetaSheetProps) {
                         </p>
                       </div>
 
-                      <div className='rounded-xl bg-white p-4 shadow-sm dark:bg-neutral-900'>
+                      <div className='rounded-xl bg-white p-4 shadow-sm dark:border dark:border-neutral-800 dark:bg-neutral-800/60 dark:shadow-none'>
                         <div className='mb-3 flex items-center gap-2'>
                           <Shield className='h-5 w-5 text-green-600 dark:text-green-400' />
                           <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>

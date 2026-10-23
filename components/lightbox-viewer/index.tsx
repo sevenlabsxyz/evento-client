@@ -348,7 +348,7 @@ export const LightboxViewer = React.memo(
             <div className='absolute right-4 top-4 z-10 flex space-x-2'>
               <button
                 onClick={downloadImage}
-                className='mr-2 text-white hover:text-gray-300 dark:hover:text-neutral-600'
+                className='mr-2 text-white hover:text-gray-300'
                 aria-label='Download image'
               >
                 {isDownloading ? (
@@ -359,7 +359,7 @@ export const LightboxViewer = React.memo(
               </button>
               <button
                 onClick={onClose}
-                className='text-white hover:text-gray-300 dark:hover:text-neutral-600'
+                className='text-white hover:text-gray-300'
                 aria-label='Close fullscreen view'
               >
                 <XIcon className='h-6 w-6' />
@@ -381,7 +381,7 @@ export const LightboxViewer = React.memo(
                         setImageError(false);
                         setImageLoading(true);
                       }}
-                      className='mt-2 rounded bg-white bg-opacity-20 px-4 py-2 text-sm hover:bg-opacity-30 dark:bg-neutral-900'
+                      className='mt-2 rounded bg-white bg-opacity-20 px-4 py-2 text-sm hover:bg-opacity-30'
                     >
                       Retry
                     </button>
@@ -405,14 +405,14 @@ export const LightboxViewer = React.memo(
             )}
             <button
               onClick={goToPrevious}
-              className='absolute left-4 z-10 text-white hover:text-gray-300 dark:hover:text-neutral-600'
+              className='absolute left-4 z-10 text-white hover:text-gray-300'
               aria-label='Previous image'
             >
               <ChevronLeftIcon className='h-10 w-10' />
             </button>
             <button
               onClick={goToNext}
-              className='absolute right-4 z-10 text-white hover:text-gray-300 dark:hover:text-neutral-600'
+              className='absolute right-4 z-10 text-white hover:text-gray-300'
               aria-label='Next image'
             >
               <ChevronRightIcon className='h-10 w-10' />

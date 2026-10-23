@@ -296,7 +296,7 @@ export default function CrowdfundingManagementPage() {
                   {...form.register('title')}
                   placeholder='e.g. Help fund our event'
                   maxLength={200}
-                  className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700'
+                  className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
                 {form.formState.errors.title && (
                   <p className='text-sm text-red-500 dark:text-red-400'>
@@ -318,7 +318,7 @@ export default function CrowdfundingManagementPage() {
                   {...form.register('description')}
                   placeholder='Tell supporters what this campaign is for...'
                   rows={3}
-                  className='w-full resize-none rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700'
+                  className='w-full resize-none rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
               </div>
             </div>
@@ -344,7 +344,7 @@ export default function CrowdfundingManagementPage() {
                   placeholder='Optional'
                   min='1'
                   step='1'
-                  className='w-32 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700'
+                  className='w-32 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-amber-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                 />
               </div>
               <p className='text-xs text-gray-500 dark:text-neutral-400'>

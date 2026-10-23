@@ -18,7 +18,11 @@ function Skeleton({ className, variant, ...props }: SkeletonProps) {
   const variantClassName = variant ? skeletonVariants[variant] : '';
   return (
     <div
-      className={cn('animate-pulse rounded-md bg-muted', variantClassName, className)}
+      className={cn(
+        'animate-pulse rounded-md bg-muted dark:bg-neutral-700/60',
+        variantClassName,
+        className
+      )}
       {...props}
     />
   );

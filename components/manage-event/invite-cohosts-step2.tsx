@@ -59,7 +59,7 @@ export default function InviteCohostsStep2({
 
       <textarea
         name='message'
-        className='w-full rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950'
+        className='w-full rounded-2xl border border-gray-200 bg-gray-50 p-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-400'
         rows={4}
         placeholder='Write a note to include with your invite (optional)'
         value={message}

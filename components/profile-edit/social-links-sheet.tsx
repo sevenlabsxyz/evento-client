@@ -209,7 +209,7 @@ export default function SocialLinksSheet({
                   {/* X (Twitter) */}
                   <div>
                     <Label htmlFor='x' className='mb-2 flex items-center gap-2'>
-                      <div className='flex h-4 w-4 items-center justify-center rounded-sm bg-black text-xs font-bold text-white'>
+                      <div className='flex h-4 w-4 items-center justify-center rounded-sm bg-black text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                         𝕏
                       </div>
                       X (formerly Twitter)
@@ -270,7 +270,7 @@ export default function SocialLinksSheet({
                     <Button
                       onClick={handleSave}
                       disabled={!hasChanges || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isSaving ? (
                         <>

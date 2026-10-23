@@ -160,7 +160,7 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
       onOpenChange={(open) => !open && handleClose()}
       headerLeft={
         <div>
-          <h2 className='text-xl font-semibold'>Manage Badges</h2>
+          <h2 className='text-xl font-semibold dark:text-neutral-100'>Manage Badges</h2>
           <p className='text-sm text-gray-500 dark:text-neutral-400'>
             {displayCount} of {MAX_DISPLAY_SLOTS} slots used
           </p>
@@ -192,7 +192,7 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
           <p className='text-gray-500 dark:text-neutral-400'>
             You haven&apos;t earned any badges yet.
           </p>
-          <p className='text-sm text-gray-400 dark:text-neutral-500'>
+          <p className='text-sm text-gray-400 dark:text-neutral-400'>
             Keep using Evento to earn badges!
           </p>
         </div>
@@ -223,12 +223,12 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
                     {badge ? (
                       <>
                         <BadgeItem badge={badge.badge} size='md' />
-                        <div className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-800 text-white'>
+                        <div className='absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-gray-800 text-white dark:bg-neutral-700'>
                           <X className='h-3 w-3' />
                         </div>
                       </>
                     ) : (
-                      <span className='text-lg font-medium text-gray-400 dark:text-neutral-500'>
+                      <span className='text-lg font-medium text-gray-400 dark:text-neutral-400'>
                         {index + 1}
                       </span>
                     )}
@@ -269,7 +269,7 @@ export function BadgesManagementSheet({ isOpen, onClose }: BadgesManagementSheet
             <Button
               onClick={handleSave}
               disabled={!hasChanges || isSaving}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
+              className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               {isSaving ? (
                 <>

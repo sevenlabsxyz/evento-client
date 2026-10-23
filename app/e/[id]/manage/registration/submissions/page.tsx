@@ -174,7 +174,7 @@ export default function RegistrationSubmissionsPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>

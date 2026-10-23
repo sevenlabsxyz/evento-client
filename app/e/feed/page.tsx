@@ -309,7 +309,7 @@ export default function FeedPage() {
             </button>
 
             {sortMenuOpen && (
-              <div className='absolute left-0 top-full mt-1 w-44 rounded-md bg-white p-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-neutral-900'>
+              <div className='absolute left-0 top-full mt-1 w-44 rounded-md bg-white p-1 shadow-lg ring-1 ring-black ring-opacity-5 dark:bg-neutral-900 dark:shadow-black/40 dark:ring-neutral-800'>
                 <button
                   onClick={() => {
                     setSortOption('date-desc');
@@ -383,7 +383,7 @@ export default function FeedPage() {
             <p className='mb-2 text-center text-gray-500 dark:text-neutral-400'>
               No events in your feed yet
             </p>
-            <p className='text-center text-sm text-gray-400 dark:text-neutral-500'>
+            <p className='text-center text-sm text-gray-400 dark:text-neutral-400'>
               Follow other users or create your first event to see updates here
             </p>
           </div>
@@ -417,7 +417,7 @@ export default function FeedPage() {
 
       {/* Save to List Modal */}
       {showSaveModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Save to List</h3>
             <div className='space-y-2'>
@@ -480,7 +480,7 @@ export default function FeedPage() {
                     value={searchText}
                     onChange={handleSearchChange}
                     placeholder='Search events, people, places...'
-                    className='w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:focus:bg-neutral-900'
+                    className='w-full rounded-full bg-gray-100 py-2 pl-10 pr-4 text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-400 dark:focus:bg-neutral-900'
                     autoFocus
                     onFocus={() => setActiveDetent(2)}
                   />

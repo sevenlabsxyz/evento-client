@@ -204,7 +204,7 @@ export default function ContributionsManagementPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -333,7 +333,7 @@ export default function ContributionsManagementPage() {
                 placeholder='0.00'
                 min='0'
                 step='0.01'
-                className='w-24 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700'
+                className='w-24 rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
               />
             </div>
             <p className='text-xs text-gray-500 dark:text-neutral-400'>
@@ -374,7 +374,7 @@ export default function ContributionsManagementPage() {
                     }`}
                   >
                     <div
-                      className={`h-4 w-4 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
+                      className={`h-4 w-4 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
                         paymentData?.enabled ? 'translate-x-5' : 'translate-x-1'
                       }`}
                     />
@@ -387,7 +387,7 @@ export default function ContributionsManagementPage() {
                     value={paymentData.value}
                     onChange={(e) => handlePaymentMethodValue(method.key, e.target.value)}
                     placeholder={method.placeholder}
-                    className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700'
+                    className='w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder-neutral-500 dark:caret-neutral-100'
                   />
                 )}
               </div>
@@ -410,7 +410,7 @@ export default function ContributionsManagementPage() {
         <button
           onClick={() => void handleSave()}
           disabled={isSubmitting}
-          className='w-full rounded-xl bg-red-500 py-4 text-base font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50'
+          className='w-full rounded-xl bg-red-500 py-4 text-base font-semibold text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-red-600 dark:hover:bg-red-700'
         >
           {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>

@@ -269,7 +269,7 @@ export default function ManageEventPage() {
         {/* Check In Guests Button */}
         {/* <button
             onClick={handleCheckInGuests}
-            className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 text-white transition-colors hover:bg-red-600'
+            className='flex h-16 flex-col items-center justify-center rounded-xl bg-red-500 dark:bg-red-600 text-white transition-colors hover:bg-red-600 dark:hover:bg-red-700'
           >
             <UserCheck className='mb-1 h-5 w-5' />
             <span className='text-xs font-medium'>Check In Guests</span>

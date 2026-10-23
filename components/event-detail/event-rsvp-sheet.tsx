@@ -287,15 +287,15 @@ export default function RsvpSheet({ eventId, isOpen, onClose, eventData }: RsvpS
         classes:
           currentStatus === 'yes'
             ? 'bg-green-600 text-white hover:bg-green-700'
-            : 'bg-red-500 text-white hover:bg-red-600',
+            : 'bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700',
       },
       {
         key: 'maybe' as const,
         label: currentStatus === 'maybe' ? 'Marked maybe' : 'Maybe',
         classes:
           currentStatus === 'maybe'
-            ? 'bg-black text-white hover:bg-black'
-            : 'bg-black text-white hover:bg-gray-900',
+            ? 'bg-black dark:bg-neutral-100 text-white hover:bg-black dark:text-neutral-900 dark:hover:bg-neutral-200'
+            : 'bg-black dark:bg-neutral-100 text-white hover:bg-gray-900 dark:hover:bg-neutral-200 dark:text-neutral-900',
       },
       {
         key: 'no' as const,

@@ -147,7 +147,7 @@ export function AIDescriptionGeneratorSheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content className='relative'>
+          <SheetWithDetentFull.Content className='relative dark:bg-neutral-900'>
             {/* Fixed Header */}
             <div className='border-b border-gray-200 dark:border-neutral-800'>
               <div className='mb-4 flex justify-center'>
@@ -183,7 +183,9 @@ export function AIDescriptionGeneratorSheet({
                 <div className='mx-auto flex max-w-md items-center justify-center gap-2'>
                   <div className='flex items-center gap-1'>
                     <Sparkles className='h-4 w-4 text-red-600 dark:text-red-400' />
-                    <span className='text-sm font-medium'>AI-powered description generator</span>
+                    <span className='text-sm font-medium dark:text-neutral-300'>
+                      AI-powered description generator
+                    </span>
                   </div>
                 </div>
               </div>
@@ -208,16 +210,18 @@ export function AIDescriptionGeneratorSheet({
                       <>
                         {/* Custom Prompt */}
                         <div className='mb-6'>
-                          <h2 className='mb-2 text-base font-medium'>Custom Prompt (Optional)</h2>
+                          <h2 className='mb-2 text-base font-medium dark:text-neutral-100'>
+                            Custom Prompt (Optional)
+                          </h2>
                           <p className='mb-2 text-sm text-gray-500 dark:text-neutral-400'>
                             Add specific details you&apos;d like to include in your description
                           </p>
                           <textarea
                             className={cn(
-                              'w-full resize-none rounded-md border p-3 transition-colors',
+                              'w-full resize-none rounded-md border p-3 transition-colors dark:placeholder:text-neutral-400',
                               !hasTitleField
                                 ? 'border-gray-200 bg-gray-50 text-gray-400 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-500'
-                                : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50 dark:border-neutral-800 dark:focus:ring-red-900'
+                                : 'border-gray-200 focus:border-red-600 focus:ring focus:ring-red-100 focus:ring-opacity-50 dark:border-neutral-800 dark:text-neutral-100 dark:focus:ring-red-900'
                             )}
                             placeholder='e.g. Include information about food, dress code, or parking...'
                             rows={3}
@@ -229,7 +233,9 @@ export function AIDescriptionGeneratorSheet({
 
                         {/* Description Length Selection */}
                         <div className='mb-6'>
-                          <h2 className='mb-2 text-base font-medium'>Description Length</h2>
+                          <h2 className='mb-2 text-base font-medium dark:text-neutral-100'>
+                            Description Length
+                          </h2>
                           <div className='grid grid-cols-3 gap-3'>
                             {lengthOptions.map((option) => (
                               <button
@@ -254,7 +260,9 @@ export function AIDescriptionGeneratorSheet({
 
                         {/* Tone Selection */}
                         <div className='mb-6'>
-                          <h2 className='mb-2 text-base font-medium'>Tone & Style</h2>
+                          <h2 className='mb-2 text-base font-medium dark:text-neutral-100'>
+                            Tone & Style
+                          </h2>
                           <div className='grid grid-cols-3 gap-3'>
                             {toneOptions.map((option) => (
                               <button
@@ -286,7 +294,7 @@ export function AIDescriptionGeneratorSheet({
                             className={cn(
                               'w-full py-2 font-medium transition-colors',
                               !hasTitleField
-                                ? 'cursor-not-allowed bg-red-300 text-white'
+                                ? 'cursor-not-allowed bg-red-300 text-white dark:bg-red-950 dark:text-neutral-400'
                                 : 'bg-red-600 text-white hover:bg-red-700'
                             )}
                           >

@@ -170,7 +170,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
                 <Upload className='mb-3 h-10 w-10 text-gray-400 dark:text-neutral-500' />
                 <h3 className='mb-1 text-lg font-medium'>Drag and drop your CSV file here</h3>
                 <p className='mb-4 text-sm text-gray-500 dark:text-neutral-400'>or</p>
-                <label className='cursor-pointer rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800'>
+                <label className='cursor-pointer rounded-lg bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'>
                   Browse files
                   <input
                     type='file'
@@ -192,7 +192,7 @@ export default function CsvImportSheet({ isOpen, onClose, onImport }: CsvImportS
 
               {isLoading && (
                 <div className='mt-4 text-center'>
-                  <div className='inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500 dark:border-neutral-700' />
+                  <div className='inline-block h-6 w-6 animate-spin rounded-full border-2 border-gray-300 border-t-red-500 dark:border-neutral-700 dark:border-t-red-500' />
                   <p className='mt-2 text-sm text-gray-500 dark:text-neutral-400'>
                     Processing file...
                   </p>

@@ -149,7 +149,7 @@ export function MyEventsSection({
               {Array.from({ length: 6 }, (_, idx) => `ske-${idx}`).map((skeletonKey) => (
                 <div
                   key={skeletonKey}
-                  className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4 dark:bg-neutral-950'
+                  className='flex items-start gap-4 rounded-3xl bg-gray-50 p-4 dark:border dark:border-neutral-800 dark:bg-neutral-950'
                 >
                   {/* Left content skeleton */}
                   <div className='flex min-w-0 flex-1 flex-col gap-2'>
@@ -180,7 +180,7 @@ export function MyEventsSection({
           ) : events.length === 0 ? (
             <div className='flex flex-col items-center justify-center py-12 text-center'>
               <div className='mb-4 rounded-2xl bg-gray-100 p-4 dark:bg-neutral-800'>
-                <Calendar className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
+                <Calendar className='h-8 w-8 text-gray-400 dark:text-neutral-400' />
               </div>
               <h3 className='mb-2 text-base font-semibold text-gray-900 dark:text-neutral-100'>
                 {activeTab === 'upcoming' && 'No upcoming events'}

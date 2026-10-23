@@ -172,7 +172,7 @@ export default function Step1SearchUsers({
         <div className='relative flex-1'>
           <Search className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
           <input
-            className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800'
+            className='w-full rounded-full bg-gray-100 py-2 pl-9 pr-4 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-400'
             type='text'
             placeholder='Email or @username'
             value={searchText}
@@ -232,10 +232,14 @@ export default function Step1SearchUsers({
                     <span
                       aria-hidden
                       className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
-                        isSelected ? 'border-black' : 'border-gray-400 dark:border-neutral-600'
+                        isSelected
+                          ? 'border-black dark:border-neutral-100'
+                          : 'border-gray-400 dark:border-neutral-500'
                       }`}
                     >
-                      {isSelected ? <span className='h-2.5 w-2.5 rounded-full bg-black' /> : null}
+                      {isSelected ? (
+                        <span className='h-2.5 w-2.5 rounded-full bg-black dark:bg-neutral-100' />
+                      ) : null}
                     </span>
                   </button>
                 );
@@ -324,10 +328,14 @@ export default function Step1SearchUsers({
                   <span
                     aria-hidden
                     className={`flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border-2 ${
-                      isSelected ? 'border-black' : 'border-gray-400 dark:border-neutral-600'
+                      isSelected
+                        ? 'border-black dark:border-neutral-100'
+                        : 'border-gray-400 dark:border-neutral-500'
                     }`}
                   >
-                    {isSelected ? <span className='h-2.5 w-2.5 rounded-full bg-black' /> : null}
+                    {isSelected ? (
+                      <span className='h-2.5 w-2.5 rounded-full bg-black dark:bg-neutral-100' />
+                    ) : null}
                   </span>
                 </button>
               );

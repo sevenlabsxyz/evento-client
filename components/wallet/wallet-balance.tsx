@@ -149,30 +149,45 @@ export function WalletBalance({ onSend, onReceive, onScan }: WalletBalanceProps)
             disabled={balanceHidden}
           >
             {balanceHidden ? (
-              <div className='text-5xl font-bold'>$••••</div>
+              <div className='text-5xl font-bold dark:text-neutral-100'>$••••</div>
             ) : (
               <div className='space-y-1'>
                 {showUSD ? (
                   <>
                     <div className='text-5xl font-bold text-gray-900 dark:text-neutral-100'>
-                      $<NumberTicker value={balanceUSD} decimalPlaces={2} />
+                      $
+                      <NumberTicker
+                        value={balanceUSD}
+                        decimalPlaces={2}
+                        className='dark:text-neutral-100'
+                      />
                     </div>
                     <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                      <NumberTicker value={walletState.balance} /> sats
+                      <NumberTicker value={walletState.balance} className='dark:text-neutral-400' />{' '}
+                      sats
                     </div>
                   </>
                 ) : (
                   <>
                     <div className='flex items-baseline justify-center gap-2'>
                       <span className='text-5xl font-bold text-gray-900 dark:text-neutral-100'>
-                        <NumberTicker value={walletState.balance} />
+                        <NumberTicker
+                          value={walletState.balance}
+                          className='dark:text-neutral-100'
+                        />
                       </span>
                       <span className='text-2xl font-medium text-gray-600 dark:text-neutral-400'>
                         sats
                       </span>
                     </div>
                     <div className='text-sm text-gray-600 dark:text-neutral-400'>
-                      ≈ $<NumberTicker value={balanceUSD} decimalPlaces={2} /> USD
+                      ≈ $
+                      <NumberTicker
+                        value={balanceUSD}
+                        decimalPlaces={2}
+                        className='dark:text-neutral-400'
+                      />{' '}
+                      USD
                     </div>
                   </>
                 )}

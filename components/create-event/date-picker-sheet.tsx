@@ -175,7 +175,7 @@ export default function DatePickerSheet({
                   </div>
                   <button
                     onClick={handleSave}
-                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white'
+                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
                     Save
                   </button>
@@ -223,9 +223,9 @@ export default function DatePickerSheet({
                       disabled={!day}
                       className={`flex h-10 w-full items-center justify-center rounded-full text-sm font-medium transition-all ${!day ? 'invisible' : ''} ${
                         isSelectedDate(day)
-                          ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2'
+                          ? 'bg-red-500 text-white shadow-md ring-2 ring-red-500 ring-offset-2 dark:bg-red-600 dark:ring-offset-neutral-900'
                           : isReferenceDate(day)
-                            ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500 ring-offset-2'
+                            ? 'bg-blue-500 text-white shadow-md ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-neutral-900'
                             : isToday(day)
                               ? 'border border-gray-200 bg-gray-100 text-black dark:border-neutral-800 dark:bg-neutral-800 dark:text-white'
                               : 'hover:bg-gray-100 dark:hover:bg-neutral-800'

@@ -150,7 +150,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
       headerSecondary={
         <div className='px-4 pb-4'>
           <input
-            className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-300 focus:bg-white dark:border-neutral-800 dark:bg-neutral-950 dark:focus:border-neutral-700 dark:focus:bg-neutral-900'
+            className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-sm outline-none focus:border-gray-300 focus:bg-white dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-700 dark:focus:bg-neutral-900'
             type='text'
             placeholder='Search interests...'
             value={searchQuery}
@@ -200,7 +200,7 @@ export default function InterestsSheet({ isOpen, onClose }: InterestsSheetProps)
             <Button
               onClick={handleSave}
               disabled={!hasChanges || isSaving}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
+              className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               {isSaving ? (
                 <>

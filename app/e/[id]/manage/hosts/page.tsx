@@ -137,7 +137,7 @@ export default function HostsManagementPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -235,7 +235,7 @@ export default function HostsManagementPage() {
           ) : (
             <div className='py-12 text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
-                <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
+                <Plus className='h-8 w-8 text-gray-400 dark:text-neutral-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
                 No Hosts
@@ -245,7 +245,7 @@ export default function HostsManagementPage() {
               </p>
               <button
                 onClick={handleAddCoHost}
-                className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600'
+                className='rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Add Cohost
               </button>
@@ -324,7 +324,7 @@ export default function HostsManagementPage() {
             <AlertDialogCancel>Keep Invite</AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmCancelInvite}
-              className='bg-red-500 hover:bg-red-600'
+              className='bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               Cancel Invite
             </AlertDialogAction>

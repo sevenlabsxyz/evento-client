@@ -41,7 +41,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             size='icon'
             variant='outline'
             onClick={() => setActiveSheet('qr')}
-            className='h-12 w-12 rounded-full'
+            className='h-12 w-12 rounded-full dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <QrCode className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
           </Button>
@@ -52,7 +52,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             size='icon'
             variant='outline'
             onClick={() => setActiveSheet('website')}
-            className='h-12 w-12 rounded-full'
+            className='h-12 w-12 rounded-full dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <Globe className='h-6 w-6 text-gray-600 dark:text-neutral-400' />
           </Button>
@@ -63,7 +63,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             size='icon'
             variant='outline'
             onClick={() => setActiveSheet('instagram')}
-            className='h-12 w-12 rounded-full'
+            className='h-12 w-12 rounded-full dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <Instagram className='h-6 w-6 text-pink-500 dark:text-pink-400' />
           </Button>
@@ -74,7 +74,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             size='icon'
             variant='outline'
             onClick={() => setActiveSheet('x')}
-            className='h-12 w-12 rounded-full !p-0'
+            className='h-12 w-12 rounded-full !p-0 dark:bg-neutral-800 dark:text-neutral-100 dark:hover:bg-neutral-700'
           >
             <svg className='h-5 w-5' viewBox='0 0 24 24' fill='currentColor'>
               <path d='M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z' />
@@ -87,7 +87,7 @@ export default function SocialLinks({ user, showQRCode, username, userImage }: S
             size='icon'
             variant='outline'
             onClick={() => setActiveSheet('nostr')}
-            className='h-12 w-12 rounded-full'
+            className='h-12 w-12 rounded-full dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <div className='flex h-6 w-6 items-center justify-center rounded-full bg-purple-500'>
               <span className='text-sm font-bold text-white'>N</span>

@@ -89,7 +89,7 @@ export default function PasswordProtectionSheet({
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         enabled
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
                           : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
@@ -116,7 +116,10 @@ export default function PasswordProtectionSheet({
               {enabled && (
                 <div className='mb-6 space-y-4'>
                   <div className='space-y-2'>
-                    <label htmlFor='event-password' className='text-sm font-medium'>
+                    <label
+                      htmlFor='event-password'
+                      className='text-sm font-medium dark:text-neutral-300'
+                    >
                       Event Password
                     </label>
                     <div className='relative'>
@@ -125,7 +128,7 @@ export default function PasswordProtectionSheet({
                         id='event-password'
                         type={showPassword ? 'text' : 'password'}
                         placeholder='Enter password'
-                        className='bg-gray-50 pl-10 pr-10 dark:bg-neutral-950'
+                        className='bg-gray-50 pl-10 pr-10 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         value={password}
                         onChange={(e) => {
                           setPassword(e.target.value);

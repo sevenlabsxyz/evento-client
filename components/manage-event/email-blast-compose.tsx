@@ -480,7 +480,7 @@ export default function EmailBlastCompose({
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
                 placeholder='Enter email subject...'
-                className='EmailBlastCompose-input'
+                className='EmailBlastCompose-input dark:placeholder:text-neutral-500'
               />
             </div>
 

@@ -113,7 +113,7 @@ export function CampaignDetailSheet({ eventId, open, onOpenChange }: CampaignDet
             <button
               data-testid='campaign-detail-contribute-btn'
               onClick={() => setPledgeSheetOpen(true)}
-              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
             >
               <Zap className='h-4 w-4' />
               Contribute
@@ -171,7 +171,7 @@ function DetailsTabContent({
           <span className='text-sm text-gray-500 dark:text-neutral-400'>sats raised</span>
           {hasGoal && (
             <>
-              <span className='text-sm text-gray-400 dark:text-neutral-500'>of</span>
+              <span className='text-sm text-gray-400 dark:text-neutral-400'>of</span>
               <span className='text-sm font-medium text-gray-700 dark:text-neutral-300'>
                 {formatSatsAbbreviated(campaign.goal_sats!)} goal
               </span>
@@ -194,7 +194,7 @@ function DetailsTabContent({
       </div>
 
       {/* Created date — lower hierarchy */}
-      <p className='text-xs italic tracking-wide text-gray-400 dark:text-neutral-500'>
+      <p className='text-xs italic tracking-wide text-gray-400 dark:text-neutral-400'>
         Created{' '}
         {new Date(campaign.created_at).toLocaleDateString('en-US', {
           month: 'long',
@@ -258,7 +258,7 @@ function ContributorsTabContent({
               {item.payer_username ? `@${item.payer_username}` : 'Anonymous'}
             </p>
             {item.settled_at && (
-              <p className='text-xs text-gray-400 dark:text-neutral-500'>
+              <p className='text-xs text-gray-400 dark:text-neutral-400'>
                 {timeAgo(item.settled_at)}
               </p>
             )}

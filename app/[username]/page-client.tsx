@@ -492,7 +492,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'future'
-                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
@@ -504,7 +504,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'past'
-                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
@@ -529,7 +529,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
           ) : groupedEvents.length === 0 ? (
             <div className='flex h-40 flex-col items-center justify-center space-y-2 text-center'>
               <div className='rounded-full bg-gray-100 p-3 dark:bg-neutral-800'>
-                <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-500' />
+                <MessageCircle className='h-6 w-6 text-gray-400 dark:text-neutral-400' />
               </div>
               <p className='text-sm text-gray-500 dark:text-neutral-400'>
                 {timeframe === 'future' ? 'No upcoming events found' : 'No past events found'}
@@ -706,8 +706,8 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     disabled={isFollowStatusLoading || followActionMutation.isPending}
                     className={`h-12 flex-1 rounded-full border border-gray-200 px-6 text-base dark:border-neutral-800 ${
                       followStatus?.isFollowing
-                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-700'
-                        : 'bg-red-500 text-white hover:bg-red-600'
+                        ? 'bg-gray-50 text-gray-900 hover:bg-gray-200 dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800'
+                        : 'bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     }`}
                   >
                     {followStatus?.isFollowing ? (
@@ -830,7 +830,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                 setShowWebsiteModal(false);
                 window.open(safeExternalUrl(userData?.bio_link), '_blank', 'noopener,noreferrer');
               }}
-              className='w-full bg-red-500 text-white hover:bg-red-600'
+              className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               Take me to sarahchen.com
             </Button>
@@ -860,7 +860,7 @@ export default function UserProfilePageClient({ username }: UserProfilePageClien
                     '/e/contact?title=Account%20Verification%20Inquiry&message=Hi,%20I%20would%20like%20to%20learn%20more%20about%20account%20verification%20and%20how%20I%20can%20become%20a%20verified%20user.%20Please%20provide%20information%20about%20the%20verification%20process%20and%20requirements.'
                   );
                 }}
-                className='w-full bg-red-500 text-white hover:bg-red-600'
+                className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Get in touch about verification
               </Button>

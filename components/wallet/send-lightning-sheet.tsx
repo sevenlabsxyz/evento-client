@@ -1062,7 +1062,9 @@ export function SendLightningSheet({
               <div className='mb-3 flex items-start gap-3'>
                 <AlertCircle className='mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700 dark:text-amber-400' />
                 <div>
-                  <h3 className='font-semibold text-amber-950'>Stablecoin sends are not ready</h3>
+                  <h3 className='font-semibold text-amber-950 dark:text-amber-100'>
+                    Stablecoin sends are not ready
+                  </h3>
                   <p className='mt-1 text-sm text-amber-900 dark:text-amber-400'>
                     Evento recognized this as a cross-chain stablecoin address, but sending USDT or
                     USDC from the wallet is not available yet.

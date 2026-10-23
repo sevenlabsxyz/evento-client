@@ -270,9 +270,15 @@ export const UserOnboardingFlow = ({
             href='/'
             className='flex h-11 w-11 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md dark:border-neutral-800 dark:bg-neutral-900'
           >
-            <Image src='/assets/img/evento-sublogo.svg' alt='Evento' height='28' width='28' />
+            <Image
+              src='/assets/img/evento-sublogo.svg'
+              alt='Evento'
+              height='28'
+              width='28'
+              className='dark:invert'
+            />
           </Link>
-          <span className='text-sm text-gray-400 dark:text-neutral-500 md:hidden'>
+          <span className='text-sm text-gray-400 dark:text-neutral-400 md:hidden'>
             Step {step} of 5
           </span>
         </div>
@@ -342,7 +348,7 @@ export const UserOnboardingFlow = ({
           )}
           <Button
             disabled={isSaveButtonDisabled || isUpdating || isLoggingOut}
-            className='h-12 w-full flex-grow bg-red-600 hover:bg-red-700 sm:w-auto'
+            className='h-12 w-full flex-grow bg-red-600 hover:bg-red-700 dark:text-white sm:w-auto'
             onClick={() => updateUserFn({ name, username, image: uploadedImg })}
           >
             {updating ? (

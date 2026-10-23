@@ -75,7 +75,9 @@ export default function WavlakeSheet({
 
               {/* Header */}
               <div className='mb-6'>
-                <h2 className='text-center text-xl font-semibold'>Add Wavlake Track or Playlist</h2>
+                <h2 className='text-center text-xl font-semibold dark:text-neutral-100'>
+                  Add Wavlake Track or Playlist
+                </h2>
               </div>
 
               {/* Form */}
@@ -92,7 +94,7 @@ export default function WavlakeSheet({
                       setError('');
                     }}
                     placeholder='https://wavlake.com/track/... or /playlist/...'
-                    className='w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
+                    className='w-full rounded-xl border border-gray-300 px-4 py-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                     autoFocus
                   />
                   {error && <p className='mt-1 text-sm text-red-600 dark:text-red-400'>{error}</p>}
@@ -112,7 +114,7 @@ export default function WavlakeSheet({
                 </button>
                 <button
                   onClick={handleSave}
-                  className='flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600'
+                  className='flex-1 rounded-xl bg-red-500 px-4 py-3 font-medium text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   Save
                 </button>

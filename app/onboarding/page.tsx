@@ -22,7 +22,7 @@ function OnboardingContent() {
   }
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-white dark:bg-neutral-900'>
+    <div className='flex min-h-screen items-center justify-center bg-white dark:bg-neutral-950'>
       <div className='fixed right-4 top-4 z-50'>
         <ThemeToggle />
       </div>

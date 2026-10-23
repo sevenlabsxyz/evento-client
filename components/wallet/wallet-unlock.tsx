@@ -94,11 +94,11 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
   return (
     <div className='space-y-6'>
       <div className='text-center'>
-        <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:bg-neutral-950'>
+        <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'>
           {isPasswordMode ? (
-            <KeyRound className='h-8 w-8 text-black dark:text-white' />
+            <KeyRound className='h-8 w-8 text-black dark:text-neutral-100' />
           ) : (
-            <Lock className='h-8 w-8 text-black dark:text-white' />
+            <Lock className='h-8 w-8 text-black dark:text-neutral-100' />
           )}
         </div>
         <h2 className='text-2xl font-bold'>
@@ -118,7 +118,7 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder='Enter admin password'
-              className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-950'
+              className='h-14 rounded-xl border-2 border-gray-200 bg-gray-50 text-center text-lg dark:border-neutral-800 dark:bg-neutral-900'
               autoFocus
               disabled={isLoading}
             />
@@ -130,9 +130,11 @@ export function WalletUnlock({ onUnlock }: WalletUnlockProps) {
               {[0, 1, 2, 3, 4, 5].map((index) => (
                 <div
                   key={index}
-                  className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
+                  className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900'
                 >
-                  {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                  {pin.length > index && (
+                    <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+                  )}
                 </div>
               ))}
             </div>

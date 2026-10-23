@@ -163,7 +163,9 @@ export function WalletRestore({ onComplete, onCancel }: WalletRestoreProps) {
           key={index}
           className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
         >
-          {currentPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+          {currentPin.length > index && (
+            <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+          )}
         </div>
       ))}
     </div>

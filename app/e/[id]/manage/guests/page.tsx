@@ -180,7 +180,7 @@ export default function GuestListPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -264,7 +264,7 @@ export default function GuestListPage() {
         <div className='p-4 pb-0'>
           <div className='flex items-center gap-2'>
             <div className='relative flex-1'>
-              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-neutral-500' />
+              <Search className='absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 transform text-gray-400 dark:text-neutral-400' />
               <input
                 type='text'
                 placeholder='Search event guests...'
@@ -382,7 +382,7 @@ export default function GuestListPage() {
           ) : (
             <div className='py-16 text-center'>
               <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-neutral-800'>
-                <Users className='h-8 w-8 text-gray-400 dark:text-neutral-500' />
+                <Users className='h-8 w-8 text-gray-400 dark:text-neutral-400' />
               </div>
               <h3 className='mb-2 text-lg font-medium text-gray-900 dark:text-neutral-100'>
                 No Guests
@@ -453,7 +453,7 @@ export default function GuestListPage() {
                   <button
                     onClick={handleConfirmRemoveGuest}
                     disabled={removeGuest.isPending}
-                    className='w-full rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50'
+                    className='w-full rounded-lg bg-red-500 px-4 py-3 text-sm font-medium text-white transition-colors hover:bg-red-600 disabled:opacity-50 dark:bg-red-600 dark:hover:bg-red-700'
                   >
                     {removeGuest.isPending ? 'Removing...' : 'Remove guest'}
                   </button>

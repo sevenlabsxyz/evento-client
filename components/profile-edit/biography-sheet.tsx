@@ -80,11 +80,11 @@ export default function BiographySheet({
       <SheetWithDetentFull.Portal>
         <SheetWithDetentFull.View>
           <SheetWithDetentFull.Backdrop />
-          <SheetWithDetentFull.Content>
+          <SheetWithDetentFull.Content className='dark:bg-neutral-900'>
             {/* Header */}
             <div className='sticky top-0 z-10 border-b border-gray-100 bg-white px-4 pb-4 pt-4 dark:border-neutral-800 dark:bg-neutral-900'>
               <div className='flex items-center justify-center'>
-                <SheetWithDetentFull.Handle />
+                <SheetWithDetentFull.Handle className='dark:bg-neutral-700' />
               </div>
               <div className='flex items-center justify-between'>
                 <h2 className='text-xl font-semibold'>Biography</h2>
@@ -127,7 +127,7 @@ export default function BiographySheet({
                     <Button
                       onClick={handleSave}
                       disabled={!hasChanges || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isSaving ? (
                         <>

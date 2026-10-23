@@ -96,13 +96,13 @@ export function RegistrationDetailSheet({
             placeholder='Reason for denial (optional)'
             value={denyReason}
             onChange={(e) => setDenyReason(e.target.value)}
-            className='w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-400 dark:border-neutral-800 dark:bg-neutral-900 dark:focus:border-neutral-600'
+            className='w-full rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none focus:border-gray-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-400 dark:focus:border-neutral-600'
           />
           <div className='flex gap-2'>
             <Button
               onClick={handleConfirmDeny}
               disabled={isDenying}
-              className='flex-1 bg-red-500 text-white hover:bg-red-600'
+              className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             >
               Confirm Deny
             </Button>
@@ -128,7 +128,7 @@ export function RegistrationDetailSheet({
           </Button>
           <Button
             onClick={handleStartDeny}
-            className='flex-1 bg-red-500 text-white hover:bg-red-600'
+            className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             <X className='mr-2 h-4 w-4' />
             Deny

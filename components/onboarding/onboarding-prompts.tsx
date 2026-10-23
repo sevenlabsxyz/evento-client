@@ -259,7 +259,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                             </p>
                             <button
                               onClick={() => handleEditPrompt(prompt)}
-                              className='mt-1 text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-400'
+                              className='mt-1 text-xs font-medium text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
                             >
                               Edit
                             </button>
@@ -307,7 +307,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                         </div>
                       ) : (
                         <div className='rounded-xl border border-dashed border-gray-200 bg-gray-50/50 p-4 text-center dark:border-neutral-800 dark:bg-neutral-950/50'>
-                          <p className='text-sm text-gray-400 dark:text-neutral-500'>
+                          <p className='text-sm text-gray-400 dark:text-neutral-400'>
                             No more prompts available
                           </p>
                         </div>
@@ -379,7 +379,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                 maxLength={500}
                 autoFocus
               />
-              <div className='mt-1.5 flex items-center justify-between text-xs text-gray-400 dark:text-neutral-500'>
+              <div className='mt-1.5 flex items-center justify-between text-xs text-gray-400 dark:text-neutral-400'>
                 <span>Minimum 5 characters</span>
                 <span>{editingPrompt.answer.length}/500</span>
               </div>
@@ -407,7 +407,7 @@ export const OnboardingPrompts = ({ onPromptsAnswered }: OnboardingPromptsProps)
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform dark:bg-neutral-900 ${
+                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
                     editingPrompt.is_visible ? 'left-5' : 'left-0.5'
                   }`}
                 />

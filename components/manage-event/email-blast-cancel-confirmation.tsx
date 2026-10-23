@@ -38,7 +38,7 @@ export default function EmailBlastCancelConfirmation({
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isCancelling}
-            className='bg-red-600 hover:bg-red-700 focus:ring-red-600'
+            className='bg-red-600 hover:bg-red-700 focus:ring-red-600 dark:text-white'
           >
             {isCancelling ? 'Cancelling...' : 'Cancel Blast'}
           </AlertDialogAction>

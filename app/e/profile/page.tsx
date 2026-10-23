@@ -219,7 +219,7 @@ export default function ProfilePage() {
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'future'
-                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:shadow-none'
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
@@ -231,7 +231,7 @@ export default function ProfilePage() {
               className={cn(
                 'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                 timeframe === 'past'
-                  ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                  ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-neutral-100 dark:shadow-none'
                   : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
               )}
             >
@@ -397,7 +397,7 @@ export default function ProfilePage() {
   if (isCheckingAuth || isUserLoading || !user) {
     return (
       <div className='mx-auto flex min-h-screen max-w-full flex-col bg-white dark:bg-neutral-900 md:max-w-sm'>
-        <div className='flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-neutral-950'>
+        <div className='flex-1 overflow-y-auto bg-gray-50 p-6 dark:bg-neutral-900'>
           <Skeleton variant='profile' />
         </div>
       </div>
@@ -522,8 +522,8 @@ export default function ProfilePage() {
 
       {/* Verification Modal */}
       {showVerificationModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
-          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center dark:bg-neutral-900 md:max-w-sm'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
+          <div className='w-full max-w-full rounded-2xl bg-white p-6 text-center dark:bg-neutral-900 dark:ring-1 dark:ring-neutral-800 md:max-w-sm'>
             <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/40'>
               <BadgeCheck className='h-8 w-8 rounded-full bg-red-600 text-white shadow-sm' />
             </div>
@@ -542,7 +542,7 @@ export default function ProfilePage() {
                     '/e/contact?title=Verification%20Support&message=Hi,%20I%20need%20assistance%20with%20my%20verified%20account%20or%20have%20questions%20about%20verification%20features.'
                   );
                 }}
-                className='w-full bg-red-500 text-white hover:bg-red-600'
+                className='w-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Contact support
               </Button>

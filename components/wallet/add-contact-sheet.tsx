@@ -93,7 +93,9 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               autoComplete='name'
               className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
-            {errors.name && <p className='text-sm text-destructive'>{errors.name.message}</p>}
+            {errors.name && (
+              <p className='text-sm text-destructive dark:text-red-400'>{errors.name.message}</p>
+            )}
           </div>
 
           {/* Lightning Address Input */}
@@ -111,7 +113,9 @@ export function AddContactSheet({ open, onOpenChange }: AddContactSheetProps) {
               className='h-12 rounded-full bg-gray-50 dark:bg-neutral-950'
             />
             {errors.lightningAddress && (
-              <p className='text-sm text-destructive'>{errors.lightningAddress.message}</p>
+              <p className='text-sm text-destructive dark:text-red-400'>
+                {errors.lightningAddress.message}
+              </p>
             )}
             <p className='text-xs text-muted-foreground'>
               Enter a Lightning address in user@domain format (e.g., alice@evento.cash)

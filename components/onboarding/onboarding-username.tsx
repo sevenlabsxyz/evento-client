@@ -116,7 +116,7 @@ export const OnboardingUsername = ({
             disabled={updating}
             placeholder={'shakespeare123'}
             onChange={onUsernameChange}
-            className={`mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 dark:border-neutral-800 dark:bg-neutral-950 dark:placeholder:text-neutral-600 md:text-2xl ${validationError && showValidation ? 'border-red-500' : ''} ${canProceed ? 'border-green-500' : ''} `}
+            className={`mb-2 min-h-[60px] rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 pr-12 text-2xl placeholder:text-gray-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-400 md:text-2xl ${validationError && showValidation ? 'border-red-500 dark:border-red-500' : ''} ${canProceed ? 'border-green-500 dark:border-green-500' : ''} `}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && canProceed) onEnterPress();
             }}
@@ -125,7 +125,7 @@ export const OnboardingUsername = ({
           {/* Status indicator */}
           <div className='absolute right-3 top-1/2 -translate-y-1/2'>
             {isCheckingAvailability || isLoading ? (
-              <Loader2 className='h-5 w-5 animate-spin text-gray-400 dark:text-neutral-500' />
+              <Loader2 className='h-5 w-5 animate-spin text-gray-400 dark:text-neutral-400' />
             ) : isAvailable === true && !validationError && showValidation ? (
               <CheckCircle className='h-5 w-5 text-green-500 dark:text-green-400' />
             ) : isAvailable === false && showValidation ? (

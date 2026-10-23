@@ -75,7 +75,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             <iframe
               width='100%'
               height='100%'
-              className='border-0'
+              className='border-0 dark:hue-rotate-180 dark:invert-[0.9]'
               loading='lazy'
               allowFullScreen
               referrerPolicy='no-referrer-when-downgrade'
@@ -94,7 +94,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
 
             {/* Map Pin */}
             <div className='pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform'>
-              <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2'>
+              <div className='-translate-y-1/2 transform rounded-full bg-red-500 p-2 dark:bg-red-600'>
                 <MapPin className='h-4 w-4 text-white' />
               </div>
             </div>
@@ -107,7 +107,7 @@ export default function EventLocation({ event, weather }: EventLocationProps) {
             {/* Expand button */}
             <button
               onClick={() => setShowMapOptions(true)}
-              className='absolute right-2 top-2 z-20 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100 dark:bg-neutral-900'
+              className='absolute right-2 top-2 z-20 rounded-full bg-white bg-opacity-90 p-1.5 transition-all hover:bg-opacity-100 dark:bg-neutral-900 dark:ring-1 dark:ring-neutral-700'
               type='button'
             >
               <ExternalLink className='h-4 w-4 text-gray-700 dark:text-neutral-300' />

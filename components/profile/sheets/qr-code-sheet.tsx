@@ -97,7 +97,7 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
               <div className='mb-6 flex justify-center'>
                 <div
                   ref={qrCodeRef}
-                  className='rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'
+                  className='rounded-2xl border border-gray-100 bg-white p-4 shadow-sm dark:border-neutral-200 dark:bg-white'
                 >
                   <QRCodeSVG
                     value={profileUrl}
@@ -105,6 +105,7 @@ export default function QRCodeSheet({ isOpen, onClose, username, userImage }: QR
                     level='M'
                     includeMargin={false}
                     fgColor='#000000'
+                    bgColor='#FFFFFF'
                     imageSettings={{
                       src: userImage || logoImage,
                       x: undefined,

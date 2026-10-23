@@ -295,7 +295,7 @@ export function SpeedUpSheet({
                               </div>
                             </div>
                             {selectedSpeed === 'fast' && (
-                              <div className='h-5 w-5 rounded-full bg-gray-900' />
+                              <div className='h-5 w-5 rounded-full bg-gray-900 dark:bg-neutral-100' />
                             )}
                           </div>
                         </button>
@@ -325,7 +325,7 @@ export function SpeedUpSheet({
                               </div>
                             </div>
                             {selectedSpeed === 'normal' && (
-                              <div className='h-5 w-5 rounded-full bg-gray-900' />
+                              <div className='h-5 w-5 rounded-full bg-gray-900 dark:bg-neutral-100' />
                             )}
                           </div>
                         </button>
@@ -355,7 +355,7 @@ export function SpeedUpSheet({
                               </div>
                             </div>
                             {selectedSpeed === 'slow' && (
-                              <div className='h-5 w-5 rounded-full bg-gray-900' />
+                              <div className='h-5 w-5 rounded-full bg-gray-900 dark:bg-neutral-100' />
                             )}
                           </div>
                         </button>
@@ -402,7 +402,7 @@ export function SpeedUpSheet({
                               type='number'
                               value={customFeeRate}
                               onChange={(e) => setCustomFeeRate(e.target.value)}
-                              className='flex-1 border-none bg-transparent text-lg outline-none'
+                              className='flex-1 border-none bg-transparent text-lg outline-none dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='Enter fee rate'
                               min='1'
                               step='0.1'

@@ -234,7 +234,7 @@ export default function TimePickerSheet({
                   <button
                     type='button'
                     onClick={handleSave}
-                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white'
+                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
                     Save
                   </button>

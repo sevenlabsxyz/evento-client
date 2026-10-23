@@ -481,7 +481,7 @@ function CreatePageContent() {
                 placeholder='Enter event name'
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100'
+                className='flex-1 border-none bg-transparent text-lg font-medium text-gray-900 outline-none dark:text-neutral-100 dark:placeholder:text-neutral-400'
               />
             </div>
           </div>
@@ -551,7 +551,7 @@ function CreatePageContent() {
               </label>
               <div className='flex items-center justify-between'>
                 <span
-                  className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-500'}`}
+                  className={`font-medium ${location ? 'text-gray-900 dark:text-neutral-100' : 'text-gray-400 dark:text-neutral-400'}`}
                 >
                   {location ? getLocationDisplayName(location) : 'Choose address'}
                 </span>
@@ -628,7 +628,7 @@ function CreatePageContent() {
                       {hasCapacity && capacity ? `Capacity ${capacity}` : 'Set Capacity'}
                     </label>
                     {hasCapacity && capacity && (
-                      <span className='text-xs text-gray-400 dark:text-neutral-500'>
+                      <span className='text-xs text-gray-400 dark:text-neutral-400'>
                         Maximum attendees: {capacity}
                       </span>
                     )}
@@ -699,7 +699,7 @@ function CreatePageContent() {
               </label>
               <div className='flex items-center justify-between'>
                 <span
-                  className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-500' : 'text-gray-900 dark:text-neutral-100'}`}
+                  className={`${isContentEmpty(description) ? 'text-gray-400 dark:text-neutral-400' : 'text-gray-900 dark:text-neutral-100'}`}
                 >
                   {isContentEmpty(description)
                     ? 'Add description about this event...'

@@ -66,7 +66,7 @@ export default function AttachmentSheet({
     {
       type: 'wavlake' as const,
       label: hasWavlake ? 'Edit Wavlake' : 'Add Wavlake',
-      icon: <WavlakeSVGImage className='h-6 w-6' />,
+      icon: <WavlakeSVGImage className='h-6 w-6 dark:fill-white' />,
       description: hasWavlake
         ? 'Modify Wavlake track or playlist'
         : 'Add Wavlake track or playlist',

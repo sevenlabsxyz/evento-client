@@ -100,13 +100,14 @@ export function UserAvatar({
       className={cn(
         !height && !width ? sizeConfig.avatar : '',
         sizeConfig.border,
-        'border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900'
+        'border-gray-200 bg-white dark:border-neutral-700 dark:bg-neutral-900'
       )}
       style={height && width ? { height: `${height}px`, width: `${width}px` } : undefined}
     >
       <AvatarImage
         src={avatarSrc}
         alt='Profile'
+        className={avatarSrc === DEFAULT_AVATAR_IMAGE ? 'dark:invert' : undefined}
         onError={() => {
           if (avatarSrc !== DEFAULT_AVATAR_IMAGE) {
             setAvatarSrc(DEFAULT_AVATAR_IMAGE);
@@ -117,7 +118,7 @@ export function UserAvatar({
         <img
           src={DEFAULT_AVATAR_IMAGE}
           alt='Default profile'
-          className='h-full w-full object-cover'
+          className='h-full w-full object-cover dark:invert'
         />
       </AvatarFallback>
     </Avatar>
@@ -140,7 +141,7 @@ export function UserAvatar({
             aria-label='Verification badge'
             onClick={handleVerificationClick}
             className={cn(
-              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-800',
+              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-700',
               sizeConfig.badge,
               sizeConfig.badgePosition,
               'transition-transform hover:scale-105'
@@ -152,7 +153,7 @@ export function UserAvatar({
           <span
             aria-hidden='true'
             className={cn(
-              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-800',
+              'absolute flex scale-90 items-center justify-center rounded-full border-2 border-gray-200 bg-red-600 dark:border-neutral-700',
               sizeConfig.badge,
               sizeConfig.badgePosition
             )}

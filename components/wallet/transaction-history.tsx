@@ -75,14 +75,14 @@ export function TransactionHistory({
     if (isPending) {
       if (isIncoming) {
         return (
-          <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100 dark:bg-orange-950/60'>
+          <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100 dark:border-orange-900/60 dark:bg-orange-950/60'>
             <ArrowDownLeft className='h-5 w-5 text-orange-600 dark:text-orange-400' />
           </div>
         );
       }
 
       return (
-        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100 dark:bg-orange-950/60'>
+        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-orange-100 dark:border-orange-900/60 dark:bg-orange-950/60'>
           <ArrowUpRight className='h-5 w-5 text-orange-600 dark:text-orange-400' />
         </div>
       );
@@ -91,14 +91,14 @@ export function TransactionHistory({
     // Normal color scheme for completed/failed transactions
     if (isIncoming) {
       return (
-        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100 dark:bg-green-950/60'>
+        <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-green-100 dark:border-green-900/60 dark:bg-green-950/60'>
           <ArrowDownLeft className='h-5 w-5 text-green-600 dark:text-green-400' />
         </div>
       );
     }
 
     return (
-      <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-blue-100 dark:bg-blue-950/60'>
+      <div className='flex h-10 w-10 items-center justify-center rounded-full border bg-blue-100 dark:border-blue-900/60 dark:bg-blue-950/60'>
         <ArrowUpRight className='h-5 w-5 text-blue-600 dark:text-blue-400' />
       </div>
     );
@@ -193,7 +193,7 @@ export function TransactionHistory({
           <button
             key={payment.id}
             onClick={() => onTransactionClick?.(payment)}
-            className='w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-950'
+            className='w-full cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700 dark:hover:bg-neutral-900'
           >
             <div className='flex min-w-0 items-start gap-3'>
               {getPaymentIcon(payment)}

@@ -85,12 +85,14 @@ export function AnimatedTabs({
     onChange?.(index);
   };
 
-  const Separator = () => <div className='mx-1 h-[24px] w-[1.2px] bg-border' aria-hidden='true' />;
+  const Separator = () => (
+    <div className='mx-1 h-[24px] w-[1.2px] bg-border dark:bg-neutral-700' aria-hidden='true' />
+  );
 
   return (
     <div
       className={cn(
-        'flex w-fit items-center gap-2 rounded-full border bg-background p-1 shadow-sm',
+        'flex w-fit items-center gap-2 rounded-full border bg-background p-1 shadow-sm dark:border-neutral-800 dark:bg-neutral-900 dark:shadow-none',
         className
       )}
     >

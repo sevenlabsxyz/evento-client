@@ -56,7 +56,7 @@ export default function EventVisibilitySheet({
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentVisibility === 'public'
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
                           : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
@@ -83,7 +83,7 @@ export default function EventVisibilitySheet({
                       </p>
                     </div>
                     {currentVisibility === 'public' && (
-                      <div className='flex h-6 w-6 items-center justify-center rounded-full bg-red-500'>
+                      <div className='flex h-6 w-6 items-center justify-center rounded-full bg-red-500 dark:bg-red-600'>
                         <div className='h-2 w-2 rounded-full bg-white dark:bg-neutral-900' />
                       </div>
                     )}
@@ -103,7 +103,7 @@ export default function EventVisibilitySheet({
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentVisibility === 'private'
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
                           : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
@@ -130,7 +130,7 @@ export default function EventVisibilitySheet({
                       </p>
                     </div>
                     {currentVisibility === 'private' && (
-                      <div className='flex h-6 w-6 items-center justify-center rounded-full bg-red-500'>
+                      <div className='flex h-6 w-6 items-center justify-center rounded-full bg-red-500 dark:bg-red-600'>
                         <div className='h-2 w-2 rounded-full bg-white dark:bg-neutral-900' />
                       </div>
                     )}

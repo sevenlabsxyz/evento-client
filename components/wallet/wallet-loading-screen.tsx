@@ -47,7 +47,7 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
     >
       {/* Animated Logo */}
       <motion.div
-        className='rounded-full border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-950'
+        className='rounded-full border border-gray-200 bg-gray-50 shadow-sm dark:border-neutral-800 dark:bg-neutral-900'
         animate={{
           rotate: 360,
         }}
@@ -59,7 +59,13 @@ export function WalletLoadingScreen({ className }: WalletLoadingScreenProps) {
           },
         }}
       >
-        <Image src='/assets/img/evento-sublogo.svg' alt='Evento Logo' width={96} height={96} />
+        <Image
+          src='/assets/img/evento-sublogo.svg'
+          alt='Evento Logo'
+          width={96}
+          height={96}
+          className='dark:invert'
+        />
       </motion.div>
 
       {/* Rotating Messages */}

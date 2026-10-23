@@ -61,7 +61,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className='fixed inset-0 z-[100] flex items-center justify-center bg-white/20 backdrop-blur-md'
+          className='fixed inset-0 z-[100] flex items-center justify-center bg-white/20 backdrop-blur-md dark:bg-neutral-950/60'
           style={{ touchAction: 'none' }}
         >
           <div className='flex w-64 max-w-full flex-col items-center justify-center space-y-6 px-4'>
@@ -84,6 +84,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
                 alt='Evento Logo'
                 width={80}
                 height={80}
+                className='dark:invert'
               />
             </motion.div>
 
@@ -108,7 +109,7 @@ export function EventCreationOverlay({ isVisible }: EventCreationOverlayProps) {
               {[0, 1, 2].map((i) => (
                 <motion.div
                   key={i}
-                  className='h-2 w-2 rounded-full bg-red-500'
+                  className='h-2 w-2 rounded-full bg-red-500 dark:bg-red-600'
                   animate={{
                     scale: [1, 1.2, 1],
                     opacity: [0.5, 1, 0.5],

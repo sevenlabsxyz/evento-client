@@ -45,17 +45,17 @@ export function APISheet({ open, onOpenChange, onContactRequest }: APISheetProps
                 <SheetWithDetentFull.ScrollContent className='p-4'>
                   <div className='space-y-6'>
                     {/* CTA Button */}
-                    <div className='rounded-2xl bg-white p-6 dark:bg-neutral-900'>
+                    <div className='rounded-2xl bg-white p-6 dark:bg-neutral-800'>
                       <Button
                         onClick={handleGetAccess}
-                        className='w-full rounded-xl bg-red-500 py-4 text-lg font-semibold text-white hover:bg-red-600'
+                        className='w-full rounded-xl bg-red-500 py-4 text-lg font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                       >
                         Get API Access
                       </Button>
                     </div>
 
                     {/* Description */}
-                    <div className='space-y-4 rounded-2xl bg-white p-6 dark:bg-neutral-900'>
+                    <div className='space-y-4 rounded-2xl bg-white p-6 dark:bg-neutral-800'>
                       <h2 className='text-xl font-bold text-gray-900 dark:text-neutral-100'>
                         Build Your Own Integrations
                       </h2>
@@ -73,23 +73,23 @@ export function APISheet({ open, onOpenChange, onContactRequest }: APISheetProps
                         </h3>
                         <ul className='space-y-2 text-gray-700 dark:text-neutral-300'>
                           <li className='flex items-start gap-2'>
-                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                             <span>Access event data and details</span>
                           </li>
                           <li className='flex items-start gap-2'>
-                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                             <span>Create custom event displays</span>
                           </li>
                           <li className='flex items-start gap-2'>
-                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                             <span>Integrate with your existing systems</span>
                           </li>
                           <li className='flex items-start gap-2'>
-                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                             <span>Build custom notification systems</span>
                           </li>
                           <li className='flex items-start gap-2'>
-                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500'></div>
+                            <div className='mt-2 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-red-500 dark:bg-red-600'></div>
                             <span>Sync events across platforms</span>
                           </li>
                         </ul>
@@ -97,7 +97,7 @@ export function APISheet({ open, onOpenChange, onContactRequest }: APISheetProps
                     </div>
 
                     {/* Use Cases */}
-                    <div className='space-y-4 rounded-2xl bg-white p-6 dark:bg-neutral-900'>
+                    <div className='space-y-4 rounded-2xl bg-white p-6 dark:bg-neutral-800'>
                       <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
                         Popular Use Cases
                       </h3>
@@ -142,7 +142,7 @@ export function APISheet({ open, onOpenChange, onContactRequest }: APISheetProps
                     </div>
 
                     {/* Getting Started */}
-                    <div className='space-y-4 rounded-2xl bg-white p-6 dark:bg-neutral-900'>
+                    <div className='space-y-4 rounded-2xl bg-white p-6 dark:bg-neutral-800'>
                       <h3 className='font-semibold text-gray-900 dark:text-neutral-100'>
                         Getting Started
                       </h3>

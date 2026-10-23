@@ -150,7 +150,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                         Select up to {MAX_PHOTOS} photos to upload to this event&apos;s gallery
                       </p>
                       <label htmlFor='photo-upload' className='cursor-pointer'>
-                        <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600'>
+                        <div className='rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'>
                           Select Photos
                         </div>
                         <input
@@ -214,7 +214,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                           ) : (
                             <button
                               onClick={() => removeFileFromSelection(fileData.file.name)}
-                              className='absolute right-1 top-1 rounded-full bg-black bg-opacity-70 p-1.5 text-white hover:bg-opacity-90'
+                              className='absolute right-1 top-1 rounded-full bg-black bg-opacity-70 p-1.5 text-white hover:bg-opacity-90 dark:bg-neutral-100 dark:text-neutral-900'
                             >
                               <Trash2 className='h-4 w-4' />
                             </button>
@@ -236,7 +236,7 @@ export default function PhotoUploadSheet({ isOpen, onClose, eventId }: PhotoUplo
                   >
                     {isUploading ? (
                       <span className='flex items-center'>
-                        <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white dark:border-neutral-700'></span>
+                        <span className='mr-2 h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-white dark:border-neutral-400 dark:border-t-neutral-900'></span>
                         Uploading...
                       </span>
                     ) : (

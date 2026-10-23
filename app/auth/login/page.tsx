@@ -45,7 +45,7 @@ function LoginContent() {
 
   if (isCheckingAuth) {
     return (
-      <div className='flex min-h-[100dvh] items-center justify-center'>
+      <div className='flex min-h-[100dvh] items-center justify-center dark:bg-neutral-950'>
         <Loader2 className='h-8 w-8 animate-spin' />
       </div>
     );
@@ -66,7 +66,10 @@ function LoginContent() {
         </CardHeader>
         <CardContent className='space-y-4'>
           {error && (
-            <Alert variant='destructive'>
+            <Alert
+              variant='destructive'
+              className='dark:border-red-500/40 dark:text-red-400 dark:[&>svg]:text-red-400'
+            >
               <AlertCircle className='h-4 w-4' />
               <AlertDescription>
                 {error.message || 'An error occurred. Please try again.'}
@@ -113,7 +116,7 @@ function LoginContent() {
 
           <div className='relative'>
             <div className='absolute inset-0 flex items-center'>
-              <span className='w-full border-t' />
+              <span className='w-full border-t dark:border-neutral-700' />
             </div>
             <div className='relative flex justify-center text-xs uppercase'>
               <span className='bg-white px-2 text-muted-foreground dark:bg-neutral-900'>or</span>
@@ -122,7 +125,7 @@ function LoginContent() {
 
           <Button
             variant='secondary'
-            className='w-full border border-gray-200 py-6 text-base dark:border-neutral-800'
+            className='w-full border border-gray-200 py-6 text-base dark:border-neutral-700'
             onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
           >
@@ -166,7 +169,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className='flex min-h-[100dvh] items-center justify-center'>
+        <div className='flex min-h-[100dvh] items-center justify-center dark:bg-neutral-950'>
           <Loader2 className='h-8 w-8 animate-spin' />
         </div>
       }

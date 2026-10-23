@@ -34,21 +34,20 @@ export default function StatsPage() {
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke='#e5e7eb'
             strokeWidth='8'
             fill='none'
+            className='stroke-gray-200 dark:stroke-neutral-700'
           />
           <circle
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke='#6366f1'
             strokeWidth='8'
             fill='none'
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap='round'
-            className='transition-all duration-300'
+            className='stroke-indigo-500 transition-all duration-300 dark:stroke-indigo-400'
           />
         </svg>
         <div className='absolute inset-0 flex items-center justify-center'>
@@ -71,9 +70,9 @@ export default function StatsPage() {
   }
 
   return (
-    <div className='mx-auto min-h-screen max-w-full bg-gray-100 dark:bg-neutral-800 md:max-w-sm'>
+    <div className='mx-auto min-h-screen max-w-full bg-gray-100 dark:bg-neutral-950 md:max-w-sm'>
       {/* Header */}
-      <div className='relative bg-gray-900 pb-8 pt-12'>
+      <div className='relative bg-gray-900 pb-8 pt-12 dark:bg-neutral-900'>
         <Button
           variant='ghost'
           size='icon'
@@ -86,7 +85,7 @@ export default function StatsPage() {
         {/* Empty State Message */}
         <div className='mt-8 px-6 text-center text-white'>
           <h1 className='mb-4 text-2xl font-bold'>No events recorded in your stats</h1>
-          <p className='mb-12 text-gray-300 dark:text-neutral-600'>
+          <p className='mb-12 text-gray-300 dark:text-neutral-400'>
             We will calculate it as soon as your next event is completed
           </p>
 
@@ -94,27 +93,27 @@ export default function StatsPage() {
           <div className='mb-8 grid grid-cols-3 gap-8'>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.events}</div>
-              <div className='text-gray-300 dark:text-neutral-600'>Events</div>
+              <div className='text-gray-300 dark:text-neutral-400'>Events</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.countries}</div>
-              <div className='text-gray-300 dark:text-neutral-600'>Countries</div>
+              <div className='text-gray-300 dark:text-neutral-400'>Countries</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.cities}</div>
-              <div className='text-gray-300 dark:text-neutral-600'>Cities</div>
+              <div className='text-gray-300 dark:text-neutral-400'>Cities</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.categories}</div>
-              <div className='text-gray-300 dark:text-neutral-600'>Categories</div>
+              <div className='text-gray-300 dark:text-neutral-400'>Categories</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>{stats.mutuals}</div>
-              <div className='text-gray-300 dark:text-neutral-600'>Mutuals</div>
+              <div className='text-gray-300 dark:text-neutral-400'>Mutuals</div>
             </div>
             <div className='text-center'>
               <div className='mb-2 text-4xl font-bold'>0</div>
-              <div className='text-gray-300 dark:text-neutral-600'>Connections</div>
+              <div className='text-gray-300 dark:text-neutral-400'>Connections</div>
             </div>
           </div>
         </div>
@@ -139,10 +138,10 @@ export default function StatsPage() {
               <div className='font-medium text-indigo-600 dark:text-indigo-400'>Events</div>
             </div>
             <div className='text-center'>
-              <div className='mb-2 text-6xl font-bold text-gray-400 dark:text-neutral-500'>
+              <div className='mb-2 text-6xl font-bold text-gray-400 dark:text-neutral-400'>
                 {stats.mutuals}
               </div>
-              <div className='font-medium text-gray-400 dark:text-neutral-500'>Mutuals Met</div>
+              <div className='font-medium text-gray-400 dark:text-neutral-400'>Mutuals Met</div>
             </div>
           </div>
 
@@ -181,10 +180,10 @@ export default function StatsPage() {
                 <div className='font-medium text-red-500 dark:text-red-400'>Visited</div>
               </div>
               <div className='text-center'>
-                <div className='mb-2 text-5xl font-bold text-gray-400 dark:text-neutral-500'>
+                <div className='mb-2 text-5xl font-bold text-gray-400 dark:text-neutral-400'>
                   249
                 </div>
-                <div className='font-medium text-gray-400 dark:text-neutral-500'>World total</div>
+                <div className='font-medium text-gray-400 dark:text-neutral-400'>World total</div>
               </div>
             </div>
             <div className='text-center'>
@@ -233,7 +232,7 @@ export default function StatsPage() {
             <h3 className='mb-4 font-medium text-gray-500 dark:text-neutral-400'>
               Popular categories
             </h3>
-            <div className='text-center text-sm text-gray-400 dark:text-neutral-500'>
+            <div className='text-center text-sm text-gray-400 dark:text-neutral-400'>
               No event categories yet
             </div>
           </div>

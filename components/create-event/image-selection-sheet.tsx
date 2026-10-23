@@ -68,13 +68,13 @@ export default function ImageSelectionSheet({
               className={`relative flex flex-col items-center gap-2 px-1 py-2 transition-colors ${
                 isActive
                   ? 'text-gray-900 dark:text-neutral-100'
-                  : 'text-gray-400 dark:text-neutral-500'
+                  : 'text-gray-400 dark:text-neutral-400'
               }`}
             >
               <IconComponent className='h-6 w-6' />
               <span className='text-center text-xs font-medium leading-tight'>{category.name}</span>
               {isActive && (
-                <div className='absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gray-900' />
+                <div className='absolute bottom-0 left-0 right-0 h-0.5 rounded-full bg-gray-900 dark:bg-neutral-100' />
               )}
             </button>
           );

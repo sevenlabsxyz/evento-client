@@ -150,7 +150,7 @@ export default function UsernameSheet({
                     {/* Status icon */}
                     {checkUsernameMutation.isPending && (
                       <div className='absolute right-3 top-1/2 -translate-y-1/2'>
-                        <div className='h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-neutral-700' />
+                        <div className='h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600 dark:border-neutral-700 dark:border-t-neutral-300' />
                       </div>
                     )}
                     {!checkUsernameMutation.isPending &&
@@ -192,7 +192,7 @@ export default function UsernameSheet({
                     <Button
                       onClick={handleSave}
                       disabled={!canSave || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isSaving ? (
                         <>

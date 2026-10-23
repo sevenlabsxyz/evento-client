@@ -216,7 +216,7 @@ export default function SaveEventSheet({ isOpen, onClose, eventId }: SaveEventSh
                     <div
                       className={`flex h-5 w-5 items-center justify-center rounded border-2 transition-colors ${
                         checked
-                          ? 'border-red-500 bg-red-500'
+                          ? 'border-red-500 bg-red-500 dark:bg-red-600'
                           : 'border-gray-300 bg-white dark:border-neutral-700 dark:bg-neutral-900'
                       }`}
                     >

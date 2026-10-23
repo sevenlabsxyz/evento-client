@@ -79,13 +79,13 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                         </h3>
                         <ol className='mt-3 space-y-2 text-sm text-gray-600 dark:text-neutral-400'>
                           <li className='flex gap-3'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               1
                             </span>
                             <span>Use a partner app to earn Bitcoin</span>
                           </li>
                           <li className='flex gap-3'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               2
                             </span>
                             <span>
@@ -96,7 +96,7 @@ export function EarnBitcoinSheet({ open, onOpenChange, lightningAddress }: EarnB
                             </span>
                           </li>
                           <li className='flex gap-3'>
-                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white'>
+                            <span className='flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white dark:bg-neutral-100 dark:text-neutral-900'>
                               3
                             </span>
                             <span>Use it inside Evento</span>

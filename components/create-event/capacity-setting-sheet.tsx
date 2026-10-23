@@ -72,7 +72,7 @@ export default function CapacitySettingSheet({
                   <h2 className='text-lg font-semibold'>Set Event Capacity</h2>
                   <button
                     onClick={handleSave}
-                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white'
+                    className='rounded-xl bg-red-500 px-4 py-2 font-medium text-white dark:bg-red-600'
                   >
                     Save
                   </button>
@@ -94,7 +94,7 @@ export default function CapacitySettingSheet({
                         onClick={() => handleQuickSelect(num)}
                         className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                           capacity === num.toString()
-                            ? 'bg-red-500 text-white'
+                            ? 'bg-red-500 text-white dark:bg-red-600'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                         }`}
                       >
@@ -111,7 +111,7 @@ export default function CapacitySettingSheet({
                       setError('');
                     }}
                     placeholder='Enter capacity'
-                    className='w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
+                    className='w-full rounded-xl border border-gray-300 px-4 py-3 text-base focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                     min='1'
                     autoFocus
                   />

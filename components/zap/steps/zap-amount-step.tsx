@@ -95,7 +95,7 @@ export function ZapAmountStep({
                   className={`flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all dark:border-neutral-800 dark:bg-neutral-950 ${
                     selectedAmount === amount
                       ? 'border-red-500 bg-red-50 text-red-600 dark:bg-red-950/40 dark:text-red-400'
-                      : 'hover:border-gray-100 dark:hover:border-neutral-800'
+                      : 'hover:border-gray-100 dark:hover:border-neutral-700'
                   }`}
                 >
                   {amount.toLocaleString()}
@@ -105,7 +105,7 @@ export function ZapAmountStep({
                 onClick={onCustomClick}
                 whileTap={{ scale: 0.95 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-                className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-800'
+                className='flex h-14 items-center justify-center rounded-3xl border border-gray-200 bg-gray-50 font-semibold transition-all hover:border-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:border-neutral-700'
               >
                 Custom
               </motion.button>
@@ -140,7 +140,7 @@ export function ZapAmountStep({
                 placeholder='Say something nice...'
                 maxLength={payRequest.commentAllowed}
                 rows={2}
-                className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-red-300 focus:outline-none focus:ring-1 focus:ring-red-300 dark:border-neutral-800 dark:bg-neutral-950 dark:focus:border-red-800 dark:focus:ring-red-800'
+                className='w-full resize-none rounded-xl border border-gray-200 bg-gray-50 p-3 text-sm transition-colors focus:border-red-300 focus:outline-none focus:ring-1 focus:ring-red-300 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-red-800 dark:focus:ring-red-800'
               />
               <p className='text-right text-xs text-gray-400 dark:text-neutral-500'>
                 {comment.length}/{payRequest.commentAllowed}

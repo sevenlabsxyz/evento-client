@@ -225,7 +225,7 @@ export function AmountInputSheet({
               onClick={handleSendAll}
               className={`w-full rounded-xl border px-4 py-3 text-center text-sm font-medium transition-colors ${
                 isSendAll
-                  ? 'border-gray-900 bg-gray-900 text-white dark:border-neutral-200'
+                  ? 'border-gray-900 bg-gray-900 text-white dark:border-neutral-200 dark:bg-neutral-100 dark:text-neutral-900'
                   : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-300 dark:hover:bg-neutral-800'
               }`}
             >

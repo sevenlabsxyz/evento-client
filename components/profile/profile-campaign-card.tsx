@@ -115,7 +115,7 @@ export default function ProfileCampaignCard({
           <button
             data-testid='profile-campaign-pledge-cta'
             onClick={() => setPledgeSheetOpen(true)}
-            className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+            className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
           >
             <Zap className='h-4 w-4' />
             Contribute sats

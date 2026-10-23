@@ -95,7 +95,7 @@ export const OnboardingWelcomeCarousel = () => {
         <CarouselContent>
           {slides.map((slide, index) => (
             <CarouselItem key={index}>
-              <div className='flex flex-col items-center rounded-2xl bg-gradient-to-br from-gray-50 to-white p-8 shadow-sm dark:to-neutral-900'>
+              <div className='flex flex-col items-center rounded-2xl bg-gradient-to-br from-gray-50 to-white p-8 shadow-sm dark:from-neutral-950 dark:to-neutral-900 dark:ring-1 dark:ring-neutral-800'>
                 <div className={`mb-6 ${slide.color}`}>{slide.icon}</div>
                 <h3 className='mb-4 text-center text-2xl font-bold text-gray-900 dark:text-neutral-100'>
                   {slide.title}

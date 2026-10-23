@@ -11,10 +11,10 @@ export const StepIndicator = ({ currentStep, totalSteps }: StepIndicatorProps) =
       {Array.from({ length: totalSteps }).map((_, index) => (
         <div
           key={index}
-          className='h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-800'
+          className='h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-neutral-600'
         >
           <motion.div
-            className='h-full w-full origin-left bg-red-600'
+            className='h-full w-full origin-left bg-red-600 dark:bg-red-500'
             initial={{ scaleX: 0 }}
             animate={{ scaleX: currentStep > index ? 1 : 0 }}
             transition={{

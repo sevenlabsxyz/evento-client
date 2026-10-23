@@ -28,7 +28,7 @@ export function EventDateGroup({
       </div>
 
       {/* Events list for this date */}
-      <div className='rounded-lg bg-white p-1 shadow-sm dark:bg-neutral-900'>
+      <div className='rounded-lg bg-white p-1 shadow-sm dark:bg-neutral-900 dark:shadow-none dark:ring-1 dark:ring-neutral-800'>
         {events.map((event) => (
           <EventCompactItem
             key={event.id}

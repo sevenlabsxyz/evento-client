@@ -142,7 +142,7 @@ export function RegistrationOtpInput({
             onPaste={handlePaste}
             disabled={isLoading}
             className={cn(
-              'h-12 w-12 rounded-lg border text-center text-xl font-semibold',
+              'h-12 w-12 rounded-lg border text-center text-xl font-semibold dark:bg-neutral-900 dark:text-neutral-100',
               'focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20',
               'disabled:cursor-not-allowed disabled:opacity-50',
               error ? 'border-red-500' : 'border-gray-300 dark:border-neutral-700'
@@ -158,7 +158,7 @@ export function RegistrationOtpInput({
       <Button
         onClick={handleSubmit}
         disabled={isLoading || code.join('').length !== 6}
-        className='w-full bg-red-500 hover:bg-red-600'
+        className='w-full bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:text-white dark:hover:bg-red-700'
       >
         {isLoading ? (
           <>

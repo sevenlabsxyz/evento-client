@@ -116,11 +116,11 @@ export default function CancelEventModal({
                   <button
                     onClick={() => setSendEmail(!sendEmail)}
                     className={`ml-4 h-6 w-12 rounded-full transition-colors ${
-                      sendEmail ? 'bg-red-500' : 'bg-gray-300 dark:bg-neutral-600'
+                      sendEmail ? 'bg-red-500 dark:bg-red-600' : 'bg-gray-300 dark:bg-neutral-600'
                     }`}
                   >
                     <div
-                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-900 ${
+                      className={`h-5 w-5 rounded-full bg-white transition-transform dark:bg-neutral-100 ${
                         sendEmail ? 'translate-x-6' : 'translate-x-0.5'
                       }`}
                     />
@@ -132,7 +132,7 @@ export default function CancelEventModal({
               <Button
                 onClick={handleConfirm}
                 disabled={cancelEventMutation.isPending}
-                className='mt-4 w-full bg-red-500 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-neutral-600'
+                className='mt-4 w-full bg-red-500 text-white hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 dark:bg-red-600 dark:hover:bg-red-700 dark:disabled:bg-neutral-600'
                 size='lg'
               >
                 {cancelEventMutation.isPending ? (

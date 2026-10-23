@@ -79,7 +79,7 @@ export function MasterScrollableSheet({
           >
             {/* Handle */}
             <div className='my-4 flex items-center'>
-              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300 dark:bg-neutral-600' />
+              <SheetWithDetentFull.Handle className='mx-auto h-1 w-12 rounded-full bg-gray-300' />
             </div>
 
             {/* Accessibility title */}

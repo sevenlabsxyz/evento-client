@@ -90,7 +90,7 @@ function EventBlock({
       type='button'
       aria-label={`${segment.title}, ${dateLabel}, ${timeLabel}. ${continuationLabel}`.trim()}
       title={`${segment.title} · ${timeLabel}`}
-      className='absolute overflow-hidden rounded-2xl border border-gray-900/10 bg-gray-900 px-2 py-1 text-left text-white shadow-sm transition-colors hover:bg-gray-800 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 dark:border-neutral-200/10 dark:focus-visible:ring-neutral-200'
+      className='absolute overflow-hidden rounded-2xl border border-gray-900/10 bg-gray-900 px-2 py-1 text-left text-white shadow-sm transition-colors hover:bg-gray-800 focus-visible:z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 dark:border-neutral-200/10 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:focus-visible:ring-neutral-200'
       style={{
         top,
         height,

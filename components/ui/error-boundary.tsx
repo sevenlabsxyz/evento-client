@@ -66,7 +66,7 @@ export class ErrorBoundary extends Component<Props, State> {
             We&apos;re sorry, but there was an error loading this content.
           </div>
           <button
-            className='rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
             onClick={() => this.setState({ hasError: false, error: undefined })}
           >
             Try again

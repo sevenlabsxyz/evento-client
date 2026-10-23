@@ -353,7 +353,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                         <EventoQRCode
                           value={qrCodeData}
                           size={256}
-                          className='rounded-3xl'
+                          className='rounded-3xl dark:bg-white'
                           showLogo={!invoiceAmount}
                           qrStyle={invoiceAmount ? 'fluid' : 'dots'}
                         />
@@ -461,7 +461,7 @@ export function ReceiveLightningSheet({ open, onOpenChange }: ReceiveLightningSh
                           <EventoQRCode
                             value={`bitcoin:${bitcoinAddress}`}
                             size={256}
-                            className='rounded-3xl'
+                            className='rounded-3xl dark:bg-white'
                             showLogo={true}
                             qrStyle='dots'
                           />

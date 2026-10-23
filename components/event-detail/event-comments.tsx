@@ -125,7 +125,7 @@ export default function EventComments({ eventId, isEventHost = false }: EventCom
                 onChange={(e) => setCommentText(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder='Add a comment'
-                className='min-h-[40px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950'
+                className='min-h-[40px] w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                 disabled={!user}
                 rows={1}
               />

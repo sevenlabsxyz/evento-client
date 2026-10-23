@@ -130,3 +130,35 @@
   font-size: 1rem;
   text-align: center;
 }
+
+/* Dark mode overrides (light rendering unchanged) */
+.dark .InterestsSheet-content {
+  background-color: rgb(23, 23, 23);
+}
+
+.dark .InterestsSheet-header {
+  border-bottom-color: rgb(38, 38, 38);
+}
+
+.dark .InterestsSheet-input {
+  background-color: rgb(38, 38, 38);
+  color: rgb(245, 245, 245);
+}
+
+.dark .InterestsSheet-input::placeholder {
+  color: rgb(163, 163, 163);
+}
+
+.dark .InterestsSheet-count {
+  color: rgb(163, 163, 163);
+}
+
+.dark .InterestsSheet-saveButton:disabled {
+  background-color: rgb(38, 38, 38) !important;
+  color: rgb(163, 163, 163) !important;
+  opacity: 1;
+}
+
+.dark .InterestsSheet-emptyText {
+  color: rgb(163, 163, 163);
+}

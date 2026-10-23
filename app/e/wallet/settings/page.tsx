@@ -77,7 +77,7 @@ export default function WalletSettingsPage() {
           <button
             type='button'
             onClick={handleLockWallet}
-            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-950'
+            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
           >
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-950/60'>
               <Lock className='h-5 w-5 text-blue-600 dark:text-blue-400' />
@@ -93,7 +93,7 @@ export default function WalletSettingsPage() {
           <button
             type='button'
             onClick={() => setShowBackupChoiceSheet(true)}
-            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950 dark:hover:bg-neutral-950'
+            className='flex w-full items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:bg-neutral-800'
           >
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-full ${
@@ -119,7 +119,7 @@ export default function WalletSettingsPage() {
             <CircledIconButton icon={ChevronRight} className='bg-white dark:bg-neutral-900' />
           </button>
 
-          <div className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-950'>
+          <div className='flex items-center gap-3 rounded-3xl border border-gray-200 bg-gray-50 p-4 dark:border-neutral-800 dark:bg-neutral-900'>
             <div className='flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 dark:bg-neutral-700'>
               <EyeOff className='h-5 w-5 text-gray-700 dark:text-neutral-300' />
             </div>

@@ -226,7 +226,7 @@ export default function EventSearchSheet({
             <Search className='absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-neutral-500' />
             <input
               ref={searchInputRef}
-              className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none dark:bg-neutral-800 dark:text-neutral-200'
+              className='h-10 w-full rounded-full border-none bg-gray-100 px-10 py-0 text-sm text-gray-800 outline-none dark:bg-neutral-800 dark:text-neutral-200 dark:placeholder:text-neutral-400'
               type='text'
               placeholder='Search events'
               value={searchText}
@@ -269,7 +269,7 @@ export default function EventSearchSheet({
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     timeframe === 'future'
-                      ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
@@ -280,7 +280,7 @@ export default function EventSearchSheet({
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     timeframe === 'past'
-                      ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
@@ -295,7 +295,7 @@ export default function EventSearchSheet({
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     sortBy === 'date-desc'
-                      ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >
@@ -306,7 +306,7 @@ export default function EventSearchSheet({
                   className={cn(
                     'rounded-full px-3 py-1.5 text-sm font-medium transition-colors',
                     sortBy === 'date-asc'
-                      ? 'bg-white text-black shadow-sm dark:bg-neutral-900 dark:text-white'
+                      ? 'bg-white text-black shadow-sm dark:bg-neutral-800 dark:text-white'
                       : 'text-gray-500 hover:text-gray-700 dark:text-neutral-400 dark:hover:text-neutral-300'
                   )}
                 >

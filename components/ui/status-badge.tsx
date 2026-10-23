@@ -57,7 +57,7 @@ export function StatusBadge({
       </span>
       {rightLabel && (
         <>
-          <span className='mx-2 h-3.5 w-px bg-border' />
+          <span className='mx-2 h-3.5 w-px bg-border dark:bg-neutral-700' />
           <span className='inline-flex items-center gap-1.5 text-muted-foreground'>
             {RightIcon && <RightIcon className='size-3 shrink-0' aria-hidden={true} />}
             {rightLabel}

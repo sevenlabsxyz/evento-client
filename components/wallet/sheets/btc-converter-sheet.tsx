@@ -178,7 +178,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                                 const parsed = parseNumericValue(e.target.value);
                                 handleUsdChange(parsed);
                               }}
-                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-neutral-800 dark:bg-neutral-950'
+                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='0.00'
                             />
                             <button
@@ -203,7 +203,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                               type='number'
                               value={btcValue}
                               onChange={(e) => handleBtcChange(e.target.value)}
-                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-neutral-800 dark:bg-neutral-950'
+                              className='w-full rounded-xl border border-gray-200 bg-gray-50 py-4 pl-8 pr-12 text-lg font-semibold focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='0.00000000'
                               step='0.00000001'
                             />
@@ -229,7 +229,7 @@ export function BTCConverterSheet({ open, onOpenChange }: BTCConverterSheetProps
                                 const parsed = parseNumericValue(e.target.value);
                                 handleSatsChange(parsed);
                               }}
-                              className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-4 pr-12 text-lg font-semibold focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:border-neutral-800 dark:bg-neutral-950'
+                              className='w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-4 pr-12 text-lg font-semibold focus:border-yellow-500 focus:outline-none focus:ring-2 focus:ring-yellow-500 dark:border-neutral-800 dark:bg-neutral-950 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                               placeholder='0'
                             />
                             <button

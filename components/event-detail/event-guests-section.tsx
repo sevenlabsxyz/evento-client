@@ -65,7 +65,7 @@ export default function EventGuestsSection({
           {Array.from({ length: 4 }).map((_, idx) => (
             <Skeleton
               key={idx}
-              className='relative h-10 w-10 rounded-full border-2 border-white'
+              className='relative h-10 w-10 rounded-full border-2 border-white dark:border-neutral-900'
               style={{ marginLeft: idx > 0 ? -8 : 0, zIndex: 4 - idx }}
             />
           ))}
@@ -161,7 +161,7 @@ export default function EventGuestsSection({
           ))}
           {remaining > 0 && (
             <button
-              className='relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-600 dark:bg-neutral-700 dark:text-neutral-400'
+              className='relative flex h-10 w-10 items-center justify-center rounded-full border-2 border-white bg-gray-200 text-xs font-semibold text-gray-600 dark:border-neutral-900 dark:bg-neutral-700 dark:text-neutral-300'
               style={{ marginLeft: -8 }}
               onClick={() => setSheetOpen(true)}
               aria-label='Open full guest list'

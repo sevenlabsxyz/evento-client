@@ -97,7 +97,7 @@ export function ZapCustomStep({
           <Button
             onClick={onConfirm}
             disabled={!hasValidSatsAmount || isPreparing}
-            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600'
+            className='h-12 w-full rounded-full bg-red-500 font-semibold text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             {isPreparing ? (
               <>

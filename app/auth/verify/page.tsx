@@ -90,7 +90,7 @@ function VerifyContent() {
   // Show loading while no email
   if (!email) {
     return (
-      <div className='flex min-h-[100dvh] items-center justify-center'>
+      <div className='flex min-h-[100dvh] items-center justify-center dark:bg-neutral-950'>
         <Loader2 className='h-8 w-8 animate-spin' />
       </div>
     );
@@ -128,7 +128,10 @@ function VerifyContent() {
         <CardContent className='space-y-4'>
           {/* Error Alert */}
           {error && (
-            <Alert variant='destructive'>
+            <Alert
+              variant='destructive'
+              className='dark:border-red-500/40 dark:text-red-400 dark:[&>svg]:text-red-400'
+            >
               <AlertCircle className='h-4 w-4' />
               <AlertDescription>
                 {error.message || 'Invalid code. Please try again.'}
@@ -138,7 +141,10 @@ function VerifyContent() {
 
           {/* Resend Error Alert */}
           {resendError && (
-            <Alert variant='destructive'>
+            <Alert
+              variant='destructive'
+              className='dark:border-red-500/40 dark:text-red-400 dark:[&>svg]:text-red-400'
+            >
               <AlertCircle className='h-4 w-4' />
               <AlertDescription>
                 {resendError.message || 'Failed to resend code. Please try again.'}
@@ -160,29 +166,29 @@ function VerifyContent() {
                   <InputOTPGroup>
                     <InputOTPSlot
                       index={0}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:border-neutral-700 dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={1}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:border-neutral-700 dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={2}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:border-neutral-700 dark:bg-neutral-950'
                     />
                   </InputOTPGroup>
                   <InputOTPGroup>
                     <InputOTPSlot
                       index={3}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:border-neutral-700 dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={4}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:border-neutral-700 dark:bg-neutral-950'
                     />
                     <InputOTPSlot
                       index={5}
-                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:bg-neutral-950'
+                      className='h-12 w-12 bg-gray-50 text-lg font-semibold dark:border-neutral-700 dark:bg-neutral-950'
                     />
                   </InputOTPGroup>
                 </InputOTP>
@@ -236,7 +242,7 @@ export default function VerifyPage() {
   return (
     <Suspense
       fallback={
-        <div className='flex min-h-[100dvh] items-center justify-center'>
+        <div className='flex min-h-[100dvh] items-center justify-center dark:bg-neutral-950'>
           <Loader2 className='h-8 w-8 animate-spin' />
         </div>
       }

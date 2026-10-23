@@ -166,8 +166,8 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
         className={cn(
           'flex w-full items-center justify-center gap-2 rounded-2xl px-4 py-3.5 text-sm font-semibold transition-colors',
           selectedAmount
-            ? 'bg-gray-900 text-white hover:bg-gray-800 active:bg-gray-700'
-            : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-neutral-700 dark:text-neutral-500'
+            ? 'bg-gray-900 text-white hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
+            : 'cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-neutral-700 dark:text-neutral-400'
         )}
       >
         {createPledge.isPending ? (
@@ -246,7 +246,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       </button>
 
       {/* Waiting indicator */}
-      <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400 dark:text-neutral-500'>
+      <div className='mt-2 flex items-center justify-center gap-2 text-sm text-gray-400 dark:text-neutral-400'>
         <Loader2 className='h-4 w-4 animate-spin' />
         Waiting for payment…
       </div>
@@ -327,7 +327,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       </p>
       <button
         onClick={handleTryAgain}
-        className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+        className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
       >
         <RotateCcw className='h-4 w-4' />
         Try again
@@ -346,7 +346,7 @@ export function CampaignPledgeSheet({ eventId, open, onOpenChange }: CampaignPle
       </p>
       <button
         onClick={handleTryAgain}
-        className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700'
+        className='flex w-full items-center justify-center gap-2 rounded-2xl bg-gray-900 px-4 py-3.5 text-sm font-semibold text-white transition-colors hover:bg-gray-800 active:bg-gray-700 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200 dark:active:bg-neutral-300'
       >
         <RotateCcw className='h-4 w-4' />
         Try again

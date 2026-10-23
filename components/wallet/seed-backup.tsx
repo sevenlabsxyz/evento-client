@@ -50,7 +50,7 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
         </p>
       </div>
 
-      <div className='rounded-2xl bg-red-50 p-4 dark:bg-red-950/40'>
+      <div className='rounded-2xl bg-red-50 p-4 dark:border dark:border-red-900 dark:bg-red-950/40'>
         <div className='flex gap-3'>
           <AlertCircle className='h-5 w-5 flex-shrink-0 text-red-600 dark:text-red-400' />
           <div className='text-sm text-red-900 dark:text-red-400'>
@@ -80,7 +80,9 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
           </Button>
         </div>
 
-        <div className={`rounded-2xl border-2 border-dashed p-4 ${showSeed ? '' : 'blur-sm'}`}>
+        <div
+          className={`rounded-2xl border-2 border-dashed p-4 dark:border-neutral-700 ${showSeed ? '' : 'blur-sm'}`}
+        >
           <div className='grid grid-cols-2 gap-3'>
             {words.map((word, index) => (
               <div
@@ -88,7 +90,7 @@ export function SeedBackup({ mnemonic, onComplete, onCancel }: SeedBackupProps) 
                 className='flex items-center gap-2 rounded-xl bg-gray-50 p-2 dark:bg-neutral-950'
               >
                 <span className='w-6 text-xs text-muted-foreground'>{index + 1}.</span>
-                <span className='font-mono text-sm'>{word}</span>
+                <span className='font-mono text-sm dark:text-neutral-100'>{word}</span>
               </div>
             ))}
           </div>

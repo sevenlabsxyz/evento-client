@@ -491,7 +491,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
                 }`}
               >
                 <span
-                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform dark:bg-neutral-900 ${
+                  className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
                     editingPrompt.isVisible ? 'left-5' : 'left-0.5'
                   }`}
                 />
@@ -503,7 +503,7 @@ export default function PromptsSheet({ isOpen, onClose }: PromptsSheetProps) {
               <Button
                 onClick={handleSavePrompt}
                 disabled={editingPrompt.answer.length < 5 || isSaving}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 {isSaving ? (
                   <>

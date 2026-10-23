@@ -135,7 +135,7 @@ export function EventCard({
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100 dark:bg-neutral-800'
+            className='h-8 w-8 rounded-full bg-gray-100 dark:bg-neutral-800 dark:hover:bg-neutral-700'
             onClick={() => {
               if (customMenuOptions && onMenuClick) {
                 onMenuClick(event.id);
@@ -212,28 +212,28 @@ export function EventCard({
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <Heart className='h-5 w-5' />
           </Button>
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <MessageCircle className='h-5 w-5' />
           </Button>
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
           >
             <Send className='h-5 w-5' />
           </Button>
           <Button
             variant='ghost'
             size='icon'
-            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800'
+            className='h-8 w-8 rounded-full bg-gray-100 p-0 dark:bg-neutral-800 dark:hover:bg-neutral-700'
             onClick={() => onBookmark?.(event.id)}
           >
             <Bookmark

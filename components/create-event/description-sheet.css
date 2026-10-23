@@ -483,3 +483,127 @@
   /* TEXT */
   color: rgb(220, 38, 38);
 }
+
+/* Dark theme overrides */
+.dark .is-editor-empty:before {
+  color: rgb(163, 163, 163); /* neutral-400 */
+}
+
+.dark .DescriptionSheet-header {
+  border-bottom-color: rgb(38, 38, 38); /* neutral-800 */
+}
+
+.dark .DescriptionSheet-headerButton--cancel,
+.dark .DescriptionSheet-headerButton--save {
+  color: rgb(248, 113, 113); /* red-400 */
+}
+
+.dark .DescriptionSheet-headerTitle {
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .DescriptionSheet-toolbar {
+  background-color: rgb(10, 10, 10); /* neutral-950 */
+}
+
+.dark .DescriptionSheet-toolButton {
+  color: rgb(163, 163, 163); /* neutral-400 */
+}
+
+.dark .DescriptionSheet-toolButton:hover {
+  background-color: rgb(38, 38, 38); /* neutral-800 */
+}
+
+.dark .DescriptionSheet-toolButton--active {
+  background-color: rgb(69, 10, 10); /* red-950 */
+  color: rgb(248, 113, 113); /* red-400 */
+}
+
+.dark .DescriptionSheet-toolDropdownMenu {
+  background-color: rgb(38, 38, 38); /* neutral-800 */
+  border-color: rgb(64, 64, 64); /* neutral-700 */
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+}
+
+.dark .DescriptionSheet-toolDropdownItem {
+  color: rgb(212, 212, 212); /* neutral-300 */
+}
+
+.dark .DescriptionSheet-toolDropdownItem:hover {
+  background-color: rgb(64, 64, 64); /* neutral-700 */
+}
+
+.dark .DescriptionSheet-toolDropdownItem--active {
+  background-color: rgb(69, 10, 10); /* red-950 */
+  color: rgb(248, 113, 113); /* red-400 */
+}
+
+.dark .DescriptionSheet-editor {
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .LinkEditSheet-title {
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .LinkEditSheet-label,
+.dark .LinkEditSheet-checkboxLabel {
+  color: rgb(212, 212, 212); /* neutral-300 */
+}
+
+.dark .LinkEditSheet-input {
+  background-color: transparent;
+  border-color: rgb(64, 64, 64); /* neutral-700 */
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .LinkEditSheet-input:focus {
+  border-color: rgb(239, 68, 68); /* red-500 */
+}
+
+.dark .LinkEditSheet-checkbox {
+  accent-color: rgb(239, 68, 68); /* red-500 */
+}
+
+.dark .LinkEditSheet-error {
+  color: rgb(248, 113, 113); /* red-400 */
+}
+
+.dark .LinkEditSheet-button--cancel {
+  background-color: rgb(38, 38, 38); /* neutral-800 */
+  border-color: rgb(64, 64, 64); /* neutral-700 */
+  color: rgb(212, 212, 212); /* neutral-300 */
+}
+
+.dark .LinkEditSheet-button--cancel:hover {
+  background-color: rgb(64, 64, 64); /* neutral-700 */
+}
+
+.dark .TextStylesSheet-title,
+.dark .FormattingSheet-title,
+.dark .ListSheet-title,
+.dark .InsertSheet-title {
+  color: rgb(245, 245, 245); /* neutral-100 */
+}
+
+.dark .TextStylesSheet-option,
+.dark .FormattingSheet-option,
+.dark .ListSheet-option,
+.dark .InsertSheet-option {
+  color: rgb(212, 212, 212); /* neutral-300 */
+}
+
+.dark .TextStylesSheet-option:hover,
+.dark .FormattingSheet-option:hover,
+.dark .ListSheet-option:hover,
+.dark .InsertSheet-option:hover {
+  background-color: rgb(64, 64, 64); /* neutral-700 */
+}
+
+.dark .TextStylesSheet-option--active,
+.dark .FormattingSheet-option--active,
+.dark .ListSheet-option--active,
+.dark .InsertSheet-option--active {
+  background-color: rgb(69, 10, 10); /* red-950 */
+  color: rgb(248, 113, 113); /* red-400 */
+}

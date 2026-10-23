@@ -217,7 +217,7 @@ export default function CommentItem({
                   ref={textareaRef}
                   value={editText}
                   onChange={(e) => setEditText(e.target.value)}
-                  className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm dark:border-neutral-800'
+                  className='min-h-[60px] w-full resize-none rounded-md border border-gray-200 p-2 text-sm dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                 />
                 <div className='flex justify-end gap-2'>
                   <Button
@@ -280,7 +280,7 @@ export default function CommentItem({
                       onChange={(e) => setReplyText(e.target.value)}
                       onKeyDown={handleReplyKeyDown}
                       placeholder={`Reply to @${comment.user_details.username}`}
-                      className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-900'
+                      className='w-full resize-none rounded-lg border border-gray-200 bg-white px-3 py-2 pr-10 text-sm outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                       rows={1}
                     />
                     <button

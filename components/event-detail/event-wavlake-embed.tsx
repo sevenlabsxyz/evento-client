@@ -8,7 +8,7 @@ export const WavlakeEmbed = ({ link }: { link: string }) => {
   const embedUrl = `https://wavlake.evento.so/track/${encodeURIComponent(trackId)}`;
 
   return (
-    <div className='w-full rounded-lg md:mt-4'>
+    <div className='w-full rounded-lg dark:overflow-hidden dark:border dark:border-neutral-800 dark:bg-white md:mt-4'>
       <iframe
         src={embedUrl}
         width='100%'
@@ -16,6 +16,7 @@ export const WavlakeEmbed = ({ link }: { link: string }) => {
         frameBorder={0}
         allowTransparency
         allow='encrypted-media'
+        className='dark:bg-white'
         style={{ maxHeight: '120px', overflow: 'hidden' }}
       ></iframe>
     </div>

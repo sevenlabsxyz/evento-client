@@ -57,7 +57,7 @@ export function EmojiSelector({ selectedEmoji, onEmojiSelect, className }: Emoji
         type='button'
         onClick={handleButtonClick}
         className={cn(
-          'flex h-12 w-12 items-center justify-center rounded-xl border-2 border-gray-200 bg-white transition-colors hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 dark:hover:bg-neutral-950',
+          'flex h-12 w-12 items-center justify-center rounded-xl border-2 border-gray-200 bg-white transition-colors hover:border-gray-300 hover:bg-gray-50 dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-neutral-700 dark:hover:bg-neutral-800',
           isOpen && 'border-blue-500 bg-blue-50 dark:bg-blue-950/40'
         )}
       >
@@ -67,7 +67,7 @@ export function EmojiSelector({ selectedEmoji, onEmojiSelect, className }: Emoji
             {/* Small X button to remove emoji */}
             <button
               onClick={handleRemoveEmoji}
-              className='absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-500 text-xs text-white hover:bg-gray-600'
+              className='absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-gray-500 text-xs text-white hover:bg-gray-600 dark:bg-neutral-600 dark:hover:bg-neutral-500'
             >
               ×
             </button>

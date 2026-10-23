@@ -79,7 +79,8 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
     if (currentStatus === 'maybe')
       return {
         label: 'Maybe',
-        className: 'bg-black hover:bg-gray-900 text-white',
+        className:
+          'bg-black dark:bg-neutral-100 hover:bg-gray-900 dark:hover:bg-neutral-200 text-white dark:text-neutral-900',
       };
     if (currentStatus === 'no')
       return {
@@ -89,7 +90,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
       };
     return {
       label: 'RSVP',
-      className: 'bg-red-500 hover:bg-red-600 text-white',
+      className: 'bg-red-500 dark:bg-red-600 hover:bg-red-600 dark:hover:bg-red-700 text-white',
     };
   }, [currentStatus, shouldDisableRsvpButton]);
 
@@ -324,7 +325,7 @@ export default function EventInfo({ event, currentUserId = '', eventData, hosts 
               />
             </div>
           )}
-          <span className='text-2xl font-bold text-black dark:text-white'>{event.title}</span>
+          <span className='text-2xl font-bold text-black dark:text-neutral-100'>{event.title}</span>
 
           {/* Date + Time */}
           <button

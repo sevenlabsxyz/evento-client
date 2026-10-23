@@ -54,7 +54,7 @@ export default function EventTypeSheet({
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentType === 'rsvp'
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
                           : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >
@@ -98,7 +98,7 @@ export default function EventTypeSheet({
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
                         currentType === 'registration'
-                          ? 'bg-red-500 text-white'
+                          ? 'bg-red-500 text-white dark:bg-red-600'
                           : 'bg-gray-100 text-gray-600 dark:bg-neutral-800 dark:text-neutral-400'
                       }`}
                     >

@@ -36,7 +36,7 @@ export function CommentReactionButton({
       disabled={disabled}
       className={cn(
         'inline-flex items-center justify-center gap-1 rounded-full transition-colors',
-        'bg-gray-50 text-gray-600 hover:bg-gray-100 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:bg-neutral-800',
+        'bg-gray-50 text-gray-600 hover:bg-gray-100 dark:bg-neutral-800 dark:text-neutral-400 dark:hover:bg-neutral-700',
         isPill ? 'h-8 px-3' : 'h-8 w-8',
         isActive && activeClassName,
         disabled && 'pointer-events-none opacity-50',

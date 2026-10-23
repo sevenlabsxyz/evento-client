@@ -347,7 +347,7 @@ export function ReceiveLnurlWithdrawSheet({
           ) : (
             <>
               <div className='space-y-3'>
-                <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                   <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                     Description
                   </p>
@@ -359,7 +359,7 @@ export function ReceiveLnurlWithdrawSheet({
                 {constraints && (
                   <>
                     {constraints.isFixedAmount ? (
-                      <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                      <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                         <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                           Amount
                         </p>
@@ -369,7 +369,7 @@ export function ReceiveLnurlWithdrawSheet({
                       </div>
                     ) : (
                       <div className='grid grid-cols-2 gap-3'>
-                        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                             Minimum
                           </p>
@@ -377,7 +377,7 @@ export function ReceiveLnurlWithdrawSheet({
                             {constraints.minSats.toLocaleString()} sats
                           </p>
                         </div>
-                        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+                        <div className='rounded-2xl bg-white p-4 dark:bg-neutral-800'>
                           <p className='mb-1 text-xs uppercase tracking-wide text-muted-foreground'>
                             Maximum
                           </p>
@@ -394,7 +394,7 @@ export function ReceiveLnurlWithdrawSheet({
               {step === 'confirm' && amountSats && (
                 <div className='space-y-4'>
                   {/* Amount Card */}
-                  <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-neutral-800 dark:bg-neutral-900'>
+                  <div className='rounded-2xl border border-gray-200 bg-white p-6 text-center dark:border-neutral-700 dark:bg-neutral-800'>
                     <p className='text-3xl font-bold text-gray-900 dark:text-neutral-100'>
                       {amountSats.toLocaleString()} sats
                     </p>

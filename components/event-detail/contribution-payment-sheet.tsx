@@ -141,7 +141,7 @@ export default function ContributionPaymentSheet({
                           min='0'
                           step='1'
                           autoFocus
-                          className='w-32 border-b-2 border-gray-300 bg-transparent text-center text-5xl font-bold text-gray-900 focus:border-red-500 focus:outline-none dark:border-neutral-700 dark:text-neutral-100'
+                          className='w-32 border-b-2 border-gray-300 bg-transparent text-center text-5xl font-bold text-gray-900 focus:border-red-500 focus:outline-none dark:border-neutral-700 dark:text-neutral-100 dark:placeholder:text-neutral-500'
                         />
                       </div>
                     ) : (

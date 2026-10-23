@@ -318,7 +318,7 @@ export function RegistrationForm({
             value={value as string}
             onChange={(e) => updateAnswer(question.id, e.target.value)}
             placeholder={question.placeholder || `Enter ${question.label.toLowerCase()}`}
-            className={error ? 'border-red-500' : ''}
+            className={error ? 'border-red-500 dark:border-red-500' : ''}
             rows={4}
           />
         );
@@ -407,7 +407,7 @@ export function RegistrationForm({
         return (
           <div className='flex items-center'>
             {prefixes[question.type] && (
-              <span className='rounded-l-md border border-r-0 bg-gray-100 px-3 py-2 text-gray-500 dark:bg-neutral-800 dark:text-neutral-400'>
+              <span className='rounded-l-md border border-r-0 bg-gray-100 px-3 py-2 text-gray-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-400'>
                 {prefixes[question.type]}
               </span>
             )}
@@ -561,7 +561,7 @@ export function RegistrationForm({
         </Button>
         <Button
           onClick={handleSubmit}
-          className='flex-1 bg-red-500 hover:bg-red-600'
+          className='flex-1 bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:text-white dark:hover:bg-red-700'
           disabled={isSubmitting}
         >
           {isSubmitting ? (

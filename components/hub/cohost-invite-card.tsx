@@ -53,7 +53,7 @@ export function CohostInviteCard({ invite }: CohostInviteCardProps) {
             {' invited you to cohost'}
           </span>
         </div>
-        <span className='flex-shrink-0 text-xs text-gray-400 dark:text-neutral-500'>{timeAgo}</span>
+        <span className='flex-shrink-0 text-xs text-gray-400 dark:text-neutral-400'>{timeAgo}</span>
       </div>
 
       <Link href={`/e/${eventId}`} className='block'>

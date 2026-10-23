@@ -90,7 +90,7 @@ export default function SwipeableHeader({ event, onImageClick }: SwipeableHeader
                   setCurrentIndex(index);
                 }}
                 className={`h-2 w-2 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-white dark:bg-neutral-900' : 'bg-white/50'
+                  index === currentIndex ? 'bg-white' : 'bg-white/50 dark:bg-white/40'
                 }`}
               />
             ))}

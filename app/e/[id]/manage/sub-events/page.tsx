@@ -146,7 +146,7 @@ export default function SubEventsManagementPage() {
             <div className='flex flex-col items-center gap-2'>
               <button
                 onClick={handleCreateNew}
-                className='w-full max-w-xs rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600'
+                className='w-full max-w-xs rounded-lg bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 Create New Sub Event
               </button>
@@ -175,7 +175,7 @@ export default function SubEventsManagementPage() {
                   <DetachedSheet.Handle />
                 </div>
 
-                <h2 className='mb-6 text-xl font-semibold'>Add Sub Event</h2>
+                <h2 className='mb-6 text-xl font-semibold dark:text-neutral-100'>Add Sub Event</h2>
 
                 <div className='flex flex-col gap-2 pb-2'>
                   <button

@@ -60,7 +60,7 @@ export default function DetachedMenuSheet({
                       onClick={option.onClick}
                       variant={option.variant || 'secondary'}
                       disabled={option.disabled}
-                      className='flex w-full items-center gap-4 rounded-full border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50 dark:border-neutral-800 dark:hover:bg-neutral-950'
+                      className='flex w-full items-center gap-4 rounded-full border border-gray-200 px-4 py-6 text-left transition-colors hover:bg-gray-50 dark:border-neutral-700 dark:hover:bg-neutral-800/70'
                     >
                       <IconComponent className='h-5 w-5' />
                       <span className='font-medium'>{option.label}</span>

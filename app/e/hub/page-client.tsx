@@ -24,15 +24,15 @@ function HubPageSkeleton() {
           <Skeleton className='h-5 w-48' />
         </div>
         <div className='flex flex-col gap-4'>
-          <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+          <div className='rounded-2xl bg-white p-4 dark:border dark:border-neutral-800 dark:bg-neutral-900'>
             <Skeleton className='mb-3 h-5 w-28' />
             <Skeleton className='h-16 w-full rounded-lg' />
           </div>
-          <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+          <div className='rounded-2xl bg-white p-4 dark:border dark:border-neutral-800 dark:bg-neutral-900'>
             <Skeleton className='mb-3 h-5 w-36' />
             <Skeleton className='h-16 w-full rounded-lg' />
           </div>
-          <div className='rounded-2xl bg-white p-4 dark:bg-neutral-900'>
+          <div className='rounded-2xl bg-white p-4 dark:border dark:border-neutral-800 dark:bg-neutral-900'>
             <Skeleton className='mb-3 h-5 w-24' />
             <Skeleton className='h-24 w-full rounded-lg' />
           </div>

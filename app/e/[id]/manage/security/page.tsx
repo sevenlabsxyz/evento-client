@@ -204,7 +204,7 @@ export default function SecurityPrivacyPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -218,7 +218,7 @@ export default function SecurityPrivacyPage() {
       <div className='flex-1 space-y-6 overflow-y-auto bg-gray-50 px-4 pb-32 pt-4 dark:bg-neutral-950'>
         {/* Event details */}
         <div>
-          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500'>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-400'>
             Event details
           </h2>
           <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>
@@ -303,7 +303,7 @@ export default function SecurityPrivacyPage() {
 
         {/* Event security */}
         <div>
-          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500'>
+          <h2 className='mb-3 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-400'>
             Event security
           </h2>
           <div className='overflow-hidden rounded-2xl bg-white dark:bg-neutral-900'>

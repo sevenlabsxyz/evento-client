@@ -17,7 +17,7 @@ export default function CoverImageSelector({
 }: CoverImageSelectorProps) {
   return (
     <div
-      className='relative aspect-square w-full cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-pink-300 to-pink-400'
+      className='relative aspect-square w-full cursor-pointer overflow-hidden rounded-2xl bg-gradient-to-br from-pink-300 to-pink-400 dark:from-pink-500 dark:to-pink-700'
       onClick={onImageClick}
     >
       {selectedImage ? (

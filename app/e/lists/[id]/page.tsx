@@ -151,7 +151,7 @@ export default function SavedListDetailPage() {
           </p>
           <Button
             onClick={() => router.push('/e/lists')}
-            className='bg-red-500 text-white hover:bg-red-600'
+            className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Back to Lists
           </Button>
@@ -230,7 +230,7 @@ export default function SavedListDetailPage() {
 
       {/* Rename Modal */}
       {showRenameModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-4 text-xl font-bold'>Rename List</h3>
             <Input
@@ -260,7 +260,7 @@ export default function SavedListDetailPage() {
               </Button>
               <Button
                 onClick={handleRenameList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 disabled={!newListName.trim() || updateListMutation.isPending}
               >
                 {updateListMutation.isPending ? (
@@ -279,7 +279,7 @@ export default function SavedListDetailPage() {
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-2 text-xl font-bold'>Delete List?</h3>
             <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
@@ -297,7 +297,7 @@ export default function SavedListDetailPage() {
               </Button>
               <Button
                 onClick={handleDeleteList}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 disabled={deleteListMutation.isPending}
               >
                 {deleteListMutation.isPending ? (
@@ -316,7 +316,7 @@ export default function SavedListDetailPage() {
 
       {/* Remove Event Confirmation Modal */}
       {showRemoveConfirmModal && eventToRemove && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4 dark:bg-black/70'>
           <div className='w-full max-w-full rounded-2xl bg-white p-6 dark:bg-neutral-900 md:max-w-sm'>
             <h3 className='mb-2 text-xl font-bold'>Remove Event?</h3>
             <p className='mb-6 text-sm text-gray-600 dark:text-neutral-400'>
@@ -337,7 +337,7 @@ export default function SavedListDetailPage() {
               </Button>
               <Button
                 onClick={handleConfirmRemoveEvent}
-                className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 disabled={removingEventId === eventToRemove}
               >
                 {removingEventId === eventToRemove ? (

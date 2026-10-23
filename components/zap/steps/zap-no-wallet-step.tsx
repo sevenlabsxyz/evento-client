@@ -65,7 +65,9 @@ export function ZapNoWalletStep({
           onClick={onNotify}
           disabled={isNotifyDisabled}
           className={`h-12 w-full rounded-full font-semibold text-white ${
-            notifySuccess ? 'bg-emerald-600 hover:bg-emerald-600' : 'bg-gray-900 hover:bg-gray-800'
+            notifySuccess
+              ? 'bg-emerald-600 hover:bg-emerald-600'
+              : 'bg-gray-900 hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
           }`}
         >
           {renderNotifyContent()}

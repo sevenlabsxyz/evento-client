@@ -65,7 +65,7 @@ export function EventCompactItem({
 
   return (
     <div
-      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:hover:bg-neutral-950'
+      className='group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 dark:hover:bg-neutral-800'
       role={variant === 'sub-event' ? 'link' : undefined}
       tabIndex={variant === 'sub-event' ? 0 : undefined}
       aria-label={variant === 'sub-event' ? `View ${event.title}` : undefined}

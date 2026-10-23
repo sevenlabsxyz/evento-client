@@ -303,7 +303,7 @@ export default function SettingsPage() {
               onClick={() => setTelegramSheetOpen(true)}
             >
               <div className='flex items-center gap-3'>
-                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF7FD]'>
+                <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-[#EEF7FD] dark:bg-[#2AABEE]/15'>
                   <Send className='h-4 w-4 text-[#2AABEE]' />
                 </div>
                 <span className='font-medium'>Telegram</span>

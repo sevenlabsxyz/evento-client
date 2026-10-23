@@ -55,7 +55,7 @@ export function ReusableDropdown({
                 item.action();
                 setIsOpen(false);
               }}
-              className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-neutral-950 ${
+              className={`flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-gray-50 dark:hover:bg-neutral-800 ${
                 item.destructive
                   ? 'text-red-500 dark:text-red-400'
                   : 'text-gray-900 dark:text-neutral-100'

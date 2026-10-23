@@ -67,7 +67,7 @@ export default function ProgressiveImage({
     return (
       <div
         className={cn(
-          'flex items-center justify-center bg-gray-200 text-sm text-gray-400 dark:bg-neutral-700 dark:text-neutral-500',
+          'flex items-center justify-center bg-gray-200 text-sm text-gray-400 dark:bg-neutral-800 dark:text-neutral-400',
           fill ? 'absolute inset-0' : '',
           className
         )}
@@ -103,12 +103,12 @@ export default function ProgressiveImage({
       {!isLoaded && (
         <div
           className={cn(
-            'absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200',
+            'absolute inset-0 animate-pulse bg-gradient-to-r from-gray-200 via-gray-100 to-gray-200 dark:from-neutral-800 dark:via-neutral-700 dark:to-neutral-800',
             fill ? 'absolute inset-0' : ''
           )}
           style={!fill ? { width, height } : undefined}
         >
-          <div className='animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-neutral-900/20' />
+          <div className='animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent dark:via-white/5' />
         </div>
       )}
     </div>

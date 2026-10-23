@@ -127,7 +127,7 @@ export default function ApiKeysPage() {
             <Button
               onClick={() => setCreateDialogOpen(true)}
               disabled={!canCreateMore}
-              className='rounded-xl bg-red-500 hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400'
+              className='rounded-xl bg-red-500 text-white hover:bg-red-600 disabled:bg-gray-300 disabled:text-gray-500 dark:bg-red-600 dark:text-white dark:hover:bg-red-700 dark:disabled:bg-neutral-600 dark:disabled:text-neutral-400'
             >
               <Plus className='mr-1 h-4 w-4' />
               Create Key
@@ -160,7 +160,7 @@ export default function ApiKeysPage() {
             <EmptyContent>
               <Button
                 onClick={() => setCreateDialogOpen(true)}
-                className='bg-red-500 hover:bg-red-600'
+                className='bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
               >
                 <Plus className='mr-2 h-4 w-4' />
                 Create Your First Key

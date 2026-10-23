@@ -376,7 +376,9 @@ export function BackupChoiceSheet({
                     key={index}
                     className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
                   >
-                    {pin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                    {pin.length > index && (
+                      <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+                    )}
                   </div>
                 ))}
               </div>
@@ -558,7 +560,9 @@ export function BackupChoiceSheet({
                     key={index}
                     className='flex h-12 w-12 items-center justify-center rounded-full border-2 border-gray-200 bg-gray-50 dark:border-neutral-800 dark:bg-neutral-950'
                   >
-                    {seedPin.length > index && <div className='h-3 w-3 rounded-full bg-gray-900' />}
+                    {seedPin.length > index && (
+                      <div className='h-3 w-3 rounded-full bg-gray-900 dark:bg-neutral-100' />
+                    )}
                   </div>
                 ))}
               </div>
@@ -649,7 +653,9 @@ export function BackupChoiceSheet({
               </Button>
             </div>
 
-            <div className={`rounded-2xl border-2 border-dashed p-4 ${showSeed ? '' : 'blur-sm'}`}>
+            <div
+              className={`rounded-2xl border-2 border-dashed p-4 dark:border-neutral-700 ${showSeed ? '' : 'blur-sm'}`}
+            >
               <div className='grid grid-cols-2 gap-3'>
                 {words.map((word, index) => (
                   <div
@@ -657,7 +663,7 @@ export function BackupChoiceSheet({
                     className='flex items-center gap-2 rounded-xl bg-gray-50 p-2 dark:bg-neutral-950'
                   >
                     <span className='w-6 text-xs text-muted-foreground'>{index + 1}.</span>
-                    <span className='font-mono text-sm'>{word}</span>
+                    <span className='font-mono text-sm dark:text-neutral-100'>{word}</span>
                   </div>
                 ))}
               </div>

@@ -115,13 +115,13 @@ export default function WeatherDetailSheet({
                       </button>
 
                       {showUnitMenu && (
-                        <div className='absolute right-0 top-full z-10 mt-1 min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-neutral-800 dark:bg-neutral-900'>
+                        <div className='absolute right-0 top-full z-10 mt-1 min-w-[120px] rounded-lg border border-gray-200 bg-white py-1 shadow-lg dark:border-neutral-700 dark:bg-neutral-800 dark:shadow-black/40'>
                           <button
                             onClick={() => {
                               setDisplayUnit('F');
                               setShowUnitMenu(false);
                             }}
-                            className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-neutral-950 ${
+                            className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-neutral-700/60 ${
                               displayUnit === 'F'
                                 ? 'font-medium text-red-600 dark:text-red-400'
                                 : 'text-gray-700 dark:text-neutral-300'
@@ -129,7 +129,7 @@ export default function WeatherDetailSheet({
                           >
                             <span>Fahrenheit</span>
                             {displayUnit === 'F' && (
-                              <div className='h-2 w-2 rounded-full bg-red-600'></div>
+                              <div className='h-2 w-2 rounded-full bg-red-600 dark:bg-red-400'></div>
                             )}
                           </button>
                           <button
@@ -137,7 +137,7 @@ export default function WeatherDetailSheet({
                               setDisplayUnit('C');
                               setShowUnitMenu(false);
                             }}
-                            className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-neutral-950 ${
+                            className={`flex w-full items-center justify-between px-4 py-2 text-left text-sm hover:bg-gray-50 dark:hover:bg-neutral-700/60 ${
                               displayUnit === 'C'
                                 ? 'font-medium text-red-600 dark:text-red-400'
                                 : 'text-gray-700 dark:text-neutral-300'
@@ -145,7 +145,7 @@ export default function WeatherDetailSheet({
                           >
                             <span>Celsius</span>
                             {displayUnit === 'C' && (
-                              <div className='h-2 w-2 rounded-full bg-red-600'></div>
+                              <div className='h-2 w-2 rounded-full bg-red-600 dark:bg-red-400'></div>
                             )}
                           </button>
                         </div>

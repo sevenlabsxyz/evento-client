@@ -135,7 +135,7 @@ export default function QuickProfileSheet({ isOpen, onClose, user }: QuickProfil
                           variant={'link'}
                           className='shadow-none'
                           disabled={isNavigatingToProfile}
-                          // className='h-12 w-full rounded-full bg-black text-white hover:bg-gray-900'
+                          // className='h-12 w-full rounded-full bg-black dark:bg-neutral-100 text-white hover:bg-gray-900 dark:hover:bg-neutral-200 dark:text-neutral-900'
                         >
                           {isNavigatingToProfile ? (
                             <>

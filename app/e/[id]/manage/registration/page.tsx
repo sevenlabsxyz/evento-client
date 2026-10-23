@@ -646,7 +646,7 @@ export default function RegistrationQuestionsPage() {
           </p>
           <button
             onClick={() => router.back()}
-            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600'
+            className='rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           >
             Go Back
           </button>
@@ -1060,7 +1060,7 @@ export default function RegistrationQuestionsPage() {
 
                 <button
                   onClick={handleAddQuestion}
-                  className='flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600'
+                  className='flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   <Plus className='h-4 w-4' />
                   Add New Question
@@ -1080,7 +1080,7 @@ export default function RegistrationQuestionsPage() {
                 </p>
                 <button
                   onClick={handleAddQuestion}
-                  className='flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600'
+                  className='flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 px-6 py-3 text-white transition-colors hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                 >
                   <Plus className='h-4 w-4' />
                   Add Question
@@ -1157,7 +1157,7 @@ export default function RegistrationQuestionsPage() {
               onClick={handleSaveQuestion}
               className={`w-full rounded-xl py-3 font-medium transition-all ${
                 isQuestionFormValid && !createQuestion.isPending
-                  ? 'bg-black text-white hover:bg-gray-800'
+                  ? 'bg-black text-white hover:bg-gray-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200'
                   : 'cursor-not-allowed bg-gray-300 text-gray-500 dark:bg-neutral-600 dark:text-neutral-400'
               }`}
               disabled={
@@ -1228,7 +1228,7 @@ export default function RegistrationQuestionsPage() {
                   value={questionLabel}
                   onChange={(event) => setQuestionLabel(event.target.value)}
                   placeholder='Enter your question'
-                  className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
+                  className='w-full rounded-xl border border-gray-300 p-4 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
                 />
               </div>
 
@@ -1252,7 +1252,7 @@ export default function RegistrationQuestionsPage() {
                         value={option}
                         onChange={(event) => handleOptionChange(index, event.target.value)}
                         placeholder={`Option ${index + 1}`}
-                        className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700'
+                        className='flex-1 rounded-lg border border-gray-300 p-3 focus:border-transparent focus:outline-none focus:ring-2 focus:ring-red-500 dark:border-neutral-700 dark:bg-neutral-800 dark:text-neutral-100 dark:caret-neutral-100 dark:placeholder:text-neutral-500'
                       />
                       {questionOptions.length > 1 && (
                         <button
@@ -1266,7 +1266,7 @@ export default function RegistrationQuestionsPage() {
                   ))}
                   <button
                     onClick={handleAddOption}
-                    className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-400'
+                    className='w-full rounded-lg border-2 border-dashed border-gray-300 p-3 text-gray-500 hover:border-gray-400 hover:text-gray-600 dark:border-neutral-700 dark:text-neutral-400 dark:hover:border-neutral-600 dark:hover:text-neutral-300'
                   >
                     + Add Option
                   </button>
@@ -1283,7 +1283,9 @@ export default function RegistrationQuestionsPage() {
                 <button
                   onClick={() => setIsRequiredNewQuestion((prev) => !prev)}
                   className={`h-6 w-12 rounded-full transition-colors ${
-                    isRequiredNewQuestion ? 'bg-red-500' : 'bg-gray-300 dark:bg-neutral-600'
+                    isRequiredNewQuestion
+                      ? 'bg-red-500 dark:bg-red-600'
+                      : 'bg-gray-300 dark:bg-neutral-600'
                   }`}
                 >
                   <div

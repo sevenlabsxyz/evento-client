@@ -244,7 +244,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     ) : step === 'review' ? (
       <div className='flex flex-col gap-3'>
         <Button
-          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           onClick={handleConfirm}
         >
           Confirm and send
@@ -260,7 +260,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     ) : step === 'comment' ? (
       <div className='flex flex-col gap-3'>
         <Button
-          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           onClick={() => setStep('review')}
         >
           Next
@@ -272,7 +272,7 @@ export function BatchZapSheet({ open, onOpenChange, recipientSummary }: BatchZap
     ) : (
       <div className='flex flex-col gap-3'>
         <Button
-          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600'
+          className='w-full rounded-full bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
           disabled={!validation.valid}
           onClick={() => setStep('comment')}
         >

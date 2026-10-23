@@ -195,7 +195,7 @@ export default function LightningAddressSheet({
                     <Button
                       onClick={handleSave}
                       disabled={isWalletManaged ? false : !hasChanges || isSaving}
-                      className='flex-1 bg-red-500 text-white hover:bg-red-600'
+                      className='flex-1 bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700'
                     >
                       {isWalletManaged ? (
                         'Open Wallet'

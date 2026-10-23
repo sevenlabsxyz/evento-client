@@ -78,7 +78,7 @@ export default function GalleryItem({
 
   return (
     <div
-      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2'
+      className='group relative aspect-square cursor-pointer overflow-hidden rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-950'
       onClick={onImageClick}
       onKeyDown={handleKeyDown}
       onMouseEnter={() => setShowControls(true)}
@@ -151,7 +151,7 @@ export default function GalleryItem({
                 <button
                   type='button'
                   aria-label='Photo actions'
-                  className='rounded-full bg-black bg-opacity-50 p-1.5 text-white'
+                  className='rounded-full bg-black bg-opacity-50 p-1.5 text-white dark:bg-neutral-100 dark:text-neutral-900'
                   onClick={(event) => event.stopPropagation()}
                 >
                   <MoreHorizontal className='h-4 w-4' />
